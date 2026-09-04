@@ -49,11 +49,10 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C01 2026-09-03: tree drifted when scripts/goal095_09512_integrate.py was
 # updated after the previous pin. C02 must revalidate historical campaign
 # hashes against this tree; the corpora and engines are unchanged.
-# C03 2026-09-03: tree drifted when src/baxy_mind/{llm.py,__main__.py} and
-# scripts/goal06_voice_sample.py started composing the local clock from the
-# real system.time contract. Corpora and engines are unchanged.
+# C03 2026-09-04: tree drifted when USER_MESSAGE_PROMPT dropped the copied
+# «no pude usar esa respuesta» example. Corpora and engines are unchanged.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "651f69892bec3925e57cd7f2d9cdbed0f750fc25fa96710fbc6d646407f59999"
+    "2c4b9cc91b968636f49fbfd04d9a04c04a55a80c013e185c1a83b1bdf2288820"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

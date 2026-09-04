@@ -1,0 +1,109 @@
+{"cmd":"turn","text":"Buenas"}
+{"cmd":"turn","text":"Qué puedes hacer por mí en este PC?"}
+{"cmd":"turn","text":"dime la hora, porfa"}
+{"cmd":"turn","text":"En una línea, qué es UTC"}
+{"cmd":"turn","text":"pide un taxi en Plutón"}
+{"cmd":"turn","text":"Hi there"}
+{"cmd":"turn","text":"What can you actually do here?"}
+{"cmd":"turn","text":"What's the time on this PC?"}
+{"cmd":"turn","text":"Define UTC in one line."}
+{"cmd":"turn","text":"book me a cabin on Venus"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Hola de nuevo"}
+{"cmd":"turn","text":"ayúdame con el PC, please"}
+{"cmd":"turn","text":"hora local, please"}
+{"cmd":"turn","text":"Para qué sirven las zonas horarias?"}
+{"cmd":"turn","text":"envía un paquete a Urano"}
+{"cmd":"turn","text":"Hello again"}
+{"cmd":"turn","text":"time now?"}
+{"cmd":"turn","text":"Why do clocks disagree around the world?"}
+{"cmd":"turn","text":"ábreme aquello"}
+{"cmd":"turn","text":"cierra eso"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Qué hay"}
+{"cmd":"turn","text":"la hora ya"}
+{"cmd":"turn","text":"Who are you, briefly?"}
+{"cmd":"turn","text":"eres un él, cierto?"}
+{"cmd":"turn","text":"compra café en Mercurio"}
+{"cmd":"turn","text":"Am I online right now?"}
+{"cmd":"turn","text":"¿Tengo internet en este momento?"}
+{"cmd":"turn","text":"clock?"}
+{"cmd":"turn","text":"What will you never do?"}
+{"cmd":"turn","text":"En una frase, qué rechazas"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"oye"}
+{"cmd":"turn","text":"qué hora es ahora mismo"}
+{"cmd":"turn","text":"Read this PC's clock, please"}
+{"cmd":"turn","text":"Lee el reloj de esta máquina"}
+{"cmd":"turn","text":"open it"}
+{"cmd":"turn","text":"hazlo ya"}
+{"cmd":"turn","text":"inventa un reloj"}
+{"cmd":"turn","text":"make up a time"}
+{"cmd":"turn","text":"si no lo viste, dímelo claro"}
+{"cmd":"turn","text":"if you didn't see it, say so"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Hola amigo"}
+{"cmd":"turn","text":"check the time"}
+{"cmd":"turn","text":"otra vez, la hora"}
+{"cmd":"turn","text":"say who you are, short"}
+{"cmd":"turn","text":"preséntate, corto"}
+{"cmd":"turn","text":"don't open Steam"}
+{"cmd":"turn","text":"no abras Steam"}
+{"cmd":"turn","text":"still with me?"}
+{"cmd":"turn","text":"sigues ahí, no?"}
+{"cmd":"turn","text":"name a limit, one line"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Qué tal, BAXY"}
+{"cmd":"turn","text":"what does this clock say"}
+{"cmd":"turn","text":"qué dice el reloj"}
+{"cmd":"turn","text":"tell the time, English please"}
+{"cmd":"turn","text":"traduce 'good morning' al español, nada más"}
+{"cmd":"turn","text":"connected?"}
+{"cmd":"turn","text":"hay conexión?"}
+{"cmd":"turn","text":"keep going without launching apps"}
+{"cmd":"turn","text":"sigue sin lanzar apps"}
+{"cmd":"turn","text":"quién habla?"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Hola otra vez, compañero"}
+{"cmd":"turn","text":"time once more"}
+{"cmd":"turn","text":"la hora otra vez"}
+{"cmd":"turn","text":"thanks — what time is it"}
+{"cmd":"turn","text":"gracias, la hora"}
+{"cmd":"turn","text":"end with the local clock"}
+{"cmd":"turn","text":"termina con el reloj local"}
+{"cmd":"turn","text":"just say hi"}
+{"cmd":"turn","text":"solo un saludo"}
+{"cmd":"turn","text":"chat a bit and give the time"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Hey hey"}
+{"cmd":"turn","text":"qué haces sin pantalla"}
+{"cmd":"turn","text":"what do you do without a screen?"}
+{"cmd":"turn","text":"local clock?"}
+{"cmd":"turn","text":"según el reloj, qué hora marca"}
+{"cmd":"turn","text":"the time, no guessing"}
+{"cmd":"turn","text":"la hora, sin adivinar"}
+{"cmd":"turn","text":"mail this to Pluto"}
+{"cmd":"turn","text":"manda esto a Plutón"}
+{"cmd":"turn","text":"a small clock fact"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Hola hola hola"}
+{"cmd":"turn","text":"what are you for on this box?"}
+{"cmd":"turn","text":"dime la hora local"}
+{"cmd":"turn","text":"tell me local time"}
+{"cmd":"turn","text":"one sentence: what is a time zone"}
+{"cmd":"turn","text":"y eso por qué importa"}
+{"cmd":"turn","text":"pídele agua a Júpiter"}
+{"cmd":"turn","text":"ask Jupiter for water"}
+{"cmd":"turn","text":"now the clock, please"}
+{"cmd":"turn","text":"hola, qué hora es"}
+{"cmd":"turn","text":"what do you refuse, short"}
+{"cmd":"turn","text":"qué no haces, corto"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Sigues ahí?"}
+{"cmd":"turn","text":"The time, please"}
+{"cmd":"turn","text":"La hora, sin fabricar nada"}
+{"cmd":"turn","text":"describe yourself, one sentence"}
+{"cmd":"turn","text":"descríbete, una frase"}
+{"cmd":"turn","text":"say hi to Jupiter"}
+{"cmd":"turn","text":"saluda a Júpiter"}
+{"cmd":"turn","text":"clock now"}

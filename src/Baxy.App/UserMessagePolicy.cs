@@ -154,6 +154,12 @@ internal static class UserMessagePolicy
         "operación",
         "operacion",
         "capacidad interna",
+        "language model",
+        "modelo de lenguaje",
+        "resolver el efecto",
+        "el efecto '",
+        "opaque identity",
+        "observed profile",
         "grounding",
         "checkpoint",
         "reconciliación",
@@ -212,12 +218,36 @@ internal static class UserMessagePolicy
         {
             return "unsafe_language";
         }
+
+        if (IsPunctuationOnly(modelText) || IsTooThin(modelText))
+        {
+            return "no_response";
+        }
+
+        if (LooksLikeMachineSlotAsk(FoldForPolicy(modelText)))
+        {
+            return "internal_code";
+        }
+
+        if (ContainsStutteredToken(modelText))
+        {
+            return "internal_code";
+        }
         if (Regex.IsMatch(
                 modelText,
                 @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",
                 RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
             || FoldForPolicy(modelText).Contains(
-                "el mensaje es correcto",
+                "el mensaje es",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "sigo con ",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "usar esa respuesta",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "unusable answer",
                 StringComparison.Ordinal)
             || Regex.IsMatch(
                 FoldForPolicy(modelText),
@@ -276,6 +306,23 @@ internal static class UserMessagePolicy
         {
             return "missing_confirmation_choice";
         }
+
+        if (draft.Intent == "welcome"
+            && ProposesUnsolicitedCatalogAction(string.Empty, modelText))
+        {
+            return "unsolicited_catalog";
+        }
+
+        if (draft.Intent == "welcome" && LooksLikeFailure(modelText))
+        {
+            return "reversed_result";
+        }
+
+        if (draft.Intent == "welcome" && ClaimsUnverifiedSuccess(modelText))
+        {
+            return "reversed_result";
+        }
+
         return null;
     }
 
@@ -297,11 +344,30 @@ internal static class UserMessagePolicy
         }
 
         if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText)
+            || NaturalSystemStatusRequestParser.IsCurrentTimeRequest(reply)
             || RestatesTheRequest(userText, reply)
             || ContainsClockPattern(reply)
             || ContainsInternalCode(reply)
             || ClaimsUnverifiedSuccess(reply)
-            || ContainsMeasuredInventedToken(reply))
+            || ContainsMeasuredInventedToken(reply)
+            || ContainsStutteredToken(reply)
+            || ProposesUnsolicitedCatalogAction(userText, reply)
+            || MentionsUnsolicitedCatalogFamily(userText, reply)
+            || LooksLikeMachineSlotAsk(FoldForPolicy(reply))
+            || IsPunctuationOnly(reply)
+            || IsTooThin(reply)
+            || AsksToInventClock(FoldForPolicy(reply))
+            || EchoesRequestAsQuestion(userText, reply)
+            || GreetsOutOfWorldTarget(FoldForPolicy(reply))
+            || ClaimsUnverifiedConnectivity(FoldForPolicy(reply))
+            || (LooksLikeFailure(reply)
+                && ConversationFallbackIntent(userText) == "welcome")
+            || (LooksLikeOutOfWorldRequest(FoldForPolicy(userText))
+                && (reply.Contains('?', StringComparison.Ordinal)
+                    || reply.Contains('¿', StringComparison.Ordinal)))
+            || (LooksLikeKnowledgeQuestion(FoldForPolicy(userText))
+                && (reply.Contains('?', StringComparison.Ordinal)
+                    || reply.Contains('¿', StringComparison.Ordinal))))
         {
             return false;
         }
@@ -322,12 +388,305 @@ internal static class UserMessagePolicy
         "nochesos",
     ];
 
+    internal static bool IsConnectivityStatusRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        string folded = FoldForPolicy(text).Trim().Trim('?', '.', '!', '¿', '¡', ' ');
+        return (folded is "online"
+            or "hay red"
+            or "hay internet"
+            or "tengo internet"
+            or "tengo red"
+            or "tienes internet"
+            or "have i got internet"
+            or "do i have internet"
+            or "got internet"
+            or "am i online"
+            or "am i connected"
+            or "estoy conectado"
+            or "is there internet")
+            || folded.EndsWith("conectado a internet", StringComparison.Ordinal);
+    }
+
+    internal static string ConversationFallbackIntent(string userText)
+    {
+        string user = FoldForPolicy(userText);
+        if (LooksLikeAmbiguousAction(user))
+        {
+            return "clarification";
+        }
+
+        if (LooksLikeOutOfWorldRequest(user))
+        {
+            return "out_of_catalog";
+        }
+
+        if (LooksLikeKnowledgeQuestion(user))
+        {
+            return "clarification";
+        }
+
+        return "welcome";
+    }
+
+    internal static bool ProposesUnsolicitedCatalogAction(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        string said = FoldForPolicy(reply);
+        if (!LooksLikeCatalogProposal(said)
+            || said.Contains("que accion", StringComparison.Ordinal)
+            || said.Contains("what action", StringComparison.Ordinal)
+            || said.Contains("que necesitas", StringComparison.Ordinal)
+            || said.Contains("what do you need", StringComparison.Ordinal)
+            || said.Contains("en que puedo ayudarte", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (!UserInvitedAnyCatalogAction(user))
+        {
+            return true;
+        }
+
+        bool coveredFamilyNamed = false;
+        foreach (string[] family in CatalogFamilies)
+        {
+            if (!ContainsAny(said, family))
+            {
+                continue;
+            }
+
+            if (!UserCoversCatalogFamily(user, family))
+            {
+                return true;
+            }
+
+            coveredFamilyNamed = true;
+        }
+
+        return !coveredFamilyNamed;
+    }
+
+    internal static bool MentionsUnsolicitedCatalogFamily(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        string said = FoldForPolicy(reply);
+        foreach (string[] family in CatalogFamilies)
+        {
+            if (ContainsAny(said, family) && !UserCoversCatalogFamily(user, family))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool UserCoversCatalogFamily(string user, string[] family)
+    {
+        if (ContainsAny(user, family))
+        {
+            return true;
+        }
+
+        if (FamilyNamed(family, "ventana", "window")
+            && ContainsAny(user, ["cierra", "close", "abre", "open"]))
+        {
+            return true;
+        }
+
+        if (FamilyNamed(family, "wifi", "wlan", "inalambr")
+            && ContainsAny(user, ["internet", "red", "online", "conectado"]))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static readonly string[][] CatalogFamilies =
+    [
+        ["papelera", "recycle", "reciclaje"],
+        ["ventana", "window"],
+        ["wifi", "wlan", "inalambr"],
+        ["steam"],
+        ["rutina", "routine"],
+        ["portapapeles", "clipboard"],
+        ["teclado", "keyboard", "win32"],
+        ["backup", "sha-256", "sha256"],
+        ["cdp"],
+        ["volumen", "audio", "silencio", "mute", "salida predeterminada"],
+        ["notificacion", "notification"],
+        ["bitcoin", "neptuno"],
+        ["busque", "buscar en la web", "search the web"],
+        ["minimice", "minimize", "minimizar"],
+    ];
+
+    private static bool LooksLikeCatalogProposal(string folded) =>
+        folded.Contains("quieres que", StringComparison.Ordinal)
+        || folded.Contains("want me to", StringComparison.Ordinal)
+        || folded.Contains("do you want me", StringComparison.Ordinal)
+        || folded.Contains("metadatos de una rutina", StringComparison.Ordinal)
+        || folded.Contains("salida predeterminada", StringComparison.Ordinal);
+
+    private static bool LooksLikeMachineSlotAsk(string folded) =>
+        folded.Contains("nombre de la aplicacion", StringComparison.Ordinal)
+        || folded.Contains("name of the application", StringComparison.Ordinal)
+        || folded.Contains("private directory", StringComparison.Ordinal)
+        || folded.Contains("zip backup", StringComparison.Ordinal)
+        || folded.Contains("reglas establecidas", StringComparison.Ordinal)
+        || folded.Contains("established rules", StringComparison.Ordinal)
+        || folded.Contains("app id", StringComparison.Ordinal)
+        || folded.Contains("application id", StringComparison.Ordinal)
+        || folded.Contains("carpeta que", StringComparison.Ordinal)
+        || folded.Contains("what folder", StringComparison.Ordinal)
+        || folded.Contains("which folder", StringComparison.Ordinal)
+        || folded.Contains("folder you want", StringComparison.Ordinal)
+        || folded.Contains("la carpeta", StringComparison.Ordinal)
+        || folded.Contains("id de confirmacion", StringComparison.Ordinal)
+        || folded.Contains("confirmation id", StringComparison.Ordinal)
+        || folded.Contains("precio esperado", StringComparison.Ordinal)
+        || folded.Contains("expected price", StringComparison.Ordinal)
+        || folded.Contains("eco icmp", StringComparison.Ordinal)
+        || folded.Contains("icmp", StringComparison.Ordinal)
+        || folded.Contains("host que", StringComparison.Ordinal)
+        || folded.Contains("subject of the email", StringComparison.Ordinal)
+        || folded.Contains("asunto del correo", StringComparison.Ordinal)
+        || folded.Contains("search for in this box", StringComparison.Ordinal)
+        || folded.Contains("deseas abrazar", StringComparison.Ordinal);
+
+    private static bool LooksLikeAmbiguousAction(string user) =>
+        ContainsAny(
+            user,
+            ["abreme eso", "abre eso", "cierra aquello", "open that", "close that",
+                "hazlo", "do it", "do that", "haz eso", "open it", "close it"]);
+
+    private static bool LooksLikeKnowledgeQuestion(string user) =>
+        ContainsAny(
+            user,
+            ["que es ", "que es un", "explicame", "explica ", "define ",
+                "what is ", "what are ", "why ", "por que ", "por que importa"]);
+
+    private static bool LooksLikeOutOfWorldRequest(string user) =>
+        ContainsAny(
+            user,
+            ["marte", "mars", "jupiter", "saturn", "neptun", "rocket",
+                "bitcoin", "titan", "postcard", "to io", " a io",
+                "to the moon", "a la luna", "fabrica una hora",
+                "invent a clock", "inventa una hora"]);
+
+    private static bool AsksToInventClock(string folded) =>
+        folded.Contains("te gustaria que fuera", StringComparison.Ordinal)
+        || folded.Contains("hora te gustaria", StringComparison.Ordinal)
+        || folded.Contains("what time would you like", StringComparison.Ordinal);
+
+    private static bool EchoesRequestAsQuestion(string userText, string reply)
+    {
+        string asked = FoldForPolicy(userText).Trim().Trim('?', '.', '!', '¿', '¡', ' ');
+        if (asked.Length < 10 || !reply.Contains('?', StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return FoldForPolicy(reply).Contains(asked, StringComparison.Ordinal);
+    }
+
+    private static bool GreetsOutOfWorldTarget(string folded) =>
+        Regex.IsMatch(
+            folded,
+            @"\b(?:hi|hey|hello|hola)[, ]+(?:saturno?|marte|mars|jupiter|neptuno?)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    private static bool ClaimsUnverifiedConnectivity(string folded) =>
+        ContainsAny(
+            folded,
+            ["tienes internet", "got internet", "estas conectado",
+                "you're connected", "you are connected", "no tienes internet",
+                "not connected", "sin internet", "wifi is", "estas online",
+                "you're online", "you are online", "conectado a internet"]);
+
+    private static bool IsTooThin(string reply)
+    {
+        int letters = 0;
+        foreach (char c in reply)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                letters++;
+                if (letters >= 2)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static bool IsPunctuationOnly(string reply)
+    {
+        foreach (char c in reply)
+        {
+            if (!char.IsWhiteSpace(c) && !char.IsPunctuation(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool UserInvitedAnyCatalogAction(string user) =>
+        ContainsAny(
+            user,
+            [
+                "cierra", "close", "abre", "open", "lanza", "launch", "borra",
+                "delete", "silencia", "mute", "revisa", "muestra", "chequea",
+                "check", "envia", "send", "traduce", "translate", "haz ",
+                "hazlo", "do that", "do it",
+            ]);
+
+    private static bool FamilyNamed(string[] family, params string[] names)
+    {
+        foreach (string name in names)
+        {
+            foreach (string token in family)
+            {
+                if (string.Equals(token, name, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ContainsAny(string text, IReadOnlyList<string> tokens)
+    {
+        foreach (string token in tokens)
+        {
+            if (text.Contains(token, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static bool ContainsInternalCode(string reply)
     {
         const RegexOptions options =
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking;
+        string folded = FoldForPolicy(reply);
         return Regex.IsMatch(reply, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
-            || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options);
+            || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options)
+            || folded.Contains("el mensaje es", StringComparison.Ordinal);
     }
 
     private static bool ClaimsUnverifiedSuccess(string reply)
@@ -336,7 +695,30 @@ internal static class UserMessagePolicy
         return folded.StartsWith("listo", StringComparison.Ordinal)
             || folded.StartsWith("ready", StringComparison.Ordinal)
             || folded.StartsWith("done", StringComparison.Ordinal)
+            || folded.StartsWith("hecho ya", StringComparison.Ordinal)
             || folded.Contains("el mensaje es correcto", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsStutteredToken(string reply)
+    {
+        foreach (Match token in Regex.Matches(
+            FoldForPolicy(reply),
+            @"[a-zñáéíóúü]{8,}",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            string word = token.Value;
+            for (int size = 2; size <= 4 && size * 2 <= word.Length; size++)
+            {
+                string end = word[^size..];
+                string before = word[^(size * 2)..^size];
+                if (string.Equals(end, before, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static bool ContainsMeasuredInventedToken(string reply)

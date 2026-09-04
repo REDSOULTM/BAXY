@@ -39,6 +39,14 @@ public sealed class NaturalSystemStatusRequestParserTests
     [TestCase("the time, don't guess")]
     [TestCase("a tiny clock fact")]
     [TestCase("según el reloj, qué día es")]
+    [TestCase("dime la hora, porfa")]
+    [TestCase("la hora ya")]
+    [TestCase("otra vez, la hora")]
+    [TestCase("now the clock, please")]
+    [TestCase("según el reloj, qué hora marca")]
+    [TestCase("thanks — what time is it")]
+    [TestCase("clock now")]
+    [TestCase("hora local, please")]
     public void ExplicitLocalTimeQueriesRouteDirectly(string text)
     {
         bool parsed = NaturalNoteRequestParser.TryParse(text, out RoutedOperation? operation);

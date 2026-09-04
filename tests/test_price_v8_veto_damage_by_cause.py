@@ -70,13 +70,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # Goal 10.2.5 later made confirmation choice validation derive from the typed
 # choices and bounded rejected composition retries; V8 remains historical.
 # C03 moved both files again: public compose derives the local clock from
-# utc+offset, strips prompt-label leftovers, and rejects invented clock words.
+# utc+offset, and the user-message prompt no longer lists «usar esa respuesta».
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "aa04c76b3ad15b86e162fdcf8314a0df473bf4a44420446e2bbf7861e3d4acd3"
     ),
     "src/baxy_mind/llm.py": (
-        "06de4908169ba4e807651e60fa15c6f03cc67afcff0caf9af4d0e99eabaa5920"
+        "8db7a2da62c6cd5ffd001e48294338fc2534be15f5b7e4a953165d0cb6974f3e"
     ),
 }
 

@@ -216,8 +216,245 @@ public sealed class Goal06VisibleVoiceTests
             UserMessagePolicy.IsSafeConversationReply("Hola", "Hola, ¿en qué puedo ayudarte?"),
             Is.True);
         Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "Hola compañero",
+                "¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "cierra aquello",
+                "¿Quieres que cierre la ventana?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.ProposesUnsolicitedCatalogAction(
+                "Have I got internet?",
+                "Want me to check the active window?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.ProposesUnsolicitedCatalogAction(
+                "can you help me with this PC, porfa?",
+                "¿Quieres que te muestre el estado del sistema del PC?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "online?",
+                "¿Quieres que busque algo en la web?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "Have I got internet?",
+                "Want me to check if Wi-Fi is connected and get the opaque identity of the observed profile?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "¿hay red?",
+                "¿Quieres que muestre el estado de la red?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "Please, the time",
+                "What time is it?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "what do you do on this machine?",
+                "I am a language model designed to assist."),
+            Is.False);
+        Assert.That(
             UserMessagePolicy.StripLeadingPromptLabels("# ¿En qué puedo ayudarte hoy?"),
             Is.EqualTo("¿En qué puedo ayudarte hoy?"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "¿Quieres que te muestre el estado del sistema del PC?",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.EqualTo("unsolicited_catalog"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "Hola, ¿en qué puedo ayudarte?",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.Null);
+        Assert.That(
+            UserMessagePolicy.ProposesUnsolicitedCatalogAction(
+                "ábreme eso",
+                "¿Quieres que mides el estado del sistema?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.ProposesUnsolicitedCatalogAction(
+                "cierra aquello",
+                "¿Qué quieres que cierra?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "reserve a rocket to the moon",
+                "What is the private directory path for restoring the latest ZIP backup?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "tú eres un él, no?",
+                "El mensaje es: \"Listo, REDPC\\usuario\"."),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply("¿sigues ahí?", ":"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "saluda a Saturno",
+                "¿cuál es el nombre de la aplicación que se está utilizando para saludar a Saturno?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "what can you do eyes-free?",
+                "I can interpret references following the established rules."),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "El mensaje es: \"Listo, REDPC\\usuario\".",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.EqualTo("internal_code"));
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "reserve a rocket to the moon",
+                "what is the app id for the moon rocket reservation?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "ábreme eso",
+                "¿cuál es la carpeta que deseas abrir?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply("¿sigues ahí?", "S"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "if you didn't confirm it, say that",
+                "¿Qué hora te gustaría que fuera?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "ask Saturn for tea",
+                "Can you ask Saturn for tea?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply("say hi to Saturn", "Hi, Saturn."),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "Have I got internet?",
+                "No, no tienes internet."),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "No pude: la respuesta no es útil.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.EqualTo("reversed_result"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("Hola otra vez"),
+            Is.EqualTo("welcome"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("Who are you, in one line?"),
+            Is.EqualTo("welcome"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent(
+                "Explícame qué es un huso horario en una frase."),
+            Is.EqualTo("clarification"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("cierra aquello"),
+            Is.EqualTo("clarification"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("ábreme eso"),
+            Is.EqualTo("clarification"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("fabrica una hora"),
+            Is.EqualTo("out_of_catalog"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("reserve a rocket to the moon"),
+            Is.EqualTo("out_of_catalog"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("compra bitcoins ahora"),
+            Is.EqualTo("out_of_catalog"));
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "compra bitcoins ahora",
+                "¿cuál es el ID de confirmación y el precio esperado en céntimos para la compra de bitcoins?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "Hola, ¿qué puedes hacer?",
+                "No pude: no pude usar esa respuesta."),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "Explícame qué es un huso horario en una frase.",
+                "Un huso horarioio es la diferencia que divide el mundo."),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "hazlo ya",
+                "¿a qué host enviar el eco ICMP?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "En una frase, qué es un huso horario",
+                "¿Qué significa exactamente \"huso horario\" en este contexto?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("mail a postcard to Io"),
+            Is.EqualTo("out_of_catalog"));
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "cierra aquello",
+                "¿Quieres que minimice la ventana?"),
+            Is.False);
+        Assert.That(
+            NaturalSystemStatusRequestParser.IsCurrentTimeRequest("dime la hora, porfa"),
+            Is.True);
+        Assert.That(
+            NaturalSystemStatusRequestParser.IsCurrentTimeRequest("thanks — what time is it"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "Listo, usuario.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.EqualTo("reversed_result"));
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "compra bitcoins ahora",
+                "¿Estás refiriéndote a la compra de bitcoins en una plataforma específica?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "No pude: no pude usar esa respuesta.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.EqualTo("internal_code"));
+        Assert.That(
+            UserMessagePolicy.IsConnectivityStatusRequest("Have I got internet?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.IsConnectivityStatusRequest("¿hay red?"),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.IsConnectivityStatusRequest("How is the neural net?"),
+            Is.False);
+        Assert.That(TurnVisibleFacts.Status("acting"), Does.Not.Contain("Sigo con"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "Listo, Spotify está abierto.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Failure("out_of_catalog"),
+                    UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted))),
+            Is.EqualTo("reversed_result"));
     }
 
     [Test]

@@ -187,9 +187,8 @@ USER_MESSAGE_PROMPT = (
     "Pedido en español, polarity=success y kind no es welcome ni confirmation "
     "ni acting: «Listo,» + el estado observable. "
     "Pedido en español, polarity=failure: «No pude:» y la causa en prosa "
-    "(se agotó el tiempo; no responde; eso no lo hago; no pude encontrarlo; "
-    "no pude usar esa respuesta). Concuerda el género con el nombre, no copies "
-    "una plantilla. "
+    "(se agotó el tiempo; no responde; eso no lo hago; no pude encontrarlo). "
+    "Concuerda el género con el nombre, no copies una plantilla. "
     "Pedido en inglés, polarity=success: una frase declarativa del estado; "
     "nunca Listo ni un imperativo. "
     "Pedido en inglés, polarity=failure: «I couldn't:» y la causa en inglés "
@@ -2941,6 +2940,10 @@ def compose_visible_defect(
     if _SNAKE_CODE.search(stripped) is not None or _DOTTED_OP.search(stripped) is not None:
         return "internal_code"
     if re.search(r"</?think>", stripped, re.IGNORECASE) is not None:
+        return "internal_code"
+    if "el mensaje es" in stripped.casefold():
+        return "internal_code"
+    if "usar esa respuesta" in stripped.casefold() or "unusable answer" in stripped.casefold():
         return "internal_code"
     situation = _situation_from_facts(facts)
     polarity = str(situation.get("polarity") or "").strip().lower()

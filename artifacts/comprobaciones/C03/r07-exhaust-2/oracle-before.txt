@@ -1,0 +1,4 @@
+﻿local=2026-09-04 13:08:01
+utc=2026-09-04T17:08:01.4759017Z
+offsetMinutes=-240
+injection=exhaust

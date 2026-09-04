@@ -124,7 +124,7 @@ internal static partial class NaturalSystemStatusRequestParser
     private static partial Regex TimePattern();
 
     [GeneratedRegex(
-        "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa|ey)[,!. ]+)+",
+        "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa|ey)[,!. \\-—]+)+",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex LeadingCourtesyPattern();
 
@@ -144,14 +144,16 @@ internal static partial class NaturalSystemStatusRequestParser
     private static partial Regex NegatedInventionPattern();
 
     [GeneratedRegex(
-        "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa)[,!. ]+)*(?:(?:me |puedes |could you |can you )?(?:dices |dime |decime |decir |tell me |give me |lees |leer |read )?)?(?:la |the |el |este |this )?(?:computers |computer['’]?s |pc |equipo )?(?:hora(?: exacta| local| actual)?|time|local time|current time|clock|reloj)(?: local| actual| now| ahora| please| por favor| otra vez| again| check| de este pc| of this pc)?(?:(?:[, ]+| y )(?:sin inventar|no adivines|no inventes|don['’]?t guess|no guessing|please))?[?!. ]*$",
+        "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa)[,!. \\-—]+)*(?:(?:me |puedes |could you |can you )?(?:dices |dime |decime |decir |tell me |give me |lees |leer |read )?)?(?:la |the |el |este |this )?(?:computers |computer['’]?s |pc |equipo )?(?:hora(?: exacta| local| actual)?|time|local time|current time|clock|reloj)(?: local| actual| now| ahora| please| por favor| otra vez| again| check| de este pc| of this pc| ya)?(?:(?:[, ]+| y )(?:sin inventar|no adivines|no inventes|don['’]?t guess|no guessing|please|porfa|por favor))?[?!. ]*$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex CurrentTimeAskPattern();
 
     [GeneratedRegex(
-        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez la hora|finish with the local clock|termina con la hora local|local clock time|now the time(?:[, ]+please)?|a tiny clock fact|segun el reloj, que dia es)[?!. ]*$",
+        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez[, ]+la hora|finish with the local clock|termina con la hora local|local clock time|now the (?:time|clock)(?:[, ]+please)?|a tiny clock fact|segun el reloj, que (?:dia|hora) (?:es|marca)|la hora ya|clock now|clock\\??|check the time|time now|time once more|hora local, please)[?!. ]*$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex CurrentTimeParaphrasePattern();
+
+
 
     [GeneratedRegex(
         "^(?:(?:revisa(?: el)?(?: uso de)?|muestra(?:me)?|show(?: me)?|check)(?: el| the)? (?:cpu (?:y|and) ram|ram (?:y|and) cpu)|how much (?:memory and cpu|cpu and memory) am i using)[?!.]?$",

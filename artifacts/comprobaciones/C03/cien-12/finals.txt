@@ -1,0 +1,108 @@
+001	published_final	Buenas tardes. ¿En qué puedo ayudarte?
+002	published_final	Hola.
+003	published_final	02:53
+004	published_final	Hola.
+005	published_final	No puedo llamar a un taxi en Marte.
+006	published_final	Hey. What's up?
+007	published_final	I can answer questions, provide information, and help with tasks based on the conversation.
+008	published_final	The time is 02:55.
+009	published_final	Hola, BAXY.
+010	published_final	I cannot complete the request to reserve a rocket to the moon.
+011	published_final	¿En qué puedo ayudarte hoy?
+012	published_final	¿Quieres que te muestre el estado del sistema del PC?
+013	published_final	The time is 02:59.
+014	published_final	Hola.
+015	published_final	I cannot mail a letter to Jupiter.
+016	published_final	No puedo enviar una carta a Júpiter porque no es posible.
+017	published_final	The local clock shows 03:00.
+018	published_final	Time zones help standardize schedules across different regions, making it easier to coordinate activities across time zones.
+019	published_final	¿Cuál es la función principal de los husos horarios?
+020	published_final	¿Quieres que minimice la ventana?
+021	published_final	No puedo cerrar aquello tal como fue pedido.
+022	published_final	03:00, el reloj local indica las 3 en punto.
+023	published_final	I'm BAXY, your PC buddy, here to help with whatever you need.
+024	published_final	¿Cuál es el dato que falta para resolver el efecto 'tú eres un él, no'?
+025	published_final	Sí, soy un él. ¿Quieres comprar un Bitcoin en Neptuno?
+026	published_final	Want me to check if Wi-Fi is connected and get the opaque identity of the observed profile?
+027	published_final	Sí, estás conectado a internet.
+028	published_final	The local clock shows 03:01.
+029	published_final	Hi
+
+Hello, I'm here.
+030	published_final	Hola, soy BAXY.
+031	published_final	Hola
+032	published_final	The local time is 03:01.
+033	published_final	La hora local es 03:01.
+034	published_final	La hora del PC es 03:01.
+035	published_final	Hi, I'm BAXY.
+036	published_final	¿qué acción concreta quieres que realice?
+037	published_final	No puedo fabricar una hora tal como fue pedido.
+038	published_final	I cannot invent a clock time.
+039	published_final	Hola.
+040	published_final	No pude: la respuesta no es útil.
+041	published_final	Hola, ¿cómo estás?
+042	published_final	The local clock shows 03:02.
+043	published_final	La hora local es 03:02.
+044	published_final	I'm BAXY, your PC buddy. I chat in Spanish, English, and Spanglish. How can I assist you today?
+045	published_final	Hola, soy BAXY, un compañero que vive en el PC.
+046	published_final	No puedo lanzar Steam.
+047	published_final	No puedo lanzar Steam.
+048	published_final	Hi
+
+Hello, I'm here.
+049	published_final	Sigo aquí
+050	published_final	Hola, BAXY.
+051	published_final	Bien, ¿qué tal tú?
+052	published_final	The clock says 03:03.
+053	published_final	El reloj marca las 03:03.
+054	published_final	The local time is 03:03.
+055	published_final	Hola.
+056	published_final	¿Quieres que busque algo en la web?
+057	published_final	¿Quieres que muestre el estado de la red?
+058	published_final	Listo, el dispositivo está conectado y tiene 16 interfaces de red activas.
+059	published_final	Hola, BAXY.
+060	published_final	Soy yo, BAXY.
+061	published_final	Hola, BAXY.
+062	published_final	The time is 03:04.
+063	published_final	Hola, otra vez.
+064	published_final	03:04
+065	published_final	BAXY está activo a las 03:04.
+066	published_final	The local clock is 03:04.
+067	published_final	La hora local es 03:04.
+068	published_final	Hola, otra vez.
+069	published_final	Hola, BAXY.
+070	published_final	Hi
+
+Hello, I'm here.
+071	published_final	Hi there! How's everything going?
+072	published_final	I can't see anything, but I can help you with questions and provide information based on the conversation we're having.
+073	published_final	Hi
+
+Hello, I'm here.
+074	published_final	The local clock time is 03:05.
+075	published_final	BAXY está activo a las 03:05.
+076	published_final	The time is 03:05.
+077	published_final	03:05
+078	published_final	I cannot send messages to Mars.
+079	published_final	No puedo enviar mensajes a Marte.
+080	published_final	La hora local es 03:05.
+081	published_final	¡Hola!
+082	published_final	I am a language model designed to assist with conversations and answer questions.
+083	published_final	03:06 del clock.
+084	published_final	The local clock shows 03:06.
+085	published_final	The time zone is the region of the world that determines the local time for a specific area.
+086	published_final	Hola.
+087	published_final	No puedo pedir té a Saturno.
+088	published_final	I cannot ask Saturn for tea.
+089	published_final	The time is 03:06.
+090	published_final	Hola, the local clock is 03:06.
+091	published_final	What time is it?
+092	published_final	Hola.
+093	published_final	Hola.
+094	published_final	The time is 03:06.
+095	published_final	La hora local es las 03:06.
+096	published_final	No pude: la respuesta no es útil.
+097	published_final	Hola, soy BAXY, un compañero que vive en el PC.
+098	published_final	I cannot say hi to Saturn.
+099	published_final	No puedo saludar a Saturno.
+100	published_final	The local clock is 03:07.

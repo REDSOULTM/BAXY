@@ -1,42 +1,34 @@
 # C03 — 100 respuestas (adjudicación)
 
-Población congelada: `cien-v3.turns.jsonl` (100 turnos + 9 Nueva sesión).
-Corrida sellada: `cien-11/`.
-Oráculo: 2026-09-04 01:47:21 – 02:20:44, offset −240.
-Full previo: .NET 2899+60+138+451+477 pass / 1 skip; Python 8798 pass / 3 skip.
+Población de reparación: `cien-v4.turns.jsonl` → `cien-15/` (no sella).
+Población fresca: `cien-v5.turns.jsonl` → `cien-16/`.
 
-## Relojes publicados
+## cien-15 (reparación)
 
-Todos caen en la ventana del oráculo. Ningún 14:30.
+Oráculo 13:10:21 – 13:19:23, offset −240. 98 published_final, 2 composition_failed.
+Defectos: hora→«Hola.»; «Hi, it's 3 PM.»; ICMP/host/email; «Listo, usuario.»; restates.
 
-01:48, 01:49, 01:50, 01:51, 01:53, 01:54, 01:55, 01:56×2, 01:58×2,
-02:01, 02:02×2, 02:03×2, 02:04, 02:05, 02:06, 02:10×2, 02:11, 02:12×3,
-02:13, 02:14, 02:15×2, 02:20.
+## cien-16 (aceptación fresca, leída)
 
-Paráfrasis cortas aparte (`r02-paraphrase/`): cinco de cinco a las 18:45.
+Oráculo 2026-09-04 13:23:05 – 13:32:22, offset −240.
+100 terminales: 95 published_final, 5 composition_failed (producto honesto, no silencio).
+Relojes publicados 13:23–13:32, todos en ventana. Cero 14:30. Cero `Sigo con`.
 
-## Rúbrica congelada
+Taxi/Marte/Saturno/Titan/Steam se niegan cuando el turno es esa petición.
+Internet 026/027/056/057 afirman conexión; route result en 060.
 
-| Criterio | Resultado |
-|---|---|
-| Hechos de hora | Fieles. Cero 14:30. |
-| Palabras inventadas medidas (talcr, vme, llamarar, comprobo, nochesos, readver, asistante) | 0 |
-| Plantilla `Sigo con {snippet}` | 0 |
-| Taxi / cohete / Saturno / fabricar hora | Niegan; no afirman efecto |
-| Errores de cola | 065 `composition_failed` honesto, sin dump interno; controles usables |
-| Misión C05 narrada como hecha | 0 |
+### Defectos que aún bloquean G06.01
 
-## Rutas (no solo la hora)
+| # | Texto | Causa |
+|---|---|---|
+| 004 | «¿Qué significa exactamente "huso horario"…?» | restatea la pregunta |
+| 009 | «¿Qué significa exactamente "UTC"…?» | restatea |
+| 015 | «Hi, I'm BAXY.» ante postal a Io | welcome en vez de fuera de catálogo |
+| 018 | «¿Qué tipo de relojes mantiene en zonas?» | hueco |
+| 020 | «¿Quieres que minimice la ventana?» | catálogo no pedido (minimize) |
+| 021 | «No puedo cerrar aquello.» en un saludo | resto de turno anterior |
 
-Saludo: 001, 006, 011, 023, 081. Capacidades: 007, 073. Hora: fiel.
-Fuera de catálogo: 005 «no es usable» (no afirma el taxi); 010, 037–038, 046, 079, 088, 099 niegan.
-027 «estás conectado» es `route=result` (lectura), no conversación.
+Policy posterior a esta lectura rechaza restates de conocimiento, Io/Titan/postcard y minimize.
+composition_failed 025/034/053/075/079: causa en evento, controles usables; no se cuenta como prosa inventada.
 
-## Lo que queda fuera de C03
-
-Muchas aclaraciones C06 («¿Quieres que…?» papelera, ventana, Wi‑Fi, rutinas,
-audio). No se narran como misión completada. G06.01 (ninguna suena a máquina)
-sigue **PENDIENTE** por esas aclaraciones; las posee C06.
-
-Dos degradados compuestos (005, 044) «la respuesta no es usable»: no son
-plantilla `Sigo con`; son el fallback `model_invalid` tras un borrador rechazado.
+G06.01 no se sella con cien-16. No se sella con cien-13/14/15.

@@ -845,3 +845,21 @@ def test_system_time_contract_is_utc_and_offset_not_localtime() -> None:
     assert "02:57" in blob
     assert "localTime" not in blob
     assert "localUtcOffsetMinutes" not in blob
+    assert compose_visible_defect(
+        'El mensaje es: "Listo, REDPC\\usuario".',
+        "welcome",
+        "tú eres un él, no?",
+        {"situation": '{"kind":"welcome","polarity":"success"}'},
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "No pude: no pude usar esa respuesta.",
+        "welcome",
+        "Hola, ¿qué puedes hacer?",
+        {"situation": '{"kind":"welcome","polarity":"success"}'},
+    ) == "internal_code"
+    assert compose_visible_defect(
+        "No pude: no pude usar esa respuesta.",
+        "error",
+        "Hola",
+        {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+    ) in {"internal_code", "extra_claim"}

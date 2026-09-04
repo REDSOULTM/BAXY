@@ -1780,6 +1780,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 cancellationToken);
         }
 
+        if (turn.Kind is "conversation" or "clarify"
+            && UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
+        {
+            return await TryExecuteMindOperationAsync(
+                mind,
+                route,
+                "network.status",
+                registry,
+                cancellationToken);
+        }
+
         if (turn.Kind == "conversation")
         {
             if (UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
@@ -1798,10 +1809,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (turn.Kind == "clarify")
         {
-            _pendingMindClarificationObjective = turn.PreserveObjective
+            bool onTopic = UserMessagePolicy.IsSafeConversationReply(
+                route.Text,
+                turn.Question);
+            _pendingMindClarificationObjective = onTopic && turn.PreserveObjective
                 ? route.Text
                 : null;
-            if (UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Question))
+            if (onTopic)
             {
                 AddMessage(
                     "BAXY",
@@ -1809,17 +1823,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     isUser: false,
                     formulatedByMind: true,
                     route: PublicResponseRoute.Clarification);
+                return true;
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(turn.Reply)
+                && UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
             {
                 AddMessage(
                     "BAXY",
-                    TurnVisibleFacts.Clarification("unsafe_clarification"),
+                    turn.Reply,
                     isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
+                    formulatedByMind: true,
+                    route: PublicResponseRoute.Conversation);
+                return true;
             }
 
-            return true;
+            return AddMindConversationFallback();
         }
 
         if (turn.Kind == "action"
@@ -1833,6 +1852,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (string.Equals(routedOperation, "system.time", StringComparison.Ordinal)
                 && !NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
             {
+                if (!string.IsNullOrWhiteSpace(turn.Reply)
+                    && UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
+                {
+                    AddMessage(
+                        "BAXY",
+                        turn.Reply,
+                        isUser: false,
+                        formulatedByMind: true,
+                        route: PublicResponseRoute.Conversation);
+                    return true;
+                }
+
                 return AddMindConversationFallback();
             }
 
@@ -1996,13 +2027,35 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // open-ended generation used to duplicate the request and could add
         // another timeout after the 22 s turn boundary. Degrade through the
         // bounded LLM message composer instead of restarting semantic work.
-        AddMessage(
-            "BAXY",
-            TurnVisibleFacts.Failure("model_invalid"),
-            isUser: false,
-            messageEvent: UserMessageEvent.Error(
-                UserMessageDiagnosticCodes.ActionNotCompleted));
-        return true;
+        // Failure("model_invalid") used to publish «No pude: unusable answer»
+        // for greetings and catalog holes — a polarity flip, not a Core miss.
+        string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
+            ?? string.Empty;
+        switch (UserMessagePolicy.ConversationFallbackIntent(userText))
+        {
+            case "clarification":
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Clarification("ambiguous_request"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Clarification);
+                return true;
+            case "out_of_catalog":
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Failure("out_of_catalog"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Error(
+                        UserMessageDiagnosticCodes.ActionNotCompleted));
+                return true;
+            default:
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Welcome(),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Welcome);
+                return true;
+        }
     }
 
     private List<(string Role, string Content)> BuildMindHistory()
