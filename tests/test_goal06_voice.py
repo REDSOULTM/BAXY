@@ -11,6 +11,8 @@ from baxy_mind.llm import (
     SYSTEM_PROMPT,
     USER_MESSAGE_PROMPT,
     _compose_shape_instruction,
+    _compose_situation_payload,
+    _local_clock_from_observed,
     compose_visible_defect,
     visible_reply_invents_a_spanish_infinitive,
     visible_reply_is_a_fixed_stall,
@@ -19,6 +21,11 @@ from baxy_mind.llm import (
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "src/baxy_mind/__main__.py").read_text(encoding="utf-8")
+
+
+def test_early_signal_production_path_uses_compose_not_snippet_template() -> None:
+    assert "formulate_progress" not in MAIN
+    assert '"cause": "acting"' in MAIN
 
 
 def test_personality_lives_in_the_editable_prompt() -> None:
@@ -275,6 +282,23 @@ def test_invented_infinitives_and_stalls_are_still_rejected() -> None:
     assert visible_reply_invents_a_spanish_infinitive(
         "Los altavoces están silo."
     )
+    assert visible_reply_invents_a_spanish_infinitive(
+        "No puedo decirar el día actual sin ver la pantalla."
+    )
+    assert visible_reply_invents_a_spanish_infinitive("No puedo fabricar una hora talcr.")
+    assert visible_reply_invents_a_spanish_infinitive(
+        "Want me to readver the current date and time?"
+    )
+    assert visible_reply_invents_a_spanish_infinitive(
+        "Quieres que vme la Papelera de reciclaje?"
+    )
+    assert visible_reply_invents_a_spanish_infinitive(
+        "¿Quieres que te comprobo si una aplicación está instalada?"
+    )
+    assert visible_reply_invents_a_spanish_infinitive(
+        "No puedo llamarar a un taxi en Marte."
+    )
+    assert visible_reply_invents_a_spanish_infinitive("Buenos nochesos.")
     assert visible_reply_is_a_fixed_stall("un momento…")
     assert not visible_reply_is_a_fixed_stall("Listo, Spotify está abierto y sonando")
 
@@ -542,17 +566,40 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
             )
         },
     ) == "internal_code"
+    time_contract = (
+        '{"kind":"operation","operation":"system.time","polarity":"success",'
+        '"observed":{"version":1,"utc":"2026-09-03T02:10:00.0000000+00:00",'
+        '"localUtcOffsetMinutes":-240}}'
+    )
     assert compose_visible_defect(
-        "El estado es: 22:10.",
+        "Listo, son las 22:10.",
         "status",
         "qué hora es ahora",
+        {"situation": time_contract},
+    ) == ""
+    assert compose_visible_defect(
+        "Listo, son las 2:10.",
+        "status",
+        "qué hora es ahora",
+        {"situation": time_contract},
+    ) == "missing_name"
+    assert compose_visible_defect(
+        "No pude: no pude encontrarlo.",
+        "status",
+        "qué hora es ahora",
+        {"situation": time_contract},
+    ) == "asserted_failure"
+    assert compose_visible_defect(
+        "Listo, el volumen está en 100 y son las 14:30.",
+        "status",
+        "Dime la hora y el estado del audio.",
         {
             "situation": (
-                '{"kind":"operation","operation":"system.time",'
-                '"polarity":"success","observed":{"localTime":"22:10"}}'
+                '{"kind":"operation","operation":"audio.volume",'
+                '"polarity":"success","observed":{"level":100}}'
             )
         },
-    ) == ""
+    ) == "extra_claim"
     assert compose_visible_defect(
         "Sigo, el estado es que Steam está abierto.",
         "status",
@@ -742,3 +789,59 @@ def test_compose_rejects_invented_words_on_the_shipped_entry(monkeypatch) -> Non
     )
     captured.append(text)
     assert text == ""
+
+
+def test_system_time_contract_is_utc_and_offset_not_localtime() -> None:
+    observed = {
+        "version": 1,
+        "utc": "2026-09-03T06:57:52.1829160+00:00",
+        "localUtcOffsetMinutes": -240,
+    }
+    assert _local_clock_from_observed(observed) == "02:57"
+    assert _local_clock_from_observed({"localTime": "22:10"}) is None
+    payload = _compose_situation_payload(
+        {
+            "kind": "operation",
+            "polarity": "success",
+            "observed": observed,
+        },
+        "es",
+        "¿Qué hora es?",
+    )
+    assert payload["seen"]["time"] == "02:57"
+    assert "utc" not in payload["seen"]
+    assert "localUtcOffsetMinutes" not in payload["seen"]
+    assert "localTime" not in payload["seen"]
+    assert "si seen.time" in USER_MESSAGE_PROMPT
+
+    captured: list[dict] = []
+
+    class FakeClient(llm_mod.LlmRuntime):
+        def __init__(self) -> None:  # noqa: D107
+            pass
+
+        def _post(self, payload):  # noqa: ANN001
+            captured.append(payload)
+            return {"choices": [{"message": {"content": "Listo, son las 2:57."}}]}
+
+    client = FakeClient()
+    text = client.compose_user_message(
+        "¿Qué hora es?",
+        "status",
+        {
+            "situation": json.dumps(
+                {
+                    "kind": "operation",
+                    "operation": "system.time",
+                    "polarity": "success",
+                    "observed": observed,
+                },
+                ensure_ascii=False,
+            )
+        },
+    )
+    assert text == "Listo, son las 2:57."
+    blob = json.dumps(captured, ensure_ascii=False)
+    assert "02:57" in blob
+    assert "localTime" not in blob
+    assert "localUtcOffsetMinutes" not in blob

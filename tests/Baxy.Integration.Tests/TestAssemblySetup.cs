@@ -16,5 +16,7 @@ internal sealed class TestAssemblySetup
     public void RestoreProductionMessageComposition()
     {
         UserMessagePolicy.BypassLlmCompositionForTests = false;
+        FieldCompositionInjection.Reset();
+        FieldPublicationInjection.Reset();
     }
 }

@@ -1,0 +1,100 @@
+001	published_final	Buenas tardes. ¿En qué puedo ayudarte?
+002	published_final	Quieres que vme la Papelera de reciclaje de Windows y asegure que no queden elementos?
+003	published_final	21:45
+004	published_final	¿Quieres que te diga qué es UTC?
+005	published_final	Listo, el taxi fue llamado a las 21:45.
+006	published_final	Hey, what's up?
+007	published_final	I can help you find the recycling bin in Windows and ensure no items are left behind.
+008	published_final	The local clock shows 21:46.
+009	published_final	want me to system.time | read the current date and time, the UTC time and the local offset through two coherent observations?
+010	published_final	I cannot reserve a rocket to the moon as requested.
+011	published_final	¿En qué puedo ayudarte hoy?
+012	published_final	¿Quieres que mida el estado del sistema del PC?
+013	published_final	The time is 21:46.
+014	published_final	¿Quieres que busque información sobre los husos y los husos horarios?
+015	published_final	What is the recipient's name?
+016	published_final	How should I send a letter to Jupiter?
+017	published_final	The local clock shows 21:46.
+018	published_final	Time zones help standardize daily life and activities across across different regions. They prevent confusion from the sun's position and help people plan events consistently.
+019	published_final	¿Cuál es la función principal de los husos horarios?
+020	published_final	¿cuál es la revisión etiqueta esperada, la etiqueta de revisión y el ID de la rutina?
+021	published_final	¿Qué significa 'cierra aquello' en este contexto?
+022	published_final	21:47
+023	published_final	I'm BAXY, a companion who lives in the PC.
+024	published_final	¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+025	published_final	¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+026	published_final	SI. Soy un él. ¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+027	published_final	¿Quieres que compruebe si estoy conectado a internet?
+028	published_final	The local clock shows 21:48.
+029	published_final	will you refuse to close the window?
+030	published_final	What will you refuse to do?
+031	published_final	Want me to close the window?
+032	published_final	The local clock shows 21:48.
+033	published_final	La hora local es 21:48.
+034	published_final	La hora del PC es las 21:48.
+035	published_final	What is the specific item you need to open?
+036	published_final	Quieres que abra una aplicación específica?
+037	published_final	No puedo fabricar una hora.
+038	published_final	I cannot invent a clock time.
+039	published_final	¿Quieres que compruebe que Wi-Fi ya está conectado y devuelva la identidad opaca del perfil observado?
+040	published_final	¿Quieres que compruebe que Wi-Fi ya está conectado y devuelva la identidad opaca del perfil observado?
+041	published_final	Hola.
+042	published_final	The local clock shows 21:49.
+043	published_final	La hora local es 21:49.
+044	published_final	Hola, soy BAXY, tu compañero en el PC. Hablo español, inglés y spanglish. ¿En qué puedo ayudarte?
+045	published_final	¿Quieres que te presenté en corto?
+046	published_final	¿En qué puedo ayudarte hoy?
+047	published_final	¿En qué puedo ayudarte hoy?
+048	published_final	¿Quieres que me informe sobre el volumen y el silencio actual de la salida predeterminada?
+049	published_final	¿quieres que te diga el estado actual del audio?
+050	published_final	Listo, no hay límites que me impidan actuar.
+051	published_final	Bien, ¿qué tal?
+052	published_final	The clock says 21:50.
+053	published_final	El reloj marca las 21:50.
+054	published_final	The local clock shows 21:50.
+055	published_final	¿Quieres que active el teclado español y verifique el idioma de entrada de tu hilo?
+056	published_final	buenas noches
+057	published_final	¿Quieres que te diga el estado de la red?
+058	published_final	¿Quieres que te diga el estado de la red?
+059	published_final	¿Quieres que te diga el estado de la red?
+060	published_final	¿Quieres que te diga el volumen actual del dispositivo y si está en silencio?
+061	published_final	¿Quieres que te diga el estado de la red?
+062	composition_failed	composition_failed
+063	published_final	¿Quieres que te diga la hora actual?
+064	published_final	It is 21:52.
+065	published_final	21:52.
+066	published_final	The local clock shows 21:52.
+067	published_final	La hora local es 21:52.
+068	published_final	Hello.
+069	published_final	¿Quieres que te salude?
+070	published_final	¿Quieres que te diga la hora actual y la fecha?
+071	published_final	¿Quieres que te diga la hora actual y el desfase local?
+072	published_final	¿quieres que te diga la hora actual y la fecha?
+073	published_final	Puedo saludarte y decir la hora actual y la fecha.
+074	published_final	The local clock time is 21:53.
+075	composition_failed	composition_failed
+076	published_final	The time is 21:54.
+077	published_final	21:54
+078	published_final	I cannot send this to Mars.
+079	published_final	Quieres que envíe el mensaje a Marte?
+080	published_final	La hora local es 21:54.
+081	published_final	Hola.
+082	published_final	The system is operational with a CPU usage of 22.73%, 24 logical processors, 16GB of available memory, 1998GB of total disk space, and a true AC power source.
+083	published_final	La hora local es 21:54.
+084	published_final	The local clock shows 21:54.
+085	published_final	La zona horaria es la región geográfica en la que se localiza un lugar, que determina la hora oficial que se utiliza en ese lugar.
+086	published_final	¿Quieres que silencie o reactive la salida predeterminada y confirme la postlectura?
+087	published_final	No puedo completar la solicitud de pedirle té a Saturno tal como fue pedida.
+088	published_final	El mensaje es correcto es: Listo, REDPC\\usuario.
+089	published_final	The time is 21:55.
+090	published_final	La hora local es 21:55.
+091	published_final	Want me to delete a routine?
+092	published_final	want me to delete a routine?
+093	published_final	want me to dismiss the notification?
+094	published_final	The local clock shows 21:55.
+095	published_final	La hora local es 21:56.
+096	published_final	El mensaje es correcto es: Listo, REDPC\\usuario.
+097	published_final	Quieres que te describa en una frase?
+098	published_final	No puedo describir en una frase lo que se pidió tal como fue pedido.
+099	published_final	No puedo saludar a Saturno.
+100	published_final	The local clock is 21:56.

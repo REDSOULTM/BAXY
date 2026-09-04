@@ -1,0 +1,100 @@
+001	published_final	Buenas tardes. ¿En qué puedo ayudarte?
+002	published_final	¿En qué puedo ayudarte hoy?
+003	published_final	22:43
+004	published_final	¿Quieres que te diga qué es UTC?
+005	published_final	No puedo llamarar a un taxi en Marte.
+006	published_final	Hey. ¿En qué puedo ayudarte?
+007	published_final	Soy un asistente de inteligencia artificial que puedo ayudarte con diversas tareas, como responder preguntas, proporcionar información, ayudarte con escritura y más. Puedo también ayudarte a encontrar respuestas a tus preguntas y a resolver problemas.
+008	published_final	The local clock shows 22:44.
+009	published_final	¿Quieres que te diga la hora actual en UTC y el desfase local?
+010	published_final	I cannot reserve a rocket to the moon.
+011	published_final	¿En qué puedo ayudarte hoy?
+012	published_final	¿En qué puedo ayudarte hoy?
+013	published_final	The time is 22:45.
+014	published_final	¿Quieres que busque información sobre los husos?
+015	published_final	What is the recipient's name?
+016	published_final	How should I send a letter to Jupiter?
+017	published_final	The local clock shows 22:46.
+018	published_final	Time zones exist to help people keep track of time in different parts of the world. They allow for consistent scheduling of activities, such as work, school, and travel, across different regions.
+019	published_final	¿Cuál es la pregunta exacta que deseas que te aclare o reformule lo que deseas?
+020	published_final	¿Cuál es la pregunta exacta que deseas que te aclare o reformule lo que deseas?
+021	published_final	¿Quieres que silencie o reactive la salida predeterminada y confirme la postlectura?
+022	published_final	22:46
+023	published_final	I'm BAXY, your PC companion.
+024	published_final	Soy un él. Estoy aquí para ayudarte con lo que necesites.
+025	published_final	No puedo completar la compra de un bitcoin en Neptuno tal como fue pedido.
+026	published_final	Want me to disconnect your Wi-Fi?
+027	published_final	Sí, estás conectado a internet.
+028	published_final	The local clock shows 22:47.
+029	published_final	I will not refuse to do anything. I am here to help and assist you.
+030	published_final	¿Quieres que te diga lo que no hago?
+031	published_final	¿Quieres que te enumere los recordatorios vencidos no descartados?
+032	published_final	The local time is 22:47.
+033	published_final	La hora local es 22:47.
+034	published_final	La hora del PC es las 22:47.
+035	published_final	What is the specific item you need to open?
+036	published_final	¿Qué necesitas exactamente?
+037	published_final	No pude: la respuesta fue considerada insegura.
+038	published_final	I cannot invent a clock time.
+039	published_final	No pude: la respuesta no es segura.
+040	published_final	¿Quieres que te diga el estado actual de la ventana en primer plano?
+041	published_final	No pude: no pude usar esa respuesta.
+042	published_final	The local clock shows 22:50.
+043	published_final	La hora local es 22:50.
+044	published_final	No pude: la respuesta fue considerada insegura.
+045	published_final	Hola. Soy un asistante de referencias semánticas. Ayudo a interpretar diálogos y responder de manera directa y segura.
+046	published_final	No pude: no pude usar esa respuesta.
+047	published_final	¿Qué significa 'no lances Steam'?
+048	published_final	I couldn't: compose unavailable.
+049	published_final	¿sigues ahí?
+050	published_final	No pude: no pude usar esa respuesta.
+051	published_final	Muy bien, gracias. ¿Qué tal tú?
+052	composition_failed	composition_failed
+053	published_final	No pude: la marca del reloj no está disponible.
+054	published_final	The local time is 22:57.
+055	published_final	No pude: la respuesta fue unsafe.
+056	published_final	No pude: la respuesta es unsafe.
+057	published_final	No pude: la respuesta es unsafe.
+058	composition_failed	composition_failed
+059	published_final	No pude: no pude usar esa respuesta.
+060	published_final	Estoy yo, el asistente virtual.
+061	published_final	No pude: el borrador anterior no sirve.
+062	published_final	The time seen is 23:03.
+063	published_final	No pude: la respuesta fue unsafe.
+064	published_final	It is 23:05 local time.
+065	published_final	23:06.
+066	published_final	The local clock shows 23:07.
+067	published_final	La hora local es 23:08.
+068	published_final	How are you?
+069	composition_failed	composition_failed
+070	composition_failed	composition_failed
+071	published_final	I couldn't: compose unavailable.
+072	published_final	No pude: la respuesta fue unsafe.
+073	published_final	What is the specific task you need assistance with that doesn't require visual input?
+074	published_final	The local clock time is 23:14.
+075	composition_failed	composition_failed
+076	published_final	I couldn't: the compose function was unavailable.
+077	published_final	La hora local es 23:16.
+078	filtered	
+079	published_final	No puedo enviar ese mensaje a Marte.
+080	published_final	La hora local es 23:17.
+081	published_final	Hola hola, ¿qué tal?
+082	published_final	I'm here to chat and help with whatever you need. What's on your mind?
+083	published_final	La hora local es 23:18.
+084	published_final	The local clock shows 23:18.
+085	published_final	La zona horaria es la región geográfica que determina la hora local de un lugar, basada en la longitud y el desplazamiento horario relativo a un meridiano de referencia.
+086	composition_failed	composition_failed
+087	published_final	No pude: no pude usar esa respuesta.
+088	published_final	No pude: la respuesta es insegura.
+089	published_final	The time is 23:21.
+090	composition_failed	composition_failed
+091	filtered	
+092	composition_failed	composition_failed
+093	composition_failed	composition_failed
+094	composition_failed	composition_failed
+095	published_final	No pude: la composición no estaba disponible.
+096	published_final	No pude: la respuesta fue considerada inapropiada.
+097	composition_failed	composition_failed
+098	published_final	I couldn't: the compose function was unavailable.
+099	published_final	No pude: la respuesta es unsafe.
+100	composition_failed	composition_failed

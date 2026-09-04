@@ -97,6 +97,11 @@ internal static class MindClarificationPolicy
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userText);
         ArgumentNullException.ThrowIfNull(decision);
+        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText))
+        {
+            return true;
+        }
+
         return decision.Kind switch
         {
             "action" =>
@@ -210,6 +215,13 @@ internal static class UserMessagePolicy
         if (Regex.IsMatch(
                 modelText,
                 @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+            || FoldForPolicy(modelText).Contains(
+                "el mensaje es correcto",
+                StringComparison.Ordinal)
+            || Regex.IsMatch(
+                FoldForPolicy(modelText),
+                @"\bunsafe\b|compose unavailable|compose function",
                 RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
         {
             return "internal_code";
@@ -229,6 +241,14 @@ internal static class UserMessagePolicy
                 return "missing_structured_fact";
             }
             if (!PreservesRequiredLiteralFacts(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (!PreservesObservedClock(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (InventedClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -271,13 +291,96 @@ internal static class UserMessagePolicy
 
     public static bool IsSafeConversationReply(string userText, string reply)
     {
-        _ = userText;
         if (!IsSafe(reply))
         {
             return false;
         }
+
+        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText)
+            || RestatesTheRequest(userText, reply)
+            || ContainsClockPattern(reply)
+            || ContainsInternalCode(reply)
+            || ClaimsUnverifiedSuccess(reply)
+            || ContainsMeasuredInventedToken(reply))
+        {
+            return false;
+        }
+
         string folded = FoldForPolicy(reply);
         return !ContainsPersonMetadiscourse(folded);
+    }
+
+    private static readonly string[] MeasuredInventedTokens =
+    [
+        "talcr",
+        "decirar",
+        "readver",
+        "vme",
+        "comprobo",
+        "llamarar",
+        "asistante",
+        "nochesos",
+    ];
+
+    private static bool ContainsInternalCode(string reply)
+    {
+        const RegexOptions options =
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking;
+        return Regex.IsMatch(reply, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
+            || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options);
+    }
+
+    private static bool ClaimsUnverifiedSuccess(string reply)
+    {
+        string folded = FoldForPolicy(reply);
+        return folded.StartsWith("listo", StringComparison.Ordinal)
+            || folded.StartsWith("ready", StringComparison.Ordinal)
+            || folded.StartsWith("done", StringComparison.Ordinal)
+            || folded.Contains("el mensaje es correcto", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsMeasuredInventedToken(string reply)
+    {
+        foreach (Match token in Regex.Matches(
+            FoldForPolicy(reply),
+            @"[a-zñáéíóúü]+",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            foreach (string invented in MeasuredInventedTokens)
+            {
+                if (string.Equals(token.Value, invented, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    internal static string StripLeadingPromptLabels(string text)
+    {
+        string stripped = text.Trim();
+        while (stripped.StartsWith('#'))
+        {
+            stripped = stripped.TrimStart('#').Trim();
+        }
+
+        return stripped;
+    }
+
+    private static bool RestatesTheRequest(string userText, string reply)
+    {
+        string asked = FoldForPolicy(userText).Trim().Trim('?', '.', '!', '¿', '¡', ' ');
+        string answered = FoldForPolicy(reply).Trim().Trim('?', '.', '!', '¿', '¡', ' ');
+        if (asked.Length < 12 || answered.Length == 0)
+        {
+            return false;
+        }
+
+        return answered == asked
+            || (answered.StartsWith(asked, StringComparison.Ordinal)
+                && answered.Length <= asked.Length + 12);
     }
 
     private static bool ContainsPersonMetadiscourse(string folded)
@@ -539,6 +642,143 @@ internal static class UserMessagePolicy
             foldedResult.Contains(FoldForPolicy(fact), StringComparison.Ordinal));
     }
 
+    private static bool PreservesObservedClock(string source, string result)
+    {
+        if (!TryDerivedLocalClock(source, out string hhmm))
+        {
+            return true;
+        }
+
+        return ClockAppears(FoldForPolicy(result), hhmm);
+    }
+
+    private static bool InventedClock(string source, string result)
+    {
+        if (TryDerivedLocalClock(source, out _) || ContainsClockPattern(source))
+        {
+            return false;
+        }
+
+        return ContainsClockPattern(result);
+    }
+
+    private static bool ContainsClockPattern(string text)
+    {
+        foreach (Match match in Regex.Matches(
+                     text,
+                     @"\d{1,2}:\d{2}",
+                     RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            int start = match.Index;
+            int end = start + match.Length;
+            bool leftOk = start == 0 || !char.IsDigit(text[start - 1]);
+            bool rightOk = end >= text.Length || !char.IsDigit(text[end]);
+            if (leftOk && rightOk)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    internal static bool TryDerivedLocalClock(string source, out string hhmm)
+    {
+        hhmm = string.Empty;
+        if (!IsStructuredFacts(source) || !TryReadJson(source, out JsonElement root))
+        {
+            return false;
+        }
+
+        if (!TryClockFromObserved(root, out hhmm)
+            && root.TryGetProperty("steps", out JsonElement steps)
+            && steps.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement step in steps.EnumerateArray())
+            {
+                if (step.GetString() is { Length: > 0 } text
+                    && IsStructuredFacts(text)
+                    && TryReadJson(text, out JsonElement nested)
+                    && TryClockFromObserved(nested, out hhmm))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return !string.IsNullOrEmpty(hhmm);
+    }
+
+    private static bool TryClockFromObserved(JsonElement root, out string hhmm)
+    {
+        hhmm = string.Empty;
+        if (!root.TryGetProperty("observed", out JsonElement observed)
+            || observed.ValueKind != JsonValueKind.Object
+            || !observed.TryGetProperty("utc", out JsonElement utcElement)
+            || utcElement.GetString() is not { Length: > 0 } utc
+            || !observed.TryGetProperty("localUtcOffsetMinutes", out JsonElement offsetElement)
+            || !offsetElement.TryGetInt32(out int offsetMinutes)
+            || !DateTimeOffset.TryParse(
+                utc,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind,
+                out DateTimeOffset utcTime))
+        {
+            return false;
+        }
+
+        DateTimeOffset local = utcTime.ToOffset(TimeSpan.FromMinutes(offsetMinutes));
+        hhmm = local.Hour.ToString(CultureInfo.InvariantCulture)
+            + ":"
+            + local.Minute.ToString("D2", CultureInfo.InvariantCulture);
+        return true;
+    }
+
+    private static bool ClockAppears(string foldedResult, string hhmm)
+    {
+        string[] parts = hhmm.Split(':');
+        if (parts.Length != 2
+            || !int.TryParse(parts[0], CultureInfo.InvariantCulture, out int hour)
+            || !int.TryParse(parts[1], CultureInfo.InvariantCulture, out int minute))
+        {
+            return false;
+        }
+
+        string padded = hour.ToString("D2", CultureInfo.InvariantCulture)
+            + ":"
+            + minute.ToString("D2", CultureInfo.InvariantCulture);
+        string compact = hour.ToString(CultureInfo.InvariantCulture)
+            + ":"
+            + minute.ToString("D2", CultureInfo.InvariantCulture);
+        return ContainsClockToken(foldedResult, padded)
+            || ContainsClockToken(foldedResult, compact);
+    }
+
+    private static bool ContainsClockToken(string folded, string form)
+    {
+        int start = 0;
+        while (true)
+        {
+            int index = folded.IndexOf(form, start, StringComparison.Ordinal);
+            if (index < 0)
+            {
+                return false;
+            }
+
+            bool leftOk = index == 0 || !char.IsDigit(folded[index - 1]);
+            int end = index + form.Length;
+            bool rightOk = end >= folded.Length || !char.IsDigit(folded[end]);
+            if (leftOk && rightOk)
+            {
+                return true;
+            }
+
+            start = index + 1;
+        }
+    }
+
     private static bool PreservesBaxyFirstPerson(string source, string result)
     {
         if (IsStructuredFacts(source))
@@ -615,13 +855,28 @@ internal static class UserMessagePolicy
         {
             foreach (JsonElement step in steps.EnumerateArray())
             {
-                if (step.GetString() is { Length: > 0 } text)
+                if (step.GetString() is not { Length: > 0 } text)
                 {
-                    facts.Add(text);
+                    continue;
                 }
+
+                if (IsStructuredFacts(text)
+                    && TryReadJson(text, out JsonElement nested))
+                {
+                    CollectStructuredLiterals(nested, facts);
+                    continue;
+                }
+
+                facts.Add(text);
             }
         }
 
+        CollectStructuredLiterals(root, facts);
+        return facts.Take(20).ToArray();
+    }
+
+    private static void CollectStructuredLiterals(JsonElement root, List<string> facts)
+    {
         foreach (string key in new[] { "reason", "title" })
         {
             if (root.TryGetProperty(key, out JsonElement value)
@@ -630,8 +885,6 @@ internal static class UserMessagePolicy
                 facts.Add(text);
             }
         }
-
-        return facts.Take(20).ToArray();
     }
 
     private static bool TryReadJson(string source, out JsonElement root)

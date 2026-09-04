@@ -245,6 +245,7 @@ internal static class ProductConductorHost
         ProductTurnTerminal.Filtered => "filtered",
         ProductTurnTerminal.AcceptedWithoutFinal => "accepted_without_final",
         ProductTurnTerminal.Silence => "silence",
+        ProductTurnTerminal.CompositionFailed => "composition_failed",
         _ => "rejected",
     };
 
@@ -268,6 +269,7 @@ internal static class ProductConductorHost
             ["hasPendingPlan"] = posterior.HasPendingPlan,
             ["pendingCompositionCount"] = posterior.PendingCompositionCount,
             ["compositionFailure"] = posterior.CompositionFailure,
+            ["hasCompositionError"] = posterior.HasCompositionError,
             ["statusDescription"] = posterior.StatusDescription,
         };
 

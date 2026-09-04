@@ -1,0 +1,100 @@
+001	published_final	Buenas tardes. ¿En qué puedo ayudarte?
+002	published_final	¿Qué tipo de información estás buscando exactamente?
+003	published_final	La hora local es 22:15.
+004	published_final	UTC es el tiempo universal coordinado, que se mide con el reloj local a las 22:15.
+005	published_final	No puedo llamar a un taxi en Marte.
+006	published_final	Hey. What's up?
+007	published_final	Do you want me to verify the size and SHA-256 of a private backup?
+008	published_final	The local clock shows 22:15.
+009	published_final	¿Qué significa UTC en este contexto?
+010	published_final	I cannot reserve a rocket to the moon.
+011	published_final	¿En qué puedo ayudarte hoy?
+012	published_final	¿Quieres que mida el estado del sistema del PC?
+013	published_final	The time is 22:16.
+014	published_final	¿Quieres que busque información sobre los husos y los husos horarios?
+015	published_final	What is the recipient's name?
+016	published_final	How should I send a letter to Jupiter?
+017	published_final	The local clock shows 22:16.
+018	published_final	Time zones help standardize daily life and commerce across different regions. They prevent confusion from local solar time.
+019	published_final	¿Quieres que desconecte la red inalámbrica?
+020	published_final	No puedo cerrar aquello.
+021	published_final	¿Quieres que silencie o reactive la salida predeterminada y confirme la postlectura?
+022	published_final	22:17 local clock.
+023	published_final	El mensaje es correcto es: Listo, REDPC\\usuario.
+024	published_final	¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+025	published_final	Sí, soy un él. ¿Quieres que te ayude a comprar un bitcoin en Neptuno?
+026	published_final	Want me to check if Wi-Fi is connected and get the opaque identity of the observed profile?
+027	published_final	Sí, estás conectado a internet.
+028	published_final	The local clock shows 22:17.
+029	published_final	will you refuse to close the window?
+030	published_final	Will you refuse to close the app?
+031	published_final	Want me to close the window?
+032	published_final	The local time is 22:18.
+033	published_final	La hora local es 22:18.
+034	published_final	La hora del PC es las 22:18.
+035	published_final	What is the specific item you need to open?
+036	published_final	Quieres que abra una aplicación específica?
+037	published_final	No puedo fabricar una hora real.
+038	published_final	I cannot invent a clock time.
+039	published_final	¿Cuál es el tiempo que te dije que confirmaras?
+040	published_final	I didn't confirm it.
+041	published_final	¿Quieres que lea el título, la URL y el texto visible de la página CDP activa sin modificarla y con el contenido limitado?
+042	published_final	22:19 local clock.
+043	published_final	La hora local es 22:19.
+044	published_final	I'm BAXY, your PC companion. I can chat in Spanish, English, and Spanglish. Just say the word "check" to see the active CDP page details. What's on your mind?
+045	published_final	¿Quieres que te presenté en corto?
+046	published_final	Soy BAXY, tu compañero en el PC. Hablo español, inglés y spanglish. Si quieres, te puedo mostrar la página CDP activa sin modificarla. ¿Qué necesitas?
+047	published_final	¿Quieres que te muestre la página CDP activa sin hacer cambios?
+048	published_final	¿Quieres que me informe sobre el estado actual del volumen y el silencio de la salida predeterminada?
+049	published_final	Sí.
+050	published_final	Sí, estoy aquí. Puedo ayudarte con lo que necesites, pero tengo algunos límites. No puedo acceder a información personal o datos sensibles sin tu permiso. También no puedo realizar acciones que puedan dañar tu sistema o privacidad.
+051	published_final	Muy bien, gracias. ¿Qué tal tú?
+052	composition_failed	composition_failed
+053	published_final	El reloj marca las 22:20.
+054	published_final	The local time is 22:20.
+055	published_final	¿Quieres que active el teclado español en la ventana enfocada y verifique el idioma de entrada de su hilo mediante Win32?
+056	published_final	Buenas noches.
+057	published_final	¿Quieres que chequee la conectividad y las interfaces activas?
+058	published_final	¿Quieres que te diga el estado de la red?
+059	published_final	¿Quieres que te diga el estado de la red?
+060	published_final	¿Quieres que te diga el estado actual del audio?
+061	published_final	¿Quieres que te diga el estado de la red?
+062	published_final	The time is 22:21.
+063	published_final	¿Quieres que te diga la hora actual y el desfase local?
+064	published_final	The local clock shows 22:21.
+065	published_final	22:21.
+066	published_final	The local clock shows 22:22.
+067	published_final	La hora local es 22:22.
+068	published_final	Good night.
+069	published_final	¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+070	published_final	¿Quieres que te diga la hora actual y la fecha?
+071	published_final	I cannot talk and give the time as requested.
+072	published_final	¿Quieres que te escriba el texto en el portapapeles y luego lo revise para asegurarme que esté correcto?
+073	published_final	Puedo escribir el texto en el portapapeles y luego lo revisar para asegurarme de que esté correcto.
+074	published_final	The local clock time is 22:23.
+075	published_final	Listo, el tiempo es 22:23.
+076	published_final	The time is 22:23.
+077	published_final	La hora local es 22:23.
+078	published_final	¿Quieres que te envíe el mensaje a Marte?
+079	published_final	No puedo enviar este mensaje a Marte.
+080	published_final	La hora local es 22:24.
+081	published_final	Hola hola, ¿en qué puedo ayudarte?
+082	published_final	¿Quieres que te comprobo si una aplicación específica está instalada en Windows?
+083	published_final	La hora local es 22:24.
+084	published_final	The local clock shows 22:24.
+085	published_final	La zona de tiempo es la región geográfica que determina la hora local de un lugar.
+086	published_final	¿Quieres que silencie o reactivé la salida predeterminada y confirme la postlectura?
+087	published_final	¿Qué significa pedirle té a Saturno?
+088	published_final	I cannot ask Saturn for tea.
+089	published_final	The time is 22:24.
+090	published_final	Hola, the local clock es 22:24.
+091	published_final	want me to delete a selected routine permanently?
+092	published_final	Rechazo la eliminación permanente de una rutina seleccionada.
+093	published_final	Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+094	published_final	The time is 22:25.
+095	published_final	La hora es las 22:25.
+096	published_final	Quieres que te describa en una frase?
+097	published_final	I'm a reliable assistant who helps with tasks and conversations in Spanish, English, and Spanglish.
+098	published_final	I cannot say hi to Saturn.
+099	published_final	No puedo saludar a Saturno.
+100	published_final	The local clock is 22:25.

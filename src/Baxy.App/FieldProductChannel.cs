@@ -65,6 +65,47 @@ internal static class FieldPublicationInjection
     internal static void Reset() => Mode = FieldPublicationInjectionMode.None;
 }
 
+/// <summary>
+/// Declared composition-boundary injection for R07. Production leaves
+/// <see cref="Mode"/> at <see cref="FieldCompositionInjectionMode.None"/>.
+/// The request still enters through the common channel; only compose is altered.
+/// </summary>
+internal enum FieldCompositionInjectionMode
+{
+    None,
+    Reject,
+    Timeout,
+    Exhaust,
+}
+
+internal static class FieldCompositionInjection
+{
+    internal const string EnvironmentVariable = "BAXY_COMPOSITION_INJECTION";
+
+    internal static FieldCompositionInjectionMode Mode { get; set; }
+
+    internal static void Reset()
+    {
+        Mode = FieldCompositionInjectionMode.None;
+    }
+
+    internal static FieldCompositionInjectionMode Resolve()
+    {
+        if (Mode != FieldCompositionInjectionMode.None)
+        {
+            return Mode;
+        }
+
+        return Environment.GetEnvironmentVariable(EnvironmentVariable) switch
+        {
+            "reject" => FieldCompositionInjectionMode.Reject,
+            "timeout" => FieldCompositionInjectionMode.Timeout,
+            "exhaust" => FieldCompositionInjectionMode.Exhaust,
+            _ => FieldCompositionInjectionMode.None,
+        };
+    }
+}
+
 internal sealed class FieldProductChannel : IAsyncDisposable
 {
     internal const int MaximumRequestBodyCharacters = 65_536;
@@ -101,6 +142,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _lifetimeCancellation = lifetimeCancellation;
         _uiContext = SynchronizationContext.Current ?? new SynchronizationContext();
         _viewModel.MessageAdded += OnMessageAdded;
+        _viewModel.CompositionFailed += OnCompositionFailed;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         _progressPulse = new Timer(
             _ => PostToUi(OnProgressPulse),
@@ -492,17 +534,56 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["label"] = _sessionLabel,
     };
 
-    internal JsonObject ActivityEvent(ConversationMessage message) => new()
+    internal JsonObject ActivityEvent(ConversationMessage message)
     {
-        ["type"] = "activity",
-        ["entry"] = new JsonObject
+        var entry = new JsonObject
         {
             ["id"] = $"native-{Interlocked.Increment(ref _activitySequence)}",
             ["src"] = message.IsUser ? "YOU" : "BAXY",
             ["msg"] = message.Body,
-            ["ts"] = message.CreatedAt.ToLocalTime().ToString("HH:mm:ss", CultureInfo.InvariantCulture),
-        },
-    };
+            ["ts"] = message.CreatedAt.ToLocalTime().ToString(
+                "HH:mm:ss",
+                CultureInfo.InvariantCulture),
+        };
+        if (!string.IsNullOrWhiteSpace(message.Route))
+        {
+            entry["route"] = message.Route;
+        }
+
+        return new JsonObject
+        {
+            ["type"] = "activity",
+            ["entry"] = entry,
+        };
+    }
+
+    private void OnCompositionFailed(PendingModelMessage pending, string failure)
+    {
+        string route = PublicResponseRoute.FromDraft(pending.Draft);
+        Publish(new JsonObject
+        {
+            ["type"] = "composition_failed",
+            ["cause"] = failure,
+            ["controlsUsable"] = true,
+            ["route"] = route,
+            ["injected"] = FieldCompositionInjection.Resolve()
+                != FieldCompositionInjectionMode.None,
+        });
+        Publish(new JsonObject
+        {
+            ["type"] = "activity",
+            ["entry"] = new JsonObject
+            {
+                ["id"] = $"native-{Interlocked.Increment(ref _activitySequence)}",
+                ["src"] = "SYSTEM",
+                ["msg"] = "composition_failed",
+                ["ts"] = DateTimeOffset.Now.ToString(
+                    "HH:mm:ss",
+                    CultureInfo.InvariantCulture),
+                ["route"] = route,
+            },
+        });
+    }
 
     internal static string NormalizeActivitySource(string? source) => source switch
     {
@@ -1068,6 +1149,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         _disposed = true;
         _viewModel.MessageAdded -= OnMessageAdded;
+        _viewModel.CompositionFailed -= OnCompositionFailed;
         _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         await _channelLifetime.CancelAsync();
         _channelLifetime.Dispose();

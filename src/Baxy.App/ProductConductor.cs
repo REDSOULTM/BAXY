@@ -9,6 +9,7 @@ internal enum ProductTurnTerminal
     Filtered,
     AcceptedWithoutFinal,
     Silence,
+    CompositionFailed,
 }
 
 internal sealed record ProductTurnResult(
@@ -28,6 +29,7 @@ internal sealed record ProductPosteriorState(
     bool HasPendingPlan,
     int PendingCompositionCount,
     string? CompositionFailure,
+    bool HasCompositionError,
     string? StatusDescription);
 
 /// <summary>
@@ -160,15 +162,37 @@ internal sealed class ProductConductor : IAsyncDisposable
                     ["status"] = "accepted",
                     ["pending"] = true,
                 });
-        return TryClassify(observed, startEvents, startMessages, timedOut: true)
-            ?? new ProductTurnResult(
+        ProductTurnResult? timedOut = TryClassify(
+            observed,
+            startEvents,
+            startMessages,
+            timedOut: true);
+        if (timedOut is not null)
+        {
+            return timedOut;
+        }
+
+        string? published = LastPublishedBaxyText(EventsSince(startEvents));
+        if (!string.IsNullOrWhiteSpace(published))
+        {
+            return new ProductTurnResult(
                 observed,
-                ProductTurnTerminal.Silence,
-                FinalText: null,
-                Diagnostic: "timeout_without_visible_final",
+                ProductTurnTerminal.PublishedFinal,
+                published,
+                Diagnostic: "timeout_after_published_final",
                 TimedOut: true,
                 EventsSince(startEvents),
                 CapturePosterior());
+        }
+
+        return new ProductTurnResult(
+            observed,
+            ProductTurnTerminal.Silence,
+            FinalText: null,
+            Diagnostic: "timeout_without_visible_final",
+            TimedOut: true,
+            EventsSince(startEvents),
+            CapturePosterior());
     }
 
     internal ProductPosteriorState CapturePosterior() =>
@@ -180,6 +204,7 @@ internal sealed class ProductConductor : IAsyncDisposable
             _viewModel.HasPendingPlan,
             _viewModel.PendingModelMessageCount,
             _viewModel.LastMessageCompositionFailure,
+            _viewModel.HasCompositionError,
             _viewModel.StatusDescription);
 
     private ProductTurnResult? TryClassify(
@@ -200,14 +225,28 @@ internal sealed class ProductConductor : IAsyncDisposable
             .Skip(startMessages)
             .Count(static message => !message.IsUser);
 
-        if (finalText is not null && !busy)
+        bool exhaustedThisTurn = events.Any(static item =>
+            (string?)item["type"] == "composition_failed");
+        if (!busy && exhaustedThisTurn)
+        {
+            return new ProductTurnResult(
+                admission,
+                ProductTurnTerminal.CompositionFailed,
+                LastSystemCompositionText(events) ?? compositionFailure,
+                compositionFailure,
+                TimedOut: false,
+                events,
+                CapturePosterior());
+        }
+
+        if (finalText is not null && (!busy || timedOut))
         {
             return new ProductTurnResult(
                 admission,
                 ProductTurnTerminal.PublishedFinal,
                 finalText,
-                Diagnostic: null,
-                TimedOut: false,
+                Diagnostic: timedOut && busy ? "timeout_after_published_final" : null,
+                TimedOut: timedOut,
                 events,
                 CapturePosterior());
         }
@@ -318,7 +357,7 @@ internal sealed class ProductConductor : IAsyncDisposable
         }
     }
 
-    private static string? LastPublishedBaxyText(IReadOnlyList<JsonObject> events)
+    internal static string? LastPublishedBaxyText(IReadOnlyList<JsonObject> events)
     {
         string? text = null;
         foreach (JsonObject item in events)
@@ -332,6 +371,28 @@ internal sealed class ProductConductor : IAsyncDisposable
             if ((string?)entry?["src"] == "BAXY")
             {
                 text = (string?)entry?["msg"];
+            }
+        }
+
+        return string.IsNullOrWhiteSpace(text) ? null : text;
+    }
+
+    private static string? LastSystemCompositionText(IReadOnlyList<JsonObject> events)
+    {
+        string? text = null;
+        foreach (JsonObject item in events)
+        {
+            if ((string?)item["type"] != "activity")
+            {
+                continue;
+            }
+
+            JsonObject? entry = item["entry"] as JsonObject;
+            if ((string?)entry?["src"] == "SYSTEM"
+                && (string?)entry?["msg"] is { Length: > 0 } msg
+                && msg.StartsWith("composition_failed", StringComparison.Ordinal))
+            {
+                text = msg;
             }
         }
 

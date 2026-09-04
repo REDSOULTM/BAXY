@@ -104,6 +104,8 @@ from baxy_mind.planner import PlannerCatalog, PlannerContractError
         "No puedo ver que dispositivos estan conectados en este momento.",
         "No puedo capturar el estado actual de la pantalla ahora.",
         "No puedo ver que automatismos tienes activos en tu sistema.",
+        "No puedo decir la hora porque no tengo un reloj físico.",
+        "I cannot tell the time.",
     ],
 )
 def test_a_conversation_reply_may_not_deny_a_capability_the_catalog_serves(
@@ -208,6 +210,7 @@ def test_the_fabrication_guard_does_not_forbid_general_knowledge(reply: str) -> 
         # a clock reading. Nothing executed, so no effect gate was ever asked.
         "La hora actual es 14:30.",
         "The current time is 9:05.",
+        "The local clock shows 14:30.",
         "Son las 14:30.",
         "Tu bateria esta al 47% ahora mismo.",
         "El disco tiene 128 GB libres.",

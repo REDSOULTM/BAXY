@@ -75,7 +75,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             PublishComposedMessageAsync,
             failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
             OnModelMessageQueued,
-            () => InvokeOnUiAsync(RestorePresentationState));
+            () => InvokeOnUiAsync(RestorePresentationState),
+            onExhaustedAsync: PublishCompositionFailureAsync);
         _mindPlans = new MindPlanSession(
             new MindPlanSession.Host
             {
@@ -123,13 +124,35 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
 
                 LastMessageCompositionFailure = failure;
+                HasCompositionError = false;
                 AddMessageCore("BAXY", text, isUser: false);
                 RestorePresentationState();
             });
 
+    private async Task PublishCompositionFailureAsync(
+        PendingModelMessage pending,
+        string failure)
+    {
+        await InvokeOnUiAsync(
+            () =>
+            {
+                if (_isDisposed)
+                {
+                    return;
+                }
+
+                LastMessageCompositionFailure = failure;
+                HasCompositionError = true;
+                CompositionFailed?.Invoke(pending, failure);
+                RestorePresentationState();
+            }).ConfigureAwait(false);
+    }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event Action<ConversationMessage>? MessageAdded;
+
+    public event Action<PendingModelMessage, string>? CompositionFailed;
 
     public ObservableCollection<ConversationMessage> Messages { get; }
 
@@ -175,6 +198,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         AddMessage("Tú", publicUserText, isUser: true);
         _turnExecutionActive = true;
+        HasCompositionError = false;
+        LastMessageCompositionFailure = null;
         IsBusy = true;
         StatusText = "Trabajando";
         StatusDescription = "understanding";
@@ -204,14 +229,51 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             total = plan.Steps.Count;
         }
 
-        ApplyInProgressSignal(
-            FirstSignal.FormulateProgress(
-                userText,
-                FirstSignal.KindMilestone,
-                step,
-                total),
-            nowUtc);
-        return true;
+        if (UserMessagePolicy.BypassLlmCompositionForTests)
+        {
+            ApplyInProgressSignal(
+                FirstSignal.FormulateProgress(
+                    userText,
+                    FirstSignal.KindMilestone,
+                    step,
+                    total),
+                nowUtc);
+            return true;
+        }
+
+        if (_mindClient is not { IsReady: true } mind)
+        {
+            return false;
+        }
+
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Status("acting"),
+            UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+        try
+        {
+            ModelMessageCompositionOutcome outcome = ModelMessageComposer.ComposeAsync(
+                    draft,
+                    userText,
+                    facts,
+                    mind.ComposeUserMessageAsync,
+                    MindSidecarClient.IsCpuFallbackProfile,
+                    allowRecovery: true,
+                    CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+            if (outcome.Text is not { Length: > 0 } text)
+            {
+                return false;
+            }
+
+            ApplyInProgressSignal(text, nowUtc);
+            return true;
+        }
+        catch (Exception exception) when (ModelMessageComposer.IsTransientFailure(exception))
+        {
+            return false;
+        }
     }
 
     internal void ClearProgressLabel()
@@ -267,6 +329,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
 
     internal string? LastMessageCompositionFailure { get; private set; }
+
+    internal bool HasCompositionError { get; private set; }
 
     internal int PendingModelMessageCount => _modelMessages.Count;
 
@@ -1705,11 +1769,27 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 cancellationToken);
         }
 
+        if (turn.Kind is "conversation" or "clarify"
+            && NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
+        {
+            return await TryExecuteMindOperationAsync(
+                mind,
+                route,
+                "system.time",
+                registry,
+                cancellationToken);
+        }
+
         if (turn.Kind == "conversation")
         {
             if (UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
             {
-                AddMessage("BAXY", turn.Reply, isUser: false, formulatedByMind: true);
+                AddMessage(
+                    "BAXY",
+                    turn.Reply,
+                    isUser: false,
+                    formulatedByMind: true,
+                    route: PublicResponseRoute.Conversation);
                 return true;
             }
 
@@ -1723,13 +1803,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 : null;
             if (UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Question))
             {
-                AddMessage("BAXY", turn.Question, isUser: false, formulatedByMind: true);
+                AddMessage(
+                    "BAXY",
+                    turn.Question,
+                    isUser: false,
+                    formulatedByMind: true,
+                    route: PublicResponseRoute.Clarification);
             }
             else
             {
                 AddMessage(
                     "BAXY",
-                    "Necesito un poco más de contexto para continuar de forma segura.",
+                    TurnVisibleFacts.Clarification("unsafe_clarification"),
                     isUser: false,
                     messageEvent: UserMessageEvent.Clarification);
             }
@@ -1745,6 +1830,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // send it through the dependency-aware planner below.
             && !string.Equals(routedOperation, "app.close", StringComparison.Ordinal))
         {
+            if (string.Equals(routedOperation, "system.time", StringComparison.Ordinal)
+                && !NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
+            {
+                return AddMindConversationFallback();
+            }
+
             return await TryExecuteMindOperationAsync(
                 mind,
                 route,
@@ -1871,7 +1962,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     "BAXY",
                     extraction.Question,
                     isUser: false,
-                    formulatedByMind: true);
+                    formulatedByMind: true,
+                    route: PublicResponseRoute.Clarification);
                 return true;
             }
 
@@ -1906,7 +1998,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // bounded LLM message composer instead of restarting semantic work.
         AddMessage(
             "BAXY",
-            TurnVisibleFacts.Failure("unsafe_reply"),
+            TurnVisibleFacts.Failure("model_invalid"),
             isUser: false,
             messageEvent: UserMessageEvent.Error(
                 UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -2270,8 +2362,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string body,
         bool isUser,
         bool formulatedByMind = false,
-        UserMessageEvent? messageEvent = null)
+        UserMessageEvent? messageEvent = null,
+        string? route = null)
     {
+        if (formulatedByMind)
+        {
+            body = UserMessagePolicy.StripLeadingPromptLabels(body);
+        }
+
         if (!isUser
             && string.Equals(speaker, "BAXY", StringComparison.Ordinal)
             && !formulatedByMind
@@ -2329,7 +2427,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 if (outcome.Text is { } finalBody)
                 {
                     LastMessageCompositionFailure = outcome.Failure;
-                    AddMessageCore("BAXY", finalBody, isUser: false);
+                    AddMessageCore(
+                        "BAXY",
+                        finalBody,
+                        isUser: false,
+                        PublicResponseRoute.FromDraft(draft));
                 }
                 else
                 {
@@ -2345,7 +2447,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
-        AddMessageCore(speaker, body, isUser);
+        AddMessageCore(
+            speaker,
+            body,
+            isUser,
+            route
+                ?? (formulatedByMind
+                    ? PublicResponseRoute.Conversation
+                    : messageEvent is null
+                        ? null
+                        : PublicResponseRoute.FromDraft(
+                            UserMessagePolicy.Create(body, messageEvent))));
     }
 
     private Task<bool> InvokeOnUiAsync(Action action)
@@ -2410,9 +2522,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 : "BAXY disponible";
     }
 
-    private void AddMessageCore(string speaker, string body, bool isUser)
+    private void AddMessageCore(
+        string speaker,
+        string body,
+        bool isUser,
+        string? route = null)
     {
-        var message = new ConversationMessage(speaker, body, isUser, DateTimeOffset.Now);
+        var message = new ConversationMessage(
+            speaker,
+            body,
+            isUser,
+            DateTimeOffset.Now,
+            route);
         Messages.Add(message);
         MessageAdded?.Invoke(message);
         MindSidecarClient? mind = _mindClient;

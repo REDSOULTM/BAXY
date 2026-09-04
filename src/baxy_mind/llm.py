@@ -32,6 +32,7 @@ import unicodedata
 import urllib.request
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import urlparse
@@ -205,6 +206,7 @@ USER_MESSAGE_PROMPT = (
     "si seen.title: las palabras nota o note y el título. "
     "si seen.level: volumen y el número. "
     "si seen.muted: audio o altavoces y si están silenciados o no. "
+    "si seen.time: di esa hora local. "
     "Nunca planner, router, tool, catálogo, schema, operación, JSON ni "
     "identificadores. Primera persona si BAXY actuó. Una frase. "
     "Devuelve sólo el mensaje."
@@ -221,7 +223,7 @@ CPU_USER_MESSAGE_PROMPT = (
     "I couldn't. Inglés y éxito: estado, sin Listo. Welcome: Hola o Hi, sin "
     "Listo. Confirmation: pregunta con confirm* y cancel*. "
     "out_of_catalog: eso no lo hago. Misión fallida: la razón, no la etiqueta. "
-    "muted: audio o altavoces. Sin JSON ni _internos."
+    "muted: audio o altavoces. seen.time: hora local. Sin JSON ni _internos."
 )
 
 
@@ -2062,7 +2064,7 @@ def visible_text_leaks_internal_vocabulary(value: object) -> bool:
 _CAPABILITY_DENIAL = re.compile(
     r"\b(?:"
     r"no\s+puedo\s+(?:ver|revisar|comprobar|consultar|capturar|mostrar|"
-    r"decirte|saber|acceder)|"
+    r"decirte|decir|leer|dar|proporcionar|saber|acceder)|"
     r"no\s+tengo\s+(?:acceso|forma|manera|capacidad)|"
     r"no\s+s[eé]\s+(?:qu[eé]|cu[aá]l|cu[aá]les)|"
     # The guard text folds an apostrophe to a space, so "don't" arrives as
@@ -2083,7 +2085,7 @@ _DENIED_MACHINE_SUBJECT = re.compile(
     r"procesos?|processes|sistema|system|maquina|machine|equipo|computador|"
     r"computadora|ordenador|automatismos?|automations?|rutinas?|routines?|"
     r"notas?|notes?|juegos?|games?|portapapeles|clipboard|copias?|backups?|"
-    r"salud|health|estado|status)\b",
+    r"salud|health|estado|status|hora|reloj|clock|time|utc)\b",
     re.IGNORECASE,
 )
 
@@ -2234,8 +2236,9 @@ _OBSERVED_INSTRUMENT_READING = re.compile(
 # What separates them is deixis, not vocabulary about machines: the offending
 # sentences name *the* current value or bind it to the person's own device.
 _READING_IS_ABOUT_THIS_MACHINE_NOW = re.compile(
-    r"\b(?:la\s+hora\s+(?:actual\s+)?es|son\s+las\b|"
-    r"the\s+(?:current\s+)?time\s+is|it\s+is\s+now\b)"
+    r"\b(?:la\s+hora\s+(?:actual|local)?\s+es|el\s+reloj\s+local\s+es|"
+    r"son\s+las\b|the\s+(?:current\s+|local\s+)?(?:time|clock)\s+"
+    r"(?:is|shows)|local\s+clock\s+shows|it\s+is\s+now\b)"
     r"|\b(?:tu|su|your|mi|my)\s+[\w\s]{0,24}?"
     r"(?:esta|está|es|is|has|tiene|queda|remains)\b"
     r"|\b(?:ahora\s+mismo|en\s+este\s+momento|actualmente|"
@@ -2575,6 +2578,14 @@ _MEASURED_INVENTED_VISIBLE_TOKENS = frozenset(
         "silo",
         "silen",
         "silenci",
+        "decirar",
+        "talcr",
+        "readver",
+        "vme",
+        "comprobo",
+        "llamarar",
+        "asistante",
+        "nochesos",
     }
 )
 _THINK_BLOCK = re.compile(r"<think>.*?</think>", re.IGNORECASE | re.DOTALL)
@@ -2680,6 +2691,89 @@ def _cause_in_prose(cause: str, language: str) -> str:
     return _CAUSE_FACT.get(key, key.replace("_", " "))
 
 
+def _parse_core_utc(value: str) -> datetime | None:
+    """Parse the Core system.time `utc` stamp. C# round-trip uses 7 fractions."""
+
+    stamp = (value or "").strip()
+    if not stamp:
+        return None
+    if stamp.endswith("Z"):
+        stamp = stamp[:-1] + "+00:00"
+    match = re.match(
+        r"^(?P<head>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?P<frac>\.\d+)?(?P<tz>.*)$",
+        stamp,
+    )
+    if match is None:
+        return None
+    frac = match.group("frac") or ""
+    if len(frac) > 7:
+        frac = frac[:7]
+    stamp = f"{match.group('head')}{frac}{match.group('tz') or ''}"
+    try:
+        parsed = datetime.fromisoformat(stamp)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _local_clock_from_observed(observed: dict | None) -> str | None:
+    """HH:MM from the real system.time contract (`utc` + offset). Not localTime."""
+
+    if not isinstance(observed, dict):
+        return None
+    utc_raw = observed.get("utc")
+    offset_raw = observed.get("localUtcOffsetMinutes")
+    if isinstance(utc_raw, str) and offset_raw is not None:
+        try:
+            offset_minutes = int(offset_raw)
+        except (TypeError, ValueError):
+            offset_minutes = None
+        else:
+            parsed = _parse_core_utc(utc_raw)
+            if parsed is not None:
+                local = parsed.astimezone(
+                    timezone(timedelta(minutes=offset_minutes))
+                )
+                return f"{local.hour:02d}:{local.minute:02d}"
+    return None
+
+
+def _local_clock_from_situation(situation: dict) -> str | None:
+    clock = _local_clock_from_observed(situation.get("observed"))
+    if clock:
+        return clock
+    for step in situation.get("steps") or []:
+        if not isinstance(step, str) or not step.lstrip().startswith("{"):
+            continue
+        try:
+            parsed = json.loads(step)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, dict):
+            clock = _local_clock_from_observed(parsed.get("observed"))
+            if clock:
+                return clock
+    return None
+
+
+def _clock_appears(text: str, hhmm: str) -> bool:
+    """True when the local clock is named, without matching 12:57 as 2:57."""
+
+    try:
+        hour_text, minute_text = hhmm.split(":", 1)
+        hour = int(hour_text)
+        minute = int(minute_text)
+    except (TypeError, ValueError):
+        return False
+    forms = (f"{hour:02d}:{minute:02d}", f"{hour}:{minute:02d}")
+    blob = text or ""
+    return any(
+        re.search(rf"(?<!\d){re.escape(form)}(?!\d)", blob) for form in forms
+    )
+
+
 def _compose_situation_payload(situation: dict, language: str, user_text: str = "") -> dict:
     """Facts the generator may see: no dotted ops, no snake_case causes."""
 
@@ -2707,9 +2801,14 @@ def _compose_situation_payload(situation: dict, language: str, user_text: str = 
             payload["effect"] = "open"
     seen = situation.get("observed")
     if isinstance(seen, dict) and seen:
-        payload["seen"] = dict(seen)
-        if "localTime" in payload["seen"]:
-            payload["seen"]["time"] = payload["seen"].pop("localTime")
+        visible_seen = dict(seen)
+        clock = _local_clock_from_observed(visible_seen)
+        for key in ("localTime", "utc", "localUtcOffsetMinutes", "version"):
+            visible_seen.pop(key, None)
+        if clock:
+            visible_seen["time"] = clock
+        if visible_seen:
+            payload["seen"] = visible_seen
     if (
         str(situation.get("polarity") or "").strip().lower() == "success"
         and cause_key != "acting"
@@ -2770,6 +2869,8 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             bits.append("Name the volume number.")
         if "muted" in observed:
             bits.append("Name mute state.")
+        if _local_clock_from_observed(observed):
+            bits.append("Name seen.time as the local clock.")
     if language == "en" and bits:
         bits.append("English only.")
     return " ".join(bits)
@@ -2781,6 +2882,7 @@ def _strip_think_tags(text: str) -> str:
 
 def _strip_prompt_labels(text: str) -> str:
     cleaned = _strip_think_tags(text)
+    cleaned = re.sub(r"^#+\s*", "", cleaned).strip()
     cleaned = re.sub(
         r"^(?:el )?estado observable(?: es)?:\s*",
         "",
@@ -3091,11 +3193,11 @@ def compose_visible_defect(
             r"volumen|volume|\bnivel\b|\blevel\b", folded
         ):
             return "missing_name"
-        local = observed_dict.get("localTime")
-        if isinstance(local, str) and local.strip():
-            compact = local.strip().casefold()
-            if compact not in folded and compact.lstrip("0") not in folded:
-                return "missing_name"
+        clock = _local_clock_from_situation(situation)
+        if clock and not _clock_appears(folded, clock):
+            return "missing_name"
+        if not clock and re.search(r"(?<!\d)\d{1,2}:\d{2}(?!\d)", stripped):
+            return "extra_claim"
         if "?" in stripped or "¿" in stripped:
             return "extra_claim"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
@@ -3114,6 +3216,8 @@ def compose_visible_defect(
             "con", "exito", "éxito", "success",
         }
         for step in situation.get("steps") or []:
+            if isinstance(step, str) and step.lstrip().startswith("{"):
+                continue
             tokens = [
                 token
                 for token in re.findall(r"[A-Za-zÁÉÍÓÚÜáéíóúüñÑ]{3,}|\d+", str(step))
@@ -7355,6 +7459,7 @@ class LlmRuntime:
                 "requiredFacts",
                 "requiredResponseWords",
                 "situation",
+                "route",
             }
         }
         if visible_situation:
@@ -7772,19 +7877,14 @@ class LlmRuntime:
             return rest if publishable(rest) else candidate
 
         def time_clip(candidate: str) -> str:
-            observed = situation.get("observed")
-            local = (
-                observed.get("localTime")
-                if isinstance(observed, dict)
-                else None
-            )
-            if not isinstance(local, str) or not local.strip():
+            clock = _local_clock_from_situation(situation)
+            if not clock:
                 return candidate
             blob = candidate or ""
-            token = local.strip()
-            alt = token.lstrip("0") or token
-            if token not in blob and alt not in blob:
+            if not _clock_appears(blob, clock):
                 return candidate
+            token = clock
+            alt = f"{int(clock.split(':')[0])}:{clock.split(':')[1]}"
             if "?" not in blob and "¿" not in blob:
                 return candidate
             kept = [

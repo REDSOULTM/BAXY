@@ -19,7 +19,10 @@ def ps_quote(value: str | Path) -> str:
     return "'" + str(value).replace("'", "''") + "'"
 
 
-def run_powershell(source: str) -> subprocess.CompletedProcess[str]:
+def run_powershell(
+    source: str,
+    timeout: int = 30,
+) -> subprocess.CompletedProcess[str]:
     if POWERSHELL is None:
         raise unittest.SkipTest("Windows PowerShell is unavailable")
     encoded = base64.b64encode(source.encode("utf-16-le")).decode("ascii")
@@ -40,7 +43,7 @@ def run_powershell(source: str) -> subprocess.CompletedProcess[str]:
         text=True,
         encoding="utf-8",
         errors="replace",
-        timeout=30,
+        timeout=timeout,
     )
 
 
@@ -1463,7 +1466,10 @@ foreach ($catalog in $invalid) {{
     cases = $invalid.Count
 }} | ConvertTo-Json -Compress
 """
-        result = run_powershell(command)
+        # The fail-closed budget cases build thousands of names after parsing
+        # the 3k-line script. 30s is enough on a quiet host and not enough
+        # when the same machine just ran Full; the assertions are unchanged.
+        result = run_powershell(command, timeout=120)
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         diagnostic = json.loads(result.stdout.strip())
         self.assertEqual(

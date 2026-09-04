@@ -1,0 +1,100 @@
+001	published_final	Hola, ¿en qué puedo ayudarte?
+002	published_final	Puedo ayudarte con preguntas, resolver dudas, proporcionar información y realizar tareas.
+003	published_final	La hora local es 17:46.
+004	published_final	UTC es la hora universal coordinada, que sirve como referencia para las horas en todo el mundo.
+005	published_final	No puedo pedir un taxi a Marte, ya que no existe.
+006	published_final	I can help you with that. What would you like me to do?
+007	published_final	Want me to resize the window?
+008	published_final	The local clock shows 17:46.
+009	published_final	¿Quieres que te diga la hora actual en UTC?
+010	published_final	I cannot book a flight to the moon.
+011	published_final	Buenos días. ¿En qué puedo ayudarte?
+012	published_final	Want me to search the web for you?
+013	published_final	No puedo dar la hora exacta actualmente.
+014	published_final	El huso horario existe para standardizar las horas en diferentes regiones, facilitando la coordinación internacional y evitando la confusión causada por la rotación de la Tierra.
+015	published_final	I cannot send a postcard to Jupiter.
+016	published_final	¿Quieres que lea el volumen y el silencio actuales de la salida predeterminada sin modificarla?
+017	published_final	The time now is 17:47.
+018	published_final	Want me to show you the current time and time zone difference?
+019	published_final	¿Quieres que te muestre la hora actual y la diferencia con la UTC?
+020	published_final	Want me to read the current date and time, the UTC time, and the local time offset using two consistent observations?
+021	published_final	Time zones exist to standardize daylight saving time and to accommodate the Earth's rotation, ensuring that daily activities align with the sun's position in the sky. They help regulate when people work, sleep, and socialize based on geographic location.
+022	published_final	Listo, el tiempo es 17:47.
+023	published_final	¿Quieres que lee metadatos de una rutina exacta sin ejecutarla?
+024	published_final	Who are you?
+025	published_final	¿En qué contexto compraste bitcoins en Marte?
+026	published_final	Sí, tengo internet.
+027	published_final	¿Quieres que desconecte mi conexión a internet?
+028	published_final	¿Quieres que te diga la hora local y la hora UTC?
+029	published_final	No puedo proporcionar la hora local.
+030	published_final	¿Quieres que te explique qué no hago, en una frase?
+031	published_final	¿Quieres que te diga quién soy y qué puedo hacer?
+032	published_final	Quieres que te diga la hora actual y la zona horaria local?
+033	published_final	No, no puedo leer la hora porque no tengo un reloj físico.
+034	published_final	¿Quieres que lea la hora actual?
+035	published_final	No, no puedo abrir de la hora porque no tengo un reloj físico.
+036	published_final	What specific action do you want me to perform?
+037	published_final	Quieres que programme una alarma o recordatorio audible, único o recurrente, y verifique la tarea futura en Windows?
+038	published_final	No puedo inventar una hora específica porque no tengo un reloj físico.
+039	published_final	No puedo puedo confirmar la hora porque no tengo un reloj físico.
+040	published_final	¿Quieres que confirme una compra preparada con precio exacto?
+041	published_final	Quieres que reabra un backup privado y verifique su tamaño y SHA-256?
+042	published_final	The time seen is 17:50.
+043	published_final	¿Quieres que te diga la hora otra vez?
+044	published_final	I introduce myself as BAXY, a companion who lives in the PC. I can speak Spanish, English, and Spanglish. I respond in the language of the user's last message, and I always follow the internal policies of the system. I am here to interact naturally and briefly, to provide useful and
+045	published_final	¿Quieres que te presentes como BAXY?
+046	published_final	¿Puedes aclarar qué es lo que deseas hacer exactamente?
+047	published_final	¿Puedes aclarar qué es lo que deseas hacer exactamente?
+048	published_final	Want me to mute or reactivate the default output and confirm the post-reading?
+049	published_final	Sí, estoy aquí. ¿Qué necesitas?
+050	published_final	¿Quieres que te muestre la ventana activa?
+051	published_final	¿Quieres que te muestre los recordatorios vencidos no descartados?
+052	published_final	Quieres que muestre la lista de recordatorios vencidos no descartados?
+053	published_final	¿Quieres que te diga la hora actual?
+054	published_final	The local clock shows 17:51.
+055	published_final	"Buenos días" en español es "Buenos días".
+056	published_final	¿Quieres que te diga el estado de la sesión multimedia actual?
+057	published_final	Las palabras "hay", "ahí" y "ay" son homófonas, es decir, se pronuncian igual pero se escriben y significan diferente.
+058	published_final	¿Quieres que compruebe si una aplicación específica está instalada en Windows sin abrirla?
+059	published_final	¿qué deseas que te indique?
+060	published_final	No pude: la respuesta fue unsafe.
+061	published_final	¿Quieres que silencie o reactive la salida predeterminada y confirme la postlectura?
+062	published_final	¿Quieres que silencie o reactive la salida predeterminada y confirme la postlectura?
+063	published_final	¿Quieres que te diga la hora actual y el desfase local?
+064	published_final	¿Quieres que te diga la hora actual?
+065	published_final	¿Cuál es la hora actual en tu ubicación?
+066	published_final	I cannot wrap up with the local time.
+067	composition_failed	composition_failed:no_response;recovery:no_response;retry_exhausted
+068	published_final	¿Quieres que muestre el estado de red sin mostrar direcciones o nombres?
+069	published_final	Hi there!
+070	published_final	¿Quieres que te diga la hora actual?
+071	published_final	I can talk, but I cannot tell the time.
+072	published_final	Puedo hablar, pero no puedo decir la hora.
+073	published_final	What can you do without a screen?
+074	published_final	I cannot check the current time.
+075	published_final	No puedo decirar el día actual sin ver la pantalla.
+076	published_final	¿Quieres que te diga la hora actual y el desfase local?
+077	published_final	¿Cuál es la hora actual en tu ubicación?
+078	published_final	No puedo enviar mensajes a Mars.
+079	published_final	No puedo enviar mensajes a Marte.
+080	published_final	I cannot provide the requested clock fact.
+081	published_final	Hola, ¿en qué puedo ayudarte?
+082	published_final	I can help you with various tasks on this PC, such as answering questions, providing information, and assisting with troubleshooting. However, I cannot access external files or perform actions that require physical interaction with the PC.
+083	published_final	La hora local es 17:54.
+084	published_final	The local clock shows 17:54.
+085	published_final	¿Quieres que te explique qué es un huso horario en una frase?
+086	published_final	# No puedo explicar qué es un huso horario en una frase.
+087	published_final	No puedo pedir café a Plutón.
+088	published_final	I cannot ask Pluto for coffee.
+089	published_final	¿Quieres que te diga la hora actual?
+090	published_final	The time is 17:55.
+091	published_final	¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+092	published_final	¿Qué no haces en una frase?
+093	published_final	Sí, estoy aquí. ¿Cómo puedo ayudarte?
+094	published_final	Can you tell me the current time and the time zone difference?
+095	published_final	Can you tell me the current time without guessing?
+096	published_final	No puedo decir la hora sin adivinar
+097	published_final	¿Quieres que presione una tecla o la combinación segura Ctrl+Shift+Escape en la ventana enfocada y verifique que Windows aceptó todos los eventos SendInput?
+098	published_final	Quieres que creemos una rutina local acotada de reproducción o captura al oír la frase 'hola Pluto'?
+099	published_final	Quieres que le diga hola a Plutón?
+100	published_final	No puedo proporcionar la hora actual sin acceder a una fuente confiable.

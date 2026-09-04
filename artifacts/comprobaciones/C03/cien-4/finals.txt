@@ -1,0 +1,100 @@
+001	published_final	Buenas tardes. ¿En qué puedo ayudarte?
+002	published_final	¿En qué puedo ayudarte hoy?
+003	published_final	18:47
+004	published_final	¿Quieres que te diga qué es UTC?
+005	published_final	No puedo llamar a un taxi en Marte.
+006	published_final	Hola. ¿En qué puedo ayudarte?
+007	published_final	Puedo ayudarte con preguntas sobre tiempo, geografía, cultura, historia, ciencia, matemáticas, tecnología y más. También puedo traducir idiomas y resolver problemas de diferentes temas.
+008	published_final	The local clock shows 18:48.
+009	published_final	¿Quieres que te diga la hora actual en UTC y el desfase local?
+010	published_final	I cannot reserve a rocket to the moon.
+011	published_final	# ¿En qué puedo ayudarte hoy?
+012	published_final	¿Quieres que te muestre el estado del sistema del PC?
+013	published_final	The time is 18:50.
+014	published_final	¿Quieres que busque información sobre los husos?
+015	published_final	What is the recipient's name?
+016	published_final	How should I send a letter to Jupiter?
+017	composition_failed	composition_failed:no_response;recovery:no_response;retry_exhausted
+018	published_final	I cannot explain why time zones are kept.
+019	published_final	¿Cuál es la razón principal por la que se mantienen los horarios de tiempo?
+020	published_final	¿Cuál es la razón principal por la que se mantienen los horarios de tiempo?
+021	published_final	¿Quieres que lea la ventana visible en primer plano y verifique su proceso, estado, geometría e identidad efímera?
+022	published_final	18:52 local clock.
+023	published_final	I'm BAXY, a companion living in the PC.
+024	published_final	¿Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+025	published_final	Sí, soy un él. ¿Quieres que te ayude a comprar un Bitcoin en Neptuno?
+026	published_final	Want me to check the active window?
+027	published_final	Sí, estás conectado a internet.
+028	published_final	The local clock shows 18:53.
+029	published_final	do you want me to close the window?
+030	published_final	Do you want me to close the window and check its absence without forcing the process to end?
+031	published_final	¿Quieres que cierre la ventana?
+032	published_final	The local time is 18:53.
+033	published_final	can you read this computer's clock?
+034	published_final	La hora del PC es las 18:53.
+035	published_final	What is the specific item you need to open?
+036	published_final	¿Qué necesitas exactamente?
+037	published_final	No puedo fabricar una hora talcr.
+038	published_final	I cannot invent a clock time as requested.
+039	published_final	¿Quieres que confirme la compra preparada con precio exacto?
+040	published_final	¿Quieres que resuelva exactamente el título que mencionaste sin dar más información?
+041	published_final	¿Qué deseas que te diga?
+042	published_final	The local clock shows 18:56.
+043	published_final	La hora local es 18:58.
+044	published_final	I'm BAXY, your PC companion. I can help with various tasks and answer questions in English, Spanish, or a mix of both. What do you need assistance with?
+045	published_final	¿Quieres que te presenté en corto?
+046	published_final	No se lanzará Steam.
+047	published_final	No puedo lanzar Steam.
+048	published_final	¿Quieres que me informe sobre el volumen y el silencio actual de la salida predeterminada?
+049	published_final	¿quieres que te diga el estado actual del audio?
+050	published_final	I'm still here, but I can't launch Steam.
+051	published_final	Bien, ¿qué tal?
+052	published_final	It cannot be determined what the clock says.
+053	published_final	El reloj marca las 19:00.
+054	composition_failed	composition_failed:no_response;recovery:no_response;retry_exhausted
+055	published_final	¿Quieres que cambie un ajuste permitido mediante API oficial y verifique su postlectura?
+056	published_final	No.
+057	published_final	¿Quieres que te diga el estado de la red?
+058	published_final	¿Quieres que te diga el estado de la red?
+059	published_final	¿Quieres que te diga el estado de la red?
+060	published_final	who is speaking?
+061	published_final	¿Quieres que lea los metadatos de la rutina exacta sin ejecutarla?
+062	published_final	The time is 19:04.
+063	published_final	La hora local es 19:04.
+064	published_final	It is 19:04.
+065	published_final	19:04.
+066	published_final	Quieres que me muestre la fecha y hora actuales, la hora UTC y el desfase local?
+067	published_final	La hora local es 19:04.
+068	published_final	¿Quieres que te haga un saludo?
+069	published_final	Hello.
+070	composition_failed	composition_failed:no_response;recovery:no_response;retry_exhausted
+071	published_final	Hi.
+072	published_final	Puedo ayudarte con preguntas, resolver dudas, proporcionar información y conversar sobre diversos temas. No tengo limitaciones específicas en lo que puedo hacer, pero siempre respeto las normas y los límites establecidos.
+073	published_final	I can help with questions, resolve doubts, provide information, and talk about various topics. I don't have specific limitations on what I can do, but I always respect the rules and limits established.
+074	published_final	Puedo proporcionarte la hora actual de cualquier lugar en el mundo, pero necesito que me indiques la ciudad o el país específico para obtener la hora local.
+075	published_final	BAXY está en la entrada a las 19:07.
+076	published_final	¿Quieres que te diga la hora actual y la diferencia con la UTC?
+077	published_final	19:07
+078	published_final	I cannot send messages to Mars.
+079	published_final	¿quieres que envíe este mensaje a marte?
+080	published_final	No puedo enviar mensajes a Marte.
+081	published_final	Hola.
+082	published_final	Can you check if a specific application is installed on Windows Start menu?
+083	published_final	19:08 local clock.
+084	published_final	The local clock shows 19:08.
+085	published_final	La zona horaria es la diferencia de tiempo entre una región y el meridiano de Greenwich.
+086	published_final	¿Quieres que silencie o reactive la salida predeterminada y confirme la postlectura?
+087	composition_failed	composition_failed:no_response;recovery:no_response;retry_exhausted
+088	published_final	I cannot ask Saturn for tea.
+089	published_final	The time is 19:09.
+090	published_final	Listo, el tiempo fue 19:09.
+091	published_final	Want me to delete a routine?
+092	published_final	Rechazo pedirle té a Saturno
+093	published_final	Quieres que lea metadatos de una rutina exacta sin ejecutarla?
+094	published_final	The time is 19:10.
+095	published_final	La hora local es 19:10.
+096	published_final	I'm BAXY, your companion on the PC, always here to help with whatever you need.
+097	published_final	Quieres que te describa en una frase?
+098	published_final	Hi to Saturn.
+099	published_final	No puedo saludar a Saturno.
+100	published_final	The local clock is 19:11.

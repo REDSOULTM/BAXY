@@ -69,12 +69,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # clarify, and a model-authored recovery question stays a question.
 # Goal 10.2.5 later made confirmation choice validation derive from the typed
 # choices and bounded rejected composition retries; V8 remains historical.
+# C03 moved both files again: public compose derives the local clock from
+# utc+offset, strips prompt-label leftovers, and rejects invented clock words.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "363a1cd91151ce4a2f2be5f93c37f809b2a462e997a338c3089ee28d7ece8402"
+        "aa04c76b3ad15b86e162fdcf8314a0df473bf4a44420446e2bbf7861e3d4acd3"
     ),
     "src/baxy_mind/llm.py": (
-        "aa5e99a37daf79a7d46336fb37c2c0807bdfcbb704197ca9da49d3e73f3ca609"
+        "06de4908169ba4e807651e60fa15c6f03cc67afcff0caf9af4d0e99eabaa5920"
     ),
 }
 

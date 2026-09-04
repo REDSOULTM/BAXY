@@ -39,7 +39,6 @@ from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
     PATH_RECOGNIZER,
-    formulate_progress,
     should_emit_early,
     turn_signal_payload,
 )
@@ -5575,15 +5574,31 @@ def _emit_early_turn_signal(
     on_signal: Callable[[dict[str, Any]], None] | None,
     already_signaled: list[bool],
     step_count: int = 1,
+    llm: Any = None,
 ) -> None:
     if already_signaled or on_signal is None:
         return
     if not should_emit_early(path, step_count):
         return
+    compose = getattr(llm, "compose_user_message", None)
+    if compose is None:
+        return
+    text = compose(
+        objective,
+        "status",
+        {
+            "situation": json.dumps(
+                {"kind": "status", "cause": "acting", "polarity": "success"},
+                ensure_ascii=False,
+            )
+        },
+    )
+    if not str(text or "").strip():
+        return
     on_signal(
         turn_signal_payload(
             request_id,
-            formulate_progress(objective),
+            str(text).strip(),
         )
     )
     already_signaled.append(True)
@@ -5770,6 +5785,7 @@ def _prepare_turn_result(
             request_id=message.get("id"),
             on_signal=on_signal,
             already_signaled=already_signaled,
+            llm=llm,
         )
         withdrawn_closed_refusal = _catalog_answers_the_request(
             routing_objective,
@@ -5791,6 +5807,7 @@ def _prepare_turn_result(
             on_signal=on_signal,
             already_signaled=already_signaled,
             step_count=len(explicit_intent.operations),
+            llm=llm,
         )
         shortlist = _shortlist_with_required_effects(
             (),
@@ -5905,6 +5922,7 @@ def _prepare_turn_result(
             request_id=message.get("id"),
             on_signal=on_signal,
             already_signaled=already_signaled,
+            llm=llm,
         )
     raw_decision = (
         explicit_conversation_decision

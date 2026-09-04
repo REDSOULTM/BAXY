@@ -83,6 +83,11 @@ public sealed class PlannerAppBoundaryTests
                 Is.True);
             Assert.That(
                 MindClarificationPolicy.IsSelfContainedRequest(
+                    "hora ahora",
+                    slotValueAsConversation),
+                Is.True);
+            Assert.That(
+                MindClarificationPolicy.IsSelfContainedRequest(
                     "Dime la hora y revisa la CPU",
                     plan),
                 Is.True);
@@ -485,9 +490,10 @@ public sealed class PlannerAppBoundaryTests
             TaskCreationOptions.RunContinuationsAsynchronously);
         int compositions = 0;
         await using var mind = new MindSidecarClient();
+        var exhausted = new List<(PendingModelMessage Pending, string Failure)>();
         var queue = new PendingModelMessageQueue(
             _ => Task.FromResult<MindSidecarClient?>(mind),
-            (_, _) => throw new AssertionException("A rejected draft must not publish."),
+            (_, _) => throw new AssertionException("A rejected draft must not publish BAXY prose."),
             failure =>
             {
                 failures.Add(failure);
@@ -508,7 +514,12 @@ public sealed class PlannerAppBoundaryTests
                         "missing_confirmation_choice",
                         UsedRecovery: false));
             },
-            (_, _) => Task.CompletedTask);
+            (_, _) => Task.CompletedTask,
+            (message, failure) =>
+            {
+                exhausted.Add((message, failure));
+                return Task.CompletedTask;
+            });
 
         queue.Enqueue(pending, CancellationToken.None);
         await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
@@ -519,6 +530,11 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(queue.Count, Is.Zero);
             Assert.That(
                 failures[^1],
+                Is.EqualTo("missing_confirmation_choice;retry_exhausted"));
+            Assert.That(exhausted, Has.Count.EqualTo(1));
+            Assert.That(exhausted[0].Pending, Is.SameAs(pending));
+            Assert.That(
+                exhausted[0].Failure,
                 Is.EqualTo("missing_confirmation_choice;retry_exhausted"));
         });
         await queue.CloseAsync();
@@ -541,29 +557,30 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
-    public async Task RejectedVisibleMessageUsesOnlyModelAuthoredRecovery()
+    public async Task RejectedVisibleMessageRetriesTheSameVerifiedFacts()
     {
         UserMessageDraft draft = UserMessagePolicy.Create(
             "Listo, abrí Calculadora.",
             UserMessageEvent.Status);
         var facts = new JsonObject { ["situation"] = draft.Source };
         var observedIntents = new List<string>();
-        const string authoredRecovery =
-            "Lo siento, no pude presentar esa respuesta sin perder información "
-            + "verificada, así que no repetiré ninguna acción a ciegas.";
+        const string authoredRetry = "Listo, abrí Calculadora.";
 
         ModelMessageCompositionOutcome outcome =
             await ModelMessageComposer.ComposeAsync(
                 draft,
                 "Abre la calculadora",
                 facts,
-                (_, intent, _, _, _) =>
+                (_, intent, retryFacts, _, _) =>
                 {
                     observedIntents.Add(intent);
+                    Assert.That(
+                        (string?)retryFacts["situation"],
+                        Is.EqualTo(draft.Source));
                     return Task.FromResult<MindComposedMessage?>(
                         observedIntents.Count == 1
                             ? new MindComposedMessage("Listo.")
-                            : new MindComposedMessage(authoredRecovery));
+                            : new MindComposedMessage(authoredRetry));
                 },
                 cpuFallback: false,
                 allowRecovery: true,
@@ -571,14 +588,11 @@ public sealed class PlannerAppBoundaryTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(outcome.Text, Is.EqualTo(authoredRecovery));
+            Assert.That(outcome.Text, Is.EqualTo(authoredRetry));
             Assert.That(outcome.UsedRecovery, Is.True);
             Assert.That(outcome.Failure, Is.Not.Null.And.Not.Empty);
-            Assert.That(observedIntents, Is.EqualTo(new[] { "status", "error" }));
-            Assert.That(
-                outcome.Text,
-                Is.Not.EqualTo(ModelMessageComposer.CreateRecoveryDraft().Source),
-                "La evidencia fija nunca puede convertirse en el texto visible.");
+            Assert.That(observedIntents, Is.EqualTo(new[] { "status", "status" }));
+            Assert.That(outcome.Text, Does.Not.Contain("No pude"));
         });
     }
 
@@ -634,8 +648,8 @@ public sealed class PlannerAppBoundaryTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Text, Is.Null);
-            Assert.That(outcome.UsedRecovery, Is.False);
-            Assert.That(calls, Is.EqualTo(1));
+            Assert.That(outcome.UsedRecovery, Is.True);
+            Assert.That(calls, Is.EqualTo(2));
         });
     }
 

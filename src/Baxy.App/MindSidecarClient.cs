@@ -889,6 +889,15 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(facts);
+        switch (FieldCompositionInjection.Resolve())
+        {
+            case FieldCompositionInjectionMode.Reject:
+                return new MindComposedMessage("planner tool catalog schema");
+            case FieldCompositionInjectionMode.Timeout:
+                throw new TimeoutException("composition_injection_timeout");
+            case FieldCompositionInjectionMode.Exhaust:
+                return null;
+        }
         JsonObject? reply = await RequestAsync(
             new JsonObject
             {

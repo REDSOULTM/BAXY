@@ -16,6 +16,29 @@ public sealed class NaturalSystemStatusRequestParserTests
     [TestCase("what is today's date")]
     [TestCase("cual es la fecha de hoy")]
     [TestCase("Mi puoi dire che ore sono?")]
+    [TestCase("¿Me dices la hora?")]
+    [TestCase("Could you tell me the time?")]
+    [TestCase("the time, please")]
+    [TestCase("hora ahora")]
+    [TestCase("local time?")]
+    [TestCase("time check")]
+    [TestCase("dime la hora y no inventes")]
+    [TestCase("Can you read this computer's clock?")]
+    [TestCase("what time is it ahora")]
+    [TestCase("what does the clock say")]
+    [TestCase("qué marca el reloj")]
+    [TestCase("tell the time in English")]
+    [TestCase("otra vez la hora")]
+    [TestCase("thanks, what time is it")]
+    [TestCase("gracias, ¿qué hora es?")]
+    [TestCase("finish with the local clock")]
+    [TestCase("termina con la hora local")]
+    [TestCase("local clock time?")]
+    [TestCase("now the time, please")]
+    [TestCase("hola, what time is it")]
+    [TestCase("the time, don't guess")]
+    [TestCase("a tiny clock fact")]
+    [TestCase("según el reloj, qué día es")]
     public void ExplicitLocalTimeQueriesRouteDirectly(string text)
     {
         bool parsed = NaturalNoteRequestParser.TryParse(text, out RoutedOperation? operation);
@@ -26,6 +49,19 @@ public sealed class NaturalSystemStatusRequestParserTests
             Assert.That(operation?.Name, Is.EqualTo("system.time"));
             Assert.That(operation?.Arguments, Is.Empty);
         });
+    }
+
+    [TestCase("por qué existen los husos horarios")]
+    [TestCase("what is a time zone")]
+    [TestCase("inventa una hora")]
+    [TestCase("make up a time")]
+    public void TimeZoneEssaysAndInventedClockAsksAreNotCurrentTimeReads(string text)
+    {
+        Assert.That(NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text), Is.False);
+        Assert.That(
+            NaturalNoteRequestParser.TryParse(text, out RoutedOperation? operation),
+            Is.False);
+        Assert.That(operation, Is.Null);
     }
 
     [TestCase("¿Cómo está mi PC?", "summary")]
@@ -119,6 +155,7 @@ public sealed class NaturalSystemStatusRequestParserTests
     [TestCase("qué es la hora UTC")]
     [TestCase("qué hora es en Tokio mañana")]
     [TestCase("dime la hora y abre Notepad")]
+    [TestCase("talk, and also give the time")]
     public void KnowledgeProcessConditionalAndCompositeQueriesFailClosed(string text)
     {
         bool parsed = NaturalNoteRequestParser.TryParse(text, out RoutedOperation? operation);

@@ -11,7 +11,7 @@ internal static partial class NaturalSystemStatusRequestParser
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
         string folded = Fold(text);
-        if (TimePattern().IsMatch(folded))
+        if (IsCurrentTimeRequest(text))
         {
             operation = new RoutedOperation("system.time", new JsonObject());
             return true;
@@ -71,16 +71,87 @@ internal static partial class NaturalSystemStatusRequestParser
 
         return HorizontalWhitespacePattern()
             .Replace(builder.ToString(), " ")
+            .Replace("¿", string.Empty, StringComparison.Ordinal)
+            .Replace("¡", string.Empty, StringComparison.Ordinal)
             .Trim()
-            .TrimStart('¿', '¡')
-            .TrimStart()
             .Normalize(NormalizationForm.FormC);
     }
 
+    internal static bool IsCurrentTimeRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        string folded = Fold(text);
+        if (MatchesTimePattern(folded))
+        {
+            return true;
+        }
+
+        if (folded.Length > 96 || TimeZoneTopicPattern().IsMatch(folded))
+        {
+            return false;
+        }
+
+        if (InventedClockAskPattern().IsMatch(folded)
+            && !NegatedInventionPattern().IsMatch(folded))
+        {
+            return false;
+        }
+
+        return CurrentTimeAskPattern().IsMatch(folded)
+            || CurrentTimeParaphrasePattern().IsMatch(folded);
+    }
+
+    private static bool MatchesTimePattern(string folded)
+    {
+        if (TimePattern().IsMatch(folded))
+        {
+            return true;
+        }
+
+        string remainder = LeadingCourtesyPattern().Replace(folded, string.Empty).Trim();
+        return remainder.Length > 0
+            && !string.Equals(remainder, folded, StringComparison.Ordinal)
+            && TimePattern().IsMatch(remainder);
+    }
+
     [GeneratedRegex(
-        "^(?:(?:dame|dime|decime|me dices|puedes decirme) (?:la hora(?: exacta| actual| local)?|la fecha(?: de hoy)?|que hora es(?: ahora)?)|que (?:hora|fecha) es(?: ahora)?|hora (?:actual|local)(?: por favor)?|what time is it(?: now| right now)?|what(?:'|’)?s the time(?: now| right now)?|what is today(?:'|’)?s date|tell me the (?:current|local) time|cual es la fecha de hoy|diga la fecha hoy|mi puoi dire che ore sono|quelle heure est il|wie spat ist es|che ore sono)[?!.]?$",
+        "^(?:(?:dame|dime|decime|me dices|puedes decirme) (?:la hora(?: exacta| actual| local)?|la fecha(?: de hoy)?|que hora es(?: ahora)?)|que (?:hora|fecha) es(?: ahora)?|hora (?:actual|local)(?: por favor)?|what time is it(?: now| right now| ahora)?|what(?:'|’)?s the time(?: now| right now)?|what is today(?:'|’)?s date|tell me the (?:current|local) time|cual es la fecha de hoy|diga la fecha hoy|mi puoi dire che ore sono|quelle heure est il|wie spat ist es|che ore sono)[?!.]?$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex TimePattern();
+
+    [GeneratedRegex(
+        "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa|ey)[,!. ]+)+",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex LeadingCourtesyPattern();
+
+    [GeneratedRegex(
+        "\\b(?:huso|time zone|time zones|timezone|zona horaria|utc)\\b",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex TimeZoneTopicPattern();
+
+    [GeneratedRegex(
+        "\\b(?:inventa|invent|fabrica|make up|adivina|guess)\\b",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex InventedClockAskPattern();
+
+    [GeneratedRegex(
+        "(?:^|[, ])(?:no|sin|don['’]?t) (?:inventar|inventes|adivines|guess(?:ing)?)",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex NegatedInventionPattern();
+
+    [GeneratedRegex(
+        "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa)[,!. ]+)*(?:(?:me |puedes |could you |can you )?(?:dices |dime |decime |decir |tell me |give me |lees |leer |read )?)?(?:la |the |el |este |this )?(?:computers |computer['’]?s |pc |equipo )?(?:hora(?: exacta| local| actual)?|time|local time|current time|clock|reloj)(?: local| actual| now| ahora| please| por favor| otra vez| again| check| de este pc| of this pc)?(?:(?:[, ]+| y )(?:sin inventar|no adivines|no inventes|don['’]?t guess|no guessing|please))?[?!. ]*$",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex CurrentTimeAskPattern();
+
+    [GeneratedRegex(
+        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez la hora|finish with the local clock|termina con la hora local|local clock time|now the time(?:[, ]+please)?|a tiny clock fact|segun el reloj, que dia es)[?!. ]*$",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex CurrentTimeParaphrasePattern();
 
     [GeneratedRegex(
         "^(?:(?:revisa(?: el)?(?: uso de)?|muestra(?:me)?|show(?: me)?|check)(?: el| the)? (?:cpu (?:y|and) ram|ram (?:y|and) cpu)|how much (?:memory and cpu|cpu and memory) am i using)[?!.]?$",

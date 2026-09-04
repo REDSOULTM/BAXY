@@ -273,6 +273,14 @@ internal sealed class MindPlanSession
         }
 
         Clear();
+        if (execution.CompletedMessages.Count == 1)
+        {
+            _host.Publish(
+                execution.CompletedMessages[0],
+                UserMessageEvent.Status);
+            return;
+        }
+
         _host.Publish(
             MissionNarration.CreateCompletionMessage(execution.CompletedMessages),
             null);

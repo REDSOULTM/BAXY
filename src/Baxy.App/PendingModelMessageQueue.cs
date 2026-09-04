@@ -19,6 +19,7 @@ internal sealed class PendingModelMessageQueue
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
     private readonly Func<string, string?, Task> _publishAsync;
     private readonly Func<string?, Task> _reportFailureAsync;
+    private readonly Func<PendingModelMessage, string, Task> _onExhaustedAsync;
     private readonly Action _onQueued;
     private readonly Func<Task> _onSettledAsync;
     private readonly Func<PendingModelMessage, MindSidecarClient, CancellationToken,
@@ -35,7 +36,8 @@ internal sealed class PendingModelMessageQueue
         Func<Task> onSettledAsync,
         Func<PendingModelMessage, MindSidecarClient, CancellationToken,
             Task<ModelMessageCompositionOutcome>>? composeAsync = null,
-        Func<TimeSpan, CancellationToken, Task>? delayAsync = null)
+        Func<TimeSpan, CancellationToken, Task>? delayAsync = null,
+        Func<PendingModelMessage, string, Task>? onExhaustedAsync = null)
     {
         ArgumentNullException.ThrowIfNull(waitForMind);
         ArgumentNullException.ThrowIfNull(publishAsync);
@@ -49,6 +51,8 @@ internal sealed class PendingModelMessageQueue
         _onSettledAsync = onSettledAsync;
         _composeAsync = composeAsync ?? ComposeAsync;
         _delayAsync = delayAsync ?? Task.Delay;
+        _onExhaustedAsync = onExhaustedAsync
+            ?? ((_, _) => Task.CompletedTask);
     }
 
     internal int Count
@@ -146,9 +150,10 @@ internal sealed class PendingModelMessageQueue
                 if (pending.Attempts >= MaximumCompositionAttempts)
                 {
                     RemoveHead(pending);
-                    await _reportFailureAsync(
-                            $"{outcome.Failure ?? "model_response_rejected"};retry_exhausted")
-                        .ConfigureAwait(false);
+                    string exhausted =
+                        $"{outcome.Failure ?? "model_response_rejected"};retry_exhausted";
+                    await _reportFailureAsync(exhausted).ConfigureAwait(false);
+                    await _onExhaustedAsync(pending, exhausted).ConfigureAwait(false);
                     await _onSettledAsync().ConfigureAwait(false);
                 }
                 continue;

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Nodes;
 using Baxy.App;
 using NUnit.Framework;
 
@@ -10,6 +11,27 @@ public sealed class FieldProductHonestTerminalTests
 {
     [TearDown]
     public void TearDown() => FieldPublicationInjection.Reset();
+
+    [Test]
+    public void AlreadyPublishedBaxyTextIsNotSilence()
+    {
+        JsonObject[] events =
+        [
+            new()
+            {
+                ["type"] = "activity",
+                ["entry"] = new JsonObject
+                {
+                    ["src"] = "BAXY",
+                    ["msg"] = "The local clock shows 20:27.",
+                },
+            },
+        ];
+
+        Assert.That(
+            ProductConductor.LastPublishedBaxyText(events),
+            Is.EqualTo("The local clock shows 20:27."));
+    }
 
     [Test]
     public async Task SilenceAfterAdmissionIsADetectableNonSuccess()

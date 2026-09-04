@@ -20,6 +20,7 @@ internal static class ModelMessageComposer
             forbiddenResponseTerms.Add(term);
         }
         facts["forbiddenResponseTerms"] = forbiddenResponseTerms;
+        facts["route"] = PublicResponseRoute.FromDraft(draft);
         if (UserMessagePolicy.IsStructuredFacts(draft.Source)
             && draft.Intent == "confirmation")
         {
@@ -84,11 +85,6 @@ internal static class ModelMessageComposer
         return facts;
     }
 
-    internal static UserMessageDraft CreateRecoveryDraft() =>
-        UserMessagePolicy.Create(
-            TurnVisibleFacts.Failure("composition_lost_verified_facts"),
-            UserMessageEvent.Error(UserMessageDiagnosticCodes.LocalService));
-
     internal static async Task<ModelMessageCompositionOutcome> ComposeAsync(
         UserMessageDraft draft,
         string userText,
@@ -123,12 +119,7 @@ internal static class ModelMessageComposer
         string originalFailure = UserMessagePolicy.ModelResponseRejectionReason(
             composed?.Text,
             draft) ?? "model_response_rejected";
-        // A generic apology is terminal. It may replace a status or error that
-        // could not be rendered, but never a welcome, clarification or
-        // confirmation whose exact wording is required for the next turn.
-        bool canUseTerminalRecovery = allowRecovery
-            && draft.Intent is "status" or "error";
-        if (!canUseTerminalRecovery)
+        if (!allowRecovery)
         {
             return new ModelMessageCompositionOutcome(
                 null,
@@ -136,20 +127,17 @@ internal static class ModelMessageComposer
                 UsedRecovery: false);
         }
 
-        // The deterministic sentence below is evidence for a second model call;
-        // it is never shown. This is the model-authored apology required when a
-        // factual result cannot be rendered without losing its contract.
-        UserMessageDraft recoveryDraft = CreateRecoveryDraft();
-        JsonObject recoveryFacts = CreateFacts(recoveryDraft);
+        // Retry the same verified facts. A lost-facts failure draft used to
+        // turn a Core-verified clock into «No pude: no pude encontrarlo.»
         MindComposedMessage? recovered = await compose(
             userText,
-            recoveryDraft.Intent,
-            recoveryFacts,
-            SelectTimeout(recoveryDraft, recoveryFacts, cpuFallback),
+            draft.Intent,
+            facts,
+            SelectTimeout(draft, facts, cpuFallback),
             cancellationToken).ConfigureAwait(false);
         string? acceptedRecovery = UserMessagePolicy.AcceptModelAuthoredResponse(
             recovered?.Text,
-            recoveryDraft);
+            draft);
         if (acceptedRecovery is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -160,7 +148,7 @@ internal static class ModelMessageComposer
 
         string recoveryFailure = UserMessagePolicy.ModelResponseRejectionReason(
             recovered?.Text,
-            recoveryDraft) ?? "model_response_rejected";
+            draft) ?? "model_response_rejected";
         return new ModelMessageCompositionOutcome(
             null,
             $"{originalFailure};recovery:{recoveryFailure}",

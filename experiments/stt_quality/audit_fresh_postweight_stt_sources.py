@@ -32,13 +32,15 @@ SCHEMA = "baxy.stt-fresh-source-audit.v1"
 # added the shared power-efficient ONNX session policy and changed wake/voice
 # loading without changing model, hop, score or corpus. Re-pinning
 # is therefore a re-seal of an unmeasured expectation, never the reopening of
-# a consumed one. Any future physical campaign must re-seal against the tree it
-# will actually measure.
+# a consumed one. C03 2026-09-03 re-sealed again after public compose started
+# deriving the local clock from utc+offset; corpora and engines are unchanged.
+# Any future physical campaign must re-seal against the tree it will actually
+# measure.
 WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
     "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
 )
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "1d3a69df31ac1ce1a75517f3f988b25a0d701b29667c89dd015d55956889bdac"
+    "651f69892bec3925e57cd7f2d9cdbed0f750fc25fa96710fbc6d646407f59999"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
