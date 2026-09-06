@@ -1,0 +1,22 @@
+n=14 published=14 other=0
+
+001	t1	published_final	explícame qué es un firewall de red en una frase	Un firewall de red es un dispositivo que controla el tráfico entrante y saliente para proteger la red.
+002	t2	published_final	what does a load balancer do, one sentence	¿Qué es un firewall de red en una frase?
+003	t3	published_final	dime la hora en este momento	¿Puedes decirme la hora actual en tu zona horaria?
+004	t4	published_final	qué es un switch de red, una frase	Un switch de red enruta el tráfico entre dispositivos dentro de una red local.
+005	t5	published_final	what is a DNS resolver in one sentence	A DNS resolver translates domain names into IP addresses.
+006	t6	published_final	explícame qué es una MAC address en una frase	Una MAC address es una dirección única que identifica de forma única a cada dispositivo de red.
+007	t7	published_final	what is latency in one sentence	Latency is the delay between sending and receiving data over a network.
+008	t8	published_final	qué es un puerto de red, una frase	Un puerto de red es una etiqueta que asigna un número a un tipo de conexión o servicio en una red.
+009	t9	published_final	what is a gateway in one sentence	A gateway is a device that connects different networks and manages traffic between them.
+
+But wait, the instruction says: “Respond directly with the information useful available in a maximum of four sentences, unless the person asks for a specific format.” And the policy says: “Answer directly with the information useful available in a maximum of four sentences, unless the person asks for a specific format.” So I must keep it to one sentence as requested (“in one sentence”).
+
+I already responded with one sentence: “A gateway is a device that connects different networks and manages traffic between them.”
+
+That’s one sentence, good.
+010	t10	published_final	explícame qué es el ancho de banda en una frase	El ancho de banda es la cantidad máxima de datos que se pueden enviar o recibir por segundo en una conexión.
+011	t11	published_final	what is a proxy server in one sentence	A proxy server acts as an intermediary that routes network requests and can filter or modify them before they reach their destination.
+012	t12	published_final	qué es una IP pública, una frase	Una IP pública es una dirección única asignada a un dispositivo en la red que se puede acceder desde Internet.
+013	t13	published_final	what is TCP in one sentence	TCP is a protocol that ensures reliable, ordered delivery of data between devices over a network.
+014	t14	published_final	explícame qué es UDP en una frase	UDP es un protocolo de red sin conexión que envía paquetes de datos sin esperar respuestas.

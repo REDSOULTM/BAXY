@@ -1,0 +1,18 @@
+n=16 published=16 composition_failed=0 other=0
+
+001	published_final	Buenos días	Buenos días
+002	published_final	qué sabes hacer en este PC	Tú puedes abrir y cerrar programas, leer la hora y reproducir el audio en este PC.
+003	published_final	Hi there	Hi there
+004	published_final	What are you able to do on this machine	I can open and close apps, read the clock, and read audio.
+005	published_final	mail a parcel to Phobos	I don't do that.
+006	published_final	clock please	07:17
+007	published_final	close that	What exactly would you like me to do with the request?
+008	published_final	are you connected?	Yes, the PC is online.
+009	published_final	What will you never do	I don't do that.
+010	published_final	don't launch Notepad	I won’t open Notepad for you.
+011	published_final	tell the time in English	The time is 7:18.
+012	published_final	traduce 'good morning' al español, nada más	Buenos días
+013	published_final	keep going without opening apps	I understand you want a single phrase in English as requested.
+014	published_final	just say hi	Hi.
+015	published_final	what is a time zone, one line	A time zone is the region where clocks are set to the same standard hour for coordinating time across geographical areas.
+016	published_final	Why do clocks differ by city	Clocks differ by city because time zones are based on geographic regions and are adjusted for daylight saving or local time variations.

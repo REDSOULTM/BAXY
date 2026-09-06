@@ -30,7 +30,8 @@ internal sealed record ProductPosteriorState(
     int PendingCompositionCount,
     string? CompositionFailure,
     bool HasCompositionError,
-    string? StatusDescription);
+    string? StatusDescription,
+    string? MindReplyRejection);
 
 /// <summary>
 /// Windowless adapter over <see cref="FieldProductChannel"/>. Same admission,
@@ -205,7 +206,8 @@ internal sealed class ProductConductor : IAsyncDisposable
             _viewModel.PendingModelMessageCount,
             _viewModel.LastMessageCompositionFailure,
             _viewModel.HasCompositionError,
-            _viewModel.StatusDescription);
+            _viewModel.StatusDescription,
+            _viewModel.LastMindReplyRejection);
 
     private ProductTurnResult? TryClassify(
         FieldHttpResponse admission,
@@ -261,6 +263,13 @@ internal sealed class ProductConductor : IAsyncDisposable
                 TimedOut: false,
                 events,
                 CapturePosterior());
+        }
+
+        // Una composición encolada sigue siendo este turno: cerrarlo aquí lo
+        // deja mudo y publica la respuesta después, fuera de su pregunta.
+        if (_viewModel.PendingModelMessageCount > 0 && !timedOut)
+        {
+            return null;
         }
 
         if (!busy && !string.IsNullOrWhiteSpace(compositionFailure) && newBaxyMessages == 0)

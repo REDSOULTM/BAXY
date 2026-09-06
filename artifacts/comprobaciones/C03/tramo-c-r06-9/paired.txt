@@ -1,0 +1,3 @@
+n=1 published=1 composition_failed=0 other=0
+
+001	published_final	Dime la hora y el estado del audio.	La hora es 06:08 y el estado del audio muestra que no está en modo de mutes y el nivel de volumen es 100.

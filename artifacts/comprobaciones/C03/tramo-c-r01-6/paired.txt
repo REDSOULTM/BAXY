@@ -1,0 +1,8 @@
+n=6 published=6 composition_failed=0 other=0
+
+001	published_final	Hola, ¿qué puedes hacer?	Puedo abrir y cerrar programas, leer la hora y leer el audio.
+002	published_final	Explícame qué es un huso horario en una frase.	Un huso horario es la diferencia de tiempo entre un lugar y el centro de coordenadas terrestres.
+003	published_final	¿Por qué importa?	Porque entender por qué importa ayuda a tomar decisiones más informadas y a enfocarse en lo realmente significativo.
+004	published_final	¿Qué hora es?	08:16
+005	published_final	What time is it?	The time is 08:16.
+006	published_final	compra bitcoins ahora	No puedo ayudarte con eso.

@@ -1,8 +1,8 @@
 # C09 — Demostrar que BAXY puede empezar el Goal 10
 
-**Ejecutable: Grok 4.6 High; contexto de 500K; un solo goal persistente.**
+**Ejecutable: Grok 4.6 High; un goal con tramos reanudables.**
 Predecesores: C01–C08 cumplidos. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
-[protocolo 500K](02_PROTOCOLO_GROK_46_500K.md).
+[protocolo vigente](../00_PROTOCOLO_EJECUCION.md).
 
 ## Objetivo único
 
@@ -17,6 +17,15 @@ como si fuera admisión, ni empieces el Goal 10 durante C09.
 La matriz completa, los criterios originales enlazados, Identidad, estado y
 handoffs C01–C08. Abre evidencia por ruta, no todos los logs.
 Distingue qué commit, runtime y corpus acreditaba cada cierre.
+
+## Tramos de ejecución
+
+A: matriz completa por IDs, hashes y preflight. B: revalidación C03–C06.
+C: C07/C08 y UI/voz reales. D: unión del candidato, Full 2+clon y certificado.
+Adjudica en lotes pequeños sin cargar todos los logs. Mantén 100/100 respuestas
+normales correctas y pruebas de avería aparte según C03 revisado. Si un modelo,
+prompt o estado compartido cambia, invalida todas las aceptaciones dependientes.
+Después de C09 siguen 10/11 y fase 12; admisión no es producto definitivo.
 
 ## Trabajo
 

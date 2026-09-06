@@ -1,0 +1,17 @@
+{
+  "scope": "Pure original narrator/policies; no LLM or product execution",
+  "oldNarrator": "La fecha local es 03/09/2026 y la hora local es 02:57.",
+  "oldRequiredLiterals": [
+    "03",
+    "09",
+    "2026",
+    "02:57",
+    "03/09/2026"
+  ],
+  "firstChangeRequiredLiterals": [],
+  "newRequiredLiterals": [],
+  "oldRejection": null,
+  "oldUnrelatedClockRejection": "missing_literal_fact",
+  "firstChangeUnrelatedClockRejection": null,
+  "newUnrelatedClockRejection": null
+}

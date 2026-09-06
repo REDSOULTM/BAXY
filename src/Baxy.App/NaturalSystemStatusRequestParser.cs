@@ -105,6 +105,26 @@ internal static partial class NaturalSystemStatusRequestParser
             || CurrentTimeParaphrasePattern().IsMatch(folded);
     }
 
+    internal static bool IsClockAndAudioStatusRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        string folded = Fold(text);
+        bool clock = folded.Contains("hora", StringComparison.Ordinal)
+            || folded.Contains("clock", StringComparison.Ordinal)
+            || folded.Contains("reloj", StringComparison.Ordinal)
+            || folded.Contains("time", StringComparison.Ordinal);
+        bool audio = folded.Contains("audio", StringComparison.Ordinal)
+            || folded.Contains("volumen", StringComparison.Ordinal)
+            || folded.Contains("volume", StringComparison.Ordinal)
+            || folded.Contains("mute", StringComparison.Ordinal)
+            || folded.Contains("silenci", StringComparison.Ordinal);
+        return clock && audio;
+    }
+
     private static bool MatchesTimePattern(string folded)
     {
         if (TimePattern().IsMatch(folded))
@@ -119,7 +139,7 @@ internal static partial class NaturalSystemStatusRequestParser
     }
 
     [GeneratedRegex(
-        "^(?:(?:dame|dime|decime|me dices|puedes decirme) (?:la hora(?: exacta| actual| local)?|la fecha(?: de hoy)?|que hora es(?: ahora)?)|que (?:hora|fecha) es(?: ahora)?|hora (?:actual|local)(?: por favor)?|what time is it(?: now| right now| ahora)?|what(?:'|’)?s the time(?: now| right now)?|what is today(?:'|’)?s date|tell me the (?:current|local) time|cual es la fecha de hoy|diga la fecha hoy|mi puoi dire che ore sono|quelle heure est il|wie spat ist es|che ore sono)[?!.]?$",
+        "^(?:(?:dame|dime|decime|me dices|puedes decirme) (?:la hora(?: exacta| actual| local)?(?: en este momento| ahora(?: mismo)?)?|la fecha(?: de hoy)?|que hora es(?: ahora)?)|que (?:hora|fecha) es(?: ahora)?|hora (?:actual|local)(?: por favor)?|what time is it(?: now| right now| ahora)?|what(?:'|’)?s the time(?: now| right now)?|what is today(?:'|’)?s date|tell me the (?:current|local) time|cual es la fecha de hoy|diga la fecha hoy|mi puoi dire che ore sono|quelle heure est il|wie spat ist es|che ore sono)[?!.]?$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex TimePattern();
 
@@ -149,7 +169,7 @@ internal static partial class NaturalSystemStatusRequestParser
     private static partial Regex CurrentTimeAskPattern();
 
     [GeneratedRegex(
-        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez[, ]+la hora|finish with the local clock|termina con la hora local|local clock time|now the (?:time|clock)(?:[, ]+please)?|a tiny clock fact|segun el reloj, que (?:dia|hora) (?:es|marca)|la hora ya|clock now|clock\\??|check the time|time now|time once more|hora local, please)[?!. ]*$",
+        "^(?:what does the clock say|que marca el reloj|tell the time(?: in english)?|otra vez[, ]+la hora|la hora[, ]+otra vez|finish with the local clock|termina con la hora local|local clock time|now the (?:time|clock)(?:[, ]+please)?|a tiny clock fact|segun el reloj, que (?:dia|hora) (?:es|marca)|la hora ya|clock now|clock\\??|check the time|time now|time once more|hora local, please)[?!. ]*$",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex CurrentTimeParaphrasePattern();
 

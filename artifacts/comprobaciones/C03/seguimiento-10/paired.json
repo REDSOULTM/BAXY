@@ -1,0 +1,633 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda un paquete de datos en viajar desde su origen hasta su destino.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 105,
+        "draft_sha256": "59de2c61e74a1057f9a42ba2425687aef04fd88fc093db45700285b98e8c6b01",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la latencia de red en una frase\"] || subject=null",
+        "draft": "La latencia de red es el tiempo que tarda un paquete de datos en viajar desde su origen hasta su destino."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia de red importa porque ralentiza la respuesta y afecta la eficiencia del sistema.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 92,
+        "draft_sha256": "113c1e290c5b8d5068fca8362991d65086287357974cf99013ed395742a55017",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la latencia de red en una frase\", \"¿por qué importa?\"] || subject=\"latencia de red\"",
+        "draft": "La latencia de red importa porque ralentiza la respuesta y afecta la eficiencia del sistema."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "DNS caching stores previous responses to queries, so returning cached data can make it seem like things changed when they didn’t.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 131,
+        "draft_sha256": "7925d7344407e0a6f1ccaad991b62a37bc75e3442a5efbd22bcab08a51e865d4",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la latencia de red en una frase\", \"¿por qué importa?\", \"explain what DNS caching is in one sentence\", \"why does it matter?\"] || subject=\"DNS caching\"",
+        "draft": "DNS caching stores previous responses to queries, so returning cached data can make it seem like things changed when they didn’t."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario entre ti y el recurso que deseas acceder.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 76,
+        "draft_sha256": "3dc4121ccfdadfcff50503494af3300671203170c7d516eee8d7fd2c9b374d3b",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la latencia de red en una frase\", \"¿por qué importa?\", \"explain what DNS caching is in one sentence\", \"why does it matter?\", \"explícame qué es un proxy en una frase\"] || subject=null",
+        "draft": "Un proxy actúa como intermediario entre ti y el recurso que deseas acceder."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "El proxy sirve para acceder y gestionar la conexión entre tú y el servidor, permitiéndote realizar solicitudes sin usar tu IP directa.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 137,
+        "draft_sha256": "6c2f6f5b2b4c5ff9068cfa85213e708b3f6ae4801e662328e86ec9024d225e4a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la latencia de red en una frase\", \"¿por qué importa?\", \"explain what DNS caching is in one sentence\", \"why does it matter?\", \"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\"] || subject=\"proxy\"",
+        "draft": "El proxy sirve para acceder y gestionar la conexión entre tú y el servidor, permitiéndote realizar solicitudes sin usar tu IP directa."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN creates a secure, encrypted connection between your device and a remote server, masking your IP and protecting data in transit.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "and why does it matter?",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) securely connects your device to a network, protecting your data by creating an encrypted tunnel so your online activity remains private and secure.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 180,
+        "draft_sha256": "17a947f25790c000c7dbf4d30114f6899aa647591c33ed95e3c84ecad8d431bb",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explain what DNS caching is in one sentence\", \"why does it matter?\", \"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\"] || subject=\"VPN\"",
+        "draft": "A VPN (Virtual Private Network) securely connects your device to a network, protecting your data by creating an encrypted tunnel so your online activity remains private and secure."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router dirige el flujo de información entre tu dispositivo y la red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 72,
+        "draft_sha256": "99cdfb6c6be6b49ad3c96309ebc75f8de3d2118f12e67b67eea3215ec81a15d0",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"why does it matter?\", \"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\"] || subject=null",
+        "draft": "Un router dirige el flujo de información entre tu dispositivo y la red."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "¿y para qué se usa?",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "unsafe_language;recovery:unsafe_language;retry_exhausted",
+    "compositionFailure": "unsafe_language;recovery:unsafe_language;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 83,
+        "draft_sha256": "cc6be9da49df7b04440d3122e7b3438bc4274c5aba84e9d2268a686980f2071d",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\", \"¿y para qué se usa?\"] || subject=\"router\"",
+        "draft": "El router se usa para conectar tu dispositivo al internet y navegar por sitios web."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 81,
+        "draft_sha256": "bbbf4d6cfad2cb5d3cc4e1c2c4daeb04f19558538b3665b6393deebff862a14f",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\", \"¿y para qué se usa?\"] || subject=\"router\"",
+        "draft": "El router se usa para enrutar el tráfico de datos entre dispositivos en una red."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 68,
+        "draft_sha256": "2e6ceff7d270d20d77fd6335fb3312eb25b806bf3f06ac00c6b0942a47cc67b9",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\", \"¿y para qué se usa?\"] || subject=\"router\"",
+        "draft": "El router se usa para enrutar el tráfico de red entre dispositivos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 68,
+        "draft_sha256": "2e6ceff7d270d20d77fd6335fb3312eb25b806bf3f06ac00c6b0942a47cc67b9",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\", \"¿y para qué se usa?\"] || subject=\"router\"",
+        "draft": "El router se usa para enrutar el tráfico de red entre dispositivos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 106,
+        "draft_sha256": "80f34ae14150b6d804557ca024d63a20769895f3628a7cbf22f26f21ef6b9ae5",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\", \"¿y para qué se usa?\"] || subject=\"router\"",
+        "draft": "El router sirve para direccional y enrutar el tráfico de datos entre dispositivos y el acceso a internet."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "f6f811fcd4e9eeca61a0a2aadbfadc26098a112a29050996335c7ce59fe54950",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es un proxy en una frase\", \"¿y para qué sirve?\", \"explain what a VPN is in one sentence\", \"and why does it matter?\", \"explícame qué es un router en una frase\", \"¿y para qué se usa?\"] || subject=\"router\"",
+        "draft": "El router sirve para enrutar el tráfico de red entre dispositivos."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "what is a core dump in one sentence",
+    "terminal": "published_final",
+    "final": "A core dump is a detailed record of a program's memory and state at the moment it crashes or is terminated unexpectedly.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t12",
+    "request": "qué es una herramienta de red, una frase",
+    "terminal": "published_final",
+    "final": "Una herramienta de red facilita la comunicación y el intercambio de datos entre dispositivos conectados a una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"} || prior=null || subject=null",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es la caché, una frase",
+    "terminal": "published_final",
+    "final": "La caché es un espacio temporal donde se almacenan datos para recuperarlos más rápido más adelante.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 103,
+        "draft_sha256": "1e250e14743c57f06fa274ea95bbd3b4ec82160e718e8a03deae9bcc9ffa25f4",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la caché, una frase\"] || subject=null",
+        "draft": "La caché es un espacio temporal donde se almacenan datos para recuperarlos más rápido más adelante."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La caché almacena datos temporales para acelerar el acceso al contenido en el futuro.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "no_reply_for_kind:action",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 86,
+        "draft_sha256": "be50b0b32bb5de82570d748a49fb5976f9f743ff84d76f7ece909252349957f6",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la caché, una frase\", \"¿por qué importa?\"] || subject=\"caché\"",
+        "draft": "La caché almacena datos temporales para acelerar el acceso al contenido en el futuro."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "y eso cómo se usa",
+    "terminal": "published_final",
+    "final": "En el pedido anterior, la caché almacena datos temporales para acelerar el rendimiento posterior.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 98,
+        "draft_sha256": "c9829e1a6a05d430954d310d3caec9c5eac2cb62e6d93cc0c17081a5364f844f",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explícame qué es la caché, una frase\", \"¿por qué importa?\", \"y eso cómo se usa\"] || subject=\"caché\"",
+        "draft": "En el pedido anterior, la caché almacena datos temporales para acelerar el rendimiento posterior."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"} || prior=null || subject=null",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "explain what a firewall is in one sentence",
+    "terminal": "published_final",
+    "final": "A firewall is a security device that monitors and controls incoming and outgoing network traffic based on addresses, ports, or application protocols to protect devices on a network.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t17",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "A firewall controls network traffic to protect devices and data by allowing only authorized connections.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 104,
+        "draft_sha256": "a8aa0501b5ef582ad00278cc98a7ddada9566de047d6445501a33306e959eff4",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explain what a firewall is in one sentence\", \"why does it matter?\"] || subject=\"firewall\"",
+        "draft": "A firewall controls network traffic to protect devices and data by allowing only authorized connections."
+      }
+    ]
+  },
+  {
+    "turnId": "t18",
+    "request": "what would I use it for at home",
+    "terminal": "published_final",
+    "final": "One sentence in English: You might use it for organizing small home items.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "6cfc0525ecb4f3e44ba80d9328ff58e32d1ddefc6314a66b75a316196960436e",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explain what a firewall is in one sentence\", \"why does it matter?\", \"what would I use it for at home\"] || subject=\"firewall\"",
+        "draft": "Use it to protect your home network and block unauthorized access."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 74,
+        "draft_sha256": "a0bf12b269c04a3d3d7f4eaaf244aad72e603ee5be10f96184deffbeba7236ac",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"} || prior=[\"explain what a firewall is in one sentence\", \"why does it matter?\", \"what would I use it for at home\"] || subject=\"firewall\"",
+        "draft": "One sentence in English: You might use it for organizing small home items."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"} || prior=null || subject=null",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t19",
+    "request": "qué es el kernel, una frase",
+    "terminal": "published_final",
+    "final": "El kernel es el componente principal del sistema operativo que gestiona el hardware y las aplicaciones.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t20",
+    "request": "para qué lo necesita el PC",
+    "terminal": "published_final",
+    "final": "¿Para qué necesita el PC para ejecutar tareas específicas?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t21",
+    "request": "¿y cuándo conviene usarlo?",
+    "terminal": "published_final",
+    "final": "¿Cuándo conviene usar el kernel para tareas específicas en el PC?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

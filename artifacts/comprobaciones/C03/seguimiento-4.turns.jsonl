@@ -1,0 +1,24 @@
+{"cmd": "turn", "text": "explícame qué es la latencia de red en una frase"}
+{"cmd": "turn", "text": "¿por qué importa?"}
+{"cmd": "turn", "text": "explain what DNS caching is in one sentence"}
+{"cmd": "turn", "text": "why does it matter?"}
+{"cmd": "turn", "text": "explícame qué es un proxy en una frase"}
+{"cmd": "turn", "text": "¿y para qué sirve?"}
+{"cmd": "turn", "text": "explain what a VPN is in one sentence"}
+{"cmd": "turn", "text": "and why does it matter?"}
+{"cmd": "turn", "text": "explícame qué es un router en una frase"}
+{"cmd": "turn", "text": "¿y para qué se usa?"}
+{"cmd": "turn", "text": "what is a core dump in one sentence"}
+{"cmd": "turn", "text": "qué es una herramienta de red, una frase"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "explícame qué es la caché, una frase"}
+{"cmd": "turn", "text": "¿por qué importa?"}
+{"cmd": "turn", "text": "y eso cómo se usa"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "explain what a firewall is in one sentence"}
+{"cmd": "turn", "text": "why does it matter?"}
+{"cmd": "turn", "text": "what would I use it for at home"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "qué es el kernel, una frase"}
+{"cmd": "turn", "text": "para qué lo necesita el PC"}
+{"cmd": "turn", "text": "¿y cuándo conviene usarlo?"}

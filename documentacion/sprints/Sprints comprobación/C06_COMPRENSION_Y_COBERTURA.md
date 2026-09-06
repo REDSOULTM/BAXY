@@ -1,8 +1,8 @@
 # C06 — Entender peticiones nuevas sin perder cobertura
 
-**Ejecutable: Grok 4.6 High; contexto de 500K; un solo goal persistente.**
+**Ejecutable: Grok 4.6 High; un goal con tramos reanudables.**
 Predecesor: C05 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
-[protocolo 500K](02_PROTOCOLO_GROK_46_500K.md).
+[protocolo vigente](../00_PROTOCOLO_EJECUCION.md).
 
 ## Objetivo
 
@@ -16,6 +16,14 @@ Filas propias G03/G03B/G03C, puerta de dominio de G04 y casos R01/R02/R05/R11/R1
 Mapa de comprensión/herencia, libro de cobertura y rechazos medidos. Después,
 router, family_classifier, semantic_family_arbiter, catálogo, argumentos y
 fronteras que muestre la traza; no empieces añadiendo otro router.
+
+## Tramos de ejecución
+
+A: baseline y contrato/argumentos del modelo promovido en C03. B: una causa de
+pérdida por ventana, hasta 20 casos. C: memoria/privacidad. D: las tres corridas
+preregistradas, bancos, cobertura y cierre. No cargues los 480 casos al chat.
+Si falla una aceptación, conserva el intento y su causa; no relances tres
+corridas enteras antes de resolver el panel diagnóstico.
 
 ## Trabajo
 

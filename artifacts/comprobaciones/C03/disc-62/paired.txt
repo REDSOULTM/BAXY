@@ -1,0 +1,18 @@
+n=16 published=15 composition_failed=0 other=1
+
+001	published_final	Buenos días	Buenos días
+002	published_final	qué sabes hacer en este PC	Lo que puedes hacer es abrir y cerrar programas, leer la hora y leer el audio.
+003	published_final	Hi there	Hello
+004	published_final	What are you able to do on this machine	I can open and close apps, read the clock, and read audio.
+005	published_final	mail a parcel to Phobos	I cannot perform this task.
+006	published_final	clock please	07:48
+007	published_final	close that	Which document or window should I close?
+008	published_final	are you connected?	Yes, the PC is online.
+009	filtered	What will you never do	composer_unavailable
+010	published_final	don't launch Notepad	I will not launch Notepad.
+011	published_final	tell the time in English	The time is 07:50.
+012	published_final	traduce 'good morning' al español, nada más	Buenos días.
+013	published_final	keep going without opening apps	No abriré apps y seguiré sin abrirlas.
+014	published_final	just say hi	Hi.
+015	published_final	what is a time zone, one line	A time zone is the region where clocks are set the same to keep synchronized time.
+016	published_final	Why do clocks differ by city	Clock differences between cities arise because time zones are based on geographic longitude and standardize local time for consistency, not because of city-specific rules. Cities in the same time zone share the same clock, while those in different zones differ due to Earth’s rotation.

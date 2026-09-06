@@ -46,9 +46,11 @@ public sealed class MindShellEndToEndTests
     {
         await WithContractMindAsync(async (viewModel, _, tracePath) =>
         {
+            // Con la composición puenteada se publica el borrador de hechos:
+            // C03 retiró las frases fijas de TurnVisibleFacts.
             Assert.That(
                 await SubmitAsync(viewModel, "Hola"),
-                Is.EqualTo("¡Hola! Estoy aquí para ayudarte."));
+                Does.Contain("\"kind\":\"welcome\""));
             Assert.That(
                 await SubmitAsync(viewModel, "Explícame la fotosíntesis"),
                 Does.Contain("convierte luz"));
@@ -68,7 +70,8 @@ public sealed class MindShellEndToEndTests
                 .ToArray();
             Assert.Multiple(() =>
             {
-                Assert.That(turns, Has.Length.EqualTo(5));
+                // «Hola» se reconoce como saludo en el shell y no gasta turno.
+                Assert.That(turns, Has.Length.EqualTo(4));
                 Assert.That(
                     trace,
                     Has.None.Matches<JsonElement>(static entry =>
@@ -151,7 +154,8 @@ public sealed class MindShellEndToEndTests
                 .ToArray();
             Assert.Multiple(() =>
             {
-                Assert.That(turns, Has.Length.EqualTo(3));
+                // La hora se encamina de forma determinista y no gasta turno.
+                Assert.That(turns, Has.Length.EqualTo(2));
                 Assert.That(time, Does.Contain("system.time"));
                 Assert.That(time, Does.Contain("\"polarity\":\"success\""));
                 Assert.That(plan, Does.Contain("mission_completed"));
@@ -161,7 +165,6 @@ public sealed class MindShellEndToEndTests
                     Is.EqualTo(new[]
                     {
                         "Haz eso",
-                        "Dime la hora actual",
                         "Dime la hora y revisa la CPU",
                     }));
                 Assert.That(
@@ -216,19 +219,22 @@ public sealed class MindShellEndToEndTests
     }
 
     [Test]
-    public async Task SafeArgumentFreeActionTraversesTurnDecisionAndRealCore()
+    public async Task SafeArgumentFreeClockRequestReachesTheRealCoreWithoutATurn()
     {
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
         {
             string answer = await SubmitAsync(viewModel, "Dime la hora actual");
 
             JsonElement[] trace = ReadTrace(tracePath);
-            JsonElement decision = trace.Single(static entry =>
-                Property(entry, "type") == "turn.decide"
-                && Property(entry, "text") == "Dime la hora actual");
             Assert.Multiple(() =>
             {
-                Assert.That(Property(decision, "text"), Is.EqualTo("Dime la hora actual"));
+                // La hora tiene encaminamiento determinista: no pide decisión
+                // al modelo y aun así pasa por el Core real.
+                Assert.That(
+                    trace,
+                    Has.None.Matches<JsonElement>(static entry =>
+                        Property(entry, "type") == "turn.decide"
+                        && Property(entry, "text") == "Dime la hora actual"));
                 Assert.That(
                     trace,
                     Has.None.Matches<JsonElement>(static entry =>

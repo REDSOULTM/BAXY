@@ -1,0 +1,11 @@
+n=9 published=9 other=0
+
+001	t1	published_final	what is a subnet mask in one sentence	A subnet mask divides an IP address into network and host portions, determining which part of the address identifies the network and which identifies the specific device.
+002	t2	published_final	what are your limits on this PC	I only do the work of this PC and nothing beyond it.
+003	t3	published_final	cuáles son tus límites aquí	Solo hago lo que este PC programa y nada más, en esta situación.
+004	t4	published_final	qué no puedes hacer en este PC	Solo hago lo que este PC permite y nada más.
+005	t5	published_final	qué te niegas a hacer aquí	Soy solo el programa de esta PC y no hago nada más.
+006	t6	published_final	hi, what do you handle on this PC	I can help you with basic tasks like opening and closing applications, moving and focusing windows, reading and setting the audio, checking the clock and PC state, taking notes, and keeping track of tasks. Let me know what you'd like to do on your PC.
+007	t7	published_final	what do you not do here	I only do the work of this PC and nothing beyond it.
+008	t8	published_final	what is the capital of Peru	The capital of Peru is Lima.
+009	t9	published_final	keep talking without launching anything	What would you like to know about Lima, Peru?

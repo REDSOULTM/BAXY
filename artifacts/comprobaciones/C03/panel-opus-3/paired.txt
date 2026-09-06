@@ -1,0 +1,46 @@
+n=44 published=38 other=6
+
+001	t1	published_final	Good afternoon	Hello hi!
+002	t2	published_final	define DNS in one sentence	DNS stands for Domain Name System, a system that maps human-readable domain names to IP addresses.
+003	t3	published_final	Hi again	Hi there!
+004	t4	published_final	Good evening	Hello hi!
+005	t5	published_final	explain what a firewall is in one sentence	A firewall is a security device that monitors and controls incoming and outgoing network traffic based on addresses, ports, or application protocols.
+006	t6	published_final	explícame qué es un cortafuegos en una frase	Un cortafuegos es un programa que protege el equipo de internet filtrando y bloqueando tráfico malicioso según reglas específicas.
+007	t7	published_final	hey, what can you do on this PC	I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.
+008	t8	composition_failed	hola, ¿qué puedes hacer en este PC?	composition_failed
+009	t9	published_final	traduce 'good evening' al español, nada más	Buenas noches.
+010	t10	published_final	What time is it?	It is 11:44.
+011	t11	published_final	Dime la hora y el volumen.	Hoy la hora es 11:44 y el volumen es 50, mudo es activo.
+012	t12	published_final	are you connected?	Yes, the PC is online.
+013	t13	published_final	¿este equipo tiene conexión?	El PC está online.
+014	t14	composition_failed	don't open Paint	composition_failed
+015	t15	published_final	no abras la Calculadora ahora	No abro la Calculadora ahora.
+016	t16	published_final	close that	¿Quieres que cierres la ventana?
+017	t17	composition_failed	qué no haces, una frase	composition_failed
+018	t18	composition_failed	what will you never do on this PC	composition_failed
+019	t19	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda una señal en viajar de un lugar a otro y llegar al destino.
+020	t20	published_final	¿por qué importa?	Porque la comprensión ayuda a resolver problemas y tomar decisiones más claras y eficientes.
+021	t21	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names to speed up future lookups.
+022	t22	published_final	why does it matter?	Caching reduces time spent on repeated lookups, which saves resources.
+023	t23	published_final	post a letter to Eris	I cannot post a letter to Eris as requested.
+024	t24	published_final	reserva una mesa en Titán	No puedo ayudar con esa solicitud.
+025	t25	published_final	book a shuttle to Callisto	I cannot book a shuttle to Callisto as requested.
+026	t26	published_final	keep chatting without opening apps	I'll keep chatting with you without using any apps.
+027	t27	published_final	sigue charlando sin abrir programas	No abriré programas y seguiré charlando en español.
+028	t28	published_final	what can you do here	I can open and close apps, move and focus windows, read and set the audio, or keep tasks. There are other things too.
+029	t29	published_final	qué sabes hacer en este equipo	Sé capaz de abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, y verificar la hora y el estado del equipo. Hay otras cosas también.
+030	t30	composition_failed	what will you never do	composition_failed
+031	t31	published_final	explain what a VPN is in one sentence	A VPN (Virtual Private Network) encrypts your internet connection, allowing you to securely access networks like public Wi‑Fi.
+032	t32	published_final	why does it matter?	Encryption keeps your data hidden from hackers.
+033	t33	published_final	explícame qué es un proxy en una frase	Un proxy actúa como intermediario que redirige solicitudes y envía el resultado al destino original.
+034	t34	published_final	¿y por qué se usa?	Un proxy sirve para dirigir solicitudes y gestionar el flujo de datos hacia el servicio original.
+035	t35	published_final	no abras Word ahora	No voy a abrir Word ahora.
+036	t36	published_final	¿tiene conexión este equipo?	El equipo está online.
+037	t37	composition_failed	what do you not do here	composition_failed
+038	t38	published_final	qué no puedes hacer en este PC	¿Qué tipo de conexión específica desea verificar en este equipo?
+039	t39	published_final	sigue hablando sin abrir nada	No abriré ninguna aplicación y seguiré hablando en español.
+040	t40	published_final	keep talking without launching anything	I’m listening and will continue in English as requested.
+041	t41	published_final	open it	What would you like to do or discuss next?
+042	t42	published_final	ábreme eso	¿De qué cosa necesitas que te abra o qué acción específica quieres realizar?
+043	t43	published_final	cuánto es doce por ocho	Doce por ocho es 96.
+044	t44	published_final	what is the capital of Peru	The capital of Peru is Lima.

@@ -1,7 +1,9 @@
 # Sprints comprobación — recuperar el cumplimiento de 01–09
 
-**Plan nuevo y separado. Estado: preparado; ningún goal ejecutado.**
-Destino: Grok 4.6, esfuerzo High, ventana de contexto de 500K.
+**Campaña en ejecución. C01/C02 cerrados; C03 en curso al revisar el 2026-09-04.**
+Estado vivo: [checkpoint](05_ESTADO_Y_CONTINUACION.md).
+Replanteamiento inmediato: [mensaje para C03](07_REPLANTEAR_C03.md).
+Destino: Grok 4.6 High; tramos pequeños según el [protocolo](../00_PROTOCOLO_EJECUCION.md).
 Esta campaña se intercala antes de continuar el Goal 10 original.
 
 ## Resultado exigido
@@ -12,9 +14,9 @@ exige pruebas de conducta por la misma entrada de producto del usuario, efectos
 observados y respuestas finales correctas. Un informe histórico o Full verde por
 sí solo no habilita el 10.
 
-La autorización actual es escribir este plan. Los siguientes archivos son prompts
-para ejecutarlos posteriormente, un solo Cxx activo por sesión; un Cxx puede
-continuar en varias sesiones sucesivas. Crear el plan no ejecuta reparaciones.
+La revisión actual modifica el plan; Grok continúa la implementación C03.
+Un solo Cxx activo, reanudable entre sesiones; no hay dos escritores de producto.
+No se reinician C01/C02 ni se hereda un pass contradicho por evidencia posterior.
 
 ## Orden de ejecución
 
@@ -39,8 +41,8 @@ actual no se aplaza para poder lanzar la siguiente.
 ## Cómo lanzar
 
 En una sesión nueva, selecciona Grok 4.6 y High, abre este repositorio en main y
-pega entero el Cxx correspondiente como objetivo persistente. El primer prompt es
-C01. Cada Cxx incorpora por referencia el [contrato de campaña](01_CONTRATO_DE_CAMPANA.md)
+pega entero el Cxx correspondiente como objetivo persistente. El siguiente pendiente de esta máquina es
+C03; en otra copia comprueba el checkpoint. Cada Cxx incorpora por referencia el [contrato de campaña](01_CONTRATO_DE_CAMPANA.md)
 y el [protocolo Grok](02_PROTOCOLO_GROK_46_500K.md): forman parte de sus instrucciones.
 
 Si cambias de agente o cuenta, conserva la misma carpeta de trabajo y retoma el
@@ -66,10 +68,13 @@ commit b2505da. Sus seis turnos son regresiones conocidas, no un examen suficien
 El informe registró Full rojo, respuesta falsa de la hora y secuestro de turnos
 por un app.open incierto. C02 vuelve a medir el árbol que encuentre.
 
-## Frontera con el Goal 10
+## Frontera con el Goal 10 y producto final
 
 Esta campaña restaura prerrequisitos; no declara cumplidos los objetivos propios
 de uso diario, familias y 200 turnos de 10.18. Sólo C09 puede habilitar retomarlos.
 Una limitación medida, un entorno pendiente o un criterio no ejecutado mantiene
 **NO_LISTO**. Los cierres anteriores quedan como historia; no se borran ni se usan
 para omitir la reparación.
+
+El cierre de 11 entrega un candidato validado. La [fase 12](../12_PRODUCTO_FINAL.md)
+certifica instalación, hardware objetivo y entrega antes de declarar BAXY definitivo.

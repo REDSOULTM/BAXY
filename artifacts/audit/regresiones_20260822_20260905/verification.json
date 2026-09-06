@@ -1,0 +1,17 @@
+{
+  "scope": "historical pure-code reproduction, not E2E or a C03 acceptance",
+  "passed": 9,
+  "failed": 0,
+  "checks": {
+    "old_narrator_converts_utc": true,
+    "old_policy_requires_real_time": true,
+    "old_policy_rejects_wrong_time": true,
+    "first_change_loses_required_time": true,
+    "first_change_accepts_wrong_time_at_csharp_boundary": true,
+    "end_goal09_accepts_wrong_time_at_csharp_boundary": true,
+    "actual_contract_lacks_local_time_aug23_sep02": true,
+    "sample_contract_has_local_time_aug23_sep02": true,
+    "language_defect_predates_goal06": true
+  },
+  "tested_dotnet_project": "C:/Users/usuario/AppData/Local/Temp/baxy-history-pure-qcx5mojd/Probe.csproj"
+}

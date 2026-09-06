@@ -1,0 +1,19 @@
+# disc-28
+n=16 published=16 composition_failed=0 other=0
+
+001	published_final	Hola, buenas	Hola! ¿Cómo estás?
+002	published_final	qué puedes hacer en este equipo	Puedo ejecutar comandos, abrir programas y ayudarte con tareas en este equipo.
+003	published_final	Hey	Hey! ¿En qué puedo ayudarte?
+004	published_final	What can you do here	I can run system diagnostics, check hardware status, manage processes, and help with basic troubleshooting tasks.
+005	published_final	book a room on Deimos	No puedo reservar habitaciones en Deimos.
+006	published_final	time check	I see the time check was seen at 01:27.
+007	published_final	open that	What would you like to open?
+008	published_final	online?	No puedo ayudar con la solicitud actual.
+009	published_final	What will you refuse to do	I am BAXY and I am present on the PC.
+010	published_final	don't open Steam	I don't do that.
+011	published_final	tell the time in English	The current time is 01:29.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	Hi!
+015	published_final	define huso horario, una frase	El huso horario es la diferencia de tiempo entre dos ubicaciones en el planeta Tierra, generalmente expresada como “X horas adelante” o “X horas atrás” según la diferencia de longitud de meridiano. Por ejemplo, si un lugar está 5 horas más adelante que otro, se dice que el huso horario es +5 horas. Esto afecta el tiempo de reloj local y se usa para sincronizar horarios en zonas diferentes.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias nos permiten coordinar el tiempo de forma consistente en todo el mundo, evitando confusiones y facilitando el enlace entre diferentes regiones.

@@ -1,0 +1,18 @@
+n=16 published=14 composition_failed=2 other=0
+
+001	published_final	solo un hola	Hola,.
+002	published_final	un saludo corto	Hola, saludo corto y masculino.
+003	published_final	qué no haces, una frase	No abres programas.
+004	published_final	qué no haces en este PC, sin abrir nada	En este PC no hagas nada sin abrir programas.
+005	composition_failed	Buenos días, compa	composition_failed
+006	published_final	Dime la hora y el volumen.	La hora es 08:48 y el volumen es el nombre del número local, el estado de mute es falso.
+007	published_final	post a letter to Eris	¿Puedes escribir una carta a Eris y especificar el contenido o detalles específicos que deseas incluir?
+008	published_final	don't open Paint	I will not open Paint.
+009	composition_failed	Good afternoon	composition_failed
+010	published_final	no abras nada ahora	Escriba una frase en español que describa brevemente los hechos del turno.
+011	published_final	Hi again	¿Qué acción específica desea realizar en este turno?
+012	published_final	are you connected?	Yes, the PC is online.
+013	published_final	keep chatting without opening apps	I won't open any apps for you.
+014	published_final	What time is it?	The current time is 08:49.
+015	published_final	define DNS in one sentence	DNS es un sistema que mapea nombres de dominio a direcciones IP en internet.
+016	published_final	hey, what can you do on this PC	I can open and close apps, read the clock, and read audio on this PC.

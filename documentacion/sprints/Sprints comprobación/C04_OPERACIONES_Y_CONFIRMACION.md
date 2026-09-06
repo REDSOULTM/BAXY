@@ -1,8 +1,8 @@
 # C04 — Lo pedido ocurre, se verifica y se autoriza correctamente
 
-**Ejecutable: Grok 4.6 High; contexto de 500K; un solo goal persistente.**
+**Ejecutable: Grok 4.6 High; un goal con tramos reanudables.**
 Predecesor: C03 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
-[protocolo 500K](02_PROTOCOLO_GROK_46_500K.md).
+[protocolo vigente](../00_PROTOCOLO_EJECUCION.md).
 
 ## Objetivo
 
@@ -16,6 +16,14 @@ Filas G05, modos de G04 e Identidad. Casos R02/R03/R08/R09/R12/R15.
 ProductCatalog, RiskPolicy, handlers Core, providers Windows y autoridad de
 confirmación. Lee la matriz histórica del 05 y la revalidación 09.5.11B como
 inventario; su contador ClassifyCatalog no es evidencia de efectos físicos.
+
+## Tramos de ejecución
+
+A: inventario/preflight y regresión Calculadora. B: una familia de providers
+por ventana, hasta 20 escenarios nuevos sin cortar secuencias. C: confirmación,
+efecto incierto y recuperación. D: unión de todo el catálogo y cierre.
+Conserva todos los IDs; un terminal honesto de fracaso no acredita que una
+operación realizable funcione. La matriz distingue ambas cosas.
 
 ## Trabajo
 

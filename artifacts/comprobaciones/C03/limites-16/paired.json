@@ -1,0 +1,191 @@
+[
+  {
+    "turnId": "t1",
+    "request": "what is a subnet mask in one sentence",
+    "terminal": "published_final",
+    "final": "A subnet mask divides an IP address into network and host portions, determining which part of the address identifies the network and which identifies the specific host.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "what are your limits on this PC",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "cuáles son tus límites aquí",
+    "terminal": "published_final",
+    "final": "¿Qué es una subnet mask y cómo se usa?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "qué no puedes hacer en este PC",
+    "terminal": "published_final",
+    "final": "¿Qué específicamente no puedes hacer en esta PC según las reglas de seguridad de BAXY?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t5",
+    "request": "qué te niegas a hacer aquí",
+    "terminal": "published_final",
+    "final": "¿Qué acción específica te niega la política de seguridad de BAXY en este entorno?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t6",
+    "request": "hi, what do you handle on this PC",
+    "terminal": "published_final",
+    "final": "Can you tell me what specific tasks or problems you're trying to solve on this PC?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t7",
+    "request": "what do you not do here",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only do the work of this PC and nothing beyond it."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "keep talking without launching anything",
+    "terminal": "published_final",
+    "final": "What would you like to know about Lima, Peru?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

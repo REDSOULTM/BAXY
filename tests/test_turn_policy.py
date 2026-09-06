@@ -21,6 +21,7 @@ from baxy_mind import effect_intent as effect_intent_module
 from baxy_mind import llm as llm_module
 from baxy_mind import protocol
 from baxy_mind.__main__ import (
+    _recovery_question_is_valid,
     ARGUMENT_REQUEST_BUDGET_SECONDS,
     CATALOG_LLM_WARMUP_SECONDS,
     CATALOG_REQUEST_BUDGET_SECONDS,
@@ -1117,9 +1118,12 @@ def test_assistant_preference_question_is_conversation_not_a_task_action() -> No
             "en",
         ),
         (
+            # Spanglish real: el lexicón anterior no reconocía «this» ni
+            # «computer» y lo daba por español. La lectura única lo conserva
+            # como mezcla, que es lo que pide el contrato de idioma.
             "Baxy, haz this: tengo una quick question, sin computer action: abre Spotify",
             "knowledge",
-            "es",
+            "mixed",
         ),
         (
             "I want it to be able to tell me statistics about things it has done for me.",
@@ -3756,7 +3760,9 @@ def test_outer_action_veto_reuses_valid_language_and_retries_only_failure(
     result = _prepare_turn_result(
         {
             "id": "turn-veto",
-            "text": "¿Cómo está la red neuronal?",
+            # Sin evidencia de idioma la lectura se abstiene, y es entonces
+            # cuando la inferencia diferida decide.
+            "text": "Red neuronal",
         },
         llm=DeferredLlm(),
         planner_catalog=catalog,
@@ -3770,6 +3776,102 @@ def test_outer_action_veto_reuses_valid_language_and_retries_only_failure(
     assert DeferredLlm.consumed == 1
     assert DeferredLlm.detected == (1 if deferred_language is None else 0)
     assert DeferredLlm.retired == 0
+    assert result["responseLanguage"] == (
+        deferred_language if deferred_language is not None else "en"
+    )
+
+
+def test_a_decisive_request_language_does_not_ask_the_model() -> None:
+    """La lectura del pedido es el owner: sin duda, no se consulta al modelo.
+
+    El detector contestaba en español a «post a letter to Eris», y el shell
+    publicaba esa respuesta porque venía de la mente. Ahora el idioma lo fija
+    la misma lectura con la que se redacta y se valida.
+    """
+
+    class DecidedLlm:
+        consumed = 0
+        detected = 0
+        retired = 0
+
+        @staticmethod
+        def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
+            return {
+                "mode": "conversation",
+                "operation": None,
+                "question": "",
+                "conversation_kind": "knowledge",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": "es",
+            }
+
+        @staticmethod
+        def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
+            return "no_effect", "zero"
+
+        @classmethod
+        def consume_deferred_response_language(
+            cls,
+            _text: str,
+        ) -> tuple[bool, str | None]:
+            cls.consumed += 1
+            return True, "es"
+
+        @classmethod
+        def retire_deferred_response_language(cls, _text: str) -> None:
+            cls.retired += 1
+
+        @classmethod
+        def detect_response_language(cls, _text: str) -> str:
+            cls.detected += 1
+            return "es"
+
+        @staticmethod
+        def chat(*_args: object, **kwargs: object) -> tuple[str, list[object]]:
+            assert kwargs["response_language"] == "en"
+            return "That is outside what I do on this PC.", []
+
+    class NoEvidenceService:
+        @staticmethod
+        def candidate_families(_text: str, _encoder: object) -> tuple[str, ...]:
+            return ()
+
+        @staticmethod
+        def retrieve(*_args: object, **_kwargs: object) -> list[object]:
+            return []
+
+    tool = {
+        "type": "function",
+        "function": {
+            "name": "network_status",
+            "canonical_name": "network.status",
+            "description": "Read the current network status.",
+            "risk": "read_only",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+    result = _prepare_turn_result(
+        {"id": "turn-decided", "text": "post a letter to Eris"},
+        llm=DecidedLlm(),
+        planner_catalog=PlannerCatalog([tool]),
+        turn_evidence=NoEvidenceService(),
+        encoder=lambda _texts: (),
+        tool_by_name={"network.status": tool},
+    )
+
+    assert result["kind"] == "conversation"
+    assert result["responseLanguage"] == "en"
+    assert DecidedLlm.detected == 0
+    assert DecidedLlm.consumed == 0
+    assert DecidedLlm.retired == 1
 
 
 def test_outer_final_action_cancels_deferred_language_only_after_all_vetoes() -> None:
@@ -9008,11 +9110,16 @@ def test_turn_failure_clarification_is_candidate_free_and_schema_closed() -> Non
     assert captured["timeout"] == 2.5
     payload = captured["payload"]
     assert isinstance(payload, dict)
+    # Idioma y trato de la pregunta viajan como contrato de sistema.
     assert [message["role"] for message in payload["messages"]] == [
+        "system",
+        "system",
         "system",
         "assistant",
         "user",
     ]
+    assert "español" in payload["messages"][1]["content"]
+    assert "de tú" in payload["messages"][2]["content"]
     schema = payload["response_format"]["json_schema"]["schema"]
     assert set(schema["properties"]) == {"question"}
     assert schema["required"] == ["question"]
@@ -10629,3 +10736,35 @@ def test_a_closed_refusal_asks_the_catalogue_before_it_speaks() -> None:
     )
     assert mind_main._catalog_answers_the_request(*arguments, Refuses(), ()) == ""
     assert mind_main._catalog_answers_the_request(*arguments, object(), ()) == ""
+
+
+def test_a_recovery_clarification_asks_about_the_current_request() -> None:
+    """Medido en panel-opus-10 (t52, t66, t67) y conocimiento-1 (t2).
+
+    Tras fallar un turno, la pregunta de recuperación devolvía la petición del
+    turno anterior o nombraba el vocabulario del encargo. Ninguna de las dos
+    aclara nada, y las dos se publicaban como respuesta del turno.
+    """
+
+    history = [
+        {"role": "user", "content": "explícame qué es un firewall de red en una frase"},
+        {"role": "assistant", "content": "Un firewall de red protege una red."},
+        {"role": "user", "content": "what does a load balancer do, one sentence"},
+    ]
+
+    assert not _recovery_question_is_valid(
+        "¿Qué es un firewall de red en una frase?",
+        "what does a load balancer do, one sentence",
+        history,
+    )
+    assert not _recovery_question_is_valid(
+        "¿Puedes confirmar si el mensaje actual es un pedido para explicar algo?",
+        "what does a load balancer do, one sentence",
+        history,
+    )
+    assert _recovery_question_is_valid(
+        "¿Qué quieres que haga con el balanceador de carga?",
+        "what does a load balancer do, one sentence",
+        history,
+    )
+    assert _recovery_question_is_valid("¿Qué acción concreta quieres que haga?")

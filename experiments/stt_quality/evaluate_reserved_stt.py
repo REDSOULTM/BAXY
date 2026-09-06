@@ -49,10 +49,28 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C01 2026-09-03: tree drifted when scripts/goal095_09512_integrate.py was
 # updated after the previous pin. C02 must revalidate historical campaign
 # hashes against this tree; the corpora and engines are unchanged.
-# C03 2026-09-04: tree drifted when USER_MESSAGE_PROMPT dropped the copied
-# «no pude usar esa respuesta» example. Corpora and engines are unchanged.
+# C03 2026-09-04: tree drifted when public compose gained a Granite 4.2
+# sampling/prompt profile. Corpora and engines are unchanged.
+# C03 2026-09-05: empty-seen English compose no longer asks to name seen.
+# C03 2026-09-05: identity-on-clock extra_claim no longer matches «time zone».
+# C03 2026-09-05: Granite compose dropped «vive en el PC» / first-person-if-acted.
+# C03 2026-09-05: clock+audio extras name both facts, not only the clock.
+# C03 2026-09-05: continue-with-constraint compose sends situation facts only.
+# C03 2026-09-05 (Opus): el árbol se movió al añadir
+# src/baxy_mind/request_reading.py (lectura única del pedido), delegar en
+# ella llm.py y __main__.py, y añadir dos ficheros de entrada al censo de
+# prosa. Corpus, motores y hashes STT/TTS/wake del runtime registrado no
+# cambian: esta actualización no afirma una medida de voz nueva.
+# C03 2026-09-05 (Opus): el censo de prosa visible salta los docstrings de
+# Python, como ya saltaba los comentarios. Corpus, motores y hashes
+# STT/TTS/wake del runtime registrado no cambian: esta actualización no
+# afirma una medida de voz nueva.
+# C03 2026-09-05 (Opus): el compositor recibe el tema de un seguimiento
+# elíptico y una explicación no puede ser sólo otra pregunta. Corpus,
+# motores y hashes STT/TTS/wake del runtime registrado no cambian: esta
+# actualización no afirma una medida de voz nueva.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2c4b9cc91b968636f49fbfd04d9a04c04a55a80c013e185c1a83b1bdf2288820"
+    "18da4c94105ddf317497f64521f98712d8f1808000aa68655e1a4627927d827d"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

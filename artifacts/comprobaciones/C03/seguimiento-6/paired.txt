@@ -1,0 +1,10 @@
+n=8 published=8 other=0
+
+001	t1	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda una señal en viajar de un punto a otro en una red.
+002	t2	published_final	¿por qué importa?	Porque la importancia define por qué algo es relevante y valioso.
+003	t3	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names to speed up future lookups.
+004	t4	published_final	why does it matter?	It matters because understanding the reason helps determine appropriate actions.
+005	t5	published_final	explícame qué es un proxy en una frase	Un proxy sirve para redirigir el tráfico de internet entre un usuario y una página web.
+006	t6	published_final	¿y para qué sirve?	Para qué sirve el programa, explicarás brevemente su función.
+007	t7	published_final	explain what a VPN is in one sentence	A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote server, allowing you to browse the internet privately.
+008	t8	published_final	and why does it matter?	It matters because understanding the concept helps clarify why decisions are made and improves communication.

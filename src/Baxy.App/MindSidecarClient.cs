@@ -33,6 +33,13 @@ internal sealed record MindTurnDecision(
     /// conversational turn cannot poison later dialogue context.
     /// </summary>
     public bool PreserveObjective { get; init; } = true;
+
+    /// <summary>
+    /// Language the mind actually wrote <see cref="Reply"/> in, as reported by
+    /// the mind. The shell never re-derives it: a second reading here is what
+    /// vetoed an English greeting composed as Spanish and left the turn silent.
+    /// </summary>
+    public string? ResponseLanguage { get; init; }
 }
 
 internal sealed record MindArgumentResult(
@@ -441,6 +448,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
         string question = (string?)reply["question"] ?? string.Empty;
         string response = (string?)reply["reply"] ?? string.Empty;
+        string? responseLanguage = (string?)reply["responseLanguage"] is { } language
+            && language is "es" or "en" or "mixed"
+                ? language
+                : null;
         if (!TryParsePreserveObjective(reply, out bool preserveObjective))
         {
             return null;
@@ -483,6 +494,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             {
                 IntentOperations = intentOperations,
                 PreserveObjective = preserveObjective,
+                ResponseLanguage = responseLanguage,
             }
             : null;
     }

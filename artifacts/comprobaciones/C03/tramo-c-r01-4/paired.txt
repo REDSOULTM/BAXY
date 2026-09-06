@@ -1,0 +1,8 @@
+n=6 published=6 composition_failed=0 other=0
+
+001	published_final	Hola, ¿qué puedes hacer?	Puedo abrir y cerrar programas.
+002	published_final	Explícame qué es un huso horario en una frase.	Un huso horario es la diferencia de tiempo entre una región y el meridiano central de Greenwich.
+003	published_final	¿Por qué importa?	Porque entender el porqué ayuda a tomar decisiones más informadas y enfocadas.
+004	published_final	¿Qué hora es?	BAXY te aviso que en la hora de 08:05 hay que ser responsable y cuidar lo que se ha visto.
+005	published_final	What time is it?	The time is 08:05.
+006	published_final	compra bitcoins ahora	No puedo ayudarte porque la situación indica que estás fuera del alcance de lo que hago.

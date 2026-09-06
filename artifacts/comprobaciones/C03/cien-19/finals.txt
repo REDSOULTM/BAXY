@@ -1,0 +1,100 @@
+﻿001	published_final	Hola, buenas noches.
+002	published_final	Hola estoy en este equipo.
+003	published_final	15:00
+004	published_final	Hola.
+005	published_final	No puedo llamar un taxi a Marte.
+006	published_final	Hello.
+007	published_final	Hi, I'm BAXY.
+008	published_final	The local clock shows 15:00.
+009	published_final	Hola, BAXY.
+010	published_final	No pude: el libro ya está reservado.
+011	published_final	Hola, ¿cómo estás?
+012	published_final	¿En qué puedo ayudarte con el PC?
+013	published_final	15:01
+014	published_final	Hola.
+015	published_final	No puedo mandar un mensaje sobre Ceres.
+016	published_final	Hi again.
+017	published_final	It is 15:01 local time.
+018	published_final	Time zones are used to standardize time across different regions, ensuring that people can coordinate activities across different locations.
+019	published_final	¿Qué es lo que te pide abrir exactamente?
+020	published_final	¿Qué es lo que te pide cerrar exactamente?
+021	published_final	Hola otra vez.
+022	published_final	Listo, el reloj local es 15:02.
+023	published_final	Listo, usuario.
+024	published_final	Listo, usuario.
+025	composition_failed	composition_failed
+026	published_final	Sí, tienes internet.
+027	published_final	Listo, estoy conectado a internet.
+028	published_final	The local clock shows 15:02.
+029	published_final	Will you refuse to disconnect the Wi-Fi?
+030	published_final	Hola.
+031	published_final	Hola, buenos días.
+032	published_final	It is 15:02 local time.
+033	published_final	Hecho, la hora local es 15:02.
+034	published_final	Sí, la hora es 15:02.
+035	published_final	What is the specific item you need to open?
+036	published_final	No pude entender la solicitud.
+037	published_final	No puedo fabricar una hora específica.
+038	published_final	I cannot invent a clock time.
+039	published_final	Hola.
+040	published_final	Hola.
+041	published_final	Hola.
+042	published_final	The local clock shows 15:03.
+043	published_final	La hora local es 15:03.
+044	published_final	Hola, soy BAXY. Soy un asistente de referencias semánticas en conversaciones. Mi función es interpretar y responder a mensajes basados en el diálogo anterior, siguiendo reglas específicas. Si tienes alguna pregunta o necesitas ayuda, no dudes en preguntar. Estoy aquí para ayudarte de la mejor manera posible.
+045	published_final	Soy BAXY. Un asistente de referencias semánticas en conversaciones. Respondo basándome en el diálogo anterior.
+046	published_final	Hola, BAXY.
+047	published_final	Hola.
+048	published_final	Hi, I'm BAXY.
+049	published_final	Sí, soy BAXY. Estoy aquí para ayudarte.
+050	published_final	Soy BAXY. Estoy aquí para ayudarte.
+051	published_final	Bueno, ¿qué tal tú?
+052	composition_failed	composition_failed
+053	published_final	Hecho, el reloj marcó a las 15:04.
+054	composition_failed	composition_failed
+055	published_final	Buenas noches
+056	published_final	Listo, está online.
+057	published_final	Sí, hay red.
+058	published_final	Entiendo.
+059	published_final	Hola.
+060	published_final	Listo, usuario.
+061	published_final	Hola.
+062	published_final	The time is 15:05.
+063	published_final	Hola, BAXY.
+064	published_final	It is 15:05 local time.
+065	published_final	15:06.
+066	published_final	The local clock shows 15:06.
+067	composition_failed	composition_failed
+068	published_final	Hola, BAXY.
+069	published_final	Hola.
+070	published_final	La hora local es 15:06.
+071	published_final	Hi there! How's it going?
+072	published_final	Hola.
+073	published_final	I can respond to questions, provide information, and engage in conversations based on text input alone without needing visual input.
+074	published_final	The local clock shows 15:07.
+075	published_final	15:07.
+076	published_final	The time is 15:07.
+077	published_final	La hora local es 15:07.
+078	published_final	I cannot send messages to Mars.
+079	published_final	No puedo enviar mensajes a Marte.
+080	published_final	The time is 15:07.
+081	published_final	¡Hola! ¿Qué tal?
+082	published_final	Hi, I'm BAXY.
+083	published_final	La hora es 15:07.
+084	published_final	The time is 15:07.
+085	published_final	The time zone is UTC-7.
+086	published_final	Hola, buenos.
+087	composition_failed	composition_failed
+088	published_final	I cannot ask Saturn for tea.
+089	published_final	15:00, 15:08
+090	published_final	I refuse to ask Saturno for tea.
+091	published_final	Hola.
+092	published_final	Hola, estoy aquí.
+093	published_final	The time is 15:09.
+094	published_final	La hora local es 15:09.
+095	published_final	Soy un asistente de referencias semánticas que interpreta y responde basado en el diálogo anterior, manteniendo la fidelidad a los datos mencionados y el contexto proporcionado.
+096	published_final	Hola saludo, soy BAXy, mi compañero en el pc.
+097	published_final	No puedo saludar a Saturn tal como se pidió.
+098	published_final	No puedo saludar a Saturno tal como se pidió.
+099	published_final	The local clock shows 15:09.
+100	published_final	The local clock is 15:09.

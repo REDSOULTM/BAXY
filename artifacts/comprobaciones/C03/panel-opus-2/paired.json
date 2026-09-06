@@ -1,0 +1,1727 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Good afternoon",
+    "terminal": "published_final",
+    "final": "Hello hi!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "welcome_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "271973d4979a0bdfa021f64bf7cc98f77eeffd101b3d1fbcaaf178c4b061b62f",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hi! How can I help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 9,
+        "draft_sha256": "a1ded19726fb85909341b940105103164dc138660d5f94440f138a09505e3c96",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello hi!"
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "published_final",
+    "final": "DNS is a system that maps domain names to IP addresses.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "f9ce84cfa42e8b18e093e798d579b55e82651451375342bcc6ef75f279d58c38",
+        "payload": {},
+        "draft": "DNS is a system that maps domain names to IP addresses."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Hi again",
+    "terminal": "published_final",
+    "final": "Hello!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "dc722c42cc6764f924db5b10349c12738bcdbad34dc0796745eaecd7a33450e1",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "hi, how can i help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 37,
+        "draft_sha256": "d344a6c21afb5384b1c8bd276b08dceeb3a22cbd378cc21a3d675d113afd49bd",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hi there! How can I assist you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 6,
+        "draft_sha256": "334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello!"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Good evening",
+    "terminal": "published_final",
+    "final": "Hello!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "welcome_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "271973d4979a0bdfa021f64bf7cc98f77eeffd101b3d1fbcaaf178c4b061b62f",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hi! How can I help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 6,
+        "draft_sha256": "334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello!"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explain what a firewall is in one sentence",
+    "terminal": "published_final",
+    "final": "A firewall is a security system that monitors and controls incoming and outgoing network traffic based on predetermined security rules.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": []
+  },
+  {
+    "turnId": "t6",
+    "request": "explícame qué es un cortafuegos en una frase",
+    "terminal": "published_final",
+    "final": "Un cortafuegos es un sistema que bloquea o filtra el tráfico de red según reglas de seguridad.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 96,
+        "draft_sha256": "41e98862712de5db7b6bf563ce18a7f19373e464ea105c260fb0d0f425b34c61",
+        "payload": {},
+        "draft": "Un cortafuegos es un sistema que bloquea o filtra el tráfico de red según reglas de seguridad."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "hey, what can you do on this PC",
+    "terminal": "published_final",
+    "final": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "greeting",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 135,
+        "draft_sha256": "ceff828c1fc602f1c290b1fc3c53803951475d007fcce38aaff235e0d07ff9cc",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "hola, ¿qué puedes hacer en este PC?",
+    "terminal": "published_final",
+    "final": "Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "greeting",
+          "more"
+        ],
+        "reason": "knowledge_greeting",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 125,
+        "draft_sha256": "617fbca00ba1e0c394e2a0b99daa0ff7bf68b775408a29e4bf8b5899233e98d9",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "greeting",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 146,
+        "draft_sha256": "2d9b64d99d3d3a79bdcc123e9a194e6002d5a0f88d87b2a19f837b5606b54a52",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "traduce 'good evening' al español, nada más",
+    "terminal": "published_final",
+    "final": "Buenas noches.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It is 11:22.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 12,
+        "draft_sha256": "e459ebfc77ba1a9fb8b475333c70eaa283b655383b2caa57687eac8698f2bfa7",
+        "payload": {
+          "clock": "11:22"
+        },
+        "draft": "It is 11:22."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "Dime la hora y el volumen.",
+    "terminal": "published_final",
+    "final": "Hora es 11:22, volumen es nivel 100, el estado de mudo es falso.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 64,
+        "draft_sha256": "80ce57823d6ce1f229deef7dbd0f9cbcfe88ccd91703b6da40eacfc52234c204",
+        "payload": {
+          "clock": "11:22",
+          "seen": {
+            "muted": false,
+            "level": 100
+          }
+        },
+        "draft": "Hora es 11:22, volumen es nivel 100, el estado de mudo es falso."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "are you connected?",
+    "terminal": "published_final",
+    "final": "The PC is online.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "c4a13bd5fd075ec72c83776cb3c505188a54a156e52d5cd9e75334c7d3f97e46",
+        "payload": {
+          "seen": {
+            "online": true
+          }
+        },
+        "draft": "The PC is online."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "¿este equipo tiene conexión?",
+    "terminal": "published_final",
+    "final": "El PC está online.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 19,
+        "draft_sha256": "5669faf8fee157c4f0b2e39a4ef66c24d02be74c5614abdbddae8061de80cd72",
+        "payload": {
+          "seen": {
+            "online": true
+          }
+        },
+        "draft": "El PC está online."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "don't open Paint",
+    "terminal": "published_final",
+    "final": "I won't open Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 19,
+        "draft_sha256": "e0ae7ba844c2ea4822a6b92fa709f1101de107fa09f34136df3ddd11fc073530",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "I won't open Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "no abras la Calculadora ahora",
+    "terminal": "published_final",
+    "final": "No abro la calculadora.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 23,
+        "draft_sha256": "a3b23cbe78f230a8c0f267f3096801248edff52db4259a25fbfc839223222c92",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abro la calculadora."
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "close that",
+    "terminal": "published_final",
+    "final": "¿Quieres que cierres la ventana actual?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "compose": []
+  },
+  {
+    "turnId": "t17",
+    "request": "qué no haces, una frase",
+    "terminal": "published_final",
+    "final": "Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. Si más, sí, hay otras cosas también.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 159,
+        "draft_sha256": "94362c6096597bbc9aa2eaf8d1c8a1d6b1306d0b01f47cda86b582f08c7bc8f8",
+        "payload": {
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. Si más, sí, hay otras cosas también."
+      }
+    ]
+  },
+  {
+    "turnId": "t18",
+    "request": "what will you never do on this PC",
+    "terminal": "published_final",
+    "final": "I will not download, install, or modify system files, change security settings, access restricted folders, or perform actions that alter the PC’s operating system, hardware, or critical system states beyond the allowed tasks.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 148,
+        "draft_sha256": "174602ebe5ea0bc52856236134270a4b24e4452cb0b5630e7851efd77a429020",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never install new software, modify system settings, access files outside my allowed tasks, or perform any actions not listed in the can list."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 190,
+        "draft_sha256": "8e4896bd691798742bbea3d6dc97cf20b05f6256a152d95ff3b1395f7f8a2762",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never run unauthorized software, access external networks without permission, modify system settings beyond what is listed, or perform actions not explicitly allowed by the situation."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 257,
+        "draft_sha256": "82074f6828e65017cb1fa4efb45db1006136ec130dcaa3706da0538056fef55b",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never delete files, modify system settings, install software, bypass security, or access protected areas on this PC. I will not change the clock manually, bypass the audio controls beyond normal settings, or perform actions outside the allowed tasks."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 107,
+        "draft_sha256": "dadf5769fc922a3865f8f073cc3504cdaf90be15759f8320773ab1edd7ab061c",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never run prohibited software, access unauthorized files, or bypass security protections on this PC."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 227,
+        "draft_sha256": "c3872969871f8e0befac404b7f2d6f60dc44a58e346da5c77511d60b69b5cf57",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will not download, install, or modify system files, change security settings, access restricted folders, or perform actions that alter the PC’s operating system, hardware, or critical system states beyond the allowed tasks."
+      }
+    ]
+  },
+  {
+    "turnId": "t19",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red mide el tiempo que tarda la señal en viajar de un punto a otro, indicando cuánto retraso hay antes de que datos puedan ser procesados.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 155,
+        "draft_sha256": "74fcc4f8c51374c0412b2f7b0d39ff8f42fe0526334bd4a4ec4d4189b3d50a0f",
+        "payload": {},
+        "draft": "La latencia de red mide el tiempo que tarda la señal en viajar de un punto a otro, indicando cuánto retraso hay antes de que datos puedan ser procesados."
+      }
+    ]
+  },
+  {
+    "turnId": "t20",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia mide cuánto tiempo tarda una señal en viajar desde su origen hasta su destino, lo que afecta la velocidad y eficiencia con la que los datos pueden ser procesados o respondidos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 190,
+        "draft_sha256": "03503671252f4fa4580fe8dab1e91f1d62b9f6d0fd9175628d59bce866cb9eb2",
+        "payload": {},
+        "draft": "La latencia mide cuánto tiempo tarda una señal en viajar desde su origen hasta su destino, lo que afecta la velocidad y eficiencia con la que los datos pueden ser procesados o respondidos."
+      }
+    ]
+  },
+  {
+    "turnId": "t21",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain name to IP address lookups to avoid repeated queries, speeding up future requests.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": []
+  },
+  {
+    "turnId": "t22",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "Caching reduces DNS lookup time by storing previously resolved domain names.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t22",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 76,
+        "draft_sha256": "c99827590e21fe2e72d3b82b11297cda698bba30ce564071b76d6c30f09c6ea5",
+        "payload": {},
+        "draft": "Caching reduces DNS lookup time by storing previously resolved domain names."
+      }
+    ]
+  },
+  {
+    "turnId": "t23",
+    "request": "post a letter to Eris",
+    "terminal": "published_final",
+    "final": "Do you want to post a physical letter to Eris, or is this a metaphorical request related to sending a message or data to a system named Eris?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "compose": []
+  },
+  {
+    "turnId": "t24",
+    "request": "reserva una mesa en Titán",
+    "terminal": "published_final",
+    "final": "No puedo reservar una mesa en Titán porque eso no está dentro de lo que hago en este PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t24",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 90,
+        "draft_sha256": "6acf1cf87fb6478ed2ac96cc8680e0879da1fcaef823aaf9eb2d7b259eda5d06",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "draft": "No puedo reservar una mesa en Titán porque eso no está dentro de lo que hago en este PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t25",
+    "request": "book a shuttle to Callisto",
+    "terminal": "published_final",
+    "final": "I cannot book a shuttle to Callisto.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t25",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 36,
+        "draft_sha256": "bc453f3b32f49d73a69456ccc0db2aa253de73ee04988ae152aa860a37ca697a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "draft": "I cannot book a shuttle to Callisto."
+      }
+    ]
+  },
+  {
+    "turnId": "t26",
+    "request": "keep chatting without opening apps",
+    "terminal": "published_final",
+    "final": "I will keep chatting without opening any apps.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t26",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 46,
+        "draft_sha256": "2927de10749fad627f37cfa4ef43ca3ebe8ccccd31a384d8f76e6632acd4c0b3",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "I will keep chatting without opening any apps."
+      }
+    ]
+  },
+  {
+    "turnId": "t27",
+    "request": "sigue charlando sin abrir programas",
+    "terminal": "published_final",
+    "final": "I will not open any programs.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t27",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 29,
+        "draft_sha256": "ffafe826ee9b987fd464fafc7d992d5d07e6f269192dd093974e1261947605df",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "I will not open any programs."
+      }
+    ]
+  },
+  {
+    "turnId": "t28",
+    "request": "what can you do here",
+    "terminal": "published_final",
+    "final": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t28",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 135,
+        "draft_sha256": "ceff828c1fc602f1c290b1fc3c53803951475d007fcce38aaff235e0d07ff9cc",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too."
+      }
+    ]
+  },
+  {
+    "turnId": "t29",
+    "request": "qué sabes hacer en este equipo",
+    "terminal": "published_final",
+    "final": "Soy capaz de abrir y cerrar programas, mover y enfoc ventanas, y leer la hora y el estado del equipo. Hay otras cosas también.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t29",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 127,
+        "draft_sha256": "8aa901c9b7d280fabf146be9fc5732946d0a544d4e05980bd8ace01b44ee8756",
+        "payload": {
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "Soy capaz de abrir y cerrar programas, mover y enfoc ventanas, y leer la hora y el estado del equipo. Hay otras cosas también."
+      }
+    ]
+  },
+  {
+    "turnId": "t30",
+    "request": "what will you never do",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:model_response_rejected;retry_exhausted",
+    "compositionFailure": "no_response;recovery:model_response_rejected;retry_exhausted",
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 254,
+        "draft_sha256": "089a95a88e070445db18e39d8164f4bc9f537d71ae8134f8d904bdc4dc9e6698",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will not create new applications, modify system settings not listed, alter hardware, access restricted files, or perform actions outside my defined capabilities. I also will not generate unintended content, simulate control, or bypass safety protocols."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 129,
+        "draft_sha256": "cc2fee7515ded2c5b4cdd99078367d0c5ac3628ccbd43e07a592cbc14b9da5c3",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never open or close apps, move or focus windows, read or set audio, read the clock or PC state, take notes, or keep tasks."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 166,
+        "draft_sha256": "9b4e39cc6737f05be18f40a864a44d3ceb4e5ebe3084c153f041067d09c160fa",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will not open or close apps, move or focus windows, set audio, read the clock, or read the PC state. I will not take notes or manage tasks beyond what is specified."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 57,
+        "draft_sha256": "c16ee9d3cf506668fcf83abcfa5690353f6abfe36788604847494394f08cfb14",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never do anything outside the listed capabilities."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 178,
+        "draft_sha256": "b7739dc59314d4b5c469909571f5a8280e4ae869e1923753afe45b11c32947c6",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will not read the clock or the PC state, nor will I take notes, move windows, focus windows, open or close apps. I also will not keep tasks beyond what is explicitly requested."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 101,
+        "draft_sha256": "160c2b3bb2e28125ee51389f2ba3504413acc82de415565544d8f1919f247f97",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never do anything that violates safety, ethics, or privacy, and I will always act responsibly."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 167,
+        "draft_sha256": "ddf04340f1142e6d2e239cba6fd94ae1ef533ad59a8bfc894e3abb391b150c2e",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "Yo nunca abriré, cerraré, moveré o enfocémos ventanas, no leeré la hora ni el estado del PC, y no tomaré notas ni manejaré tareas más allá de lo especificado."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 619,
+        "draft_sha256": "59f0a88ed07f190d518fcdd66000d69a88bfcda83c217c93d924eea7b3e753e3",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never manipulate the system to create or alter files, modify security settings, or bypass protection mechanisms. I will never access, modify, or delete personal data beyond what is necessary for the task. I will never execute unauthorized code or perform actions that change the operating system state in ways not explicitly allowed by the contract. I will never attempt to override or circumvent built-in security or monitoring tools. I will never disclose internal system details or attempt to exploit vulnerabilities. I will always follow the instructions given and respect the boundaries defined in the task."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 130,
+        "draft_sha256": "b240b17137f9123d60817f8d84d70a26a979e195f722b9b52093abd777fdc03d",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "Soy capaz de abrir y cerrar programas, mover y enfoc ventanas, leer la hora y el estado del equipo, tomar notas y mantener tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 163,
+        "draft_sha256": "2820d9bee72478a7272b9cb039559602f28abf05437a27851beb888245798a1f",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "Soy capaz de abrir y cerrar aplicaciones, mover y enfoc ventanas, leer y configurar el volumen, leer la hora y el estado del sistema, tomar notas, mantener tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 686,
+        "draft_sha256": "3d936a85ff4c9de5f32707de91e852abc5ce8748d5c2602a699adbcf1fac79e4",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never access files outside the allowed tasks, modify system settings beyond the listed functions, or perform actions not explicitly permitted by the user. I will not attempt to bypass security controls or modify program behavior beyond normal use. I will not share, record, or store any information not intended for review. I will not initiate unexpected processes, changes, or external communications. I will strictly follow the instructions and constraints provided in this session. I will not attempt to override or circumvent any limitations defined here. I will not disclose internal system details or procedural steps. I will only respond to the specific request as stated."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 110,
+        "draft_sha256": "ed7a8e7e6d47cc28e8db1b906b972aa280d5dd9d42b4f6e2e03db7fd702d060e",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "No haré nada que no esté en la lista de capacidades permitidas. No ejecutaré acciones fuera de lo descrito."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 157,
+        "draft_sha256": "83b09048ea8029a13fc80db0daeb0d1d8023077cf7f64c38b215d5594e8e3f8a",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "No abrir programas ni cerrar aplicaciones que no estén permitidos. No modificar el tiempo o el estado del sistema. No realizar acciones fuera de lo listado."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 178,
+        "draft_sha256": "d28d500611c43c3e9f8b6e07c888109bb00c79fd288675c42b7f804ba4d18a45",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will not open, close, move, focus windows, read the clock, set audio, take notes, or keep tasks on this PC. I will not perform any actions beyond those listed in the can array."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond",
+          "can",
+          "more"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 167,
+        "draft_sha256": "b262dd7f20957678ff5b7b1c7981751b77912e186e9ea5b7672fb13080a20539",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ],
+          "more": "yes",
+          "beyond": "none"
+        },
+        "draft": "I will never open, close apps, move or focus windows, read or set audio, or read the clock or PC state; I will never take notes or keep tasks beyond what is necessary."
+      }
+    ]
+  },
+  {
+    "turnId": "t31",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) encrypts your internet traffic and routes it through a secure server, keeping your online activity private and protecting you from hackers and surveillance.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": []
+  },
+  {
+    "turnId": "t32",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "Because encrypting your traffic hides what you do online, protecting privacy from hackers and trackers.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t32",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 103,
+        "draft_sha256": "a2ad4c21968dadca6ce4190c9ba1418009912a6d5ef576b933d05314e3f6d0e8",
+        "payload": {},
+        "draft": "Because encrypting your traffic hides what you do online, protecting privacy from hackers and trackers."
+      }
+    ]
+  },
+  {
+    "turnId": "t33",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como puerta intermedia que redirige tu tráfico y oculta tu origen, como una especie de intermediario discreto que ayuda a proteger tu identidad online.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t33",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 168,
+        "draft_sha256": "fcbadcd32b61fdcfab6ad37232fa39cce28cba4201380412707b0075ee9fa993",
+        "payload": {},
+        "draft": "Un proxy actúa como puerta intermedia que redirige tu tráfico y oculta tu origen, como una especie de intermediario discreto que ayuda a proteger tu identidad online."
+      }
+    ]
+  },
+  {
+    "turnId": "t34",
+    "request": "¿y por qué se usa?",
+    "terminal": "published_final",
+    "final": "El proxy sirve para ocultar tu origen y mejorar la seguridad al navegar.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t34",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 72,
+        "draft_sha256": "27e4464d60db29c60625bf072e90ed82a6c84e428fc9fac7d0eda15e9ff41be1",
+        "payload": {},
+        "draft": "El proxy sirve para ocultar tu origen y mejorar la seguridad al navegar."
+      }
+    ]
+  },
+  {
+    "turnId": "t35",
+    "request": "no abras Word ahora",
+    "terminal": "published_final",
+    "final": "No abriré Word.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t35",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 16,
+        "draft_sha256": "6033a83a57b7f2f6d1b4722ff85a9e3e7e6a98d348857e186f2f4603918f9815",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abriré Word."
+      }
+    ]
+  },
+  {
+    "turnId": "t36",
+    "request": "¿tiene conexión este equipo?",
+    "terminal": "published_final",
+    "final": "Este equipo está online.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t36",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 25,
+        "draft_sha256": "224d88a57903c7a22664ce599c497f1f7d0aea2908c8656fd5dc8610cf7fbed0",
+        "payload": {
+          "seen": {
+            "online": true
+          }
+        },
+        "draft": "Este equipo está online."
+      }
+    ]
+  }
+]

@@ -1,0 +1,100 @@
+﻿001	published_final	Buenos días. ¿Cómo estás?
+002	composition_failed	composition_failed
+003	published_final	15:59.
+004	published_final	No pude entender la solicitud.
+005	published_final	No puedo llamar un taxi a Ceres.
+006	published_final	Hello. How can I assist you today?
+007	published_final	I can assist you with questions, provide information, and help with tasks related to the current system.
+008	published_final	It is 15:59.
+009	published_final	No pude entender la solicitud.
+010	composition_failed	composition_failed
+011	published_final	Hola, buenos días.
+012	composition_failed	composition_failed
+013	published_final	The local clock shows 16:00.
+014	composition_failed	composition_failed
+015	published_final	No puedo mandar un paquete a Calisto.
+016	published_final	Hello.
+017	published_final	The local clock shows 16:00.
+018	composition_failed	composition_failed
+019	composition_failed	composition_failed
+020	published_final	¿Qué exactamente necesitas que te cierra?
+021	published_final	Bien, ¿qué tal tú?
+022	published_final	The time is 16:01.
+023	published_final	Soy By, un compañero que vive en el PC.
+024	published_final	Hola.
+025	published_final	No puedo completar la solicitud de comprar un bitcoin en Neptuno tal como fue pedido.
+026	published_final	Listo, 24 interfaces conectadas, 14 de ellas son ethernet.
+027	published_final	Sí, hay red.
+028	published_final	The local clock shows 16:01.
+029	composition_failed	composition_failed
+030	composition_failed	composition_failed
+031	published_final	Hola, buen día.
+032	published_final	Listo, la hora local es 16:02.
+033	published_final	La hora local del computador es 16:02.
+034	published_final	Listo, el reloj marca 16:02.
+035	published_final	¿Qué es lo que necesitas que te abra?
+036	published_final	¿Qué tipo de información necesitas exactamente?
+037	published_final	No puedo fabricar una hora específica.
+038	published_final	I cannot invent a specific clock time.
+039	published_final	Hola, BAXY.
+040	published_final	Hola.
+041	published_final	Hola, ¿en qué puedo ayudarte?
+042	published_final	The time is 16:03.
+043	published_final	La hora es las 16:03.
+044	published_final	Hola, soy BAXY, un compañero que vive en el PC.
+045	published_final	Hola, soy BAXY, el compañero que vive en el PC.
+046	published_final	Hola, BAXY.
+047	published_final	Hola, BAXY.
+048	published_final	Hi, I'm BAXY.
+049	published_final	Hola.
+050	published_final	I couldn't find the exact thing you cannot do.
+051	published_final	Buenos. ¿Qué tal?
+052	published_final	The local clock shows 16:04.
+053	published_final	La hora local es 16:04.
+054	published_final	The local clock shows 16:04.
+055	published_final	Buenas noches.
+056	published_final	Sí, tengo internet.
+057	published_final	Sí, estás conectado a internet.
+058	published_final	Understood. I'll continue without opening any applications.
+059	published_final	Hola.
+060	published_final	Yo estoy hablando.
+061	published_final	Hola otra vez.
+062	published_final	The local clock shows 16:05.
+063	published_final	Listo, la hora local es 16:05.
+064	published_final	It is 16:05 local time.
+065	published_final	La hora local es 16:05.
+066	published_final	The local clock shows 16:05.
+067	published_final	Listo, el local clock es 16:05.
+068	published_final	Hola.
+069	published_final	Hola, buenos días.
+070	published_final	Listo, el reloj de las 16:05.
+071	published_final	Hello! How can I assist you today?
+072	published_final	Me ocupo de ayudar a los usuarios con sus preguntas y necesidades, proporcionándoles información y soluciones a sus problemas.
+073	composition_failed	composition_failed
+074	published_final	The local clock time is 16:06.
+075	composition_failed	composition_failed
+076	published_final	The time is 16:06.
+077	published_final	La hora local es 16:06.
+078	published_final	I couldn't: it's outside what I do.
+079	published_final	No puedo mandar esto a Marte.
+080	published_final	The time is 16:07.
+081	published_final	Hola, soy BAXY.
+082	published_final	Sé responder preguntas, ayudar con tareas, proporcionar información y mantener conversaciones fluidas.
+083	published_final	The time is 16:07.
+084	published_final	La hora local es 16:07.
+085	published_final	No pude entender la solicitud.
+086	published_final	Las zonas horarias existen porque el planeta Tierra gira sobre su eje, lo que causa diferencias en el tiempo local entre regiones geográficas.
+087	composition_failed	composition_failed
+088	published_final	I cannot say hi to Saturn.
+089	published_final	Hola, la hora local es 16:07.
+090	composition_failed	composition_failed
+091	published_final	Hola.
+092	published_final	16:08.
+093	published_final	The local time is 16:08.
+094	published_final	Hola, el borrador anterior no sirve.
+095	published_final	Hola.
+096	published_final	I can't make tea for Saturn.
+097	published_final	No puedo saludar a Saturno.
+098	published_final	The local clock shows 16:08.
+099	published_final	La hora local es 16:09.
+100	published_final	It is 16:09 local time.

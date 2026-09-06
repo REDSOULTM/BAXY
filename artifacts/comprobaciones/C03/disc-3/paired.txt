@@ -1,0 +1,19 @@
+# disc-3
+n=16 published=14 composition_failed=2 other=0
+
+001	published_final	Hola, buenas	¡Hola! ¿Cómo estás?
+002	published_final	qué puedes hacer en este equipo	No puedo ayudar con esa solicitud.
+003	published_final	Hey	Hey! ¿Qué te gustaría hacer o aprender hoy?
+004	composition_failed	What can you do here	composition_failed
+005	published_final	book a room on Deimos	No puedo reservar una habitación en Deimos.
+006	published_final	time check	I have seen the time check at 21:52 local time.
+007	published_final	open that	¿Qué acción específica desea realizar con la referencia 'that'?
+008	published_final	online?	No puedo ayudar con la situación debido a la ambigüedad en los detalles.
+009	composition_failed	What will you refuse to do	composition_failed
+010	published_final	don't open Steam	I understand the situation failed, and I cannot assist further.
+011	published_final	tell the time in English	The time is 21:54.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	No puedo ayudar con eso.
+014	published_final	just say hi	Hi
+015	published_final	define huso horario, una frase	Define el huso horario actual.
+016	published_final	Por qué hay zonas horarias	Hay zonas horarias porque diferentes regiones del mundo necesitan marcar el tiempo de manera consistente para coordinar actividades, comunicaciones y actividades diarias.

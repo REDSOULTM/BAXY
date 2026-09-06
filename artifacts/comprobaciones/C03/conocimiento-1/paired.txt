@@ -1,0 +1,12 @@
+n=10 published=10 other=0
+
+001	t1	published_final	explícame qué es un firewall de red en una frase	Un firewall de red es un sistema que controla el tráfico de red entrante y saliente para proteger la red y prevenir accesos no autorizados.
+002	t2	published_final	what does a load balancer do, one sentence	¿Puedes confirmar si el mensaje actual es un pedido para explicar qué hace un load balancer en una frase?
+003	t3	published_final	dime la hora en este momento	La hora actual es las tres y veinticinco de la tarde.
+004	t4	published_final	qué es un switch de red, una frase	Un switch de red enruta el tráfico entre dispositivos dentro de una red local, sin necesidad de una dirección IP central.
+005	t5	published_final	what is a DNS resolver in one sentence	A DNS resolver translates domain names into IP addresses to locate and connect to web servers.
+006	t6	published_final	explícame qué es una MAC address en una frase	Una MAC address es una dirección única que identifica el dispositivo de red de una computadora.
+007	t7	published_final	what is latency in one sentence	Latency is the delay between sending a request and receiving a response over a network.
+008	t8	published_final	qué es un puerto de red, una frase	Un puerto de red es una conexión que permite el tráfico de datos entre dispositivos en una red.
+009	t9	published_final	what is a gateway in one sentence	A gateway is a network device that routes traffic between different networks, such as between a home network and the internet.
+010	t10	published_final	explícame qué es el ancho de banda en una frase	El ancho de banda es la cantidad de datos que se pueden enviar o recibir en un cierto tiempo.

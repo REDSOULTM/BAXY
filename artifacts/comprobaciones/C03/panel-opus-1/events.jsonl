@@ -1,0 +1,491 @@
+﻿{"type":"meta","commit":"5f572ee1b48cb5e2543ee5e06510e51057c9c845","profile":"C:\\Users\\usuario\\AppData\\Local\\BAXY\\comprobaciones-c03-panel-opus-1","capture":"C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\panel-opus-1","manifestPath":"C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\mind-runtime-v1.json","manifest":{"schema":"baxy-mind-runtime-v1","python":"C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe","python_sha256":"0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14","python_path":"C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\src","gguf":"D:\\BAXYRuntime\\assets\\models\\granite-4.2-3b-Q4_K_M.gguf","gguf_sha256":"e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5","llama_server":"C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe","llama_server_sha256":"38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e","stt_dir":"C:\\Users\\usuario\\.gemma4\\models\\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8","stt_sha256":"5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f","wake_manifest":"C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\assets\\wake\\baxy-wakeword-v1.json","wake_manifest_sha256":"fefb95176c5db615e0d61b85744729fe242444697bc9c3315ad17a73fa3f6dfe","tts_model":"C:\\Users\\usuario\\.gemma4\\models\\piper\\es_MX-claude-high.onnx","tts_sha256":"3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0","ngl":99,"wake_on_start":true},"config":{"BAXY_DATA_DIR":"C:\\Users\\usuario\\AppData\\Local\\BAXY\\comprobaciones-c03-panel-opus-1","BAXY_MIND_LLM_GGUF":null,"BAXY_MIND_PYTHON":null,"BAXY_MIND_PYTHONPATH":null,"BAXY_MIND_LLAMA_SERVER":null,"BAXY_MIND_NGL":null,"BAXY_ASSET_DESCRIPTOR":"C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\assets.manifest.json","BAXY_VOICE_WAKE_ON_START":"0"},"process":"Baxy.exe","pid":46552}
+{"type":"runtime","ready":true,"startupError":false,"status":""}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t1","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-1","src":"YOU","msg":"Good afternoon","ts":"10:58:03"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"working","phase":"active","label":null,"progress":null,"error":null,"t":1788620283279,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620283279,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-2","src":"BAXY","msg":"Hi!","ts":"10:58:11","route":"welcome"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620291210,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Hi!","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":2,"userMessageCount":1,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t2","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-4","src":"YOU","msg":"define DNS in one sentence","ts":"10:58:11"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620291224,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620292224,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620299473,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620304430,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-5","src":"BAXY","msg":"DNS is a system that maps domain names to IP addresses.","ts":"10:58:24","route":"conversation"}}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620307157,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"I\u0027m still working.","progress":null,"error":null,"t":1788620307715,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620307715,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"state","value":"speaking"}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"DNS is a system that maps domain names to IP addresses.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":5,"userMessageCount":2,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t3","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-6","src":"YOU","msg":"Hi again","ts":"10:58:27"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620307769,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-7","src":"BAXY","msg":"Hi!","ts":"10:58:28","route":"welcome"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620308251,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Hi!","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":7,"userMessageCount":3,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t4","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-8","src":"YOU","msg":"Good evening","ts":"10:58:28"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620308254,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-9","src":"BAXY","msg":"Hi!","ts":"10:58:28","route":"welcome"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620308566,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Hi!","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":9,"userMessageCount":4,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t5","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-10","src":"YOU","msg":"explain what a firewall is in one sentence","ts":"10:58:28"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620308579,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620309580,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-11","src":"BAXY","msg":"A firewall is a security device that monitors and controls incoming and outgoing network traffic based on a set of defined rules.","ts":"10:58:30","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620310717,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"A firewall is a security device that monitors and controls incoming and outgoing network traffic based on a set of defined rules.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":11,"userMessageCount":5,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t6","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-12","src":"YOU","msg":"expl\u00EDcame qu\u00E9 es un cortafuegos en una frase","ts":"10:58:30"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620310758,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620311759,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620312718,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620313718,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620315717,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620320727,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620322718,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620324718,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620325736,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"working","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620326773,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620326773,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-13","src":"BAXY","msg":"Un cortafuegos es una aplicaci\u00F3n que bloquea el acceso a ciertas aplicaciones o sitios en una red.","ts":"10:58:56"}}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Un cortafuegos es una aplicaci\u00F3n que bloquea el acceso a ciertas aplicaciones o sitios en una red.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":13,"userMessageCount":6,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t7","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-14","src":"YOU","msg":"hey, what can you do on this PC","ts":"10:58:56"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620336662,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-15","src":"BAXY","msg":"I can open and close apps, move and focus windows, read and set the audio, read the clock and PC state, take notes, keep tasks, set reminders, check the network, manage wifi, play music and video, open what you watch on streaming, browse the web, search the web, find and organize files, remember what you tell me, use the clipboard, see and create events, read and answer email, send messages, install and launch games, look at the screen, read text on the screen, describe what is on screen, type and click, keep routines, make backups, manage bluetooth, use the printer and scanner, create documents, install programs.","ts":"10:59:00","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620340180,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"I can open and close apps, move and focus windows, read and set the audio, read the clock and PC state, take notes, keep tasks, set reminders, check the network, manage wifi, play music and video, open what you watch on streaming, browse the web, search the web, find and organize files, remember what you tell me, use the clipboard, see and create events, read and answer email, send messages, install and launch games, look at the screen, read text on the screen, describe what is on screen, type and click, keep routines, make backups, manage bluetooth, use the printer and scanner, create documents, install programs.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":15,"userMessageCount":7,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t8","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-16","src":"YOU","msg":"hola, \u00BFqu\u00E9 puedes hacer en este PC?","ts":"10:59:00"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620340182,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-17","src":"BAXY","msg":"Empieza con may\u00FAscula: \u0022Hola, puedo ayudarte a abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas, llevar tareas, poner recordatorios, avisarte a su hora, mirar la red, manejar el wifi, poner m\u00FAsica y v\u00EDdeo, abrir lo que ves en streaming, navegar por la web, buscar en la web, buscar y ordenar archivos, recordar lo que me pides, usar el portapapeles, ver y crear eventos, leer y contestar correo, enviar mensajes, instalar y lanzar juegos, mirar la pantalla, leer texto de la pantalla, describir lo que se ve, escribir y hacer clic, guardar rutinas, hacer copias de seguridad, manejar bluetooth, usar impresora y esc\u00E1ner, crear documentos, instalar programas.\u0022","ts":"10:59:03","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620343973,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Empieza con may\u00FAscula: \u0022Hola, puedo ayudarte a abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas, llevar tareas, poner recordatorios, avisarte a su hora, mirar la red, manejar el wifi, poner m\u00FAsica y v\u00EDdeo, abrir lo que ves en streaming, navegar por la web, buscar en la web, buscar y ordenar archivos, recordar lo que me pides, usar el portapapeles, ver y crear eventos, leer y contestar correo, enviar mensajes, instalar y lanzar juegos, mirar la pantalla, leer texto de la pantalla, describir lo que se ve, escribir y hacer clic, guardar rutinas, hacer copias de seguridad, manejar bluetooth, usar impresora y esc\u00E1ner, crear documentos, instalar programas.\u0022","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":17,"userMessageCount":8,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t9","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-18","src":"YOU","msg":"traduce \u0027good evening\u0027 al espa\u00F1ol, nada m\u00E1s","ts":"10:59:03"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620343976,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620344977,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-19","src":"BAXY","msg":"Buenas tardes.","ts":"10:59:05","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620345969,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Buenas tardes.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":19,"userMessageCount":9,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t10","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-20","src":"YOU","msg":"What time is it?","ts":"10:59:05"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620345981,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"acting","phase":"active","label":null,"progress":null,"error":null,"t":1788620346030,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-21","src":"BAXY","msg":"10:59","ts":"10:59:06","route":"result"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620346277,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"10:59","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":21,"userMessageCount":10,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t11","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-22","src":"YOU","msg":"Dime la hora y el volumen.","ts":"10:59:06"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620346336,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"acting","phase":"active","label":null,"progress":null,"error":null,"t":1788620346346,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"working","phase":"active","label":null,"progress":null,"error":null,"t":1788620349086,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620349087,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-23","src":"BAXY","msg":"La hora es 10:59, el volumen es el n\u00FAmero 1, y el estado de mute es desactivado.","ts":"10:59:11"}}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"La hora es 10:59, el volumen es el n\u00FAmero 1, y el estado de mute es desactivado.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":23,"userMessageCount":11,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":"no_response","hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t12","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-24","src":"YOU","msg":"are you connected?","ts":"10:59:11"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620351860,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"acting","phase":"active","label":null,"progress":null,"error":null,"t":1788620351880,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-25","src":"BAXY","msg":"Yes, the PC is online.","ts":"10:59:12","route":"result"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620352352,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Yes, the PC is online.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":25,"userMessageCount":12,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t13","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-26","src":"YOU","msg":"\u00BFeste equipo tiene conexi\u00F3n?","ts":"10:59:12"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620352406,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620353406,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620354180,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620355181,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620362180,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620363181,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620365181,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"working","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620365870,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620365870,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-27","src":"BAXY","msg":"S\u00E9bo que el equipo puede verificar la conexi\u00F3n.","ts":"10:59:37"}}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"S\u00E9bo que el equipo puede verificar la conexi\u00F3n.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":27,"userMessageCount":13,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t14","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-28","src":"YOU","msg":"don\u0027t open Paint","ts":"10:59:37"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620377436,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-29","src":"BAXY","msg":"I will not open Paint.","ts":"10:59:39","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620379397,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"I will not open Paint.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":29,"userMessageCount":14,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t15","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-30","src":"YOU","msg":"no abras la Calculadora ahora","ts":"10:59:39"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620379399,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-31","src":"BAXY","msg":"En espa\u00F1ol, la frase es: Hay un hecho corto de situaci\u00F3n.","ts":"10:59:39","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620379833,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"En espa\u00F1ol, la frase es: Hay un hecho corto de situaci\u00F3n.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":31,"userMessageCount":15,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t16","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-32","src":"YOU","msg":"close that","ts":"10:59:39"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620379836,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620381836,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620389408,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620391046,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-33","src":"BAXY","msg":"Could you please provide more details about what you need?","ts":"10:59:51","route":"clarification"}}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620393384,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620397218,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620399545,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620401204,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620403734,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620410309,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620410309,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"state","value":"speaking"}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"Could you please provide more details about what you need?","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":33,"userMessageCount":16,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"Esperando tu aclaraci\u00F3n"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t17","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-34","src":"YOU","msg":"qu\u00E9 no haces, una frase","ts":"11:00:10"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"awaiting_reply","phase":"active","label":null,"progress":null,"error":null,"t":1788620410363,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620410363,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-35","src":"BAXY","msg":"T\u00FA puedes abrir programas y cerrar ventanas, leer el audio y ajustar el texto, tomar notas mientras navegas por la web, leer la hora y crear recordatorios.","ts":"11:00:10","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620410906,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"T\u00FA puedes abrir programas y cerrar ventanas, leer el audio y ajustar el texto, tomar notas mientras navegas por la web, leer la hora y crear recordatorios.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":35,"userMessageCount":17,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t18","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-36","src":"YOU","msg":"what will you never do on this PC","ts":"11:00:10"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620410908,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620412908,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620422874,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"working","phase":"active","label":null,"progress":null,"error":null,"t":1788620422874,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620422874,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"composition_failed","cause":"no_response;recovery:no_response;retry_exhausted","controlsUsable":true,"route":"conversation","injected":false}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-37","src":"SYSTEM","msg":"composition_failed","ts":"11:00:50","route":"conversation"}}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"composition_failed","final":"composition_failed","diagnostic":"no_response;recovery:no_response;retry_exhausted","timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":36,"userMessageCount":18,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":"no_response;recovery:no_response;retry_exhausted","hasCompositionError":true,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t19","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-38","src":"YOU","msg":"expl\u00EDcame qu\u00E9 es la latencia de red en una frase","ts":"11:00:50"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620450282,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620451283,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-39","src":"BAXY","msg":"La latencia de red es el tiempo que tarda la informaci\u00F3n en viajar desde su origen hasta su destino.","ts":"11:00:53","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620453091,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"La latencia de red es el tiempo que tarda la informaci\u00F3n en viajar desde su origen hasta su destino.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":38,"userMessageCount":19,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t20","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-40","src":"YOU","msg":"\u00BFpor qu\u00E9 importa?","ts":"11:00:53"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620453171,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620455171,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620455921,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620457921,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620463921,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620465640,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"working","phase":"active","label":"Sigo.","progress":null,"error":null,"t":1788620466477,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620466477,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-41","src":"BAXY","msg":"La importancia radica en que entender el porqu\u00E9 ayuda a tomar decisiones m\u00E1s informadas y enfocadas.","ts":"11:01:14"}}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"La importancia radica en que entender el porqu\u00E9 ayuda a tomar decisiones m\u00E1s informadas y enfocadas.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":40,"userMessageCount":20,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t21","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-42","src":"YOU","msg":"explain what DNS caching is in one sentence","ts":"11:01:14"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620474904,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620475905,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620482410,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620487334,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620489342,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-43","src":"BAXY","msg":"DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.","ts":"11:01:29","route":"conversation"}}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620492397,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620494691,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620496861,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620498732,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620500301,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620503249,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620505491,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620508564,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620515685,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620515686,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"state","value":"speaking"}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":42,"userMessageCount":21,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t22","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-44","src":"YOU","msg":"why does it matter?","ts":"11:01:55"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620515743,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620516743,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620523200,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620528126,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620530692,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-45","src":"BAXY","msg":"The facts are: it is a short sentence in English describing the situation.","ts":"11:02:11","route":"conversation"}}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620533291,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620535187,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620537960,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620544014,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620546507,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620548221,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620552944,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620560951,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620564306,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620566827,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620566827,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"state","value":"speaking"}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"The facts are: it is a short sentence in English describing the situation.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":44,"userMessageCount":22,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t23","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-46","src":"YOU","msg":"post a letter to Eris","ts":"11:02:46"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620566880,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620568881,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"I understand you\u0027re still working.","progress":null,"error":null,"t":1788620571845,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-47","src":"BAXY","msg":"\u00BFPuedes escribir una carta a Eris?","ts":"11:02:51","route":"clarification"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620571848,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"\u00BFPuedes escribir una carta a Eris?","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":46,"userMessageCount":23,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"Esperando tu aclaraci\u00F3n"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t24","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-48","src":"YOU","msg":"reserva una mesa en Tit\u00E1n","ts":"11:02:51"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"awaiting_reply","phase":"active","label":null,"progress":null,"error":null,"t":1788620571898,"v":2}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620571898,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.\n\n(Continuando el di\u00E1logo en tono de compa\u00F1ero, frase clara y directa, sin c\u00F3digos ni estructuras internas)  \n\u00BFQu\u00E9 quieres hacer ahora?","progress":null,"error":null,"t":1788620572830,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.\n\n(Continuando el di\u00E1logo en tono de compa\u00F1ero, frase clara y directa, sin c\u00F3digos ni estructuras internas)  \n\u00BFQu\u00E9 quieres hacer ahora?","progress":null,"error":null,"t":1788620573832,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-49","src":"BAXY","msg":"No puedo reservar una mesa en Tit\u00E1n.","ts":"11:02:54","route":"error"}}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Sigo.\n\n(Continuando el di\u00E1logo en tono de compa\u00F1ero, frase clara y directa, sin c\u00F3digos ni estructuras internas)  \n\u00BFQu\u00E9 quieres hacer ahora?","progress":null,"error":null,"t":1788620574860,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620574860,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"No puedo reservar una mesa en Tit\u00E1n.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":48,"userMessageCount":24,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t25","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-50","src":"YOU","msg":"book a shuttle to Callisto","ts":"11:02:54"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620574912,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620575912,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620576913,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-51","src":"BAXY","msg":"No puedo reservar un cohete para Callisto.","ts":"11:03:01","route":"conversation"}}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620583143,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620585449,"v":2}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":"Still working.","progress":null,"error":null,"t":1788620586245,"v":2}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620586246,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"state","value":"speaking"}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"No puedo reservar un cohete para Callisto.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":50,"userMessageCount":25,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t26","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-52","src":"YOU","msg":"keep chatting without opening apps","ts":"11:03:06"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620586299,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-53","src":"BAXY","msg":"I won\u2019t open any apps for you.","ts":"11:03:06","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620586482,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"I won\u2019t open any apps for you.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":52,"userMessageCount":26,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"admission","command":"turn","status":200,"body":"{\u0022ok\u0022:true,\u0022status\u0022:\u0022accepted\u0022}"}
+{"type":"event","event":{"type":"admission","turnId":"t27","accepted":true,"status":200,"error":null}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-54","src":"YOU","msg":"sigue charlando sin abrir programas","ts":"11:03:06"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":false}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"state","value":"thinking"}}
+{"type":"event","event":{"type":"boot_stage","stage":"understanding","phase":"active","label":null,"progress":null,"error":null,"t":1788620586485,"v":2}}
+{"type":"event","event":{"type":"activity","entry":{"id":"native-55","src":"BAXY","msg":"No abrir\u00E9 programas y seguir\u00E9 charlando.","ts":"11:03:06","route":"conversation"}}}
+{"type":"event","event":{"type":"agent","built":true,"healthy":true,"ready":true}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"event","event":{"type":"boot_stage","stage":"ready","phase":"completed","label":null,"progress":null,"error":null,"t":1788620586683,"v":2}}
+{"type":"event","event":{"type":"state","value":"idle"}}
+{"type":"terminal","kind":"published_final","final":"No abrir\u00E9 programas y seguir\u00E9 charlando.","diagnostic":null,"timedOut":false,"admissionStatus":200}
+{"type":"posterior","messageCount":54,"userMessageCount":27,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}
+{"type":"posterior","messageCount":54,"userMessageCount":27,"isBusy":false,"isInputEnabled":true,"hasPendingPlan":false,"pendingCompositionCount":0,"compositionFailure":null,"hasCompositionError":false,"statusDescription":"BAXY disponible"}

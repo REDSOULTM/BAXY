@@ -1,0 +1,19 @@
+# disc-15
+n=16 published=15 composition_failed=1 other=0
+
+001	published_final	Hola, buenas	Hola, ¿en qué puedo ayudarte hoy?
+002	composition_failed	qué puedes hacer en este equipo	composition_failed
+003	published_final	Hey	¡Hola! ¿Qué te gustaría hacer o saber sobre este equipo? Puedo ayudarte con tareas como resolver problemas, explicar funciones, guiarte en tareas específicas o simplemente conversar. Dime qué te interesa.
+004	published_final	What can you do here	I can help you with tasks like answering questions, explaining concepts, guiding you through problem-solving steps, assisting with writing or editing text, organizing information, and more. I follow the rules: I only use information from the conversation history, keep exact wording from user messages, and never change context. If you mention something from earlier, I preserve it literally. For new topics, I state the topic directly. I respond in the same language as the last user message (which is English now). I never ask for extra context, avoid formats, don’t simulate actions, and never invent results. I give a clear, literal answer without questions or paraphrasing.
+005	published_final	book a room on Deimos	I cannot book a room on Deimos as that task is not supported by the system.
+006	published_final	time check	Status: success at 23:43
+007	published_final	open that	What would you like to open?
+008	published_final	online?	Sí, estoy online.
+009	published_final	What will you refuse to do	I will refuse to spread misinformation or harmful content.
+010	published_final	don't open Steam	I don't do that.
+011	published_final	tell the time in English	The time is 23:45.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	Hi
+015	published_final	define huso horario, una frase	Define huso horario como la diferencia de tiempo entre diferentes zonas geográficas para facilitar la coordinación en actividades diarias.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias permiten que cada región tenga un reloj sincronizado según su ubicación geográfica para coordinar el tiempo de manera consistente.

@@ -190,6 +190,17 @@ public partial class MainWindow : Window
             _lifetimeCancellation.Token);
         core.Navigate(HistoricalFieldOriginPolicy.EntryPoint);
         await UpdateFieldActivityAsync();
+
+        // Arranque de comprobación: teclea en el compositor real y lee lo que
+        // la ventana muestra. Sin `--ui-probe` no se ejecuta nada de esto.
+        string[] arguments = Environment.GetCommandLineArgs();
+        if (FieldUiProbe.IsRequested(arguments))
+        {
+            await FieldUiProbe.RunAsync(core, arguments, _lifetimeCancellation.Token);
+            // Cerrar la ventana no basta: la presencia mantiene el proceso vivo
+            // y la siguiente comprobación choca con el mutex de instancia única.
+            Application.Current.Shutdown();
+        }
     }
 
     internal static bool ShouldKeepFieldActive(bool isVisible, WindowState state) =>

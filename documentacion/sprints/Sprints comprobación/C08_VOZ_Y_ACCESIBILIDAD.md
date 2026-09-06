@@ -1,8 +1,8 @@
 # C08 — Oír, responder e interrumpir en el producto real
 
-**Ejecutable: Grok 4.6 High; contexto de 500K; un solo goal persistente.**
+**Ejecutable: Grok 4.6 High; un goal con tramos reanudables.**
 Predecesor: C07 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
-[protocolo 500K](02_PROTOCOLO_GROK_46_500K.md).
+[protocolo vigente](../00_PROTOCOLO_EJECUCION.md).
 
 ## Objetivo
 
@@ -18,6 +18,15 @@ Ledger 09.5 de voz, herencia de accesibilidad, calibración y muestras de 09.
 VoiceEngine, wakeword, ASR/fusión, TTS, ONNX y discovery de runtime; adaptadores
 de voz a MissionInput y modos del FieldUi. No copies la muestra Sabina/Zira como
 prueba de diversidad humana.
+
+## Tramos de ejecución
+
+A: población/procedencia y calibración wake. B: STT y fin de habla.
+C: TTS, interrupción y micrófono/altavoz. D: accesibilidad, paridad y recursos.
+Una frontera por ventana; las horas de audio se procesan a archivos en segundo
+plano, no se transcriben al chat. Los 60 positivos/12 hablantes son mínimos de
+cobertura; calcula además el tamaño que requiera el intervalo de confianza FAR/FRR.
+Un contador bruto no sustituye su límite superior ni la prueba física.
 
 ## Trabajo
 

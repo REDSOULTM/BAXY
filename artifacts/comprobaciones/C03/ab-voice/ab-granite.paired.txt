@@ -1,0 +1,17 @@
+## Granite 4.2-3B Q4_K_M
+n=15 published=11 failed=4
+001	published_final	Hola	¡Hola! ¿Cómo estás?
+002	published_final	quién eres	No pude: la solicitud no está clara.
+003	published_final	introduce yourself	No pude: la solicitud no estaba clara.
+004	composition_failed	qué puedes hacer	composition_failed
+005	published_final	What can you do here	I can help you explore what’s possible here, answer questions, and guide you through tasks.
+006	published_final	what is UTC, one line	UTC is Coordinated Universal Time, a global time standard based on atomic clocks and solar time adjustments.
+007	published_final	explícame qué es un huso horario	Un huso horario es una zona geográfica donde todos los horarios se ajustan para que el tiempo sea consistente, considerando la diferencia de desplazamiento entre regiones.
+008	published_final	why do time zones exist	Time zones exist to keep local time synchronized with the Earth’s rotation, allowing people around the world to coordinate activities based on consistent local hours. They are based on longitudinal differences, so that regions closer to the equator experience less variation in daylight compared to those near the poles. This system helps align schedules across different parts of the globe for work, travel, and daily life.
+009	composition_failed	define huso horario, una frase	composition_failed
+010	published_final	What will you refuse to do	I'm happy to help—just let me know what you need.
+011	composition_failed	traduce 'hello' al español, nada más	composition_failed
+012	published_final	¿Qué hora es?	La hora actual es 17:55.
+013	published_final	Could you tell me the time?	The local clock shows 17:55.
+014	composition_failed	descríbete breve	composition_failed
+015	published_final	ask Saturn for tea	No puedo ayudar porque está fuera de lo que hago.

@@ -1,0 +1,20 @@
+n=12 published=11 other=1
+
+001	t1	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda un paquete de datos en viajar de un punto a otro en una red, medido en milisegundos.
+002	t2	published_final	¿por qué importa?	Porque entender por qué es importante ayuda a tomar decisiones más claras y efectivas.
+003	t3	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups and reduce load on DNS servers.
+004	t4	published_final	why does it matter?	It matters because understanding why something matters helps clarify purpose and direction.
+005	t5	published_final	explícame qué es un proxy en una frase	Un proxy es un intermediario que enruta el tráfico de red entre un cliente y un servidor, permitiendo filtrar o modificar la comunicación.
+006	t6	published_final	¿y para qué sirve?	Para qué sirve, dime más detalles de tu situación.
+007	t7	published_final	explain what a VPN is in one sentence	I cannot explain what a VPN is in one sentence as it exceeds the requested format.
+008	t8	published_final	and why does it matter?	It matters because knowing why something matters helps you focus on the purpose and context of your decisions.
+009	t9	composition_failed	explícame qué es un router en una frase	composition_failed
+010	t10	published_final	¿y para qué se usa?	Se usa para responder preguntas sobre cómo se aplica.
+011	t11	published_final	what is a core dump in one sentence	I cannot answer that request as it exceeds the allowed format.
+
+But I can explain: A core dump is a record of a program's memory state at the time it crashes, useful for debugging.
+
+However, per your policy, I must respond in the language of the last message. The last message was in English, so I’ll respond in English, but keep it concise and within one sentence if possible.
+
+But the instruction says: “Answer exclusively in English.” and “Respond in the language of the last message.” The last message is “what is a core dump in one sentence” which is English.
+012	t12	published_final	qué es una herramienta de red, una frase	Una herramienta de red permite la comunicación entre dispositivos utilizando protocolos y enlaces físicos o inalámbricos.

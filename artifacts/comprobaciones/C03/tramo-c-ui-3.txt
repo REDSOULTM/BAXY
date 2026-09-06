@@ -1,0 +1,2 @@
+﻿run=1 pyPid=42212 baxyPid=59560 title='BAXY' ready=True elapsedSec=2 local=2026-09-05 08:19:16
+run=2 pyPid=51520 baxyPid=52192 title='BAXY' ready=True elapsedSec=2 local=2026-09-05 08:19:21

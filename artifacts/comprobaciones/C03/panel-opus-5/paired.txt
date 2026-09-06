@@ -1,0 +1,61 @@
+n=56 published=55 other=1
+
+001	t1	published_final	Good afternoon	Hola.
+002	t2	published_final	define DNS in one sentence	DNS is a system that maps domain names to IP addresses.
+003	t3	published_final	Hi again	Hello, hi!
+004	t4	published_final	Good evening	Hi.
+005	t5	published_final	explain what a firewall is in one sentence	A firewall is a security device that monitors and controls incoming and outgoing network traffic based on an IP address or application.
+006	t6	published_final	explícame qué es un cortafuegos en una frase	Un cortafuegos es un dispositivo que bloquea o controla el tráfico de red para proteger el sistema.
+007	t7	published_final	hey, what can you do on this PC	I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.
+008	t8	published_final	hola, ¿qué puedes hacer en este PC?	Hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.
+009	t9	published_final	traduce 'good evening' al español, nada más	Buenas noches.
+010	t10	published_final	What time is it?	At 13:03, the time is thirteen minutes past one.
+011	t11	published_final	Dime la hora y el volumen.	La hora es 13:03, el volumen es el número correspondiente, y el estado de mutes es falso.
+012	t12	published_final	are you connected?	The PC is online.
+013	t13	published_final	¿este equipo tiene conexión?	Sí, el PC está online.
+014	t14	published_final	don't open Paint	I will not open Paint.
+015	t15	published_final	no abras la Calculadora ahora	No abriré la calculadora.
+016	t16	published_final	close that	Do you mean close the document or close the window?
+017	t17	published_final	qué no haces, una frase	Solo hago lo que esta PC permite y nada más.
+018	t18	published_final	what will you never do on this PC	I only do the work of this PC and nothing beyond it.
+019	t19	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda la señal en viajar de un punto a otro en la red.
+020	t20	published_final	¿por qué importa?	La importancia radica en que permite entender el porqué algo sucede y por qué es relevante en el contexto dado.
+021	t21	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.
+022	t22	published_final	why does it matter?	Caching reduces latency by storing domain name lookups, preventing repeated network requests.
+023	t23	published_final	post a letter to Eris	I cannot post a letter to Eris as it is beyond the scope of what I can do on this PC.
+024	t24	published_final	reserva una mesa en Titán	No pude reservar la mesa en Titán.
+025	t25	published_final	book a shuttle to Callisto	I cannot book a shuttle to Callisto.
+026	t26	published_final	keep chatting without opening apps	I won’t open any apps and will keep chatting as requested.
+027	t27	published_final	sigue charlando sin abrir programas	No abriré ningún programa.
+028	t28	published_final	what can you do here	I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.
+029	t29	published_final	qué sabes hacer en este equipo	Tengo lo que necesito para ayudarte. Necesito que me digas qué quieres hacer ahora.
+030	t30	published_final	what will you never do	I only do the work of this PC and nothing beyond it.
+031	t31	published_final	explain what a VPN is in one sentence	A VPN encrypts your internet traffic so it stays private and secure.
+032	t32	published_final	why does it matter?	Because encryption protects your data from being intercepted or read by anyone else.
+033	t33	published_final	explícame qué es un proxy en una frase	Un proxy actúa como intermediario que redirige tu conexión a través de otro servidor.
+034	t34	published_final	¿y por qué se usa?	Un proxy actúa como intermediario que redirige tu conexión a través de otro servidor.
+035	t35	published_final	no abras Word ahora	No abriré Word ahora.
+036	t36	published_final	¿tiene conexión este equipo?	El equipo está online.
+037	t37	published_final	what do you not do here	I only do the work of this PC and nothing beyond it.
+038	t38	published_final	qué no puedes hacer en este PC	¿Puedes explicar qué tipo de tareas o acciones específicas no realizarás en esta PC?
+039	t39	published_final	sigue hablando sin abrir nada	No usaré ninguna aplicación.
+040	t40	published_final	keep talking without launching anything	What specific task would you like to focus on, or how would you like to proceed with your request?
+041	t41	published_final	open it	Could you please clarify whether you want to open a file, a link, or something else?
+042	t42	published_final	ábreme eso	¿Qué archivo o recurso específico quieres abrir?
+043	t43	published_final	cuánto es doce por ocho	¿Qué archivo o recurso específico deseas abrir?
+044	t44	published_final	what is the capital of Peru	The capital of Peru is Lima.
+045	t45	published_final	hola, ¿qué sabes hacer aquí?	Hola, hago una frase en español según los detalles del turno.  
+La frase es: "Soy un compañero que responde en español y me enfoco en la tarea actual."  
+
+(Esta frase cumple con los requisitos: es una frase en español, de primera persona, una sola frase, sin código ni términos internos, y está escrita en español sin usar palabras en inglés.)
+046	t46	published_final	hi, what do you handle on this PC	I cannot handle that request.
+047	t47	published_final	no abras Spotify	No abriré Spotify.
+048	t48	published_final	don't launch Steam	I won’t launch Steam.
+049	t49	published_final	qué es una VLAN, una frase	Una VLAN es un subgrupo virtual dentro de una red que permite organizar equipos por función sin cambiar direcciones globales.
+050	t50	published_final	what is a subnet mask in one sentence	A subnet mask defines which portion of an IP address identifies the network segment.
+051	t51	published_final	what are your limits on this PC	I am a system that responds in English to explain technical concepts clearly and concisely.
+052	t52	published_final	cuáles son tus límites aquí	¿Puedes explicar qué es una subnet mask en términos simples?
+053	t53	published_final	hola, ¿me dices la hora?	La hora es 13:11.
+054	t54	published_final	hi, what time is it?	It is 13:11.
+055	t55	composition_failed	explícame qué es un router en una frase	composition_failed
+056	t56	published_final	¿y para qué sirve?	No sé exactamente a qué te refieres, pero si me dices más detalles, puedo ayudarte.

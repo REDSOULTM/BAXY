@@ -1,0 +1,102 @@
+n=100 published=88 composition_failed=12 other=0
+
+001	published_final	Hola	¡Hola! ¿En qué puedo ayudarte hoy?
+002	published_final	qué puedes hacer en este PC	Puedo abrir y cerrar programas en este PC.
+003	published_final	explícame qué es un huso horario, una frase	Un huso horario es la diferencia de tiempo entre una región y un centro de referencia, como el día o la noche.
+004	published_final	por qué importa	Porque entender por qué importa ayuda a tomar decisiones más informadas y alineadas con nuestras metas.
+005	published_final	¿Qué hora es?	06:21
+006	published_final	Dime la hora y el estado del audio.	La hora es 06:21 y el estado de audio muestra volumen 100 con mute falso.
+007	published_final	traduce 'good morning' al español, nada más	Buenos días
+008	published_final	cierra aquello	¿Qué quieres cerrar exactamente?
+009	composition_failed	no abras el bloc de notas	composition_failed
+010	published_final	compra bitcoins ahora	No puedo ayudarte con eso.
+011	published_final	Hi there	Hi there! How can I help you today?
+012	published_final	what can you do on this PC	I can open and close apps, read the clock, and play audio.
+013	published_final	define UTC in one sentence	UTC is Coordinated Universal Time, a global time standard based on atomic clocks and solar time.
+014	published_final	why does that matter	Porque es importante entender el contexto para resolver el problema.
+015	published_final	What time is it?	06:22
+016	published_final	don't open Calculator	I don't do that.
+017	published_final	What will you refuse to do	I don't do that.
+018	published_final	keep going without opening apps	The facts state that a short sentence is required in English.
+019	published_final	are you connected?	The PC network is called BAXY Network.
+020	published_final	book a table on Callisto	I can't book a table on Callisto for you.
+021	published_final	Buenos días	Buenos días
+022	published_final	En qué me puedes echar una mano en este equipo	Puedo ayudarte a abrir o cerrar programas y a leer el audio en este equipo.
+023	published_final	qué no haces, sin abrir nada	No hago eso sin abrir nada.
+024	published_final	Have I got internet?	Sí, el PC está online.
+025	published_final	clock please	06:24
+026	published_final	ábreme eso	¿Qué necesitas que se abra?
+027	published_final	open that	What would you like to open?
+028	published_final	traduce 'hello' al español, nada más	Hola
+029	composition_failed	still with me?	composition_failed
+030	published_final	send a postcard to Titan	I can’t send a postcard to Titan.
+031	published_final	Hey	Hey! ¿En qué puedo ayudarte hoy?
+032	published_final	who are you	I am BAXY, a helpful AI assistant.
+033	published_final	introduce yourself briefly	I'm BAXY, your friendly AI companion. I'm here to help with questions, tasks, or just chat in a natural way. I speak Spanish, English, and Spanglish, and I'll respond in the same language you're using. Let me know how I can assist you!
+034	published_final	dime qué es la memoria RAM, una frase	La memoria RAM es un tipo de almacenamiento temporal que el computador utiliza para ejecutar programas y cargar información mientras está encendido.
+035	published_final	y para qué sirve en un PC	¿Qué tipo de respuesta esperas para 'dime qué es la memoria RAM, una frase'?
+036	published_final	the time, please	The local clock reads 06:27.
+037	published_final	no abras Steam	No puedo ayudarte si el tema está fuera de lo que hago.
+038	published_final	if it didn't happen, say so	No evento específico se ha descrito en la conversación que no haya ocurrido, por lo que no puedo decir 'no ocurrió' sin más contexto.
+039	published_final	just say hi	Hi.
+040	composition_failed	inventa una hora	composition_failed
+041	published_final	Qué tal	¡Hola! ¿Cómo estás?
+042	published_final	what do you do on this PC	I can open and close apps and read the clock.
+043	published_final	explícame qué es un proceso del sistema, una frase	Un proceso del sistema es un conjunto de instrucciones que el sistema ejecuta para realizar una tarea específica.
+044	published_final	por qué conviene saberlo	Conocer qué es un proceso del sistema ayuda a entender cómo el sistema opera y a identificar qué está ejecutando o haciendo en el momento.
+045	published_final	Could you tell me the time?	06:28
+046	published_final	Dime la hora y el volumen.	La hora es 06:28 y el volumen es normal (100), mientras que el estado de mutes es desactivado.
+047	published_final	continue without opening apps	I continue without opening apps.
+048	published_final	haz eso	¿Qué específicamente te gustaría que hiciera?
+049	published_final	hazlo	¿Qué específico deseas que haga?
+050	published_final	pide un taxi a Encélado	¿Puedes indicarme cómo pedir un taxi a Encélado?
+051	published_final	Hello again	Hola, compaño.
+052	published_final	qué sabes hacer en este PC	Sé capaz de abrir y cerrar programas, leer la hora y reproducir audio.
+053	published_final	define a time zone, one line	Define a time zone means to specify the regional time difference from a base reference, including the offset and whether daylight saving time is applied.
+054	published_final	Por qué hay zonas horarias	Las zonas horarias existen porque la Tierra gira, lo que hace que diferentes partes del planeta vean la hora en momentos diferentes. Esto ayuda a alinear el tiempo en todo el mundo para coordinar actividades, viajes y comunicaciones.
+055	published_final	dime la hora local	06:30
+056	composition_failed	Who is speaking	composition_failed
+057	published_final	don't launch Terminal	I don't do that.
+058	published_final	¿hay red?	El PC está en línea.
+059	published_final	traduce 'good night' al español, nada más	Buenas noches.
+060	published_final	name a thing you cannot do	I cannot do that.
+061	composition_failed	Hola compañero	composition_failed
+062	published_final	Explícame con calma qué puedes hacer en este PC y qué no haces, sin abrir nada.	Puedo leer la hora y leer el audio, pero no abro programas ni cierro nada.
+063	published_final	why do time zones exist	Time zones exist to align local time with the Earth's rotation for practical coordination and consistency.
+064	published_final	gracias, ¿qué hora es?	BAXY te dice: "Hoy es las 06:32, ¡muy bien empezando!"
+065	published_final	local time?	06:32
+066	published_final	close that	What would you like me to close?
+067	published_final	keep chatting without launching apps	I'll keep chatting without opening any apps.
+068	published_final	online?	El PC está online.
+069	composition_failed	solo un saludo	composition_failed
+070	published_final	manda flores a Miranda	¿Qué es el due date y el título del recordatorio que quieres crear?
+071	composition_failed	Buenas tardes	composition_failed
+072	published_final	De qué te ocupas	Me estás preguntando qué hago.
+073	published_final	what is RAM, one sentence	RAM is temporary memory that the computer uses to load active programs and data.
+074	published_final	y por qué importa en un PC	En un PC, importa porque permite ejecutar aplicaciones y tareas que mejoran la productividad y el rendimiento del sistema.
+075	published_final	hora ahora	06:35
+076	composition_failed	Don't open Notepad	composition_failed
+077	published_final	¿sigues ahí?	Sigo ahí.
+078	published_final	traduce 'thanks' al español, nada más	Gracias.
+079	published_final	quién eres tú	Soy BAXY, un compañero que te ayudo en español sin usar inglés.
+080	published_final	compra un boleto a Oberón	No puedo ayudarte con la compra del boleto a Oberón.
+081	composition_failed	hola, what time is it	composition_failed
+082	published_final	what can you do, una frase	I can open and close apps, read the clock, and listen to audio.
+083	published_final	define huso horario, una frase	El huso horario ajusta el tiempo mostrado según la ubicación geográfica.
+084	published_final	y eso cómo se usa	Hola, amigo.
+085	published_final	clock now	06:36
+086	published_final	no abras nada	No puedo abarcar nada.
+087	published_final	Have I got internet	Estás online.
+088	composition_failed	preséntate en corto	composition_failed
+089	composition_failed	quién habla	composition_failed
+090	published_final	envía esto a Mimas	¿Quién es Mimas?
+091	published_final	¿Sigues?	Sigo.
+092	published_final	dime la hora	La hora es 06:38.
+093	published_final	explícame qué es el portapapeles, una frase	El portapapeles es una frase que se usa para describir un lugar o método donde se almacenan o gestionan papeles o documentos de manera ordenada y eficiente.
+094	published_final	para qué lo usaría yo	Hola
+095	published_final	What time is it now	06:38
+096	published_final	ábreme eso	¿De qué documento o tema te refieres con "eso"?
+097	composition_failed	don't open the calculator	composition_failed
+098	published_final	keep going without opening apps	I will continue without opening any applications.
+099	published_final	describe yourself	Soy BAXY, un compañero de apoyo en español que entiende y responde de forma clara y concisa.
+100	published_final	reserve a cabin on Ganymede	No puedo reservar una cabin en Ganymede, ya que no realizo actividades fuera de mi alcance.

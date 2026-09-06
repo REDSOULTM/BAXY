@@ -177,3 +177,5 @@ goal.
 - **Soak 24 h no es requisito** — 10.2 mide idle 15 min. Guard `soak-24h-as-requirement`. *Goal 09.5.9.*
 - **Gemma-native-audio no es el oído** — llama-server no rutea `input_audio`; Parakeet se conserva. Guard `gemma-native-audio`. *Goal 09.5.9.*
 - **`MainWindowViewModel.HandlePendingNoteChoiceAsync`** — tres `AddMessage` con prosa de paginación/cancelación y un interpolate de «Esa opción no está visible». El censo no las cuenta (no disparan `PALABRAS_ES`). No bloquean 09.5.11B. *Goal 09.5.11B.*
+
+- 2026-09-04, revisión autorizada de sprints: quedan sustituidas las reglas de 350K+150K, cierre en una sesión y aceptación fresca por cambio de GGUF; véase `documentacion/sprints/REVISION_SPRINTS_2026-09-04.md`. Hardware/instalación/firma diferidos conservan compromiso y tienen owner en fase 12; no son capacidad certificada por 11.16.

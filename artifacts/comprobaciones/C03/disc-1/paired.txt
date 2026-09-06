@@ -1,0 +1,19 @@
+# disc-1
+n=16 published=12 composition_failed=4 other=0
+
+001	published_final	Hola, buenas	Hola, bienvenido.
+002	composition_failed	qué puedes hacer en este equipo	composition_failed
+003	published_final	Hey	Hey! ¿Qué te gustaría hacer o aprender hoy? Puedo ayudar con ideas, explicaciones, resolver problemas o simplemente conversar en español, inglés o spanglish. Dime qué necesitas y lo hago.
+004	composition_failed	What can you do here	composition_failed
+005	published_final	book a room on Deimos	I cannot book a room on Deimos as requested.
+006	published_final	time check	I see the time is 21:38.
+007	published_final	open that	¿Qué acción específica desea realizar con la referencia 'that'?
+008	published_final	online?	Sí, estoy online.
+009	published_final	What will you refuse to do	I won’t refuse to do anything you ask.
+010	composition_failed	don't open Steam	composition_failed
+011	published_final	tell the time in English	The current time is 21:40.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	No puedo ayudar con eso.
+014	composition_failed	just say hi	composition_failed
+015	published_final	define huso horario, una frase	Claro, aquí tienes una frase simple sobre el huso horario:   "El huso horario ajusta el tiempo según la línea de meridiano de un lugar, para que todos en la misma zona horaria tengan la misma hora."
+016	published_final	Por qué hay zonas horarias	Por qué hay zonas horarias depende de cómo se organiza la distribución de los países en el mundo y la necesidad de coordinar el tiempo entre ellos.

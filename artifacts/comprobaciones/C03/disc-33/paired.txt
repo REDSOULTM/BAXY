@@ -1,0 +1,18 @@
+n=16 published=16 composition_failed=0 other=0
+
+001	published_final	Hola, buenas	¡Bienvenido al PC, soy BAXY y estoy listo para ayudarte!
+002	published_final	qué puedes hacer en este equipo	Puedo ejecutar comandos, abrir programas y ayudarte con tareas técnicas en este equipo.
+003	published_final	Hey	¡Hola! ¿En qué puedo ayudarte hoy?
+004	published_final	What can you do here	I can help you run scripts, edit files, manage processes, and answer questions about tasks you have on this computer.
+005	published_final	book a room on Deimos	Eso no lo hago.
+006	published_final	time check	I see the time is 02:28.
+007	published_final	open that	Which window or document should I open?
+008	published_final	online?	Soy BAXY y estoy online.
+009	published_final	What will you refuse to do	I don't do that.
+010	published_final	don't open Steam	I can't proceed with this request as it falls outside my capabilities.
+011	published_final	tell the time in English	The current time is 02:30.
+012	published_final	traduce 'hello' al español, nada más	Hola.
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	Hi
+015	published_final	define huso horario, una frase	Define huso horario como el reloj local que refleja la hora correspondiente a la región geográfica específica, ajustando automáticamente para cubrir el desplazamiento horario.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias permiten que las personas en lugares diferentes del mundo midan el tiempo de manera consistente, facilitando la coordinación y el trabajo en equipo.

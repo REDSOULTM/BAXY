@@ -1,0 +1,588 @@
+[
+  {
+    "turnId": "t1",
+    "request": "what is a subnet mask in one sentence",
+    "terminal": "published_final",
+    "final": "A subnet mask divides an IP address into network and host portions, determining which part of the address identifies the network and which identifies the specific host.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "what are your limits on this PC",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "cuáles son tus límites aquí",
+    "terminal": "published_final",
+    "final": "¿Qué puedes hacer en esta conversación?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "qué no puedes hacer en este PC",
+    "terminal": "published_final",
+    "final": "¿Qué específicamente no puedes hacer en este PC?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t5",
+    "request": "qué te niegas a hacer aquí",
+    "terminal": "published_final",
+    "final": "¿Qué específicamente no puedes hacer en este PC?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t6",
+    "request": "hi, what do you handle on this PC",
+    "terminal": "published_final",
+    "final": "Can you tell me what specific task or problem you'd like help with on this PC?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t7",
+    "request": "what do you not do here",
+    "terminal": "published_final",
+    "final": "I only run the tasks assigned to my PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 61,
+        "draft_sha256": "4243d426c9122a3f7f1860094a0568dd7d8b78160f6a9e0c7b09df71853ca55f",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only run the tasks assigned to my PC and nothing beyond it."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "keep talking without launching anything",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "653f33fc425392590282c04238c5cd1c6769eee93d68de35d6f61c715fd5ab45",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I’ll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "cf300633cb457bbaeaf9f04671031d26b7f82fc74badc33e2da16ea13c5a0d2f",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I will keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "593fdffe63c21a8fc3bc68d20a68e0b1fe94d14e3d17ccbed9d6cbe2f5730591",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I will keep talking without launching any app."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "9be52003357a709ad6a22b2815b1e153b2dfc19c0e11d0abbfbc96e694871fca",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I will keep talking without launching anything, and I won’t open the app."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "cf300633cb457bbaeaf9f04671031d26b7f82fc74badc33e2da16ea13c5a0d2f",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I will keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 51,
+        "draft_sha256": "630fe76b2b6499505374573eede330634eb45bcd0fa9a2a6769ce2c4f60ff344",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Sure, I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "593fdffe63c21a8fc3bc68d20a68e0b1fe94d14e3d17ccbed9d6cbe2f5730591",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I will keep talking without launching any app."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "cf300633cb457bbaeaf9f04671031d26b7f82fc74badc33e2da16ea13c5a0d2f",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I will keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "cc544d352e73f01135592e3944a19a90125607633186af7626b84b335e1c6847",
+        "payload": {
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I'll keep talking without launching anything."
+      }
+    ]
+  }
+]

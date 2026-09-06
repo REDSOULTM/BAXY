@@ -1,0 +1,212 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda una señal en viajar entre un punto y otro a través de una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure"
+  },
+  {
+    "turnId": "t2",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "Porque entender por qué importa te ayuda a priorizar acciones con mayor significado y propósito.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long"
+  },
+  {
+    "turnId": "t3",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain name to IP address mappings to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t4",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why something matters helps prioritize meaningful actions.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "no_reply_for_kind:action"
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario entre tu dispositivo y la red, ayudando a filtrar o modificar el tráfico.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t6",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Para qué sirve el código es el proceso que lo utiliza para resolver el problema.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long"
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN creates an encrypted tunnel between your device and a remote server, securing your internet connection.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t8",
+    "request": "and why does it matter?",
+    "terminal": "published_final",
+    "final": "The concept matters because understanding it helps you make informed decisions that lead to better outcomes.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t9",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router enruta el tráfico de red entre dispositivos y el internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long"
+  },
+  {
+    "turnId": "t10",
+    "request": "¿y para qué se usa?",
+    "terminal": "published_final",
+    "final": "Para qué se usa, indica el propósito o función del dispositivo.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t11",
+    "request": "what is a core dump in one sentence",
+    "terminal": "published_final",
+    "final": "A core dump is a file containing the memory state of a process at the time it crashes, useful for debugging.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t12",
+    "request": "qué es una herramienta de red, una frase",
+    "terminal": "published_final",
+    "final": "Una herramienta de red permite enviar y recibir datos entre dispositivos conectados.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure"
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es la caché, una frase",
+    "terminal": "published_final",
+    "final": "La caché es un espacio rápido donde se guarda información para acceder más rápido al contenido más común.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure"
+  },
+  {
+    "turnId": "t14",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "Porque entender por qué importa nos ayuda a tomar decisiones más claras y significativas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long"
+  },
+  {
+    "turnId": "t15",
+    "request": "y eso cómo se usa",
+    "terminal": "published_final",
+    "final": "Puedes usar el programa ingresando la información y ejecutándola con el comando correspondiente.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t16",
+    "request": "explain what a firewall is in one sentence",
+    "terminal": "published_final",
+    "final": "A firewall is a security device that monitors and controls incoming and outgoing network traffic based on predetermined security rules.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t17",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why it matters helps clarify goals and decision-making.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "no_reply_for_kind:action"
+  },
+  {
+    "turnId": "t18",
+    "request": "what would I use it for at home",
+    "terminal": "published_final",
+    "final": "You might use a firewall at home to protect your devices from unauthorized access and to control traffic between your network and the internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t19",
+    "request": "qué es el kernel, una frase",
+    "terminal": "published_final",
+    "final": "El kernel es el núcleo del sistema operativo que gestiona los recursos del ordenador.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t20",
+    "request": "para qué lo necesita el PC",
+    "terminal": "published_final",
+    "final": "Para qué lo necesita el PC, dime qué programa o software quieres ejecutar y qué rendimiento esperas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  },
+  {
+    "turnId": "t21",
+    "request": "¿y cuándo conviene usarlo?",
+    "terminal": "published_final",
+    "final": "Se usa cuando se necesita hacer una tarea específica en el momento adecuado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null
+  }
+]

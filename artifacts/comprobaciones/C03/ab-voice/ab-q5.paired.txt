@@ -1,0 +1,17 @@
+## Qwen3-4B Q5_K_M
+n=15 published=9 failed=6
+001	published_final	Hola	Hola. ¿Qué tal?
+002	composition_failed	quién eres	composition_failed
+003	composition_failed	introduce yourself	composition_failed
+004	composition_failed	qué puedes hacer	composition_failed
+005	published_final	What can you do here	I can answer questions, provide information, and help with tasks. I can also engage in conversations and understand context from the dialogue.
+006	published_final	what is UTC, one line	UTC stands for Coordinated Universal Time, a time standard that is essentially the same everywhere in the world. It's used as a reference point for time zones and is based on the mean solar time at the Prime Meridian in Greenwich, England.
+007	composition_failed	explícame qué es un huso horario	composition_failed
+008	composition_failed	why do time zones exist	composition_failed
+009	composition_failed	define huso horario, una frase	composition_failed
+010	published_final	What will you refuse to do	Quiero saber qué tarea específica me pedirían que rechace o no realice.
+011	published_final	traduce 'hello' al español, nada más	Hola.
+012	published_final	¿Qué hora es?	Listo, la hora local es 17:46.
+013	published_final	Could you tell me the time?	I saw the time was 17:46.
+014	published_final	descríbete breve	BAXY es mi compañero que vive en el PC y soy un él.
+015	published_final	ask Saturn for tea	No pude: eso no lo hago.

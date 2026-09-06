@@ -1,0 +1,100 @@
+﻿001	published_final	Hola, buenas noches.
+002	composition_failed	composition_failed
+003	published_final	La hora local es 16:16.
+004	composition_failed	composition_failed
+005	composition_failed	composition_failed
+006	published_final	Hey, what's up?
+007	composition_failed	composition_failed
+008	published_final	The local clock shows 16:17.
+009	published_final	I cannot provide a one-line explanation of what a time zone is.
+010	published_final	I cannot book a trip on Deimos as requested.
+011	published_final	Hola, ¿en qué puedo ayudarte?
+012	composition_failed	composition_failed
+013	published_final	16:17.
+014	composition_failed	composition_failed
+015	published_final	No puedo mandar flores a Oberón.
+016	published_final	Hola buen día.
+017	published_final	The local clock shows 16:18.
+018	composition_failed	composition_failed
+019	published_final	¿qué acción concreta quieres que realice?
+020	published_final	I cannot close that.
+021	published_final	Hola, BAXY.
+022	published_final	The time is 16:18.
+023	published_final	¿Quién te pregunta?
+024	published_final	¿Cuál es el propósito de "preséntate en corto"?
+025	published_final	No puedo comprar bitcoin en plutón.
+026	published_final	Listo, estoy online.
+027	published_final	Listo, tengo internet.
+028	published_final	The local clock time is 16:19.
+029	published_final	I will never stop helping you.
+030	composition_failed	composition_failed
+031	published_final	Hola, ¿en qué puedo ayudarte?
+032	published_final	Listo, la hora local es 16:19.
+033	composition_failed	composition_failed
+034	composition_failed	composition_failed
+035	composition_failed	composition_failed
+036	published_final	¿qué acción específica quieres que te haga?
+037	published_final	No puedo inventar una hora.
+038	published_final	I cannot fabricate a clock time.
+039	published_final	¿Qué necesitas que te diga exactamente?
+040	composition_failed	composition_failed
+041	published_final	Hola.
+042	composition_failed	composition_failed
+043	published_final	La hora, otra vez: 16:21.
+044	published_final	¿Cuál es el tema que necesitas aclarar?
+045	published_final	¿Cuál es el aspecto que deseas describir?
+046	published_final	I cannot open Steam.
+047	published_final	¿Qué tipo de información necesitas exactamente?
+048	published_final	Hola.
+049	published_final	Sí, still with me. Estoy aquí.
+050	composition_failed	composition_failed
+051	published_final	Hola, BAXY.
+052	published_final	The local clock shows 16:22.
+053	published_final	Listo, la hora es 16:22.
+054	published_final	The local clock shows 16:22.
+055	published_final	Hi.
+056	published_final	Listo, 24 interfaces conectadas, 14 de ellas son ethernet.
+057	published_final	Listo, hay internet.
+058	published_final	I'll keep going without any apps.
+059	published_final	¿Qué tipo de aplicación estás la que no se lanzó?
+060	published_final	¿Quién es el quien habla?
+061	published_final	Hola, soy BAXY.
+062	published_final	The local clock shows 16:23.
+063	published_final	La hora local es 16:23.
+064	published_final	The local clock shows 16:23.
+065	published_final	Listo, la hora local es 16:23.
+066	published_final	Hola, soy BAXY.
+067	published_final	Hola.
+068	published_final	Listo, el reloj de la sala marca 16:23.
+069	published_final	The time is 16:24.
+070	published_final	Listo, la hora local es 16:24.
+071	published_final	Hi again.
+072	composition_failed	composition_failed
+073	composition_failed	composition_failed
+074	published_final	The local clock shows 16:24.
+075	published_final	Según el reloj, las 16:24.
+076	published_final	The time is 16:25.
+077	published_final	16:25
+078	published_final	I couldn't: it's outside what I do.
+079	composition_failed	composition_failed
+080	published_final	The local clock shows 16:25.
+081	published_final	¡Hola!
+082	composition_failed	composition_failed
+083	published_final	La hora local es 16:25.
+084	published_final	La hora local es 16:25.
+085	composition_failed	composition_failed
+086	published_final	Las zonas horarias varían según la región geográfica y el desfase horario local.
+087	published_final	No puedo pedir café a Júpiter.
+088	published_final	I couldn't: I don't do that.
+089	published_final	Hola, la hora local es 16:26.
+090	composition_failed	composition_failed
+091	published_final	Hola, soy BAXY.
+092	published_final	The local clock shows 16:26.
+093	published_final	The local clock shows 16:26.
+094	published_final	¿Cuál es el aspecto que deseas que te describa?
+095	published_final	¿Cuál es el tema principal que deseas aclarar?
+096	composition_failed	composition_failed
+097	composition_failed	composition_failed
+098	published_final	The local clock shows 16:27.
+099	published_final	La hora local es 16:27.
+100	published_final	The local clock shows 16:27.

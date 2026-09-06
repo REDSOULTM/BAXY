@@ -1,0 +1,19 @@
+# disc-12
+n=16 published=13 composition_failed=3 other=0
+
+001	published_final	Hola, buenas	¡Hola! ¿En qué puedo ayudarte hoy?
+002	composition_failed	qué puedes hacer en este equipo	composition_failed
+003	composition_failed	Hey	composition_failed
+004	published_final	What can you do here	I can help you with general questions, provide explanations, assist with tasks, or just chat in a friendly way. Let me know what you'd like to do!
+005	published_final	book a room on Deimos	No puedo ayudar con eso.
+006	published_final	time check	I saw the draft at 23:15 and include the name and number from the seen data.
+007	published_final	open that	¿Qué acción específica desea realizar con la referencia 'that'?
+008	published_final	online?	No puedo ayudar esta vez.
+009	published_final	What will you refuse to do	I understand the task and will respond in English as required.
+010	published_final	don't open Steam	I understand the situation but can't assist with this request as it falls outside my capabilities.
+011	published_final	tell the time in English	The current time is 23:18.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	composition_failed	just say hi	composition_failed
+015	published_final	define huso horario, una frase	Configuro el huso horario para la zona horaria local.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias se definen para que todas las regiones del mundo puedan coordinar el tiempo de forma uniforme.

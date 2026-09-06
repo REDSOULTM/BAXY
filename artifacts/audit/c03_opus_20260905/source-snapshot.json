@@ -1,0 +1,22 @@
+{
+  "src/baxy_mind/llm.py": {
+    "headLines": 8100,
+    "workingLines": 9035,
+    "sha256": "9552652da505049efe2aceb583560695984acfbc52b90ca59282dba8b954e16a"
+  },
+  "src/Baxy.App/UserMessagePolicy.cs": {
+    "headLines": 1446,
+    "workingLines": 2419,
+    "sha256": "2848526b507378386889b77cd5d6a31a98ead80b61715341a9d09e35f5aaf337"
+  },
+  "tests/test_goal06_voice.py": {
+    "headLines": 865,
+    "workingLines": 1907,
+    "sha256": "51c671a0ab89bbe5fd3887cc6468d10926f42569b6a258b591b1593a854a2628"
+  },
+  "tests/Baxy.Integration.Tests/Goal06VisibleVoiceTests.cs": {
+    "headLines": 525,
+    "workingLines": 1632,
+    "sha256": "b26c5ff8767a0d80f7e9ab1bf4d43d454f1432b76b2baa6dfd4015f3d9d9f9f2"
+  }
+}

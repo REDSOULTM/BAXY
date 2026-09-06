@@ -1,0 +1,76 @@
+n=74 published=73 other=1
+
+001	t1	published_final	Good afternoon	Hello!
+002	t2	published_final	define DNS in one sentence	DNS stands for Domain Name System, which translates domain names into IP addresses for easier access to online resources.
+003	t3	published_final	Hi again	Hi, I see you've greeted me with "hi".
+004	t4	published_final	Good evening	Hi, how can I help you today.
+005	t5	published_final	explain what a firewall is in one sentence	A firewall is a security device that monitors and controls incoming and outgoing network traffic based on predefined rules to protect devices and data.
+006	t6	published_final	explícame qué es un cortafuegos en una frase	Un cortafuegos es una herramienta que bloquea o controla el acceso a ciertas funciones o entradas para proteger el sistema.
+007	t7	published_final	hey, what can you do on this PC	I can open and close apps, move and focus windows, read and set the audio, and check the clock and PC state. There are other things too.
+008	t8	published_final	hola, ¿qué puedes hacer en este PC?	Hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.
+009	t9	published_final	traduce 'good evening' al español, nada más	Buenas noches.
+010	t10	published_final	What time is it?	It is 17:52.
+011	t11	published_final	Dime la hora y el volumen.	La hora y el volumen es 17:52 y el volumen es 20.
+012	t12	published_final	are you connected?	Yes, the PC is online.
+013	t13	published_final	¿este equipo tiene conexión?	Sí, el PC está online.
+014	t14	published_final	don't open Paint	I will not open Paint.
+015	t15	published_final	no abras la Calculadora ahora	No debo abrir la calculadora ahora.
+016	t16	published_final	close that	What would you like me to close?
+017	t17	published_final	qué no haces, una frase	Soy solo el programa de esta PC, y solo hago exactamente lo que esta PC está diseñada para hacer, nada más.
+018	t18	published_final	what will you never do on this PC	I will never do anything beyond the work of this PC—I stick strictly to what this computer can handle and nothing more.
+019	t19	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda la señal en viajar entre tu dispositivo y el de otro, medido en milisegundos.
+020	t20	published_final	¿por qué importa?	Porque entender por qué esencial para tomar decisiones informadas.
+021	t21	published_final	explain what DNS caching is in one sentence	DNS caching stores previously looked-up domain names and their IP addresses to speed up future lookups, reducing load and latency.
+022	t22	published_final	why does it matter?	It matters because understanding why matters helps you make better decisions.
+023	t23	published_final	post a letter to Eris	I cannot post a letter to Eris as I am not capable of sending external communications.
+024	t24	published_final	reserva una mesa en Titán	No puedo reservar una mesa en Titán, ya que este es un pedido que se queda fuera de lo que hago en este PC.
+025	t25	published_final	book a shuttle to Callisto	I cannot help with that request.
+026	t26	published_final	keep chatting without opening apps	I will keep chatting without opening any apps.
+027	t27	published_final	sigue charlando sin abrir programas	Voy a no abrir ningún programa y seguir charlando con ti.
+028	t28	published_final	what can you do here	I can open and close apps, move and focus windows, read the clock and PC state, and take notes. There are other things too.
+029	t29	published_final	qué sabes hacer en este equipo	Lo que puedo hacer en este equipo incluye abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.
+030	t30	published_final	what will you never do	I only do the work assigned to this PC and nothing beyond.
+031	t31	published_final	explain what a VPN is in one sentence	A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote network, allowing you to browse the internet privately and securely.
+032	t32	published_final	why does it matter?	It matters because understanding why it matters helps clarify goals and decisions.
+033	t33	published_final	explícame qué es un proxy en una frase	Un proxy actúa como intermediario que enruta tu conexión a internet, permitiéndote acceder a contenido o servicios que podrían estar bloqueados o más seguros en tu ubicación.
+034	t34	published_final	¿y por qué se usa?	Porque es útil resolver problemas y ayudar a entender.
+035	t35	published_final	no abras Word ahora	No abriré Word según lo solicitado.
+036	t36	published_final	¿tiene conexión este equipo?	Sí, el PC está en línea.
+037	t37	published_final	what do you not do here	I only operate this PC and do nothing beyond it.
+038	t38	published_final	qué no puedes hacer en este PC	Solo hago lo que esta PC permite y nada más.
+039	t39	published_final	sigue hablando sin abrir nada	No abriré ninguna aplicación y no abriré nada, según lo solicitado.
+040	t40	published_final	keep talking without launching anything	Please keep the conversation going calmly without taking any action.
+041	t41	published_final	open it	What would you like me to open?
+042	t42	published_final	ábreme eso	¿A qué documento o tema debería abrirse?
+043	t43	published_final	cuánto es doce por ocho	¿Qué tipo de resultado o cálculo deseas realizar con 'doce por ocho'?
+044	t44	published_final	what is the capital of Peru	The capital of Peru is Lima.
+045	t45	published_final	hola, ¿qué sabes hacer aquí?	Hola, aquí puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.
+046	t46	published_final	hi, what do you handle on this PC	I can help you understand what tasks I handle on this PC, such as providing system status, answering questions about the device, or guiding you on common troubleshooting steps.
+047	t47	published_final	no abras Spotify	No abro Spotify.
+048	t48	published_final	don't launch Steam	I will not launch Steam.
+049	t49	published_final	qué es una VLAN, una frase	Una VLAN es un grupo de dispositivos dentro de una red que se tratan como una red separada.
+050	t50	published_final	what is a subnet mask in one sentence	A subnet mask defines how many bits of an IP address are used for identifying the network versus the host.
+051	t51	published_final	what are your limits on this PC	I can help explain the technical limits of the PC based on system specifications like CPU, RAM, GPU, and storage capacity, without recommending specific configurations.
+052	t52	published_final	cuáles son tus límites aquí	Mis límites aquí son respetar la comunicación en español, no usar términos en inglés, y responder de forma concisa sin desviaciones del tema.
+053	t53	published_final	hola, ¿me dices la hora?	17:59
+054	t54	published_final	hi, what time is it?	The time is 17:59.
+055	t55	published_final	explícame qué es un router en una frase	Un router enruta el tráfico de red entre dispositivos y controla el acceso a la internet.
+056	t56	published_final	¿y para qué sirve?	Para qué sirve la función de BAXY es ayudarte en tareas específicas según tu necesidad.
+057	t57	published_final	what do you refuse to do here	I only do the work of this PC and nothing beyond it.
+058	t58	published_final	qué te niegas a hacer aquí	Me niego a hacer nada aquí.
+059	t59	published_final	manda una carta a Ganímedes	No puedo mandar la carta a Ganímedes porque está fuera de lo que hago en este PC.
+060	t60	published_final	send a parcel to Rhea	I will send the parcel to Rhea.
+061	t61	published_final	hola, ¿qué hora es y el volumen?	La hora es 18:00 y el volumen es el nivel actual 20.
+062	t62	composition_failed	hi, are we online?	composition_failed
+063	t63	published_final	what is a core dump in one sentence	A core dump is a detailed record of a program’s state at the moment it crashes, which helps debug the issue.
+064	t64	published_final	qué es una herramienta de red, una frase	Una herramienta de red permite el intercambio de información entre dispositivos mediante una red.
+065	t65	published_final	explícame qué es un firewall de red en una frase	Un firewall de red controla el tráfico entrante y saliente para proteger la red, permitiendo solo las conexiones seguras.
+066	t66	published_final	what does a load balancer do, one sentence	A load balancer distributes incoming network traffic across multiple servers to improve performance, reliability, and scalability.
+067	t67	published_final	dime la hora en este momento	Sébo.
+068	t68	published_final	tell me the time now	The time is 18:02.
+069	t69	published_final	¿qué es un switch de red, una frase?	Un switch de red enruta el tráfico entre diferentes dispositivos dentro de la misma red, basado en direcciones MAC.
+070	t70	published_final	what is a DNS resolver in one sentence	A DNS resolver translates domain names into IP addresses to resolve network addresses for accessing web resources.
+071	t71	published_final	explícame qué es una MAC address en una frase	Una MAC address es un identificador único que se asigna a cada dispositivo de red para que pueda ser reconocido por el enlace de red.
+072	t72	published_final	what is TCP in one sentence	TCP (Transmission Control Protocol) is a reliable, connection-oriented protocol that ensures data is delivered accurately and in order over a network.
+073	t73	published_final	qué es un puerto de red, una frase	Un puerto de red es una dirección que permite que el equipo se conecte con otra por el enlace.
+074	t74	published_final	what is a gateway in one sentence	A gateway is a device or software that controls the flow of data between different networks or systems.

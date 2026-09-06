@@ -39,8 +39,21 @@ SCHEMA = "baxy.stt-fresh-source-audit.v1"
 WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
     "756a5b311b20ed833da182595766c9d577cca89f20d7a4355eb972576f0f90c0"
 )
+# C03 2026-09-05 (Opus): el árbol se movió al añadir
+# src/baxy_mind/request_reading.py (lectura única del pedido), delegar en
+# ella llm.py y __main__.py, y añadir dos ficheros de entrada al censo de
+# prosa. Corpus, motores y hashes STT/TTS/wake del runtime registrado no
+# cambian: esta actualización no afirma una medida de voz nueva.
+# C03 2026-09-05 (Opus): el censo de prosa visible salta los docstrings de
+# Python, como ya saltaba los comentarios. Corpus, motores y hashes
+# STT/TTS/wake del runtime registrado no cambian: esta actualización no
+# afirma una medida de voz nueva.
+# C03 2026-09-05 (Opus): el compositor recibe el tema de un seguimiento
+# elíptico y una explicación no puede ser sólo otra pregunta. Corpus,
+# motores y hashes STT/TTS/wake del runtime registrado no cambian: esta
+# actualización no afirma una medida de voz nueva.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "2c4b9cc91b968636f49fbfd04d9a04c04a55a80c013e185c1a83b1bdf2288820"
+    "18da4c94105ddf317497f64521f98712d8f1808000aa68655e1a4627927d827d"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

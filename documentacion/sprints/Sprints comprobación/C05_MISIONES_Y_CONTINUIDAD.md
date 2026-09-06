@@ -1,8 +1,8 @@
 # C05 — Misiones completas y una conversación que puede continuar
 
-**Ejecutable: Grok 4.6 High; contexto de 500K; un solo goal persistente.**
+**Ejecutable: Grok 4.6 High; un goal con tramos reanudables.**
 Predecesor: C04 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
-[protocolo 500K](02_PROTOCOLO_GROK_46_500K.md).
+[protocolo vigente](../00_PROTOCOLO_EJECUCION.md).
 
 ## Objetivo
 
@@ -17,6 +17,14 @@ MainWindowViewModel: pendingMindPlan, HandlePendingMindPlanAsync,
 StartNewUiSession; stores durables, MissionEngine, planner y capacidad genérica
 de interacción con apps. Localiza las piezas heredadas de UIA/OCR/visión.
 R6 y Steam históricos sirven de regresión; volver a leer su JSON no los ejecuta.
+
+## Tramos de ejecución
+
+A: secuencia que capturaba objetivos y semántica de sesión. B: planes,
+cancelación y recuperación. C: cascada genérica y Steam real. D: aceptación de
+30 misiones y 20 secuencias completas, sin repartir una secuencia entre resets.
+Lee/adjudica hasta 10 secuencias por lote. No sustituye «misión completa» por
+«paso correcto»; una misión solicitada incompleta debe decir qué quedó pendiente.
 
 ## Trabajo
 

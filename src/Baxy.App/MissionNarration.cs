@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Baxy.App;
@@ -24,13 +25,18 @@ internal static class MissionNarration
             steps.Add(NormalizeOutcome(message));
         }
 
-        return TurnVisibleFacts.Status(
-            "mission_completed",
-            new JsonObject
-            {
-                ["stepCount"] = completedMessages.Count,
-                ["steps"] = steps,
-            });
+        var extra = new JsonObject
+        {
+            ["stepCount"] = completedMessages.Count,
+            ["steps"] = steps,
+        };
+        JsonObject? observed = MergeObserved(completedMessages);
+        if (observed is not null)
+        {
+            extra["observed"] = observed;
+        }
+
+        return TurnVisibleFacts.Status("mission_completed", extra);
     }
 
     internal static string CreateFailureMessage(
@@ -73,6 +79,62 @@ internal static class MissionNarration
         return TurnVisibleFacts.Confirmation(
             "mission_recovery_resume",
             TurnVisibleFacts.ContinueCancel);
+    }
+
+    private static JsonObject? MergeObserved(IReadOnlyList<string> messages)
+    {
+        var merged = new JsonObject();
+        foreach (string message in messages)
+        {
+            string trimmed = message.Trim();
+            if (trimmed.Length == 0 || trimmed[0] != '{')
+            {
+                continue;
+            }
+
+            try
+            {
+                using JsonDocument document = JsonDocument.Parse(trimmed);
+                JsonElement root = document.RootElement;
+                JsonElement observed = root;
+                if (root.TryGetProperty("observed", out JsonElement nested)
+                    && nested.ValueKind == JsonValueKind.Object)
+                {
+                    observed = nested;
+                }
+
+                CopyObservedFacts(observed, merged);
+                if (observed.TryGetProperty("state", out JsonElement state)
+                    && state.ValueKind == JsonValueKind.Object)
+                {
+                    CopyObservedFacts(state, merged);
+                    if (state.TryGetProperty("volumePercent", out JsonElement volume))
+                    {
+                        merged["level"] = JsonNode.Parse(volume.GetRawText());
+                    }
+                }
+            }
+            catch (JsonException)
+            {
+                // Prose step outcomes are not observed facts.
+            }
+        }
+
+        return merged.Count == 0 ? null : merged;
+    }
+
+    private static void CopyObservedFacts(JsonElement observed, JsonObject merged)
+    {
+        foreach (string key in new[]
+        {
+            "utc", "localUtcOffsetMinutes", "muted", "level", "online",
+        })
+        {
+            if (observed.TryGetProperty(key, out JsonElement value))
+            {
+                merged[key] = JsonNode.Parse(value.GetRawText());
+            }
+        }
     }
 
     private static string NormalizeOutcome(string message)

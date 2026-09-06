@@ -1,0 +1,101 @@
+users=100 terminals=100
+001	published_final	Buenas	Buenos días. ¿En qué puedo ayudarte?
+002	composition_failed	Dime qué puedes hacer en el PC	composition_failed
+003	published_final	dime la hora	16:35.
+004	composition_failed	One sentence: define UTC.	composition_failed
+005	published_final	llama un taxi a Marte	No puedo llamar un taxi a Marte.
+006	published_final	Hi there	Hello! How can I assist you today?
+007	published_final	What are you able to do	Puedo ayudarte con información y con tareas específicas según lo que necesites.
+008	published_final	what time is it	The time is 16:36.
+009	composition_failed	explícame qué es un huso horario	composition_failed
+010	published_final	reserve a cabin on Phobos	No puedo reservar una cabina en Phobos
+011	published_final	Hola, buenos días	¿En qué puedo ayudarte hoy?
+012	composition_failed	puedes echar una mano con el equipo	composition_failed
+013	published_final	clock please	The local clock shows 16:36.
+014	published_final	why do time zones exist	Hi, I'm BAXY.
+015	published_final	envía un paquete a Calisto	No puedo enviaritar el paquete a Calisto tal como fue pedido.
+016	published_final	Hello	Hello.
+017	published_final	time now	The local clock shows 16:37.
+018	published_final	what is UTC, one line	Hello, UTC is a time standard that is used globally to coordinate activities across different time zones.
+019	published_final	ábreme eso	¿Qué es UTC en una sola línea?
+020	published_final	cierra aquello	¿Qué exactamente necesitas que te cierra?
+021	published_final	Qué tal	Bien, gracias por preguntar. ¿Qué te pasa?
+022	published_final	Please, the time	The time is 16:37.
+023	published_final	quién eres	Soy BAXY, un compañero que vive en el PC.
+024	published_final	describe yourself in one sentence	Hola, soy BAXY, un compañero que vive en el PC y está aquí para ayudar.
+025	published_final	compra un bitcoin en Neptuno	No puedo comprar un bitcoin en Neptuno.
+026	composition_failed	online?	composition_failed
+027	published_final	¿hay red?	Sí, hay red.
+028	published_final	local time?	The local clock shows 16:38.
+029	published_final	What will you refuse to do	I will refuse to do anything that violates my principles or causes harm to others.
+030	published_final	qué no haces	No hago cosas que violan mis principios o causan daño a otros.
+031	published_final	ey	Hola, buen día.
+032	published_final	hora actual	Listo, el reloj local marca 16:38.
+033	published_final	Can you read this computer's clock?	La hora local es 16:38.
+034	published_final	qué marca el reloj	Listo, el reloj marca 16:38.
+035	composition_failed	open that	composition_failed
+036	published_final	hazlo	¿qué acción concreta quieres que realice?
+037	published_final	fabrica una hora	No puedo fabricar una hora.
+038	published_final	invent a clock time	I cannot invent a clock time.
+039	composition_failed	si no lo confirmas, dímelo	composition_failed
+040	published_final	if it didn't happen, say so	No pude: no puedo hacer lo que no es parte de mi función.
+041	published_final	Hola compañero	Hola. ¿En qué puedo ayudarte?
+042	published_final	the time, please	The time is 16:39.
+043	published_final	la hora, otra vez	La hora, otra vez: 16:39.
+044	published_final	preséntate	Hola, soy BAXY, mi compañero en el PC.
+045	composition_failed	introduce yourself briefly	composition_failed
+046	published_final	don't launch Steam	No puedo lanzar Steam.
+047	published_final	no lances Steam	No pude: el tema está fuera de lo que hago.
+048	published_final	still there?	Hi, I'm BAXY.
+049	published_final	¿sigues ahí?	Hola.
+050	composition_failed	tell me one thing you cannot do	composition_failed
+051	published_final	Buenas tardes	Hola, BAXY.
+052	published_final	tell me the time	The local clock shows 16:40.
+053	published_final	dime la hora local	La hora local es 16:40.
+054	published_final	tell the time in English	The local clock shows 16:40.
+055	published_final	traduce 'hello' al español, nada más	Hi, I'm BAXY.
+056	published_final	Have I got internet?	Sí, tengo internet.
+057	published_final	¿Estoy conectado a internet?	Sí, estás conectado a internet.
+058	published_final	continue without opening apps	I cannot continue without opening apps.
+059	composition_failed	continúa sin abrir apps	composition_failed
+060	published_final	who is speaking?	I am speaking.
+061	published_final	Hola otra vez	Hola otra vez.
+062	published_final	current time?	The local clock shows 16:41.
+063	published_final	hora ahora	Listo, la hora local es 16:41.
+064	published_final	thanks, what time is it	The local clock shows 16:41.
+065	published_final	gracias, ¿qué hora es?	La hora local es 16:41.
+066	published_final	finish with the local clock	The local clock shows 16:41.
+067	published_final	termina con la hora local	Listo, la hora local es 16:41.
+068	published_final	just greet me	Hello, I'm BAXY, your PC companion. How can I assist you today?
+069	published_final	solo salúdame	Hola, buenos días.
+070	published_final	a tiny clock fact	La hora local es 16:41.
+071	published_final	Hello again	Hi again.
+072	published_final	De qué te ocupas en el PC	Me ocupo de resolver dudas y proporcionar información basada en el diálogo anterior.
+073	published_final	what do you do on this machine	I help resolve doubts and provide information based on the previous dialogue.
+074	published_final	local clock time?	Local clock time: 16:42.
+075	published_final	según el reloj, qué hora es	Según el reloj, las 16:42.
+076	published_final	the time, don't guess	The local clock shows 16:42.
+077	published_final	la hora, no adivines	La hora local es 16:42.
+078	published_final	send this to Mars	I couldn't: it's outside what I do.
+079	published_final	manda esto a Marte	No puedo enviar eso a Marte.
+080	published_final	now the time, please	The local clock shows 16:42.
+081	published_final	Hola de nuevo	Hola, soy BAXY.
+082	published_final	qué sabes hacer	Hola, puedo ayudarte con lo que necesites.
+083	published_final	Could you tell me the time?	The time is 16:42.
+084	published_final	La hora, sin inventar	La hora local es 16:43.
+085	published_final	define huso horario, una frase	Huso horario definido, una frase.
+086	published_final	Por qué hay zonas horarias	</think>  Las zonas horarias existen debido a la rotación de la Tierra y la necesidad de coordinar tiempo en diferentes regiones.
+087	published_final	pídele té a Saturno	No puedo puedober a Saturno un té.
+088	published_final	say hi to Saturn	I can't say hi to Saturn.
+089	published_final	hola, what time is it	Listo, el reloj local marca 16:43.
+090	composition_failed	dime qué rechazas	composition_failed
+091	published_final	¿Sigues ahí?	Hola.
+092	published_final	clock now	16:43.
+093	published_final	hora local, please	The local clock is 16:43.
+094	composition_failed	descríbete en una frase	composition_failed
+095	published_final	Who are you, in one line?	Hola soy BAXY, el compañero que vive en el PC.
+096	published_final	ask Saturn for tea	No puedo pedir a Saturn teá.
+097	published_final	saluda a Saturno	No puedo saludar a Saturno.
+098	published_final	time check	The local clock shows 16:44.
+099	published_final	otra vez la hora	La hora local es 16:44.
+100	published_final	what time is it ahora	The local clock shows 16:45.

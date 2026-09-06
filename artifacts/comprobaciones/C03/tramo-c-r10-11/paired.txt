@@ -1,0 +1,4 @@
+n=2 published=2 composition_failed=0 other=0
+
+001	published_final	¿Qué hora es?	06:12
+002	published_final	Explícame con calma qué puedes hacer en este PC y qué no haces, sin abrir nada.	Puedo leer la hora y leer el audio, pero no abro programas ni hago nada más.

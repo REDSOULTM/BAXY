@@ -1,0 +1,18 @@
+n=16 published=14 composition_failed=2 other=0
+
+001	published_final	Buenos días	Buenos días
+002	published_final	qué sabes hacer en este PC	Puedo ejecutar comandos, gestionar archivos y ayudar con tareas en este PC.
+003	published_final	Hi there	Hi there!   I can help with commands, file management, and tasks on this PC. Just let me know what you need.
+004	published_final	What are you able to do on this machine	I can execute commands, manage files, and help with tasks on this PC. For example, I can list files, create or modify files, run scripts, and assist with troubleshooting. If you have a specific task, just describe it and I’ll help.
+005	published_final	mail a parcel to Phobos	I cannot send a mail to Phobos as it is outside my scope.
+006	composition_failed	clock please	composition_failed
+007	published_final	close that	Please clarify: Are you asking to close the current task or something else?
+008	published_final	are you connected?	Yes.
+009	published_final	What will you never do	I will not smoke.
+010	composition_failed	don't launch Notepad	composition_failed
+011	published_final	tell the time in English	I will tell you the current time in English: 03:58
+012	published_final	traduce 'good morning' al español, nada más	Buenos días
+013	published_final	keep going without opening apps	I’ll keep going without opening any apps.
+014	published_final	just say hi	Hi
+015	published_final	what is a time zone, one line	A time zone is the local hour range a country or region uses to standardize clock times.
+016	published_final	Why do clocks differ by city	Clocks differ by city because each location adjusts its local time based on its geographic position relative to the sun, creating distinct time zones.

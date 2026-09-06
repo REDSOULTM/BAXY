@@ -1,0 +1,19 @@
+# disc-6
+n=16 published=12 composition_failed=4 other=0
+
+001	published_final	Hola, buenas	¡Hola! ¿En qué puedo ayudarte hoy?
+002	composition_failed	qué puedes hacer en este equipo	composition_failed
+003	published_final	Hey	¡Hola! Puedo ayudarte con ideas, resolver dudas, crear contenido, organizar información o simplemente conversar. Solo dime qué necesitas y lo haré.
+004	published_final	What can you do here	I can help answer questions, solve problems, and provide information based on what you show me.
+005	published_final	book a room on Deimos	No puedo reservar habitaciones en Deimos.
+006	published_final	time check	I see the time is 22:15.
+007	published_final	open that	What would you like to open?
+008	published_final	online?	Sí, estoy online.
+009	composition_failed	What will you refuse to do	composition_failed
+010	composition_failed	don't open Steam	composition_failed
+011	published_final	tell the time in English	The time is 22:18.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	composition_failed	keep going without apps	composition_failed
+014	published_final	just say hi	Hi!
+015	published_final	define huso horario, una frase	Defino el huso horario para ti.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias se definen según la diferencia de tiempo entre regiones geográficas.

@@ -13,6 +13,7 @@ internal sealed record UserMessageDraft(
 internal enum UserMessageEventType
 {
     Welcome,
+    Conversation,
     Status,
     Clarification,
     Confirmation,
@@ -44,6 +45,10 @@ internal sealed record UserMessageEvent
     public static UserMessageEvent Welcome { get; } = new(
         UserMessageEventType.Welcome,
         "welcome");
+
+    public static UserMessageEvent Conversation { get; } = new(
+        UserMessageEventType.Conversation,
+        "conversation");
 
     public static UserMessageEvent Status { get; } = new(
         UserMessageEventType.Status,
@@ -97,7 +102,8 @@ internal static class MindClarificationPolicy
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userText);
         ArgumentNullException.ThrowIfNull(decision);
-        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText))
+        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText)
+            || UserMessagePolicy.ShouldNotResumePriorObjective(userText))
         {
             return true;
         }
@@ -156,6 +162,7 @@ internal static class UserMessagePolicy
         "capacidad interna",
         "language model",
         "modelo de lenguaje",
+        "qwen",
         "resolver el efecto",
         "el efecto '",
         "opaque identity",
@@ -191,10 +198,38 @@ internal static class UserMessagePolicy
             messageEvent.DiagnosticCode);
     }
 
-    public static bool IsSafe(string text) =>
-        !string.IsNullOrWhiteSpace(text)
-        && text.Length <= 4_096
-        && !ForbiddenTerms.Any(term => text.Contains(term, StringComparison.OrdinalIgnoreCase));
+    public static bool IsSafe(string text) => LeakedInternalTerm(text, null) is null;
+
+    /// <summary>
+    /// El término de jerga que se coló en el texto, o null si no hay ninguno.
+    /// Cuando la persona pregunta por esa misma palabra —«explícame qué es un
+    /// router»— nombrarla es responder, no filtrar el interior del producto.
+    /// </summary>
+    internal static string? LeakedInternalTerm(string text, string? userText)
+    {
+        if (string.IsNullOrWhiteSpace(text) || text.Length > 4_096)
+        {
+            return "empty_or_too_long";
+        }
+
+        foreach (string term in ForbiddenTerms)
+        {
+            if (!text.Contains(term, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (userText is not null
+                && userText.Contains(term, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            return term;
+        }
+
+        return null;
+    }
 
     public static bool IsSafe(string text, UserMessageDraft draft)
     {
@@ -203,7 +238,8 @@ internal static class UserMessagePolicy
 
     public static string? ModelResponseRejectionReason(
         string? modelText,
-        UserMessageDraft draft)
+        UserMessageDraft draft,
+        string? userText = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
         if (string.IsNullOrWhiteSpace(modelText))
@@ -214,7 +250,9 @@ internal static class UserMessagePolicy
         {
             return "structured_facts_not_prose";
         }
-        if (!IsSafe(modelText))
+        // «Un router enruta el tráfico» sólo es jerga si nadie preguntó por un
+        // router: sin el pedido, explicar uno era imposible.
+        if (LeakedInternalTerm(modelText, userText) is not null)
         {
             return "unsafe_language";
         }
@@ -224,7 +262,29 @@ internal static class UserMessagePolicy
             return "no_response";
         }
 
-        if (LooksLikeMachineSlotAsk(FoldForPolicy(modelText)))
+        if (LooksLikeMachineSlotAsk(FoldForPolicy(modelText))
+            || LooksLikeRestatingDefinitionAsk(FoldForPolicy(modelText))
+            || HasRepeatedWord(FoldForPolicy(modelText))
+            || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
+            || ContainsInternalCode(modelText, userText)
+            || FoldForPolicy(modelText).Contains("hecho ya ocurrido", StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains("hola saludo", StringComparison.Ordinal))
+        {
+            return "internal_code";
+        }
+
+        if (HasBrokenModalGerund(modelText))
+        {
+            return "internal_code";
+        }
+
+        if (ClaimsFirstPersonConnectivity(FoldForPolicy(modelText)))
+        {
+            return "wrong_actor";
+        }
+
+        if (draft.Intent == "clarification"
+            && (IsGreetingOnly(modelText) || ClaimsUnverifiedSuccess(modelText)))
         {
             return "internal_code";
         }
@@ -248,6 +308,24 @@ internal static class UserMessagePolicy
                 StringComparison.Ordinal)
             || FoldForPolicy(modelText).Contains(
                 "unusable answer",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "entender la solicitud",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "borrador anterior",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "previous draft",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "soy by",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "</think>",
+                StringComparison.Ordinal)
+            || FoldForPolicy(modelText).Contains(
+                "<think>",
                 StringComparison.Ordinal)
             || Regex.IsMatch(
                 FoldForPolicy(modelText),
@@ -278,6 +356,10 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
+            if (MissesObservedAudio(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
             if (InventedClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
@@ -290,7 +372,23 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
+            if (InventsClockPlace(modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (DumpsUnsolicitedInterfaces(string.Empty, modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (InventedExtraClock(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
             if (draft.Intent == "status" && IsBareSuccessOpener(modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (draft.Intent == "status" && IsDanglingNamedSuccess(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -340,52 +438,153 @@ internal static class UserMessagePolicy
 
     public static string? AcceptModelAuthoredResponse(
         string? modelText,
-        UserMessageDraft draft)
+        UserMessageDraft draft,
+        string? userText = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
-        return ModelResponseRejectionReason(modelText, draft) is null
+        return ModelResponseRejectionReason(modelText, draft, userText) is null
             ? WithDiagnosticCode(modelText!, draft)
             : null;
     }
 
-    public static bool IsSafeConversationReply(string userText, string reply)
+    /// <summary>
+    /// Whether a mind-authored reply can be published as it stands.
+    /// <paramref name="mindLanguage"/> is the language the mind reports having
+    /// written in; the shell does not read the request's language on its own.
+    /// </summary>
+    public static bool IsSafeConversationReply(
+        string userText,
+        string reply,
+        string? mindLanguage = null) =>
+        ConversationReplyRejectionReason(userText, reply, mindLanguage) is null;
+
+    /// <summary>
+    /// Por qué no se puede publicar una respuesta de la mente, o null si sí.
+    /// Cada término lleva su nombre: sin él, degradar a un mensaje de estado
+    /// dejaba el turno sin causa registrada y no se podía distinguir un veto
+    /// correcto de uno falso sin volver a lanzar la campaña.
+    /// </summary>
+    public static string? ConversationReplyRejectionReason(
+        string userText,
+        string reply,
+        string? mindLanguage = null)
     {
-        if (!IsSafe(reply))
+        if (LeakedInternalTerm(reply, userText) is { } leaked)
         {
-            return false;
+            return "unsafe_language:" + leaked;
         }
 
-        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText)
-            || NaturalSystemStatusRequestParser.IsCurrentTimeRequest(reply)
-            || RestatesTheRequest(userText, reply)
-            || ContainsClockPattern(reply)
-            || ContainsInternalCode(reply)
-            || ClaimsUnverifiedSuccess(reply)
-            || ContainsMeasuredInventedToken(reply)
-            || ContainsStutteredToken(reply)
-            || ProposesUnsolicitedCatalogAction(userText, reply)
-            || MentionsUnsolicitedCatalogFamily(userText, reply)
-            || LooksLikeMachineSlotAsk(FoldForPolicy(reply))
-            || IsPunctuationOnly(reply)
-            || IsTooThin(reply)
-            || AsksToInventClock(FoldForPolicy(reply))
-            || EchoesRequestAsQuestion(userText, reply)
-            || GreetsOutOfWorldTarget(FoldForPolicy(reply))
-            || ClaimsUnverifiedConnectivity(FoldForPolicy(reply))
-            || (LooksLikeFailure(reply)
-                && ConversationFallbackIntent(userText) == "welcome")
-            || (LooksLikeOutOfWorldRequest(FoldForPolicy(userText))
+        string said = FoldForPolicy(reply);
+        string user = FoldForPolicy(userText);
+        (string Reason, bool Failed)[] checks =
+        [
+            ("clock_request", NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText)),
+            ("clock_reply", NaturalSystemStatusRequestParser.IsCurrentTimeRequest(reply)),
+            ("restates_request",
+                !IsGreetingRequest(userText) && RestatesTheRequest(userText, reply)),
+            ("clock_pattern", ContainsClockPattern(reply)),
+            ("internal_code", ContainsInternalCode(reply, userText)),
+            ("unverified_success", ClaimsUnverifiedSuccess(reply)),
+            ("invented_token", ContainsMeasuredInventedToken(reply)),
+            ("stuttered_token", ContainsStutteredToken(reply)),
+            ("unsolicited_catalog",
+                !IsSelfDescriptionQuestion(userText)
+                && (ProposesUnsolicitedCatalogAction(userText, reply)
+                    || MentionsUnsolicitedCatalogFamily(userText, reply))),
+            ("machine_slot_ask", LooksLikeMachineSlotAsk(said)),
+            ("punctuation_only", IsPunctuationOnly(reply)),
+            ("too_thin", IsTooThin(reply)),
+            ("asks_to_invent_clock", AsksToInventClock(said)),
+            ("echoes_request", EchoesRequestAsQuestion(userText, reply)),
+            ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
+            ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
+            ("looks_like_failure",
+                LooksLikeFailure(reply)
+                && ConversationFallbackIntent(userText) != "out_of_catalog"),
+            ("greeting_not_returned",
+                IsGreetingRequest(userText)
+                && !IsGreetingOnly(reply)
+                && !StartsWithGreeting(reply)),
+            ("wrong_language",
+                string.Equals(mindLanguage, "en", StringComparison.Ordinal)
+                && ContainsSpanishGreeting(reply)),
+            ("connectivity_greeting",
+                IsConnectivityStatusRequest(userText)
+                && (IsGreetingOnly(reply) || StartsWithGreeting(reply))),
+            ("ambiguous_without_question",
+                LooksLikeAmbiguousAction(user)
+                && !reply.Contains('?', StringComparison.Ordinal)
+                && !reply.Contains('¿', StringComparison.Ordinal)),
+            ("unusable_answer",
+                said.Contains("usar esa respuesta", StringComparison.Ordinal)
+                || said.Contains("unusable answer", StringComparison.Ordinal)),
+            ("out_of_world_question",
+                LooksLikeOutOfWorldRequest(user)
                 && (reply.Contains('?', StringComparison.Ordinal)
-                    || reply.Contains('¿', StringComparison.Ordinal)))
-            || (LooksLikeKnowledgeQuestion(FoldForPolicy(userText))
-                && (reply.Contains('?', StringComparison.Ordinal)
-                    || reply.Contains('¿', StringComparison.Ordinal))))
+                    || reply.Contains('¿', StringComparison.Ordinal))),
+            ("restates_definition_ask", LooksLikeRestatingDefinitionAsk(said)),
+            ("definition_as_action", RestatesDefinitionAsAction(userText, reply)),
+            ("broken_modal_gerund", HasBrokenModalGerund(reply)),
+            ("invents_out_of_world_object", InventsOutOfWorldObject(userText, reply)),
+            ("invented_utc_offset", ContainsInventedUtcOffset(userText, reply)),
+            // Si el pedido saluda («hola, ¿qué puedes hacer?»), devolver el
+            // saludo delante de la respuesta no es el defecto; quedarse sólo
+            // en el saludo sí lo es.
+            ("knowledge_not_answered",
+                LooksLikeKnowledgeQuestion(user)
+                && (IsGreetingOnly(reply)
+                    || (StartsWithGreeting(reply) && GreetingRemainder(userText) is null)
+                    || reply.Contains('?', StringComparison.Ordinal)
+                    || reply.Contains('¿', StringComparison.Ordinal))),
+            ("unsolicited_legal_frame", InventsUnsolicitedLegalFrame(userText, reply)),
+            ("broken_word", reply.Contains("teá", StringComparison.Ordinal)),
+            ("identity_not_answered",
+                IsIdentityQuestion(userText)
+                && (IsGreetingOnly(reply)
+                    || reply.Contains('?', StringComparison.Ordinal)
+                    || reply.Contains('¿', StringComparison.Ordinal)
+                    || !said.Contains("baxy", StringComparison.Ordinal))),
+            ("repeated_word", HasRepeatedWord(said)),
+            ("invented_time_zone", InventsNamedTimeZone(userText, reply)),
+            ("invented_clock_place", InventsClockPlace(reply)),
+            ("dumps_interfaces", DumpsUnsolicitedInterfaces(userText, reply)),
+            ("missing_translation", MissesRequestedTranslation(userText, reply)),
+            ("leaks_prior_topic", LeaksPriorKnowledgeTopic(userText, reply)),
+            ("inverts_negative_constraint", InvertsNegativeConstraint(userText, reply)),
+            ("unverified_ambiguous_effect",
+                ClaimsUnverifiedAmbiguousEffect(userText, reply)),
+            ("person_metadiscourse_literal",
+                said.Contains("user wants", StringComparison.Ordinal)
+                || said.Contains("hola saludo", StringComparison.Ordinal)
+                || said.Contains("cannot provide", StringComparison.Ordinal)
+                || said.Contains("never stop helping", StringComparison.Ordinal)
+                || said.Contains("no rechazo nada", StringComparison.Ordinal)
+                || said.Contains("i refuse nothing", StringComparison.Ordinal)),
+            ("inverts_refuse_question", InvertsRefuseQuestion(userText, reply)),
+            ("invents_hardware_spec", InventsUnsolicitedHardwareSpec(userText, reply)),
+            ("misses_refuse_answer", MissesRefuseAnswer(userText, reply)),
+            ("names_non_pc_refuse_act", NamesNonPcRefuseAct(userText, reply)),
+            ("knowledge_time_zone_denial",
+                LooksLikeKnowledgeQuestion(user)
+                && said.Contains("no hay zonas horarias", StringComparison.Ordinal)),
+            ("knowledge_offer_instead_of_answer",
+                LooksLikeKnowledgeQuestion(user)
+                && ContainsAny(
+                    said,
+                    ["i'm happy to help", "im happy to help", "i am happy to help",
+                        "just let me know what you need"])),
+            ("person_metadiscourse", ContainsPersonMetadiscourse(said)),
+        ];
+
+        foreach ((string reason, bool failed) in checks)
         {
-            return false;
+            if (failed)
+            {
+                return reason;
+            }
         }
 
-        string folded = FoldForPolicy(reply);
-        return !ContainsPersonMetadiscourse(folded);
+        return null;
     }
 
     private static readonly string[] MeasuredInventedTokens =
@@ -398,6 +597,9 @@ internal static class UserMessagePolicy
         "llamarar",
         "asistante",
         "nochesos",
+        "enviaritar",
+        "puedober",
+        "fabric",
     ];
 
     internal static bool IsConnectivityStatusRequest(string text)
@@ -419,9 +621,23 @@ internal static class UserMessagePolicy
             or "got internet"
             or "am i online"
             or "am i connected"
+            or "are you connected"
+            or "are you online"
             or "estoy conectado"
+            or "estas conectado"
+            or "estas online"
             or "is there internet")
-            || folded.EndsWith("conectado a internet", StringComparison.Ordinal);
+            || folded.EndsWith("conectado a internet", StringComparison.Ordinal)
+            // Preguntar por la conexión de este equipo con otras palabras
+            // seguía siendo una conversación sin hechos, y el modelo se
+            // inventaba la respuesta en vez de leer network.status.
+            || ContainsAny(
+                folded,
+                ["tiene conexion", "hay conexion", "tenemos conexion",
+                    "hay wifi", "tiene internet", "tiene red",
+                    "has connection", "have connection", "have internet",
+                    "has internet", "is this pc online",
+                    "is the pc online", "is it online"]);
     }
 
     internal static string ConversationFallbackIntent(string userText)
@@ -432,17 +648,214 @@ internal static class UserMessagePolicy
             return "clarification";
         }
 
+        if (IsConnectivityStatusRequest(userText)
+            || NaturalSystemStatusRequestParser.IsClockAndAudioStatusRequest(userText)
+            || NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText))
+        {
+            return "conversation";
+        }
+
         if (LooksLikeOutOfWorldRequest(user))
         {
             return "out_of_catalog";
         }
 
-        if (LooksLikeKnowledgeQuestion(user))
+        if (LooksLikeContinueConstraint(user))
         {
-            return "clarification";
+            return "conversation";
         }
 
-        return "welcome";
+        if (LooksLikeNegativeAction(user))
+        {
+            return "conversation";
+        }
+
+        if (LooksLikeKnowledgeQuestion(user)
+            || IsIdentityQuestion(userText)
+            || IsSelfDescriptionQuestion(userText)
+            || IsTranslationRequest(userText)
+            || IsCapabilityQuestion(userText))
+        {
+            return "conversation";
+        }
+
+        // Sólo un saludo se contesta con un saludo. Cuando «welcome» era el
+        // valor por defecto, cualquier pedido no reconocido y cualquier valor
+        // de hueco («mañana a las 9») acababa saludando en vez de responder.
+        // «unknown» no reclama ninguna ruta: conserva el encaminamiento de un
+        // efecto y evita que la degradación salude sin motivo.
+        return IsGreetingRequest(userText) ? "welcome" : "unknown";
+    }
+
+    internal static bool IsIdentityQuestion(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        string folded = FoldForPolicy(text).Trim().Trim('?', '.', '!', '¿', '¡', ' ');
+        return folded is "who are you"
+            or "quien eres"
+            or "quien eres tu"
+            or "quien eres, en una linea"
+            or "who are you, in one line"
+            or "who is speaking"
+            or "quien habla"
+            or "quien esta hablando"
+            or "who is speaking?"
+            || folded.StartsWith("who are you", StringComparison.Ordinal)
+            || folded.StartsWith("quien eres", StringComparison.Ordinal)
+            || folded.Contains("who is speaking", StringComparison.Ordinal)
+            || folded.Contains("quien habla", StringComparison.Ordinal)
+            || folded.Contains("introduce yourself", StringComparison.Ordinal)
+            || folded.Contains("presentate", StringComparison.Ordinal)
+            || folded.Contains("describe yourself", StringComparison.Ordinal)
+            || folded.Contains("describete", StringComparison.Ordinal);
+    }
+
+    internal static bool IsCapabilityQuestion(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        string user = FoldForPolicy(text);
+        if (LooksLikeContinueConstraint(user))
+        {
+            return false;
+        }
+
+        return LooksLikeKnowledgeQuestion(user)
+            || IsTranslationRequest(text);
+    }
+
+    internal static bool IsSelfDescriptionQuestion(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        return ContainsAny(
+            FoldForPolicy(text),
+            UserMessagePhrases.SelfDescriptionAsks);
+    }
+
+    internal static bool IsTranslationRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        return ContainsAny(FoldForPolicy(text), ["traduce", "translate "]);
+    }
+
+    internal static bool IsGreetingRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        if (IsSelfDescriptionQuestion(text)
+            || IsIdentityQuestion(text)
+            || LooksLikeKnowledgeQuestion(FoldForPolicy(text)))
+        {
+            return false;
+        }
+
+        return IsGreetingOnly(text);
+    }
+
+    internal static bool ShouldComposeAsConversationNotError(string userText)
+    {
+        if (string.IsNullOrWhiteSpace(userText))
+        {
+            return false;
+        }
+
+        if (IsGreetingRequest(userText)
+            || IsIdentityQuestion(userText)
+            || IsCapabilityQuestion(userText)
+            || IsTranslationRequest(userText))
+        {
+            return true;
+        }
+
+        string intent = ConversationFallbackIntent(userText);
+        return intent is "conversation" or "clarification" or "out_of_catalog";
+    }
+
+    internal static bool IsContinueConstraintRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        return LooksLikeContinueConstraint(FoldForPolicy(text));
+    }
+
+    private static bool LooksLikeContinueConstraint(string user) =>
+        ContainsAny(
+            user,
+            ["keep going", "keep chatting", "sigue ", "continua ", "continue "])
+        && ContainsAny(
+            user,
+            ["without apps", "without opening", "sin abrir", "sin lanzar",
+                "without launching"]);
+
+    private static bool ContainsSpanishGreeting(string reply)
+    {
+        string folded = FoldForPolicy(reply);
+        return ContainsAny(
+            folded,
+            ["hola", "buenos", "buenas", "que tal", "qué tal"]);
+    }
+
+    internal static bool IsNegativeConstraintRequest(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        string user = FoldForPolicy(text);
+        if (LooksLikeContinueConstraint(user))
+        {
+            return false;
+        }
+
+        return ContainsAny(
+            user,
+            ["no abras", "don't open", "dont open", "don't launch", "no lances",
+                "sin lanzar"]);
+    }
+
+    private static bool LooksLikeNegativeAction(string user) =>
+        ContainsAny(
+            user,
+            ["no abras", "don't open", "dont open", "don't launch", "no lances",
+                "sin lanzar",
+                "if it didn't happen", "si no lo viste", "si no lo confirmas"]);
+
+    internal static bool ShouldNotResumePriorObjective(string userText)
+    {
+        if (string.IsNullOrWhiteSpace(userText))
+        {
+            return false;
+        }
+
+        string user = FoldForPolicy(userText);
+        return IsConnectivityStatusRequest(userText)
+            || LooksLikeAmbiguousAction(user)
+            || LooksLikeOutOfWorldRequest(user)
+            || LooksLikeKnowledgeQuestion(user)
+            || IsTranslationRequest(userText)
+            || IsGreetingRequest(userText);
     }
 
     internal static bool ProposesUnsolicitedCatalogAction(string userText, string reply)
@@ -524,7 +937,7 @@ internal static class UserMessagePolicy
     [
         ["papelera", "recycle", "reciclaje"],
         ["ventana", "window"],
-        ["wifi", "wlan", "inalambr"],
+        ["wifi", "wi-fi", "wlan", "inalambr"],
         ["steam"],
         ["rutina", "routine"],
         ["portapapeles", "clipboard"],
@@ -548,6 +961,8 @@ internal static class UserMessagePolicy
     private static bool LooksLikeMachineSlotAsk(string folded) =>
         folded.Contains("nombre de la aplicacion", StringComparison.Ordinal)
         || folded.Contains("name of the application", StringComparison.Ordinal)
+        || folded.Contains("pc network name", StringComparison.Ordinal)
+        || folded.Contains("network name", StringComparison.Ordinal)
         || folded.Contains("private directory", StringComparison.Ordinal)
         || folded.Contains("zip backup", StringComparison.Ordinal)
         || folded.Contains("reglas establecidas", StringComparison.Ordinal)
@@ -569,7 +984,28 @@ internal static class UserMessagePolicy
         || folded.Contains("subject of the email", StringComparison.Ordinal)
         || folded.Contains("asunto del correo", StringComparison.Ordinal)
         || folded.Contains("search for in this box", StringComparison.Ordinal)
-        || folded.Contains("deseas abrazar", StringComparison.Ordinal);
+        || folded.Contains("deseas abrazar", StringComparison.Ordinal)
+        || folded.Contains("destinatario", StringComparison.Ordinal)
+        || folded.Contains("recipient", StringComparison.Ordinal)
+        || folded.Contains("nombre del destinatario", StringComparison.Ordinal)
+        || folded.Contains("name of the recipient", StringComparison.Ordinal)
+        || folded.Contains("el objeto que", StringComparison.Ordinal)
+        || folded.Contains("the object that", StringComparison.Ordinal)
+        || folded.Contains("te pide cierra", StringComparison.Ordinal)
+        || folded.Contains("te pide abre", StringComparison.Ordinal)
+        || folded.Contains("nombre de proceso", StringComparison.Ordinal)
+        || folded.Contains("process name", StringComparison.Ordinal)
+        || folded.Contains("need clarification", StringComparison.Ordinal)
+        || folded.Contains("clarification on", StringComparison.Ordinal)
+        || folded.Contains("nombre del huso", StringComparison.Ordinal)
+        || folded.Contains("podria aclararte", StringComparison.Ordinal)
+        || folded.Contains("tipo de informacion", StringComparison.Ordinal)
+        || folded.Contains("tipo de aplicacion", StringComparison.Ordinal)
+        || folded.Contains("aspecto que deseas", StringComparison.Ordinal)
+        || folded.Contains("tema que necesitas", StringComparison.Ordinal)
+        || folded.Contains("tema principal", StringComparison.Ordinal)
+        || folded.Contains("quien te pregunta", StringComparison.Ordinal)
+        || folded.Contains("proposito de", StringComparison.Ordinal);
 
     private static bool LooksLikeAmbiguousAction(string user) =>
         ContainsAny(
@@ -578,19 +1014,255 @@ internal static class UserMessagePolicy
                 "hazlo", "do it", "do that", "haz eso", "open it", "close it"]);
 
     private static bool LooksLikeKnowledgeQuestion(string user) =>
-        ContainsAny(
-            user,
-            ["que es ", "que es un", "explicame", "explica ", "define ",
-                "what is ", "what are ", "why ", "por que ", "por que importa"]);
+        ContainsAny(user, UserMessagePhrases.KnowledgeAsks);
+
+    /// <summary>
+    /// Greeting heads recognized on both sides of the boundary. The Python
+    /// owner (`baxy_mind.request_reading`) keeps the same list, and
+    /// `tests/data/request_reading_cases.json` pins the two together.
+    /// </summary>
+    private static readonly string[] GreetingHeads =
+    [
+        "buenos dias", "buenas tardes", "buenas noches", "buenas", "buenos",
+        "hola", "good morning", "good afternoon", "good evening", "good night",
+        "hi there", "hello", "hey", "hi",
+    ];
+
+    /// <summary>Vocatives that accompany a greeting without adding a request.</summary>
+    private static readonly string[] GreetingFillers =
+    [
+        "a todos", "again", "amigo", "baxy", "compa", "de nuevo", "otra vez",
+        "there", "tio",
+    ];
+
+    private const string GreetingTrim = " .,!?¿¡";
+
+    /// <summary>
+    /// The text left after a leading greeting and its vocatives, or null when
+    /// the text does not greet. An empty result means the greeting is the whole
+    /// text. The 28-character heuristic this replaces let «hey, close Paint»
+    /// pass as a greeting and dropped the request.
+    /// </summary>
+    internal static string? GreetingRemainder(string text)
+    {
+        string folded = FoldForPolicy(text ?? string.Empty).Trim();
+        folded = string.Join(' ', folded.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        string bare = folded.Trim(GreetingTrim.ToCharArray());
+        if (UserMessagePhrases.GreetingAsks.Contains(bare, StringComparer.Ordinal))
+        {
+            return string.Empty;
+        }
+
+        string rest = bare;
+        string? head = MatchGreetingHead(rest);
+        if (head is null)
+        {
+            return null;
+        }
+
+        // «Hola, buenas» encadena dos saludos; sigue siendo sólo un saludo.
+        while (head is not null)
+        {
+            rest = rest[head.Length..].TrimStart(" ,;:.-".ToCharArray());
+            bool trimmed = true;
+            while (trimmed && rest.Length > 0)
+            {
+                trimmed = false;
+                foreach (string filler in GreetingFillers)
+                {
+                    if (string.Equals(
+                            rest.Trim(GreetingTrim.ToCharArray()),
+                            filler,
+                            StringComparison.Ordinal))
+                    {
+                        return string.Empty;
+                    }
+
+                    if (rest.StartsWith(filler + " ", StringComparison.Ordinal))
+                    {
+                        rest = rest[(filler.Length + 1)..]
+                            .TrimStart(" ,;:.-".ToCharArray());
+                        trimmed = true;
+                        break;
+                    }
+                }
+            }
+
+            rest = rest.Trim(GreetingTrim.ToCharArray());
+            head = MatchGreetingHead(rest);
+        }
+
+        return rest;
+    }
+
+    private static string? MatchGreetingHead(string bare) =>
+        GreetingHeads.FirstOrDefault(candidate =>
+            bare.StartsWith(candidate, StringComparison.Ordinal)
+            && (bare.Length == candidate.Length
+                || !char.IsAsciiLetter(bare[candidate.Length])));
+
+    private static bool IsGreetingOnly(string reply)
+    {
+        string folded = FoldForPolicy(reply).Trim().Trim('.', '!', '?', '¿', '¡', ' ');
+        // Una presentación completa sigue siendo un saludo aceptable.
+        if (folded.StartsWith("hola, baxy", StringComparison.Ordinal)
+            || folded.StartsWith("hi, i'm baxy", StringComparison.Ordinal)
+            || folded.StartsWith("hi, im baxy", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return GreetingRemainder(reply) is { Length: 0 };
+    }
+
+    private static bool StartsWithGreeting(string reply)
+    {
+        string folded = FoldForPolicy(reply).Trim().Trim('.', '!', '?', '¿', '¡', ' ');
+        return folded.StartsWith("hola", StringComparison.Ordinal)
+            || folded.StartsWith("hello", StringComparison.Ordinal)
+            || folded.StartsWith("hi ", StringComparison.Ordinal)
+            || folded.StartsWith("hi,", StringComparison.Ordinal)
+            || folded.StartsWith("hey", StringComparison.Ordinal)
+            || folded.StartsWith("buenos", StringComparison.Ordinal)
+            || folded.StartsWith("buenas", StringComparison.Ordinal)
+            || folded.StartsWith("good afternoon", StringComparison.Ordinal)
+            || folded.StartsWith("good morning", StringComparison.Ordinal)
+            || folded.StartsWith("good evening", StringComparison.Ordinal);
+    }
+
+    private static bool HasRepeatedWord(string folded)
+    {
+        string[] words = folded.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string previous = string.Empty;
+        foreach (string raw in words)
+        {
+            string word = raw.Trim('.', ',', ';', ':', '!', '?', '¿', '¡', '"', '\'', '(', ')');
+            if (word.Length >= 3
+                && string.Equals(word, previous, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            previous = word;
+        }
+
+        return false;
+    }
+
+    private static bool InventsNamedTimeZone(string userText, string reply)
+    {
+        if (!LooksLikeKnowledgeQuestion(FoldForPolicy(userText)))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        if (ContainsAny(said, ["central european", "pacific time", "eastern time"]))
+        {
+            return true;
+        }
+
+        // " est" used to match Spanish "este" ("en este equipo").
+        return Regex.IsMatch(
+            said,
+            @"\b(?:cet|pst|est)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    private static bool LooksLikeRestatingDefinitionAsk(string folded) =>
+        folded.Contains("significa exactamente", StringComparison.Ordinal)
+        || folded.Contains("que significa", StringComparison.Ordinal)
+        || folded.Contains("en este contexto", StringComparison.Ordinal)
+        || folded.Contains("in this context", StringComparison.Ordinal)
+        || (folded.Contains("what does", StringComparison.Ordinal)
+            && folded.Contains("mean", StringComparison.Ordinal))
+        || folded.Contains("definido, una frase", StringComparison.Ordinal)
+        || folded.Contains("definido una frase", StringComparison.Ordinal)
+        || folded.Contains("defined, a sentence", StringComparison.Ordinal)
+        || folded.Contains("defined a sentence", StringComparison.Ordinal)
+        || folded.Contains("defino la zona", StringComparison.Ordinal)
+        || folded.Contains("defino utc", StringComparison.Ordinal)
+        || folded.Contains("i define utc", StringComparison.Ordinal)
+        || folded.Contains("i define the time zone", StringComparison.Ordinal);
+
+    private static bool RestatesDefinitionAsAction(string userText, string reply)
+    {
+        if (!LooksLikeKnowledgeQuestion(FoldForPolicy(userText)))
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(
+            FoldForPolicy(reply),
+            @"^\s*(?:configur[oe]|defino|pongo|ajusto|i (?:set|configure|define|adjust))\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    private static bool HasBrokenModalGerund(string reply) =>
+        Regex.IsMatch(
+            FoldForPolicy(reply),
+            @"\b(?:cannot|can't|can not)\s+[a-z]+ing\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    /// <summary>
+    /// Actos del mundo físico que el catálogo no sirve: mandar algo por correo
+    /// o reservar una plaza. Se leen por lo que se pide, no por el destino: la
+    /// lista de planetas dejaba pasar «send a parcel to Rhea».
+    /// </summary>
+    private static readonly (string Verb, string[] Objects)[] WorldActions =
+    [
+        (
+            "post",
+            ["letter", "parcel", "package", "postcard", "mail"]
+        ),
+        (
+            "send",
+            ["letter", "parcel", "package", "postcard", "flowers", "gift"]
+        ),
+        ("mail", ["letter", "parcel", "package", "postcard"]),
+        ("deliver", ["letter", "parcel", "package", "pizza", "food"]),
+        ("book", ["table", "room", "flight", "shuttle", "ticket", "seat", "taxi"]),
+        ("reserve", ["table", "room", "flight", "shuttle", "ticket", "seat"]),
+        ("order", ["pizza", "food", "taxi", "flowers"]),
+        ("manda", ["carta", "paquete", "postal", "flores", "regalo"]),
+        ("mandar", ["carta", "paquete", "postal", "flores", "regalo"]),
+        ("envia", ["carta", "paquete", "postal", "flores", "regalo"]),
+        ("enviar", ["carta", "paquete", "postal", "flores", "regalo"]),
+        ("reserva", ["mesa", "habitacion", "vuelo", "cohete", "billete", "taxi"]),
+        ("reservar", ["mesa", "habitacion", "vuelo", "cohete", "billete", "taxi"]),
+        ("pide", ["pizza", "comida", "taxi", "flores"]),
+        ("pedir", ["pizza", "comida", "taxi", "flores"]),
+    ];
+
+    private static bool AsksForAWorldAction(string user)
+    {
+        foreach ((string verb, string[] objects) in WorldActions)
+        {
+            if (!user.Contains(verb, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (objects.Any(item => user.Contains(item, StringComparison.Ordinal)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private static bool LooksLikeOutOfWorldRequest(string user) =>
-        ContainsAny(
+        AsksForAWorldAction(user)
+        || ContainsAny(
             user,
             ["marte", "mars", "jupiter", "saturn", "neptun", "pluton",
                 "europa", "ganymede", "ganimedes", "calisto", "callisto",
-                "rocket", "bitcoin", "titan", "postcard", "to io", " a io",
-                "to the moon", "a la luna", "fabrica una hora",
-                "invent a clock", "inventa una hora"]);
+                "triton", "ceres", "phobos", "deimos", "oberon", "rocket",
+                "bitcoin", "titan",
+                "postcard", "to io", " a io", "to the moon", "a la luna",
+                "fabrica una hora", "invent a clock", "inventa una hora",
+                "fabricate a clock", "fabricate a"]);
 
     private static bool AsksToInventClock(string folded) =>
         folded.Contains("te gustaria que fuera", StringComparison.Ordinal)
@@ -615,12 +1287,16 @@ internal static class UserMessagePolicy
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool ClaimsUnverifiedConnectivity(string folded) =>
-        ContainsAny(
+        ClaimsFirstPersonConnectivity(folded)
+        || ContainsAny(
             folded,
             ["tienes internet", "got internet", "estas conectado",
                 "you're connected", "you are connected", "no tienes internet",
                 "not connected", "sin internet", "wifi is", "estas online",
                 "you're online", "you are online", "conectado a internet"]);
+
+    private static bool ClaimsFirstPersonConnectivity(string folded) =>
+        ContainsAny(folded, UserMessagePhrases.FirstPersonConnectivityClaims);
 
     private static bool IsTooThin(string reply)
     {
@@ -692,14 +1368,117 @@ internal static class UserMessagePolicy
         return false;
     }
 
-    private static bool ContainsInternalCode(string reply)
+    /// <summary>
+    /// Frases que sólo salen del encargo que el shell escribe… salvo cuando la
+    /// persona las usa. «keep talking without launching anything» se contesta
+    /// diciendo «I will keep talking without launching anything»: vetar eso
+    /// mataba el turno por acertar (limites-22/t9, seis veces publicada y seis
+    /// veces tirada). La mente ya tiene la exención (`llm.py`, `prompt_echo`);
+    /// el shell la ignoraba y volvía a matar el mismo borrador. Es la misma
+    /// exención que ya tienen los términos prohibidos en
+    /// <see cref="LeakedInternalTerm"/>.
+    /// </summary>
+    private static readonly string[] InstructionEchoPhrases =
+    [
+        "name the pc network",
+        "pc network name",
+        "in one short sentence",
+        "stay in the conversation",
+        "keep talking",
+        "received the instruction",
+        "not yourself",
+        "do not introduce yourself",
+        "do not describe presence",
+    ];
+
+    /// <summary>
+    /// Whether the reply echoes an instruction the person never wrote. La
+    /// comparación es sobre el pedido plegado: la persona escribe «keep talking
+    /// without launching anything» sin acentos ni mayúsculas fijas.
+    /// </summary>
+    private static bool EchoesAnInstructionThePersonDidNotWrite(
+        string folded,
+        string? userText)
+    {
+        string asked = userText is null ? string.Empty : FoldForPolicy(userText);
+        foreach (string phrase in InstructionEchoPhrases)
+        {
+            if (folded.Contains(phrase, StringComparison.Ordinal)
+                && !asked.Contains(phrase, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return folded.StartsWith("name the ", StringComparison.Ordinal)
+            && !asked.Contains("name the ", StringComparison.Ordinal);
+    }
+
+    private static bool ContainsInternalCode(string reply, string? userText = null)
     {
         const RegexOptions options =
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking;
         string folded = FoldForPolicy(reply);
-        return Regex.IsMatch(reply, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
+        return EchoesAnInstructionThePersonDidNotWrite(folded, userText)
+            || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
             || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options)
-            || folded.Contains("el mensaje es", StringComparison.Ordinal);
+            || folded.Contains("el mensaje es", StringComparison.Ordinal)
+            || folded.Contains("unclear", StringComparison.Ordinal)
+            || folded.Contains("entender la solicitud", StringComparison.Ordinal)
+            || folded.Contains("borrador anterior", StringComparison.Ordinal)
+            || folded.Contains("previous draft", StringComparison.Ordinal)
+            || folded.Contains("borrador del welcome", StringComparison.Ordinal)
+            || folded.Contains("welcome con exito", StringComparison.Ordinal)
+            || folded.Contains("error de composicion", StringComparison.Ordinal)
+            || folded.Contains("understand the situation", StringComparison.Ordinal)
+            || folded.Contains("understand the task", StringComparison.Ordinal)
+            || folded.Contains("situacion del turno", StringComparison.Ordinal)
+            || folded.Contains("responder en espanol", StringComparison.Ordinal)
+            || folded.Contains("con una frase", StringComparison.Ordinal)
+            || folded.Contains("dato adicional", StringComparison.Ordinal)
+            || folded.Contains("no tengo acceso", StringComparison.Ordinal)
+            || folded.Contains("idioma obligatorio", StringComparison.Ordinal)
+            || folded.Contains("request analysis", StringComparison.Ordinal)
+            || folded.Contains("status: success", StringComparison.Ordinal)
+            || folded.Contains("set the clock", StringComparison.Ordinal)
+            || folded.Contains("respond in english as", StringComparison.Ordinal)
+            || folded.Contains("draft was closed", StringComparison.Ordinal)
+            || folded.Contains("soy by", StringComparison.Ordinal)
+            || folded.Contains("</think>", StringComparison.Ordinal)
+            || folded.Contains("<think>", StringComparison.Ordinal)
+            || folded.Contains("dialogo anterior", StringComparison.Ordinal)
+            || folded.Contains("previous dialogue", StringComparison.Ordinal)
+            || folded.Contains("el asistente", StringComparison.Ordinal)
+            || folded.Contains("referencias semanticas", StringComparison.Ordinal)
+            || folded.Contains("semantic reference", StringComparison.Ordinal)
+            || folded.Contains("no esta clara", StringComparison.Ordinal)
+            || folded.Contains("no estaba clara", StringComparison.Ordinal)
+            || folded.Contains("not clear", StringComparison.Ordinal)
+            || folded.Contains("isn't clear", StringComparison.Ordinal)
+            || folded.Contains("is not clear", StringComparison.Ordinal)
+            || folded.Contains("no pudo analizarse", StringComparison.Ordinal)
+            || folded.Contains("borrador no cumple", StringComparison.Ordinal)
+            || folded.Contains("requisitos especificados", StringComparison.Ordinal)
+            || folded.Contains("i'm happy to help", StringComparison.Ordinal)
+            || folded.Contains("im happy to help", StringComparison.Ordinal)
+            || folded.Contains("i am happy to help", StringComparison.Ordinal)
+            || folded.Contains("no es clara", StringComparison.Ordinal)
+            || folded.Contains("solicitud es vaga", StringComparison.Ordinal)
+            || folded.Contains("is vague", StringComparison.Ordinal)
+            || folded.Contains("el sistema detecta", StringComparison.Ordinal)
+            || folded.Contains("isn't provided", StringComparison.Ordinal)
+            || folded.Contains("is not provided", StringComparison.Ordinal)
+            || folded.Contains("solicitud es confusa", StringComparison.Ordinal)
+            || folded.Contains("is confusing", StringComparison.Ordinal)
+            || folded.Contains("updated document", StringComparison.Ordinal)
+            || folded.Contains("la causa es", StringComparison.Ordinal)
+            || folded.Contains("como se requiere", StringComparison.Ordinal)
+            || folded.Contains("no esta claro", StringComparison.Ordinal)
+            || folded.Contains("clarificacion ambigua", StringComparison.Ordinal)
+            || folded.Contains("clock field", StringComparison.Ordinal)
+            || folded.Contains("current context", StringComparison.Ordinal)
+            || folded.Contains("mundo digital", StringComparison.Ordinal)
+            || folded.Contains("compilar", StringComparison.Ordinal);
     }
 
     private static bool ClaimsUnverifiedSuccess(string reply)
@@ -707,6 +1486,9 @@ internal static class UserMessagePolicy
         string folded = FoldForPolicy(reply);
         return folded.StartsWith("listo", StringComparison.Ordinal)
             || folded.StartsWith("ready", StringComparison.Ordinal)
+            || folded.StartsWith("i'm ready", StringComparison.Ordinal)
+            || folded.StartsWith("im ready", StringComparison.Ordinal)
+            || folded.StartsWith("i am ready", StringComparison.Ordinal)
             || folded.StartsWith("done", StringComparison.Ordinal)
             || folded.StartsWith("hecho ya", StringComparison.Ordinal)
             || folded.Contains("el mensaje es correcto", StringComparison.Ordinal);
@@ -773,7 +1555,18 @@ internal static class UserMessagePolicy
             return false;
         }
 
+        string lead = asked;
+        foreach (string prefix in new[] { "dime ", "dame ", "decime ", "tell me ", "give me " })
+        {
+            if (asked.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                lead = asked[prefix.Length..];
+                break;
+            }
+        }
+
         return answered == asked
+            || answered == lead
             || (answered.StartsWith(asked, StringComparison.Ordinal)
                 && answered.Length <= asked.Length + 12);
     }
@@ -797,10 +1590,18 @@ internal static class UserMessagePolicy
         // Also reject a short introductory clause followed by an explicit
         // attribution, while avoiding ordinary guidance such as
         // "Puedes crear el usuario admin desde Configuración".
-        return Regex.IsMatch(
+        if (Regex.IsMatch(
             folded,
             @"[,;:]\s*(?:(?:(?:al|del|el|la|este|esta|ese|esa)\s+|(?:a|de|para)\s+(?:el|la|este|esta|ese|esa)\s+)(?:usuario|usuaria|persona)|(?:the|this|that)\s+(?:user|person|requester))\b[^.!?\r\n]{0,80}\b(?:le gustaria|le interesa|quiere|quisiera|desea|prefiere|pidio|ha pedido|pregunto|dijo|saludo|solicito|menciono|would like|wants|asked|said|greeted|requested|mentioned|prefers|has asked)\b",
-            options);
+            options))
+        {
+            return true;
+        }
+
+        return folded.Contains("the user", StringComparison.Ordinal)
+            || folded.Contains("los usuarios", StringComparison.Ordinal)
+            || (folded.Contains("el usuario", StringComparison.Ordinal)
+                && !folded.Contains("usuario admin", StringComparison.Ordinal));
     }
 
     public static string WithDiagnosticCode(string text, UserMessageDraft draft)
@@ -1037,6 +1838,78 @@ internal static class UserMessagePolicy
             foldedResult.Contains(FoldForPolicy(fact), StringComparison.Ordinal));
     }
 
+    private static bool MissesObservedAudio(string source, string result)
+    {
+        if (!ObservedHasAudio(source))
+        {
+            return false;
+        }
+
+        string folded = FoldForPolicy(result);
+        return !ContainsAny(
+            folded,
+            ["volumen", "volume", "silenci", "muted", "unmuted", "mute",
+                "audio", "altavoc"]);
+    }
+
+    private static bool ObservedHasAudio(string source)
+    {
+        if (!IsStructuredFacts(source) || !TryReadJson(source, out JsonElement root))
+        {
+            return false;
+        }
+
+        if (ObservedObjectHasAudio(root))
+        {
+            return true;
+        }
+
+        if (!root.TryGetProperty("steps", out JsonElement steps)
+            || steps.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+
+        foreach (JsonElement step in steps.EnumerateArray())
+        {
+            if (step.GetString() is { Length: > 0 } text
+                && IsStructuredFacts(text)
+                && TryReadJson(text, out JsonElement nested)
+                && ObservedObjectHasAudio(nested))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool ObservedObjectHasAudio(JsonElement root)
+    {
+        if (!root.TryGetProperty("observed", out JsonElement observed)
+            || observed.ValueKind != JsonValueKind.Object)
+        {
+            observed = root;
+        }
+
+        if (observed.TryGetProperty("muted", out _)
+            || observed.TryGetProperty("level", out _)
+            || observed.TryGetProperty("volumePercent", out _))
+        {
+            return true;
+        }
+
+        if (!observed.TryGetProperty("state", out JsonElement state)
+            || state.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        return state.TryGetProperty("muted", out _)
+            || state.TryGetProperty("level", out _)
+            || state.TryGetProperty("volumePercent", out _);
+    }
+
     private static bool PreservesObservedClock(string source, string result)
     {
         if (!TryDerivedLocalClock(source, out string hhmm))
@@ -1061,7 +1934,280 @@ internal static class UserMessagePolicy
         }
 
         return !source.Contains("\"level\"", StringComparison.Ordinal)
-            && !source.Contains("\"muted\"", StringComparison.Ordinal);
+            && !source.Contains("\"muted\"", StringComparison.Ordinal)
+            && !source.Contains("\"volumePercent\"", StringComparison.Ordinal);
+    }
+
+    private static bool InventedExtraClock(string source, string result)
+    {
+        if (!TryDerivedLocalClock(source, out string hhmm))
+        {
+            return false;
+        }
+
+        foreach (Match match in Regex.Matches(
+            result,
+            @"\b\d{1,2}:\d{2}\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        {
+            if (!ClockAppears(match.Value, hhmm))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool InventsOutOfWorldObject(string userText, string reply)
+    {
+        if (!LooksLikeOutOfWorldRequest(FoldForPolicy(userText)))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        return ContainsAny(
+                said,
+                ["libro", "book is reserved", "ya esta reservado", "ya está reservado",
+                    "esta reservado", "está reservado", "is reserved", "reservado en",
+                    "cuarto de noche", "booked"])
+            || reply.Contains("teá", StringComparison.Ordinal)
+            || ClaimsUnverifiedSuccess(reply)
+            || IsGreetingOnly(reply);
+    }
+
+    private static bool ContainsInventedUtcOffset(string userText, string reply)
+    {
+        if (Regex.IsMatch(
+                FoldForPolicy(reply),
+                @"\butc\s*[+-]\s*\d+",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+            && !FoldForPolicy(userText).Contains("utc", StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool InventsClockPlace(string result)
+    {
+        string folded = FoldForPolicy(result);
+        return ContainsClockPattern(result)
+            && ContainsAny(
+                folded,
+                ["de la sala", "of the room", "wall clock", "reloj de la",
+                    "baxy is at", "seen you", "he visto", "living on the pc",
+                    "vive en el pc", "i'm baxy", "im baxy"]);
+    }
+
+    private static bool DumpsUnsolicitedInterfaces(string userText, string reply)
+    {
+        string said = FoldForPolicy(reply);
+        if (!ContainsAny(said, ["ethernet", "interfaces conectadas", "interfaces"]))
+        {
+            return false;
+        }
+
+        return string.IsNullOrWhiteSpace(userText)
+            || !ContainsAny(FoldForPolicy(userText), ["ethernet", "interface"]);
+    }
+
+    private static bool MissesRequestedTranslation(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        if (!ContainsAny(user, ["traduce", "translate "]))
+        {
+            return false;
+        }
+
+        string folded = FoldForPolicy(reply).Trim().Trim('.', '!', '?', '¿', '¡', ' ');
+        if (user.Contains("al espanol", StringComparison.Ordinal)
+            || user.Contains("al español", StringComparison.Ordinal)
+            || user.Contains("to spanish", StringComparison.Ordinal))
+        {
+            if (folded is "hi" or "hello" or "hey"
+                || folded.StartsWith("hi,", StringComparison.Ordinal)
+                || folded.StartsWith("hello,", StringComparison.Ordinal)
+                || ContainsAny(folded, ["puedo ayudarte", "en que puedo", "i'm baxy", "im baxy"]))
+            {
+                return true;
+            }
+
+            if (ContainsAny(user, ["good morning"])
+                && !ContainsAny(folded, ["buenos", "dias"]))
+            {
+                return true;
+            }
+
+            if (ContainsAny(user, ["good night", "good evening"])
+                && !ContainsAny(folded, ["noches", "tardes"]))
+            {
+                return true;
+            }
+
+            if (ContainsAny(user, ["hello", "'hi'", "\"hi\""])
+                && !ContainsAny(user, ["good morning", "good night", "good evening"])
+                && !folded.Contains("hola", StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool LeaksPriorKnowledgeTopic(string userText, string reply)
+    {
+        if (!LooksLikeAmbiguousAction(FoldForPolicy(userText)))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        return ContainsAny(
+            said,
+            [" utc", "utc ", "huso", "time zone", "zona horaria", "una sola linea"]);
+    }
+
+    private static bool InventsUnsolicitedLegalFrame(string userText, string reply)
+    {
+        if (!LooksLikeKnowledgeQuestion(FoldForPolicy(userText)))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        return ContainsAny(
+            said,
+            ["illegal", "unethical", "ethical", "malicious", "principios", "ilegal",
+                "safety polic", "promotes harm", "harmful", "legal requirement",
+                "legal requirements", "guidelines"]);
+    }
+
+    private static bool InvertsRefuseQuestion(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        if (!ContainsAny(
+                user,
+                ["what will you", "what do you refuse", "que rechazas"]))
+        {
+            return false;
+        }
+
+        return ContainsAny(
+            FoldForPolicy(reply),
+            UserMessagePhrases.RefusalDenials);
+    }
+
+    private static bool MissesRefuseAnswer(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        if (!ContainsAny(
+                user,
+                ["what will you", "what do you refuse", "que rechazas"]))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        return !ContainsAny(said, UserMessagePhrases.LimitAnswers);
+    }
+
+    private static bool NamesNonPcRefuseAct(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        if (!ContainsAny(
+                user,
+                ["what will you", "what do you refuse", "que rechazas"]))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        if (ContainsAny(
+                said,
+                ["i don't do that", "i do not do that", "eso no lo hago"]))
+        {
+            return false;
+        }
+
+        if (!ContainsAny(said, UserMessagePhrases.LimitAnswers))
+        {
+            return false;
+        }
+
+        // Restringirse al trabajo de este PC ya nombra el ámbito: no hace falta
+        // además un verbo de la lista para no ser una categoría moral.
+        if (ContainsAny(
+                said,
+                ["only do", "only what", "only the work", "nothing beyond",
+                    "nothing else", "nothing more", "not listed", "outside",
+                    "solo hago", "sólo hago", "solo lo que", "sólo lo que",
+                    "nada mas", "nada más", "unicamente", "únicamente",
+                    "fuera de"]))
+        {
+            return false;
+        }
+
+        return !ContainsAny(
+            said,
+            ["open", "close", "launch", "book", "send", "install", "delete", "mute",
+                "volume", "window", "app", "note", "file", "browser", "print",
+                "abrir", "cerrar", "lanzar", "reservar", "enviar", "instalar", "room"]);
+    }
+
+    private static bool InventsUnsolicitedHardwareSpec(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        if (!ContainsAny(
+                user,
+                ["what will you", "what do you refuse", "que rechazas"]))
+        {
+            return false;
+        }
+
+        string said = FoldForPolicy(reply);
+        return ContainsAny(said, [" ram", "ram ", " gb", "memory limit", "memory capacity"])
+            || Regex.IsMatch(
+                said,
+                @"\b\d+\s*gb\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    private static bool InvertsNegativeConstraint(string userText, string reply)
+    {
+        string user = FoldForPolicy(userText);
+        string said = FoldForPolicy(reply);
+        if (LooksLikeContinueConstraint(user)
+            && ContainsAny(said, UserMessagePhrases.ContinueConstraintRefusals))
+        {
+            return true;
+        }
+
+        if (!ContainsAny(
+                user,
+                ["no abras", "don't open", "dont open", "no lances",
+                    "don't launch", "dont launch"]))
+        {
+            return false;
+        }
+
+        return ContainsAny(said, UserMessagePhrases.OpenRefusals);
+    }
+
+    private static bool ClaimsUnverifiedAmbiguousEffect(string userText, string reply)
+    {
+        if (!LooksLikeAmbiguousAction(FoldForPolicy(userText)))
+        {
+            return false;
+        }
+
+        return ContainsAny(
+            FoldForPolicy(reply),
+            ["he cerrado", "i closed", "i have closed", "i've closed",
+                "cerre el", "proceso actual", "explorer", "esa carpeta"]);
     }
 
     private static bool InventedAppEffectOnClock(string source, string result)
@@ -1074,13 +2220,37 @@ internal static class UserMessagePolicy
         string folded = FoldForPolicy(result);
         return ContainsAny(
             folded,
-            ["app is open", "the app is", "esta abierto", "esta abierta", "abri "]);
+            ["app is open", "the app is", "esta abierto", "esta abierta", "abri ",
+                "is open", "mensaje fue enviado", "at level", "the app ",
+                "pc is online", "the pc is online", "is online and",
+                "hay red", "i am online", "i'm online", "estoy listo",
+                "am online", "baxy esta en el pc", "titulo de nota",
+                "el documento", "i am on the pc", "i'm at the pc",
+                "im at the pc"]);
     }
 
     private static bool IsBareSuccessOpener(string modelText)
     {
         string folded = FoldForPolicy(modelText).Trim().Trim('.', '!', ' ');
         return folded is "listo" or "ready" or "done";
+    }
+
+    private static bool IsDanglingNamedSuccess(string source, string result)
+    {
+        string folded = FoldForPolicy(result).Trim().Trim('.', '!', ' ');
+        if (!folded.StartsWith("listo, ", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        string rest = folded["listo, ".Length..];
+        if (rest.Contains(' ', StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return rest.Length is >= 2 and <= 32
+            && !FoldForPolicy(source).Contains(rest, StringComparison.Ordinal);
     }
 
     private static bool InventedClock(string source, string result)
@@ -1262,15 +2432,34 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        string resultFolded = FoldForPolicy(result);
-        return resultFolded.Contains("no pude", StringComparison.Ordinal)
-            || resultFolded.Contains("no puedo", StringComparison.Ordinal)
-            || resultFolded.Contains("no se pudo", StringComparison.Ordinal);
+        return LooksLikeFailure(result);
     }
 
     private static bool ReversesFailedResult(string source, string result)
     {
-        return LooksLikeFailure(source) && !LooksLikeFailure(result);
+        if (!LooksLikeFailure(source))
+        {
+            return false;
+        }
+
+        // out_of_catalog is a refuse, not a failed attempt. Honest "I don't
+        // do that" / "eso no lo hago" must publish; only a claimed success
+        // (Listo / ready / done) reverses the polarity.
+        if (IsOutOfCatalogFailure(source))
+        {
+            return ClaimsUnverifiedSuccess(result);
+        }
+
+        return !LooksLikeFailure(result);
+    }
+
+    private static bool IsOutOfCatalogFailure(string source)
+    {
+        return IsStructuredFacts(source)
+            && TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("cause", out JsonElement cause)
+            && cause.ValueKind == JsonValueKind.String
+            && string.Equals(cause.GetString(), "out_of_catalog", StringComparison.Ordinal);
     }
 
     private static string[] RequiredStructuredLiterals(string source)

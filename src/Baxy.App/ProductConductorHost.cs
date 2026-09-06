@@ -77,6 +77,15 @@ internal static class ProductConductorHost
             await EmitAsync(meta, capture, lifetime.Token).ConfigureAwait(true);
 
             await viewModel.InitializeAsync(lifetime.Token).ConfigureAwait(true);
+            DateTime mindDeadline = DateTime.UtcNow.AddSeconds(120);
+            while (!viewModel.IsMindReady
+                && !viewModel.HasStartupError
+                && DateTime.UtcNow < mindDeadline)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(200), lifetime.Token)
+                    .ConfigureAwait(true);
+            }
+
             await EmitAsync(
                     new JsonObject
                     {
@@ -176,6 +185,36 @@ internal static class ProductConductorHost
             return;
         }
 
+        // R07 pide inyectar el fallo, restaurar el recurso y volver a pedir en
+        // el mismo proceso, perfil y sesión. La inyección ya vivía en el shell
+        // (`FieldCompositionInjection.Mode`); sólo faltaba poder moverla sin
+        // arrancar otra vez, que es lo que dejaba la prueba en dos procesos.
+        if (cmd is "inject" or "restore")
+        {
+            string requested = cmd == "restore"
+                ? "none"
+                : ((string?)command["mode"] ?? "reject").Trim().ToLowerInvariant();
+            FieldCompositionInjection.Mode = requested switch
+            {
+                "reject" => FieldCompositionInjectionMode.Reject,
+                "timeout" => FieldCompositionInjectionMode.Timeout,
+                "exhaust" => FieldCompositionInjectionMode.Exhaust,
+                _ => FieldCompositionInjectionMode.None,
+            };
+            await EmitAsync(
+                    new JsonObject
+                    {
+                        ["type"] = "injection",
+                        ["mode"] = FieldCompositionInjection.Mode.ToString()
+                            .ToLowerInvariant(),
+                        ["pid"] = Environment.ProcessId,
+                    },
+                    capture,
+                    cancellationToken)
+                .ConfigureAwait(true);
+            return;
+        }
+
         if (cmd is "cancel" or "cancelar")
         {
             ProductTurnResult result = await conductor
@@ -271,6 +310,7 @@ internal static class ProductConductorHost
             ["compositionFailure"] = posterior.CompositionFailure,
             ["hasCompositionError"] = posterior.HasCompositionError,
             ["statusDescription"] = posterior.StatusDescription,
+            ["mindReplyRejection"] = posterior.MindReplyRejection,
         };
 
     private static JsonObject BuildMeta(ConductorArguments parsed)

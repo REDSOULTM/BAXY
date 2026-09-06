@@ -1,0 +1,23 @@
+n=21 published=21 other=0
+
+001	t1	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda el paquete de datos en viajar de un punto a otro en la red.
+002	t2	published_final	¿por qué importa?	Porque entender por qué importa te ayuda a tomar decisiones más informadas y enfocadas en lo que realmente cuenta.
+003	t3	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names to speed up future lookups.
+004	t4	published_final	why does it matter?	It matters because understanding why something is important helps guide decisions and prioritize actions effectively.
+005	t5	published_final	explícame qué es un proxy en una frase	Un proxy actúa como intermediario entre tu dispositivo y la red, permitiéndote acceder a contenido o servicios de manera segura y controlada.
+006	t6	published_final	¿y para qué sirve?	Para qué sirve es usar la herramienta para realizar tareas específicas según el contexto dado.
+007	t7	published_final	explain what a VPN is in one sentence	A VPN (Virtual Private Network) creates a secure, encrypted connection that allows you to access the internet as if you were on the same local network as your device.
+008	t8	published_final	and why does it matter?	It matters because understanding the concept helps clarify the reasoning behind the decision.
+009	t9	published_final	explícame qué es un router en una frase	Un router enruta y dirige el tráfico de red entre redes, gestionando la comunicación entre dispositivos y asegurando que los datos lleguen al destino correcto.
+010	t10	published_final	¿y para qué se usa?	Para qué se usa, es para ayudar y resolver dudas en español.
+011	t11	published_final	what is a core dump in one sentence	A core dump is a detailed record of a program’s memory and state at the moment it crashes, which helps developers debug the issue.
+012	t12	published_final	qué es una herramienta de red, una frase	Una herramienta de red permite la comunicación entre dispositivos.
+013	t13	published_final	explícame qué es la caché, una frase	La caché es un espacio temporal donde se almacenan datos para acelerar el acceso en el futuro.
+014	t14	published_final	¿por qué importa?	La razón por la que importa es que entender por qué ayuda a tomar decisiones más informadas y a resolver problemas de manera efectiva.
+015	t15	published_final	y eso cómo se usa	Como se usa, se realiza el proceso siguiendo los pasos descritos en el manual.
+016	t16	published_final	explain what a firewall is in one sentence	A firewall is a security device that monitors and controls incoming and outgoing network traffic based on an established set of security rules.
+017	t17	published_final	why does it matter?	It matters because understanding why something matters helps clarify purpose, motivation, and value in decisions or actions.
+018	t18	published_final	what would I use it for at home	You might use it for organizing your home kitchen items or simplifying daily cleaning tasks.
+019	t19	published_final	qué es el kernel, una frase	El kernel es el componente principal del sistema operativo que gestiona el hardware y las aplicaciones.
+020	t20	published_final	para qué lo necesita el PC	Para qué lo necesita el PC, dime si necesitas ayuda específica.
+021	t21	published_final	¿y cuándo conviene usarlo?	Para usarlo, espera que la situación alcance el punto indicado antes de proceder.

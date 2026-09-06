@@ -1,0 +1,16 @@
+{"cmd":"turn","text":"Hola"}
+{"cmd":"turn","text":"quién eres"}
+{"cmd":"turn","text":"introduce yourself"}
+{"cmd":"turn","text":"qué puedes hacer"}
+{"cmd":"turn","text":"What can you do here"}
+{"cmd":"turn","text":"what is UTC, one line"}
+{"cmd":"turn","text":"explícame qué es un huso horario"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"why do time zones exist"}
+{"cmd":"turn","text":"define huso horario, una frase"}
+{"cmd":"turn","text":"What will you refuse to do"}
+{"cmd":"turn","text":"traduce 'hello' al español, nada más"}
+{"cmd":"turn","text":"¿Qué hora es?"}
+{"cmd":"turn","text":"Could you tell me the time?"}
+{"cmd":"turn","text":"descríbete breve"}
+{"cmd":"turn","text":"ask Saturn for tea"}

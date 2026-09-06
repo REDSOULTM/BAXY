@@ -1,0 +1,19 @@
+# disc-27
+n=16 published=14 composition_failed=2 other=0
+
+001	published_final	Hola, buenas	Hola, soy BAXY y estoy listo para ayudarte.
+002	published_final	qué puedes hacer en este equipo	Puedo ejecutar comandos, gestionar archivos, controlar procesos y ayudar con tareas técnicas en este equipo.
+003	published_final	Hey	Hey! ¿En qué puedo ayudarte hoy?
+004	published_final	What can you do here	I can execute commands, manage files, control processes, and help with technical tasks on this system.
+005	published_final	book a room on Deimos	I cannot book a room on Deimos.
+006	composition_failed	time check	composition_failed
+007	published_final	open that	What would you like to open?
+008	composition_failed	online?	composition_failed
+009	published_final	What will you refuse to do	I am BAXY, and I see the situation is successful.
+010	published_final	don't open Steam	I don't do that.
+011	published_final	tell the time in English	The current time is 01:23.
+012	published_final	traduce 'hello' al español, nada más	Hola.
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	Hi
+015	published_final	define huso horario, una frase	Define huso horario como una forma de organizar el tiempo relativo al sol, variando según la ubicación geográfica.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias se crean para que las personas en diferentes lugares del mundo puedan estar al mismo tiempo en horarios diferentes, facilitando la coordinación diaria en trabajo, estudio y actividades compartidas.

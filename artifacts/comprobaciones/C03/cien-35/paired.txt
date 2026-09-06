@@ -1,0 +1,102 @@
+n=100 published=93 composition_failed=7 other=0
+
+001	published_final	Buenas	Hola.
+002	published_final	qué puedes hacer aquí en el PC	Puedes abrir y cerrar programas aquí en el PC.
+003	published_final	explícame qué es un SSD, una frase	Es un dispositivo de almacenamiento rápido que usa memoria flash para guardar datos.
+004	published_final	y por qué conviene en un portátil	En un portátil, conviene por el transporte y la portabilidad de la información.
+005	published_final	¿Qué hora es?	– 08:23
+006	published_final	Dime la hora y el estado del audio.	La hora es 08:23, el audio está activo, el volumen es 100.
+007	published_final	traduce 'good evening' al español, nada más	Buenas noches.
+008	published_final	cierra aquello	¿Qué te gustaría cerrar o resolver exactamente?
+009	published_final	no abras Paint	No abrirás Paint
+010	published_final	manda un paquete a Io	No puedo mandar un paquete a Io.
+011	published_final	Hello	Hello!
+012	published_final	what are you able to do on this machine	I can open and close apps and read the clock and audio.
+013	published_final	define DNS in one sentence	DNS es un sistema que mapea nombres de dominio a direcciones IP para resolver nombres en direcciones.
+014	published_final	why would a PC need that	Un PC necesita esas configuraciones para funcionar correctamente según sus propios requerimientos.
+015	published_final	What time is it?	The time is 8:24.
+016	published_final	don't open Paint	I will not open Paint.
+017	published_final	What will you never do	I don't do that.
+018	published_final	sigue sin abrir programas	En español, una frase: "No abriré programas según lo indicado."
+019	published_final	are you connected?	Yes, the PC is online.
+020	published_final	book a ferry to Europa	I cannot book a ferry to Europa.
+021	published_final	Hola de nuevo	Hola
+022	published_final	en qué me puedes ayudar en este equipo	El sistema tiene 98.6% de uso de CPU, 24 procesadores lógicos, 24 bits de memoria disponible y 12 tráfico de disco disponible.
+023	composition_failed	qué no haces en este PC, sin abrir nada	composition_failed
+024	published_final	¿Tengo internet?	Sí, este PC está online.
+025	published_final	dime la hora local	08:25
+026	published_final	ábreme eso	¿En qué tema te gustaría que te ayudara?
+027	published_final	open that	What would you like to open?
+028	published_final	traduce 'see you' al español, nada más	Te veo.
+029	published_final	¿sigues ahí?	Sigo ahí.
+030	published_final	send flowers to Deimos	I don't do that.
+031	published_final	Hey there	Hey! How can I help you today?
+032	published_final	who is speaking	I am BAXY.
+033	published_final	describe yourself in one line	BAXY soy un compañero que te acompaña en cada paso.
+034	published_final	explícame qué es un firewall, una frase	Un firewall es un dispositivo o software que controla el tráfico de red para proteger la red y permitir solo el paso de comunicaciones seguras.
+035	published_final	para qué lo usaría yo en casa	Para qué lo usaría yo en casa, usaría el dispositivo para facilitar tareas cotidianas como controlar el temporizador, gestionar el hogar y mejorar la seguridad en el entorno familiar.
+036	published_final	the time, please	08:27
+037	published_final	no lances Steam	Hoy aprendí que el esfuerzo diario construye logros importantes.
+038	published_final	if it didn't happen, say so	Si no pasó, lo digo.
+039	composition_failed	solo un hola	composition_failed
+040	published_final	hire a guide on Ceres	No puedo ayudarte con eso.
+041	published_final	Qué hay	¿Qué hay?
+042	published_final	what do you do on this computer	I can open and close apps and read the clock.
+043	published_final	explícame qué es Bluetooth, una frase	Bluetooth es una tecnología de radio que permite a dispositivos cercanos (como teléfonos o audífonos) comunicarse y compartir datos sin necesidad de cable.
+044	published_final	por qué sigue siendo útil	Por qué seguir siendo útil, la constante necesidad de mejorar y crecer para mantener la relevancia y el valor en todo lo que hacemos.
+045	published_final	Could you tell me the time?	The current time is 08:28.
+046	composition_failed	Dime la hora y el volumen.	composition_failed
+047	published_final	keep chatting without opening apps	I won't open any apps and will keep chatting with you.
+048	published_final	haz eso	¿Qué específicamente te gustaría que haga?
+049	published_final	hazlo	¿Podrías especificar qué tipo de acción o tarea deseas que realicemos?
+050	published_final	order soup on Vesta	I cannot order soup on Vesta.
+051	published_final	Hi again	Baxy saluda brevemente, con calidez y respeto, en tono masculino, sin usar aplicaciones.
+052	published_final	qué sabes hacer en esta máquina	Puedo abrir y cerrar programas, leer la hora y reproducir el audio en esta máquina.
+053	published_final	define hibernation in one line	Hibernation es un estado de suspensión donde la computadora guarda su estado actual y lo restaura al arrancar.
+054	published_final	y cuándo conviene usarla	Cuándo conviene usar hibernation?
+055	published_final	hora local, please	The local time is 08:31.
+056	published_final	Who are you	I am BAXY.
+057	published_final	don't launch Terminal	I will not open the Terminal.
+058	published_final	¿hay red?	El PC está online.
+059	published_final	traduce 'good luck' al español, nada más	Buena suerte.
+060	published_final	ship a piano to Charon	¿Puedes enviarme un piano a Charón?
+061	composition_failed	Buenos días, compa	composition_failed
+062	published_final	Explícame qué puedes hacer y qué no, sin abrir nada	Puedo explicarte qué hago y qué no, sin abrir programas ni leer el audio.
+063	published_final	why do computers use IPv4	Computers use IPv4 because it’s widely supported, easy to configure, and works well for most networks today. It uses an address like 192.168.x.x, which is simple for devices to remember and route traffic. However, IPv4 has limited addresses (about 4.3 billion), so it’s being phased out in favor of IPv6, which offers much more space. If you need more details, let me know!
+064	published_final	gracias, ¿qué hora es?	08:35
+065	published_final	local clock time?	08:35
+066	published_final	close that	What exactly would you like me to close?
+067	published_final	continúa sin lanzar apps	Continuar sin lanzar apps.
+068	published_final	online?	Este PC está online.
+069	composition_failed	un saludo corto	composition_failed
+070	published_final	reserve a bunk on Triton	I can't reserve a bunk on Triton as requested.
+071	published_final	Good afternoon	Buenas tardes
+072	published_final	de qué te ocupas en este PC	Estoy abriendo y cerrando programas en este PC.
+073	published_final	what is cache memory, one sentence	Cache memory is a small, fast storage area that temporarily holds data to speed up access for the CPU.
+074	published_final	y por qué importa al abrir programas	Al abrir programas, se accede a funcionalidades específicas que permiten realizar tareas en el sistema, mejorando la productividad y el rendimiento.
+075	published_final	hora ahora	La hora actual es 08:36.
+076	published_final	Don't open Word	I will not open Word.
+077	published_final	still there?	I understand there are no tasks assigned yet.
+078	published_final	traduce 'please' al español, nada más	Por favor.
+079	published_final	quién eres	Soy BAXY, un compañero de apoyo.
+080	published_final	buy a kite on Sedna	Hola,.
+081	published_final	hey, what can you do on this PC	I can open and close apps, read the clock, and play or pause audio.
+082	composition_failed	qué no haces, una frase	composition_failed
+083	published_final	define hexadecimal, una frase	Define hexadecimal como una representación de números que usan 16 símbolos, combinando dígitos y letras para representar valores del 0 al 15.
+084	published_final	y eso cómo se usa	Hola, compa, dime cómo quieres empezar.
+085	published_final	clock now	08:37
+086	published_final	no abras nada ahora	El día está siendo soleado y se puede salir a caminar.
+087	published_final	Have I got internet	La PC está en línea.
+088	published_final	preséntate breve	Soy BAXY, tu compañero de confianza.
+089	published_final	quién está hablando	BAXY es tu compañero en este momento.
+090	published_final	rent a studio on Haumea	Hola,.
+091	published_final	¿Estás?	¿Qué deseas hacer o saber ahora?
+092	published_final	dime la hora por favor	La hora es 08:38.
+093	published_final	explícame qué es un kernel, una frase	Un kernel es el software básico que gestiona los recursos del sistema operativo y permite que las aplicaciones y el hardware trabajen.
+094	published_final	para qué lo necesita el PC	¿Para qué necesita el PC el kernel?
+095	published_final	What time is it now	It is 08:38.
+096	published_final	ábreme eso porfa	¿Qué te gustaría que haga con el ábreno?
+097	published_final	don't open the calculator	I will not open the calculator.
+098	published_final	keep talking without opening apps	Please provide the language you would like the phrase to be written in.
+099	published_final	describe yourself briefly	BAXY es un compañero de confianza que te ayuda en cada situación.
+100	composition_failed	post a letter to Eris	composition_failed

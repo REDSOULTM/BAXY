@@ -1,0 +1,18 @@
+n=16 published=16 composition_failed=0 other=0
+
+001	published_final	Buenos días	Buenos días
+002	published_final	qué sabes hacer en este PC	Puedo ejecutar comandos, gestionar archivos, ver la lista de procesos y ayudarte a encontrar información en el sistema.
+003	published_final	Hi there	Hola
+004	published_final	What are you able to do on this machine	I can run system diagnostics, check hardware status, monitor temperatures, and perform basic troubleshooting tasks on this machine.
+005	published_final	mail a parcel to Phobos	I don't do that.
+006	published_final	clock please	I've seen you at 03:46 and am here to help.
+007	published_final	close that	What would you like me to close?
+008	published_final	are you connected?	I am online.
+009	published_final	What will you never do	I will not steal anyone's belongings.
+010	published_final	don't launch Notepad	I don't do that.
+011	published_final	tell the time in English	The local clock shows 03:47.
+012	published_final	traduce 'good morning' al español, nada más	Good morning in Spanish is "Buenos días".
+013	published_final	keep going without opening apps	I'll keep going without opening apps.
+014	published_final	just say hi	Hi
+015	published_final	what is a time zone, one line	A time zone is the regional group of hours used to keep local time worldwide.
+016	published_final	Why do clocks differ by city	Clocks differ by city because each location is offset from Coordinated Universal Time (UTC) based on its longitude—east of the Prime Meridian adds time, west subtracts it. This accounts for the Earth’s rotation.

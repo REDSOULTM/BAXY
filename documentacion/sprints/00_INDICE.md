@@ -1,66 +1,34 @@
-# BAXY en once goals y una recuperación histórica 09.5
+# BAXY — sprints de producto y comprobación
 
-Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, y
-**se deja correr hasta que se cumple**. Antes del 10 se intercala la recuperación
-09.5 porque aparecieron fuentes históricas cuya cobertura no estaba demostrada.
-09.5, 10 y 11 son mapas: su unidad de ejecución son sus subgoals. Un prompt de
-campaña se lanza una vez y puede consumir muchos checkpoints internos sin devolver
-al dueño un bucle manual.
+**Ruta vigente desde 2026-09-04: C03 → C09 → 10.7–10.18 → 11.1–11.16 → 12.1–12.3.**
+C01/C02 están cerrados en el estado inspeccionado; C03 sigue en curso.
+Comprueba el [estado actual](Sprints%20comprobación/05_ESTADO_Y_CONTINUACION.md)
+antes de continuar. No reinicies sprints por haber cambiado de sesión.
 
-Acceso directo **sólo a los prompts pendientes**, listo para copiar y pegar:
-[`00_LANZAR_DESDE_10_7.md`](00_LANZAR_DESDE_10_7.md). La trazabilidad completa,
-incluidos los ya cerrados, permanece en
-[`00_ORDEN_DESDE_09_5.md`](00_ORDEN_DESDE_09_5.md).
-10.2.5 cerró el 2026-09-01 con medición del árbol completo. Ese mismo día el dueño
-retiró las tandas humanas 10.3–10.6 y movió la certificación transversal detrás de
-las familias funcionales. El siguiente lanzamiento es
-[`10.7_CONVERSACION.md`](10.7_CONVERSACION.md); decisión completa en
-[`10_REPLANIFICACION_AUTONOMA.md`](10_REPLANIFICACION_AUTONOMA.md).
+- [Lanzador con todos los pendientes](00_LANZAR_DESDE_10_7.md).
+- [Replanteamiento para el Grok que ejecuta C03](Sprints%20comprobación/07_REPLANTEAR_C03.md).
+- [Protocolo único Grok 4.6 High](00_PROTOCOLO_EJECUCION.md).
+- [Diagnóstico y fuentes oficiales](REVISION_SPRINTS_2026-09-04.md).
 
-## Con qué modelo se lanza cada uno
+## Qué manda y cómo se ejecuta
 
-| Goals | Modelo | Dónde |
-|---|---|---|
-| **01–11 + 09.5** | **Grok 4.6**, esfuerzo `high` | Esta carpeta. Son los que están en uso. |
-| **03C** | **Grok 4.6** | Esta carpeta. Cierra el alcance y los restos antes del 04. |
-| 03B (cerrado) | Se abrió con GPT-5.6 Sol y se cerró con Grok 4.6 | Esta carpeta. El 90 % se midió; el alcance no. |
-| 01–04 (versión anterior) | GPT-5.6 Sol, `reasoning.effort: high` | [`sol/`](sol/). Archivo, no se lanzan. |
+Identidad, la petición actual del dueño y el prompt vigente con su protocolo.
+Los cierres anteriores prueban lo que midieron en su fecha, no que hoy el producto
+cumpla. Los relevos son evidencia/estado; sus copias de instrucciones no sustituyen
+el archivo vigente. AGENTS ubica repositorio, owners y validación.
 
-**Sobre el 03B.** El goal 03 cerró en 46 % con el 90 % **medido inalcanzable**.
-El 03B movió el techo y el producto llegó a **112/124 (mediana de tres
-corridas)** el 2026-08-21. Lo que **no** cerró es el alcance: 12–15 de 36
-fuera de catálogo `acted` (listón ≤5) y 12 filas in-catalog aún fallan.
-Detalle en
-[`documentacion/base/03B_COMPRENSION_TECHO.md`](../base/03B_COMPRENSION_TECHO.md)
-§12.
+Cada sprint conserva su alcance completo. Trabaja una causa/frontera por tramo,
+con lecturas y salida pequeñas; estado durable y continuación entre ventanas.
+500K es capacidad de Grok, no objetivo de consumo. La política actual busca
+60–100K activos y corta a 150K; no es un umbral oficial de calidad.
+Una sesión agotada no cierra ni invalida un sprint. No se exige una sesión única.
 
-**El 03C cerró esa deuda el 2026-08-21.** Tres corridas de **116, 114 y 113**
-—mediana **114/124 = 91,9 %**— con **0, 1 y 1** de 36 `acted`, listón ≤5, sin
-tocar el scorer. Evidencia y mecanismo en
-[`documentacion/base/03C_ALCANCE.md`](../base/03C_ALCANCE.md); el goal, en
-[`03C_ALCANCE.md`](03C_ALCANCE.md). **El 04 arranca sin deuda del 03.**
+## Compromisos originales y trazabilidad
 
-**El 04 cerró el 2026-08-21.** Dos corridas sobre el corpus fresco, scorer
-congelado: **0 / 0 / 0** (efectos no pedidos, éxitos no verificados, respuestas
-fijas), texto visible auditado a mano. Evidencia en
-[`documentacion/base/04_HONESTIDAD.md`](../base/04_HONESTIDAD.md) y
-`artifacts/development/goal04_honesty*.json`.
-
-**Cómo se lanza uno.** Sesión nueva y limpia, Grok 4.6, `/effort high`, y el goal
-pegado entero **una sola vez** con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
-que una revisión de evidencia independiente reproduce el resultado**; si no puede
-reproducirlo, el goal sigue abierto con los huecos nombrados. Eso es exactamente el
-invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una meta por
-goal ejecutable. En 09.5.x/10.x/11.x el techo operativo es **500k tokens por
-ventana**; las campañas persisten el cursor, compactan y continúan bajo la misma
-meta.
-
-**El contenido no cambia entre versiones**: mismo objetivo, misma evidencia
-heredada, mismos criterios de cierre. Lo que cambia es el bloque «Cómo trabajas
-aquí» de cada goal. Detalle de las versiones anteriores en
-[`sol/00_LEEME.md`](sol/00_LEEME.md).
-
-## Los once
+01–09, 03B/03C y la recuperación 09.5 son historia de implementación que los
+Cxx contrastan con el producto. No se borran esos prompts ni sus umbrales.
+La [matriz](Sprints%20comprobación/03_MATRIZ_DE_CRITERIOS.md) conserva sus 97
+criterios originales y owners. Los números históricos no son conteos actuales.
 
 | # | Goal | Cumplido cuando |
 |---|---|---|
@@ -79,176 +47,52 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 10 | **Certificación para uso diario** ([mapa](10_USO_DIARIO.md)) | Familias 10.7–10.17 primero; después 200 turnos autónomos por la entrada pública, `N10/M10` (mínimos 1.947/808 + delta 09.5) e Identidad |
 | 11 | **Validación y cierre** ([mapa](11_VALIDACION.md)) | `K11` contratos (mínimo 2.036 + delta 09.5), deuda, errores, regresión e higiene |
 
-El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
-anteriores en esta máquina con piezas que ya funcionan. El 09.5 no invalida ese
-trabajo: concilia el mapa del 01 contra copias añadidas después, cubre sus huecos
-declarados y trasplanta sólo el delta probado antes del uso diario.
 
-**El 11 es distinto y por eso va aparte.** Del 01 al 10 está prohibido perseguir lo
-que *podría* fallar: van rápido a propósito. El 11 invierte esa regla y se dedica
-exactamente a eso — los caminos de error, las fragilidades, la regresión completa
-sobre el árbol final. Es donde se cobra la deuda que los diez fueron dejando.
+La campaña [C01–C09](Sprints%20comprobación/00_INDICE.md) recupera la conducta
+integrada. C09 habilita el 10; no lo certifica. El 10 prueba familias y 200 turnos;
+el 11 resuelve deuda y regresión. [Fase 12](12_PRODUCTO_FINAL.md) cubre el producto
+instalado y el hardware objetivo que el alcance había dejado diferidos.
 
-**Ambiente no es aprobación ni disponibilidad del dueño.** Desde 09.5.0, una fuente histórica requerida que
-falte o siga copiándose pausa la meta en `FALLO_DE_AMBIENTE`. Desde 10.1, una
-misión in-scope que necesita una app, cuenta, serie, contenido, permiso o dispositivo
-ausente hace lo mismo. Ningún prompt puede pedir al dueño que actúe como generador
-de entradas, juez o probador. Si una preparación física irremplazable falta, el
-prompt deja al dueño únicamente la preparación y readiness exactos;
-después la misma tarea reanuda desde su cursor, sin volver a pegar el subgoal. No se
-omite la fila ni se avanza.
+Conserva lo ya demostrado con hashes/procedencia; revalida lo afectado por cambios.
+Un caso de aceptación usado para reparar deja de ser reservado. Un
+composition_failed espontáneo es fallo de respuesta aunque sea honesto.
+Full verde solo no acredita prosa, ejecución física, UI, voz ni instalación.
+Un límite medido mantiene incumplimiento, no permiso para avanzar.
 
-## Antes de nada: la identidad
+## Cinco leyes
 
-`documentacion/00_IDENTIDAD.md` es **lectura obligatoria de todos los goals**, y va
-dentro de cada prompt por eso. No son preferencias: son decisiones tomadas por el
-dueño del producto, con los cuatro intentos anteriores sobre la mesa. Si una
-decisión de diseño de un agente la contradice, la que cambia es la del agente.
+1. **Hereda primero, estado del arte después, construye al final.** Biblioteca por
+   índice/título/rango; contrasta la pieza viva. No re-derives rechazos medidos.
+2. **Nada de sobreingeniería.** Si añades una capa, retira la que sustituye.
+3. **Sólo se arregla lo que bloquea (01–10).** Deuda restante a APLAZADOS;
+   el 11 la resuelve. Un fallo de tu aceptación no se difiere para aprobar.
+4. **Lo más ligero que cumpla.** 4 GB VRAM es techo, no objetivo; cuentan árbol
+   completo, RAM, CPU, voz y latencia. No reducir cobertura ni exactitud.
+5. **Arquitectura modular.** Una responsabilidad por pieza, dependencias hacia
+   dentro y cero código muerto. Costuras medidas para sustituciones reales.
 
-Tres de esas decisiones cambian goals concretos:
+## Seis invariantes
 
-- **La accesibilidad es central en el motor y modo en la interfaz.** Todo lo que
-  BAXY hace se puede pedir por voz, y BAXY narra lo que hace. No se construye el
-  producto y se le añade accesibilidad después.
-- **El catálogo: máxima cobertura con el mínimo número de herramientas.** No es
-  consolidar: la cobertura no baja nunca, y con la cobertura intacta gana el número
-  menor. Se publican **dos números, no uno**. El criterio de qué entra es **cubrir
-  el PC, no las apps**; lo que no cabe en una herramienta se **encadena**, que
-  amplía cobertura sin añadir catálogo. Lo mide el goal 03 junto con el 07.
-- **Buscar en la web está permitido**; enviar contenido del usuario, no.
+Catálogo tipado único: mente propone, kernel autoriza, provider ejecuta.
+Nada se afirma sin verificar. Terminales honestos. Confirmación ligada a la
+invocación exacta. Cero respuestas visibles fijas. Modelo local y privado:
+puede entrar información web, no salir contenido privado del usuario.
 
-Y una decisión ya tomada que ahorra un goal entero de deliberación: **la
-infraestructura .NET se conserva**. Está auditada —0 advertencias con
-`TreatWarningsAsErrors`, 3.865 pruebas verdes, dependencias sin ciclos, AOT y JSON
-por generador— y se hereda arreglando tres deficiencias concretas que el goal 01
-detalla: los adaptadores por aplicación, `MainWindowViewModel` (3.678 líneas) y los
-ocho constructores de `MissionEngine`.
+Identidad exige compañero con voz, accesibilidad, memoria controlable,
+operaciones genéricas del PC, presencia y ausencia de silencio mayor de 3 s.
+No se sustituye respuesta útil por silencio ni por una lista de frases permitidas.
 
-## Las cinco leyes
+## Qué significa terminado
 
-Van dentro de los once prompts, idénticas. Son lo que evita que este intento acabe
-como los cuatro anteriores.
+Una tanda de implementación cierra con conducta demostrada, Full verde,
+validación física cuando corresponda y trabajo propio publicado conforme a AGENTS.
+Los skips se informan aparte y no acreditan criterios. Conserva WIP ajeno y usa
+un checkout aislado para certificar si es necesario.
 
-**1. Hereda primero, estado del arte después, construye al final.** En ese orden:
-¿lo resolvió ya un Carter o BAXY anterior, incluida su etapa Schema Agent? — entonces trae
-esa solución, o la **mejor combinación** de las que hay, buscándola primero en
-[`biblioteca/`](../../biblioteca/00_INDICE.md) y, desde 09.5, en su manifiesto
-reconciliado contra **todos** los repositorios históricos presentes. Los 1.350
-documentos son el inventario previo, no un certificado eterno de completitud.
-¿Está resuelto ahí fuera? — entonces impleméntalo en
-vez de inventarlo. Construir es el último recurso, y hay que decir por qué. Y al
-revés: **que BAXY ya lo haga de una manera no es razón para conservarla**; heredar
-es traer lo que funciona, no conservar lo que estaba. Es una pasada, no una
-persecución: en cuanto algo cumple, se deja de buscar mejor.
+11.16 entrega candidato de desarrollo validado. **Sólo 12.3 declara
+BAXY_DEFINITIVO_VALIDADO**, con instalación, hardware objetivo y distribución
+acreditados. Los diferidos de producto tienen ahora dueño en 12: no desaparecen
+ni se presentan como hechos. Un bloqueo ambiental mantiene NO_LISTO.
 
-**2. Nada de sobreingeniería.** El mínimo código que cumpla, y que se active sólo
-el necesario. Nada de capa sobre capa, ni abstracciones para un segundo caso que no
-existe, ni defensas para fallos que nadie ha visto. **Si se añade una capa, se
-retira la que sustituye, en el mismo goal.**
-
-**3. Sólo se arregla lo que bloquea** (goals 01–10). Lo demás, una línea en
-`documentacion/APLAZADOS.md` y adelante. El goal 11 existe para vaciar esa lista,
-así que nada se pierde por anotarlo.
-
-**4. Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo. Entre
-dos opciones que cumplen gana la más ligera —RAM, disco, CPU en reposo y arranque
-en frío incluidos—. El ahorro se detiene donde BAXY deja de entender a la primera,
-de no mentir o de no dejar silencio muerto. La máquina de desarrollo tiene 16 GB de
-VRAM: eso es holgura para trabajar, no el presupuesto del producto.
-
-**5. Arquitectura modular: cada pieza sustituible.** BAXY no se termina — dentro de
-dos meses saldrá algo mejor y hay que poder cambiarlo sin reescribir el producto.
-Va en **dos niveles**, y confundirlos es lo que produce sobreingeniería:
-
-- **Nivel 1, la forma — aplica a todo BAXY y no cuesta nada.** Una responsabilidad
-  por pieza, nadie conoce las tripas de nadie, las dependencias apuntan hacia
-  dentro, nada global y mutable, **cero código muerto**. Sin esto nada es
-  sustituible jamás; con esto, todo lo es.
-- **Nivel 2, el mecanismo de cambio — cuesta trabajo, así que se le pone a las
-  piezas que de verdad se van a comparar** contra un candidato: la **medición que
-  decide** y la declaración en el manifiesto. Están en
-  [`documentacion/03_COSTURAS.md`](../03_COSTURAS.md).
-
-La medición es la parte que suele faltar y la que de verdad importa: con un corpus
-y un número, cambiar de motor es una tarde; con una interfaz preciosa y sin número
-no puedes decidir si mejoraste, así que no lo cambias nunca. Lo que **no** se
-escribe: interfaces con un solo implementador «por si acaso», registros de plugins,
-configuración para elegir entre implementaciones que no existen.
-
-**Y la consigna que une las cinco:** ésta es la escritura definitiva tras múltiples
-versiones de Carter, schemas y BAXY, y tiene que ser **la más rápida del linaje**.
-No porque haga menos, sino porque **no vuelve a descubrir nada que ya se descubrió**. Cada
-hora gastada re-derivando algo ya medido en estos repositorios es una hora que el
-proyecto ya pagó una vez.
-
-## Las reglas de conducta
-
-**Permisos totales.** Acceso completo al PC. Descarga, instala, sobrescribe, borra
-lo que sobre. **No preguntes.** Si dudas de una suposición, elige la más razonable
-y sigue. Una sola excepción, por daño irreversible fuera de BAXY: borrar datos
-personales del usuario o tocar otros proyectos de la carpeta `Programacion`.
-
-**Un solo criterio: lo mejor para BAXY como producto final.** No lo más rápido de
-implementar, no lo que ya estaba, no lo que luce mejor en un informe.
-
-**No investigues de más.** Estos repositorios acumulan documentación extensa. Si ya
-está respondido, decide con eso. Y no recopiles contexto exhaustivo antes de
-empezar: lee lo justo para dar el paso siguiente.
-
-**Termina.** El goal acaba cuando sus criterios de cierre están marcados, o cuando
-uno se ha medido inalcanzable y se ha publicado la evidencia. No cuando se acaban
-las ideas de mejora.
-
-**Y publica.** `git push origin main` detrás de cada commit, y el goal no se da por
-cerrado hasta que `git rev-list --count origin/main..main` da **0**. Es un criterio
-de cierre en los once. El dueño trabaja en varias máquinas: lo que no está en
-`origin` no existe para las demás, y este repositorio ya llegó a acumular 101
-commits sin publicar —cinco goals de trabajo en un solo disco—.
-
-## Por qué están escritos así
-
-Un agente de código moderno es proactivo y persistente por defecto: reanuda tras un
-fallo de herramienta, encadena ediciones y no necesita que lo empujen. Lo que
-necesita saber es **dónde está la frontera** y **cuándo ha terminado**. Por eso cada
-prompt dice el destino, el límite y los criterios de cierre, y no los pasos.
-
-**Y por eso los goals no repiten lo que el modelo ya trae de fábrica.** El prompt de
-sistema de Grok 4.6 ya le ordena mantener a la vista todos los requisitos explícitos
-hasta cumplirlos, no afirmar que algo está hecho o probado sin salida de herramienta
-que lo sostenga, no ampliar el encargo, y responder en vez de devolver una pregunta
-cuando la respuesta está en el contexto. Repetírselo no lo refuerza: gasta sitio y le
-dice cosas que ya cree. Lo que sí llevan los goals es el bloque **«Cómo trabajas
-aquí»**: las tools, la shell, el esfuerzo, los subagentes y dónde se deja el estado
-—que es lo que el harness no le dice—.
-
-Las versiones anteriores llevaban además un bloque de tendencias por modelo. Para
-10.x/11.x ya no se escribe por intuición: `10_PROTOCOLO_GROK46.md` parte de la
-sesión local del intento fallido —927 mensajes de chat, 5.065 eventos, dos rondas
-de `/goal` y cierre incompleto— y de las capacidades declaradas por el harness
-Grok Build 1.0.13. Por eso fija objetivo único, ownership, presupuesto 350k+150k,
-estado durable antes de compactar y una sola partición por ventana de trabajo. No se copia como
-andamiaje a los goals antiguos que ya cerraron.
-
-Cada prompt lleva además **lo que ya se midió y se rechazó**, para que ningún
-agente pague dos veces la misma corrida. Eso no es andamiaje: es evidencia.
-
-## Fuera de alcance
-
-No se miden, no cuentan como pendientes, no bloquean ningún goal: perfil
-certificado de 4 GB de VRAM y perfil CPU de 8 GB; instalación limpia, primer
-arranque y purge en cuenta desechable; certificado de firma. Detalle en
-`documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md`.
-
-## Invariantes — ningún goal los re-deriva
-
-1. El catálogo tipado es la única fuente de operaciones. La mente propone, el
-   kernel autoriza, el provider ejecuta.
-2. Nada se afirma sin verificar.
-3. Estados terminales honestos.
-4. La confirmación se liga a la invocación exacta.
-5. Cero respuestas visibles fijas.
-6. Local y privado. El modelo corre en la máquina, sin nube y sin APIs de pago.
-   BAXY **sí puede consultar la web** cuando no sabe algo; lo que no puede es
-   enviar contenido del usuario. La línea es de dirección, no de conexión.
-
-Todo lo demás se re-deriva midiendo en esta máquina.
+Historia de orden: [09.5 y siguientes](00_ORDEN_DESDE_09_5.md).
+Prompts Sol antiguos en `sol/`: archivo, no se lanzan.

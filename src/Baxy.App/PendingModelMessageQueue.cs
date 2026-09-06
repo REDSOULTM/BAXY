@@ -17,7 +17,7 @@ internal sealed class PendingModelMessageQueue
     private readonly object _lock = new();
     private readonly Queue<PendingModelMessage> _pending = new();
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
-    private readonly Func<string, string?, Task> _publishAsync;
+    private readonly Func<string, string?, string?, Task> _publishAsync;
     private readonly Func<string?, Task> _reportFailureAsync;
     private readonly Func<PendingModelMessage, string, Task> _onExhaustedAsync;
     private readonly Action _onQueued;
@@ -25,19 +25,21 @@ internal sealed class PendingModelMessageQueue
     private readonly Func<PendingModelMessage, MindSidecarClient, CancellationToken,
         Task<ModelMessageCompositionOutcome>> _composeAsync;
     private readonly Func<TimeSpan, CancellationToken, Task> _delayAsync;
+    private readonly Func<PendingModelMessage, bool> _isStale;
     private Task? _worker;
     private bool _isClosed;
 
     internal PendingModelMessageQueue(
         Func<CancellationToken, Task<MindSidecarClient?>> waitForMind,
-        Func<string, string?, Task> publishAsync,
+        Func<string, string?, string?, Task> publishAsync,
         Func<string?, Task> reportFailureAsync,
         Action onQueued,
         Func<Task> onSettledAsync,
         Func<PendingModelMessage, MindSidecarClient, CancellationToken,
             Task<ModelMessageCompositionOutcome>>? composeAsync = null,
         Func<TimeSpan, CancellationToken, Task>? delayAsync = null,
-        Func<PendingModelMessage, string, Task>? onExhaustedAsync = null)
+        Func<PendingModelMessage, string, Task>? onExhaustedAsync = null,
+        Func<PendingModelMessage, bool>? isStale = null)
     {
         ArgumentNullException.ThrowIfNull(waitForMind);
         ArgumentNullException.ThrowIfNull(publishAsync);
@@ -53,6 +55,7 @@ internal sealed class PendingModelMessageQueue
         _delayAsync = delayAsync ?? Task.Delay;
         _onExhaustedAsync = onExhaustedAsync
             ?? ((_, _) => Task.CompletedTask);
+        _isStale = isStale ?? (static _ => false);
     }
 
     internal int Count
@@ -126,6 +129,17 @@ internal sealed class PendingModelMessageQueue
                 return;
             }
 
+            // Un saludo que llega cuando la persona ya habló no responde a
+            // nada: se publicaba detrás de la respuesta del primer turno y se
+            // quedaba como su final. No se descarta ninguna respuesta, sólo
+            // una bienvenida que perdió su momento.
+            if (_isStale(pending))
+            {
+                RemoveHead(pending);
+                await _onSettledAsync().ConfigureAwait(false);
+                continue;
+            }
+
             MindSidecarClient? mind = await _waitForMind(cancellationToken).ConfigureAwait(false);
             if (mind is null)
             {
@@ -161,7 +175,13 @@ internal sealed class PendingModelMessageQueue
 
             RemoveHead(pending);
 
-            await _publishAsync(outcome.Text, outcome.Failure).ConfigureAwait(false);
+            // La ruta viaja con el texto: un mensaje publicado por la cola sin
+            // ruta no se podía atribuir a la respuesta que lo originó.
+            await _publishAsync(
+                    outcome.Text,
+                    outcome.Failure,
+                    PublicResponseRoute.FromDraft(pending.Draft))
+                .ConfigureAwait(false);
         }
     }
 

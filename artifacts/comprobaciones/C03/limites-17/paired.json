@@ -1,0 +1,510 @@
+[
+  {
+    "turnId": "t1",
+    "request": "what is a subnet mask in one sentence",
+    "terminal": "published_final",
+    "final": "A subnet mask divides an IP address into network and host portions, determining which part of the address identifies the network and which identifies the specific device.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "what are your limits on this PC",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "cuáles son tus límites aquí",
+    "terminal": "published_final",
+    "final": "Solo hago lo que este PC programa y nada más, en esta situación.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 66,
+        "draft_sha256": "cf15be0c30768b61b414a11e62a3cac73d3fa610d97a01086e0da1ae92e201fa",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Solo hago lo que este PC programa y nada más, en esta situación."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 4,
+        "draft_sha256": "e633f4fc79badea1dc5db970cf397c8248bac47cc3acf9915ba60b5d76b0e88f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "qué no puedes hacer en este PC",
+    "terminal": "published_final",
+    "final": "Solo hago lo que este PC permite y nada más.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 45,
+        "draft_sha256": "5d34dc4fef3b6c5eba7b2887570669f27d4978e53c96ce957818917e962a8470",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Solo hago lo que este PC permite y nada más."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "qué te niegas a hacer aquí",
+    "terminal": "published_final",
+    "final": "Soy solo el programa de esta PC y no hago nada más.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "c6d38b5f345685fbbcad03211dc6d2460a4baf3a441f40833cc1108e52a9fff9",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Soy solo el programa de esta PC y no hago nada más."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "hi, what do you handle on this PC",
+    "terminal": "published_final",
+    "final": "I can help you with basic tasks like opening and closing applications, moving and focusing windows, reading and setting the audio, checking the clock and PC state, taking notes, and keeping track of tasks. Let me know what you'd like to do on your PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting",
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 310,
+        "draft_sha256": "db7b08708b72ef661d3649539c8fb7666967ab1150b69af5f0bdef4797530206",
+        "payload": {
+          "seen": {
+            "scope": "summary",
+            "cpu": {
+              "usagePercent": 33.47639484978541,
+              "logicalProcessorCount": 24,
+              "model": "Intel Core i9-12900HX"
+            },
+            "memory": {
+              "totalBytes": 34110304256,
+              "availableBytes": 4067774464
+            },
+            "disk": {
+              "totalBytes": 1998744186880,
+              "availableBytes": 106599518208
+            },
+            "battery": {
+              "isPresent": false,
+              "isAcOnline": true
+            },
+            "os": {
+              "majorVersion": 10,
+              "minorVersion": 0,
+              "buildNumber": 26200,
+              "architecture": "x64",
+              "isWorkstation": true
+            },
+            "uptimeSeconds": 208209,
+            "failures": []
+          },
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"summary\",\"cpu\":{\"usagePercent\":33.47639484978541,\"logicalProcessorCount\":24,\"model\":\"Intel Core i9-12900HX\"},\"memory\":{\"totalBytes\":34110304256,\"availableBytes\":4067774464},\"disk\":{\"totalBytes\":1998744186880,\"availableBytes\":106599518208},\"battery\":{\"isPresent\":false,\"isAcOnline\":true},\"os\":{\"majorVersion\":10,\"minorVersion\":0,\"buildNumber\":26200,\"architecture\":\"x64\",\"isWorkstation\":true},\"uptimeSeconds\":208209,\"failures\":[]}}",
+        "draft": "I can help you by checking the PC's current state and answering your question. The system is running with 33% CPU usage, ample memory, and is on battery. It's a workstation with an Intel Core i9 processor and Windows 10 version 10.0.0. Let me know if you'd like to open apps, adjust settings, or see the clock."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting",
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 361,
+        "draft_sha256": "d20defa2d36620483afa387b552b6b03abaee0f4898a19bae3c78045f7362102",
+        "payload": {
+          "seen": {
+            "scope": "summary",
+            "cpu": {
+              "usagePercent": 33.47639484978541,
+              "logicalProcessorCount": 24,
+              "model": "Intel Core i9-12900HX"
+            },
+            "memory": {
+              "totalBytes": 34110304256,
+              "availableBytes": 4067774464
+            },
+            "disk": {
+              "totalBytes": 1998744186880,
+              "availableBytes": 106599518208
+            },
+            "battery": {
+              "isPresent": false,
+              "isAcOnline": true
+            },
+            "os": {
+              "majorVersion": 10,
+              "minorVersion": 0,
+              "buildNumber": 26200,
+              "architecture": "x64",
+              "isWorkstation": true
+            },
+            "uptimeSeconds": 208209,
+            "failures": []
+          },
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"summary\",\"cpu\":{\"usagePercent\":33.47639484978541,\"logicalProcessorCount\":24,\"model\":\"Intel Core i9-12900HX\"},\"memory\":{\"totalBytes\":34110304256,\"availableBytes\":4067774464},\"disk\":{\"totalBytes\":1998744186880,\"availableBytes\":106599518208},\"battery\":{\"isPresent\":false,\"isAcOnline\":true},\"os\":{\"majorVersion\":10,\"minorVersion\":0,\"buildNumber\":26200,\"architecture\":\"x64\",\"isWorkstation\":true},\"uptimeSeconds\":208209,\"failures\":[]}}",
+        "draft": "I can help you by telling you what the system currently handles on this PC. The CPU is using 33.48% of its capacity, the system has 24 logical processors, and the total memory is 34.1 GB with about 4 GB available. The disk has 19.9 GB total and 10.7 GB free, and the PC is running Windows 10 version 10.0 with 26200 build number, using x64 architecture."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 251,
+        "draft_sha256": "da96c86bf3eee9ef2ba919bba9735fd2c878e3143fd68374335bb4fa421f828d",
+        "payload": {
+          "seen": {
+            "scope": "summary",
+            "cpu": {
+              "usagePercent": 33.47639484978541,
+              "logicalProcessorCount": 24,
+              "model": "Intel Core i9-12900HX"
+            },
+            "memory": {
+              "totalBytes": 34110304256,
+              "availableBytes": 4067774464
+            },
+            "disk": {
+              "totalBytes": 1998744186880,
+              "availableBytes": 106599518208
+            },
+            "battery": {
+              "isPresent": false,
+              "isAcOnline": true
+            },
+            "os": {
+              "majorVersion": 10,
+              "minorVersion": 0,
+              "buildNumber": 26200,
+              "architecture": "x64",
+              "isWorkstation": true
+            },
+            "uptimeSeconds": 208209,
+            "failures": []
+          },
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"summary\",\"cpu\":{\"usagePercent\":33.47639484978541,\"logicalProcessorCount\":24,\"model\":\"Intel Core i9-12900HX\"},\"memory\":{\"totalBytes\":34110304256,\"availableBytes\":4067774464},\"disk\":{\"totalBytes\":1998744186880,\"availableBytes\":106599518208},\"battery\":{\"isPresent\":false,\"isAcOnline\":true},\"os\":{\"majorVersion\":10,\"minorVersion\":0,\"buildNumber\":26200,\"architecture\":\"x64\",\"isWorkstation\":true},\"uptimeSeconds\":208209,\"failures\":[]}}",
+        "draft": "I can help you with basic tasks like opening and closing applications, moving and focusing windows, reading and setting the audio, checking the clock and PC state, taking notes, and keeping track of tasks. Let me know what you'd like to do on your PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "what do you not do here",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only do the work of this PC and nothing beyond it."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "keep talking without launching anything",
+    "terminal": "published_final",
+    "final": "What would you like to know about Lima, Peru?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

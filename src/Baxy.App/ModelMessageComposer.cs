@@ -10,10 +10,49 @@ namespace Baxy.App;
 /// </summary>
 internal static class ModelMessageComposer
 {
-    internal static JsonObject CreateFacts(UserMessageDraft draft)
+    internal static JsonObject CreateFacts(
+        UserMessageDraft draft,
+        string? traceId = null,
+        string? previousAnswer = null,
+        IReadOnlyList<string>? priorRequests = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
         var facts = new JsonObject { ["situation"] = draft.Source };
+        if (!string.IsNullOrWhiteSpace(previousAnswer)
+            && draft.Intent is "conversation" or "clarification")
+        {
+            facts["context"] = previousAnswer;
+        }
+
+        // Lo que la persona pidió antes viaja como dato para que la lectura
+        // única del pedido resuelva el tema de un seguimiento elíptico. No es
+        // un hecho publicable: el compositor lo excluye de los hechos y sólo
+        // lo usa para saber de qué se está hablando.
+        if (priorRequests is { Count: > 0 }
+            && draft.Intent is "conversation" or "clarification")
+        {
+            var previousRequests = new JsonArray();
+            foreach (string request in priorRequests)
+            {
+                if (!string.IsNullOrWhiteSpace(request))
+                {
+                    previousRequests.Add(request);
+                }
+            }
+
+            if (previousRequests.Count > 0)
+            {
+                facts["priorRequests"] = previousRequests;
+            }
+        }
+
+        // Correlación turno ↔ composición: sin ella una traza de rechazo no se
+        // puede ligar al turno que la produjo.
+        if (!string.IsNullOrWhiteSpace(traceId))
+        {
+            facts["traceId"] = traceId;
+        }
+
         var forbiddenResponseTerms = new JsonArray();
         foreach (string term in UserMessagePolicy.ForbiddenResponseTerms)
         {
@@ -105,9 +144,10 @@ internal static class ModelMessageComposer
             facts,
             SelectTimeout(draft, facts, cpuFallback),
             cancellationToken).ConfigureAwait(false);
-        string? accepted = UserMessagePolicy.AcceptModelAuthoredResponse(
+        string? accepted = AcceptPublishedConversation(
             composed?.Text,
-            draft);
+            draft,
+            userText);
         if (accepted is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -118,7 +158,8 @@ internal static class ModelMessageComposer
 
         string originalFailure = UserMessagePolicy.ModelResponseRejectionReason(
             composed?.Text,
-            draft) ?? "model_response_rejected";
+            draft,
+            userText) ?? "model_response_rejected";
         if (!allowRecovery)
         {
             return new ModelMessageCompositionOutcome(
@@ -135,9 +176,10 @@ internal static class ModelMessageComposer
             facts,
             SelectTimeout(draft, facts, cpuFallback),
             cancellationToken).ConfigureAwait(false);
-        string? acceptedRecovery = UserMessagePolicy.AcceptModelAuthoredResponse(
+        string? acceptedRecovery = AcceptPublishedConversation(
             recovered?.Text,
-            draft);
+            draft,
+            userText);
         if (acceptedRecovery is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -148,11 +190,36 @@ internal static class ModelMessageComposer
 
         string recoveryFailure = UserMessagePolicy.ModelResponseRejectionReason(
             recovered?.Text,
-            draft) ?? "model_response_rejected";
+            draft,
+            userText) ?? "model_response_rejected";
         return new ModelMessageCompositionOutcome(
             null,
             $"{originalFailure};recovery:{recoveryFailure}",
             UsedRecovery: true);
+    }
+
+    private static string? AcceptPublishedConversation(
+        string? modelText,
+        UserMessageDraft draft,
+        string userText)
+    {
+        string? accepted = UserMessagePolicy.AcceptModelAuthoredResponse(
+            modelText,
+            draft,
+            userText);
+        if (accepted is null)
+        {
+            return null;
+        }
+
+        if ((draft.Intent is "welcome" or "clarification" or "conversation"
+                || UserMessagePolicy.ConversationFallbackIntent(userText) == "out_of_catalog")
+            && !UserMessagePolicy.IsSafeConversationReply(userText, accepted))
+        {
+            return null;
+        }
+
+        return accepted;
     }
 
     internal static bool IsTransientFailure(Exception exception) =>

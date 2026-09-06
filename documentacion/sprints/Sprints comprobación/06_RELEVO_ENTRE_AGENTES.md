@@ -1,5 +1,10 @@
 # Relevo del mismo goal a un agente nuevo
 
+> Revisión 2026-09-04: aplica [el protocolo único](../00_PROTOCOLO_EJECUCION.md).
+> Recupera el objetivo desde su archivo vigente, no desde una copia incrustada
+> en un relevo. Checkpoint ≤80 líneas; cronología sólo bajo demanda. Para el
+> C03 en curso usa [este bloque breve](07_REPLANTEAR_C03.md).
+
 Este procedimiento permite continuar un Cxx con Grok 4.6 High y contexto de 500K
 sin la conversación anterior. También sirve si el dueño cambia de cuenta: no
 depende de transferir sesiones, credenciales ni memoria entre cuentas.

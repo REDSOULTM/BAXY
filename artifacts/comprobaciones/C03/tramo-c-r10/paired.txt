@@ -1,0 +1,4 @@
+n=2 published=1 composition_failed=1 other=0
+
+001	published_final	¿Qué hora es?	5:04
+002	composition_failed	Explícame con calma qué puedes hacer en este PC y qué no haces, sin abrir nada.	composition_failed

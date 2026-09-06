@@ -1,0 +1,23 @@
+n=21 published=20 other=1
+
+001	t1	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda un paquete de datos en viajar desde su origen hasta su destino.
+002	t2	published_final	¿por qué importa?	La latencia de red importa porque ralentiza la respuesta y afecta la eficiencia del sistema.
+003	t3	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.
+004	t4	published_final	why does it matter?	DNS caching stores previous responses to queries, so returning cached data can make it seem like things changed when they didn’t.
+005	t5	published_final	explícame qué es un proxy en una frase	Un proxy actúa como intermediario entre ti y el recurso que deseas acceder.
+006	t6	published_final	¿y para qué sirve?	El proxy sirve para acceder y gestionar la conexión entre tú y el servidor, permitiéndote realizar solicitudes sin usar tu IP directa.
+007	t7	published_final	explain what a VPN is in one sentence	A VPN creates a secure, encrypted connection between your device and a remote server, masking your IP and protecting data in transit.
+008	t8	published_final	and why does it matter?	A VPN (Virtual Private Network) securely connects your device to a network, protecting your data by creating an encrypted tunnel so your online activity remains private and secure.
+009	t9	published_final	explícame qué es un router en una frase	Un router dirige el flujo de información entre tu dispositivo y la red.
+010	t10	composition_failed	¿y para qué se usa?	composition_failed
+011	t11	published_final	what is a core dump in one sentence	A core dump is a detailed record of a program's memory and state at the moment it crashes or is terminated unexpectedly.
+012	t12	published_final	qué es una herramienta de red, una frase	Una herramienta de red facilita la comunicación y el intercambio de datos entre dispositivos conectados a una red.
+013	t13	published_final	explícame qué es la caché, una frase	La caché es un espacio temporal donde se almacenan datos para recuperarlos más rápido más adelante.
+014	t14	published_final	¿por qué importa?	La caché almacena datos temporales para acelerar el acceso al contenido en el futuro.
+015	t15	published_final	y eso cómo se usa	En el pedido anterior, la caché almacena datos temporales para acelerar el rendimiento posterior.
+016	t16	published_final	explain what a firewall is in one sentence	A firewall is a security device that monitors and controls incoming and outgoing network traffic based on addresses, ports, or application protocols to protect devices on a network.
+017	t17	published_final	why does it matter?	A firewall controls network traffic to protect devices and data by allowing only authorized connections.
+018	t18	published_final	what would I use it for at home	One sentence in English: You might use it for organizing small home items.
+019	t19	published_final	qué es el kernel, una frase	El kernel es el componente principal del sistema operativo que gestiona el hardware y las aplicaciones.
+020	t20	published_final	para qué lo necesita el PC	¿Para qué necesita el PC para ejecutar tareas específicas?
+021	t21	published_final	¿y cuándo conviene usarlo?	¿Cuándo conviene usar el kernel para tareas específicas en el PC?

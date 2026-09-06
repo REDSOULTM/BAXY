@@ -1,0 +1,14 @@
+n=12 published=11 other=1
+
+001	t1	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el retraso que ocurre entre cuando envías una señal y cuando ella llega al destino.
+002	t2	published_final	¿por qué importa?	Porque la importancia muestra por qué algo cuenta y ayuda a decidir lo que hacer.
+003	t3	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names and their associated IP addresses to reduce lookup time and improve performance.
+004	t4	published_final	why does it matter?	It matters because understanding the reason helps clarify goals and decisions.
+005	t5	published_final	explícame qué es un proxy en una frase	Un proxy sirve para redirigir el tráfico o acceder a contenido por medio de un intermediario.
+006	t6	published_final	¿y para qué sirve?	¿Para qué sirve el proxy?
+007	t7	published_final	explain what a VPN is in one sentence	¿Para qué sirve un proxy?
+008	t8	published_final	and why does it matter?	The concept matters because understanding it helps you make better decisions and improve outcomes.
+009	t9	composition_failed	explícame qué es un router en una frase	composition_failed
+010	t10	published_final	¿y para qué se usa?	Se usa para responder preguntas y ayudar con tareas específicas.
+011	t11	published_final	what is a core dump in one sentence	A core dump is a file created when a program crashes, containing its memory state for debugging.
+012	t12	published_final	qué es una herramienta de red, una frase	Una herramienta de red es un dispositivo o software que permite la comunicación y el intercambio de datos entre dispositivos.

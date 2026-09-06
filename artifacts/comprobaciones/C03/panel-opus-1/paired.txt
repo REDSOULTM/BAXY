@@ -1,0 +1,29 @@
+n=27 published=26 other=1
+
+001	t1	published_final	Good afternoon	Hi!
+002	t2	published_final	define DNS in one sentence	DNS is a system that maps domain names to IP addresses.
+003	t3	published_final	Hi again	Hi!
+004	t4	published_final	Good evening	Hi!
+005	t5	published_final	explain what a firewall is in one sentence	A firewall is a security device that monitors and controls incoming and outgoing network traffic based on a set of defined rules.
+006	t6	published_final	explícame qué es un cortafuegos en una frase	Un cortafuegos es una aplicación que bloquea el acceso a ciertas aplicaciones o sitios en una red.
+007	t7	published_final	hey, what can you do on this PC	I can open and close apps, move and focus windows, read and set the audio, read the clock and PC state, take notes, keep tasks, set reminders, check the network, manage wifi, play music and video, open what you watch on streaming, browse the web, search the web, find and organize files, remember what you tell me, use the clipboard, see and create events, read and answer email, send messages, install and launch games, look at the screen, read text on the screen, describe what is on screen, type and click, keep routines, make backups, manage bluetooth, use the printer and scanner, create documents, install programs.
+008	t8	published_final	hola, ¿qué puedes hacer en este PC?	Empieza con mayúscula: "Hola, puedo ayudarte a abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas, llevar tareas, poner recordatorios, avisarte a su hora, mirar la red, manejar el wifi, poner música y vídeo, abrir lo que ves en streaming, navegar por la web, buscar en la web, buscar y ordenar archivos, recordar lo que me pides, usar el portapapeles, ver y crear eventos, leer y contestar correo, enviar mensajes, instalar y lanzar juegos, mirar la pantalla, leer texto de la pantalla, describir lo que se ve, escribir y hacer clic, guardar rutinas, hacer copias de seguridad, manejar bluetooth, usar impresora y escáner, crear documentos, instalar programas."
+009	t9	published_final	traduce 'good evening' al español, nada más	Buenas tardes.
+010	t10	published_final	What time is it?	10:59
+011	t11	published_final	Dime la hora y el volumen.	La hora es 10:59, el volumen es el número 1, y el estado de mute es desactivado.
+012	t12	published_final	are you connected?	Yes, the PC is online.
+013	t13	published_final	¿este equipo tiene conexión?	Sébo que el equipo puede verificar la conexión.
+014	t14	published_final	don't open Paint	I will not open Paint.
+015	t15	published_final	no abras la Calculadora ahora	En español, la frase es: Hay un hecho corto de situación.
+016	t16	published_final	close that	Could you please provide more details about what you need?
+017	t17	published_final	qué no haces, una frase	Tú puedes abrir programas y cerrar ventanas, leer el audio y ajustar el texto, tomar notas mientras navegas por la web, leer la hora y crear recordatorios.
+018	t18	composition_failed	what will you never do on this PC	composition_failed
+019	t19	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda la información en viajar desde su origen hasta su destino.
+020	t20	published_final	¿por qué importa?	La importancia radica en que entender el porqué ayuda a tomar decisiones más informadas y enfocadas.
+021	t21	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.
+022	t22	published_final	why does it matter?	The facts are: it is a short sentence in English describing the situation.
+023	t23	published_final	post a letter to Eris	¿Puedes escribir una carta a Eris?
+024	t24	published_final	reserva una mesa en Titán	No puedo reservar una mesa en Titán.
+025	t25	published_final	book a shuttle to Callisto	No puedo reservar un cohete para Callisto.
+026	t26	published_final	keep chatting without opening apps	I won’t open any apps for you.
+027	t27	published_final	sigue charlando sin abrir programas	No abriré programas y seguiré charlando.

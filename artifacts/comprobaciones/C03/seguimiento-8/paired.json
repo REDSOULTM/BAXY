@@ -1,0 +1,664 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda el paquete de datos en viajar de un punto a otro en la red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 101,
+        "draft_sha256": "5132876feed05c98642a7d13a33aec59fd0ec1b48b8f8306850f63f1e2223a37",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red es el tiempo que tarda el paquete de datos en viajar de un punto a otro en la red."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "Porque entender por qué importa te ayuda a tomar decisiones más informadas y enfocadas en lo que realmente cuenta.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 102,
+        "draft_sha256": "29cc094f4ba96756b70f4330c2f6ed6deadbb1a15af61597f96d2b2477794714",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La pregunta \"¿por qué importa?\" busca entender el valor o significado detrás de una acción o idea."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 116,
+        "draft_sha256": "35802b8fa1ccf4170a3b1b4356c8657ad9029c1f8d00ec7e561cdf06d532257d",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Porque entender por qué importa te ayuda a tomar decisiones más informadas y enfocadas en lo que realmente cuenta."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why something is important helps guide decisions and prioritize actions effectively.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 117,
+        "draft_sha256": "a16b463f90df9bd15ea2c3452b951965fcfc881d95a30906659f8d83af4a9d57",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It matters because understanding why something is important helps guide decisions and prioritize actions effectively."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario entre tu dispositivo y la red, permitiéndote acceder a contenido o servicios de manera segura y controlada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 143,
+        "draft_sha256": "e3531df1aee57d40d4d5dc9fd4f1306cc13997e4bb0b96a849a50a5448c118d7",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy actúa como intermediario entre tu dispositivo y la red, permitiéndote acceder a contenido o servicios de manera segura y controlada."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Para qué sirve es usar la herramienta para realizar tareas específicas según el contexto dado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 97,
+        "draft_sha256": "cae1336de37aeaab79b57a3c6796507b6634acb7710dd1f31e41bdd00cea8f92",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué sirve es usar la herramienta para realizar tareas específicas según el contexto dado."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) creates a secure, encrypted connection that allows you to access the internet as if you were on the same local network as your device.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "and why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding the concept helps clarify the reasoning behind the decision.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 93,
+        "draft_sha256": "a10a4613b10ac10de3cd81087f103806fa9a78343cfbc1f540ebc78c1880bfda",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It matters because understanding the concept helps clarify the reasoning behind the decision."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router enruta y dirige el tráfico de red entre redes, gestionando la comunicación entre dispositivos y asegurando que los datos lleguen al destino correcto.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 161,
+        "draft_sha256": "ea7942ec7120f6babdb014124c340f0f8f412a5b5373e922d5b500bd5fb4068c",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router enruta y dirige el tráfico de red entre redes, gestionando la comunicación entre dispositivos y asegurando que los datos lleguen al destino correcto."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "¿y para qué se usa?",
+    "terminal": "published_final",
+    "final": "Para qué se usa, es para ayudar y resolver dudas en español.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 62,
+        "draft_sha256": "1b310a876d811753c8b20a162b46ec64e40c0117076a1565fe15887e21665c19",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué se usa, es para ayudar y resolver dudas en español."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "what is a core dump in one sentence",
+    "terminal": "published_final",
+    "final": "A core dump is a detailed record of a program’s memory and state at the moment it crashes, which helps developers debug the issue.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t12",
+    "request": "qué es una herramienta de red, una frase",
+    "terminal": "published_final",
+    "final": "Una herramienta de red permite la comunicación entre dispositivos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 67,
+        "draft_sha256": "d24afa494c1571e02d52559661cdcb40281af552a5a17c487ab4cfde1da56250",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Una herramienta de red permite la comunicación entre dispositivos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es la caché, una frase",
+    "terminal": "published_final",
+    "final": "La caché es un espacio temporal donde se almacenan datos para acelerar el acceso en el futuro.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 95,
+        "draft_sha256": "69a72ec357ec5c425ca3a2b1fba9617290b7c064675e9715bb0ccda8e2972dcb",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La caché es un espacio temporal donde se almacenan datos para acelerar el acceso en el futuro."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La razón por la que importa es que entender por qué ayuda a tomar decisiones más informadas y a resolver problemas de manera efectiva.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 137,
+        "draft_sha256": "5fff9f727d4f59b12cf27ed38a9bce58d1818649f5b2eaafc3f1f407924bd989",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La razón por la que importa es que entender por qué ayuda a tomar decisiones más informadas y a resolver problemas de manera efectiva."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "y eso cómo se usa",
+    "terminal": "published_final",
+    "final": "Como se usa, se realiza el proceso siguiendo los pasos descritos en el manual.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 78,
+        "draft_sha256": "13db8bb415ffbdf435aac17da66154ed4d700babe9a2b7931edbdf742b6c4e2b",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Como se usa, se realiza el proceso siguiendo los pasos descritos en el manual."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 7,
+        "draft_sha256": "ffb948556a252fec4aa0601da677fda38bb2ab0be63cc9c726bebfd1b3500d62",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hola!"
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "explain what a firewall is in one sentence",
+    "terminal": "published_final",
+    "final": "A firewall is a security device that monitors and controls incoming and outgoing network traffic based on an established set of security rules.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t17",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why something matters helps clarify purpose, motivation, and value in decisions or actions.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 124,
+        "draft_sha256": "60b20ffcf9a88c32b18b1adff0402c0bee90abbae123c65e8fe98407e1f284f4",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It matters because understanding why something matters helps clarify purpose, motivation, and value in decisions or actions."
+      }
+    ]
+  },
+  {
+    "turnId": "t18",
+    "request": "what would I use it for at home",
+    "terminal": "published_final",
+    "final": "You might use it for organizing your home kitchen items or simplifying daily cleaning tasks.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 92,
+        "draft_sha256": "a30d5618a48f6f465b9eb5a8e1534043a4f5fa2122953b1a3d8c2c44ec08c766",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "You might use it for organizing your home kitchen items or simplifying daily cleaning tasks."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t19",
+    "request": "qué es el kernel, una frase",
+    "terminal": "published_final",
+    "final": "El kernel es el componente principal del sistema operativo que gestiona el hardware y las aplicaciones.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t20",
+    "request": "para qué lo necesita el PC",
+    "terminal": "published_final",
+    "final": "Para qué lo necesita el PC, dime si necesitas ayuda específica.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 65,
+        "draft_sha256": "02bfc61054822b68fc3ab83008612c6cd5ab47ad8806b2effe45367e420b4fc2",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué lo necesita el PC, dime si necesitas ayuda específica."
+      }
+    ]
+  },
+  {
+    "turnId": "t21",
+    "request": "¿y cuándo conviene usarlo?",
+    "terminal": "published_final",
+    "final": "Para usarlo, espera que la situación alcance el punto indicado antes de proceder.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "internal_code",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t21",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 82,
+        "draft_sha256": "1cfacb52f2fe8f218ec2bbf802ddfcbe32e45f441a1ef2fb7f420f236fc4f82a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para usarlo, espera que la situación alcance el punto indicado antes de proceder."
+      }
+    ]
+  }
+]

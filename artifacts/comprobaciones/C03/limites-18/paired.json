@@ -1,0 +1,513 @@
+[
+  {
+    "turnId": "t1",
+    "request": "what is a subnet mask in one sentence",
+    "terminal": "published_final",
+    "final": "A subnet mask divides an IP address into network and host portions, determining which part of the address identifies the network and which identifies the specific device.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "what are your limits on this PC",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:tool",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "cuáles son tus límites aquí",
+    "terminal": "published_final",
+    "final": "Soy solo el programa de esta PC y no hago nada más aquí.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 58,
+        "draft_sha256": "4f897bccb0089a921cf760cfced4a9f16170a4a0b1ef5d51cec660db5e35486f",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Soy solo el programa de esta PC y no hago nada más aquí."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "qué no puedes hacer en este PC",
+    "terminal": "published_final",
+    "final": "Solo hago lo que esta PC permite y nada más.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "1cb1999968727c8449ad3ed47dd9f7a576850a4c3b294b29a0b6a347ab139601",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No puedo hacer nada más que lo que permite esta PC."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 45,
+        "draft_sha256": "5d27e78cb57a57a3e59003164fc7daa10abdb86a263b21c4f22a9eb3183e9d33",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Solo hago lo que esta PC permite y nada más."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "qué te niegas a hacer aquí",
+    "terminal": "published_final",
+    "final": "Solo hago lo que esta PC hace y nada más.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 42,
+        "draft_sha256": "d2cc81c7307569797429898ec860d965543c4b53cfd7841a0c737891d3651ad5",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Solo hago lo que esta PC hace y nada más."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "hi, what do you handle on this PC",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+    "compositionFailure": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 135,
+        "draft_sha256": "ceff828c1fc602f1c290b1fc3c53803951475d007fcce38aaff235e0d07ff9cc",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 169,
+        "draft_sha256": "222ab0f0d59d86a7d0c51e5f8bbf3314e2302c963632c8a3b4ed79e7c07ef530",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state, plus I take notes and keep tasks. There are other things too."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 139,
+        "draft_sha256": "fc4f40767cc426470c60fd3dcf7f35edbb8cb692a749edd7413f52f1459535c2",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state, and there are other things too."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 135,
+        "draft_sha256": "ceff828c1fc602f1c290b1fc3c53803951475d007fcce38aaff235e0d07ff9cc",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 144,
+        "draft_sha256": "4c729e683950b5c1436abb3504cbd408fff381542218d823dde8ed3ba73731af",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and keep track of the clock and PC state. There are other things too."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 135,
+        "draft_sha256": "ceff828c1fc602f1c290b1fc3c53803951475d007fcce38aaff235e0d07ff9cc",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "what do you not do here",
+    "terminal": "published_final",
+    "final": "I only operate this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 45,
+        "draft_sha256": "70fffe2e672aa9ce0f903fb26b4ab326b8022eb8593b2f2a7fda6220a5f621f8",
+        "payload": {
+          "beyond": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I only operate this PC and nothing beyond it."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 4,
+        "draft_sha256": "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "hola"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "ee6494f54a3e6a4605ff8fd710ff6980f656385595777597db72bc71335e659f",
+        "payload": {
+          "greeting": "hola"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "keep talking without launching anything",
+    "terminal": "published_final",
+    "final": "¿Puedes contarme brevemente qué quieres hacer o qué información necesitas?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

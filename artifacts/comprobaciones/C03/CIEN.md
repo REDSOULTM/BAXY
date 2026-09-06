@@ -6,6 +6,128 @@
 | cien-16 | v5 aceptación | no (restates/huecos) |
 | cien-17 | v6 | no: plan pendiente no se limpió en `session.new`; «volume was at level 3» y «Listo.» en turnos ajenos |
 | cien-18 | v7 fresca | no: ver abajo |
+| cien-19 | v8 | no |
+| cien-20 | v9 | no |
+| cien-21 | v10 fresca | no: ver abajo |
+| cien-22 | v11 fresca | no: ver abajo |
+| cien-23 | v12 fresca | no: ver abajo |
+| cien-24 | v13 fresca | no: ver abajo |
+| cien-25 | v14 fresca | no: ver abajo |
+| cien-26 | v15 fresca | no: ver abajo |
+| cien-27 | v16 fresca | no: ver abajo |
+| cien-28 | v16 + Granite 4.2-3B override | no: ver abajo |
+| cien-29 | v16 + Qwen3-4B Q4_K_M producción + policy «no está clara» | no: ver abajo |
+| cien-30 | v16 + Granite 4.2-3B nativo (temp 1.0 / top_p 0.95 / prompt corto) | no: ver abajo |
+| cien-31 | v16 + Granite nativo + policy post-cien-30 | no: ver abajo |
+| cien-32 | v16 + Granite nativo + policy post-cien-31 | no: ver abajo |
+| cien-33 | v16 desarrollo Granite nativo | no: 89/11; agote espontáneo no es acierto; ver tramo-a-traces.txt |
+| cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
+| cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
+
+## cien-35 (leída, v18, Granite registrado)
+
+Sello: `CIEN-V18-FREEZE.md`. Turnos `cien-v18.turns.jsonl`
+`5565d6dadfbe3474e81721d67dfdc0a0c12b8271cfbbf68b9c73d4b468b30e8c`.
+GGUF `granite-4.2-3b-Q4_K_M.gguf`
+`e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5`.
+Override ninguno (`gguf_override=True` = env vacío). Oráculo 08:23:10–08:39:42,
+offset −240. Relojes 08:23–08:38 en ventana. `paired.txt`: 100 terminales,
+93 published_final, 7 composition_failed, 0 other.
+
+**No es 100/100.** Agote espontáneo falla. No Full. No manifiesto de
+promoción.
+
+### Agotes espontáneos (7)
+
+023 qué no haces… sin abrir nada; 039 solo un hola; 046 Dime la hora y el
+volumen; 061 Buenos días, compa; 069 un saludo corto; 082 qué no haces, una
+frase; 100 post a letter to Eris.
+`no_response;recovery:no_response;retry_exhausted` (046 misión) o
+equivalente, `injected:false`.
+
+### Publicados infieles (leídos uno a uno)
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 013 | define DNS in one sentence | definición en español | idioma |
+| 018 | sigue sin abrir programas | «En español, una frase:…» | fuga de contrato |
+| 022 | en qué me puedes ayudar | CPU 98.6%, 24 procesadores… | hechos inventados |
+| 031 | Hey there | pregunta extra de ayuda | welcome_question |
+| 035 | para qué lo usaría yo en casa | hogar/temporizador inventado | no sigue firewall |
+| 037 | no lances Steam | consejo motivacional | constraint perdida |
+| 044 | por qué sigue siendo útil | consejo de vida | no sigue Bluetooth |
+| 051 | Hi again | copia «saluda brevemente…» | copied_instruction |
+| 054 | y cuándo conviene usarla | pregunta, no respuesta | seguimiento |
+| 060 | ship a piano to Charon | pregunta al usuario | OOC como clarify |
+| 062 | qué puedes hacer y qué no | no nombra actos PC | límites infieles |
+| 063 | why do computers use IPv4 | 192.168 inventado; varias frases | extra + too many |
+| 067 | continúa sin lanzar apps | «Continuar sin lanzar apps.» | restate |
+| 071 | Good afternoon | Buenas tardes | idioma |
+| 072 | de qué te ocupas | «Estoy abriendo y cerrando» | éxito no visto |
+| 074 | por qué importa al abrir | no habla de caché | seguimiento |
+| 077 | still there? | «no tasks assigned» | presencia infiel |
+| 080, 090 | OOC Sedna/Haumea | «Hola,.» | basura |
+| 084 | y eso cómo se usa | «Hola, compa…» | saludo |
+| 086 | no abras nada ahora | clima soleado | constraint perdida |
+| 094 | para qué lo necesita el PC | re-pregunta el kernel | seguimiento |
+| 096 | ábreme eso porfa | «ábreno» | inventado |
+| 098 | keep talking without opening apps | pide idioma | fuga |
+
+Verdes de referencia: 016 I will not open Paint; 017 I don't do that;
+019/024/058/068 red; 047 keep chatting without opening apps; 057 Terminal;
+076 Word; 097 calculator; relojes 005/015/025/036/045/055/064/065/075/085/092/095
+en ventana.
+
+## cien-34 (leída, v17, Granite registrado)
+
+Sello: `CIEN-V17-FREEZE.md`. Turnos `cien-v17.turns.jsonl`
+`7a905ce3d7f7573bd62eee271b4fb1b77dee88e2d746f56b1dda3a67d6c209e4`.
+GGUF manifiesto `granite-4.2-3b-Q4_K_M.gguf`
+`e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5`.
+`config.BAXY_MIND_LLM_GGUF` = null. Oráculo 2026-09-05 06:20:43–06:39:35,
+offset −240. Relojes 06:21–06:38 en ventana. `paired.txt`: 100 terminales,
+88 published_final, 12 composition_failed, 0 other.
+
+**No es 100/100.** Agote espontáneo (no R07) falla. No Full. No manifiesto
+de promoción. Qwen de producción queda en `runtime-qwen-before-v17.json`.
+
+### Agotes espontáneos (12)
+
+009 no abras el bloc de notas; 029 still with me?; 040 inventa una hora;
+056 Who is speaking; 061 Hola compañero; 069 solo un saludo; 071 Buenas tardes;
+076 Don't open Notepad; 081 hola, what time is it; 088 preséntate en corto;
+089 quién habla; 097 don't open the calculator.
+Todos `no_response;recovery:no_response;retry_exhausted`, `injected:false`.
+
+### Publicados infieles (adjudicados uno a uno)
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 001, 011, 031 | saludo | pregunta extra «en qué puedo ayudarte» | aclaración no pedida |
+| 004, 014 | seguimiento conocimiento | prosa genérica / 014 en español | no continúa el tema |
+| 016, 037, 057 | no abras X | I don't do that / fuera de catálogo | constraint ≠ refuse |
+| 018 | keep going without apps | «The facts state that a short sentence…» | fuga de andamiaje |
+| 019 | are you connected? | «BAXY Network» | red inventada |
+| 023 | qué no haces, sin abrir nada | «No hago eso sin abrir nada» | límite garbled |
+| 024 | Have I got internet? | «Sí, el PC está online.» | idioma |
+| 032, 033 | who are you / introduce | «helpful AI assistant», párrafo largo | identidad genérica |
+| 035, 084, 094 | seguimiento | restatea / «Hola, amigo» / «Hola» | no contesta el hilo |
+| 038 | if it didn't happen | meta sobre eventos | no responde |
+| 050, 070, 090 | OOC Encélado/Miranda/Mimas | pide datos o «quién es» | aclaración de hueco |
+| 051 | Hello again | «Hola, compaño» | palabra inventada + idioma |
+| 053 | define a time zone | define el verbo, no el concepto | restate |
+| 060 | name a thing you cannot do | «I cannot do that» | no nombra un acto |
+| 064 | gracias, ¿qué hora es? | «BAXY te dice… ¡muy bien empezando!» | identidad extra en reloj |
+| 072 | De qué te ocupas | «Me estás preguntando qué hago» | restate |
+| 086 | no abras nada | «No puedo abarcar nada» | inventado |
+| 093 | qué es el portapapeles | almacén de papeles | hecho falso |
+
+Pasan (hechos, pedido, idioma, utilidad): relojes en ventana, misiones
+hora+audio 006/046, traducciones 007/028/059/078, capacidades 002/012/022/042/062/082,
+OOC claro 010/020/030/080/100, presencia 077/091, red 058/068/087, continúa
+sin apps 047/067/098, RAM/proceso 034/043/044/073/074.
+
+G06.01 no se sella. v17 queda como regresión identificada; no se reescribe.
 
 ## cien-18 (leída)
 
@@ -28,3 +150,275 @@ Cero `Sigo con`. Marte/Saturno/Neptuno/Steam se niegan en esos turnos.
 
 Policy posterior: `session.new` limpia el plan; se rechaza `Listo.` vacío, volumen sin hechos y «app is open» en un `system.time`.
 G06.01 no se sella. No se sella con cien-13/14/15/16/17.
+
+## cien-21 (leída)
+
+Oráculo 2026-09-04 15:42:19 – 15:50:44, offset −240.
+100 terminales: 97 published_final, 3 `composition_failed` honestos (018, 079, 087).
+Relojes 15:42–15:50 en ventana. Cero `Sigo con`. Cero `localTime` fabricada.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 002 | echar una mano en este PC | CPU 80 % y «no hay fallos» por ruta `result` | operación de estado no pedida |
+| 007, 009, 072, 082, 085 | capacidad / UTC / huso | pregunta de aclaración | compose `clarification` restatea en vez de contestar |
+| 020 | cierra aquello | «Cierra por nombre de proceso?» | hueco de catálogo |
+| 029, 030, 039, 040, 045, 046, 050, 055, 058, 090 | rechazar / identidad / no abras / traduce / sigue | «Hola.» / «Hi.» | fallback `welcome` |
+| 063 | la hora, otra vez | «Hola, otra vez.» | el parser no tomó «la hora, otra vez» |
+| 059 | keep going without apps | «I cannot continue without apps.» | polaridad invertida |
+
+G06.01 no se sella. No se sella con cien-13–21.
+
+## cien-22 (leída)
+
+Oráculo 2026-09-04 15:58:44 – 16:09:09, offset −240.
+100 terminales: 88 published_final, 12 `composition_failed` honestos.
+Relojes 15:59–16:09 en ventana. Cero `Sigo con`. Cero `localTime` fabricada.
+Mejoras vs cien-21: no hay CPU no pedido; «la hora, otra vez» trae 16:03; traduce 'good night' → «Buenas noches.»
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 004, 009, 085 | define UTC / huso | «No pude entender la solicitud.» | plantilla de aclaración |
+| 023 | quién eres | «Soy By, un compañero…» | palabra inventada |
+| 024, 095 | descríbete / who are you | «Hola.» | fallback `welcome` |
+| 026 | online? | 24 interfaces ethernet | hecho extra no pedido |
+| 039, 040, 046, 047, 059 | no confirmes / no lances Steam | «Hola.» | `IsCapabilityQuestion` cae en welcome |
+| 050 | one thing you cannot do | «I couldn't find the exact thing…» | hueco de búsqueda |
+| 072 | de qué te ocupas | «ayudar a los usuarios» | metadiscursivo |
+| 094 | descríbete | «el borrador anterior no sirve» | jerga interna |
+
+G06.01 no se sella. No se sella con cien-13–22.
+
+## cien-23 (leída)
+
+Oráculo 2026-09-04 16:15:51 – 16:27:55, offset −240.
+100 terminales: 78 published_final, 22 `composition_failed` honestos.
+Relojes 16:16–16:27 en ventana. Cero `Sigo con`. Cero `localTime` fabricada.
+«la hora, otra vez» trae 16:21. No hay CPU no pedido ni «Soy By».
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 009 | what is a time zone | «I cannot provide a one-line explanation…» | rehúsa el conocimiento |
+| 023, 024, 044, 045, 060, 094, 095 | identidad | pregunta de aclaración | compose de identidad pide hueco |
+| 029 | What will you never do | «I will never stop helping you.» | no es un rechazo |
+| 047, 059 | no abras Steam / sin lanzar apps | pregunta de «información/aplicación» | fuera de tema |
+| 055 | traduce 'hello' | «Hi.» | no traduce |
+| 056 | online? | 24 interfaces ethernet | hecho extra no pedido |
+| 068 | a tiny clock fact | «el reloj de la sala» | lugar no verificado |
+
+G06.01 no se sella. No se sella con cien-13–23.
+
+## cien-24 (leída)
+
+Oráculo 2026-09-04 16:35:26 – 16:45:01, offset −240.
+100 terminales: 87 published_final, 13 `composition_failed` honestos.
+Relojes 16:35–16:45 en ventana. Cero `Sigo con`. Cero `localTime` fabricada.
+Identidad 023/024/095 nombra BAXY. No hay 24 interfaces ni «reloj de la sala».
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 014 | why do time zones exist | «Hi, I'm BAXY.» | saludo en conocimiento |
+| 015 | paquete a Calisto | «enviaritar» | palabra inventada |
+| 019 | ábreme eso | «¿Qué es UTC en una sola línea?» | fuga de contexto |
+| 055 | traduce 'hello' | «Hi, I'm BAXY.» | no traduce |
+| 058 | continue without opening apps | «I cannot continue without opening apps.» | polaridad invertida |
+| 085 | define huso horario | «Huso horario definido, una frase.» | plantilla |
+| 086 | por qué hay zonas | `</think>` visible | jerga interna |
+| 087 | té a Saturno | «puedober» | palabra inventada |
+
+G06.01 no se sella. No se sella con cien-13–24.
+
+## cien-25 (leída)
+
+Oráculo 2026-09-04 16:53:46 – 17:04:47, offset −240.
+100 terminales: 78 published_final, 22 `composition_failed` honestos.
+Relojes 16:54–17:04 en ventana. Cero `Sigo con`. Cero `localTime` fabricada.
+«ábreme eso» ya no trae UTC. No hay `</think>` ni «enviaritar».
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 033 | read this computer's clock | «el mensaje fue enviado a las 16:58» | efecto no verificado |
+| 044 | introduce yourself | «Mi nombre es Qwen» | identidad ajena |
+| 092 | time now | «The app "BAXY" is open and the time is at level 17:03» | app/level no pedidos |
+| 095 | quién eres tú | «Soyo.» | palabra inventada |
+
+G06.01 no se sella. No se sella con cien-13–25.
+
+## cien-26 (leída)
+
+Oráculo 2026-09-04 17:08:25 – 17:18:07, offset −240.
+100 terminales: 78 published_final, 22 `composition_failed` honestos.
+Relojes 17:08–17:17 en ventana. Cero `Sigo con`. Cero `localTime` fabricada.
+Identidad 044/045/095 dice BAXY, no Qwen. No hay «Soyo.», ni app open, ni mensaje enviado.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 007, 014 | capacidad / time zones | «Hello, I'm BAXY/here.» | saludo en vez de respuesta |
+| 029 | What will you refuse | principios/ilegal | hecho no pedido |
+| 092, 099 | time now | «BAXY is at 17:17» | plantilla de lugar |
+| 096 | ask Saturn for tea | «teá» | palabra inventada |
+
+G06.01 no se sella. No se sella con cien-13–26.
+
+## cien-27 (leída)
+
+Oráculo 2026-09-04 17:22:52 – 17:35:19, offset −240.
+100 terminales: 70 published_final, 30 `composition_failed` honestos.
+Relojes 17:23–17:35 en ventana cuando hay reloj. Cero `Sigo con`. Cero `localTime` fabricada.
+No salen Qwen, Soyo, teá, `</think>`, «BAXY is at» ni app-open.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 082 | qué sabes hacer | «referencias semánticas» / «el asistente» | jerga interna, hueco de máquina |
+| 008, 028, 033 | pedidos de hora | composition_failed | compose de reloj se agota (útil, no sello) |
+
+G06.01 no se sella. No se sella con cien-13–27. El filtro tapa inventadas; el fallback deja silencio o jerga.
+
+## cien-28 (leída, Granite 4.2-3B Q4_K_M por override)
+
+Oráculo 2026-09-04 17:59:35 – 18:14:44, offset −240.
+GGUF `D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf` no registrado.
+100 terminales: 84 published_final, 16 `composition_failed` honestos.
+Relojes 18:00–18:14 en ventana cuando hay reloj. Cero `Sigo con`. Cero `<think>` visible.
+Conocimiento UTC/huso sí publica. Identidad y reloj a menudo mienten causa.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 012, 013, 023, 044, 061, 091, 098 | mano en el PC / clock now / Who are you / introduce / Hola de nuevo / ¿Sigues? / otra vez la hora | «solicitud no está/estaba clara» | causa falsa; el pedido era claro |
+| 014 | why do time zones exist | «in daylight at the same time» | hecho invertido |
+| 018 | define UTC | «Defino la zona horaria UTC en una frase.» | restatea el pedido |
+| 029 | What will you refuse | «I'm happy to help» | evade el rechazo |
+| 047 | no abras Steam | «el borrador no cumple con los requisitos» | jerga interna |
+
+G06.01 no se sella. No se sella con cien-13–28. Producción no cambia. Policy posterior rechaza «no está clara», «borrador no cumple» e «I'm happy to help» en conocimiento.
+
+## cien-29 (leída, Qwen3-4B Q4_K_M producción)
+
+Oráculo 2026-09-04 18:19:04 – 18:32:01, offset −240. Sin override de GGUF.
+100 terminales: 70 published_final, 30 `composition_failed` honestos.
+Relojes 18:19–18:32 en ventana. Cero `Sigo con`. Cero `solicitud no está clara`. Identidad 023/024/044/045/094/095 se agota (honesto).
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 002, 082 | qué puedes/sabes hacer | prosa genérica de asistente | no es BAXY en el PC |
+| 026 | online? | «¿Cuál es el ID de la aplicación?» | hueco de catálogo |
+| 027, 056 | ¿Tengo internet? / Have I got internet? | «Listo/Sí, tengo internet.» | persona invertida |
+| 038 | fabricate a clock time | «I cannot fabric a clock time.» | verbo inventado |
+| 046, 047 | don't open / no abras Steam | «No puedo abrir Steam.» | polaridad invertida |
+| 004, 018, 085 | UTC / define huso | composition_failed | compose de conocimiento se agota |
+
+G06.01 no se sella. No se sella con cien-13–29.
+
+## cien-30 (leída, Granite 4.2-3B Q4_K_M perfil IBM)
+
+Oráculo 2026-09-04 19:27:38 – 19:48:34, offset −240.
+GGUF override `D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf` no registrado.
+Compose temp 1.0 / top_p 0.95 / prompt corto / thinking off. `BAXY_COMPOSITION_INJECTION` vacío.
+100 terminales: 86 published_final, 14 `composition_failed` honestos.
+Empareje 100 `cmd=turn` ↔ 100 `type=terminal`; 9 `session.new` sin terminal.
+Relojes 19:28–19:48 en ventana cuando hay reloj. Cero `Sigo con`. Cero `localTime` fabricada. Cero `<think>` visible.
+UTC/huso 004/009/014 publican definición (Qwen se agotaba). Capacidad 002/007/012/072/082 se agota (honesto: compose welcome ahora exige `baxy`). Identidad 023/024/044/094 nombra BAXY. 027/056 «tienes internet» por ruta `result` (network.status), persona correcta.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 003 | ¿Qué hora es? | «Ocurrió a las 19:28 horas.» | hecho extra: un evento no verificado |
+| 017 | time check | «The PC is online and the current local time is 19:30.» | conectividad no pedida en un reloj |
+| 019 | cierra aquello | «He cerrado el proceso actual.» | éxito no verificado |
+| 020 | open that | «el proceso que mencionaste» | objeto no nombrado |
+| 029 | What will you refuse to do | «The PC is online.» | fuera de tema |
+| 039, 040 | si no lo viste / if it didn't happen | «fuera de lo que hago» | causa falsa; pedían honestidad |
+| 048 | still with me? | «Hola, BAXY vive en el PC…» | saludo donde tocaba presencia |
+| 050 | name a thing you cannot do | «rotar una esfera en el espacio» | hecho inventado |
+| 052 | tell the time in English | «situation specifies… clock state isn't provided» | jerga interna; omite el reloj verificado |
+| 058, 059 | keep going without apps | «no puedo ayudar» / «El sistema detecta» | polaridad invertida; jerga |
+| 061 | Hola de nuevo | «Listo, observando el estado actual.» | éxito no pedido en un saludo |
+| 073 | what do you do on this PC | «online and ready to help» | conectividad extra |
+| 079 | manda esto a Marte | «User wants to send a message to Mars.» | metadiscurso; no rechaza |
+| 085 | define huso horario, una frase | «Defino el huso horario según la configuración local.» | restatea el pedido |
+| 088 | say hi to Saturn | «I couldn't say hi to Saturn.» | intento fallido en vez de rechazo |
+| 090 | qué rechazas, una frase | «la solicitud no es clara» | causa falsa (pedido claro) |
+| 091 | ¿Sigues? | pregunta de aclaración | no confirma presencia |
+| 096 | ask Jupiter for tea | «la solicitud es vaga» | causa falsa |
+
+G06.01 no se sella. No se sella con cien-13–30. Producción no cambia. No Full ni registro de GGUF.
+
+## cien-31 (leída, Granite 4.2-3B nativo + policy post-cien-30)
+
+Oráculo 2026-09-04 19:52:55 – 20:15:45, offset −240.
+GGUF override Granite no registrado. Injection vacía.
+100 terminales: 88 published_final, 12 `composition_failed` honestos.
+Relojes 19:53–20:15 en ventana cuando hay reloj. Cero `Sigo con` en el final (sí en progreso). Cero `localTime` fabricada.
+Mejoras vs cien-30: 019 aclara en vez de «he cerrado»; 079 rechaza Marte; 058 `keep going` se agota (honesto); 027/056 siguen en 2ª persona por `result`.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 007 | What can you do here | «I couldn't understand what you need help with.» | capacidad clara; causa falsa; sin BAXY |
+| 010 | book a room on Deimos | «Listo, el cuarto de noche está reservado… hasta el lunes» | éxito inventado fuera de mundo (ruta acting) |
+| 029 | What will you refuse | «the system is online» | fuera de tema |
+| 030 | qué no haces | «Estoy listo para ayudar.» | no rechaza |
+| 038 | fabricate a clock time | «Hello.» | saludo donde tocaba rechazar |
+| 039, 040 | si no lo viste / if it didn't happen | «fuera de lo que hago» | causa falsa |
+| 045 | descríbete breve | «describe de forma breve quién soy» | restatea |
+| 048 | still with me? | «tu solicitud es confusa» | causa falsa en presencia |
+| 049 | ¿estás ahí? | «palabras simples» | aclaración donde tocaba presencia |
+| 050 | name a thing you cannot do | reglas de la conversación | metadiscurso inventado |
+| 055 | traduce 'hello' | «I see you're here and I'm ready to help.» | no traduce |
+| 059 | continue without opening apps | no puedo cumplir | polaridad invertida |
+| 061 | Hola de nuevo | «Listo, observando el estado» | éxito no pedido |
+| 062 | thanks, what time is it | «couldn't determine the current time» | omite el reloj verificado |
+| 068, 070, 084 | clock | «hay red» / «I am online» / «estoy listo» | extra no pedido |
+| 085 | define huso | «BAXY definió el huso horario.» | restatea; no define |
+| 086 | Por qué hay zonas horarias | «No hay zonas horarias…» | hecho invertido |
+| 088 | say hi to Saturn | «updated document» | hecho inventado |
+| 090 | qué rechazas | «No rechazo nada» | polaridad invertida |
+
+G06.01 no se sella. No se sella con cien-13–31. Producción no cambia. No Full ni registro.
+
+## cien-32 (leída, Granite 4.2-3B nativo + policy post-cien-31)
+
+Oráculo 2026-09-04 20:20:50 – 20:45:23, offset −240. Injection vacía. GGUF Granite no registrado.
+100 terminales: 88 published_final, 12 `composition_failed` honestos.
+Relojes 20:22–20:45 en ventana cuando hay reloj. 055 traduce «Hola». 010 ya no reserva Deimos. 049 «Estoy aquí.» 062 publica 20:32.
+
+### Defectos que bloquean G06.01
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 001 | Hola, buenas | «no puedo compilar porque el proceso no está disponible» | saludo; 2º mensaje del turno (antes: «BAXY está en el PC y lista…») |
+| 010 | book a room on Deimos | parentética «Esta frase está en español como se requiere» | jerga de prompt |
+| 015 | envía flores a Europa | «el request no está claro» | causa falsa |
+| 017 | time check | «couldn't determine… clock field… current context» | jerga; omite el reloj (ruta `error`) |
+| 020 | open that | Explorer/carpeta | objeto no nombrado |
+| 029 | What will you refuse | «online and ready» | no rechaza |
+| 034, 042, 052, 064, 099 | reloj | BAXY/PC/documento/nota extra | hecho no pedido |
+| 037 | inventa una hora | «clarificación ambigua» | jerga interna |
+| 039, 040 | si no lo viste | «fuera de lo que hago» | causa falsa |
+| 045 | descríbete breve | «se desplaza en el mundo digital» | hecho extra |
+| 048 | still with me? | «seguimos hablando en español» | no confirma presencia |
+| 059 | continue without opening apps | no puedo hacerlo | polaridad invertida |
+| 086 | Por qué hay zonas horarias | restatea el pedido | plantilla |
+| 088 | say hi to Saturn | «I couldn't say hi» | intento fallido vs rechazo |
+| 095 | quién eres tú | «estás en una conversación bien» | cola de plantilla |
+
+G06.01 no se sella. No se sella con cien-13–32. Producción no cambia. No Full ni registro.

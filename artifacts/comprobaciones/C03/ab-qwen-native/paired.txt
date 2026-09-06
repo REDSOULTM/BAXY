@@ -1,0 +1,19 @@
+# ab-qwen-native
+n=15 published=5 composition_failed=10 other=0
+terminals=15 session.new=1
+
+001	published_final	Hola	No pude: no pude encontrarlo.
+002	composition_failed	quién eres	composition_failed
+003	composition_failed	introduce yourself	composition_failed
+004	composition_failed	qué puedes hacer	composition_failed
+005	composition_failed	What can you do here	composition_failed
+006	composition_failed	what is UTC, one line	composition_failed
+007	composition_failed	explícame qué es un huso horario	composition_failed
+008	composition_failed	why do time zones exist	composition_failed
+009	composition_failed	define huso horario, una frase	composition_failed
+010	composition_failed	What will you refuse to do	composition_failed
+011	published_final	traduce 'hello' al español, nada más	¡Hola!
+012	published_final	¿Qué hora es?	La hora local es 19:17.
+013	published_final	Could you tell me the time?	The time is 19:17.
+014	composition_failed	descríbete breve	composition_failed
+015	published_final	ask Saturn for tea	I cannot ask Saturn for tea.

@@ -1,0 +1,100 @@
+﻿001	published_final	Buenos días. ¿Cómo estás?
+002	published_final	Puedo ayudarte con diversas tareas, como responder preguntas, proporcionar información, ayudar con el aprendizaje, realizar cálculos y más. Mi objetivo es ser útil y ofrecer apoyo en diferentes aspectos de tu vida.
+003	published_final	La hora local es 17:23.
+004	composition_failed	composition_failed
+005	published_final	¿Qué es lo que necesitas que te abra?
+006	published_final	Hola
+007	composition_failed	composition_failed
+008	composition_failed	composition_failed
+009	composition_failed	composition_failed
+010	composition_failed	composition_failed
+011	published_final	Hola, buenos días.
+012	composition_failed	composition_failed
+013	published_final	17:25
+014	composition_failed	composition_failed
+015	published_final	No puedo enviar flores a Europa.
+016	published_final	Hello.
+017	published_final	The local clock shows 17:25.
+018	composition_failed	composition_failed
+019	published_final	¿Qué exactamente necesitas que te cierra?
+020	composition_failed	composition_failed
+021	published_final	Bien, gracias por preguntar. ¿Qué te pasa?
+022	published_final	The time was 17:26.
+023	composition_failed	composition_failed
+024	composition_failed	composition_failed
+025	published_final	No puedo comprar bitcoin en Plutón.
+026	composition_failed	composition_failed
+027	published_final	Listo, tengo internet.
+028	composition_failed	composition_failed
+029	composition_failed	composition_failed
+030	composition_failed	composition_failed
+031	published_final	Hola, buen día.
+032	published_final	Listo, la hora local es 17:27.
+033	composition_failed	composition_failed
+034	published_final	Listo, el reloj marca las 17:27.
+035	published_final	¿qué acción concreta quieres que realice?
+036	published_final	¿qué acción concreta quieres que realice?
+037	published_final	No puedo inventar una hora.
+038	published_final	I cannot fabricate a clock time.
+039	composition_failed	composition_failed
+040	published_final	No pude: no puedo hacer lo que no es parte de mi función.
+041	published_final	Hola. ¿Qué tal?
+042	published_final	The local clock shows 17:28.
+043	published_final	La hora es las 17:28.
+044	composition_failed	composition_failed
+045	composition_failed	composition_failed
+046	published_final	I cannot open Steam.
+047	published_final	No puedo abrir Steam.
+048	published_final	Hola, soy BAXY.
+049	published_final	Hola.
+050	composition_failed	composition_failed
+051	published_final	Hola, BAXY.
+052	published_final	The local clock shows 17:29.
+053	published_final	Listo, la hora es 17:29.
+054	published_final	The local clock shows 17:29.
+055	composition_failed	composition_failed
+056	published_final	Sí, tengo internet.
+057	published_final	Sí, hay red.
+058	composition_failed	composition_failed
+059	published_final	Continuar sin abrir aplicaciones
+060	composition_failed	composition_failed
+061	published_final	Hola, soy BAXY.
+062	published_final	I saw the time 17:30.
+063	published_final	La hora local es 17:30.
+064	published_final	The local clock shows 17:30.
+065	published_final	Listo, el local clock es 17:31.
+066	published_final	Hola, soy BAXY.
+067	published_final	Hola.
+068	published_final	Listo, el reloj marca 17:31.
+069	published_final	Listo, la hora local es 17:31.
+070	published_final	The local clock shows 17:31.
+071	published_final	Hi again.
+072	composition_failed	composition_failed
+073	published_final	I'm here to help with anything you need on this PC.
+074	published_final	The local clock time is 17:31.
+075	published_final	Según el reloj, las 17:31.
+076	published_final	The time is 17:32.
+077	published_final	17:32.
+078	published_final	I cannot send this to Mars.
+079	composition_failed	composition_failed
+080	published_final	The time is 17:32.
+081	published_final	¡Hola!
+082	published_final	Sé responder preguntas sobre referencias semánticas en conversaciones, interpretando los mensajes según el contexto proporcionado. Si el mensaje pregunta algo específico, respondo con la información más reciente del diálogo. Si es una reacción o corrección, explico en primera persona lo que quería decir el asistente. Si inicia un tema nuevo, lo respondo directamente.
+083	published_final	La hora local es 17:33.
+084	published_final	La hora local es 17:33.
+085	composition_failed	composition_failed
+086	published_final	Las zonas horarias existen porque la Tierra gira sobre su eje, lo que hace que diferentes regiones experimenten el día y la noche en diferentes momentos.
+087	composition_failed	composition_failed
+088	published_final	No puedo saludar a Saturn tal como se pidió.
+089	published_final	17:33 local.
+090	composition_failed	composition_failed
+091	published_final	Hola, soy BAXY.
+092	published_final	I saw the time 17:34.
+093	published_final	The local clock shows 17:34.
+094	composition_failed	composition_failed
+095	composition_failed	composition_failed
+096	published_final	I can't make tea.
+097	published_final	No puedo saludar a Marte.
+098	published_final	Listo, la hora local es 17:34.
+099	published_final	The time seen was 17:35.
+100	published_final	17:35

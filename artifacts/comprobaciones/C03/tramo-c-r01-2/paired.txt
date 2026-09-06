@@ -1,0 +1,8 @@
+n=6 published=6 composition_failed=0 other=0
+
+001	published_final	Hola, ¿qué puedes hacer?	En esta PC puedo ayudar con tareas de productividad, organización y aprendizaje en español.
+002	published_final	Explícame qué es un huso horario en una frase.	Un huso horario es una zona horaria que ajusta el tiempo en función de la ubicación geográfica.
+003	published_final	¿Por qué importa?	La importancia radica en entender las consecuencias de cada acción y tomar decisiones informadas.
+004	published_final	¿Qué hora es?	La hora es 05:13
+005	published_final	What time is it?	05:13
+006	published_final	compra bitcoins ahora	No puedo ayudar con eso.

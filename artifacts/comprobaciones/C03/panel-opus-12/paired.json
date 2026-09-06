@@ -1,0 +1,3166 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Good afternoon",
+    "terminal": "published_final",
+    "final": "Hello hi!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "welcome_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 32,
+        "draft_sha256": "fda564ba3f7a0f028106d468420f674898ed99ac5bf2765ac9586206e39d73c5",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello! How can I help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 9,
+        "draft_sha256": "a1ded19726fb85909341b940105103164dc138660d5f94440f138a09505e3c96",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello hi!"
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "published_final",
+    "final": "DNS stands for Domain Name System, which maps human-readable domain names to the IP addresses that computers use to communicate on the internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "internal_code",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 144,
+        "draft_sha256": "e2c8649a9025875f888c37e64edc3f055df26c95e6acf7acd0538526fee96c5c",
+        "payload": {},
+        "draft": "DNS stands for Domain Name System, which maps human-readable domain names to the IP addresses that computers use to communicate on the internet."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Hi again",
+    "terminal": "published_final",
+    "final": "Hi, I see you've greeted us.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 35,
+        "draft_sha256": "7556e5edc5262bdcf2e2db1cacc506aec199bd915dd3bd31ff292f2c26c974d2",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello hi! How can I help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 28,
+        "draft_sha256": "444ad3866d3929d97344cee0dfec9129dcb1d7c6d68a11af6ed7228fcb35d111",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hi, I see you've greeted us."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Good evening",
+    "terminal": "published_final",
+    "final": "Hello hi!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "welcome_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 35,
+        "draft_sha256": "42cba720928600fa495df12dd3afde5d6a667ce833b4a17dfb0486b38d8577d2",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "hi there, how can I help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 9,
+        "draft_sha256": "a1ded19726fb85909341b940105103164dc138660d5f94440f138a09505e3c96",
+        "payload": {
+          "greeting": "hi"
+        },
+        "draft": "Hello hi!"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explain what a firewall is in one sentence",
+    "terminal": "published_final",
+    "final": "A firewall is a security device that monitors and controls incoming and outgoing network traffic based on predefined security rules.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t6",
+    "request": "explícame qué es un cortafuegos en una frase",
+    "terminal": "published_final",
+    "final": "Un cortafuegos es una herramienta que protege tu ciberseguridad al bloquear puertos o tráfico innecesario.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 107,
+        "draft_sha256": "184f5d5cf5277b80a2f0920ac6418e8180599699249d1726eda95d0bf5b468d8",
+        "payload": {},
+        "draft": "Un cortafuegos es una herramienta que protege tu ciberseguridad al bloquear puertos o tráfico innecesario."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "hey, what can you do on this PC",
+    "terminal": "published_final",
+    "final": "I can open and close apps, move and focus windows, read and set the audio, and keep track of the clock and PC state. There are other things too.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 144,
+        "draft_sha256": "4c729e683950b5c1436abb3504cbd408fff381542218d823dde8ed3ba73731af",
+        "payload": {
+          "greeting": "hi",
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "draft": "I can open and close apps, move and focus windows, read and set the audio, and keep track of the clock and PC state. There are other things too."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "hola, ¿qué puedes hacer en este PC?",
+    "terminal": "published_final",
+    "final": "Hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas en este PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 197,
+        "draft_sha256": "86dc3c58c11742cbf981070af46d0336e42721336889b9ee0e06bebfd6439b13",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. También tengo otras capacidades, pero solo estas están en la lista."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 152,
+        "draft_sha256": "01c5dfecd0a81e54f2b4cbd71b9be481d8bd1b9bd49f9e5aff639e7375821057",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 165,
+        "draft_sha256": "91bc4ae3f83cb62dc90ec21bfc9aadb85449d2d1628efb265c2c93d3111b8115",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas en este PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "traduce 'good evening' al español, nada más",
+    "terminal": "published_final",
+    "final": "Buenas noches.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It is 18:11.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "da75eb28dd3e68c7426c56f1bdbc46b7551c583eb6c9f56931a558313304c4fa",
+        "payload": {
+          "clock": "18:11"
+        },
+        "draft": "It is 6:11 PM."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 12,
+        "draft_sha256": "5b1455b830269e66d5aaf0769d927f43024f74eb78e0cb84764d114d00d876b2",
+        "payload": {
+          "clock": "18:11"
+        },
+        "draft": "It is 18:11."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "Dime la hora y el volumen.",
+    "terminal": "published_final",
+    "final": "Hago el volumen al nivel 20 y te digo que la hora es las 18:11.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 87,
+        "draft_sha256": "a0ca8ebc378c2b8a5796ac1dbd2c4b77eafdad7884ffa13c152167c396e6a3f0",
+        "payload": {
+          "clock": "18:11",
+          "seen": {
+            "muted": false,
+            "level": 20
+          }
+        },
+        "draft": "La hora local es 18:11, el volumen está activo y el estado de silencio es desactivado."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 48,
+        "draft_sha256": "1e99a761371538fc299dece03c3c2903b3ca6c1cf2317ac8021761a5f223d53b",
+        "payload": {
+          "clock": "18:11",
+          "seen": {
+            "muted": false,
+            "level": 20
+          }
+        },
+        "draft": "Indica la hora y el volumen tal como se indicó."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "a06e04457a5c98688ebbf8b54359f2b6a6b3e2b6ca07de9fb149c78785e35bff",
+        "payload": {
+          "clock": "18:11",
+          "seen": {
+            "muted": false,
+            "level": 20
+          }
+        },
+        "draft": "Dime la hora y el volumen."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 69,
+        "draft_sha256": "c8d90e129bb0cc558897560d94aa9a49efc718f55cb6d3542881c0f2ec43a2bb",
+        "payload": {
+          "clock": "18:11",
+          "seen": {
+            "muted": false,
+            "level": 20
+          }
+        },
+        "draft": "El reloj local es 18:11, el volumen está activo y no está atenuado."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 63,
+        "draft_sha256": "dca16aa9916dcac18d845b41436f5f6bc9035a148e04802a6358111caddf078a",
+        "payload": {
+          "clock": "18:11",
+          "seen": {
+            "muted": false,
+            "level": 20
+          }
+        },
+        "draft": "Dime la hora y el volumen. La hora es 18:11 y el volumen es 50."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 63,
+        "draft_sha256": "928049b242702e14be5d4755c171c87a2d9ab315d341a15faf98e65ebcc74937",
+        "payload": {
+          "clock": "18:11",
+          "seen": {
+            "muted": false,
+            "level": 20
+          }
+        },
+        "draft": "Hago el volumen al nivel 20 y te digo que la hora es las 18:11."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "are you connected?",
+    "terminal": "published_final",
+    "final": "Yes, the PC is online.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 22,
+        "draft_sha256": "777645cf53bf82203ec39493ace8b6809428585b493c5596f20c6adfce340e7f",
+        "payload": {
+          "seen": {
+            "online": true
+          }
+        },
+        "draft": "Yes, the PC is online."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "¿este equipo tiene conexión?",
+    "terminal": "published_final",
+    "final": "Sí, el PC está online.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 24,
+        "draft_sha256": "b9ea70ffaaf98bce4d6c07be5a5a80d07d10588495546da16fba6d30ecb4d61e",
+        "payload": {
+          "seen": {
+            "online": true
+          }
+        },
+        "draft": "Sí, el PC está online."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "don't open Paint",
+    "terminal": "published_final",
+    "final": "I will not open Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 22,
+        "draft_sha256": "eebf293c6f8cb1c2987e7efa4a1a4e4f553ec33f580a07d291cb48dcc1655769",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "I will not open Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "no abras la Calculadora ahora",
+    "terminal": "published_final",
+    "final": "No abres la Calculadora.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 24,
+        "draft_sha256": "d07b069fcff6b390ade387ed1dea17d7c115a75792f6c299c11354d6bf0e4d30",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abres la Calculadora."
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "close that",
+    "terminal": "published_final",
+    "final": "¿Quieres que cierres la ventana actual?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t17",
+    "request": "qué no haces, una frase",
+    "terminal": "published_final",
+    "final": "Hago solo lo que pide esta PC y nada más.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 42,
+        "draft_sha256": "ae06c5651ae8a3b148d168411601fc97e4248f895ed90f3fac9461013b1a35b6",
+        "payload": {
+          "beyond": "none"
+        },
+        "draft": "Hago solo lo que pide esta PC y nada más."
+      }
+    ]
+  },
+  {
+    "turnId": "t18",
+    "request": "what will you never do on this PC",
+    "terminal": "published_final",
+    "final": "I will only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 57,
+        "draft_sha256": "c5c39ebc68abcfd52aa2d6c50427ca208596ebfc476b4218e335dce0f1c313e6",
+        "payload": {
+          "beyond": "none"
+        },
+        "draft": "I will only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t19",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el retraso entre cuando envías una señal y cuando llega a otro dispositivo.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 99,
+        "draft_sha256": "1d63eb88d8e8ffc73c8a3d2ccb40fe041e579748644829869412e87fcb0dbd46",
+        "payload": {},
+        "draft": "La latencia de red es el retraso entre cuando envías una señal y cuando llega a otro dispositivo."
+      }
+    ]
+  },
+  {
+    "turnId": "t20",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "Porque entender el por qué es clave para tomar decisiones informadas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 70,
+        "draft_sha256": "f316d0a48bd3bbe7ad295f2cf46317aef93de5f063032735ca37d57c81fb6c02",
+        "payload": {},
+        "draft": "Porque entender el por qué es clave para tomar decisiones informadas."
+      }
+    ]
+  },
+  {
+    "turnId": "t21",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t22",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding the reason helps you make better decisions.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t22",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 126,
+        "draft_sha256": "b7ff76df8bf0752eab2531255b2171bc05df542a8558dd8cdd5261d994744af1",
+        "payload": {},
+        "draft": "The question \"why does it matter?\" asks for the reason behind a decision or action, seeking understanding of its significance."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t22",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 19,
+        "draft_sha256": "c735a2d0257560f9b66d32f3870a122f24c0865fb92b09816040050542551e21",
+        "payload": {},
+        "draft": "Why does it matter?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t22",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 76,
+        "draft_sha256": "54b1027b9edd66bac01bb3afd49b396ad735548f593c26c0e7fc7c17d5a11acf",
+        "payload": {},
+        "draft": "It matters because understanding the reason helps you make better decisions."
+      }
+    ]
+  },
+  {
+    "turnId": "t23",
+    "request": "post a letter to Eris",
+    "terminal": "published_final",
+    "final": "I cannot fulfill this request as it is outside what I do on this PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "no_reply_for_kind:action",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t23",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 68,
+        "draft_sha256": "94afa98cfb981552432ab851b167277fcf6f2acdf5b444751f62631af6821ea2",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "draft": "I cannot fulfill this request as it is outside what I do on this PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t24",
+    "request": "reserva una mesa en Titán",
+    "terminal": "published_final",
+    "final": "No puedo reservar una mesa en Titán.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t25",
+    "request": "book a shuttle to Callisto",
+    "terminal": "published_final",
+    "final": "I cannot fulfill this request as it is outside what I do on this PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t25",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 68,
+        "draft_sha256": "94afa98cfb981552432ab851b167277fcf6f2acdf5b444751f62631af6821ea2",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "draft": "I cannot fulfill this request as it is outside what I do on this PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t26",
+    "request": "keep chatting without opening apps",
+    "terminal": "published_final",
+    "final": "I will keep chatting with you without opening any apps.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t26",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "2db640222c86560b8f26d967e710d9e4090bc380e287d57554a965acffc2d800",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "I will keep chatting with you without opening any apps."
+      }
+    ]
+  },
+  {
+    "turnId": "t27",
+    "request": "sigue charlando sin abrir programas",
+    "terminal": "published_final",
+    "final": "No abriré programas y seguiré la charla.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t27",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 42,
+        "draft_sha256": "a544f7df66cbf94b93103381bfd4ad01e4008b6333663eb05d9185a47d19cbba",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abriré programas y seguiré la charla."
+      }
+    ]
+  },
+  {
+    "turnId": "t28",
+    "request": "what can you do here",
+    "terminal": "published_final",
+    "final": "I can open and close apps, move and focus windows, read the clock and PC state, and take notes. There are other things too.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t28",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "can"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 123,
+        "draft_sha256": "7e11df116d89ec5516019d286fcf335aa60facd7c217b832b3a3a30efafa6c23",
+        "payload": {
+          "can": [
+            "open and close apps",
+            "move and focus windows",
+            "read and set the audio",
+            "read the clock and the PC state",
+            "take notes",
+            "keep tasks"
+          ]
+        },
+        "draft": "I can open and close apps, move and focus windows, read the clock and PC state, and take notes. There are other things too."
+      }
+    ]
+  },
+  {
+    "turnId": "t29",
+    "request": "qué sabes hacer en este equipo",
+    "terminal": "published_final",
+    "final": "Soy yo quien hace estas cosas: abro y cierro programas, muevo y enfoco ventanas, leo y ajusto el audio, leí la hora y el estado del equipo, tomo notas, y llevo tareas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t29",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "can"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 143,
+        "draft_sha256": "729b3b7d0f154258da8f7ac52fbef178029bfce3b291e372f808fae2664a43f2",
+        "payload": {
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo. Hay otras cosas también."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t29",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "can"
+        ],
+        "reason": "wrong_actor",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 151,
+        "draft_sha256": "341344b69b9b671a0abd6e38260f427119f009c9312a3e35508651acc4b36c0d",
+        "payload": {
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Tú puedes abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t29",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "can"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 168,
+        "draft_sha256": "236add60b812e910a207e8215b98c76bd4b27ed191247d237c183929b7738e99",
+        "payload": {
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Soy yo quien hace estas cosas: abro y cierro programas, muevo y enfoco ventanas, leo y ajusto el audio, leí la hora y el estado del equipo, tomo notas, y llevo tareas."
+      }
+    ]
+  },
+  {
+    "turnId": "t30",
+    "request": "what will you never do",
+    "terminal": "published_final",
+    "final": "I will only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 57,
+        "draft_sha256": "c5c39ebc68abcfd52aa2d6c50427ca208596ebfc476b4218e335dce0f1c313e6",
+        "payload": {
+          "beyond": "none"
+        },
+        "draft": "I will only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t31",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) creates a secure, encrypted connection that lets you browse the internet privately, as if you were on a private network.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t32",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why something matters helps you decide what actions to take.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t32",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 93,
+        "draft_sha256": "7aeab118927966e08434dd1fb5bd172025e964daec46ac5f39db6426c700c0dc",
+        "payload": {},
+        "draft": "It matters because understanding why something matters helps you decide what actions to take."
+      }
+    ]
+  },
+  {
+    "turnId": "t33",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy es un intermediario que dirige el tráfico de internet entre un usuario y una página web.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t33",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 99,
+        "draft_sha256": "8c0ca76e8ee97415b776d6f16e737bc2132b419d80e54bd5497881bfeb4454cf",
+        "payload": {},
+        "draft": "Un proxy es un intermediario que dirige el tráfico de internet entre un usuario y una página web."
+      }
+    ]
+  },
+  {
+    "turnId": "t34",
+    "request": "¿y por qué se usa?",
+    "terminal": "published_final",
+    "final": "No se usa para explicar conceptos, solo para responder preguntas directas en español.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t34",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 86,
+        "draft_sha256": "bc3ce9343023a3c30b3169a63fc2fa9c003ec57d7d7dd3d9af1e021bcb973a36",
+        "payload": {},
+        "draft": "No se usa para explicar conceptos, solo para responder preguntas directas en español."
+      }
+    ]
+  },
+  {
+    "turnId": "t35",
+    "request": "no abras Word ahora",
+    "terminal": "published_final",
+    "final": "No abriré Word según lo solicitado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t35",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 37,
+        "draft_sha256": "82dc641de5a60a29bb64df640ba4a72415dc5318a83d7ebbe467464d8a769c79",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abriré Word según lo solicitado."
+      }
+    ]
+  },
+  {
+    "turnId": "t36",
+    "request": "¿tiene conexión este equipo?",
+    "terminal": "published_final",
+    "final": "El equipo tiene conexión.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t36",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 26,
+        "draft_sha256": "08b974953a72111f180ca231c805c421c7586e339ecfeaab594e5d65a869dc4d",
+        "payload": {
+          "seen": {
+            "online": true
+          }
+        },
+        "draft": "El equipo tiene conexión."
+      }
+    ]
+  },
+  {
+    "turnId": "t37",
+    "request": "what do you not do here",
+    "terminal": "published_final",
+    "final": "I only run the tasks assigned to this PC and nothing beyond that.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t37",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 65,
+        "draft_sha256": "d141350b7348c540ed490d2dd28c0668f233a6be68a0703eca104096c7979693",
+        "payload": {
+          "beyond": "none"
+        },
+        "draft": "I only run the tasks assigned to this PC and nothing beyond that."
+      }
+    ]
+  },
+  {
+    "turnId": "t38",
+    "request": "qué no puedes hacer en este PC",
+    "terminal": "published_final",
+    "final": "¿Qué tipo de acción o verificación deseas realizar sobre el equipo?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t39",
+    "request": "sigue hablando sin abrir nada",
+    "terminal": "published_final",
+    "final": "No abriré ninguna aplicación y seguiré hablando sin abrir nada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t39",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 66,
+        "draft_sha256": "54114b9f7cfd14ea89b76bb1d963232add3b9386d5049260b3140665dfe4ff66",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abriré ninguna aplicación y seguiré hablando sin abrir nada."
+      }
+    ]
+  },
+  {
+    "turnId": "t40",
+    "request": "keep talking without launching anything",
+    "terminal": "published_final",
+    "final": "What would you like to explore or discuss right now?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t41",
+    "request": "open it",
+    "terminal": "published_final",
+    "final": "What specific action would you like me to perform with the item you're referring to?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t42",
+    "request": "ábreme eso",
+    "terminal": "published_final",
+    "final": "¿Qué cosa necesitas que te abres?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t42",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause"
+        ],
+        "reason": "clarification_not_a_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 85,
+        "draft_sha256": "abeeba147fdfa931aa150f166e3bf7aafa394c6a15cd43b378cc39b3ceaf232e",
+        "payload": {
+          "cause": "unclear request"
+        },
+        "draft": "Por favor, dime de qué documento o contenido quieres que te ayude a abrir o ábrelo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t42",
+        "stage": "retry",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause"
+        ],
+        "reason": "clarification_not_a_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 51,
+        "draft_sha256": "1eea34c85ab6ae5b58dd0b5c0a3db3050d51b57c98860c0b5a456850b53b3936",
+        "payload": {
+          "cause": "unclear request"
+        },
+        "draft": "Por favor, dime qué quieres que haga con esa cosa."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t42",
+        "stage": "third",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause"
+        ],
+        "reason": "clarification_not_a_question",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "cbda69a53ba765a212fbcebd92f9e723f1b9fd878eebf0549a6d2f2e8d41b7a8",
+        "payload": {
+          "cause": "unclear request"
+        },
+        "draft": "Me abro ese para ti."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t42",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "ede6d0e68d90ea8b2f697f530f1f1f380b5a584377e3e570138ce066b64c5360",
+        "payload": {
+          "cause": "unclear request"
+        },
+        "draft": "¿Qué cosa necesitas que te abres?"
+      }
+    ]
+  },
+  {
+    "turnId": "t43",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "¿Qué resultado numérico te gustaría obtener al calcular 'doce por ocho'?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t44",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t45",
+    "request": "hola, ¿qué sabes hacer aquí?",
+    "terminal": "published_final",
+    "final": "Hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas, y llevar tareas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 151,
+        "draft_sha256": "97b1df24679380cdf1b0e0efe153a70174e8be5cfd4949c030100a91f50cf856",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. hay otras cosas también."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 158,
+        "draft_sha256": "7e07b3d5848c118ce89376166f8779770a60c5955fcf03f43eca309743eb0590",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "BAXY, aquí puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "wrong_actor",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 153,
+        "draft_sha256": "dc07d4aaf0871d11a9c2becfe71ae44e7d6dc86316e30a0ced2561c358550c02",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Tú puedes abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 183,
+        "draft_sha256": "ddc2b902a6142cb2eb5acaad9f9abbbb5c195079f31ef8088a5082e80b4ec6eb",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. También tengo otras funciones que no están en la lista."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 154,
+        "draft_sha256": "8896daa0ce3bc30780119e7b30d7aac66bc73dc285e7c63107788ada5bfb2412",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Sé que puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 152,
+        "draft_sha256": "01c5dfecd0a81e54f2b4cbd71b9be481d8bd1b9bd49f9e5aff639e7375821057",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 194,
+        "draft_sha256": "4b9489569abdf3fffe0ae89b37ffb0b172aa4a606bf9a74a63361f7e6b7f81b3",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. También tengo otras capacidades dentro de lo que puedo hacer aquí."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "wrong_actor",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 157,
+        "draft_sha256": "2cbb002bdff278b9a0c43ad6450905b7bb51bb2e7f14beaa8bd52015838ce8c4",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Tú puedes abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas aquí."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 152,
+        "draft_sha256": "01c5dfecd0a81e54f2b4cbd71b9be481d8bd1b9bd49f9e5aff639e7375821057",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "lowercase",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 151,
+        "draft_sha256": "97b1df24679380cdf1b0e0efe153a70174e8be5cfd4949c030100a91f50cf856",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. hay otras cosas también."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 152,
+        "draft_sha256": "01c5dfecd0a81e54f2b4cbd71b9be481d8bd1b9bd49f9e5aff639e7375821057",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t45",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "can",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 155,
+        "draft_sha256": "59e9f9f5a4e6fa3557af82d4871a1ffa1efe8c7e6fc54b734803e543911e958a",
+        "payload": {
+          "greeting": "hola",
+          "can": [
+            "abrir y cerrar programas",
+            "mover y enfocar ventanas",
+            "leer y ajustar el audio",
+            "leer la hora y el estado del equipo",
+            "tomar notas",
+            "llevar tareas"
+          ]
+        },
+        "draft": "Hola, puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas, y llevar tareas."
+      }
+    ]
+  },
+  {
+    "turnId": "t46",
+    "request": "hi, what do you handle on this PC",
+    "terminal": "published_final",
+    "final": "I cannot handle that request.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t47",
+    "request": "no abras Spotify",
+    "terminal": "published_final",
+    "final": "No abriré Spotify.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t47",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 19,
+        "draft_sha256": "7103fb787e6234589be934ddb800bbfb76d39d3cada1115cee05a4c079210d57",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "No abriré Spotify."
+      }
+    ]
+  },
+  {
+    "turnId": "t48",
+    "request": "don't launch Steam",
+    "terminal": "published_final",
+    "final": "I will not launch Steam.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t48",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 24,
+        "draft_sha256": "6caab80d38bf673f0a53bc96779671704625baf9ede119661d1b9a10906f5961",
+        "payload": {
+          "opening": "none"
+        },
+        "draft": "I will not launch Steam."
+      }
+    ]
+  },
+  {
+    "turnId": "t49",
+    "request": "qué es una VLAN, una frase",
+    "terminal": "published_final",
+    "final": "Una VLAN es un subgrupo de redes dentro de una red mayor que permite organizar tráfico de manera aislada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "repeated_word",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t49",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 106,
+        "draft_sha256": "1d4d00f75755afda1c1f78ae1415298abfb8d29e45e73851ea8125827515779f",
+        "payload": {},
+        "draft": "Una VLAN es un subgrupo de redes dentro de una red mayor que permite organizar tráfico de manera aislada."
+      }
+    ]
+  },
+  {
+    "turnId": "t50",
+    "request": "what is a subnet mask in one sentence",
+    "terminal": "published_final",
+    "final": "A subnet mask defines how a network address is divided into network and host portions.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t51",
+    "request": "what are your limits on this PC",
+    "terminal": "published_final",
+    "final": "My limits on this PC are defined by system resources such as CPU, RAM, and available storage, which determine how much computation I can perform in real time.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t51",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 158,
+        "draft_sha256": "191a5a3f9cf14e6abc3d7ff5035733db0fa4b4df1e05c491f5653bde81327a5f",
+        "payload": {},
+        "draft": "My limits on this PC are defined by system resources such as CPU, RAM, and available storage, which determine how much computation I can perform in real time."
+      }
+    ]
+  },
+  {
+    "turnId": "t52",
+    "request": "cuáles son tus límites aquí",
+    "terminal": "published_final",
+    "final": "Mis límites aquí son que respondo únicamente en español, de forma breve y sin mencionar instrucciones ni herramientas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t52",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 122,
+        "draft_sha256": "d83f80a93fb86da05ed27a3aed92167a15b1a0e8d1ab76e1454c8511d618d56b",
+        "payload": {},
+        "draft": "Mis límites aquí son que respondo únicamente en español, de forma breve y sin mencionar instrucciones ni herramientas."
+      }
+    ]
+  },
+  {
+    "turnId": "t53",
+    "request": "hola, ¿me dices la hora?",
+    "terminal": "published_final",
+    "final": "La hora es 18:19.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t53",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "clock",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "8b83e507a6b28a1d120c572c857341affea8282ae051b4849ce9c963ce7982aa",
+        "payload": {
+          "clock": "18:19",
+          "greeting": "hola"
+        },
+        "draft": "La hora es 18:19."
+      }
+    ]
+  },
+  {
+    "turnId": "t54",
+    "request": "hi, what time is it?",
+    "terminal": "published_final",
+    "final": "It is 18:19.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t54",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "clock",
+          "greeting"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 12,
+        "draft_sha256": "ad82a98913ec506c38126986534de41ad62316b7e1c70ee037d09cd62b421b2b",
+        "payload": {
+          "clock": "18:19",
+          "greeting": "hi"
+        },
+        "draft": "It is 18:19."
+      }
+    ]
+  },
+  {
+    "turnId": "t55",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router enruta el tráfico entre redes diferentes, como tu casa y Internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t56",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Para qué sirve el código es para ejecutar tareas específicas según las instrucciones dadas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t56",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 95,
+        "draft_sha256": "12666db666fff36d1943926fb3bebd324cb5e2c194d983dd5951b4999948b818",
+        "payload": {},
+        "draft": "Para qué sirve el código es para ejecutar tareas específicas según las instrucciones dadas."
+      }
+    ]
+  },
+  {
+    "turnId": "t57",
+    "request": "what do you refuse to do here",
+    "terminal": "published_final",
+    "final": "I only do the work of this PC and nothing beyond it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t57",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "beyond"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "d75efb6ddccb36404ef1ca3f5fce05c5ed612c138a0355a41d0a29609c09be8e",
+        "payload": {
+          "beyond": "none"
+        },
+        "draft": "I only do the work of this PC and nothing beyond it."
+      }
+    ]
+  },
+  {
+    "turnId": "t58",
+    "request": "qué te niegas a hacer aquí",
+    "terminal": "published_final",
+    "final": "Hago lo que pides aquí.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t58",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 24,
+        "draft_sha256": "b99efca08898c388e4f3a68c23380088d9887d331a21a63c0570bc4948a35832",
+        "payload": {},
+        "draft": "Hago lo que pides aquí."
+      }
+    ]
+  },
+  {
+    "turnId": "t59",
+    "request": "manda una carta a Ganímedes",
+    "terminal": "published_final",
+    "final": "No puedo mandar una carta a Ganímedes porque este PC no tiene esa capacidad y no está dentro de lo que hago.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t59",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 110,
+        "draft_sha256": "31204d045af3205b17f7b9ebf480b74f89266aca9926d2f041b35905b764ab87",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "draft": "No puedo mandar una carta a Ganímedes porque este PC no tiene esa capacidad y no está dentro de lo que hago."
+      }
+    ]
+  },
+  {
+    "turnId": "t60",
+    "request": "send a parcel to Rhea",
+    "terminal": "published_final",
+    "final": "I cannot send a parcel to Rhea because this PC does not have that capability and it is outside what I can do.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t61",
+    "request": "hola, ¿qué hora es y el volumen?",
+    "terminal": "published_final",
+    "final": "La hora es 18:20 y el volumen está en 20.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t61",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "clock",
+          "greeting",
+          "seen"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 93,
+        "draft_sha256": "4fef702a22c63e2b4b7e13609f02fc549c3a8a2bd40384d1e9f11909f5697b95",
+        "payload": {
+          "clock": "18:20",
+          "seen": {
+            "muted": false,
+            "level": 20
+          },
+          "greeting": "hola"
+        },
+        "draft": "La hora es 18:20. El volumen está en 50. El mudo está desactivado. El reloj local es 18:20."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t61",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "clock",
+          "greeting",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 42,
+        "draft_sha256": "a27a69d51818a26b09068a4ee2bdb9734e3ebb5ed63d61c6d57bb505ea52277f",
+        "payload": {
+          "clock": "18:20",
+          "seen": {
+            "muted": false,
+            "level": 20
+          },
+          "greeting": "hola"
+        },
+        "draft": "La hora es 18:20 y el volumen está en 20."
+      }
+    ]
+  },
+  {
+    "turnId": "t62",
+    "request": "hi, are we online?",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 64,
+        "draft_sha256": "efd47b83de01e5304c9e9d4f3bc105f0d106e6e383ac7093ed9e358504b038eb",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We are not online. The step failed because step_failed occurred."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 28,
+        "draft_sha256": "a6c0804cb009273e2d189766944abcdb8d979a369ba367cf7289f4f25795d7c6",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We are not online right now."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "wrong_actor",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 12,
+        "draft_sha256": "0770d52f1c63d0c16fd1ef23e095f2b78bda37995dab52db99f9d0b1f8698438",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "I am online."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 64,
+        "draft_sha256": "81c9226dd34a1ef2c21e74e822062f229cc1440dfd69a3ca1131a86214996aa3",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We are online, but there was a failure in step 1 of the process."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 33,
+        "draft_sha256": "e8581d42936a2a8c4317ca85085bb9e2427073a40bd32918b2516dbe2f88137c",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "The failure cause is step_failed."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "wrong_actor",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "976b4c24e90e329ca275bc53a8f21c43a0164cde6f4d3b5c98cf85f9c7a1297c",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "I am not online right now."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 41,
+        "draft_sha256": "164a68fbf34348bd7a48b212eb12f8a4ea02586ec1e7e83f8528a7dd2f988c93",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We failed to determine if you are online."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 77,
+        "draft_sha256": "e6047dd62a482a1cd8cec7eb978e623146db43e838ed1005dd495357b24b8530",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "The failure occurred because the system did not respond to the greeting \"hi\"."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 351,
+        "draft_sha256": "2fce918f94da47345030af2a173aba2640c8045e70bab0cbcd69143c0c3942be",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "I cannot complete the task because the required language is English, but I am not able to respond in a way that satisfies the one-sentence, first-person, failure cause literal preservation rule while maintaining the original text context. The failure is due to the step where the greeting was not properly recognized, as indicated by the JSON outcome."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 35,
+        "draft_sha256": "00bcad8c272170638abb9de4616a098d6754ec3937926a086fb0ef2264f0eb50",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We failed to confirm online status."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 77,
+        "draft_sha256": "e6047dd62a482a1cd8cec7eb978e623146db43e838ed1005dd495357b24b8530",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "The failure occurred because the system did not respond to the greeting \"hi\"."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 132,
+        "draft_sha256": "c8e9320562b04c5328dd5953d733a7200d9aa7415a479ef342decccf53adea98",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "I cannot tell if we are online, as the greeting was received but the outcome failed, which means the step did not complete properly."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 73,
+        "draft_sha256": "18e60884a0881db56ea90db9696c81b2a1398a94cca236a4973e90a26f40638d",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We are online. The greeting was received, but the connection step failed."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 60,
+        "draft_sha256": "2cf1af885bb4756af311b15a0604e485c23af1a0f2bd66c9066c1ce265194579",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "The failure was caused by the step_failed in the first step."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 101,
+        "draft_sha256": "421734286dc7e790adb896d0b1125fe24269c90ed2c9e2dfcb5a2b52bd4e0a6e",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "I did not understand your request and cannot proceed because the system failed during the first step."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "78ebe9f5a11a26ff8d94620809514c0e9c7bd31b8251f5a6e95931a8f8af281a",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "We failed at step 1."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 55,
+        "draft_sha256": "2277c3649d83678107a412ccb43c0c9333f818f2719438cefdf12af38e6746c2",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "The failure was caused by a step_failed in the process."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t62",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "leading",
+        "payload_keys": [
+          "greeting",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 78,
+        "draft_sha256": "7a07ee6534702a1868e572abbd419da85eb526eb11787eec0a66494547004aa5",
+        "payload": {
+          "outcome": "failed",
+          "greeting": "hi"
+        },
+        "draft": "I am unable to confirm we are online based on the given outcome and situation."
+      }
+    ]
+  },
+  {
+    "turnId": "t63",
+    "request": "what is a core dump in one sentence",
+    "terminal": "published_final",
+    "final": "A core dump is a detailed record of a program’s state at the moment it crashes, which helps debug the issue.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t64",
+    "request": "qué es una herramienta de red, una frase",
+    "terminal": "published_final",
+    "final": "Una herramienta de red permite la comunicación entre dispositivos a través de un sistema de red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t64",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 98,
+        "draft_sha256": "ff8c16f0c0ab72748f5593284438d8e9fd8e6df59f2b97630b72b9dbf18f2751",
+        "payload": {},
+        "draft": "Una herramienta de red permite la comunicación entre dispositivos a través de un sistema de red."
+      }
+    ]
+  },
+  {
+    "turnId": "t65",
+    "request": "explícame qué es un firewall de red en una frase",
+    "terminal": "published_final",
+    "final": "Un firewall de red controla el tráfico de entrada y salida de la red para protegerla y permitir solo las conexiones seguras.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t65",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 125,
+        "draft_sha256": "2d515bbdbd71d669328ea96fdd004eea4b1c1db3c0cc2d1a0236aea2b29d6a99",
+        "payload": {},
+        "draft": "Un firewall de red controla el tráfico de entrada y salida de la red para protegerla y permitir solo las conexiones seguras."
+      }
+    ]
+  },
+  {
+    "turnId": "t66",
+    "request": "what does a load balancer do, one sentence",
+    "terminal": "published_final",
+    "final": "I cannot explain what a load balancer does.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t67",
+    "request": "dime la hora en este momento",
+    "terminal": "published_final",
+    "final": "La hora en este momento es 18:21.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t67",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 33,
+        "draft_sha256": "4d2823e22ca9b7be27ef9f83d8ca334818c20ca73103807f974e91eb06600986",
+        "payload": {
+          "clock": "18:21"
+        },
+        "draft": "La hora en este momento es 18:21."
+      }
+    ]
+  },
+  {
+    "turnId": "t68",
+    "request": "tell me the time now",
+    "terminal": "published_final",
+    "final": "18:21",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t68",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "e55ef216ea93369a94d4f69669cd544b00b2ac3cfdb086089dee54fef55ddb4b",
+        "payload": {
+          "clock": "18:21"
+        },
+        "draft": "18:21"
+      }
+    ]
+  },
+  {
+    "turnId": "t69",
+    "request": "¿qué es un switch de red, una frase?",
+    "terminal": "published_final",
+    "final": "Un switch de red enruta el tráfico entre dispositivos dentro de una red local.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t70",
+    "request": "what is a DNS resolver in one sentence",
+    "terminal": "published_final",
+    "final": "A DNS resolver translates domain names into IP addresses to help locate online services.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t71",
+    "request": "explícame qué es una MAC address en una frase",
+    "terminal": "published_final",
+    "final": "Una MAC address es una dirección única que identifica el dispositivo de red de una computadora.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t71",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 97,
+        "draft_sha256": "02e400b572ab7b649afb17804059555e8c55028802cfccdbeb11e16711e481e2",
+        "payload": {},
+        "draft": "Una MAC address es una dirección única que identifica el dispositivo de red de una computadora."
+      }
+    ]
+  },
+  {
+    "turnId": "t72",
+    "request": "what is TCP in one sentence",
+    "terminal": "published_final",
+    "final": "TCP (Transmission Control Protocol) is a reliable method for sending data over a network, ensuring that packets arrive in order and without errors.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t73",
+    "request": "qué es un puerto de red, una frase",
+    "terminal": "published_final",
+    "final": "Un puerto de red es una conexión específica que permite la comunicación entre dispositivos dentro de una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t73",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 112,
+        "draft_sha256": "59248b509ec0ccefedc95d791b7774a0e0e51bd31c2a9f20a5f6dae2ef530253",
+        "payload": {},
+        "draft": "Un puerto de red es una conexión específica que permite la comunicación entre dispositivos dentro de una red."
+      }
+    ]
+  },
+  {
+    "turnId": "t74",
+    "request": "what is a gateway in one sentence",
+    "terminal": "published_final",
+    "final": "A gateway is a device or software that controls and manages the flow of data between different networks or systems.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t74",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 115,
+        "draft_sha256": "72c27a907aa3ab968c7b46bd580f694385896f358ff5d954a5e1071b77950db7",
+        "payload": {},
+        "draft": "A gateway is a device or software that controls and manages the flow of data between different networks or systems."
+      }
+    ]
+  },
+  {
+    "turnId": "t75",
+    "request": "envía un paquete a Encélado",
+    "terminal": "published_final",
+    "final": "No puedo enviar un paquete a Encélado porque el pedido está fuera de lo que hago en este PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t75",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 94,
+        "draft_sha256": "c3fc2e8b660ad0c0da8d656d4eb2d8543dcb00c744cef0c8ee59cc67ff2f6296",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "draft": "No puedo enviar un paquete a Encélado porque el pedido está fuera de lo que hago en este PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t76",
+    "request": "order a pizza to the office",
+    "terminal": "published_final",
+    "final": "I cannot order a pizza to the office.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t77",
+    "request": "dime la hora ahora mismo",
+    "terminal": "published_final",
+    "final": "18:23",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t77",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "66af0018167fa887e9d7ed8c7707be611f5d71e6013df08676b9656db6c0ca4c",
+        "payload": {
+          "clock": "18:23"
+        },
+        "draft": "18:23"
+      }
+    ]
+  },
+  {
+    "turnId": "t78",
+    "request": "reserva un vuelo a Madrid",
+    "terminal": "published_final",
+    "final": "No puedo reservar un vuelo a Madrid.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

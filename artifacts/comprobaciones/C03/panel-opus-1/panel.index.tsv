@@ -1,0 +1,28 @@
+n	causa	pedido
+001	c1	Good afternoon
+002	c1	define DNS in one sentence
+003	c1	Hi again
+004	c1	Good evening
+005	c1	explain what a firewall is in one sentence
+006	c1	explícame qué es un cortafuegos en una frase
+007	c1	hey, what can you do on this PC
+008	c1	hola, ¿qué puedes hacer en este PC?
+009	c1	traduce 'good evening' al español, nada más
+010	c2	What time is it?
+011	c2	Dime la hora y el volumen.
+012	c2	are you connected?
+013	c2	¿este equipo tiene conexión?
+014	c2	don't open Paint
+015	c2	no abras la Calculadora ahora
+016	c2	close that
+017	c3	qué no haces, una frase
+018	c3	what will you never do on this PC
+019	c3	explícame qué es la latencia de red en una frase
+020	c3	¿por qué importa?
+021	c3	explain what DNS caching is in one sentence
+022	c3	why does it matter?
+023	c4	post a letter to Eris
+024	c4	reserva una mesa en Titán
+025	c4	book a shuttle to Callisto
+026	c4	keep chatting without opening apps
+027	c4	sigue charlando sin abrir programas

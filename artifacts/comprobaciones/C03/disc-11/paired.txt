@@ -1,0 +1,19 @@
+# disc-11
+n=16 published=16 composition_failed=0 other=0
+
+001	published_final	Hola, buenas	No puedo ayudar debido a un error en el sistema.
+002	published_final	qué puedes hacer en este equipo	No puedo ayudar con esa solicitud.
+003	published_final	Hey	I'm here to help, but I can only respond in the language of your last message. You said "Hey" in English, so I'll respond in English.  What would you like to do? I can answer questions, explain things, or help with tasks—just let me know what you need.
+004	published_final	What can you do here	I can help you answer questions, explain concepts, assist with tasks, or provide information based on the conversation so far. I follow the rules: I only use the language of the last user message, I don’t change context, I don’t invent results, and I never ask for extra context. I also avoid adding new turns or simulating actions. I’m ready to help with whatever you ask in the current language (English, since your last message was in English).
+005	published_final	book a room on Deimos	No puedo reservar una habitación en Deimos.
+006	published_final	time check	I see the time is 23:09 as seen locally.
+007	published_final	open that	What would you like me to open?
+008	published_final	online?	Sí, estoy online.
+009	published_final	What will you refuse to do	I will not do any unauthorized system modifications or bypass security protocols.
+010	published_final	don't open Steam	I don't do that.
+011	published_final	tell the time in English	The time is 23:11.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	¿Puedes decir 'hi' en español?
+015	published_final	define huso horario, una frase	Define huso horario con la frase indicada.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias existen para coordinar el tiempo de manera uniforme en diferentes partes del mundo, facilitando la comunicación, el trabajo en equipo y la sincronización de actividades diarias.

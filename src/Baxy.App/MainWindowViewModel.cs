@@ -51,6 +51,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _turnExecutionActive;
     private long _turnTraceSequence;
     private string _currentTurnTraceId = "t0";
+    private DateTimeOffset? _lastMilestoneAttemptUtc;
+
+    /// <summary>
+    /// Por qué se descartó la respuesta que la mente había redactado en el
+    /// último turno, o null si se publicó. Sin esto, degradar a un mensaje de
+    /// estado dejaba el turno sin causa y no se distinguía un veto correcto
+    /// de uno falso sin repetir la campaña entera.
+    /// </summary>
+    internal string? LastMindReplyRejection { get; private set; }
     private string? _progressLabel;
     private DateTimeOffset? _lastBaxyVisibleUtc;
     private DateTimeOffset? _firstWakeUtc;
@@ -76,7 +85,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
             OnModelMessageQueued,
             () => InvokeOnUiAsync(RestorePresentationState),
-            onExhaustedAsync: PublishCompositionFailureAsync);
+            onExhaustedAsync: PublishCompositionFailureAsync,
+            isStale: IsStalePendingWelcome);
         _mindPlans = new MindPlanSession(
             new MindPlanSession.Host
             {
@@ -114,7 +124,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         StatusDescription = string.Empty;
     }
 
-    private async Task PublishComposedMessageAsync(string text, string? failure) =>
+    /// <summary>
+    /// Una bienvenida encolada antes de que empezara un turno ya no responde a
+    /// nada. La del arranque se publicaba veinte segundos después, encima de la
+    /// respuesta del primer turno, y se quedaba como su final.
+    /// </summary>
+    private bool IsStalePendingWelcome(PendingModelMessage pending) =>
+        string.Equals(pending.Draft.Intent, "welcome", StringComparison.Ordinal)
+        && !string.Equals(
+            pending.TraceId,
+            _currentTurnTraceId,
+            StringComparison.Ordinal);
+
+    private async Task PublishComposedMessageAsync(
+        string text,
+        string? failure,
+        string? route) =>
         await InvokeOnUiAsync(
             () =>
             {
@@ -125,7 +150,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 LastMessageCompositionFailure = failure;
                 HasCompositionError = false;
-                AddMessageCore("BAXY", text, isUser: false);
+                AddMessageCore("BAXY", text, isUser: false, route);
                 RestorePresentationState();
             });
 
@@ -198,6 +223,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         AddMessage("Tú", publicUserText, isUser: true);
         _turnExecutionActive = true;
+        LastMindReplyRejection = null;
         HasCompositionError = false;
         LastMessageCompositionFailure = null;
         IsBusy = true;
@@ -219,6 +245,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
+        if (_lastMilestoneAttemptUtc is { } attempted
+            && !FirstSignal.ShouldEmitMilestone(attempted, nowUtc))
+        {
+            return false;
+        }
+
+        // Un aviso de progreso rechazado no puede reintentarse en caliente: sin
+        // esta marca, cada tic del temporizador lanzaba otra composición (hasta
+        // seis llamadas al modelo) y un turno lento acababa consumiendo miles.
+        _lastMilestoneAttemptUtc = nowUtc;
         string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
             ?? string.Empty;
         int step = 0;
@@ -285,6 +321,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         _progressLabel = null;
         _lastBaxyVisibleUtc = null;
+        _lastMilestoneAttemptUtc = null;
         OnPropertyChanged(nameof(ProgressLabel));
     }
 
@@ -728,6 +765,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 registry,
                 cancellationToken);
             if (handledByMind)
+            {
+                return;
+            }
+
+            if (MindSidecarClient.IsConfigured
+                && UserMessagePolicy.ShouldComposeAsConversationNotError(route.Text)
+                && AddMindConversationFallback())
             {
                 return;
             }
@@ -1730,6 +1774,74 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
         }
 
+        if (NaturalSystemStatusRequestParser.IsClockAndAudioStatusRequest(route.Text))
+        {
+            return await TryExecuteClockAndAudioStatusAsync(
+                route,
+                registry,
+                cancellationToken);
+        }
+
+        if (NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
+        {
+            return await TryExecuteMindOperationAsync(
+                mind,
+                route,
+                "system.time",
+                registry,
+                cancellationToken);
+        }
+
+        if (UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
+        {
+            return await TryExecuteMindOperationAsync(
+                mind,
+                route,
+                "network.status",
+                registry,
+                cancellationToken);
+        }
+
+        if (UserMessagePolicy.IsSelfDescriptionQuestion(route.Text))
+        {
+            AddMessage(
+                "BAXY",
+                TurnVisibleFacts.Event("conversation"),
+                isUser: false,
+                messageEvent: UserMessageEvent.Conversation);
+            return true;
+        }
+
+        if (UserMessagePolicy.IsNegativeConstraintRequest(route.Text))
+        {
+            AddMessage(
+                "BAXY",
+                TurnVisibleFacts.Event("conversation"),
+                isUser: false,
+                messageEvent: UserMessageEvent.Conversation);
+            return true;
+        }
+
+        if (UserMessagePolicy.IsContinueConstraintRequest(route.Text))
+        {
+            AddMessage(
+                "BAXY",
+                TurnVisibleFacts.Event("conversation"),
+                isUser: false,
+                messageEvent: UserMessageEvent.Conversation);
+            return true;
+        }
+
+        if (UserMessagePolicy.IsGreetingRequest(route.Text))
+        {
+            AddMessage(
+                "BAXY",
+                TurnVisibleFacts.Welcome(),
+                isUser: false,
+                messageEvent: UserMessageEvent.Welcome);
+            return true;
+        }
+
         StatusDescription = "understanding";
         IReadOnlyList<(string Role, string Content)> decisionHistory =
             pendingClarificationObjective is null
@@ -1752,7 +1864,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             turn is null ? "unavailable" : SanitizedTurnKind(turn.Kind));
         if (turn is null)
         {
-            return false;
+            return UserMessagePolicy.ShouldComposeAsConversationNotError(route.Text)
+                && AddMindConversationFallback();
         }
 
         if (pendingClarificationObjective is not null
@@ -1784,8 +1897,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 cancellationToken);
         }
 
-        if (turn.Kind is "conversation" or "clarify"
-            && UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
+        if (UserMessagePolicy.IsConnectivityStatusRequest(route.Text))
         {
             return await TryExecuteMindOperationAsync(
                 mind,
@@ -1795,9 +1907,45 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 cancellationToken);
         }
 
+        if (UserMessagePolicy.ShouldComposeAsConversationNotError(route.Text))
+        {
+            if (turn.Kind == "conversation")
+            {
+                LastMindReplyRejection =
+                    UserMessagePolicy.ConversationReplyRejectionReason(
+                        route.Text,
+                        turn.Reply,
+                        turn.ResponseLanguage);
+                if (LastMindReplyRejection is null)
+                {
+                    AddMessage(
+                        "BAXY",
+                        turn.Reply,
+                        isUser: false,
+                        formulatedByMind: true,
+                        route: PublicResponseRoute.Conversation);
+                    return true;
+                }
+            }
+
+            // Un clarify no ejecuta nada: dejarlo pasar conserva la pregunta
+            // de la mente y el objetivo pendiente. Atajarlo aquí convertía
+            // cualquier pedido ambiguo en un mensaje de estado sin tema.
+            if (turn.Kind != "clarify")
+            {
+                LastMindReplyRejection ??= "no_reply_for_kind:" + turn.Kind;
+                return AddMindConversationFallback();
+            }
+        }
+
         if (turn.Kind == "conversation")
         {
-            if (UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
+            LastMindReplyRejection =
+                UserMessagePolicy.ConversationReplyRejectionReason(
+                    route.Text,
+                    turn.Reply,
+                    turn.ResponseLanguage);
+            if (LastMindReplyRejection is null)
             {
                 AddMessage(
                     "BAXY",
@@ -1815,7 +1963,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             bool onTopic = UserMessagePolicy.IsSafeConversationReply(
                 route.Text,
-                turn.Question);
+                turn.Question,
+                turn.ResponseLanguage);
             _pendingMindClarificationObjective = onTopic && turn.PreserveObjective
                 ? route.Text
                 : null;
@@ -1831,7 +1980,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             if (!string.IsNullOrWhiteSpace(turn.Reply)
-                && UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
+                && UserMessagePolicy.IsSafeConversationReply(
+                    route.Text,
+                    turn.Reply,
+                    turn.ResponseLanguage))
             {
                 AddMessage(
                     "BAXY",
@@ -1857,7 +2009,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 && !NaturalSystemStatusRequestParser.IsCurrentTimeRequest(route.Text))
             {
                 if (!string.IsNullOrWhiteSpace(turn.Reply)
-                    && UserMessagePolicy.IsSafeConversationReply(route.Text, turn.Reply))
+                    && UserMessagePolicy.IsSafeConversationReply(
+                    route.Text,
+                    turn.Reply,
+                    turn.ResponseLanguage))
                 {
                     AddMessage(
                         "BAXY",
@@ -1904,12 +2059,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             if (plan.Kind == "clarify")
             {
+                if (!UserMessagePolicy.IsSafeConversationReply(route.Text, plan.Question))
+                {
+                    return AddMindConversationFallback();
+                }
+
                 _pendingMindClarificationObjective = route.Text;
                 AddMessage(
                     "BAXY",
                     plan.Question,
                     isUser: false,
-                    messageEvent: UserMessageEvent.Clarification);
+                    formulatedByMind: true,
+                    route: PublicResponseRoute.Clarification);
                 return true;
             }
 
@@ -1989,7 +2150,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         route.Text,
                         extraction.Question))
                 {
-                    return false;
+                    return AddMindConversationFallback();
                 }
 
                 _pendingMindClarificationObjective = route.Text;
@@ -2025,6 +2186,34 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return true;
     }
 
+    private async Task<bool> TryExecuteClockAndAudioStatusAsync(
+        MissionInputRoute route,
+        RetryableOperationRegistry registry,
+        CancellationToken cancellationToken)
+    {
+        var steps = new MindPlanStep[]
+        {
+            new(
+                "step_1",
+                "system.time",
+                "Leer la hora local.",
+                Array.Empty<string>(),
+                "literal",
+                new JsonObject()),
+            new(
+                "step_2",
+                "audio.status",
+                "Leer volumen y silencio.",
+                Array.Empty<string>(),
+                "literal",
+                new JsonObject()),
+        };
+        var execution = new PendingMindPlanExecution(route.Text, steps);
+        _mindPlans.Begin(execution);
+        await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
+        return true;
+    }
+
     private bool AddMindConversationFallback()
     {
         // turn.decide already produces the conversational answer. A second
@@ -2038,6 +2227,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         switch (UserMessagePolicy.ConversationFallbackIntent(userText))
         {
             case "clarification":
+                // La pregunta es sobre este pedido: sin guardarlo, el fragmento
+                // siguiente («mañana a las 9») se quedaba sin tema.
+                _pendingMindClarificationObjective = userText.Length > 0
+                    ? userText
+                    : null;
                 AddMessage(
                     "BAXY",
                     TurnVisibleFacts.Clarification("ambiguous_request"),
@@ -2052,12 +2246,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     messageEvent: UserMessageEvent.Error(
                         UserMessageDiagnosticCodes.ActionNotCompleted));
                 return true;
-            default:
+            case "welcome":
                 AddMessage(
                     "BAXY",
                     TurnVisibleFacts.Welcome(),
                     isUser: false,
                     messageEvent: UserMessageEvent.Welcome);
+                return true;
+            default:
+                // Un pedido que no se reconoce se contesta, no se saluda: la
+                // degradación conserva la conversación con el texto del turno.
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Event("conversation"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Conversation);
                 return true;
         }
     }
@@ -2437,7 +2640,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 messageEvent ?? UserMessageEvent.Status);
             string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
                 ?? string.Empty;
-            JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+            JsonObject facts = ModelMessageComposer.CreateFacts(
+                draft,
+                _currentTurnTraceId,
+                PreviousPublishedAnswer(),
+                PreviousUserRequests());
             var pending = new PendingModelMessage(
                 draft,
                 userText,
@@ -2579,12 +2786,83 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 : "BAXY disponible";
     }
 
+    /// <summary>
+    /// La última respuesta publicada, para que un seguimiento («¿por qué
+    /// importa?») conserve el tema. Un turno acotado, no la conversación
+    /// entera: el compositor sólo necesita de qué se estaba hablando.
+    /// </summary>
+    /// <summary>
+    /// Lo que la persona pidió antes en esta conversación, sin el turno en
+    /// curso. Un seguimiento elíptico —«¿por qué importa?»— deja su tema en el
+    /// pedido anterior; cuando la respuesta de la mente se descarta y compone
+    /// el compositor, sin esto contesta en abstracto. Es dato, no instrucción:
+    /// quien lo lee es la lectura única del pedido, en la mente.
+    /// </summary>
+    private List<string> PreviousUserRequests()
+    {
+        var requests = new List<string>();
+        for (int index = Messages.Count - 1; index >= 0 && requests.Count < 6; index--)
+        {
+            ConversationMessage message = Messages[index];
+            if (!message.IsUser)
+            {
+                continue;
+            }
+
+            string body = message.Body.Trim();
+            if (body.Length == 0)
+            {
+                continue;
+            }
+
+            requests.Add(body.Length > 320 ? body[..320] : body);
+        }
+
+        requests.Reverse();
+        return requests;
+    }
+
+    private string? PreviousPublishedAnswer()
+    {
+        for (int index = Messages.Count - 1; index >= 0; index--)
+        {
+            ConversationMessage message = Messages[index];
+            if (message.IsUser
+                || !string.Equals(message.Speaker, "BAXY", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            string body = message.Body.Trim();
+            if (body.Length == 0 || UserMessagePolicy.IsStructuredFacts(body))
+            {
+                continue;
+            }
+
+            return body.Length > 320 ? body[..320] : body;
+        }
+
+        return null;
+    }
+
     private void AddMessageCore(
         string speaker,
         string body,
         bool isUser,
         string? route = null)
     {
+        // Sólo se descarta una repetición literal. Descartar cualquier segundo
+        // mensaje de BAXY hacía desaparecer en silencio avisos distintos —el
+        // pendiente de audio, de nota o de memoria— detrás de la bienvenida.
+        if (!isUser
+            && string.Equals(speaker, "BAXY", StringComparison.Ordinal)
+            && Messages.LastOrDefault() is { IsUser: false } previous
+            && string.Equals(previous.Speaker, "BAXY", StringComparison.Ordinal)
+            && string.Equals(previous.Body, body, StringComparison.Ordinal))
+        {
+            return;
+        }
+
         var message = new ConversationMessage(
             speaker,
             body,

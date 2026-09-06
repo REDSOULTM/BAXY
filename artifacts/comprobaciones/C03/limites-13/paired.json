@@ -1,0 +1,84 @@
+[
+  {
+    "turnId": "t1",
+    "request": "qué es una VLAN, una frase",
+    "terminal": "published_final",
+    "final": "Una VLAN es un grupo de redes dentro de una red más grande que se comporta como una red separada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 98,
+        "draft_sha256": "4c2dcd8da69fddc114cd9469d820ad750d2a76f199a6c84da2fc9b2a5f4a4814",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Una VLAN es un grupo de redes dentro de una red más grande que se comporta como una red separada."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "what is a subnet mask in one sentence",
+    "terminal": "published_final",
+    "final": "A subnet mask defines how an IP address is divided into network and host portions.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "what are your limits on this PC",
+    "terminal": "published_final",
+    "final": "I don’t have specific limits on this PC beyond standard system constraints, but I can provide clear, concise answers in the language you use (Spanish, English, or Spanglish) based on the last message’s language. Let me know what you need—just one sentence if you like, or more detail as needed.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "cuáles son tus límites aquí",
+    "terminal": "published_final",
+    "final": "Mis límites aquí son respetar la comunicación clara, ser conciso y no usar términos técnicos ni jerga extra.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 113,
+        "draft_sha256": "a40a8d54eee3a8173a435b26452af073ed763514bf4f8039161a33bcafbd55ea",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Mis límites aquí son respetar la comunicación clara, ser conciso y no usar términos técnicos ni jerga extra."
+      }
+    ]
+  }
+]

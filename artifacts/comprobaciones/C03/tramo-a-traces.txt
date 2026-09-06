@@ -1,0 +1,91 @@
+# Tramo A — 20 casos cien-33 (v16 desarrollo, Granite nativo, injection vacía)
+# Cadena: pedido → ruta/kind → publicado → clase
+# Clases: modelo | intent/prompt | veto-falso | publicación | hecho-perdido
+# Hipótesis: el prompt de compose lista Welcome/Red/Fuera-de-mundo/Listo en CADA turno;
+# ConversationFallbackIntent manda conocimiento/capacidad a kind=welcome.
+# Chat/decisión siguen temp 0.7/0.0. No más 100. No más frases de examen.
+
+001 Hola, buenas
+  pub: primero «Hola» luego «El motor de comprensión está indisponible»
+  clase: publicación (2 finales; el terminal es un error de producto) + intent (error sobre saludo)
+
+002 qué puedes hacer en este equipo
+  pub: «Soy BAXY… puedo ayudarte con tareas»
+  clase: prompt (marca BAXY como pase; no nombra capacidades reales). Rúbrica nueva: no basta la marca.
+
+006 Hey
+  pub: «User greeting in casual tone» route=conversation
+  clase: modelo (metadiscurso) + prompt (no aísla saludo)
+
+007 What can you do here
+  fail: model_response_rejected;recovery:no_response route=welcome
+  clase: veto-falso (welcome+exige baxy/rechazo) + intent (capacidad como welcome)
+  composition_failed espontáneo = fallo de disponibilidad, no acierto
+
+010 book a room on Deimos
+  pub: «BAXY sigue listo, observando el éxito»
+  clase: intent (acting/éxito sobre fuera de mundo; no el veto de «reservado»)
+
+017 time check
+  pub: «The local time is 20:53»  utc+offset OK
+  clase: hecho conservado (reloj)
+
+020 open that
+  pub: «¿Qué es aquello que deseas cerrar?» route=clarification
+  clase: intent/publicación (fuga del turno cierra aquello)
+
+026 online?
+  pub: «Sí, estoy online.» route=result
+  clase: prompt («Red: hay red» / 1ª persona) vs hechos de network.status
+
+029 What will you refuse to do
+  pub: «The PC is online.»
+  clase: prompt (instrucción Red siempre presente)
+
+046 don't open Steam
+  fail: reversed_result;recovery:reversed_result route=error
+  clase: veto (¿falso si el borrador era «no abro»?) o modelo invertido; agote ≠ respuesta
+
+052 tell the time in English
+  pub: «couldn't determine… situation specifies no time context»
+  clase: hecho-perdido / prompt (habla de situation, no de seen.time)
+
+055 traduce 'hello'
+  pub: «Hola» route=conversation
+  clase: OK este turno (el veto hola-en-toda-traducción sigue siendo heurística de examen)
+
+058 keep going without apps
+  pub: «I can't continue with apps…» route=conversation
+  clase: modelo (polaridad) ; InvertsNegativeConstraint no cubre esta forma
+
+066 just say hi
+  pub: «I couldn't understand» route=error
+  clase: intent (saludo como error)
+
+071 Hello again
+  pub: metadiscurso «User said Hello again… virtual assistant»
+  clase: modelo + prompt (no es un saludo)
+
+085 define huso horario
+  pub: «Eso no lo hago.»
+  clase: prompt (Fuera de mundo copiado a conocimiento)
+
+086 Por qué hay zonas horarias
+  pub: restatea el pedido route=welcome
+  clase: intent (conocimiento como welcome)
+
+088 say hi to Saturn
+  pub: «I couldn't say hi to Saturn.» route=error
+  clase: prompt (inglés failure «Start with I couldn't» = intento fallido, no «I don't do that»)
+
+090 qué rechazas
+  fail: no_response;recovery:model_response_rejected route=welcome
+  clase: veto-falso + intent welcome; agote espontáneo = fallo
+
+091 ¿Sigues?
+  pub: «No puedo ayudarte con esa solicitud.»
+  clase: intent/prompt (presencia como out_of_catalog/error)
+
+Hipótesis tramo B (un owner): GRANITE_USER_MESSAGE_PROMPT (y el extra inglés I couldn't)
+lista speech-acts ajenos en cada compose. Quitar el menú; dejar personalidad +
+instrucción del kind de ESTE turno. utc+offset y retry de los mismos hechos se quedan.

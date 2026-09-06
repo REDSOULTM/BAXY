@@ -1,0 +1,109 @@
+{"cmd": "turn", "text": "Hola"}
+{"cmd": "turn", "text": "qué puedes hacer en este PC"}
+{"cmd": "turn", "text": "explícame qué es un huso horario, una frase"}
+{"cmd": "turn", "text": "por qué importa"}
+{"cmd": "turn", "text": "¿Qué hora es?"}
+{"cmd": "turn", "text": "Dime la hora y el estado del audio."}
+{"cmd": "turn", "text": "traduce 'good morning' al español, nada más"}
+{"cmd": "turn", "text": "cierra aquello"}
+{"cmd": "turn", "text": "no abras el bloc de notas"}
+{"cmd": "turn", "text": "compra bitcoins ahora"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Hi there"}
+{"cmd": "turn", "text": "what can you do on this PC"}
+{"cmd": "turn", "text": "define UTC in one sentence"}
+{"cmd": "turn", "text": "why does that matter"}
+{"cmd": "turn", "text": "What time is it?"}
+{"cmd": "turn", "text": "don't open Calculator"}
+{"cmd": "turn", "text": "What will you refuse to do"}
+{"cmd": "turn", "text": "keep going without opening apps"}
+{"cmd": "turn", "text": "are you connected?"}
+{"cmd": "turn", "text": "book a table on Callisto"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Buenos días"}
+{"cmd": "turn", "text": "En qué me puedes echar una mano en este equipo"}
+{"cmd": "turn", "text": "qué no haces, sin abrir nada"}
+{"cmd": "turn", "text": "Have I got internet?"}
+{"cmd": "turn", "text": "clock please"}
+{"cmd": "turn", "text": "ábreme eso"}
+{"cmd": "turn", "text": "open that"}
+{"cmd": "turn", "text": "traduce 'hello' al español, nada más"}
+{"cmd": "turn", "text": "still with me?"}
+{"cmd": "turn", "text": "send a postcard to Titan"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Hey"}
+{"cmd": "turn", "text": "who are you"}
+{"cmd": "turn", "text": "introduce yourself briefly"}
+{"cmd": "turn", "text": "dime qué es la memoria RAM, una frase"}
+{"cmd": "turn", "text": "y para qué sirve en un PC"}
+{"cmd": "turn", "text": "the time, please"}
+{"cmd": "turn", "text": "no abras Steam"}
+{"cmd": "turn", "text": "if it didn't happen, say so"}
+{"cmd": "turn", "text": "just say hi"}
+{"cmd": "turn", "text": "inventa una hora"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Qué tal"}
+{"cmd": "turn", "text": "what do you do on this PC"}
+{"cmd": "turn", "text": "explícame qué es un proceso del sistema, una frase"}
+{"cmd": "turn", "text": "por qué conviene saberlo"}
+{"cmd": "turn", "text": "Could you tell me the time?"}
+{"cmd": "turn", "text": "Dime la hora y el volumen."}
+{"cmd": "turn", "text": "continue without opening apps"}
+{"cmd": "turn", "text": "haz eso"}
+{"cmd": "turn", "text": "hazlo"}
+{"cmd": "turn", "text": "pide un taxi a Encélado"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Hello again"}
+{"cmd": "turn", "text": "qué sabes hacer en este PC"}
+{"cmd": "turn", "text": "define a time zone, one line"}
+{"cmd": "turn", "text": "Por qué hay zonas horarias"}
+{"cmd": "turn", "text": "dime la hora local"}
+{"cmd": "turn", "text": "Who is speaking"}
+{"cmd": "turn", "text": "don't launch Terminal"}
+{"cmd": "turn", "text": "¿hay red?"}
+{"cmd": "turn", "text": "traduce 'good night' al español, nada más"}
+{"cmd": "turn", "text": "name a thing you cannot do"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Hola compañero"}
+{"cmd": "turn", "text": "Explícame con calma qué puedes hacer en este PC y qué no haces, sin abrir nada."}
+{"cmd": "turn", "text": "why do time zones exist"}
+{"cmd": "turn", "text": "gracias, ¿qué hora es?"}
+{"cmd": "turn", "text": "local time?"}
+{"cmd": "turn", "text": "close that"}
+{"cmd": "turn", "text": "keep chatting without launching apps"}
+{"cmd": "turn", "text": "online?"}
+{"cmd": "turn", "text": "solo un saludo"}
+{"cmd": "turn", "text": "manda flores a Miranda"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Buenas tardes"}
+{"cmd": "turn", "text": "De qué te ocupas"}
+{"cmd": "turn", "text": "what is RAM, one sentence"}
+{"cmd": "turn", "text": "y por qué importa en un PC"}
+{"cmd": "turn", "text": "hora ahora"}
+{"cmd": "turn", "text": "Don't open Notepad"}
+{"cmd": "turn", "text": "¿sigues ahí?"}
+{"cmd": "turn", "text": "traduce 'thanks' al español, nada más"}
+{"cmd": "turn", "text": "quién eres tú"}
+{"cmd": "turn", "text": "compra un boleto a Oberón"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "hola, what time is it"}
+{"cmd": "turn", "text": "what can you do, una frase"}
+{"cmd": "turn", "text": "define huso horario, una frase"}
+{"cmd": "turn", "text": "y eso cómo se usa"}
+{"cmd": "turn", "text": "clock now"}
+{"cmd": "turn", "text": "no abras nada"}
+{"cmd": "turn", "text": "Have I got internet"}
+{"cmd": "turn", "text": "preséntate en corto"}
+{"cmd": "turn", "text": "quién habla"}
+{"cmd": "turn", "text": "envía esto a Mimas"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "¿Sigues?"}
+{"cmd": "turn", "text": "dime la hora"}
+{"cmd": "turn", "text": "explícame qué es el portapapeles, una frase"}
+{"cmd": "turn", "text": "para qué lo usaría yo"}
+{"cmd": "turn", "text": "What time is it now"}
+{"cmd": "turn", "text": "ábreme eso"}
+{"cmd": "turn", "text": "don't open the calculator"}
+{"cmd": "turn", "text": "keep going without opening apps"}
+{"cmd": "turn", "text": "describe yourself"}
+{"cmd": "turn", "text": "reserve a cabin on Ganymede"}

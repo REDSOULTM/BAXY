@@ -1,0 +1,8 @@
+n=6 published=6 composition_failed=0 other=0
+
+001	published_final	Hola, ¿qué puedes hacer?	Buenos días
+002	published_final	Explícame qué es un huso horario en una frase.	Un huso horario es la diferencia de tiempo entre una región y una hora de referencia global.
+003	published_final	¿Por qué importa?	Porque la importancia define lo que realmente importa en el proceso.
+004	published_final	¿Qué hora es?	05:03
+005	published_final	What time is it?	The clock shows 05:03.
+006	published_final	compra bitcoins ahora	Eso no lo hago.

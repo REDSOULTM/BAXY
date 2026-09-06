@@ -1,5 +1,10 @@
 # Replanificación del Goal 10 — certificación antes del uso cotidiano
 
+> Decisión histórica de orden. La ejecución vigente y sus reglas de sesión,
+> contexto y cierre están en [00_PROTOCOLO_EJECUCION.md](00_PROTOCOLO_EJECUCION.md).
+> C09 es prerrequisito; 12 completa producto. Los tramos reanudables sustituyen
+> cualquier obligación histórica de resolver un goal dentro de una sola sesión.
+
 Decisión del dueño del producto del **2026-09-01**. Esta decisión sustituye el
 orden que exigía cuatro tandas humanas en `10.3`–`10.6` antes de validar las
 familias funcionales.

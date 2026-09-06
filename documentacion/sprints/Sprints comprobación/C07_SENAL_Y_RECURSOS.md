@@ -1,8 +1,8 @@
 # C07 — Primera señal, respuesta completa y recursos reales
 
-**Ejecutable: Grok 4.6 High; contexto de 500K; un solo goal persistente.**
+**Ejecutable: Grok 4.6 High; un goal con tramos reanudables.**
 Predecesor: C06 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
-[protocolo 500K](02_PROTOCOLO_GROK_46_500K.md).
+[protocolo vigente](../00_PROTOCOLO_EJECUCION.md).
 
 ## Objetivo
 
@@ -16,6 +16,14 @@ Filas propias G03/G03B/G03C/G07/G08, Identidad y R02/R07/R10/R16.
 first_signal.py, turn.signal, time_budget, composición/colas y FieldUiBridge.
 Hereda medidas de 08 y la corrección del árbol de procesos de 10.2.5. Sus cifras
 son baseline; no se copian como medición actual.
+
+## Tramos de ejecución
+
+A: relojes y población. B: una causa de sobrecarga por ventana. C: perfiles
+separados y árbol completo. D: regresión de prosa/efectos y cierre de las 60
+entradas. C08 revalida con escucha real. La medición de consumo aquí no acredita
+hardware objetivo: la certificación GPU 4 GB/CPU 8 GB instalada pertenece a 12.2.
+No adelantes prosa genérica ni ocultes fallos para mejorar cuantiles.
 
 ## Trabajo
 

@@ -493,7 +493,8 @@ public sealed class PlannerAppBoundaryTests
         var exhausted = new List<(PendingModelMessage Pending, string Failure)>();
         var queue = new PendingModelMessageQueue(
             _ => Task.FromResult<MindSidecarClient?>(mind),
-            (_, _) => throw new AssertionException("A rejected draft must not publish BAXY prose."),
+            (_, _, _) => throw new AssertionException(
+                "A rejected draft must not publish BAXY prose."),
             failure =>
             {
                 failures.Add(failure);
@@ -829,9 +830,16 @@ public sealed class PlannerAppBoundaryTests
                     "hOLA",
                     "¡Hola! ¿En qué puedo ayudarte?"),
                 Is.True);
+            // Un saludo pide un saludo: devolverle una pregunta de tarea es
+            // el defecto que C03 persigue, no una respuesta aceptable.
             Assert.That(
                 UserMessagePolicy.IsSafeConversationReply(
                     "hOLA",
+                    "¿Qué necesitas exactamente?"),
+                Is.False);
+            Assert.That(
+                UserMessagePolicy.IsSafeConversationReply(
+                    "dime algo de los husos horarios",
                     "¿Qué necesitas exactamente?"),
                 Is.True);
             Assert.That(
@@ -860,8 +868,10 @@ public sealed class PlannerAppBoundaryTests
         string reply,
         bool expected)
     {
+        // El pedido no es un saludo: aquí se mide el metadiscurso, no la
+        // pertinencia de contestar a un «Hola» con otra cosa.
         Assert.That(
-            UserMessagePolicy.IsSafeConversationReply("Hola", reply),
+            UserMessagePolicy.IsSafeConversationReply("crea el usuario admin", reply),
             Is.EqualTo(expected));
     }
 

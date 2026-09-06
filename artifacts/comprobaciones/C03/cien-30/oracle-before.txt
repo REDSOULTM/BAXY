@@ -1,0 +1,5 @@
+﻿local=2026-09-04 19:27:38
+utc=2026-09-04T23:27:38.6233070Z
+offsetMinutes=-240
+injection=
+gguf=D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf

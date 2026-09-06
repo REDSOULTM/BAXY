@@ -58,7 +58,7 @@ def test_order_is_complete_unique_and_chained() -> None:
             assert prompts[index + 1] in text, f"{name} -> {prompts[index + 1]}"
 
 
-def test_no_prompt_requires_a_human_relaunch() -> None:
+def test_no_prompt_requires_restarting_finished_work() -> None:
     paths = [
         path
         for path in SPRINTS.iterdir()
@@ -69,13 +69,14 @@ def test_no_prompt_requires_a_human_relaunch() -> None:
         for forbidden in FORBIDDEN_RELAUNCHES:
             assert forbidden.casefold() not in folded, f"{path.name}: {forbidden}"
 
-    for name in (
-        "09.5_PROTOCOLO_GROK46.md",
-        "10_PROTOCOLO_GROK46.md",
-        "11_PROTOCOLO_GROK46.md",
-    ):
+    historical = (SPRINTS / "09.5_PROTOCOLO_GROK46.md").read_text(encoding="utf-8")
+    assert re.search(r"una\s+sola\s+vez", historical, re.IGNORECASE)
+    for name in ("10_PROTOCOLO_GROK46.md", "11_PROTOCOLO_GROK46.md"):
         text = (SPRINTS / name).read_text(encoding="utf-8")
-        assert re.search(r"una\s+sola\s+vez", text, re.IGNORECASE), name
+        assert "00_PROTOCOLO_EJECUCION.md" in text, name
+    protocol = (SPRINTS / "00_PROTOCOLO_EJECUCION.md").read_text(encoding="utf-8")
+    assert "sin perder alcance ni reiniciarlo" in protocol
+    assert "estado durable, no el chat entero" in protocol
 
 
 def test_migration_preserves_finished_goal095_work() -> None:
@@ -88,6 +89,16 @@ def test_migration_preserves_finished_goal095_work() -> None:
     assert "Las dos" in code_campaign and "cuentan como progreso" in code_campaign
 
 
-def test_final_prompt_declares_product_ready() -> None:
-    final_prompt = (SPRINTS / "11.16_FULL_Y_CIERRE.md").read_text(encoding="utf-8")
-    assert re.search(r"BAXY está\s+listo para uso diario", final_prompt)
+def test_product_ready_requires_installed_hardware_and_functional_acceptance() -> None:
+    final_prompt = (SPRINTS / "12.3_ENTREGA.md").read_text(encoding="utf-8")
+    for requirement in (
+        "12.1 y 12.2 cumplidos",
+        "200/200 turnos instalados correctos",
+        "cero fallos conocidos",
+        "Full verde con skips separados",
+        "BAXY_DEFINITIVO_VALIDADO",
+        "si falta algo, NO_LISTO",
+    ):
+        assert requirement in final_prompt
+    development = (SPRINTS / "11.16_FULL_Y_CIERRE.md").read_text(encoding="utf-8")
+    assert "El producto instalado cierra en 12.3" in development

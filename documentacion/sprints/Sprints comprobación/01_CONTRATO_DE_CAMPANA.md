@@ -1,5 +1,9 @@
 # Contrato común de los goals C01–C09
 
+Revisión 2026-09-04: incorpora el [protocolo único](../00_PROTOCOLO_EJECUCION.md).
+Sus reglas de contexto, reserva, conteo de respuestas e invalidación corrigen las
+interpretaciones de relevos anteriores. Los IDs y mínimos originales se conservan.
+
 Este documento es parte explícita de cada prompt Cxx. Se aplica con Identidad,
 AGENTS.md y el goal en ejecución. Los antiguos prompts aportan compromisos y
 evidencia; sus salidas «inalcanzable demostrado» no habilitan por sí solas el 10.

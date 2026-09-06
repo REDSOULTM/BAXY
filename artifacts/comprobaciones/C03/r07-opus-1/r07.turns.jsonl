@@ -1,0 +1,14 @@
+{"cmd": "turn", "text": "¿Qué hora es?"}
+{"cmd": "inject", "mode": "reject"}
+{"cmd": "turn", "text": "¿Qué hora es?"}
+{"cmd": "restore"}
+{"cmd": "turn", "text": "¿Qué hora es?"}
+{"cmd": "inject", "mode": "timeout"}
+{"cmd": "turn", "text": "What time is it?"}
+{"cmd": "restore"}
+{"cmd": "turn", "text": "What time is it?"}
+{"cmd": "inject", "mode": "exhaust"}
+{"cmd": "turn", "text": "Dime la hora y el volumen."}
+{"cmd": "restore"}
+{"cmd": "turn", "text": "Dime la hora y el volumen."}
+{"cmd": "turn", "text": "hola"}

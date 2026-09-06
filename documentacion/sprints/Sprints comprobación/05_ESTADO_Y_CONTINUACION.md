@@ -1,24 +1,148 @@
 # Estado de Sprints comprobación
 
-Fecha de preparación: 2026-09-03. Base inspeccionada: b2505da.
-C01 **CERRADO**. C02 **CERRADO**. C03 **EN_CURSO**. C04 no se abre.
+C01 CERRADO `d6500f8`. C02 CERRADO `88b5370`. **C03 EN_CURSO**. C04 no abierto.
+HEAD `5f572ee` WIP `main`. Falta 100/100.
+**Sesión de Opus 5 High cerrada el 2026-09-06; relevo en**
+`artifacts/comprobaciones/C03/HANDOFF_OPUS_METODO.md` **y estado en**
+`artifacts/comprobaciones/C03/CHECKPOINT.md`. Cerrar esa sesión no cumple C03.
 
-| Goal | Estado | Evidencia de cumplimiento |
-|---|---|---|
-| C01 | CERRADO | commit `d6500f8` |
-| C02 | CERRADO | `88b5370` |
-| C03 | EN_CURSO | compose/hora/exhaust OK; G06.01 no sellado (cien-18) |
-| C04 | PENDIENTE | — |
-| C05 | PENDIENTE | — |
-| C06 | PENDIENTE | — |
-| C07 | PENDIENTE | — |
-| C08 | PENDIENTE | — |
-| C09 | PENDIENTE | — |
+## Criterios de C03 ya cumplidos
 
-## Checkpoint
+**Frontera idioma/intención/hechos.** `src/baxy_mind/request_reading.py` es el
+único owner: idioma, saludo (`none|only|leading`), petición real e intenciones,
+con precedencia traducción → idioma pedido → evidencia → idioma de conversación
+→ español. `IsEnglishGreetingRequest` se retiró de C#: la mente reporta
+`responseLanguage` en `turn.result` y la política lo consume. Corpus compartido
+`tests/data/request_reading_cases.json` (89 casos), comprobado en pytest y en
+`RequestReadingConformanceTests`.
 
-- Goal activo: C03 EN_CURSO. G06.01 PENDIENTE.
-- `session.new` ahora llama `_mindPlans.Clear()`. Full verde 2026-09-04.
-- cien-17: plan pendiente envenenó la muestra. cien-18 leída, huecos de aclaración/conocimiento y «app is open».
-- Publicado: `e7a8ba0`. Próxima: 100 fresca para G06.01. No abrir C04.
-- Ajenos: `artifacts/comprobaciones/C02/full-reval-*.log` untracked.
+**Hechos.** El payload no deduce `effect`/`seen.window` del verbo, no convierte
+una red sin lectura en `online=false`, no publica un `reason` en JSON crudo y
+acepta el reloj en su forma de doce horas. `close_clip` retirado. Fuera de
+catálogo es un límite, no un intento fallido.
+
+**Cero prosa fija.** Los prompts ya no dictan la frase. Se vetan la copia de lo
+enviado (sin acentos), las aperturas sobre el encargo, el metadiscurso de tarea,
+los nombres de campo y la segunda persona en una respuesta de capacidades.
+
+**R07 cumplido** (`r07-opus-1/`): un proceso (PID 37680), un perfil, una sesión;
+`reject`, `timeout` y `exhaust` con terminal honesto, causa pública y controles
+utilizables, y la respuesta normal vuelve tras restaurar, en ES y EN.
+
+**UI real cumplida** (`ui-opus-2/`): `py main.py --ui-probe` teclea en el
+`input` de la ventana y lee `.activity-scroll .act`. Siete de siete útiles y
+fieles, con estado y turno siguiente. Encontró y se reparó la bienvenida de
+arranque que publicaba `situación.greeting`.
+
+**Instrumentación.** `compose-audit.jsonl` v2 (turno, etapa, idioma, saludo,
+payload, borrador sin recortar, motivo, `finish_reason`, publicación) y
+`paired.json` con `mindReplyRejection` nombrado. `IsSafeConversationReply` pasó
+de una disyunción de 45 términos a comprobaciones con nombre.
+
+**Full verde** sobre el candidato de aquel momento: `source_quality_gate_passed: mode=Full`.
+Para el candidato actual el Full está **NO VERIFICADO**: ver «Pruebas» más abajo.
+
+## Seguimientos elípticos: reparado, con el defecto de fondo a la vista
+
+Ver `artifacts/comprobaciones/C03/SEGUIMIENTOS.md`.
+
+La anotación anterior («la ruta contextual sólo corre para `followup`/`None`»)
+era falsa. La traza de composición con el campo `situation` enseña que **todo
+turno conversacional que degrada llega al compositor con
+`{"kind":"conversation","polarity":"success"}` y nada más**: sin la respuesta
+que escribió la mente, sin historial y sin tema. El compositor vuelve a
+contestar desde cero con el texto del turno. Con una pregunta que se basta sale
+bien; con «¿por qué importa?» no puede salir bien.
+
+La elipsis se lee ahora donde se lee el pedido —`is_elliptical_followup`,
+`request_topic`, `followup_topic` en `request_reading.py`— y el shell manda
+`priorRequests` (lo que la persona pidió antes, no lo que se le contestó) en los
+hechos de conversación. De 0 de 9 seguimientos en tema a 7–9 de 9.
+
+Queda abierto que el seguimiento, ya en tema, a menudo repita la definición en
+vez de contestar la pregunta. Eso es generación conversacional (C05/C06);
+forzarlo desde el prompt fue lo que empeoró en `seguimiento-12`.
+
+## Lo que falta: 100/100
+
+`panel-opus-13/` (78 turnos, ver `ADJUDICACION.md`): 75 publicados, 2
+agotamientos, 1 silencio, ~75 % de respuestas útiles y fieles —estimación, no
+cifra exacta—. No procede congelar cien turnos frescos hasta que el panel sea
+fiel. Clases pendientes:
+
+1. El seguimiento en tema que repite la definición (arriba). C05/C06.
+2. Saludo mal formado («Hello hi!») y persona impersonal («se puede abrir…»).
+   La persona de la negativa («No abres la Calculadora») sí quedó reparada.
+3. Capacidades o límites inventados y rechazos de preguntas contestables:
+   reparados y medidos en `limites-22/` (8 de 9), **sin panel completo todavía**.
+4. Fuga del contrato interno.
+5. Dos agotamientos y un silencio por corrida, más el turno que muere agotado
+   porque el veto del shell tira la respuesta correcta del compositor.
+
+## Hipótesis medidas y descartadas
+
+1. **Turno anterior como contexto de conversación** (`panel-opus-4/-5`): el
+   modelo continuaba el turno anterior en vez de responder el nuevo.
+2. **Muestreo de composición 0.2/0.9** (`panel-opus-6` contra `-5`, misma
+   población): agotamientos 1 → 7 y peor tasa.
+3. **Forzar la ruta contextual en preguntas elípticas** (`seguimiento-3` contra
+   `-2`): sin mejora y con una regresión —el tema anterior arrastrado a una
+   pregunta nueva—. La causa real estaba en los hechos del compositor.
+4. **Prohibir la definición en un seguimiento** (`seguimiento-12` contra `-11`,
+   misma población): el modelo rodeó la prohibición con frases contorsionadas y
+   de nueve seguimientos en tema bajó a seis.
+
+Las tres están revertidas y documentadas en el código donde vivían.
+
+## Candidato (sin publicar)
+
+`llm.py` `f0569f87d070a043…`, `request_reading.py` `60b9e8b595976ea1…`,
+`__main__.py` `5092f2e5c3a89ae9…`, `UserMessagePolicy.cs` `b0c8baf4b706509d…`,
+`MainWindowViewModel.cs` `3889ccd755146dcb…`, `ModelMessageComposer.cs`
+`45cf5cfa6a73b0db…`, `FieldUiProbe.cs` `06b0733966ccc24d…`, `UserMessagePhrases.cs`
+`29ee866bbed09384…`, `censo_voz_visible.py` `a503171e01922ab9…`,
+`request_reading_cases.json` `66dcd7a6cd663a8a…` (92 casos).
+Granite 4.2 3B Q4_K_M, gguf `e0406663`, sin `BAXY_MIND_LLM_GGUF`.
+`registered_runtime_expectation_r281` declara Granite; STT/TTS/wake conservan
+sus hashes: la voz no se volvió a medir y esto no lo afirma.
+
+## Pruebas
+
+Intérprete: el del manifiesto
+(`%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1\Scripts\python.exe`); con el
+Python del sistema fallan 20 pruebas por dependencias ausentes.
+
+**Full: NO VERIFICADO para el candidato actual.** El último `-Mode Full`
+(`full_gate8.txt`) dejó verdes todas las etapas —Contracts 60, Integration 2920
+(1 skip), Kernel 138, Providers 451, Setup 477, ruff, compileall, eslint, tsc,
+dotnet-format, censo de prosa visible 0— salvo `test_stt_quality_evaluators`,
+por deriva del pin `EXPECTED_PROGRAM_TREE_SHA256` al editar durante la corrida.
+El pin no se refrescó al cerrar la sesión: hay que refrescarlo con su nota y
+relanzar Full.
+
+Recogido después de ese Full, sobre el candidato actual: `test_request_reading.py`
+177 pass; `-k "turn or planner or compose or reading or policy or goal06"` 1853
+pass con 101 subtests; Integration completo 2922 pass, 1 skip —anterior a la
+prueba roja de caracterización que documenta el fallo abierto—.
+
+## Corridas conservadas (publicado ≠ fiel)
+
+`panel-opus-1..13`, `seguimiento-1..14`, `limites-13..22`, `r07-opus-1`,
+`ui-opus-1/2`, y las de Grok (`cien-35` 93 publicados/7 agotamientos —no
+aciertos—, `disc-68` 15/1). Todas son regresión: ninguna vale como aceptación
+fresca. La última completa es `panel-opus-13` (78 turnos, 75 publicados, 2
+agotamientos, 1 silencio, ~75 % fieles), anterior a las reparaciones de límites.
+
+## Siguiente acción
+
+1. Poner en verde la prueba roja de caracterización
+   `AcceptingTheConstraintInThePersonsOwnWordsIsNotVetoed`: el compositor ya
+   escribe la respuesta correcta y el veto del shell la tira, así que el turno
+   acaba `composition_failed`.
+2. `panel-opus-14` sobre `panel-opus-13.turns.jsonl`, para medir las
+   reparaciones de límites en población completa.
+3. Con el panel fiel: congelar 100 turnos nuevos, adjudicarlos por lotes de 20
+   sin partir secuencias, refrescar el pin del árbol y repetir Full antes de
+   publicar.
+
+Procesos propios activos: ninguno.

@@ -1,0 +1,6 @@
+﻿local=2026-09-05 08:05:31
+utc=2026-09-05T12:05:31.5253108Z
+offsetMinutes=-240
+injection=
+gguf_override=True
+gguf_env=''

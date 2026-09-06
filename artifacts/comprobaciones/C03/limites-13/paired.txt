@@ -1,0 +1,6 @@
+n=4 published=4 other=0
+
+001	t1	published_final	qué es una VLAN, una frase	Una VLAN es un grupo de redes dentro de una red más grande que se comporta como una red separada.
+002	t2	published_final	what is a subnet mask in one sentence	A subnet mask defines how an IP address is divided into network and host portions.
+003	t3	published_final	what are your limits on this PC	I don’t have specific limits on this PC beyond standard system constraints, but I can provide clear, concise answers in the language you use (Spanish, English, or Spanglish) based on the last message’s language. Let me know what you need—just one sentence if you like, or more detail as needed.
+004	t4	published_final	cuáles son tus límites aquí	Mis límites aquí son respetar la comunicación clara, ser conciso y no usar términos técnicos ni jerga extra.

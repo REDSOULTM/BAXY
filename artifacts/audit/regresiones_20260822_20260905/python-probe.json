@@ -1,0 +1,102 @@
+[
+  {
+    "ref": "4c9804c",
+    "selected_nodes": [
+      {
+        "name": "_message_response_language",
+        "line": 252
+      }
+    ],
+    "actual_contract": "function did not exist",
+    "historical_test_contract": "function did not exist",
+    "language_examples": {
+      "Good afternoon": "es",
+      "define DNS in one sentence": "es",
+      "Hola": "es"
+    }
+  },
+  {
+    "ref": "26d8eab",
+    "selected_nodes": [
+      {
+        "name": "_compose_situation_payload",
+        "line": 2658
+      },
+      {
+        "name": "_cause_in_prose",
+        "line": 2651
+      },
+      {
+        "name": "_CAUSE_FACT",
+        "line": 2622
+      },
+      {
+        "name": "_message_response_language",
+        "line": 228
+      }
+    ],
+    "actual_contract": {
+      "kind": "operation",
+      "polarity": "success",
+      "seen": {
+        "version": 1,
+        "utc": "2026-09-03T06:57:52.1829160+00:00",
+        "localUtcOffsetMinutes": -240
+      }
+    },
+    "historical_test_contract": {
+      "kind": "operation",
+      "polarity": "success",
+      "seen": {
+        "time": "22:10"
+      }
+    },
+    "language_examples": {
+      "Good afternoon": "es",
+      "define DNS in one sentence": "es",
+      "Hola": "es"
+    }
+  },
+  {
+    "ref": "b2505da",
+    "selected_nodes": [
+      {
+        "name": "_compose_situation_payload",
+        "line": 2683
+      },
+      {
+        "name": "_cause_in_prose",
+        "line": 2676
+      },
+      {
+        "name": "_CAUSE_FACT",
+        "line": 2647
+      },
+      {
+        "name": "_message_response_language",
+        "line": 228
+      }
+    ],
+    "actual_contract": {
+      "kind": "operation",
+      "polarity": "success",
+      "seen": {
+        "version": 1,
+        "utc": "2026-09-03T06:57:52.1829160+00:00",
+        "localUtcOffsetMinutes": -240
+      }
+    },
+    "historical_test_contract": {
+      "kind": "operation",
+      "polarity": "success",
+      "seen": {
+        "time": "22:10"
+      }
+    },
+    "language_examples": {
+      "Good afternoon": "es",
+      "define DNS in one sentence": "es",
+      "Hola": "es"
+    }
+  }
+]

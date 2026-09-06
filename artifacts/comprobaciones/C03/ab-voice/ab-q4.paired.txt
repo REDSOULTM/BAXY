@@ -1,0 +1,17 @@
+## Qwen3-4B Q4_K_M
+n=15 published=5 failed=9
+001	published_final	Hola	No pude: no pude encontrarlo.
+002	filtered	quién eres	filtered
+003	composition_failed	introduce yourself	composition_failed
+004	composition_failed	qué puedes hacer	composition_failed
+005	published_final	What can you do here	I can help with various tasks such as answering questions, providing information, and assisting with problem-solving.
+006	composition_failed	what is UTC, one line	composition_failed
+007	composition_failed	explícame qué es un huso horario	composition_failed
+008	composition_failed	why do time zones exist	composition_failed
+009	composition_failed	define huso horario, una frase	composition_failed
+010	composition_failed	What will you refuse to do	composition_failed
+011	published_final	traduce 'hello' al español, nada más	¡Hola!
+012	published_final	¿Qué hora es?	Listo, la hora local es 17:44.
+013	published_final	Could you tell me the time?	The time is 17:44.
+014	composition_failed	descríbete breve	composition_failed
+015	composition_failed	ask Saturn for tea	composition_failed

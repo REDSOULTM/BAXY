@@ -1,0 +1,19 @@
+# disc-20
+n=16 published=15 composition_failed=1 other=0
+
+001	published_final	Hola, buenas	Hola! ¿Cómo estás?
+002	published_final	qué puedes hacer en este equipo	Puedo ejecutar comandos, gestionar archivos y ayudar con tareas de programación en este equipo.
+003	published_final	Hey	Hey! ¿Qué tal? ¿Necesitas ayuda con algo específico?
+004	published_final	What can you do here	I can run programs, manage files, and assist with tasks on this PC.
+005	published_final	book a room on Deimos	No puedo hacer eso.
+006	published_final	time check	Current status: 00:25 minutes elapsed, operation successful.
+007	published_final	open that	What would you like to open?
+008	published_final	online?	Estoy online y conectado.
+009	published_final	What will you refuse to do	The PC has a limited amount of RAM, which is the main physical constraint.
+010	composition_failed	don't open Steam	composition_failed
+011	published_final	tell the time in English	The local clock shows 00:27.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	Hi!
+015	published_final	define huso horario, una frase	Define el huso horario como la diferencia de tiempo entre dos zonas horarias específicas.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias permiten alinearse temporalmente entre diferentes regiones del mundo, facilitando la coordinación de actividades, comunicación y sincronización de eventos en horarios consistentes.

@@ -1,0 +1,708 @@
+{
+  "schema": "baxy.request-reading-cases.v1",
+  "note": "Corpus compartido de la lectura del pedido. Lo comprueban tests/test_request_reading.py (owner en Python) y Baxy.Integration.Tests/RequestReadingConformanceTests.cs (saludo y petición en el shell). Si las dos implementaciones divergen, este fichero falla en las dos.",
+  "cases": [
+    {
+      "text": "Good afternoon",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "Good morning",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "Good evening",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "define DNS in one sentence",
+      "language": "en",
+      "greeting": "none",
+      "ask": "define DNS in one sentence",
+      "intents": [
+        "knowledge"
+      ]
+    },
+    {
+      "text": "Hi again",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "hey, close Paint",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "close Paint",
+      "intents": []
+    },
+    {
+      "text": "hey, what can you do",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "what can you do",
+      "intents": [
+        "capability",
+        "knowledge"
+      ]
+    },
+    {
+      "text": "Hola",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "hola, ¿qué puedes hacer?",
+      "language": "es",
+      "greeting": "leading",
+      "ask": "¿qué puedes hacer?",
+      "intents": [
+        "capability",
+        "knowledge"
+      ]
+    },
+    {
+      "text": "buenos días",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "buenas, compa",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "hola baxy",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "book a room on Deimos",
+      "language": "en",
+      "greeting": "none",
+      "ask": "book a room on Deimos",
+      "intents": []
+    },
+    {
+      "text": "don't launch Notepad",
+      "language": "en",
+      "greeting": "none",
+      "ask": "don't launch Notepad",
+      "intents": [
+        "negative_constraint"
+      ]
+    },
+    {
+      "text": "qué hora es",
+      "language": "es",
+      "greeting": "none",
+      "ask": "qué hora es",
+      "intents": []
+    },
+    {
+      "text": "¿Qué hora es?",
+      "language": "es",
+      "greeting": "none",
+      "ask": "¿Qué hora es?",
+      "intents": []
+    },
+    {
+      "text": "open calculator",
+      "language": "en",
+      "greeting": "none",
+      "ask": "open calculator",
+      "intents": []
+    },
+    {
+      "text": "abre Spotify and pause",
+      "language": "mixed",
+      "greeting": "none",
+      "ask": "abre Spotify and pause",
+      "intents": []
+    },
+    {
+      "text": "Gracias",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Gracias",
+      "intents": []
+    },
+    {
+      "text": "Muchas gracias.",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Muchas gracias.",
+      "intents": []
+    },
+    {
+      "text": "Mil gracias!",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Mil gracias!",
+      "intents": []
+    },
+    {
+      "text": "Thanks a lot!",
+      "language": "en",
+      "greeting": "none",
+      "ask": "Thanks a lot!",
+      "intents": []
+    },
+    {
+      "text": "Thank you very much.",
+      "language": "en",
+      "greeting": "none",
+      "ask": "Thank you very much.",
+      "intents": []
+    },
+    {
+      "text": "hello there",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "Hello?",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "good morning",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "Hi, how are you?",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "how are you?",
+      "intents": []
+    },
+    {
+      "text": "how are you",
+      "language": "en",
+      "greeting": "none",
+      "ask": "how are you",
+      "intents": []
+    },
+    {
+      "text": "bye",
+      "language": "en",
+      "greeting": "none",
+      "ask": "bye",
+      "intents": []
+    },
+    {
+      "text": "goodbye baxy",
+      "language": "en",
+      "greeting": "none",
+      "ask": "goodbye baxy",
+      "intents": []
+    },
+    {
+      "text": "see you later",
+      "language": "en",
+      "greeting": "none",
+      "ask": "see you later",
+      "intents": []
+    },
+    {
+      "text": "good night",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "perfect, thanks",
+      "language": "en",
+      "greeting": "none",
+      "ask": "perfect, thanks",
+      "intents": []
+    },
+    {
+      "text": "thanks, you're awesome",
+      "language": "en",
+      "greeting": "none",
+      "ask": "thanks, you're awesome",
+      "intents": []
+    },
+    {
+      "text": "mi dia fue extremadamente duro",
+      "language": "es",
+      "greeting": "none",
+      "ask": "mi dia fue extremadamente duro",
+      "intents": []
+    },
+    {
+      "text": "my day was extremely hard",
+      "language": "en",
+      "greeting": "none",
+      "ask": "my day was extremely hard",
+      "intents": []
+    },
+    {
+      "text": "No entendí",
+      "language": "es",
+      "greeting": "none",
+      "ask": "No entendí",
+      "intents": []
+    },
+    {
+      "text": "No entiendo.",
+      "language": "es",
+      "greeting": "none",
+      "ask": "No entiendo.",
+      "intents": []
+    },
+    {
+      "text": "No comprendí",
+      "language": "es",
+      "greeting": "none",
+      "ask": "No comprendí",
+      "intents": []
+    },
+    {
+      "text": "No me quedó claro",
+      "language": "es",
+      "greeting": "none",
+      "ask": "No me quedó claro",
+      "intents": []
+    },
+    {
+      "text": "I didn't understand.",
+      "language": "en",
+      "greeting": "none",
+      "ask": "I didn't understand.",
+      "intents": []
+    },
+    {
+      "text": "I don't get it",
+      "language": "en",
+      "greeting": "none",
+      "ask": "I don't get it",
+      "intents": []
+    },
+    {
+      "text": "I'm confused",
+      "language": "en",
+      "greeting": "none",
+      "ask": "I'm confused",
+      "intents": []
+    },
+    {
+      "text": "¿Qué?",
+      "language": "es",
+      "greeting": "none",
+      "ask": "¿Qué?",
+      "intents": []
+    },
+    {
+      "text": "¿Por qué?",
+      "language": "es",
+      "greeting": "none",
+      "ask": "¿Por qué?",
+      "intents": [
+        "knowledge"
+      ]
+    },
+    {
+      "text": "What?",
+      "language": "en",
+      "greeting": "none",
+      "ask": "What?",
+      "intents": []
+    },
+    {
+      "text": "Why?",
+      "language": "en",
+      "greeting": "none",
+      "ask": "Why?",
+      "intents": [
+        "knowledge"
+      ]
+    },
+    {
+      "text": "quien es el actual primer ministro de rusia",
+      "language": "es",
+      "greeting": "none",
+      "ask": "quien es el actual primer ministro de rusia",
+      "intents": []
+    },
+    {
+      "text": "puedes mostrarme una lista de todos mis comandos recientes",
+      "language": "es",
+      "greeting": "none",
+      "ask": "puedes mostrarme una lista de todos mis comandos recientes",
+      "intents": []
+    },
+    {
+      "text": "describe el disco duro del ordenador",
+      "language": "es",
+      "greeting": "none",
+      "ask": "describe el disco duro del ordenador",
+      "intents": []
+    },
+    {
+      "text": "describe about the computer hard disk",
+      "language": "en",
+      "greeting": "none",
+      "ask": "describe about the computer hard disk",
+      "intents": []
+    },
+    {
+      "text": "tell me about india location",
+      "language": "en",
+      "greeting": "none",
+      "ask": "tell me about india location",
+      "intents": []
+    },
+    {
+      "text": "please tell me the score of the game",
+      "language": "en",
+      "greeting": "none",
+      "ask": "please tell me the score of the game",
+      "intents": []
+    },
+    {
+      "text": "what sound does a dog make",
+      "language": "en",
+      "greeting": "none",
+      "ask": "what sound does a dog make",
+      "intents": []
+    },
+    {
+      "text": "give details of rock sand",
+      "language": "en",
+      "greeting": "none",
+      "ask": "give details of rock sand",
+      "intents": []
+    },
+    {
+      "text": "cuéntame todo sobre el huracán",
+      "language": "es",
+      "greeting": "none",
+      "ask": "cuéntame todo sobre el huracán",
+      "intents": []
+    },
+    {
+      "text": "my day is going well add a memo",
+      "language": "en",
+      "greeting": "none",
+      "ask": "my day is going well add a memo",
+      "intents": []
+    },
+    {
+      "text": "encontrar ruta",
+      "language": "es",
+      "greeting": "none",
+      "ask": "encontrar ruta",
+      "intents": []
+    },
+    {
+      "text": "dime la dirección de billy crytals",
+      "language": "es",
+      "greeting": "none",
+      "ask": "dime la dirección de billy crytals",
+      "intents": []
+    },
+    {
+      "text": "Dime el uso actual de RAM de este computador.",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Dime el uso actual de RAM de este computador.",
+      "intents": []
+    },
+    {
+      "text": "What is the current speaker volume?",
+      "language": "en",
+      "greeting": "none",
+      "ask": "What is the current speaker volume?",
+      "intents": [
+        "knowledge"
+      ]
+    },
+    {
+      "text": "post a letter to Eris",
+      "language": "en",
+      "greeting": "none",
+      "ask": "post a letter to Eris",
+      "intents": []
+    },
+    {
+      "text": "qué no haces, una frase",
+      "language": "es",
+      "greeting": "none",
+      "ask": "qué no haces, una frase",
+      "intents": [
+        "knowledge",
+        "refuse"
+      ]
+    },
+    {
+      "text": "Dime la hora y el volumen.",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Dime la hora y el volumen.",
+      "intents": []
+    },
+    {
+      "text": "traduce buenos días al inglés",
+      "language": "en",
+      "greeting": "none",
+      "ask": "traduce buenos días al inglés",
+      "intents": [
+        "knowledge",
+        "translation"
+      ]
+    },
+    {
+      "text": "translate good morning to spanish",
+      "language": "es",
+      "greeting": "none",
+      "ask": "translate good morning to spanish",
+      "intents": [
+        "knowledge",
+        "translation"
+      ]
+    },
+    {
+      "text": "keep chatting without opening apps",
+      "language": "en",
+      "greeting": "none",
+      "ask": "keep chatting without opening apps",
+      "intents": [
+        "continue_constraint"
+      ]
+    },
+    {
+      "text": "sigue charlando sin abrir programas",
+      "language": "es",
+      "greeting": "none",
+      "ask": "sigue charlando sin abrir programas",
+      "intents": [
+        "continue_constraint"
+      ]
+    },
+    {
+      "text": "just say hi",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "un saludo corto",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "Hey Steam",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "Steam",
+      "intents": []
+    },
+    {
+      "text": "hola quien eres",
+      "language": "es",
+      "greeting": "leading",
+      "ask": "quien eres",
+      "intents": [
+        "identity",
+        "knowledge"
+      ]
+    },
+    {
+      "text": "hello, what time is it?",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "what time is it?",
+      "intents": []
+    },
+    {
+      "text": "hi, mute everything",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "mute everything",
+      "intents": []
+    },
+    {
+      "text": "Escribe hola",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Escribe hola",
+      "intents": []
+    },
+    {
+      "text": "type hello",
+      "language": "en",
+      "greeting": "none",
+      "ask": "type hello",
+      "intents": []
+    },
+    {
+      "text": "What will you never do",
+      "language": "en",
+      "greeting": "none",
+      "ask": "What will you never do",
+      "intents": [
+        "knowledge",
+        "refuse"
+      ]
+    },
+    {
+      "text": "who are you",
+      "language": "en",
+      "greeting": "none",
+      "ask": "who are you",
+      "intents": [
+        "identity",
+        "knowledge"
+      ]
+    },
+    {
+      "text": "Explícame con calma qué puedes hacer en este PC y qué no haces, sin abrir nada.",
+      "language": "es",
+      "greeting": "none",
+      "ask": "Explícame con calma qué puedes hacer en este PC y qué no haces, sin abrir nada.",
+      "intents": [
+        "capability",
+        "knowledge"
+      ]
+    },
+    {
+      "text": "hola, todo bien?",
+      "language": "es",
+      "greeting": "leading",
+      "ask": "todo bien?",
+      "intents": []
+    },
+    {
+      "text": "Hi there",
+      "language": "en",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "close that",
+      "language": "en",
+      "greeting": "none",
+      "ask": "close that",
+      "intents": [
+        "ambiguous_action"
+      ]
+    },
+    {
+      "text": "cierra aquello",
+      "language": "es",
+      "greeting": "none",
+      "ask": "cierra aquello",
+      "intents": [
+        "ambiguous_action"
+      ]
+    },
+    {
+      "text": "Hola, buenas",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "buenas noches, baxy",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "hola, buenas tardes",
+      "language": "es",
+      "greeting": "only",
+      "ask": "",
+      "intents": []
+    },
+    {
+      "text": "cuáles son tus límites aquí",
+      "language": "es",
+      "greeting": "none",
+      "ask": "cuáles son tus límites aquí",
+      "intents": [
+        "refuse"
+      ]
+    },
+    {
+      "text": "what are your limits on this PC",
+      "language": "en",
+      "greeting": "none",
+      "ask": "what are your limits on this PC",
+      "intents": [
+        "knowledge",
+        "refuse"
+      ]
+    },
+    {
+      "text": "qué te niegas a hacer aquí",
+      "language": "es",
+      "greeting": "none",
+      "ask": "qué te niegas a hacer aquí",
+      "intents": [
+        "refuse"
+      ]
+    },
+    {
+      "text": "hi, what do you handle on this PC",
+      "language": "en",
+      "greeting": "leading",
+      "ask": "what do you handle on this PC",
+      "intents": [
+        "capability"
+      ]
+    },
+    {
+      "text": "what do you not do here",
+      "language": "en",
+      "greeting": "none",
+      "ask": "what do you not do here",
+      "intents": [
+        "refuse"
+      ]
+    },
+    {
+      "text": "en qué me puedes ayudar",
+      "language": "es",
+      "greeting": "none",
+      "ask": "en qué me puedes ayudar",
+      "intents": [
+        "capability"
+      ]
+    }
+  ]
+}

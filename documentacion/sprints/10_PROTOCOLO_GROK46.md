@@ -1,152 +1,16 @@
-# Protocolo de las sesiones 10.x — Grok 4.6 High
+# Protocolo 10.x — Grok 4.6 High
 
-## Lanzamiento
+Revisado 2026-09-04. Los prompts incorporan el
+[contrato único de ejecución](00_PROTOCOLO_EJECUCION.md). Ése es el protocolo
+vigente: tramos pequeños, estado durable, aceptación reservada, pruebas de
+producto y cierre basado en evidencia. Esta ruta se conserva para los enlaces.
 
-Sesión nueva y limpia, modelo **Grok 4.6**, esfuerzo **High**, modo `/goal`. Cada
-fichero `10.x` se pega entero **una sola vez**. Grok Build ya carga `AGENTS.md`;
-el prompt no lo duplica, pero sí ordena leer los documentos concretos que gobiernan
-el tramo.
+Se retiran el reparto 350K+150K y la exigencia de cerrar una campaña en una sola
+sesión. Los 500k son capacidad máxima; contexto objetivo 60–100K, corte a 150K.
+Un límite medido o FALLO_DE_AMBIENTE no es cumplimiento. High se mantiene.
 
-El objetivo de `/goal` es el objetivo único escrito en el fichero, no «avanza»,
-«continúa» ni «cierra rápido». El intento anterior perdió frontera cuando el goal
-activo quedó reducido a una frase de ese tipo.
-
-Los prompts pendientes conservan una estructura fija y en segunda persona: rol y
-autoridad, contrato operativo, leyes e invariantes, objetivo, método, frontera y
-criterios de cierre. El contenido estable va delante de la evidencia específica;
-no reordenes ni reescribas mensajes anteriores durante una meta. Esta forma aprovecha
-el contexto de 500k y la compactación de Grok 4.6 sin convertir el handoff en una
-nueva instrucción ambigua.
-
-## Contrato de ejecución
-
-Antes de actuar, lee `AGENTS.md`, `00_INDICE.md`, `../00_IDENTIDAD.md`,
-`10_APRENDIZAJES.md`, este protocolo, `../herencia/00_MAPA.md`, la decisión 09.5
-del subsistema y el handoff del tramo anterior. Después:
-
-1. crea un checklist corto basado sólo en los criterios de cierre;
-2. ejecuta el preflight de ambiente de la partición;
-3. localiza primero la pieza histórica aceptada, luego dueño y prueba con búsquedas acotadas;
-4. mide antes de editar;
-5. corrige la causa mínima;
-6. ejecuta test dueño dos veces, medición del tramo y validación proporcional;
-7. si un criterio falla, corrige su owner mínimo y repite la validación dentro de
-   esta misma meta hasta dejarlo verde;
-8. escribe evidencia y handoff, revisa el diff, commitea y publica.
-
-La respuesta final de una prueba o de Grok no es el oráculo. Reproduce el cierre
-desde el árbol, el artefacto y la postcondición. Si el agente conductor afirma que
-algo pasó, otra pieza debe observarlo sin depender de esa afirmación.
-
-No pauses para pedir aprobación de un plan. Pregunta sólo ante daño irreversible a
-datos personales o a otro proyecto. No trabajes en el siguiente `10.x`, no vuelvas
-a un goal anterior y no pidas relanzar este fichero.
-
-## Las cinco leyes
-
-1. Hereda primero desde el ledger 09.5, estado del arte después, construye al final.
-2. Mínimo código; una capa nueva retira en el mismo goal la que sustituye.
-3. Sólo arregla lo que bloquea este tramo. Lo demás va en `APLAZADOS.md`.
-4. Gana lo más ligero que cumpla; 4 GB de VRAM es techo, no objetivo.
-5. Una responsabilidad por pieza, dependencias hacia dentro y cero código muerto.
-
-Los seis invariantes siguen vigentes: catálogo tipado único; mente propone,
-kernel autoriza y provider ejecuta; nada se afirma sin verificar; terminales
-honestos; confirmación ligada a la invocación exacta; cero prosa visible fija; y
-modelo local sin salida de contenido del usuario.
-
-## Presupuesto de contexto
-
-Cada ventana tiene un máximo operativo de **500k tokens**, aunque el modelo admita
-más. Reserva aproximadamente 350k para diagnóstico/implementación y 150k para
-verificación/cierre. Si la meta necesita más, persiste estado, compacta y continúa
-en la misma tarea. Consulta `/context` al arrancar, después de cada campaña y antes
-de Full.
-
-- Abre sólo los archivos dueño y la partición asignada.
-- Nunca vuelques JSONL ni salidas completas al chat: guarda artefactos y trae
-  conteos, causas, hashes y rutas.
-- Si dos lecturas seguidas no cambian la próxima acción, sobra la tercera.
-- No reejecutes tramos cerrados salvo regresión demostrada por un test dueño.
-- Actualiza el handoff después de cada medición material y antes de compactar. La
-  compactación ayuda al modelo, pero el estado durable vive en el repositorio.
-- Sin subagentes salvo exploración de sólo lectura cuyo resultado quepa en rutas,
-  rangos y conclusión.
-
-## Método de aceptación
-
-Cada `message_id` conserva prompt, salida visible, operación/plan, hechos
-contemporáneos, postcondición, terminal y veredicto. `review`, `unresolved`, timeout
-oculto, skip o exclusión automática no son pass. Las repeticiones se contabilizan;
-los textos únicos sólo sirven para diagnosticar.
-
-Desde la decisión del dueño del 2026-09-01, **ninguna campaña necesita turnos
-humanos**. Cuando el goal valida una conducta visible o una misión:
-
-1. el agente genera o selecciona una entrada desde el contrato congelado y un
-   holdout que el runtime no conoce;
-2. la envía por la misma superficie pública de texto que usa la UI, o por la ruta
-   pública de voz con audio de prueba; llamar directamente a mente, Core, Kernel o
-   provider no cuenta como turno end-to-end;
-3. conserva entrada, salida visible, operación/plan, hechos contemporáneos,
-   postcondición y terminal;
-4. un adjudicador independiente compara intención, conducta y mundo observado;
-5. cualquier fail in-scope corrige el owner mínimo y reinicia sólo el bloque
-   afectado sobre entradas frescas.
-
-Las cuatro dosis transversales de 50 viven dentro de la única meta 10.18, después
-de 10.7–10.17. El agente persiste cursor y continúa automáticamente entre bloques;
-no solicita que el dueño escriba, hable, mire la pantalla ni emita veredictos.
-
-Las acciones seguras y reversibles se prueban físicamente. Compras, mensajes a
-terceros, borrados personales, energía y otros efectos peligrosos usan ámbito
-desechable o fixture fiel y se publican como no físicos. Nunca se toca un dato
-personal para aprobar una fila.
-
-Sólo español, inglés y spanglish son alcance de producto. Un nombre inglés de app
-dentro de una petición española es spanglish. Otro idioma puede cerrarse fuera de
-alcance con procedencia, nunca como fallo ambiental ni como capacidad pendiente.
-
-## Ambiente: fallo, no excepción
-
-Antes de ejecutar la campaña, deriva de sus contratos una lista comprobable de
-aplicaciones, cuentas, contenido, ventanas, permisos, dispositivos y estado inicial.
-El preflight deja evidencia de cada requisito.
-
-Si una petición in-scope no puede ejecutarse porque el PC no está preparado:
-
-1. no la omitas, no la conviertas a conversación y no uses fixture para fingir el
-   efecto físico;
-2. no continúes una campaña parcial que vaya a ocultar el bloqueo;
-3. pausa la meta activa como **`FALLO_DE_AMBIENTE`**; no la marques cumplida, no
-   emitas cierre final y no abras el siguiente goal;
-4. escribe `artifacts/goal10/environment/<goal>.md` con requisito ausente, filas
-   afectadas, por qué BAXY no puede resolverlo solo, preparación manual exacta,
-   comprobación de que quedó listo y comando para reanudar;
-5. después de que el dueño prepare el PC, comprueba readiness y reanuda **la misma
-   meta desde su cursor**, sin volver a pegar el fichero.
-
-La ausencia del dueño no es un requisito ambiental. Sólo una acción física o
-credencial imposible de sustituir puede pedir preparación; producir prompts,
-conducir misiones y juzgar resultados siempre pertenece a los agentes.
-
-«Pon la serie X» sin servicio, cuenta o contenido disponible es un fallo de
-ambiente de esa sesión, no una limitación aceptada del producto. Sólo idioma fuera
-del compromiso ES/EN/spanglish o efecto explícitamente fuera del producto puede
-quedar fuera de alcance; el manifiesto lo justifica fila por fila.
-
-## Prohibiciones específicas
-
-No uso humano obligatorio, no soak, no espera de 24 h, no enseñar el examen al runtime, no regex por fallo, no
-overlay parcial, no remake con tests rojos, no convertir ambiente/idioma en pass,
-no avanzar después de `FALLO_DE_AMBIENTE` hasta que readiness permita reanudar, no
-saltarse el ledger 09.5 y no usar el código del intento fallido como autoridad.
-
-## Forma del cierre
-
-El goal sólo termina `cumplido` o `inalcanzable demostrado`. Un fallo corregible o
-una regresión no son una tercera salida: se reparan y revalidan dentro de la meta.
-Entrega: criterios marcados, comandos y resultados exactos, artefactos/hashes,
-defectos corregidos, limitaciones reales, diff sin restos, commit publicado y el
-nombre exacto del siguiente prompt distinto. Un resumen optimista no sustituye
-ninguno de esos puntos.
+No cambian Identidad, 200 turnos, N10/M10 (mínimos 1.947/808 + delta), K11
+(mínimo 2.036 + delta), cobertura, tres ceros ni Full. Los errores ya vistos en C03
+no se resuelven llenando una ventana ni reutilizando holdout como fresco.
+Consulta el [lanzador](00_LANZAR_DESDE_10_7.md) para dependencias y la
+[revisión](REVISION_SPRINTS_2026-09-04.md) para evidencia y fuentes.

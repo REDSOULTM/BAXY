@@ -1,10 +1,13 @@
 # Goal 10 — Certificación autónoma para uso diario
 
-> **Mapa: no se lanza entero.** El Goal 10 se ejecuta en orden mediante
-> `10.0`–`10.18`. Cada fichero es un goal autónomo para **Grok 4.6 High**, se
-> lanza una sola vez y usa ventanas operativas máximas de **500k tokens**. Si
-> necesita más, persiste, compacta y continúa en la misma meta; nunca pide repetir
-> el fichero.
+> Revisión 2026-09-04: requiere C09 cumplido y el
+> [protocolo único](00_PROTOCOLO_EJECUCION.md). Una meta se divide en tramos
+> reanudables, con contexto objetivo 60–100K y corte a 150K; 500K es capacidad.
+> El cierre de desarrollo no sustituye la [fase 12](12_PRODUCTO_FINAL.md).
+
+> **Mapa: no se lanza entero.** 10.0–10.2.5 conservan su estado histórico;
+> 10.3–10.6 están retirados. Tras C09, ejecuta 10.7–10.18 con Grok 4.6 High.
+> Una meta puede reanudarse en sesiones limpias conservando objetivo y cursor.
 
 ## Por qué existe
 

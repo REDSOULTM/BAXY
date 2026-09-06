@@ -91,7 +91,7 @@ SHA-256: `8743a3fa67f57fb38c245dbf285db2b6223bebdc866949076d09ffea7a5ff5fe`.
 | G03.05 / 439 | **Cobertura y cuenta publicadas juntas**, con la cobertura medida antes y después: no bajó. | C06 | PENDIENTE | — |
 | G03.06 / 441 | El número y la forma del catálogo **justificados midiendo**, no eligiendo. | C06 | PENDIENTE | — |
 | G03.07 / 442 | El acierto de argumentos medido aparte, para que la ganancia no se haya mudado de sitio. | C06 | PENDIENTE | — |
-| G03.08 / 444 | Los tres ceros intactos. | C03 | CUMPLIDO | [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) cien-11: sin efectos no pedidos, sin taxi afirmado, sin 14:30; C06 pregunta, no ejecuta |
+| G03.08 / 444 | Los tres ceros intactos. | C03 | CONTRADICHO | Histórico CUMPLIDO cien-11. Posterior: cien-31 010 reserva Deimos; extras de red en reloj (cien-30/32). Historia: cien-11. |
 | G03.09 / 445 | Publicado **qué heredaste y de dónde** — y sólo si no heredaste nada, por qué ninguna de las soluciones anteriores servía. | C06 | PENDIENTE | — |
 | G03.10 / 447 | El LLM decisor sigue **detrás de la frontera de proceso** y declarado en el manifiesto con su hash: cambiarlo mañana no debe recompilar nada. | C06 | PENDIENTE | — |
 | G03.11 / 449 | Rellenas las filas de `03_COSTURAS.md` que te tocan —LLM decisor, runtime, recuperador, reconocedor, forma del catálogo— con la medición que decide un sustituto. | C06 | PENDIENTE | — |
@@ -131,7 +131,7 @@ SHA-256: `4b842d107451164d257bdc8a9c9e54982bfd0ef95aa603e5995f86faf8c57989`.
 | G03C.06 / 295 | Pico VRAM ≤ 4 GB durante un turno con el modelo cargado, medido. | C07 | PENDIENTE | — |
 | G03C.07 / 296 | Sobrecarga frente a inferencia pura (mismo prompt/modelo/tokens), desglosada: el Δ de 17 ms de la capa LLM sigue siendo la referencia; si añades una etapa, dice qué compra. | C07 | PENDIENTE | — |
 | G03C.08 / 299 | Listón de silencio 3 s (p50 del turno). Hoy 1,50–1,60 s. | C07 | PENDIENTE | — |
-| G03C.09 / 300 | Tres ceros intactos. | C03 | CUMPLIDO | Misma muestra [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) cien-11 |
+| G03C.09 / 300 | Tres ceros intactos. | C03 | CONTRADICHO | Histórico CUMPLIDO cien-11. Posterior: cien-31 Deimos. Historia: cien-11. |
 | G03C.10 / 301 | `03_COSTURAS.md` con las filas que toques. | C06 | PENDIENTE | — |
 | G03C.11 / 302 | `documentacion/base/03C_ALCANCE.md` con las cifras, y `documentacion/base/03B_COMPRENSION_TECHO.md` §12 actualizado para que no mienta. | C06 | PENDIENTE | — |
 | G03C.12 / 305 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C06 | PENDIENTE | — |
@@ -143,7 +143,7 @@ SHA-256: `c20d609655c58c1a031395b8faf44012b89015e50b9459c5a57a344192eeceff`.
 
 | ID / línea | Criterio original completo | Owner | Estado | Evidencia |
 |---|---|---|---|---|
-| G04.01 / 301 | Los tres ceros, sobre población abierta, con el texto visible **auditado a mano**. | C03 | CUMPLIDO | [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md); `cien-16/finals.txt` leído; relojes 13:23–13:32 en ventana; 5 `composition_failed` honestos |
+| G04.01 / 301 | Los tres ceros, sobre población abierta, con el texto visible **auditado a mano**. | C03 | CONTRADICHO | Histórico CUMPLIDO cien-16. Posterior cien-31…33: efectos no pedidos y agotes. Historia: cien-16. |
 | G04.02 / 303 | La autocorrección funciona: una afirmación desmentida por la verificación se corrige sola, y hay una traza que lo demuestra. | C03 | CUMPLIDO | `Goal06VisibleVoiceTests` polaridad invertida; compose reintenta los mismos hechos utc+offset (`PlannerAppBoundaryTests`) |
 | G04.03 / 305 | Los dos modos funcionan, y el *bypass* no relaja ni el cero de efectos no pedidos ni el de éxitos no verificados. | C04 | PENDIENTE | — |
 | G04.04 / 307 | La puerta de dominio ya no rechaza operaciones correctas por ausencia de lista — o está retirada y sustituida por algo que no herede el defecto. | C06 | PENDIENTE | — |
@@ -173,9 +173,9 @@ SHA-256: `3fc2e9c96110e204f6a5fae55f9f2b75ee095dfa6f510b1eb3bb60cfd2aae1b0`.
 
 | ID / línea | Criterio original completo | Owner | Estado | Evidencia |
 |---|---|---|---|---|
-| G06.01 / 296 | Cien respuestas seguidas leídas a mano y ninguna suena a máquina rellenando un hueco. | C03 | PENDIENTE | [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) cien-18 leída; no sello. cien-17 plan pendiente cruzó `session.new` (reparado). |
-| G06.02 / 298 | Cero palabras inventadas en la muestra, con la causa resuelta —modelo, cuantización o comprobación— y la decisión justificada midiendo. | C03 | CUMPLIDO | cien-11: 0 talcr/vme/llamarar/comprobo/nochesos/readver. Causa: contrato utc+offset + comprobación, no cambio de Q. [HERENCIA.md](../../../artifacts/comprobaciones/C03/HERENCIA.md) |
-| G06.03 / 300 | Cero constantes en pantalla, incluidos los caminos feos y el degradado. | C03 | CUMPLIDO | `Sigo con {snippet}` fuera de producción; welcome/progreso por compose; `composition_failed` SYSTEM sin dump (R07) |
+| G06.01 / 296 | Cien respuestas seguidas leídas a mano y ninguna suena a máquina rellenando un hueco. | C03 | PENDIENTE | [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) cien-30 leída; no sello. No se sella con cien-13…30. Granite nativo 86/14. |
+| G06.02 / 298 | Cero palabras inventadas en la muestra, con la causa resuelta —modelo, cuantización o comprobación— y la decisión justificada midiendo. | C03 | CONTRADICHO | Histórico CUMPLIDO cien-11. Posterior: fabric (cien-29), «compilar» (cien-32), metadiscurso (cien-33 006/071). Historia: cien-11 + HERENCIA. |
+| G06.03 / 300 | Cero constantes en pantalla, incluidos los caminos feos y el degradado. | C03 | CONTRADICHO | Histórico: `Sigo con` fuera de producción. Posterior: progreso «BAXY Sigo.» en cien-31/33 events. Historia conservada. |
 | G06.04 / 301 | La narración de accesibilidad sale por la misma ruta de prosa, sin subsistema propio. | C08 | PENDIENTE | — |
 | G06.05 / 303 | La personalidad está en el prompt y se puede cambiar editando un texto. | C03 | CUMPLIDO | `USER_MESSAGE_PROMPT` en `src/baxy_mind/llm.py`; seguridad en otro bloque |
 | G06.06 / 304 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C03 | CUMPLIDO | `e7a8ba0` en `origin/main` |

@@ -1,0 +1,213 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda la información en viajar de un punto a otro en la red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 97,
+        "draft_sha256": "50ff7d46ea97fa7d825e11c08d451be4271314f1eff41c90e0b9e9935d7de4bd",
+        "payload": {},
+        "draft": "La latencia de red es el tiempo que tarda la información en viajar de un punto a otro en la red."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia de red importa porque afecta el tiempo de respuesta en aplicaciones en tiempo real, como videoconferencias o juegos, donde la demora puede hacer que la interacción parezca más lenta o menos fluida.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups, reducing latency and load on DNS servers.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why something matters helps clarify purpose and motivation.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 92,
+        "draft_sha256": "3321d5a69453f6eac7ec00ea9225be17e9d00f2ef64f66962dc2bea9fe9a2fdc",
+        "payload": {},
+        "draft": "It matters because understanding why something matters helps clarify purpose and motivation."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario entre tu dispositivo y la red, ayudando a navegar más rápido o con más seguridad.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 119,
+        "draft_sha256": "fc6dcc56cec303905bd12877685174120e454e82f81014eecb9563383cc4dfbd",
+        "payload": {},
+        "draft": "Un proxy actúa como intermediario entre tu dispositivo y la red, ayudando a navegar más rápido o con más seguridad."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "¿Para qué sirve el proxy?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "¿Para qué sirve un VPN?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "and why does it matter?",
+    "terminal": "published_final",
+    "final": "The concept matters because it helps clarify why decisions are made and ensures everyone understands the reasoning behind the outcome.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 96,
+        "draft_sha256": "48f9bd38abfefc2f24e619b986dd6f5b5a34bebc5b2bf1307001fb27b56033dd",
+        "payload": {},
+        "draft": "And why does it matter? is a short question seeking clarification on the relevance of the topic."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 134,
+        "draft_sha256": "99af405631b09524ebd6c83559baa4590181c6cf2740c85f1ec1c2378186eebf",
+        "payload": {},
+        "draft": "The concept matters because it helps clarify why decisions are made and ensures everyone understands the reasoning behind the outcome."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "qué es una VLAN, una frase",
+    "terminal": "published_final",
+    "final": "Una VLAN organiza dispositivos en grupos lógicos dentro de una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "¿y para qué se usa?",
+    "terminal": "published_final",
+    "final": "Para qué se usa, se aplica en situaciones prácticas para resolver problemas eficientemente.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 93,
+        "draft_sha256": "3974844b444519cabe6d1f136142c9b4bc27e738e3882e42573b174257273ed6",
+        "payload": {},
+        "draft": "Para qué se usa, se aplica en situaciones prácticas para resolver problemas eficientemente."
+      }
+    ]
+  }
+]

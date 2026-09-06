@@ -1,4 +1,4 @@
-"""Owner decision 2026-09-01: certify Goal 10 before daily use."""
+"""Sprint contracts: bounded context and installed acceptance after Goal 11."""
 
 from __future__ import annotations
 
@@ -42,21 +42,19 @@ def test_live_order_skips_human_batches_and_continues_at_10_7() -> None:
     assert "`0/50` no es deuda" in handoff
 
 
-def test_every_pending_goal_embeds_the_full_grok46_contract() -> None:
+def test_every_pending_goal_incorporates_the_shared_grok46_contract() -> None:
     assert len(PENDING) == 28
     required = (
         GROK46_CONTRACT_MARK,
         "## Contrato de goal",
-        "## BAXY y fuentes de autoridad",
-        "## Las cinco leyes",
-        "## Los seis invariantes",
-        "## Cómo trabajas aquí",
+        "[00_PROTOCOLO_EJECUCION.md](00_PROTOCOLO_EJECUCION.md)",
+        "Identidad y AGENTS",
         "## Herencia 09.5",
         "## Contrato de sesión",
         "## Objetivo único",
         "## Criterios de cierre",
         "Grok 4.6",
-        "HEAD == origin/main",
+        "## Tramos de ejecución",
     )
     for name in PENDING:
         text = (SPRINTS / name).read_text(encoding="utf-8")
@@ -67,12 +65,9 @@ def test_every_pending_goal_embeds_the_full_grok46_contract() -> None:
 def test_pending_prompts_preserve_goal_01_09_rules_and_prompt_shape() -> None:
     headings = (
         "## Contrato de goal",
-        "## BAXY y fuentes de autoridad",
-        "## Las cinco leyes",
-        "## Los seis invariantes",
-        "## Cómo trabajas aquí",
         "## Herencia 09.5",
         "## Contrato de sesión",
+        "## Tramos de ejecución",
         "## Objetivo único",
         "## Criterios de cierre",
     )
@@ -85,11 +80,11 @@ def test_pending_prompts_preserve_goal_01_09_rules_and_prompt_shape() -> None:
     )
     invariants = (
         "catálogo tipado",
-        "Nada se afirma sin verificarlo independientemente",
-        "estados terminales dicen la verdad",
-        "confirmación pertenece a la invocación exacta",
+        "Nada se afirma sin verificar",
+        "Estados terminales honestos",
+        "confirmación se liga a la invocación exacta",
         "Cero respuestas visibles fijas",
-        "Modelo local y privado",
+        "Local y privado",
     )
     forbidden_human_dependencies = (
         "pedidos espontáneos del dueño",
@@ -99,6 +94,14 @@ def test_pending_prompts_preserve_goal_01_09_rules_and_prompt_shape() -> None:
         "pide al dueño que pruebe",
     )
 
+    authority = (REPO / "AGENTS.md").read_text(encoding="utf-8").casefold()
+    assert all(law.casefold() in authority for law in laws)
+    assert all(item.casefold() in authority for item in invariants)
+    protocol = (SPRINTS / "00_PROTOCOLO_EJECUCION.md").read_text(encoding="utf-8")
+    assert "Lee AGENTS, Identidad" in protocol
+    assert "60–100K" in protocol and "150K" in protocol
+    assert "máximo 80 líneas" in protocol
+    assert "Ningún rojo permite cierre" in protocol
     for name in PENDING:
         text = (SPRINTS / name).read_text(encoding="utf-8")
         assert text.count("grok46-goal-contract:begin") == 1, name
@@ -107,11 +110,10 @@ def test_pending_prompts_preserve_goal_01_09_rules_and_prompt_shape() -> None:
         assert [text.index(heading) for heading in headings] == sorted(
             text.index(heading) for heading in headings
         ), name
-        assert all(law.casefold() in text.casefold() for law in laws), name
-        assert all(item.casefold() in text.casefold() for item in invariants), name
-        assert "Grok 4.6" in text and "esfuerzo `high`" in text, name
+        assert "Identidad y AGENTS" in text, name
+        assert "Grok 4.6 High" in text, name
         assert "500k" in text and "FALLO_DE_AMBIENTE" in text, name
-        assert "HEAD == origin/main" in text, name
+        assert "aceptación reservada" in text, name
         assert not any(
             item.casefold() in text.casefold()
             for item in forbidden_human_dependencies
@@ -119,6 +121,9 @@ def test_pending_prompts_preserve_goal_01_09_rules_and_prompt_shape() -> None:
 
 
 def test_goal11_contract_uses_goal11_authority_and_cannot_redefer_debt() -> None:
+    protocol = (SPRINTS / "00_PROTOCOLO_EJECUCION.md").read_text(encoding="utf-8")
+    assert "Los aplazados de 11 se resuelven con evidencia" in protocol
+    assert "diferidos tienen dueño en 12" in protocol
     for name in PENDING:
         if not name.startswith("11."):
             continue
@@ -127,10 +132,9 @@ def test_goal11_contract_uses_goal11_authority_and_cannot_redefer_debt() -> None
             "grok46-goal-contract:end", 1
         )[0]
         assert "11_VALIDACION.md" in common, name
-        assert "11_PROTOCOLO_GROK46.md" in common, name
+        assert "00_PROTOCOLO_EJECUCION.md" in common, name
         assert "10_PROTOCOLO_GROK46.md" not in common, name
         assert "ningún ítem in-scope vuelve a" in common, name
-        assert "si este prompt sólo inventaría o particiona" in common, name
 
 
 def test_pending_launcher_contains_exact_sequence_and_no_closed_goal() -> None:
@@ -143,17 +147,20 @@ def test_pending_launcher_contains_exact_sequence_and_no_closed_goal() -> None:
     assert links == PENDING
     assert not set(CLOSED_GOAL10).intersection(links)
     assert not set(RETIRED_PROMPTS).intersection(links)
-    assert "SIGUIENTE:" in launcher
-    assert "10.7_CONVERSACION.md" in launcher
-    assert "No hay otra tanda humana ni un goal oculto después" in launcher
+    assert "C09 es prerrequisito" in launcher
+    assert "07_REPLANTEAR_C03.md" in launcher
+    assert tuple(re.findall(r"\]\((12\.\d[^)]+\.md)\)", launcher)) == (
+        "12.1_INSTALACION.md", "12.2_HARDWARE.md", "12.3_ENTREGA.md"
+    )
 
 
-def test_pending_goal_chain_is_explicit_and_terminal_only_at_11_16() -> None:
+def test_pending_goal_chain_hands_off_to_installed_acceptance() -> None:
     for current, following in zip(PENDING[:-1], PENDING[1:], strict=True):
         text = (SPRINTS / current).read_text(encoding="utf-8")
         assert f"Siguiente: `{following}`" in text, current
     final = (SPRINTS / PENDING[-1]).read_text(encoding="utf-8")
-    assert "Siguiente: `ninguno — BAXY listo para uso diario`" in final
+    assert "Siguiente: [12.1 — Instalación](12.1_INSTALACION.md)" in final
+    assert "El producto instalado cierra en 12.3" in final
 
 
 def test_retired_prompts_cannot_be_mistaken_for_work() -> None:
@@ -173,7 +180,7 @@ def test_10_18_owns_agent_driven_public_entry_certification() -> None:
         "A/B/C/D = 50/50",
         "sin participación del dueño",
         "adjudicador independiente",
-        "no acredita end-to-end",
+        "Las invocaciones internas sirven para diagnóstico y nunca suman 200",
     ):
         assert required.casefold() in text.casefold(), required
     assert "25 pedidos espontáneos del dueño" not in text

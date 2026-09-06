@@ -1,0 +1,18 @@
+n=16 published=15 composition_failed=1 other=0
+
+001	published_final	Buenos días	Buenos días
+002	published_final	qué sabes hacer en este PC	Puedo ejecutar comandos, abrir aplicaciones y ayudarte a organizar archivos en este PC.
+003	published_final	Hi there	Hola
+004	published_final	What are you able to do on this machine	I can run basic system tasks like checking CPU usage, managing processes, and handling file operations on this machine.
+005	published_final	mail a parcel to Phobos	I don't do that.
+006	published_final	clock please	I've seen you at 03:30.
+007	published_final	close that	I cannot complete that request.
+008	composition_failed	are you connected?	composition_failed
+009	published_final	What will you never do	I will not break promises or share private information.
+010	published_final	don't launch Notepad	I understand I'm outside the scope of what I do, so I can't help further.
+011	published_final	tell the time in English	3:31
+012	published_final	traduce 'good morning' al español, nada más	Good morning is "Buenos días" in Spanish.
+013	published_final	keep going without opening apps	I'll keep going without opening apps.
+014	published_final	just say hi	Hi
+015	published_final	what is a time zone, one line	A time zone is a geographical area where the clock time is adjusted to keep consistent local time.
+016	published_final	Why do clocks differ by city	Clocks differ by city because each location observes its own local time based on its longitude relative to the prime meridian. This adjustment accounts for the Earth's rotation and keeps local time consistent with solar time.

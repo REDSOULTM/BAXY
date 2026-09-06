@@ -70,6 +70,7 @@ from .llm import (
     _literal_recall_reference,
     _native_selection_description,
     _reads_as_an_observation,
+    served_capability_families,
 )
 from .planner import (
     MAX_SHORTLIST_OPERATIONS,
@@ -84,6 +85,14 @@ from .planner import (
     validate_argument_grounding,
     validate_json_schema_instance,
     validate_skeleton,
+)
+from .request_reading import (
+    fold as read_fold,
+    INTENT_CAPABILITY,
+    INTENT_CONTINUE_CONSTRAINT,
+    INTENT_REFUSE,
+    read_request,
+    response_language as read_language,
 )
 from .process_lifecycle import (
     ReapResource,
@@ -2159,7 +2168,7 @@ def _domain_confirmation_question(
         )
     except Exception:  # noqa: BLE001 - a failed question is an honest refusal
         return ""
-    return question if _recovery_question_is_valid(question) else ""
+    return question if _recovery_question_is_valid(question, objective) else ""
 
 
 def _shortlist_with_required_effects(
@@ -2271,112 +2280,25 @@ def apply_explicit_effect_contract(
 
 
 def _explicit_response_language(objective: str) -> str:
-    """Choose presentation language for a non-conversational explicit effect."""
+    """Idioma de presentación de un efecto explícito. Owner: read_request."""
 
-    folded = unicodedata.normalize("NFKD", objective.casefold())
-    folded = "".join(
-        character for character in folded if not unicodedata.combining(character)
-    )
-    tokens = set(re.findall(r"[a-z]+", folded))
-    spanish = len(
-        tokens
-        & {
-            "abre",
-            "agradezco",
-            "busca",
-            "cierre",
-            "claro",
-            "como",
-            "comprendi",
-            "comprendo",
-            "crea",
-            "dime",
-            "entendi",
-            "entiendo",
-            "esta",
-            "gracias",
-            "haz",
-            "la",
-            "lee",
-            "lista",
-            "mis",
-            "muestra",
-            "navega",
-            "pausa",
-            "perder",
-            "podia",
-            "pon",
-            "que",
-            "reproduce",
-            "selecciona",
-            "trabajo",
-            "volumen",
-        }
-    )
-    english = len(
-        tokens
-        & {
-            "create",
-            "confused",
-            "closing",
-            "could",
-            "do",
-            "anything",
-            "ask",
-            "find",
-            "for",
-            "funny",
-            "get",
-            "give",
-            "good",
-            "hear",
-            "how",
-            "it",
-            "just",
-            "jokes",
-            "like",
-            "list",
-            "lose",
-            "music",
-            "my",
-            "navigate",
-            "not",
-            "of",
-            "on",
-            "open",
-            "opened",
-            "pause",
-            "phone",
-            "play",
-            "read",
-            "search",
-            "select",
-            "set",
-            "say",
-            "show",
-            "speak",
-            "talk",
-            "tell",
-            "thank",
-            "thanks",
-            "the",
-            "temperature",
-            "details",
-            "tomorrow",
-            "understand",
-            "until",
-            "used",
-            "what",
-            "why",
-            "would",
-            "work",
-            "yesterday",
-            "hot",
-        }
-    )
-    if spanish and english:
-        return "mixed"
-    return "en" if english > spanish else "es"
+    return read_language(objective)
+
+
+def _decisive_request_language(objective: str) -> str | None:
+    """Idioma cuando la evidencia del texto apunta sólo a un lado.
+
+    El detector del modelo respondía en español a «post a letter to Eris» y a
+    «book a shuttle to Callisto». Cuando la lectura del pedido tiene evidencia
+    de un solo idioma no hay nada que preguntar: manda ella, que es el mismo
+    owner con el que después se redacta y se valida.
+    """
+
+    reading = read_request(objective)
+    spanish, english = reading.evidence
+    if bool(spanish) == bool(english):
+        return None
+    return reading.language
 
 
 def _explicit_turn_decision(
@@ -2571,6 +2493,13 @@ def _explicit_social_turn_decision(
             None,
         )
         assistant_preference = language is not None
+    if language is None:
+        # «Hi again» y «buenas, compa» son saludos completos: la lectura del
+        # pedido los reconoce sin ampliar otro patrón por cada variante, y sin
+        # tragarse un pedido que venga detrás del saludo.
+        greeting = read_request(objective)
+        if greeting.greeting_only:
+            language = greeting.language
     if language is None:
         return None
     return {
@@ -5629,9 +5558,24 @@ def _prepare_turn_result(
     non_target_language = confident_non_target_language(objective)
     explicit_non_action = effect_intent.explicit_non_action_frame(objective)
     content_drafting = conversation_only_content_request(objective)
+    # Preguntar por lo que hace o por lo que no hace el producto se contesta con
+    # el catálogo, y pedir que siga la conversación sin abrir nada es un
+    # encargo completo: en ninguno de los dos casos hay algo que aclarar.
+    # Cuando salían por aquí, la persona recibía su propia pregunta de vuelta
+    # —«¿Qué específicamente no puedes hacer en este PC?»—, vocabulario del
+    # planificador, o una pregunta sobre el turno anterior —«Would you like to
+    # hear a fun fact about Peru?»— (limites-14/003..006, limites-20/009,
+    # panel-opus-13/038, /052).
+    nothing_to_clarify = bool(
+        read_request(objective).intents
+        & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+    )
     explicit_clarification = (
         None
-        if non_target_language is not None or content_drafting or explicit_non_action
+        if non_target_language is not None
+        or content_drafting
+        or explicit_non_action
+        or nothing_to_clarify
         else resolve_explicit_clarification_intent(
             objective,
             authenticated_operations,
@@ -6247,7 +6191,7 @@ def _prepare_turn_result(
             history=history,
             timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
         )
-        if not _recovery_question_is_valid(question):
+        if not _recovery_question_is_valid(question, objective, history):
             raise PlannerContractError("aclaración de intención inválida")
         decision = {
             "mode": "clarify",
@@ -6286,6 +6230,9 @@ def _prepare_turn_result(
         )
 
     reply_text = ""
+    # El idioma con el que se redacta la respuesta viaja con ella: el shell no
+    # vuelve a adivinarlo para vetarla.
+    response_language: str | None = None
     if decision["mode"] == "conversation":
         presentation_conversation_kind = (
             "unsupported_language"
@@ -6298,23 +6245,34 @@ def _prepare_turn_result(
             # and only repeats work before the same social/follow-up response.
             response_language = str(decision["response_language"])
         else:
-            consumed_deferred_language = False
-            response_language = None
-            consume_deferred = getattr(
-                llm,
-                "consume_deferred_response_language",
-                None,
-            )
-            if callable(consume_deferred):
-                (
-                    consumed_deferred_language,
-                    response_language,
-                ) = consume_deferred(objective)
-            if not consumed_deferred_language or response_language is None:
-                try:
-                    response_language = llm.detect_response_language(objective)
-                except ValueError:
-                    response_language = None
+            response_language = _decisive_request_language(objective)
+            if response_language is not None:
+                # La lectura decide: la inferencia especulativa se retira sin
+                # consumirse, igual que en una ruta sin conversación.
+                retire_decided = getattr(
+                    llm,
+                    "retire_deferred_response_language",
+                    None,
+                )
+                if callable(retire_decided):
+                    retire_decided(objective)
+            else:
+                consumed_deferred_language = False
+                consume_deferred = getattr(
+                    llm,
+                    "consume_deferred_response_language",
+                    None,
+                )
+                if callable(consume_deferred):
+                    (
+                        consumed_deferred_language,
+                        response_language,
+                    ) = consume_deferred(objective)
+                if not consumed_deferred_language or response_language is None:
+                    try:
+                        response_language = llm.detect_response_language(objective)
+                    except ValueError:
+                        response_language = None
         reply_text, _ = llm.chat(
             objective,
             history=history,
@@ -6331,6 +6289,24 @@ def _prepare_turn_result(
             raise PlannerContractError(
                 "no se pudo preparar una respuesta conversacional"
             )
+        # Una explicación que sólo devuelve otra pregunta no contesta nada:
+        # «para qué lo necesita el PC» salió como «¿Para qué necesita el PC
+        # para ejecutar tareas específicas?» (seguimiento-13/020), y «cuáles
+        # son tus límites aquí» como «¿Cuáles son los límites de esta PC?»
+        # (limites-14/003). Un turno social sí puede terminar preguntando; uno
+        # que se contesta con el catálogo, no.
+        if (
+            (
+                presentation_conversation_kind in {"knowledge", "followup"}
+                or read_request(objective).intents
+                & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+            )
+            and reply_text.rstrip().endswith(("?", "？"))
+            and re.search(r"[.!][\"'»]?\s", reply_text) is None
+        ):
+            raise PlannerContractError(
+                "una explicación no puede ser sólo una pregunta"
+            )
     else:
         # P may finish before the independent language inference.  Keep L alive
         # through every outer veto, then cancel it only once the final result is
@@ -6343,6 +6319,23 @@ def _prepare_turn_result(
         )
         if callable(retire_deferred):
             retire_deferred(objective)
+    # Preguntar por lo que hace o por lo que no hace el producto se contesta
+    # con el catálogo; no hay nada que aclarar. Cuando salía por aquí, la
+    # pregunta devuelta se construía con vocabulario del planificador: «¿Cuáles
+    # son los campos necesarios para crear un recordatorio futuro local y
+    # duradero?» ante «cuáles son tus límites aquí» (panel-opus-13/052, /038).
+    if decision["mode"] == "clarify" and nothing_to_clarify:
+        raise PlannerContractError(
+            "una pregunta por las capacidades o los límites no se aclara"
+        )
+    if decision["mode"] == "clarify" and not _recovery_question_is_valid(
+        decision["question"],
+        objective,
+        history,
+    ):
+        # Devolver la petición anterior como pregunta no aclara nada: se trata
+        # como un turno fallido para que la recuperación formule una de verdad.
+        raise PlannerContractError("aclaración que repite un turno anterior")
     result = {
         "type": "turn.result",
         "id": message.get("id"),
@@ -6353,6 +6346,8 @@ def _prepare_turn_result(
         "question": decision["question"],
         "reply": reply_text,
     }
+    if response_language in {"es", "en", "mixed"}:
+        result["responseLanguage"] = response_language
     turn_audit["final"] = {
         "kind": result["kind"],
         "intent_operations": result["intentOperations"],
@@ -6388,12 +6383,56 @@ def _retry_side_effect_free_turn(
     raise last_error
 
 
-def _recovery_question_is_valid(value: object) -> bool:
-    """Accept exactly one compact question, never an action-bearing object."""
+_RECOVERY_PROMPT_VOCABULARY = (
+    "mensaje actual",
+    "current message",
+    "pedido actual",
+    "current request",
+    "la frase que",
+    "the sentence you",
+    "situacion del turno",
+)
+
+
+def _recovery_question_repeats_a_previous_turn(
+    question: str,
+    history: object,
+) -> bool:
+    """La pregunta devuelve una petición que la persona ya hizo antes."""
+
+    if not isinstance(history, list) or len(history) < 2:
+        return False
+    asked = set(re.findall(r"[a-z]{4,}", read_fold(question)))
+    if len(asked) < 2:
+        return False
+    for item in history[:-1]:
+        if not isinstance(item, dict) or item.get("role") != "user":
+            continue
+        previous = set(
+            re.findall(r"[a-z]{4,}", read_fold(str(item.get("content") or "")))
+        )
+        if len(previous) < 2:
+            continue
+        shared = asked & previous
+        if len(shared) >= 2 and len(shared) / len(asked) >= 0.6:
+            return True
+    return False
+
+
+def _recovery_question_is_valid(
+    value: object,
+    objective: str = "",
+    history: object = None,
+) -> bool:
+    """Accept exactly one compact question, never an action-bearing object.
+
+    Además no nombra el vocabulario del encargo ni devuelve una petición
+    anterior, que es lo que hacía cuando un turno de conocimiento fallaba.
+    """
 
     if not isinstance(value, str):
         return False
-    return (
+    if not (
         bool(value)
         and len(value) <= 512
         and value == value.strip()
@@ -6404,7 +6443,13 @@ def _recovery_question_is_valid(value: object) -> bool:
         )
         and value.endswith("?")
         and value.count("?") == 1
-    )
+    ):
+        return False
+    folded = read_fold(value)
+    if any(term in folded for term in _RECOVERY_PROMPT_VOCABULARY):
+        return False
+    _ = objective
+    return not _recovery_question_repeats_a_previous_turn(value, history)
 
 
 def _standalone_deictic_conversation_needs_clarification(
@@ -6476,8 +6521,19 @@ def _recover_failed_turn(
         )
         return result
 
+    # Un turno fallido no convierte una pregunta por las capacidades o los
+    # límites en algo que aclarar: eso se contesta con el catálogo. Devolverla
+    # como pregunta era el último sitio por donde salía —«¿Qué específicamente
+    # no puedes hacer en este PC?», «¿Qué acción específica te niega la política
+    # de seguridad de BAXY?»— (limites-16/003..006).
+    nothing_to_clarify = bool(
+        read_request(objective).intents
+        & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+    )
     if llm is not None:
         try:
+            if nothing_to_clarify:
+                raise ValueError("capability_question_is_not_clarified")
             question = llm.clarify_after_turn_failure(
                 objective,
                 history=history,
@@ -6505,7 +6561,7 @@ def _recover_failed_turn(
         except Exception:  # noqa: BLE001 - use the protocol safety floor
             pass
         kind, text = _recovery_visible_from_compose(llm, objective)
-        if kind == "clarify":
+        if kind == "clarify" and not nothing_to_clarify:
             return audited(
                 {
                     "type": "turn.result",
@@ -7692,6 +7748,14 @@ def _run_sidecar(
                 facts = message.get("facts")
                 if not isinstance(facts, dict):
                     raise ValueError("facts debe ser un objeto")
+                # Una respuesta de capacidades describe el catálogo servido
+                # hoy, no una lista fija elegida para el corpus.
+                facts = {
+                    **facts,
+                    "capabilities": served_capability_families(
+                        [tool["function"]["canonical_name"] for tool in tools]
+                    ),
+                }
                 text = llm.compose_user_message(
                     str(message.get("userText", ""))[:4096],
                     str(message.get("intent", "status"))[:32],

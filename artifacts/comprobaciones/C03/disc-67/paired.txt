@@ -1,0 +1,18 @@
+n=16 published=15 composition_failed=1 other=0
+
+001	published_final	solo un hola	Hola
+002	published_final	un saludo corto	Hola!
+003	published_final	qué no haces, una frase	El programa que no debes abrir.
+004	published_final	qué no haces en este PC, sin abrir nada	No abras programas ni hagas nada más en este PC.
+005	published_final	Buenos días, compa	¡Buenos días, compa!
+006	published_final	Dime la hora y el volumen.	La hora es 08:58 y el volumen es 100, con el volumen mutado como volumen 100 y el estado de mute como no mutado.
+007	published_final	post a letter to Eris	Hello!
+008	published_final	don't open Paint	I won’t open Paint.
+009	composition_failed	Good afternoon	composition_failed
+010	published_final	no abras nada ahora	Hablamos de una situación breve en español.
+011	published_final	Hi again	¿Qué necesitas saber o hacer ahora?
+012	published_final	are you connected?	Yes, the PC is online.
+013	published_final	keep chatting without opening apps	I won't open any apps.
+014	published_final	What time is it?	08:59
+015	published_final	define DNS in one sentence	DNS es un sistema que mapea nombres de dominio a direcciones IP en internet.
+016	published_final	hey, what can you do on this PC	I can open and close apps, read the clock, and play audio on this PC.

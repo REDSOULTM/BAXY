@@ -1,0 +1,100 @@
+﻿001	published_final	Hola, ¿en qué puedo ayudarte?
+002	published_final	Puedo ayudarte con preguntas y respuestas, resolver dudas, proporcionar información y conversar sobre diversos temas.
+003	published_final	La hora local es 16:54.
+004	published_final	Hello, UTC is a time standard that is used globally to coordinate activities across different time zones.
+005	published_final	¿Qué es lo que necesitas que te abra?
+006	published_final	Hola
+007	published_final	I can help with questions, explain things, talk about various topics, and assist with tasks. I'm here to chat and help in whatever way you need.
+008	published_final	The time is 16:54.
+009	composition_failed	composition_failed
+010	composition_failed	composition_failed
+011	published_final	Hola, buenos días.
+012	published_final	Hola, estoy aquí para ayudarte en el PC.
+013	published_final	16:55
+014	composition_failed	composition_failed
+015	published_final	No pude: no puedo enviar paquetes.
+016	published_final	Hello.
+017	published_final	The local clock shows 16:56.
+018	composition_failed	composition_failed
+019	published_final	¿Qué exactamente necesitas que te cierra?
+020	composition_failed	composition_failed
+021	published_final	Bien, gracias por preguntar. ¿Qué te pasa?
+022	published_final	The local clock shows 16:56.
+023	composition_failed	composition_failed
+024	composition_failed	composition_failed
+025	published_final	No puedo comprar bitcoin en Plutón.
+026	composition_failed	composition_failed
+027	published_final	Listo, tengo internet.
+028	published_final	The local clock shows 16:57.
+029	composition_failed	composition_failed
+030	composition_failed	composition_failed
+031	published_final	Hola, buen día.
+032	published_final	Listo, la hora local es 16:58.
+033	published_final	Listo, el mensaje fue enviado a las 16:58.
+034	published_final	Listo, el reloj marca 16:58.
+035	published_final	¿qué acción concreta quieres que realice?
+036	published_final	¿qué acción concreta quieres que realice?
+037	published_final	No puedo inventar una hora.
+038	published_final	I cannot fabricate a clock.
+039	published_final	No puedo fabricar una hora.
+040	published_final	No pude: no puedo hacer lo que no es parte de mi función.
+041	published_final	Hola. ¿Qué tal?
+042	published_final	The time is 16:59.
+043	published_final	16:59, la hora.
+044	published_final	Soy un asistente de inteligencia artificial diseñado para ayudarte con diversas tareas, como responder preguntas, resolver problemas y proporcionar información. Mi nombre es Qwen, y estoy aquí para brindarte apoyo en lo que necesites.
+045	published_final	Hola, soy BAXY, un compañero que vive en el PC y aquí estoy para ayudarte.
+046	published_final	I can't open Steam.
+047	published_final	No puedo abrir Steam.
+048	published_final	Hola.
+049	published_final	Hola.
+050	composition_failed	composition_failed
+051	published_final	Hola, BAXY.
+052	published_final	The local clock shows 16:59.
+053	published_final	Listo, la hora es 17:00.
+054	published_final	The time seen was 17:00.
+055	composition_failed	composition_failed
+056	published_final	Sí, tengo internet.
+057	published_final	Sí, hay red.
+058	published_final	No apps, no distractions. Just me and the conversation. ¿Quieres continuar?
+059	composition_failed	composition_failed
+060	published_final	Hola, soy BAXY, tu compañero en el PC.
+061	published_final	Hola, soy BAXY.
+062	published_final	The time seen was 17:00.
+063	published_final	La hora local es 17:00.
+064	published_final	The local clock is 17:00.
+065	published_final	Listo, la hora local es 17:01.
+066	published_final	Hola, soy BAXY.
+067	published_final	Hola.
+068	composition_failed	composition_failed
+069	published_final	Listo, el reloj marca 17:01.
+070	published_final	BAXY is at 17:01.
+071	published_final	Hi again.
+072	composition_failed	composition_failed
+073	published_final	I'm here to help with anything you need on this PC.
+074	published_final	BAXY is at 17:01.
+075	composition_failed	composition_failed
+076	published_final	The local clock shows 17:02.
+077	published_final	La hora local es 17:02.
+078	published_final	I couldn't: it's outside what I do.
+079	published_final	No puedo enviar esto a Marte.
+080	published_final	The local clock shows 17:02.
+081	published_final	¡Hola!
+082	published_final	Sé que puedo ayudarte con diversas cosas, como resolver dudas, proporcionar información, ayudarte con tareas, etc. Pero si tienes una pregunta específica o necesitas algo en particular, dime y te ayudaré lo mejor que pueda.
+083	published_final	La hora local es 17:02.
+084	published_final	La hora local es 17:02.
+085	composition_failed	composition_failed
+086	composition_failed	composition_failed
+087	published_final	No puedo pedir café a Júpiter.
+088	published_final	I cannot say hi to Saturn.
+089	published_final	Listo, el reloj local marca 17:03.
+090	composition_failed	composition_failed
+091	published_final	Hola, soy BAXY.
+092	published_final	The app "BAXY" is open and the time is at level 17:03.
+093	published_final	The local time is 17:03.
+094	composition_failed	composition_failed
+095	published_final	Soyo.
+096	composition_failed	composition_failed
+097	published_final	No puedo saludar a Marte.
+098	published_final	La hora local es 17:04.
+099	published_final	The time seen was 17:04.
+100	composition_failed	composition_failed

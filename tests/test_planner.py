@@ -3066,11 +3066,12 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
 
         self.assertEqual(result, "Complete y verifique los 8 pasos.")
         self.assertEqual(len(seen), 2)
+        # La corrección viaja en el sistema: el usuario nunca la lee.
         self.assertIn(
             "No incluyas ninguno de estos terminos",
-            seen[1]["messages"][1]["content"],
+            seen[1]["messages"][0]["content"],
         )
-        self.assertIn("operacion", seen[1]["messages"][1]["content"])
+        self.assertIn("operacion", seen[1]["messages"][0]["content"])
 
     def test_visible_message_prompt_does_not_duplicate_literal_contract_fields(self):
         runtime = object.__new__(LlmRuntime)
@@ -3360,7 +3361,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
 
         self.assertEqual(result, "Paso 1: La hora local es 14:25.")
         self.assertEqual(len(seen), 2)
-        self.assertIn("nunca copies el pedido", seen[1]["messages"][1]["content"])
+        self.assertIn("nunca copies el pedido", seen[1]["messages"][0]["content"])
 
     def test_visible_message_returns_empty_when_retry_still_drops_verified_fact(self):
         runtime = object.__new__(LlmRuntime)

@@ -71,12 +71,26 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # choices and bounded rejected composition retries; V8 remains historical.
 # C03 moved both files again: public compose derives the local clock from
 # utc+offset, and the user-message prompt no longer lists «usar esa respuesta».
+# C03 later moved llm.py so a Spanish translation is not an English welcome.
+# C03 later moved llm.py so compose retry no longer teaches «borrador anterior».
+# C03 later moved llm.py so empty-seen English compose does not ask to name seen,
+# and an unsolicited harm frame is extra_claim.
+# C03 later moved llm.py so identity-on-clock extra_claim does not match
+# «time zone», and a named refuse that is not a PC act is extra_claim.
+# C03 later dropped Granite compose «vive en el PC» / first-person-if-acted.
+# C03 later moved llm.py so clock+audio extras name both facts, not only the clock.
+# C03 2026-09-05 movió los dos: la lectura del pedido (idioma, saludo, petición)
+# pasó a un owner único y el payload dejó de deducir efectos del verbo. La
+# población y el veredicto de V8 siguen siendo históricos.
+# C03 2026-09-05 movió los dos otra vez: el compositor recibe el tema de
+# un seguimiento elíptico y una explicación no puede ser sólo otra
+# pregunta. La población y el veredicto de V8 siguen siendo históricos.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "aa04c76b3ad15b86e162fdcf8314a0df473bf4a44420446e2bbf7861e3d4acd3"
+        "15d0322e040ed705b03742116ae9009d860c12f18043047b01d5566e8e4d85d4"
     ),
     "src/baxy_mind/llm.py": (
-        "8db7a2da62c6cd5ffd001e48294338fc2534be15f5b7e4a953165d0cb6974f3e"
+        "399d13809a6f75ddacae636c012a92b6f1baea490e5a035ddfd7cf003396e1ea"
     ),
 }
 

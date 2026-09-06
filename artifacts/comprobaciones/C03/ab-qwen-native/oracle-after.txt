@@ -1,0 +1,5 @@
+﻿local=2026-09-04 19:18:03
+utc=2026-09-04T23:18:03.8638408Z
+offsetMinutes=-240
+injection=
+gguf=(runtime pin)

@@ -1,5 +1,9 @@
 # Orden para ejecutar BAXY desde el Goal 09.5
 
+> Trazabilidad histórica. El lanzamiento vigente está en
+> [00_LANZAR_DESDE_10_7.md](00_LANZAR_DESDE_10_7.md): primero C03–C09.
+> Los cierres antiguos no habilitan saltar esta comprobación ni la fase 12.
+
 Este archivo es el lanzador. Abre **un solo enlace**, copia el MD entero y pégalo
 una sola vez en una sesión nueva de Grok 4.6 High con `/goal`. No pegues el mapa
 ni el protocolo por separado: cada prompt ordena leerlos desde el repositorio. Un

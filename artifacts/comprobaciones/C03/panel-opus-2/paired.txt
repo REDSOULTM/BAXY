@@ -1,0 +1,38 @@
+n=36 published=35 other=1
+
+001	t1	published_final	Good afternoon	Hello hi!
+002	t2	published_final	define DNS in one sentence	DNS is a system that maps domain names to IP addresses.
+003	t3	published_final	Hi again	Hello!
+004	t4	published_final	Good evening	Hello!
+005	t5	published_final	explain what a firewall is in one sentence	A firewall is a security system that monitors and controls incoming and outgoing network traffic based on predetermined security rules.
+006	t6	published_final	explícame qué es un cortafuegos en una frase	Un cortafuegos es un sistema que bloquea o filtra el tráfico de red según reglas de seguridad.
+007	t7	published_final	hey, what can you do on this PC	I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.
+008	t8	published_final	hola, ¿qué puedes hacer en este PC?	Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.
+009	t9	published_final	traduce 'good evening' al español, nada más	Buenas noches.
+010	t10	published_final	What time is it?	It is 11:22.
+011	t11	published_final	Dime la hora y el volumen.	Hora es 11:22, volumen es nivel 100, el estado de mudo es falso.
+012	t12	published_final	are you connected?	The PC is online.
+013	t13	published_final	¿este equipo tiene conexión?	El PC está online.
+014	t14	published_final	don't open Paint	I won't open Paint.
+015	t15	published_final	no abras la Calculadora ahora	No abro la calculadora.
+016	t16	published_final	close that	¿Quieres que cierres la ventana actual?
+017	t17	published_final	qué no haces, una frase	Puedo abrir y cerrar programas, mover y enfoc ventanas, leer y ajustar el audio, y leer la hora y el estado del equipo. Si más, sí, hay otras cosas también.
+018	t18	published_final	what will you never do on this PC	I will not download, install, or modify system files, change security settings, access restricted folders, or perform actions that alter the PC’s operating system, hardware, or critical system states beyond the allowed tasks.
+019	t19	published_final	explícame qué es la latencia de red en una frase	La latencia de red mide el tiempo que tarda la señal en viajar de un punto a otro, indicando cuánto retraso hay antes de que datos puedan ser procesados.
+020	t20	published_final	¿por qué importa?	La latencia mide cuánto tiempo tarda una señal en viajar desde su origen hasta su destino, lo que afecta la velocidad y eficiencia con la que los datos pueden ser procesados o respondidos.
+021	t21	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain name to IP address lookups to avoid repeated queries, speeding up future requests.
+022	t22	published_final	why does it matter?	Caching reduces DNS lookup time by storing previously resolved domain names.
+023	t23	published_final	post a letter to Eris	Do you want to post a physical letter to Eris, or is this a metaphorical request related to sending a message or data to a system named Eris?
+024	t24	published_final	reserva una mesa en Titán	No puedo reservar una mesa en Titán porque eso no está dentro de lo que hago en este PC.
+025	t25	published_final	book a shuttle to Callisto	I cannot book a shuttle to Callisto.
+026	t26	published_final	keep chatting without opening apps	I will keep chatting without opening any apps.
+027	t27	published_final	sigue charlando sin abrir programas	I will not open any programs.
+028	t28	published_final	what can you do here	I can open and close apps, move and focus windows, read and set the audio, and read the clock and PC state. There are other things too.
+029	t29	published_final	qué sabes hacer en este equipo	Soy capaz de abrir y cerrar programas, mover y enfoc ventanas, y leer la hora y el estado del equipo. Hay otras cosas también.
+030	t30	composition_failed	what will you never do	composition_failed
+031	t31	published_final	explain what a VPN is in one sentence	A VPN (Virtual Private Network) encrypts your internet traffic and routes it through a secure server, keeping your online activity private and protecting you from hackers and surveillance.
+032	t32	published_final	why does it matter?	Because encrypting your traffic hides what you do online, protecting privacy from hackers and trackers.
+033	t33	published_final	explícame qué es un proxy en una frase	Un proxy actúa como puerta intermedia que redirige tu tráfico y oculta tu origen, como una especie de intermediario discreto que ayuda a proteger tu identidad online.
+034	t34	published_final	¿y por qué se usa?	El proxy sirve para ocultar tu origen y mejorar la seguridad al navegar.
+035	t35	published_final	no abras Word ahora	No abriré Word.
+036	t36	published_final	¿tiene conexión este equipo?	Este equipo está online.

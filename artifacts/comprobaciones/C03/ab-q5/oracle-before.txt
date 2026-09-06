@@ -1,0 +1,5 @@
+﻿local=2026-09-04 17:44:48
+utc=2026-09-04T21:44:48.5161660Z
+offsetMinutes=-240
+injection=
+gguf=D:\BAXYRuntime\assets\models\Qwen3-4B-Q5_K_M.gguf

@@ -1,0 +1,19 @@
+# ab-granite-native
+n=15 published=13 composition_failed=2 other=0
+terminals=15 session.new=1
+
+001	published_final	Hola	¡Hola! ¿Cómo estás?
+002	composition_failed	quién eres	composition_failed
+003	composition_failed	introduce yourself	composition_failed
+004	published_final	qué puedes hacer	Estoy listo para ayudar en el PC; dime qué necesitas hacer.
+005	published_final	What can you do here	I can help you here—let me know what you need.
+006	published_final	what is UTC, one line	UTC is the standard for Coordinated Universal Time, which is based on the International Atomic Time standard and is the reference time for the world.
+007	published_final	explícame qué es un huso horario	Un huso horario es una zona horaria que ajusta el tiempo real teniendo en cuenta la diferencia entre los relojes en diferentes ciudades o regiones.
+008	published_final	why do time zones exist	Time zones exist because the Earth rotates on its axis, causing different parts of the world to be in daylight or nighttime at the same time. This helps coordinate schedules, travel, and communication globally.
+009	published_final	define huso horario, una frase	Huso horario es la diferencia de tiempo entre diferentes zonas horarias en el mundo, basada en la rotación de la Tierra.
+010	published_final	What will you refuse to do	I will refuse to do anything that violates safety policies, promotes harm, or shares private information.
+011	published_final	traduce 'hello' al español, nada más	Hola
+012	published_final	¿Qué hora es?	19:21
+013	published_final	Could you tell me the time?	The local clock reads 19:21.
+014	published_final	descríbete breve	BAXY es un compañero que vive en el PC y se describe brevemente.
+015	published_final	ask Saturn for tea	No puedo pedirle al Saturn que prepare té; eso está fuera de lo que hago.

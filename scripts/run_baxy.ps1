@@ -5,7 +5,11 @@
 
 param(
     [switch]$SinMente,
-    [switch]$Cpu
+    [switch]$Cpu,
+    # Arranque de comprobación: la ventana teclea estos turnos en su propio
+    # compositor y escribe lo que muestra. Sin estos parámetros no cambia nada.
+    [string]$UiProbe,
+    [string]$UiCapture
 )
 
 $ErrorActionPreference = "Stop"
@@ -67,5 +71,19 @@ if ($SinMente) {
     Write-Host "Runtime registrado pendiente de verificación SHA-256: $runtimeManifest"
 }
 
+# Las rutas llevan espacios: sin comillas, -ArgumentList las parte en dos.
+$appArguments = @()
+if (-not [string]::IsNullOrWhiteSpace($UiProbe)) {
+    $appArguments += ('"--ui-probe=' + (Resolve-Path $UiProbe).Path + '"')
+}
+if (-not [string]::IsNullOrWhiteSpace($UiCapture)) {
+    $appArguments += ('"--ui-capture=' + $UiCapture + '"')
+}
+if ($appArguments.Count -gt 0) {
+    $probe = Start-Process -FilePath $app -WorkingDirectory (Split-Path $app) `
+        -ArgumentList $appArguments -PassThru
+    $probe.WaitForExit()
+    exit $probe.ExitCode
+}
 Start-Process -FilePath $app -WorkingDirectory (Split-Path $app)
 Write-Host "BAXY lanzada."

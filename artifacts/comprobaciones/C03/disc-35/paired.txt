@@ -1,0 +1,18 @@
+n=16 published=16 composition_failed=0 other=0
+
+001	published_final	Buenos días	Buenos días
+002	published_final	qué sabes hacer en este PC	Puedo ejecutar comandos, gestionar archivos y ayudar con tareas técnicas en este PC.
+003	published_final	Hi there	Hi there! How can I help you today?
+004	published_final	What are you able to do on this machine	I can run programs, manage files, process text, answer questions, and help with tasks on this machine.
+005	published_final	mail a parcel to Phobos	I can't send mail to Phobos.
+006	published_final	clock please	Clock: 02:45
+007	published_final	close that	I cannot complete that request.
+008	published_final	are you connected?	Sí, estoy conectado.
+009	published_final	What will you never do	I will not steal anyone's property.
+010	published_final	don't launch Notepad	No puedo ayudarte porque estoy fuera de mi función.
+011	published_final	tell the time in English	The current time is 02:47.
+012	published_final	traduce 'good morning' al español, nada más	Buenos días
+013	published_final	keep going without opening apps	Sigo sin abrir apps y continúo.
+014	published_final	just say hi	Hi
+015	published_final	what is a time zone, one line	A time zone is the local time difference from a reference point used worldwide.
+016	published_final	Why do clocks differ by city	Clocks differ by city because each location is offset from a central reference (like UTC) based on its geographic longitude and local daylight‑saving rules.

@@ -1,0 +1,80 @@
+[
+  {
+    "request": "Good afternoon",
+    "language_selected": "es",
+    "greeting_selected": true,
+    "payload": {
+      "greeting": "hola"
+    },
+    "user_content": "situation: {\"greeting\": \"hola\"}"
+  },
+  {
+    "request": "Good morning",
+    "language_selected": "es",
+    "greeting_selected": true,
+    "payload": {
+      "greeting": "hola"
+    },
+    "user_content": "situation: {\"greeting\": \"hola\"}"
+  },
+  {
+    "request": "define DNS in one sentence",
+    "language_selected": "es",
+    "greeting_selected": false,
+    "payload": {},
+    "user_content": "Texto original de la persona: define DNS in one sentence\nLANG=es"
+  },
+  {
+    "request": "Hi again",
+    "language_selected": "en",
+    "greeting_selected": true,
+    "payload": {
+      "greeting": "hi"
+    },
+    "user_content": "situation: {\"greeting\": \"hi\"}"
+  },
+  {
+    "request": "hey, close Paint",
+    "language_selected": "en",
+    "greeting_selected": true,
+    "payload": {
+      "effect": "closed",
+      "seen": {
+        "window": true
+      },
+      "greeting": "hi"
+    },
+    "user_content": "situation: {\"effect\": \"closed\", \"seen\": {\"window\": true}, \"greeting\": \"hi\"}"
+  },
+  {
+    "request": "hey, what can you do",
+    "language_selected": "en",
+    "greeting_selected": true,
+    "payload": {
+      "greeting": "hi",
+      "can": [
+        "open and close apps",
+        "read the clock",
+        "read audio"
+      ]
+    },
+    "user_content": "situation: {\"greeting\": \"hi\", \"can\": [\"open and close apps\", \"read the clock\", \"read audio\"]}"
+  },
+  {
+    "case": "no observed close effect",
+    "payload": {
+      "effect": "closed",
+      "seen": {
+        "window": true
+      }
+    }
+  },
+  {
+    "case": "network observation missing online/connected",
+    "payload": {
+      "seen": {
+        "online": false
+      }
+    }
+  }
+]

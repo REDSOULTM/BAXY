@@ -1,0 +1,270 @@
+{
+  "status": "PASS",
+  "scope": "Sprint documentation and two document-contract tests; excludes live C03 WIP and physical product acceptance",
+  "baseCommit": "5f572ee1b48cb5e2543ee5e06510e51057c9c845",
+  "completedAt": "2026-09-05T09:05:07.708546-04:00",
+  "command": "./scripts/test_source_quality.ps1 -Mode Full",
+  "environment": {
+    "PYTEST_ADDOPTS": "-rs",
+    "checkout": "C:\\Users\\usuario\\AppData\\Local\\Temp\\baxy-sprints-review-20260904\\BAXY Definitivo"
+  },
+  "exitCode": 0,
+  "dotnet": {
+    "passed": 4033,
+    "failed": 0,
+    "skipped": 1
+  },
+  "python": {
+    "passed": 8790,
+    "failed": 0,
+    "skipped": 11,
+    "subtestsPassed": 433,
+    "warnings": 3
+  },
+  "buildWarnings": 0,
+  "productAndScriptsDiff": "",
+  "skipReasons": [
+    "SKIPPED [7] tests\\local_evidence.py:34: environment: tests/data/turn_evidence_runtime.v1.jsonl is private local data that the tree excludes on purpose (TURN_EVIDENCE_DATA_NOTICE.md)",
+    "SKIPPED [1] tests\\local_evidence.py:45: environment: the inherited repository FunctionGemma is not beside this one, so the historical corpus cannot be rebuilt here",
+    "SKIPPED [1] tests\\test_reviewed_semantic_expectation.py:87: The local exhaustive runtime ledger is unavailable.",
+    "SKIPPED [1] tests\\test_stt_quality_evaluators.py:122: environment: blind campaign inputs absent (6)",
+    "SKIPPED [1] tests\\test_technology_tournament.py:523: environment: the official Round B WPF build tree is not on this machine"
+  ],
+  "logSha256": "7b8a809ced53f68a09471186b9ba2f1a2a17121742f31bffe060cf5d3ddadbef",
+  "testedInputFiles": [
+    {
+      "path": "documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md",
+      "sha256": "7923ca62378f117dd0a7107c13ae575db7de3812035749fe60a3b6b8ac42a9b9"
+    },
+    {
+      "path": "documentacion/APLAZADOS.md",
+      "sha256": "f29f21ce60cacd8be8068be76651c7edc8656a37a6e3fd9866294797fcbfc4a1"
+    },
+    {
+      "path": "documentacion/sprints/00_INDICE.md",
+      "sha256": "3d7c1b0b2c22d5a8be1f6829182f9cf761c228def3ad8e6569f51f1e23d088a0"
+    },
+    {
+      "path": "documentacion/sprints/00_LANZAR_DESDE_10_7.md",
+      "sha256": "cad1efa60b917e8d75be05edca80a0f6cf727a3e53f501bbf01fb9f0dc8ddcee"
+    },
+    {
+      "path": "documentacion/sprints/00_ORDEN_DESDE_09_5.md",
+      "sha256": "3465e72d2736179c1fe2adec769c7acf5d1071d28de7e10cfce5d7f1d83166e5"
+    },
+    {
+      "path": "documentacion/sprints/00_PROTOCOLO_EJECUCION.md",
+      "sha256": "4fb42503d3a7e51d44cfdbb94ada1a5fb084191d7adae0b622b3637257d4a108"
+    },
+    {
+      "path": "documentacion/sprints/10.10_APPS_VENTANAS_VISION.md",
+      "sha256": "82e3b8e2058ac2c2cadfd65d0c95a8c62ba9b48d612003de1669620b5b389ac8"
+    },
+    {
+      "path": "documentacion/sprints/10.11_AUDIO.md",
+      "sha256": "4532df03acedb3cf5df4ecf4d4772095d6937070b39b44aa05a41f5ce2f155af"
+    },
+    {
+      "path": "documentacion/sprints/10.12_MEDIA_STREAMING_JUEGOS.md",
+      "sha256": "1957021d233fa30e8a6c0f356cbf0377d04bd2106be26dda7db065c4ce385cba"
+    },
+    {
+      "path": "documentacion/sprints/10.13_SISTEMA_CONECTIVIDAD.md",
+      "sha256": "434ef72473a7ed0b28bdf124aa8533d80c1a92ca3c3fd5a82f61805d4fae5414"
+    },
+    {
+      "path": "documentacion/sprints/10.14_PRODUCTIVIDAD_MEMORIA.md",
+      "sha256": "0792eef9f5f7ba9fbc39174721f6538b4cf97b224003ec1347bb9372e397e416"
+    },
+    {
+      "path": "documentacion/sprints/10.15_COMUNICACION_NAVEGACION.md",
+      "sha256": "1f84484a3f53a49b6c3f8d1aadba63604ddd1e1f77e769e3f6711b8fbb5504cb"
+    },
+    {
+      "path": "documentacion/sprints/10.16_MISIONES_COMPUESTAS.md",
+      "sha256": "a095f52188c0c73e7848369493ab7fc2915083246c818ebf3edc08efa737c3ba"
+    },
+    {
+      "path": "documentacion/sprints/10.17_IDENTIDAD_VIVA.md",
+      "sha256": "2fe38d8ca048b3a46195c40861c6c2c0f6aea5c1b1b8c77abf883e869c88ab5a"
+    },
+    {
+      "path": "documentacion/sprints/10.18_INTEGRACION.md",
+      "sha256": "a41a74129e72885c59d5dfda33a8309b254ab0bb4e3674503ab1d6c646e4c082"
+    },
+    {
+      "path": "documentacion/sprints/10.7_CONVERSACION.md",
+      "sha256": "071de48780ddaa8b42468c3683cf748bb59378ef5404ffd3615058fac9ba6c4e"
+    },
+    {
+      "path": "documentacion/sprints/10.8_HECHOS_LOCALES.md",
+      "sha256": "0f9bceee2a827d6ffa9989cd1b49a2e03cb24dcd19aece2201a823d0cbd756cd"
+    },
+    {
+      "path": "documentacion/sprints/10.9_WEB_Y_ACTUALIDAD.md",
+      "sha256": "82d33461be075f632c2ebfda415c38d712e677d338e99670e4678a987d02a39e"
+    },
+    {
+      "path": "documentacion/sprints/10_PROTOCOLO_GROK46.md",
+      "sha256": "d82e4231901eb629e95eedbbf7a10c59ab12eb42004e599fe219a6cc98fd2478"
+    },
+    {
+      "path": "documentacion/sprints/10_REPLANIFICACION_AUTONOMA.md",
+      "sha256": "d4f3f734010b78d01e87ac2ddb0a68a9b2a25c889ae083cefff116a7ca5fd97c"
+    },
+    {
+      "path": "documentacion/sprints/10_USO_DIARIO.md",
+      "sha256": "1ae3042a9fa454eaaf61cce03d735fff1554f804f05944f669e1383d2ea18b49"
+    },
+    {
+      "path": "documentacion/sprints/11.10_NO_RUNTIME_B.md",
+      "sha256": "1d473a8ac24c5f184e1aab1b0073b94e18e6470e2f12411840dc56d212d5f027"
+    },
+    {
+      "path": "documentacion/sprints/11.11_ERRORES_MENTE_KERNEL.md",
+      "sha256": "a365fdfe942dcbc3f2dc7ac340ed0f875127a4a8640cb39c04929d698a8e2765"
+    },
+    {
+      "path": "documentacion/sprints/11.12_ERRORES_PROVIDERS_ESTADO.md",
+      "sha256": "3980662d930f9b1217d254f1b2a52175345ac297e33a69adeed1bfec2378052a"
+    },
+    {
+      "path": "documentacion/sprints/11.13_REGRESION_01_06.md",
+      "sha256": "2e84af972da6da3a33d51aa80e1850e50772ae8bf6ba133e0c8e139750d1e123"
+    },
+    {
+      "path": "documentacion/sprints/11.14_REGRESION_07_10.md",
+      "sha256": "f4457854bf704abde05f6f2228f4f25e55601ff14847077618c0f301b316d1bc"
+    },
+    {
+      "path": "documentacion/sprints/11.15_HIGIENE_IDENTIDAD.md",
+      "sha256": "a653d42a4cba9739323a89798b7538e0f683799f091c140e5cdc77cab27ab880"
+    },
+    {
+      "path": "documentacion/sprints/11.16_FULL_Y_CIERRE.md",
+      "sha256": "408e335d55bc8d12961636d12abc05e56ac3448e796e3615a1361d30bcb4eb61"
+    },
+    {
+      "path": "documentacion/sprints/11.1_COLA_DE_CIERRE.md",
+      "sha256": "067ad655b7864d939178a593f7c63d4f290cd0b79e9f0a7d5b0ed04d0a4131d0"
+    },
+    {
+      "path": "documentacion/sprints/11.2_CONTRATOS_RUNTIME.md",
+      "sha256": "3e6c8e35edbffc7b8f8a10d867d4aea97ddb38293fd14e25bf8f36908e6f7454"
+    },
+    {
+      "path": "documentacion/sprints/11.3_REQUISITOS_A.md",
+      "sha256": "86a2a324d43f595da484609706bb61261b7beb20c2e891a6f390f9ae52a87439"
+    },
+    {
+      "path": "documentacion/sprints/11.4_REQUISITOS_B.md",
+      "sha256": "a27488ae737afcebeae6cd39ab48b00ba0cb7b70e70b1a6fae293c76e8b70320"
+    },
+    {
+      "path": "documentacion/sprints/11.5_REQUISITOS_C.md",
+      "sha256": "edac1edd985cf95efefc2997f0383650407d6e836eff0b5144e352039f1a736b"
+    },
+    {
+      "path": "documentacion/sprints/11.6_REQUISITOS_D.md",
+      "sha256": "f2eaac04975655fb455bd6ed8be5b1f270a8fd69059a620688f9967297d9ca60"
+    },
+    {
+      "path": "documentacion/sprints/11.7_REQUISITOS_E.md",
+      "sha256": "b5115da2e8d50f0a604e655643a73b2a5357ea5f8b0965d538541a9007813537"
+    },
+    {
+      "path": "documentacion/sprints/11.8_REQUISITOS_F.md",
+      "sha256": "05418e1d6759ec4fb75ad90cdb5a178bba55851e4b9728497524e3ff599d0b34"
+    },
+    {
+      "path": "documentacion/sprints/11.9_NO_RUNTIME_A.md",
+      "sha256": "c0b3567df83a50e54118767c5c75ab6e8b80b7415c5183d6c9638270b7a31a1a"
+    },
+    {
+      "path": "documentacion/sprints/11_PROTOCOLO_GROK46.md",
+      "sha256": "563f44b38b162131577a6ee77619e3a460c1ef48e7f78e0f1aec1a6f08462e37"
+    },
+    {
+      "path": "documentacion/sprints/11_VALIDACION.md",
+      "sha256": "83397f365885be842e806c646fc5875c1fff8b8e7e70d3efa078cc3c446ae6ec"
+    },
+    {
+      "path": "documentacion/sprints/12.1_INSTALACION.md",
+      "sha256": "734d45edff720b69b88d327ebd002b6eb9fb5c6ecb7c7c0377cf498e3d304e07"
+    },
+    {
+      "path": "documentacion/sprints/12.2_HARDWARE.md",
+      "sha256": "6298bd932a91d7c36350ae17c181c483802202f0ea4033bd3e227423e9d31145"
+    },
+    {
+      "path": "documentacion/sprints/12.3_ENTREGA.md",
+      "sha256": "53c69eb3209bfce081a0976fd4992c10ca9404025c9dbc7d464313bb2de064ec"
+    },
+    {
+      "path": "documentacion/sprints/12_PRODUCTO_FINAL.md",
+      "sha256": "9f0fdde94c64ee59e3f368293ddd036576440f5bcf54a7bd0f33d5200e9c1a39"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/00_INDICE.md",
+      "sha256": "33a493b6a53576cad4603680175a7f5d6fda857c16ff417ea3942a2a33ab8d9e"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/01_CONTRATO_DE_CAMPANA.md",
+      "sha256": "9cd872c593573e7631d4abcf96736e852cea1c423a8a7535ded2c48c30f77589"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/02_PROTOCOLO_GROK_46_500K.md",
+      "sha256": "149cd936d35d267a48bdcb1f43c736ccd20c03c9fca723ecc9adebd23d86bfb3"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/06_RELEVO_ENTRE_AGENTES.md",
+      "sha256": "c8fc2587bbcb228c5be8fa3d832c132569351a24763d86629bc40f25accea02c"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/07_REPLANTEAR_C03.md",
+      "sha256": "e9e16dc6e34fbde4d144eb2258000868aa22eb0c43fda6bca65d4dfc83dd1bd9"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C03_RESPUESTA_VERAZ.md",
+      "sha256": "1ed013dbf266431da872ebd91db27c99ec7e80a492f691822b571dcca7d55705"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C04_OPERACIONES_Y_CONFIRMACION.md",
+      "sha256": "fe6402faa330c11ce3a6bb6b72ba55b93b3135447fc2a1abecb5cb76c7e8eee7"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C05_MISIONES_Y_CONTINUIDAD.md",
+      "sha256": "7bab96644240574276b9e87b9c8dd3b928eeb70524648539cae2903591c69541"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C06_COMPRENSION_Y_COBERTURA.md",
+      "sha256": "34fe12371ba58c81835270767348aaca4532f44729d03ca50a25f9ee95556b3a"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C07_SENAL_Y_RECURSOS.md",
+      "sha256": "2a6769e7031079cd2170a8b7688094f0c64a44c3e6665081e8268e822d5b68f3"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C08_VOZ_Y_ACCESIBILIDAD.md",
+      "sha256": "f9edfebeefeac7affda58717eab4967d7993c666836c1097c61ea2640f9708b3"
+    },
+    {
+      "path": "documentacion/sprints/Sprints comprobación/C09_ADMISION_GOAL_10.md",
+      "sha256": "c225b021c0c835c1675d465cc4a590c3b0095dc37ae1b6904fc14e6143e0f06c"
+    },
+    {
+      "path": "tests/test_goal10_autonomous_campaign_docs.py",
+      "sha256": "fbdaeab95fbf2cd0c4378dcd1e78544b9c0e2bb670a3b3cb0da0c774781e6d33"
+    },
+    {
+      "path": "tests/test_goal_launch_contracts.py",
+      "sha256": "60142aaa2a147601e35f230c3ecf59b75792dbb25a86d15e1be0f016ed04397e"
+    }
+  ],
+  "notCertified": [
+    "Live C03 code",
+    "Actual UI and voice",
+    "Installed product",
+    "Hardware targets"
+  ]
+}

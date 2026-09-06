@@ -1,0 +1,180 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda una señal en viajar entre un punto y otro.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 85,
+        "draft_sha256": "5969c7ac886e77cfb288a0457df9084c162eeba9aeb9d55b83151789e505892d",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red es el tiempo que tarda una señal en viajar entre un punto y otro."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "Porque entender el porqué ayuda a tomar decisiones más informadas y enfocadas en el objetivo.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 95,
+        "draft_sha256": "2498d3dbf84fc7833f1207b2a3669ebaf28599274a7553a1278e2e6d5f53395a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Porque entender el porqué ayuda a tomar decisiones más informadas y enfocadas en el objetivo."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because it reduces lookup time and improves performance by avoiding repeated DNS queries.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy es un intermediario que redirige solicitudes entre un usuario y un servicio, gestionando conexiones y enrutando información según reglas específicas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 161,
+        "draft_sha256": "e7ae50db5f1996ca3716c39ca040f8cc671d4a82b62a4b87aca928f4b8d79250",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy es un intermediario que redirige solicitudes entre un usuario y un servicio, gestionando conexiones y enrutando información según reglas específicas."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Para qué sirve depende de el contexto específico, pero generalmente busca información útil.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 95,
+        "draft_sha256": "4120cd6424579c6de479ac965406848f42cf035d20ba705cdef3d13c7ff34179",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué sirve depende de el contexto específico, pero generalmente busca información útil."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote server, allowing you to browse the internet privately and securely.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "and why does it matter?",
+    "terminal": "filtered",
+    "final": "",
+    "diagnostic": "composer_unavailable",
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 104,
+        "draft_sha256": "b6f9ae2e0d64a2324702d6f143fd2693ce4030b29a85166e8e14c76b5347b402",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "The concept matters because understanding it helps make informed decisions that lead to better outcomes."
+      }
+    ]
+  }
+]

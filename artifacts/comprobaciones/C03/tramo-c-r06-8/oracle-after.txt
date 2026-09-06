@@ -1,0 +1,5 @@
+﻿local=2026-09-05 06:01:32
+utc=2026-09-05T10:01:32.2705253Z
+offsetMinutes=-240
+injection=
+exit=0

@@ -1,0 +1,19 @@
+# disc-16
+n=16 published=15 composition_failed=1 other=0
+
+001	published_final	Hola, buenas	¡Hola! ¿En qué puedo ayudarte hoy?
+002	composition_failed	qué puedes hacer en este equipo	composition_failed
+003	published_final	Hey	Hola, BAXY.
+004	published_final	What can you do here	I am BAXY and I can help answer questions, provide information, or assist with tasks based on the current conversation.
+005	published_final	book a room on Deimos	I cannot book a room on Deimos as that request cannot be completed.
+006	published_final	time check	I've seen the time as 23:48.
+007	published_final	open that	What do you mean by "open that"?
+008	published_final	online?	Lo siento, no puedo ayudar con el tipo de respuesta que se está solicitando según el nuevo requisito.
+009	published_final	What will you refuse to do	I will refuse to do anything harmful or against my programming, such as spreading misinformation or causing harm.
+010	published_final	don't open Steam	I don't do that.
+011	published_final	tell the time in English	The current time is 23:50.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	published_final	just say hi	Hi!
+015	published_final	define huso horario, una frase	Claro, aquí tienes una frase clara:   "El huso horario define la diferencia de tiempo entre regiones geográficas, ajustando las horas para que coincidan con la posición solar."
+016	published_final	Por qué hay zonas horarias	Las zonas horarias permiten que las personas de diferentes partes del mundo trabajen y vivan al mismo tiempo en horarios compatibles, coordinando fechas y tareas de manera eficiente.

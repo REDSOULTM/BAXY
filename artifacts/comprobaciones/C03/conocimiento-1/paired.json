@@ -1,0 +1,213 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es un firewall de red en una frase",
+    "terminal": "published_final",
+    "final": "Un firewall de red es un sistema que controla el tráfico de red entrante y saliente para proteger la red y prevenir accesos no autorizados.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "what does a load balancer do, one sentence",
+    "terminal": "published_final",
+    "final": "¿Puedes confirmar si el mensaje actual es un pedido para explicar qué hace un load balancer en una frase?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "dime la hora en este momento",
+    "terminal": "published_final",
+    "final": "La hora actual es las tres y veinticinco de la tarde.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "asserted_failure",
+        "finish_reason": "stop",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "768279007003aa2a47a7a2f6807da9a4f1d87a3bd8f972bd54254d6604b4b271",
+        "payload": {},
+        "draft": "Lo siento, pero no puedo darte la hora exacta."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 53,
+        "draft_sha256": "bf269c15416ad57f8baf79cb3601389bad2964ad48779d01b2de63e4228a05c8",
+        "payload": {},
+        "draft": "La hora actual es las tres y veinticinco de la tarde."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "qué es un switch de red, una frase",
+    "terminal": "published_final",
+    "final": "Un switch de red enruta el tráfico entre dispositivos dentro de una red local, sin necesidad de una dirección IP central.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t5",
+    "request": "what is a DNS resolver in one sentence",
+    "terminal": "published_final",
+    "final": "A DNS resolver translates domain names into IP addresses to locate and connect to web servers.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 94,
+        "draft_sha256": "ee5c38abca8db969d0018cc8b9fd2c6aa0251e300d3df9dfc06d14d5a8584d31",
+        "payload": {},
+        "draft": "A DNS resolver translates domain names into IP addresses to locate and connect to web servers."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "explícame qué es una MAC address en una frase",
+    "terminal": "published_final",
+    "final": "Una MAC address es una dirección única que identifica el dispositivo de red de una computadora.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 97,
+        "draft_sha256": "02e400b572ab7b649afb17804059555e8c55028802cfccdbeb11e16711e481e2",
+        "payload": {},
+        "draft": "Una MAC address es una dirección única que identifica el dispositivo de red de una computadora."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "what is latency in one sentence",
+    "terminal": "published_final",
+    "final": "Latency is the delay between sending a request and receiving a response over a network.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "qué es un puerto de red, una frase",
+    "terminal": "published_final",
+    "final": "Un puerto de red es una conexión que permite el tráfico de datos entre dispositivos en una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 97,
+        "draft_sha256": "90e92cf1bb5486a2ee140b7c0034d348002f2671d1b18d80a9f53e209a5d83a7",
+        "payload": {},
+        "draft": "Un puerto de red es una conexión que permite el tráfico de datos entre dispositivos en una red."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "what is a gateway in one sentence",
+    "terminal": "published_final",
+    "final": "A gateway is a network device that routes traffic between different networks, such as between a home network and the internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "explícame qué es el ancho de banda en una frase",
+    "terminal": "published_final",
+    "final": "El ancho de banda es la cantidad de datos que se pueden enviar o recibir en un cierto tiempo.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "published": true,
+        "draft_bytes": 93,
+        "draft_sha256": "b3c0f86a284e9e3e8253bc896c4d8a971b4802cbcfa11649c682dd54d2a14ae2",
+        "payload": {},
+        "draft": "El ancho de banda es la cantidad de datos que se pueden enviar o recibir en un cierto tiempo."
+      }
+    ]
+  }
+]

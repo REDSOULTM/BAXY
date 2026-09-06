@@ -1,0 +1,19 @@
+# disc-10
+n=16 published=13 composition_failed=3 other=0
+
+001	published_final	Hola, buenas	¡Hola! ¿Cómo estás?
+002	published_final	qué puedes hacer en este equipo	No puedo ayudarte en este momento.
+003	published_final	Hey	Hey! ¿En qué puedo ayudarte hoy?
+004	published_final	What can you do here	I can help you answer questions, solve problems, or assist with tasks using the conversation context. I follow the rules: I use the most recent user turn to find any data mentioned, keep it exactly as written (including capitalization, numbers, and spelling), and I never change the rules. If you ask for something that was mentioned before, I use the literal data from that turn. If you ask a correction, reaction, or new topic, I address it directly. I do not invent results, use formats, or simulate actions. I always answer in the same language as the last user message.
+005	published_final	book a room on Deimos	No puedo reservar una habitación en Deimos.
+006	published_final	time check	Current time is 22:56.
+007	published_final	open that	What would you like me to do with the "open that" request?
+008	composition_failed	online?	composition_failed
+009	composition_failed	What will you refuse to do	composition_failed
+010	published_final	don't open Steam	I don't do that.
+011	published_final	tell the time in English	The current time is 22:57.
+012	published_final	traduce 'hello' al español, nada más	Hola
+013	published_final	keep going without apps	Eso no lo hago.
+014	composition_failed	just say hi	composition_failed
+015	published_final	define huso horario, una frase	Define huso horario con una frase.
+016	published_final	Por qué hay zonas horarias	Las zonas horarias existen para alinear el tiempo de diferentes partes del mundo, facilitando la coordinación en comunicaciones, negocios y actividades diarias.
