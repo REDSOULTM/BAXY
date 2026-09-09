@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-09T05:40:01.944273+00:00",
+  "stage": "After test-first12fail/6pass and focal18pass, before broad owners/Fast/product.",
+  "cause": "Native568:13 carries seen.muted:false but also instructs not to mention mute because it is absent. llm.py9410 checks only top-level situation.observed, while the existing fact projection and validator use _merged_observed including lifted states and serialized mission results.",
+  "change": "Reuse the already computed merged_audio in the missing-mute instruction condition. Remove the redundant top-level read. No new extraction path, facts, guard exemption, template, model setting or desired answer string.",
+  "controls": "Both mute polarities, ES/EN, direct/nested state/applied final/serialized mission result. Absent mute remains withheld and an invented mute state is rejected by the unchanged validator.",
+  "source_sha256": "07d48a5db19b2179c9ff22e275932835ee836c84afc6eef6fdfc05a8eab909ba",
+  "next": "Broad owners, STT declarations, Fast, native/product confirmation and publication. Final Full remains pending."
+}

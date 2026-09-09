@@ -9401,10 +9401,11 @@ class LlmRuntime:
             and not _looks_like_continue_constraint(user_text)
         ):
             instruct("\nEnglish only.")
-        observed = situation.get("observed")
         if (
             re.search(r"silenci|\bmute\b", (user_text or "").casefold())
-            and (not isinstance(observed, dict) or "muted" not in observed)
+            # Use the same lifted/mission observations as the visible facts
+            # and validator; a nested mute reading is not a missing reading.
+            and "muted" not in merged_audio
             and str(situation.get("operation") or "") != "audio.mute"
         ):
             instruct("\nDo not mention mute: it is not in observed.")

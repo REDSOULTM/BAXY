@@ -1,0 +1,26 @@
+{
+  "adopted": true,
+  "baseline": {
+    "failed": 12,
+    "passed": 6,
+    "seconds": 0.9
+  },
+  "focal": {
+    "passed": 18,
+    "seconds": 0.5
+  },
+  "owners_and_stt": {
+    "passed": 1966,
+    "subtests": 121,
+    "environmental_skips": 1,
+    "seconds": 9.86
+  },
+  "fast": "passed",
+  "release_seconds": 19.77,
+  "product": "pending572",
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  }
+}

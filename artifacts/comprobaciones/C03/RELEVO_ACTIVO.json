@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T05:13:19.856459+00:00",
+  "confirmedAtUtc": "2026-09-09T05:43:31.123043+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "569: local internet query repaired;2604pass+121subtests/Fast green. Survey11/731/0. Product570 pending.",
-  "continuation": "Publish569, verify shared network product570, then repair audio merged-observation contradiction; C03 remains active.",
+  "checkpoint": "571: nested audio observations retained;1966pass+121subtests/1environmental skip,Fast green. Survey12/730/0; product572 pending.",
+  "continuation": "Publish571, verify product572. Investigate missing verified CPU physical topology instead of repeating ownership/units prompt sweeps; remaining C03 obligations open.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,12 +24,12 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 11,
-    "open": 731,
+    "covered": 12,
+    "open": 730,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "8027c2220997ee9407f04aac94b383e0647225c4",
+  "publishedSourceCommit": "a9f053b77f93033a110c2fc8d61634a29d962ba8",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

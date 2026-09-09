@@ -34,6 +34,54 @@ class Recorder(llm.LlmRuntime):
         }
 
 
+@pytest.mark.parametrize("shape", ["direct", "nested_state", "applied_final", "mission_step"])
+@pytest.mark.parametrize("muted", [False, True])
+@pytest.mark.parametrize("language", ["es", "en"])
+def test_audio_composition_uses_the_same_observations_as_its_fact_guard(
+    shape: str, muted: bool, language: str,
+) -> None:
+    observation = {"level": 37, "muted": muted}
+    situation = {"kind": "operation", "operation": "audio.status", "observed": observation}
+    if shape == "nested_state":
+        situation["observed"] = {"state": {"volumePercent": 37, "muted": muted}}
+    elif shape == "applied_final":
+        situation["observed"] = {"applied": True, "final": observation}
+    elif shape == "mission_step":
+        situation = {
+            "kind": "status", "cause": "mission_completed", "polarity": "success",
+            "steps": [json.dumps(situation)],
+        }
+    user_text = "¿Está silenciado el sonido y en cuánto está el volumen?"
+    reply = "El volumen es 37 y el sonido " + ("está silenciado." if muted else "no está silenciado.")
+    if language == "en":
+        user_text = "Is the sound on mute, and what is the volume level?"
+        reply = "The volume is 37 and the sound is " + ("muted." if muted else "not muted.")
+    client = Recorder([reply])
+    client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    facts = {"situation": situation}
+
+    assert llm.compose_visible_defect(reply, "status", user_text, facts) == ""
+    assert client.compose_user_message(user_text, "status", facts) == reply
+    content = client.payloads[0]["messages"][-1]["content"]
+    assert "Do not mention mute: it is not in observed." not in content
+    assert llm._merged_observed(situation)["muted"] is muted
+
+
+@pytest.mark.parametrize("nested", [False, True])
+def test_audio_composition_still_withholds_unobserved_mute_state(nested: bool) -> None:
+    situation = {"kind": "operation", "operation": "audio.status", "observed": {"level": 37}}
+    if nested:
+        situation = {"kind": "status", "cause": "mission_completed", "steps": [json.dumps(situation)]}
+    client = Recorder(["El volumen es 37."])
+    client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    user_text = "¿Está silenciado el sonido?"
+    facts = {"situation": situation}
+
+    client.compose_user_message(user_text, "status", facts)
+    assert "Do not mention mute: it is not in observed." in client.payloads[0]["messages"][-1]["content"]
+    assert llm.compose_visible_defect("El sonido está silenciado.", "status", user_text, facts) == "extra_claim"
+
+
 def test_optional_compose_budget_covers_retries_without_resetting_the_turn(monkeypatch) -> None:
     now = [100.0]
     monkeypatch.setattr(llm.time, "monotonic", lambda: now[0])

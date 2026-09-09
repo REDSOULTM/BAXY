@@ -1,0 +1,22 @@
+{
+  "published": 8,
+  "newly_covered": [
+    "H0080"
+  ],
+  "survey_counts": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1840.79296875,
+    "seconds": 24.188
+  },
+  "private_report_sha256": "d9ee58ea999676da2dbe22f3a43600c32a681d26e054b43b706b314574930c34",
+  "adjudication_sha256": "9fea43033dce2588ceb26d24100da5c3a68da4ad135a77deba8a446cab29f88a",
+  "source_commit": "a9f053b77f93033a110c2fc8d61634a29d962ba8",
+  "limits": "Sin UI/voz ni prueba de red física desconectada."
+}

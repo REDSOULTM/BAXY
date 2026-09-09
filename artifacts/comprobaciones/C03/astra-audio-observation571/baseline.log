@@ -1,0 +1,112 @@
+.FFF.FFF.FFF.FFF..                                                       [100%]
+================================== FAILURES ===================================
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-False-nested_state] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in '¿Está silen...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-False-applied_final] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in '¿Está silen...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-False-mission_step] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in '¿Está silen...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E        silenced.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-True-nested_state] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in '¿Está silen...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-True-applied_final] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in '¿Está silen...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-True-mission_step] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in '¿Está silen...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E        silenced.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-False-nested_state] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in 'Is the soun...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-False-applied_final] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in 'Is the soun...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-False-mission_step] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in 'Is the soun...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       lish only.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-True-nested_state] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in 'Is the soun...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-True-applied_final] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in 'Is the soun...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       e request.
+E       Do not mention mute: it is not in observed.
+_ test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-True-mission_step] _
+tests\test_c03_request_preservation.py:66: in test_audio_composition_uses_the_same_observations_as_its_fact_guard
+    assert "Do not mention mute: it is not in observed." not in content
+E   AssertionError: assert 'Do not ment...in observed.' not in 'Is the soun...in observed.'
+E     
+E     'Do not mention mut...is not in observed.' is contained here:
+E       lish only.
+E       Do not mention mute: it is not in observed.
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-False-nested_state]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-False-applied_final]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-False-mission_step]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-True-nested_state]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-True-applied_final]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[es-True-mission_step]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-False-nested_state]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-False-applied_final]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-False-mission_step]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-True-nested_state]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-True-applied_final]
+FAILED tests/test_c03_request_preservation.py::test_audio_composition_uses_the_same_observations_as_its_fact_guard[en-True-mission_step]
+12 failed, 6 passed, 168 deselected in 0.90s

@@ -58,11 +58,11 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # STT/TTS/wake. No acredita una nueva aceptacion de voz.
 # C03 Astra: hora AM/PM, tema y causa anidada conservados; lectura de explain.
 # Prosa: conocimiento separado de observaciones, sin saludo recortado ni intro fija.
-# C03 569: current local connectivity questions preserve their catalog operation.
+# C03 571: composer instructions retain nested observed audio state.
 # Historical STT/wake campaign pins remain unchanged; this declaration does
 # not claim new audio acceptance.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "90b2fedd464bb3a639860d4d91a2912c84915a2b35132cc5907fe440185fdb8a"
+    "564e880c9d37bf3c26965006e34c98288a8793d7c37313c59e34271cd595d0b6"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
