@@ -1,0 +1,22 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 28df255d..a606752e 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3435,8 +3435,16 @@ def _compose_situation_payload(
+         ):
+             visible_seen.pop(key, None)
+         if isinstance(visible_seen.get("windows"), list):
++            # The canonical snapshot stays unchanged. Describe its Boolean
++            # meaning to the narrator: the short API label leaked into Spanish
++            # prose (C03 661); this representation was measured in 663.
+             visible_seen["windows"] = [
+-                {key: value for key, value in window.items() if key != "windowId"}
++                {
++                    ("in_front_of_other_windows" if key == "foreground"
++                     and isinstance(value, bool) and "in_front_of_other_windows" not in window
++                     else key): value
++                    for key, value in window.items() if key != "windowId"
++                }
+                 if isinstance(window, dict)
+                 else window
+                 for window in visible_seen["windows"]

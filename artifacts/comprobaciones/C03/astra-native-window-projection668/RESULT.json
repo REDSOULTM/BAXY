@@ -1,0 +1,27 @@
+{
+  "scores": {
+    "projection667": 10,
+    "published660": 9
+  },
+  "total_per_arm": 14,
+  "original_per_arm": 10,
+  "new_compound_cases_correct_per_arm": 0,
+  "all_eos": true,
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 719.0859375,
+    "seconds": 18.28200000000652,
+    "manifest_unchanged": true
+  },
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "panel.json": "fc87e30c6d4d07684bf38410c861d3db561f38899074cf8d18a3e250570bbf2c",
+    "requests.jsonl": "ed8afcc1e8a2764f8e86231b7ace7719616ef78778e7645d07bf8e65d43e8f54",
+    "responses.jsonl": "1c0fe14a8d6820fb3215caa567f6430674774dee695b141ee7c2e89a72822e25",
+    "adjudication.json": "434f488bffff62201c26091faec0078ed938c63a616ef88abdf01a135ad9e49e",
+    "RESULT.md": "4411cc754de7be088f6e3fc5da1a015b6154f41c8ee39ae04f320bfd30e7c177"
+  }
+}

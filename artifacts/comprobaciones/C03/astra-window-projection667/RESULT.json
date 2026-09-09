@@ -1,0 +1,13 @@
+{
+  "adopted": false,
+  "source_sha256": "8b704707c2e5bad1300049aedd2ac76722fdf55dc230287d5160488609fb9458",
+  "test_sha256": "5737d93bde8edd360a7965f70e7e39bac0b31a530038c9116561a5290296db50",
+  "focal_passed": 439,
+  "native668_original_correct": 10,
+  "native668_original_total": 10,
+  "native668_compound_correct": 0,
+  "native668_compound_total": 4,
+  "product669_correct": 24,
+  "product669_total": 24,
+  "limits": "Native670 still confuses normal/visible with focus. Not adopted. No owner suite, declaration refresh or Fast for667 yet. No final Full or joint UI/voice acceptance."
+}

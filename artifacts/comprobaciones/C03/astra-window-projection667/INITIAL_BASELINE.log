@@ -1,0 +1,576 @@
+FFFFFFFFFFFFFFFFFF.....F.                                                [100%]
+================================== FAILURES ===================================
+_ test_window_projection_preserves_boolean_names_and_geometry[Foreground-True-es] _
+
+language = 'es', foreground = True, title = 'Foreground'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Fo...d': True, ...} == {'title': 'Fo...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[Foreground-True-en] _
+
+language = 'en', foreground = True, title = 'Foreground'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Fo...d': True, ...} == {'title': 'Fo...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[Foreground-True-mixed] _
+
+language = 'mixed', foreground = True, title = 'Foreground'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Fo...d': True, ...} == {'title': 'Fo...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[Foreground-False-es] _
+
+language = 'es', foreground = False, title = 'Foreground'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Fo...': False, ...} == {'title': 'Fo...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[Foreground-False-en] _
+
+language = 'en', foreground = False, title = 'Foreground'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Fo...': False, ...} == {'title': 'Fo...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[Foreground-False-mixed] _
+
+language = 'mixed', foreground = False, title = 'Foreground'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Fo...': False, ...} == {'title': 'Fo...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-True-es] _
+
+language = 'es', foreground = True, title = 'Órbita 23'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Ór...d': True, ...} == {'title': 'Ór...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-True-en] _
+
+language = 'en', foreground = True, title = 'Órbita 23'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Ór...d': True, ...} == {'title': 'Ór...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-True-mixed] _
+
+language = 'mixed', foreground = True, title = 'Órbita 23'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Ór...d': True, ...} == {'title': 'Ór...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-False-es] _
+
+language = 'es', foreground = False, title = 'Órbita 23'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Ór...': False, ...} == {'title': 'Ór...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-False-en] _
+
+language = 'en', foreground = False, title = 'Órbita 23'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Ór...': False, ...} == {'title': 'Ór...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-False-mixed] _
+
+language = 'mixed', foreground = False, title = 'Órbita 23'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'Ór...': False, ...} == {'title': 'Ór...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-True-es] _
+
+language = 'es', foreground = True, title = 'in_front_of_other_windows'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'in...d': True, ...} == {'title': 'in...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-True-en] _
+
+language = 'en', foreground = True, title = 'in_front_of_other_windows'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'in...d': True, ...} == {'title': 'in...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-True-mixed] _
+
+language = 'mixed', foreground = True, title = 'in_front_of_other_windows'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'in...d': True, ...} == {'title': 'in...s': True, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': True}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': True}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-False-es] _
+
+language = 'es', foreground = False, title = 'in_front_of_other_windows'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'in...': False, ...} == {'title': 'in...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-False-en] _
+
+language = 'en', foreground = False, title = 'in_front_of_other_windows'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'in...': False, ...} == {'title': 'in...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+_ test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-False-mixed] _
+
+language = 'mixed', foreground = False, title = 'in_front_of_other_windows'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("foreground", [True, False])
+    @pytest.mark.parametrize("title", ["Foreground", "Órbita 23", "in_front_of_other_windows"])
+    def test_window_projection_preserves_boolean_names_and_geometry(language, foreground, title):
+        window = {"windowId": "win_private", "title": title, "processName": title,
+                  "state": "normal", "foreground": foreground,
+                  "x": -7, "y": 13, "width": 321, "height": 456}
+        situation = {"kind": "operation", "operation": "window.active",
+                     "verified": True, "succeeded": True,
+                     "observed": {"windows": [window], "count": 1}}
+        original = copy.deepcopy(situation)
+        payload = _compose_situation_payload(situation, language)
+        projected = payload["seen"]["windows"][0]
+>       assert projected == {"title": title, "processName": title, "state": "normal",
+                             "in_front_of_other_windows": foreground,
+                             "x": -7, "y": 13, "width": 321, "height": 456}
+E       AssertionError: assert {'title': 'in...': False, ...} == {'title': 'in...': False, ...}
+E         
+E         Omitting 7 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'foreground': False}
+E         Right contains 1 more item:
+E         {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:22: AssertionError
+____________ test_nested_step_and_failure_keep_their_own_snapshot _____________
+
+    def test_nested_step_and_failure_keep_their_own_snapshot():
+        step = {"operation": "window.resolve", "observed": {"windows": [{"foreground": False}]}}
+        failure = {"operation": "window.active", "observed": {"windows": [{"foreground": True}]}}
+        payload = _compose_situation_payload({"steps": [step], "reason": failure}, "es")
+>       assert payload["completedStepsInOrder"][0]["resultAtThisStep"]["seen"]["windows"] == [{"in_front_of_other_windows": False}]
+E       AssertionError: assert [{'foreground': False}] == [{'in_front_o...dows': False}]
+E         
+E         At index 0 diff: {'foreground': False} != {'in_front_of_other_windows': False}
+E         Use -v to get more diff
+
+tests\test_c03_window_prose_projection.py:46: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[Foreground-True-es]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[Foreground-True-en]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[Foreground-True-mixed]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[Foreground-False-es]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[Foreground-False-en]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[Foreground-False-mixed]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-True-es]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-True-en]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-True-mixed]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-False-es]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-False-en]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[\xd3rbita 23-False-mixed]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-True-es]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-True-en]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-True-mixed]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-False-es]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-False-en]
+FAILED tests/test_c03_window_prose_projection.py::test_window_projection_preserves_boolean_names_and_geometry[in_front_of_other_windows-False-mixed]
+FAILED tests/test_c03_window_prose_projection.py::test_nested_step_and_failure_keep_their_own_snapshot
+19 failed, 6 passed in 1.20s

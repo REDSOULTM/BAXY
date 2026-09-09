@@ -1027,3 +1027,37 @@ Violación system_free_ram_bound; el último sample registra707,305MiB libres fr
 Diez peticiones coinciden exactamente con el brazo663 medido. Dueñas4046 pases+121 subpruebas/0 skips,71,24s; declaraciones22 pases/1 skip ambiental,1,99s; Fast0,Release26,21s,sin advertencias/errores. Esos verdes no bastan: producto665 corrige foreground pero introduce «un ventana», manteniendo23/24. Producto666 se detiene por RAM libre tras21 de35 turnos y conserva el fallo de identidad. No se adopta la instrucción general española.
 
 Patch y logs del candidato preservados. Se restauran únicamente los cuatro ficheros propios a la fuente660 y sus declaraciones; igualdad contra HEAD comprobada, LLM SHA61c9da7e0975dabd54f0698f20eef06ade160988b4d8b64b8621516cdd454300. Modelo/registro/encuesta intactos. Ningún Full664 ni crédito de cierre. Siguiente: alternativa de representación medida663, comprobando gramática y márgenes de RAM antes de otro producto. No seguir acumulando instrucciones equivalentes para estos dos defectos.
+
+
+## WIP667 y petición de liberar RAM — estado vigente
+
+Fuente667NOadoptada: llm.py cambia la etiqueta de foreground sólo en proyección de windows; original intacto, booleanos true/false, campos desconocidos y colisiones conservados. Tests nuevos27, focales439 pasan3,93s (TEMP/c03-window-projection667-refined.log). Prototipo inicial in_front_of_other_windows y sus25tests/baseline19fallos6pases/focal437 guardados en astra-window-projection667 INITIAL_* mediante preserve667 YAejecutado. Microsoft Window Features z-order confirma que topmost puede superponerse a foreground: la etiqueta inicial no conserva ese significado. Candidata corregida is_current_window_for_user_interaction aún NOmedida nativa ni paridad663; no usar10/10 de663 como aceptación de667. Pendientes preparar pins actuales, ampliar dueñas/Fast, nativo y producto. Fuente llm.py WIP y tests/test_c03_window_prose_projection.py propios. Ninguna inferencia/validación activa.
+
+Dueño autorizó expresamente cerrar apps y liberar RAM. Medición14,864GiB utilizados de15,404GiB,0,539GiB libre; RSS grupos Opera2,772GiB,Code2,378GiB. BAXY/llama ausentes. Skill Computer Use leída; sky seleccionó Opera por ventana4330202 y app devuelta, pero get_window_state cortó Computer Use porque no pudo determinar URL con confianza para aplicar política. No se ejecutó ningún cierre; no eludir ese corte mediante otra vía de control del navegador. El trabajo fuente667 y el goal siguen abiertos.
+
+
+# 668 — mejora la fuga original; estados compuestos siguen abiertos
+
+Veintiocho borradores completos,14 casos por brazo. Los diez controles publicados reproducen662:9/10. La proyección precisa667 produce10/10 en esos mismos casos; la petición real pasa a «La ventana activa es "ChatGPT". Está maximizada.». Todas las peticiones candidatas originales coinciden con el compositor real, cambiando únicamente la etiqueta booleana.
+
+Cuatro fixtures nuevos ES/EN separan actividad y configuración siempre encima; ambos brazos0/4. Confunden estados opuestos. En inglés activo=true, el baseline omite contestar actividad y667 la niega incorrectamente; también aparece alwaysOnTop como jerga en un control español. No se ocultan estos fallos ni se adopta la candidata por el10/10 anterior. Los nuevos fixtures son diagnósticos declarados, no observaciones de ese campo en el proveedor ni resultados del producto.
+
+GPU3497,559MiB y RAM719,086MiB del servidor,18,282s, sin infracciones. Registro intacto. No UI/voz ni mínimo conjunto. Candidata667 sigue WIP; producto669 permitirá localizar el comportamiento en la ruta real. Encuesta26/716/0; C03 sigue activo. El defecto compuesto necesita conservar cada predicado por separado; no basta eliminar la palabra foreground.
+
+
+# 669 — las24 respuestas cumplen las observaciones actuales
+
+El panel conserva las24 consultas de661. Se revisaron sus finales y22 observaciones contra capturas independientes antes/después:24/24 correctas,16 lecturas por aplicación y cuatro referencias correctas. Todas24 actividades igualan sus finales. La consulta real de foco español ya responde «La ventana activa es "ChatGPT". Está maximizada.». El foco permanece ChatGPT, y sus campos proyectados conservan el estado activo.
+
+Steam y WhatsApp ahora están cerrados por la liberación de RAM autorizada; sus observaciones y respuestas dicen cero ventanas. Chrome conserva una ventana. No se presenta como reproducción del estado positivo de esas dos apps en661/665 ni como prueba de reparación de «un ventana». Los snapshots no son observación continua, y este conductor no acredita UI real ni voz.
+
+GPU3497,559MiB,RAM1904,250MiB,45,187s; sin infracciones, registro y fuentes estables durante la corrida. Menor RSS observado no demuestra ahorro causado por667: el estado del PC y sus aplicaciones cambió. La candidata sigue sin adoptar por los controles compuestos668 y porque faltan sus dueñas/declaraciones/Fast. Encuesta26/716/0; C03 sigue abierto.
+
+
+# 670 — confusión antes de la política completa
+
+Mismos cuatro fixtures668, campos proyectados y parámetros: nativo mínimo1/4, identidad0/4, compositor0/4. Los cuatro controles completos reproducen668. El nativo ya equipara normal/visible con activa en los dos casos cuyo foco es falso. En español activo=true también se contradice dentro de su propia respuesta. Quitar instrucciones no basta. No se añade otra regla equivalente ni se adopta667 con estos fallos abiertos.
+
+Matiz de adjudicación668: «not active and configured…» admite negación de la conjunción completa. Sin una afirmación posterior de actividad, debe contarse respuesta incompleta/ambigua, no negación inequívoca del foco. Ese caso sigue fallando; el total668 no cambia. El nativo inglés670 sí resuelve explícitamente ambos hechos después de esa apertura, y se cuenta correcto. Esta corrección del motivo preserva los originales668 sellados.
+
+Todos12 EOS, GPU3497,559MiB/RAM722,902MiB,17,234s, sin infracciones ni cambio de registro. Sin UI/voz ni crédito de encuesta. Siguiente: extender el contraste factual existente para estados de ventana con sujeto y negación conservados, y comprobar reparación por la ruta real del compositor. No añadir otro narrador ni respuestas visibles fijas. C03 activo, encuesta26/716/0.

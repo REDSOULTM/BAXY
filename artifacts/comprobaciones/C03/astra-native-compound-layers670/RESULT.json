@@ -1,0 +1,28 @@
+{
+  "scores": {
+    "native_facts": 1,
+    "identity_facts": 0,
+    "compositor667": 0
+  },
+  "total_per_arm": 4,
+  "all_eos": true,
+  "all_compositor_reproduce668": true,
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 722.90234375,
+    "seconds": 17.23399999999674,
+    "manifest_unchanged": true
+  },
+  "ui_or_voice_credit": false,
+  "corrects668_reason_not_score": "topmost-en-true projection667: incomplete/ambiguous negation, not unambiguous activity denial",
+  "private_hashes": {
+    "panel.json": "4b2328ef2a15fa01d53d3ccee603ca38017ee41c8bc891d4211058adb1732e25",
+    "requests.jsonl": "17360b227b904a142082cd5c7a77fc8ba22d92d139b3a4700697290c7395bb41",
+    "responses.jsonl": "7639f26b3cf46e5318f0066d8ff62113f23a0da54dfa7e16a063eb88e49c9ecc",
+    "adjudication.json": "01ae48f6686dc8e2d6a999eefb4ca430ac79664b7cb0539cb687cb6d243681aa",
+    "RESULT.md": "5f13a33df6cbf74d01b6a00fca0f1c33b7802bb47d13d42e44898d02cffe40fa"
+  }
+}
