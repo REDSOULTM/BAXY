@@ -847,3 +847,8 @@ Validación:1408pruebas R4/R5/R6;97controles focales;3521dueñas+121subpruebas/0
 Incluye646: la referencia se resuelve desde preguntas del usuario y se conserva hasta los argumentos, usando el historial existente del shell, sin estado nuevo ni frases visibles fijas.647, ejecutado antes de651, verificó18/20finales y4referencias recuperadas; no es una nueva corrida sobre651. Sus2defectos siguen abiertos: running sin observación del proceso y foco inglés respondido en español.649 conserva7fallos del contrato factual.646 queda sellado con su Full rojo original; la adopción del conjunto corregido se acredita aquí.
 
 Encuesta25cubiertos/717abiertos/0NA. Sin cierre global, mínimo deRAM/VRAM ni crédito conjunto deUI/voz. Próximo:650 sobre primer borrador factual, reparación de alcance del compositor; idioma, encuesta, UI real, loopback/AEC, recuperación yFull final siguen pendientes. Ninguna decisión pendiente del dueño.
+
+
+## 651 publicada y siguiente diagnóstico
+
+Fuente combinada 646/651 publicada en e1c6db6bb79bf1aa69e3c5ec72acac5656804700; remoto confirmado y main intacto. Full verde: Python 10411 pases, 3 skips y 466 subpruebas; .NET 4469 pases, 1 skip agregado y 16 omisiones opt-in impresas aparte. Matriz G04.06/G06.06 actualizada y G06.01 conserva pendiente con 25/717/0. H0040 queda abierto por la prosa sin respaldo; su referencia ya está reparada. Experimento 650 preparado, sin ejecutar, con situación y payload visible de 647/t15 comprobados iguales. Herramienta de escritorio sky disponible; no UI realizada.

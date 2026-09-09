@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T15:01:41.358291+00:00",
+  "confirmedAtUtc": "2026-09-09T15:05:21.928572+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "651Full0:Python10411/3skips+466subtests,.NET4469/1skip;646rojo conservado.25/717/0.",
-  "continuation": "Publicar646–649+651 tras auditoría de bytes.650 diagnóstico factual preparado/no ejecutado, requiereFull651. Después conservar hechos y alcance en compositor, resolver idioma has. UI/voz/encuesta/recuperación/Full final pendientes.",
+  "checkpoint": "Fuente 646/651 publicada e1c6db6b y remoto confirmado. Full 651 verde: Python10411/3skips+466subtests, .NET4469/1skip agregado. Encuesta25/717/0; H0040 actualizado. Siguiente650.",
+  "continuation": "Ejecutar650 diagnóstico nativo del alcance factual y adjudicar16borradores. No fuente factual adoptada aún. Matriz651 ya actualizada; publicar esta documentación. No campañas activas.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "pending_publication_of_validated_source651",
+  "publishedSourceCommit": "e1c6db6bb79bf1aa69e3c5ec72acac5656804700",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "b20bff2472ede886a7edea4a947849328e574672",
+  "publishedEvidenceCommit": "e1c6db6bb79bf1aa69e3c5ec72acac5656804700",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

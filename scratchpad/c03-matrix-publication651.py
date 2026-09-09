@@ -17,13 +17,13 @@ py = result['python']
 net = sum(r['passed'] for r in result['dotnet'])
 net_skips = sum(r['skipped'] for r in result['dotnet'])
 evidence = (
-    f'Fuente combinada646/651 publicada {commit}, remoto verificado y main intacto. '
-    f'Full651: Python{py["passed"]}pases/{py["skipped"]}skips+{py["subtests"]}subpruebas; '
-    f'.NET{net}pases/{net_skips}skips agregados y{result["dotnet_printed_omissions"]}omisiones opt-in impresas aparte. '
-    '3521dueñas+121subpruebas/0skips,1408R4/R5/R6,97scope,Fast0. '
-    'Full646rojo conservado:24regresiones originadas en633 reparadas sin cambiar oráculos. '
-    '647 antes de651:18/20finales y4referencias recuperadas;649 contrato factual4/11. '
-    'Siguen prosa sin respaldo e idioma;25/717/0. No cierreC03 ni UI/voz conjunta.'
+    f'Fuente combinada 646/651 publicada en {commit}, remoto verificado y main intacto. '
+    f'Full 651: Python {py["passed"]} pases, {py["skipped"]} skips y {py["subtests"]} subpruebas; '
+    f'.NET {net} pases, {net_skips} skips agregados y {result["dotnet_printed_omissions"]} omisiones opt-in impresas aparte. '
+    'Dueñas: 3521 pases + 121 subpruebas, sin skips; R4/R5/R6: 1408 pases; alcance: 97 pases; Fast exit 0. '
+    'Full 646 rojo conservado: 24 regresiones originadas en 633 reparadas sin cambiar oráculos. '
+    'Producto 647, anterior a 651: 18/20 finales correctos y cuatro referencias recuperadas; contrato factual 649: 4/11. '
+    'Siguen prosa sin respaldo e idioma. Encuesta: 25 cubiertos, 717 abiertos, 0 no aplicables. No cierra C03 ni acredita UI/voz conjunta.'
 )
 p = root/'documentacion/sprints/Sprints comprobación/03_MATRIZ_DE_CRITERIOS.md'
 lines = p.read_text(encoding='utf-8').splitlines()
@@ -41,10 +41,10 @@ for i, line in enumerate(lines):
         cells = line.split('|')
         assert cells[3].strip() == 'C03' and cells[4].strip() == 'PENDIENTE'
         cells[5] = (' [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) histórico conservado; '
-            'sin sello de cierre. Autorización del dueño536 permite histórico, encuesta y casos nuevos, '
+            'sin sello de cierre. Autorización del dueño 536 permite histórico, encuesta y casos nuevos, '
             'sin requisito de material inédito y distinguiendo procedencia. '
-            'Encuesta742:25cubiertos/717abiertos/0no aplicables individualmente; '
-            'no equivale a717fallos de producto.647acredita18/20finales, quedan prosa/idioma; '
+            'Encuesta de 742 casos: 25 cubiertos, 717 abiertos y 0 no aplicables individualmente; '
+            'no equivale a 717 fallos de producto. Producto 647 acredita 18/20 finales; quedan prosa e idioma. '
             'no cumple cien respuestas ni acredita UI/voz conjunta. ')
         lines[i] = '|'.join(cells)
         counts['G06.01'] = counts.get('G06.01', 0)+1
