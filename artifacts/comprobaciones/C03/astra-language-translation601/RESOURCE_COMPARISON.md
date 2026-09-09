@@ -1,0 +1,1 @@
+Seis peticiones por brazo, perfil nativo idéntico: entrada media466→337,8tokens; salida26,7→19tokens; tiempo medio627,5→325,7ms. Calidad3/6→6/6. No son p95, benchmark universal ni consumo del producto entero; son las12peticiones602hereda para reparar sólo idioma. No se ejecutó otra generación para este cálculo.

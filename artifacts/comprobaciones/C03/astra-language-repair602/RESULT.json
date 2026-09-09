@@ -1,0 +1,30 @@
+{
+  "owner_command": "runtime Python -X utf8 -m pytest tests/test_c03_request_preservation.py tests/test_planner.py tests/test_turn_policy.py tests/test_cpu_prose_adapter.py tests/test_cpu_adapter_registration.py tests/test_price_v8_veto_damage_by_cause.py -q",
+  "owners": {
+    "passed": 1407,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 13.37
+  },
+  "fast": {
+    "exit_code": 0,
+    "release_seconds": 21.21,
+    "warnings": 0,
+    "errors": 0
+  },
+  "python_tree": {
+    "before": "48f6ba493ddd27006319a550b6457258b666020ff56fbf239e4e9c3d2fe22d11",
+    "sha256": "059abe0cb6f9ecf84cb217c8bd2f4c4980091f0d18f165fca965d9464290a47e",
+    "files": 404,
+    "llm_sha256": "a56dcb9e008e119e82d1a67876b82befc4e5716451cc1e4410994a8958140a59",
+    "historical_pins_unchanged": true
+  },
+  "manifest_changed": false,
+  "full_on_this_source": false,
+  "product603": "running, no result asserted",
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  }
+}

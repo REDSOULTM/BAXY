@@ -1,0 +1,30 @@
+{
+  "source": 604,
+  "finals": 35,
+  "correct_finals": 33,
+  "failed_cases": {
+    "H0012": "incorrect_interpretation_failure",
+    "greeting-variant-3": "unsupported_user_name_attribution"
+  },
+  "survey": {
+    "covered": 24,
+    "open": 718,
+    "not_applicable": 0
+  },
+  "no_hooks": true,
+  "manifest_changed": false,
+  "ui_or_voice_credit": false,
+  "progress_route_acceptance": "open; compose candidates are not proof of UI visibility or adequate final product style",
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2456.0625,
+    "seconds": 88.094
+  },
+  "private_hashes": {
+    "RESULT.md": "3bca9c1f97eae419559900126112c93a5fa0b1db59293f553b8493d3442d9dce",
+    "adjudication.json": "ed1aded6515e3298219b32820d853e0d2bfe3a86c4c7553bc6b994805d932538",
+    "requirements-after-adjudication.json": "eaeb3257d9c2a2233f1ec81ea10b3853f8c0618dee80c2d016ada640adb98de5"
+  }
+}

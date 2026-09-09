@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-09T08:58:15.568291+00:00",
+  "comparison": "guard-boundary594",
+  "correct_by_arm": {
+    "original": 10,
+    "candidate": 11
+  },
+  "per_arm_total": 16,
+  "native_request_type_correct": {
+    "original": 11,
+    "candidate": 12
+  },
+  "verdict": "La definición más precisa corrige H0012, pero conserva fallos de negación, tres argumentos incompletos y cuenta múltiple. No pasa el panel completo; no se adopta.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 737.38671875,
+    "seconds": 12.172000000020489,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "98b33a6dcfcc2df93e66992108dd94040918dc743936771acb840926385b9d0d",
+    "responses.jsonl": "ea7ce22d6bd4f13c60f64fc9fb7dd39fb24b87413fb4517b925d3cce27dd5df9",
+    "adjudication.json": "fcffe71141929fa1f52c12c90ed4148c640a5873c56b2216b7e55cec5d5375a4",
+    "RESULT.md": "bf0bcc1088ef070d3869fe97319daa96184c235ffbbe54752c99bb63eac44e55"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

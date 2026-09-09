@@ -1,0 +1,77 @@
+{
+  "utc": "2026-09-09T09:45:43.406015+00:00",
+  "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+  "gate_exit_code": 0,
+  "source_changed_during_run": false,
+  "python_tree": {
+    "before": "5d678bf4b7f7550fe435265f8dabdba751cc7502b4e5576bb409680170b30075",
+    "sha256": "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84",
+    "llm_sha256": "d9ace8ac4adcf83af955276d1ed072b9a9ddff2fe85a26f2fa4511433dcc9425",
+    "files": 404,
+    "historical_pins_unchanged": true
+  },
+  "dotnet": [
+    {
+      "failed": 0,
+      "passed": 60,
+      "skipped": 0,
+      "total": 60,
+      "duration": "213 ms",
+      "suite": "Baxy.Contracts.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 3274,
+      "skipped": 1,
+      "total": 3275,
+      "duration": "9 m 6 s",
+      "suite": "Baxy.Integration.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 140,
+      "skipped": 0,
+      "total": 140,
+      "duration": "1 s",
+      "suite": "Baxy.Kernel.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 501,
+      "skipped": 0,
+      "total": 501,
+      "duration": "41 s",
+      "suite": "Baxy.Providers.Windows.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 477,
+      "skipped": 0,
+      "total": 477,
+      "duration": "1 m 16 s",
+      "suite": "Baxy.Setup.Tests.dll"
+    }
+  ],
+  "python": {
+    "passed": 10218,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 571.67
+  },
+  "release_time": "00:00:02.75",
+  "dotnet_printed_omissions": 16,
+  "omissions_note": "Existing environmental/opt-in omissions are not passes and give no UI, audio or acceptance credit; none added or relaxed.",
+  "full_sha256": "49d5f6833e411219219ca65f58b6c84c338fa7e29ae542de04a5c98135a1c61c",
+  "survey": {
+    "covered": 24,
+    "open": 718,
+    "not_applicable": 0
+  },
+  "product605": {
+    "correct_finals": 33,
+    "total": 35,
+    "ui_or_voice_credit": false
+  },
+  "goal_status": "EN_CURSO",
+  "registered_manifest_changed": false
+}

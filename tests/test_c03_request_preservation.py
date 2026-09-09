@@ -1452,6 +1452,80 @@ def test_direct_answer_cannot_publish_a_second_opposite_language_reply() -> None
     assert error.value.audit_reason == "wrong_language"
 
 
+@pytest.mark.parametrize(
+    ("language", "draft", "translated", "target"),
+    [
+        ("en", "Tu nombre es Ágata y guardaste 17 notas.",
+         "Your name is Ágata and you saved 17 notes.", "English"),
+        ("es", "Your name is Rohan and you saved 23 notes.",
+         "Tu nombre es Rohan y guardaste 23 notas.", "Spanish"),
+    ],
+)
+def test_language_only_repair_preserves_the_complete_draft_and_original_history(
+    language: str, draft: str, translated: str, target: str,
+) -> None:
+    history = [{
+        "role": "user", "content": "Me llamo Ágata y guardé 17 notas."
+        if language == "en" else "Me llamo Rohan y guardé 23 notas.",
+    }]
+    before = json.dumps(history, ensure_ascii=False)
+    runtime = Recorder([draft, json.dumps({"answer": translated})])
+    answer, actions = runtime.chat(
+        "What is my name?" if language == "en" else "¿Cómo me llamo?",
+        history=history, conversation_kind="knowledge", response_language=language,
+    )
+    assert answer == translated and actions == []
+    assert json.dumps(history, ensure_ascii=False) == before
+    assert history[0]["content"] in runtime.payloads[0]["messages"][-2]["content"]
+    repair = runtime.payloads[1]
+    assert json.loads(repair["messages"][-1]["content"]) == {
+        "source_text": draft, "target_language": target,
+    }
+    assert repair["max_tokens"] == 96
+    assert repair["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
+    assert len(runtime.payloads) == 2
+
+
+def test_wrong_language_echo_is_reanswered_instead_of_translating_the_question() -> None:
+    question = "¿Cuál es la capital de Perú?"
+    runtime = Recorder([question, json.dumps({"answer": "The capital of Peru is Lima."})])
+    answer, _ = runtime.chat(
+        question, conversation_kind="knowledge", response_language="en",
+    )
+    assert answer == "The capital of Peru is Lima."
+    assert runtime.payloads[1]["messages"][-1]["content"] == question
+
+
+def test_incomplete_wrong_language_draft_is_not_used_as_a_translation_source() -> None:
+    class TruncatedFirstReply(Recorder):
+        def _post(self, payload: dict) -> dict:
+            result = super()._post(payload)
+            if len(self.payloads) == 1:
+                result["choices"][0]["finish_reason"] = "length"
+            return result
+
+    runtime = TruncatedFirstReply([
+        "La capital de Perú es", json.dumps({"answer": "The capital of Peru is Lima."}),
+    ])
+    question = "What is the capital of Peru?"
+    answer, _ = runtime.chat(question, conversation_kind="knowledge", response_language="en")
+    assert answer == "The capital of Peru is Lima."
+    assert runtime.payloads[1]["messages"][-1]["content"] == question
+
+
+def test_foreign_sentence_after_a_spanish_opening_gets_language_only_repair() -> None:
+    draft = "De nada, amigo. How ya doing today?"
+    correct = "De nada, amigo. ¿Cómo te va hoy?"
+    runtime = Recorder([draft, json.dumps({"answer": correct})])
+    answer, actions = runtime.chat(
+        "Te agradezco la ayuda.", conversation_kind="knowledge", response_language="es",
+    )
+    assert answer == correct and actions == []
+    assert json.loads(runtime.payloads[1]["messages"][-1]["content"]) == {
+        "source_text": draft, "target_language": "Spanish",
+    }
+
+
 def test_a_neutral_proper_name_is_a_complete_answer_in_either_language() -> None:
     for language in ("es", "en"):
         assert not llm._reply_uses_opposite_language("Lima", language)

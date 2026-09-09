@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T08:58:15.948269+00:00",
+  "comparison": "language-translation601",
+  "correct_by_arm": {
+    "original": 3,
+    "translate_draft": 6
+  },
+  "per_arm_total": 6,
+  "native_request_type_correct": {},
+  "verdict": "Traducir el borrador completo real, cuando sólo falla idioma, mejora3/6→6/6;12stop. Conserva BAXY, Sofia, Isabel, identidad española y hechos sobre RAM. Sigue siendo nativo: incorporar en el reintento existente sólo para conocimiento sin otro defecto, conservar guardas y probar producto. No se ha promovido fuente por estos seis aciertos.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 746.62109375,
+    "seconds": 7.953000000008615,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "e21144137380b226d2cdaf8e8f6b06464be5341b8de68d3f48ea6957ecdbf525",
+    "responses.jsonl": "eed97d514e10943f7103a36a100af576f17ecc04ab1edebe0f33985bb9e7df2c",
+    "adjudication.json": "1ba11222373eb36b550ccaacadd717a59dce158d2d0091846c13d1ecbbf98f87",
+    "RESULT.md": "9254780a9e86f9e77c4a3f5c62fe312f5137ca40b222fe092408f2046698f93d"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

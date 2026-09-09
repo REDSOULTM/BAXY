@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T08:58:15.726786+00:00",
+  "comparison": "language-wire597",
+  "correct_by_arm": {
+    "original": 3,
+    "candidate": 4
+  },
+  "per_arm_total": 6,
+  "native_request_type_correct": {},
+  "verdict": "Prefijo system unido exactamente como _post: las dos identidades originales siguen en español. La instrucción de reparación correcta produce razonamiento que consume96tokens y deja ambas respuestas cortadas. RAM mejora a inglés. No se adopta. Se verificaron saltos reales y ausencia de literales slash-n en el prefijo.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 738.828125,
+    "seconds": 11.85899999999674,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "8b2971239e2994fce10e4fe375c64029bc9dd5c42778d86e19d2500ee7309d90",
+    "responses.jsonl": "7436ff251f29c89781578b08123c89bb0840830db293196a7389af4deea76570",
+    "adjudication.json": "ee7c3f52e6bc17689212f3e103d7943ddb7851688c28a92fd0c87d512998a03b",
+    "RESULT.md": "aa148da180878be8445c37dca9e5534dd74c71b9868893e8d4d03481fe208a39"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

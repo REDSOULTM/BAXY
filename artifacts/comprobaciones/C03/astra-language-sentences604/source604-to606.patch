@@ -1,0 +1,15 @@
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3969,7 +3969,11 @@
+     # A correct opening must not hide an unrelated foreign-language sentence.
+     # Embedded literal quotations may legitimately retain their source language;
+     # the whole-answer check above still rejects an entirely foreign quote.
+-    prose = re.sub(r'"[^"]*"|«[^»]*»|“[^”]*”', "", text)
++    prose = re.sub(
++        r'```[\s\S]*?```|`[^`]*`|"[^"]*"|«[^»]*»|“[^”]*”'
++        r"|(?<!\w)'[\s\S]*?'(?!\w)",
++        "", text,
++    )
+     return any(opposite(sentence) for sentence in re.split(r"(?<=[.!?])\s+|\n+", prose))
+ 
+ 

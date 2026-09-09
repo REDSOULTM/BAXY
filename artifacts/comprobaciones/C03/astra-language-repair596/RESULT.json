@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T08:58:15.679146+00:00",
+  "comparison": "language-repair596",
+  "correct_by_arm": {
+    "original": 4,
+    "candidate": 3
+  },
+  "per_arm_total": 6,
+  "native_request_type_correct": {},
+  "verdict": "El aviso de idioma no corrige las dos identidades y corta la explicación RAM. Esta reproducción tomó el input al constructor _post antes de unir el prefijo system; no equivale al envío efectivo del producto.597 corrige el instrumento;596 se conserva íntegro.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 741.5703125,
+    "seconds": 11.187999999994645,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "1c9ae002d2caf39b85095fe9e4f181defe25892c1d3ef7277617ccbec6301158",
+    "responses.jsonl": "c91228c795129a8464a9f018c52d5b62a834f3b6beb79c031e653b20c008e848",
+    "adjudication.json": "0e76b01a6c59745177b94495ca4599f77283ebb1d5a9787430d70a324eddd7b4",
+    "RESULT.md": "e539bac6f2a069cd0afc796d0dc9c683625f030f385bd566669a61e6c01a52c3"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

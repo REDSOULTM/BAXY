@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T08:58:15.780931+00:00",
+  "comparison": "language-backend598",
+  "correct_by_arm": {
+    "original": 3,
+    "candidate": 4
+  },
+  "per_arm_total": 6,
+  "native_request_type_correct": {},
+  "verdict": "Sólo backendb10865 frente a597: ambas identidades siguen fallando, con razonamiento y corte en el candidato. No corrige el síntoma ni se promueve. La explicación propuesta por el issue26781 fue refutada en su propia actualización; no atribuirle esta causa.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3496.15625,
+    "ram_peak_mib": 752.5703125,
+    "seconds": 13.235000000015134,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "8b2971239e2994fce10e4fe375c64029bc9dd5c42778d86e19d2500ee7309d90",
+    "responses.jsonl": "1fc58e4c9152f851430b3483c2a52f8935c530ba87530e6452dcc7de39521ea4",
+    "adjudication.json": "8cfb7b9660372484696ac2c6371f54aece1c5b621212923b8742615682d5f0b9",
+    "RESULT.md": "751cf97f5e4eb8bd50580b1a89c366e05d7a18b3688677a2cf7c99f20e2280ff"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

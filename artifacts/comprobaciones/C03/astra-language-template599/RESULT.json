@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T08:58:15.835444+00:00",
+  "comparison": "language-template599",
+  "correct_by_arm": {
+    "original": 3,
+    "candidate": 4
+  },
+  "per_arm_total": 6,
+  "native_request_type_correct": {},
+  "verdict": "Sólo plantilla oficial2507 frente a597, mismob9980 y payloads: desaparecen cortes y reasoning_content en los12, pero ambas identidades candidatas vuelven a español. Mismo4/6 candidato; no se promueve como solución. Renders previamente iguales no implican idéntica capacidad del parser/gramática.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 746.26953125,
+    "seconds": 9.25,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "8b2971239e2994fce10e4fe375c64029bc9dd5c42778d86e19d2500ee7309d90",
+    "responses.jsonl": "e520f71d98a39b46b7915d9210c180b810c6e2b54f8022c36c1cac63593e1155",
+    "adjudication.json": "9176b1ed0b984eb367d69f4e4ef84e3c1aa2e962eba3c37aed204f97a12f06c5",
+    "RESULT.md": "e6dbcb260fd7a76be53fa5ccf55eb67591135e2e39daa03c879e327031e71cc1"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

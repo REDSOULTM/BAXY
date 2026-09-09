@@ -341,3 +341,118 @@ Encuesta16 cubiertos/726 abiertos/0 no aplicables,742/rev1248 original intacto. 
 
 
 Fuente590 publicada en `122c490f2f93b71de21756c269607c5b25024f04`, HEAD y origin/Goal-c03 iguales; main5f572ee intacto. Siguiente diagnóstico: scratchpad/c03-observe-identity593.py (11turnos iniciales de592, HTTP/shape/chat, sin tratamiento). No repetir scripts de sellado/cierre ya ejecutados. Al cambiar llm.py o __main__.py, mantener sólo los pins de programas actuales de tests/test_price_v8_veto_damage_by_cause.py y los pins actuales de árbol STT; sellos históricos intactos. Diff de fuente sin espacios inválidos; los dos espacios finales del primer traceback se conservan como bytes de evidencia, no código.
+
+
+# Observación593: dos causas confirmadas, ninguna reparación aún
+
+Los once turnos de identidad repiten exactamente592:8 finales correctos y3 fallidos. La observación delega sin modificar payloads ni respuestas; añade trazas de HTTP, retorno de la guarda y entrada de chat. No es una medición limpia de latencia.
+
+H0012: el selector nativo conserva conocimiento, pero la guarda semántica devuelve `incomplete_effect/one`; su retorno real es `not_complete/one`. `apply_conversation_effect_presentation` convierte entonces la presentación en unsupported. El usuario no pidió un efecto. Falta distinguir una expresión conversacional ruidosa de una acción a la que le falte un argumento; no basta eliminar palabras iniciales por literal.
+
+Las dos preguntas inglesas llegan a chat como knowledge y `response_language=en`. La historia se conserva con sus autores como datos, conforme a fuente512; tanto el borrador como su reintento JSON copian la respuesta española anterior. El reintento habla de respuesta vacía/eco aunque el defecto observado es idioma. No se elimina historia ni se relaja el veto de idioma sin una prueba comparativa.
+
+Base Qwen2507/b9980, sin adaptador ni cambio de registro. GPU3499,559MiB/RAM2400,297MiB,64,469s de escenario con observación. Sin UI/voz. Encuesta16/726/0, sin nuevos requisitos acreditados. C03 sigue activo.
+
+
+# Comparación guard-boundary594
+
+La definición más precisa corrige H0012, pero conserva fallos de negación, tres argumentos incompletos y cuenta múltiple. No pasa el panel completo; no se adopta.
+
+Aciertos por brazo: {'original': 10, 'candidate': 11}, sobre 16 por brazo. GPU3497.559MiB; RAM737.387MiB; 12.172s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación guard-contract595
+
+La segunda instrucción corrige H0012 y la negación, pero no los tres casos incompletos ni la cuenta múltiple. También emite one en siete conversaciones: derive_semantic_effect_state lo normaliza a zero, de modo que no es por sí solo regresión ejecutable. La rúbrica nativa exigía zero y se conserva. No se adopta ni se sigue variando ese prompt.
+
+Aciertos por brazo: {'original': 10, 'candidate': 5}, sobre 16 por brazo. GPU3497.559MiB; RAM740.949MiB; 12.984s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación language-repair596
+
+El aviso de idioma no corrige las dos identidades y corta la explicación RAM. Esta reproducción tomó el input al constructor _post antes de unir el prefijo system; no equivale al envío efectivo del producto.597 corrige el instrumento;596 se conserva íntegro.
+
+Aciertos por brazo: {'original': 4, 'candidate': 3}, sobre 6 por brazo. GPU3497.559MiB; RAM741.570MiB; 11.188s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación language-wire597
+
+Prefijo system unido exactamente como _post: las dos identidades originales siguen en español. La instrucción de reparación correcta produce razonamiento que consume96tokens y deja ambas respuestas cortadas. RAM mejora a inglés. No se adopta. Se verificaron saltos reales y ausencia de literales slash-n en el prefijo.
+
+Aciertos por brazo: {'original': 3, 'candidate': 4}, sobre 6 por brazo. GPU3497.559MiB; RAM738.828MiB; 11.859s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación language-backend598
+
+Sólo backendb10865 frente a597: ambas identidades siguen fallando, con razonamiento y corte en el candidato. No corrige el síntoma ni se promueve. La explicación propuesta por el issue26781 fue refutada en su propia actualización; no atribuirle esta causa.
+
+Aciertos por brazo: {'original': 3, 'candidate': 4}, sobre 6 por brazo. GPU3496.156MiB; RAM752.570MiB; 13.235s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación language-template599
+
+Sólo plantilla oficial2507 frente a597, mismob9980 y payloads: desaparecen cortes y reasoning_content en los12, pero ambas identidades candidatas vuelven a español. Mismo4/6 candidato; no se promueve como solución. Renders previamente iguales no implican idéntica capacidad del parser/gramática.
+
+Aciertos por brazo: {'original': 3, 'candidate': 4}, sobre 6 por brazo. GPU3497.559MiB; RAM746.270MiB; 9.250s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación history-request600
+
+Agrupar sin pérdida historial y petición en un solo mensaje user no resuelve idioma:3/6 en ambos brazos; una identidad candidata se corta. No se adopta ni se elimina historial por este resultado.
+
+Aciertos por brazo: {'original': 3, 'combined_user_packet': 3}, sobre 6 por brazo. GPU3497.559MiB; RAM736.191MiB; 9.734s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+# Comparación language-translation601
+
+Traducir el borrador completo real, cuando sólo falla idioma, mejora3/6→6/6;12stop. Conserva BAXY, Sofia, Isabel, identidad española y hechos sobre RAM. Sigue siendo nativo: incorporar en el reintento existente sólo para conocimiento sin otro defecto, conservar guardas y probar producto. No se ha promovido fuente por estos seis aciertos.
+
+Aciertos por brazo: {'original': 3, 'translate_draft': 6}, sobre 6 por brazo. GPU3497.559MiB; RAM746.621MiB; 7.953s. Sólo servidor nativo, sin UI/voz, efectos ni registro. Encuesta16/726/0.
+
+
+# Fuente602: reparar sólo el idioma del borrador completo
+
+La comparación nativa601 mejora3/6→6/6 traduciendo el borrador real. Se incorpora esa tarea al reintento existente de chat de conocimiento, sólo con borrador completo y rechazo exclusivamente por idioma. Si está cortado, es un eco o falla otro contrato, conserva la reparación previa. Mantiene el historial original para la primera respuesta y siguientes turnos, hechos literales, autoría, presupuesto96, esquema y todas las guardas finales. No añade llamadas, modelos, respuestas fijas ni un segundo compositor.
+
+Validación final:1407 pass y121 subpruebas,0 omisiones,13,37s; incluye las nuevas pruebas ES/EN, historia intacta, datos del borrador, eco, corte y rechazo de segundo idioma incorrecto, además de planner/política/perfilCPU/pinV8. Fast salida0, Release21,21s,0 errores/advertencias. Árbol Python404 archivos,059abe0cb6f9ecf84cb217c8bd2f4c4980091f0d18f165fca965d9464290a47e. Sólo se actualizan pins actuales V8/STT; sellos históricos intactos.
+
+Full590 anterior:Python10200 pass/3 omisiones/466 subpruebas;.NET4452 pass/1 omisión agregada. No se presenta ese Full como ejecución sobre602. El objetivo exige nuevo Full al tocar C# y Python conjuntamente y al cierre; esta fuente sólo cambia conversación Python. Producto603 repite35turnos sin hooks; resultado pendiente al escribir esta nota. Encuesta16/726/0. Registro intacto, C03 activo; clasificaciónH0012, nombreAtlas, gramática, resto encuesta, UI/voz conjunta, registroCPU y aceptación siguen pendientes.
+
+
+# Producto603: 32/35 finales correctos
+
+Fuente602, modelo/backend registrados sin override ni hooks. Fallos conservados: {'H0012': 'incorrect_interpretation_failure', 'greeting-variant-3': 'unsupported_user_name_attribution', 'thanks-variant-3': 'english_sentence_in_spanish_answer'}. Las dos identidades inglesas y los dos casos gramaticales mejoran; aparece una frase inglesa tras un comienzo español en agradecimiento. Se reabren cuatro requisitos:12/730/0.
+
+GPU3499.559MiB/RAM2517.297MiB, 88.906s del escenario. No acredita UI, voz ni recursos conjuntos. Los candidatos de progreso aún requieren mejor prosa y verificación de visibilidad: este conteo es de finales, no aceptación completa de los35turnos ni cierreC03.
+
+
+# Producto605: 33/35 finales correctos
+
+Fuente604, modelo/backend registrados sin override ni hooks. Fallos conservados: {'H0012': 'incorrect_interpretation_failure', 'greeting-variant-3': 'unsupported_user_name_attribution'}. La guarda por frases y traducción del borrador corrigen esa regresión. Se restauran los cuatro agradecimientos y se verifican individualmente seis identidades y dos conversaciones breves con sus variantes. Encuesta24/718/0. H0021 no se acredita sin repetir su propio literal; H0012 y los saludos con otra identidad permanecen abiertos.
+
+GPU3499.559MiB/RAM2456.062MiB, 88.094s del escenario. No acredita UI, voz ni recursos conjuntos. Los candidatos de progreso aún requieren mejor prosa y verificación de visibilidad: este conteo es de finales, no aceptación completa de los35turnos ni cierreC03.
+
+
+# Fuente604: el idioma se comprueba también por frases
+
+La ruta compartida de chat y composición ya no deja que una apertura en el idioma correcto esconda una frase completa en el opuesto. Reutiliza la misma evidencia lingüística, sin palabras nuevas ni alias por caso. Conserva citas literales incrustadas, nombres con acentos y el contrato de mezcla; una cita completamente en el idioma incorrecto sigue rechazada.602 traduce el borrador completo cuando sólo falla idioma, dentro del reintento existente.
+
+Validación:1801 pass,121 subpruebas,1 omisión ambiental existente,18,13s. La omisión corresponde a entradas ausentes de una campaña STT ciega histórica; no se cuenta como ejecución ni audio. Fast salida0, Release2,97s,0 advertencias/errores. No C# ni protocolo modificado. Los pins actuales V8/STT se actualizan y sus históricos permanecen intactos. No se atribuye el Full590 a esta fuente; Full finalC03 pendiente.
+
+Producto605 sin hooks ni override:33/35 finales correctos. Permanecen H0012 (pregunta de identidad convertida en efecto incompleto) y atribución de Atlas al usuario. La mezcla incorrecta de603 queda reparada y se conservan las identidades inglesas y conversación breve. La encuesta evoluciona16→12 por la regresión603→24 cubiertos/718 abiertos/0 no aplicables tras605. Progresos, UI real, voz, presupuesto conjunto, registroCPU y aceptación completaC03 siguen abiertos. BAXY manual cerrado, sin decisión pendiente del dueño.
+
+
+# Fuente606: revisión de literales, Full en curso
+
+La revisión de604 encontró dos falsos rechazos demostrados: código Python cercado con if/is y texto literal entre backticks, ambos dentro de una explicación española. Se conserva el chequeo global y se excluyen de la revisión por frases los bloques de código y las citas equilibradas; las comillas simples se distinguen de apóstrofos internos de contracciones. Cuatro regresiones nuevas cubren código, backticks, cita simple y contracciones inglesas que deben seguir rechazadas.
+
+Focal final:473 pass/1 omisión ambiental,3,47s; la omisión sigue siendo material STT ciego histórico ausente, no audio aprobado.602/604 pasaron1801pass+121subtests/1omisión y Fast; producto60533/35finales.606 cambia sólo el tratamiento de literales, sin más llamadas ni ajustes de modelos. Full sobre606 en curso: sesión75993, TEMP/c03-language606-full.log. No editar fuente, scripts ni tests durante esta ejecución. No afirmar que pasó hasta recoger salida y resumen.
+
+Encuesta24 cubiertos/718 abiertos/0NA. Fuente actual aún sin publicar; publicada122c490f (590), último commit7a8620e6. Main5f572ee intacto. Falta sellar606 tras Full, revisar todos los PINS y publicar fuente602/604/606 con593–605. Después: cambiar estrategia para H0012; la proyección actual convierte not_complete en unsupported aunque no se conoce un efecto completo.594/595 cambian prompts sin pasar controles: no repetir ese camino ni crear alias. Atlas, prosa de progreso, UI/voz/recursos conjuntos, registroCPU y demás C03 siguen abiertos. No decisión del dueño pendiente; BAXY manual cerrado.
+
+
+# Fuente606: reparación de idioma y literales validada
+
+602 repara un borrador completo de conocimiento cuando sólo falla idioma traduciéndolo en el reintento existente, sin añadir llamadas ni borrar el historial.604 detecta frases en el idioma opuesto aunque la apertura sea correcta.606 conserva citas y código literal para no introducir falsos rechazos. La revisión y las pruebas ES/EN preservan nombres, números, autores, texto citado, contracciones, código, cortes y todos los rechazos finales. No se modifica el modelo, backend, plantilla registrada ni el perfil CPU.
+
+Full salida0: Python10218 pass,3 omisiones,466 subpruebas,571.67s. .NET4452 pass,0 fallos,1 omisión agregada; el log imprime16 omisiones opt-in. Estática y Release aprobados,00:00:02.75,0 advertencias/errores. Ninguna omisión es una prueba realizada ni acredita UI/voz. No se añadió skip ni se relajaron umbrales. Árbol Python37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84,404archivos, sin cambiar durante Full; sólo pins actuales V8/STT actualizados, históricos intactos.
+
+Producto605 sin hooks ni override da33/35finales correctos, conserva los agradecimientos y las dos identidades inglesas y la conversación breve. Permanecen H0012 y Atlas. La revisión606 posterior sólo cambia literales/código; su contrato específico pasa y este Full lo integra. Encuesta24cubiertos/718abiertos/0NA;742/rev1248 original intacto. El conteo de finales no acredita la ruta completa de progreso ni UI/voz. C03 sigue activo: registroCPU, recursos conjuntos, prosa de progreso, restantes conductas y aceptación final siguen pendientes. BAXY manual cerrado, sin decisión pendiente del dueño.
+
+
+## Continuación después de Full606
+
+Full606 terminó con salida 0. La reproducción aislada607 conserva 15 de 16 salidas y corrige sólo H0012 sin conceder autoridad de acción; fuente todavía sin esa modificación. Baseline de producto608 en curso, sesión80550, TEMP/c03-effect-controls608.log: 12 casos de identidad, campos ausentes, límites físicos, negación y conocimiento. No editar la fuente hasta que termine esta comparación. BAXY manual permanece cerrado.

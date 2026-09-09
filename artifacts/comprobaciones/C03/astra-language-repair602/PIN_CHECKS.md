@@ -1,0 +1,1 @@
+Pruebas adicionales de pins actuales:17 pass/1 omisión ambiental,1,93s. Omisión existente: faltan entradas de una campaña STT ciega histórica; no acredita audio. source602.patch reconstruye llm.py desde122c490f con hash a56dcb9e008e119e82d1a67876b82befc4e5716451cc1e4410994a8958140a59, antes del cambio604.

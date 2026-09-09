@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-09T08:58:15.623577+00:00",
+  "comparison": "guard-contract595",
+  "correct_by_arm": {
+    "original": 10,
+    "candidate": 5
+  },
+  "per_arm_total": 16,
+  "native_request_type_correct": {
+    "original": 11,
+    "candidate": 13
+  },
+  "verdict": "La segunda instrucción corrige H0012 y la negación, pero no los tres casos incompletos ni la cuenta múltiple. También emite one en siete conversaciones: derive_semantic_effect_state lo normaliza a zero, de modo que no es por sí solo regresión ejecutable. La rúbrica nativa exigía zero y se conserva. No se adopta ni se sigue variando ese prompt.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 740.94921875,
+    "seconds": 12.98399999999674,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "5c164404957226a59f6b2a613b31516452a795a54a5feb6814f8f57bb280559f",
+    "responses.jsonl": "23e07cbc106eca4e5a1e0361c4ed9e0b9ec450ee75b9d8de23dcea32c4e71498",
+    "adjudication.json": "84c226b6b03b41daf4d924c328563b23d19494beebb6ba525460259116c4facc",
+    "RESULT.md": "bec5967ae4299fb9aa821a5f76edd0990e1b3f83ae88705f81d1a9502296fbd2"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

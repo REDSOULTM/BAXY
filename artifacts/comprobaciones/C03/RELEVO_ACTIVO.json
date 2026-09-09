@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T08:36:31.011976+00:00",
+  "confirmedAtUtc": "2026-09-09T09:46:39.459594+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Fuente590 publicada y Full salida0:10200pass/3skips/466subtests; .NET4452pass/1omisión agregada.59117finales correctos;59229correctos/6fallos. Encuesta16/726/0.",
-  "continuation": "Ejecutar observación593 preparada de11turnos: capturar transición H0012 y payloads ingleses sin tratamiento. Luego reparar causa demostrada, probar dueñas, actualizar sólo pins actuales V8/STT y publicar. CPUregistro/UI/voz/recursos conjuntos y resto C03 pendientes.",
+  "checkpoint": "606 Full0: Python10218pass/3skips/466subtests; .NET4452pass/1omisión agregada.60533/35finales. Encuesta24/718/0. Fuente pendiente de publicación.",
+  "continuation": "Publicar fuente606 Full0 y evidencia593–607. Baseline608 activo sesión80550, TEMP/c03-effect-controls608.log; fuente inmóvil hasta terminar. Luego adoptar y validar la proyección607 si pasa el contraste completo; Atlas y prosa de progreso siguen pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,8 +24,8 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 16,
-    "open": 726,
+    "covered": 24,
+    "open": 718,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,

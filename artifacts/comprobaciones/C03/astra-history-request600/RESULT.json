@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T08:58:15.891204+00:00",
+  "comparison": "history-request600",
+  "correct_by_arm": {
+    "original": 3,
+    "combined_user_packet": 3
+  },
+  "per_arm_total": 6,
+  "native_request_type_correct": {},
+  "verdict": "Agrupar sin pérdida historial y petición en un solo mensaje user no resuelve idioma:3/6 en ambos brazos; una identidad candidata se corta. No se adopta ni se elimina historial por este resultado.",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 736.19140625,
+    "seconds": 9.73399999999674,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "requests.jsonl": "b83a1665167b65b96ac94a496d698bbb2004201ca88e7f44380290bbf54da6c8",
+    "responses.jsonl": "6fc5835cb59038e3850bb3ec9c39fb00d4acfdd369a0cb2a5f9aca688a100164",
+    "adjudication.json": "d77eb23f603bd6e2fcf818857116adaf1727b6d93c1196c3bbbc16ea3b640362",
+    "RESULT.md": "059594ec126a292b89d28bdd61444e2bbff7bf7e7bd3b3431d844ab20ee4e71f"
+  },
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "ui_or_voice_credit": false
+}

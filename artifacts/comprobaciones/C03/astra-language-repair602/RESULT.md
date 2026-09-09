@@ -1,0 +1,7 @@
+# Fuente602: reparar sólo el idioma del borrador completo
+
+La comparación nativa601 mejora3/6→6/6 traduciendo el borrador real. Se incorpora esa tarea al reintento existente de chat de conocimiento, sólo con borrador completo y rechazo exclusivamente por idioma. Si está cortado, es un eco o falla otro contrato, conserva la reparación previa. Mantiene el historial original para la primera respuesta y siguientes turnos, hechos literales, autoría, presupuesto96, esquema y todas las guardas finales. No añade llamadas, modelos, respuestas fijas ni un segundo compositor.
+
+Validación final:1407 pass y121 subpruebas,0 omisiones,13,37s; incluye las nuevas pruebas ES/EN, historia intacta, datos del borrador, eco, corte y rechazo de segundo idioma incorrecto, además de planner/política/perfilCPU/pinV8. Fast salida0, Release21,21s,0 errores/advertencias. Árbol Python404 archivos,059abe0cb6f9ecf84cb217c8bd2f4c4980091f0d18f165fca965d9464290a47e. Sólo se actualizan pins actuales V8/STT; sellos históricos intactos.
+
+Full590 anterior:Python10200 pass/3 omisiones/466 subpruebas;.NET4452 pass/1 omisión agregada. No se presenta ese Full como ejecución sobre602. El objetivo exige nuevo Full al tocar C# y Python conjuntamente y al cierre; esta fuente sólo cambia conversación Python. Producto603 repite35turnos sin hooks; resultado pendiente al escribir esta nota. Encuesta16/726/0. Registro intacto, C03 activo; clasificaciónH0012, nombreAtlas, gramática, resto encuesta, UI/voz conjunta, registroCPU y aceptación siguen pendientes.

@@ -1,0 +1,7 @@
+# Fuente604: el idioma se comprueba también por frases
+
+La ruta compartida de chat y composición ya no deja que una apertura en el idioma correcto esconda una frase completa en el opuesto. Reutiliza la misma evidencia lingüística, sin palabras nuevas ni alias por caso. Conserva citas literales incrustadas, nombres con acentos y el contrato de mezcla; una cita completamente en el idioma incorrecto sigue rechazada.602 traduce el borrador completo cuando sólo falla idioma, dentro del reintento existente.
+
+Validación:1801 pass,121 subpruebas,1 omisión ambiental existente,18,13s. La omisión corresponde a entradas ausentes de una campaña STT ciega histórica; no se cuenta como ejecución ni audio. Fast salida0, Release2,97s,0 advertencias/errores. No C# ni protocolo modificado. Los pins actuales V8/STT se actualizan y sus históricos permanecen intactos. No se atribuye el Full590 a esta fuente; Full finalC03 pendiente.
+
+Producto605 sin hooks ni override:33/35 finales correctos. Permanecen H0012 (pregunta de identidad convertida en efecto incompleto) y atribución de Atlas al usuario. La mezcla incorrecta de603 queda reparada y se conservan las identidades inglesas y conversación breve. La encuesta evoluciona16→12 por la regresión603→24 cubiertos/718 abiertos/0 no aplicables tras605. Progresos, UI real, voz, presupuesto conjunto, registroCPU y aceptación completaC03 siguen abiertos. BAXY manual cerrado, sin decisión pendiente del dueño.

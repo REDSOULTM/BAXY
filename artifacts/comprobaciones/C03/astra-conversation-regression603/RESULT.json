@@ -1,0 +1,31 @@
+{
+  "source": 602,
+  "finals": 35,
+  "correct_finals": 32,
+  "failed_cases": {
+    "H0012": "incorrect_interpretation_failure",
+    "greeting-variant-3": "unsupported_user_name_attribution",
+    "thanks-variant-3": "english_sentence_in_spanish_answer"
+  },
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  },
+  "no_hooks": true,
+  "manifest_changed": false,
+  "ui_or_voice_credit": false,
+  "progress_route_acceptance": "open; compose candidates are not proof of UI visibility or adequate final product style",
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2517.296875,
+    "seconds": 88.906
+  },
+  "private_hashes": {
+    "RESULT.md": "f093b10fd62c3a773bb538bd9006aaacaaeaeb05eae5c46eb1765ce62a7a523e",
+    "adjudication.json": "1368a5e895301d5f3334cb0f50c332b00fd745a01fdc4342ff2bfd717ca49ee9",
+    "requirements-after-adjudication.json": "bed26c291880ffaf9024cd7be2f0084f796b8398d73434517b09f884af077d4b"
+  }
+}

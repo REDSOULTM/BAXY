@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-09T08:39:57.055127+00:00",
+  "finals": 11,
+  "correct": 8,
+  "failed": [
+    "H0012",
+    "identity-variant-1",
+    "identity-variant-2"
+  ],
+  "source": "122c490f2f93b71de21756c269607c5b25024f04",
+  "observer_only": true,
+  "private_hashes": {
+    "RESULT.md": "e1d021573b693a4e663ef6dd54a8d0ae046078dfe98ba48adc9472ffa970872c",
+    "adjudication.json": "5f926c10c1bc08c67006cb1e29520cb135ea533ef49a0d4e4df38299e350372f",
+    "boundaries.jsonl": "c0272e21a3e27962be3a6e191496863db3a59340c03dabd1f9a8cfd28d2e8cf6",
+    "http-posts.jsonl": "057de5c36154f57d05e070bc1a41e405579b04b308b90fde6a4429861947309f",
+    "effective-server-command.json": "77ad3528b2b12ba93623a41ab3f5d83acdaf91cdc7a1c90bb4121614db8cf87e"
+  },
+  "ui_or_voice_credit": false,
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  }
+}
