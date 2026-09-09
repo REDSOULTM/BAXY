@@ -1,0 +1,27 @@
+{
+  "stage": "After diagnosed source edit and owner validation, before Fast/product577; original baseline saved before edits.",
+  "utc": "2026-09-09T06:12:48.770311+00:00",
+  "inheritance": "545 quantity-question boundaries;572 native4–17 Spanish interpretation failure,18 English audio-only. Direct trace before576: one clause both languages, ES unsupported_deferred_effect=True, EN strict_catalog returns audio.status alone. No native sampler changes can restore an omitted requested read.",
+  "change": "Add copular/subordinate question boundaries and consume their punctuation. Reuse governing observation head for a complete indirect current audio question. Only its si/if marker ceases to be conditional; every other clause remains subject to deferred-action guards. Quoted note body after explicit content marker is data; preserve conditional actions and scheduling outside it.",
+  "criteria": "Both requested reads must be available and ordered. No authority for conditional actions, past states, other devices or quoted payload. No template, observation or new operation. Generalize ES/EN, ordering, interrogative versus imperative and explicit versus inherited head.",
+  "baseline": {
+    "test_population": 26,
+    "failed": 11,
+    "passed": 15,
+    "seconds": 0.75
+  },
+  "focal": {
+    "test_population": 29,
+    "passed": 29,
+    "seconds": 0.64,
+    "added_controls": "Three note timing/conditional-tail tests added after baseline; no claim baseline29 was run."
+  },
+  "owners": {
+    "passed": 2651,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 52.54
+  },
+  "initial_owner_invocation": "Wrong filename test_state_corpus.py: no tests ran, retained log. Corrected to test_effect_intent_state_corpus.py before owner result.",
+  "source_sha256": "048ad0fab5713d2e3f86941fe3f53f32216f78b7537ac66385329a19641181a9"
+}

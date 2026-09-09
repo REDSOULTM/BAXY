@@ -4984,8 +4984,25 @@ _AUDIO_LEVEL_CUE = (
 # Verbos de observación que, por sí solos, ya piden leer el audio.
 _AUDIO_OBSERVATION_HEAD = (
     r"(?:dime|decime|dame|muestra|muestrame|mostrame|show|display|ver|"
-    r"revisa|revisar|chequea|checa|verifica|mira|fijate|check)"
+    r"revisa|revisar|comprueba|chequea|checa|verifica|mira|fijate|check)"
 )
+
+
+def _indirect_audio_mute_state_query(text: str) -> bool:
+    """An entire current-state question, with no conditional action tail."""
+    target_es = r"(?:(?:el|mi)\s+)?(?:audio|sonido|volumen)"
+    state_es = r"(?:silenciad[oa]|mutead[oa]|en\s+(?:silencio|mudo))"
+    target_en = r"(?:(?:the|my)\s+)?(?:audio|sound|volume)"
+    state_en = r"(?:muted|on\s+mute|silent)"
+    return re.fullmatch(
+        rf"[¿?¡!\s]*{_AUDIO_OBSERVATION_HEAD}\s+(?:si|if|whether)\s+"
+        rf"(?:{target_es}\s+esta\s+{state_es}|"
+        rf"esta\s+{state_es}\s+{target_es}|"
+        rf"{target_en}\s+is\s+{state_en})"
+        r"(?:\s+(?:ahora|actualmente|now|right\s+now))?[\s.!?]*",
+        text,
+        re.IGNORECASE,
+    ) is not None
 
 
 def _is_audio_mute_state_query(text: str, head: str) -> bool:
@@ -4997,6 +5014,8 @@ def _is_audio_mute_state_query(text: str, head: str) -> bool:
     application scope or a report about someone else stays out.
     """
 
+    if _indirect_audio_mute_state_query(text):
+        return True
     if _has_app_scoped_audio(text) or _is_past_or_hypothetical_state(text):
         return False
     if _head_is(
@@ -5550,6 +5569,16 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
             " ",
             deferred_scope,
         )
+    if _has(text, r"^[¿?¡!\s]*(?:crea|crear|create|make)\s+(?:una?\s+|a\s+)?(?:nota|note)\b"):
+        # A quoted note body is data. Keep scheduling before its content
+        # marker and conditional actions outside its closing quote visible.
+        deferred_scope = re.sub(
+            r'(\b(?:con\s+el\s+texto|with\s+the\s+text)\s+)'
+            r'(?:"[^\"]*"|«[^»]*»|“[^”]*”)',
+            r"\1 literal content",
+            deferred_scope,
+            flags=re.IGNORECASE,
+        )
     # These phrases sequence a second explicit action; they do not defer the
     # mission to a later real-world event. Keep ``after that meeting`` and
     # other event-relative requests untouched and therefore fail-closed.
@@ -5567,6 +5596,14 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
     # before the marker (``create a note tomorrow that says ...``) remains
     # visible and therefore still fails closed.
     scoped_clauses = _request_clauses(deferred_scope)
+    if any(_indirect_audio_mute_state_query(clause) for clause in scoped_clauses):
+        # Only the subordinate question's marker is non-conditional. Preserve
+        # every other clause so an actual "if ... then act" still vetoes now.
+        deferred_scope = " . ".join(
+            re.sub(r"\b(?:si|if)\b", "", clause, count=1, flags=re.IGNORECASE)
+            if _indirect_audio_mute_state_query(clause) else clause
+            for clause in scoped_clauses
+        )
     if any(_literal_note_payload_request(clause) for clause in scoped_clauses):
         deferred_scope = " . ".join(
             "note literal payload" if _literal_note_payload_request(clause) else clause
@@ -11248,7 +11285,8 @@ def _request_clauses(text: str) -> tuple[str, ...]:
         rf"leerla con ocr|leerlo con ocr|read it with ocr)\b)"
         rf"(?:{action_after_clause}|{elliptical_head}|"
         rf"{_SEQUENCE_NOMINAL_HEAD}|como\s+esta|how\s+is|"
-        rf"what\s+time|que\s+hora{quantity_question_head})\b)"
+        rf"what\s+time|que\s+hora|is|are|was|were|esta|estan|estaba|estaban|"
+        rf"si|if|whether{quantity_question_head})\b)"
     )
     separator = re.compile(
         (
@@ -11267,7 +11305,7 @@ def _request_clauses(text: str) -> tuple[str, ...]:
             r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:gracias|thanks|thank you|"
             r"por favor|please|que tengas (?:un )?buen dia)\b)|"
             rf"\b(?:pero|but)\b\s*{next_action_head}|"
-            rf"\b(?:y|and)\b\s*{next_effect_head})\s*"
+            rf"(?:[,;]\s*)?\b(?:y|and)\b\s*{next_effect_head})\s*"
         ),
         re.IGNORECASE,
     )
@@ -11418,7 +11456,9 @@ def _normalize_dependent_clauses(clauses: tuple[str, ...]) -> tuple[str, ...]:
     for clause in clauses:
         current = clause
         sequencing = _SEQUENCING_CLAUSE_HEAD.match(current)
-        if sequencing is not None:
+        if governing_verb and _indirect_audio_mute_state_query(f"{governing_verb} {current}"):
+            current = f"{governing_verb} {current}"
+        elif sequencing is not None:
             remainder = current[sequencing.end() :].lstrip()
             if remainder:
                 # ``revisa`` is already an accepted observation head, so the
@@ -11446,6 +11486,8 @@ def _normalize_dependent_clauses(clauses: tuple[str, ...]) -> tuple[str, ...]:
             current = f"{current.rstrip(' .!?')} {governing_noun}"
 
         verb = _clause_leading_verb(current)
+        if verb is None and _head_is(_request_head(current), _AUDIO_OBSERVATION_HEAD):
+            verb = _request_head(current)
         if verb is not None:
             governing_verb = verb
         noun = _CLAUSE_OBJECT_NOUN.match(current)

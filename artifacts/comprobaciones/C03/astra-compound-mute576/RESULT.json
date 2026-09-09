@@ -1,0 +1,23 @@
+{
+  "adopted": true,
+  "focal_passed": 29,
+  "owners": {
+    "passed": 2651,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 52.54
+  },
+  "turns_and_stt": {
+    "passed": 1632,
+    "environmental_skips": 1,
+    "seconds": 8.45
+  },
+  "fast": "passed",
+  "release_seconds": 11.36,
+  "product": "pending577",
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  }
+}

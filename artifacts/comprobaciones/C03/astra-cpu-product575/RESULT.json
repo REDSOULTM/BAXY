@@ -1,0 +1,34 @@
+{
+  "finals": 10,
+  "correct": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "open": [
+    5
+  ],
+  "newly_covered": [],
+  "physical_observation_verified_in_product": true,
+  "source_commit": "ad6d9a1a69efc3b71b654e2ca9a0bb7185085305",
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1587.40234375,
+    "seconds": 103.282
+  },
+  "private_report_sha256": "03a44f834e7c0b4910af42f18ba5d27ee530364eecaeb218d106cbdab315fd51",
+  "adjudication_sha256": "b0cb4e44a54e9712edef3aa7fccd0362cb7f597491e5710a0f555d047b11163c",
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  }
+}
