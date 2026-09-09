@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-09T03:35:00.982668+00:00",
+  "purpose": "Measured product543 encoder worker858.63MiB exceeds native generator720.71MiB. Resource pressure aborted541. Before larger generator or lower quality, compare same pinned E5 encoder through official ONNX FP32 and official INT8 graphs. Acquisition only; do not alter registered runtime, current encoder, caches, catalog or corpus.",
+  "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+  "files": {
+    "model.onnx": [
+      470268510,
+      "ca456c06b3a9505ddfd9131408916dd79290368331e7d76bb621f1cba6bc8665"
+    ],
+    "model_qint8_avx512_vnni.onnx": [
+      118346824,
+      "dd476dd0c2514e9b9be83aeb3853fac0763e0bdf4a71645407587d77c48a2d88"
+    ]
+  },
+  "official_metadata": "https://huggingface.co/api/models/intfloat/multilingual-e5-small/tree/614241f622f53c4eeff9890bdc4f31cfecc418b3/onnx",
+  "primary_sources": [
+    "https://www.sbert.net/docs/sentence_transformer/usage/efficiency.html",
+    "https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html",
+    "https://huggingface.co/intfloat/multilingual-e5-small/tree/614241f622f53c4eeff9890bdc4f31cfecc418b3"
+  ],
+  "inheritance": "Current SemanticEncoder uses pinned SentenceTransformer CPU FP32. encoder-cache-inheritance.json records25156 cached embeddings with query prefix/normalization/384dimensions; preserve semantics. No previous ONNX encoder comparison found in scoped filenames and index; that is a bounded search, not proof of absence.",
+  "platform_caveat": "Published INT8 graph is named avx512_vnni; Ryzen5800H uses AVX2. It is a portable ONNX candidate, not an optimized AMD verdict. Inspect operators/configuration and use documented AVX2/U8U8 or reduced range if saturation appears; do not discard quantization from inappropriate defaults. FP32 direct backend is the first equivalence control.",
+  "next_criteria": "Preserve tokenizer, max512 tokens, query/passage prefixes, masked mean pooling and L2 normalization. Compare embeddings and ranking on owner-authorized local messages and frozen vectors, recording drift and candidate changes. Measure RAM/latency in separate processes. No adoption from file size or benchmark speed alone.",
+  "privacy": "Only public model asset URLs leave the machine; no user content, vectors, transcripts or logs are uploaded.",
+  "destination": "D:\\BAXYRuntime\\experiments\\models\\e5-onnx-614241f6"
+}

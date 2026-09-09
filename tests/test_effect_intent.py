@@ -4044,6 +4044,12 @@ def test_resource_identity_stays_with_machine_status(text: str) -> None:
             ("system.status", "audio.mute"),
         ),
         ("Dime la hora y revisa la batería", ("system.time", "system.status")),
+        ("decime la hora y cuánta batería tengo", ("system.time", "system.status")),
+        ("How much battery is left, and what time is it?", ("system.status", "system.time")),
+        ("Dime la fecha y cuánta RAM está libre", ("system.time", "system.status")),
+        ("What time is it and how much memory is available?", ("system.time", "system.status")),
+        ("¿Cuánta batería queda y cuánta RAM tengo?", ("system.status", "system.status")),
+        ("¿Cuánto disco libre hay y cuánta batería queda?", ("system.status", "system.status")),
     ],
 )
 def test_state_questions_are_recognized_across_languages_and_forms(
@@ -4103,9 +4109,13 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         # Memoria privada del asistente, no memoria del equipo.
         "¿Cuánta memoria tienes de mí?",
         "¿Qué recuerdas de mi cumpleaños?",
-        # Dos alcances que el catálogo no mide en una sola lectura.
-        "¿Cuánta batería queda y cuánta RAM tengo?",
-        "¿Cuánto disco libre hay y cuánta batería queda?",
+        # A compound cannot replace historical or hypothetical observations
+        # with current measurements, or silently drop an ungrounded clause.
+        "¿Cuánta batería tenía ayer y cuánta RAM tengo?",
+        "What time is it and how much RAM would a different PC have?",
+        "Dime la hora y cuánta batería tiene mi coche",
+        "¿Qué es una batería y cuánta RAM tengo?",
+        "Dime la hora y cuánta comida queda en la nevera",
         # Casos reales del corpus histórico de 14.836 mensajes.
         "Cuanta ram usa parekeet?",
         "Cuanta vram uisa el modelo de qwen?",
@@ -4115,7 +4125,6 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         "muestra el nombre del PC y el usuario actual",
         "muestra la hora, mi IP y mi RAM",
         "show time, IP and RAM",
-        "decime la hora y cuánta batería tengo",
         "is dictation available on my PC?",
         "cómo cuidas mi PC?",
         "Como va la rapidez del finetuning? cerre todo en mi pc para eso",
@@ -4132,6 +4141,25 @@ def test_state_questions_are_recognized_across_languages_and_forms(
 )
 def test_state_lookalikes_never_gain_deterministic_authority(text: str) -> None:
     assert resolve_explicit_effects(text, AVAILABLE) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Dime la hora y cuánta batería tengo",
+    "How much battery is left, and what time is it?",
+])
+@pytest.mark.parametrize("available", [{"system.time"}, {"system.status"}])
+def test_coordinated_questions_require_every_catalog_read(text, available) -> None:
+    assert resolve_explicit_effects(text, available) is None
+
+
+@pytest.mark.parametrize("text", [
+    'Crea una nota titulada Medidas con el texto "hora y cuánta batería tengo"',
+    'Create a note titled Measures with the text "time and how much battery is left"',
+])
+def test_quantity_question_inside_note_content_does_not_add_a_read(text) -> None:
+    result = resolve_explicit_effects(text, {"note.create", "system.time", "system.status"})
+    assert result is not None
+    assert result.operations == ("note.create",)
 
 
 @pytest.mark.parametrize(

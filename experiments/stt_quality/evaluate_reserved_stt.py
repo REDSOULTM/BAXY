@@ -75,11 +75,11 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # STT/TTS/wake. No acredita una nueva aceptacion de voz.
 # C03 Astra: hora AM/PM, tema y causa anidada conservados; lectura de explain.
 # Prosa: conocimiento separado de observaciones, sin saludo recortado ni intro fija.
-# C03 542: current program tree distinguishes GPU video memory from RAM.
+# C03 545: current program tree preserves coordinated measurement questions.
 # Historical STT/wake campaign pins remain unchanged; this declaration does
 # not claim new audio acceptance.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "69586e40ec78f1ac4b183575f110f36371633b02b17d3bc52516a92cf4952086"
+    "399e73203f5eafca73a8573083703cd2e10756b2c8544e992c8c40cb24b80138"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

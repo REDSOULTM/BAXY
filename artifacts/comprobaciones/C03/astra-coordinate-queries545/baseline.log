@@ -1,0 +1,35 @@
+.....................................FFFFFF............................. [ 66%]
+.....................................                                    [100%]
+================================== FAILURES ===================================
+_ test_state_questions_are_recognized_across_languages_and_forms[decime la hora y cu\xe1nta bater\xeda tengo-expected37] _
+tests\test_effect_intent.py:4060: in test_state_questions_are_recognized_across_languages_and_forms
+    assert result is not None
+E   assert None is not None
+_ test_state_questions_are_recognized_across_languages_and_forms[How much battery is left, and what time is it?-expected38] _
+tests\test_effect_intent.py:4060: in test_state_questions_are_recognized_across_languages_and_forms
+    assert result is not None
+E   assert None is not None
+_ test_state_questions_are_recognized_across_languages_and_forms[Dime la fecha y cu\xe1nta RAM est\xe1 libre-expected39] _
+tests\test_effect_intent.py:4060: in test_state_questions_are_recognized_across_languages_and_forms
+    assert result is not None
+E   assert None is not None
+_ test_state_questions_are_recognized_across_languages_and_forms[What time is it and how much memory is available?-expected40] _
+tests\test_effect_intent.py:4060: in test_state_questions_are_recognized_across_languages_and_forms
+    assert result is not None
+E   assert None is not None
+_ test_state_questions_are_recognized_across_languages_and_forms[\xbfCu\xe1nta bater\xeda queda y cu\xe1nta RAM tengo?-expected41] _
+tests\test_effect_intent.py:4060: in test_state_questions_are_recognized_across_languages_and_forms
+    assert result is not None
+E   assert None is not None
+_ test_state_questions_are_recognized_across_languages_and_forms[\xbfCu\xe1nto disco libre hay y cu\xe1nta bater\xeda queda?-expected42] _
+tests\test_effect_intent.py:4060: in test_state_questions_are_recognized_across_languages_and_forms
+    assert result is not None
+E   assert None is not None
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_state_questions_are_recognized_across_languages_and_forms[decime la hora y cu\xe1nta bater\xeda tengo-expected37]
+FAILED tests/test_effect_intent.py::test_state_questions_are_recognized_across_languages_and_forms[How much battery is left, and what time is it?-expected38]
+FAILED tests/test_effect_intent.py::test_state_questions_are_recognized_across_languages_and_forms[Dime la fecha y cu\xe1nta RAM est\xe1 libre-expected39]
+FAILED tests/test_effect_intent.py::test_state_questions_are_recognized_across_languages_and_forms[What time is it and how much memory is available?-expected40]
+FAILED tests/test_effect_intent.py::test_state_questions_are_recognized_across_languages_and_forms[\xbfCu\xe1nta bater\xeda queda y cu\xe1nta RAM tengo?-expected41]
+FAILED tests/test_effect_intent.py::test_state_questions_are_recognized_across_languages_and_forms[\xbfCu\xe1nto disco libre hay y cu\xe1nta bater\xeda queda?-expected42]
+6 failed, 103 passed, 1734 deselected in 1.38s

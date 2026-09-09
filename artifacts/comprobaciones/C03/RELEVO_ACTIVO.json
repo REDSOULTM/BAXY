@@ -1,10 +1,10 @@
 {
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
-  "goalStatus": "blocked",
-  "confirmedAtUtc": "2026-09-09T03:30:21.987060+00:00",
+  "goalStatus": "active",
+  "confirmedAtUtc": "2026-09-09T03:59:47.085085+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "543: GPU scope verified in real product; survey6covered/736open/0NA.",
+  "checkpoint": "545: coordinated questions; 3699 pass +121 subtests; Fast green; product546 pending.",
   "continuation": "Repair compound time+battery and factual presentation; investigate measured encoder RAM without sacrificing ranking. Continue C03, no owner clarification pending.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
@@ -41,5 +41,5 @@
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
   "workStatus": "resumed_by_explicit_owner_instruction",
-  "goalStatusNote": "get_goal todavía informa blocked; las herramientas disponibles no permiten cambiar a active. El trabajo continúa por instrucción directa del dueño; no se falsifica ese estado ni se recrea el objetivo."
+  "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending."
 }

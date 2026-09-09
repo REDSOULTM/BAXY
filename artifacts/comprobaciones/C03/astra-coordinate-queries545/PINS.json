@@ -1,0 +1,14 @@
+{
+  "baseline.log": "e9bddaffec01f38170a2845db99046c4995df79aa33c2cefc9491a76f627eff1",
+  "CURRENT_TREE.json": "6c1098f405b6caef37a6a02b026179607e6d5e3aeed939884474fc399b4eed6c",
+  "effect_intent.py.before": "68deadd7036c32ee49d174be2e216eb53f59a13f3f37236080d3baf66f4cb085",
+  "fast.log": "063bfc1d3d6faf5d2a301378b67641606aaa8926950fcb92d2a0d59109edc714",
+  "focal-after.log": "8e221fba26f208ccd2ca7da3b1bac95deff47ec51f40ce83af5ff925a72d9c77",
+  "focal.log": "f15fbe3aac7045b5095ad44b105764a33d6e3d7c69376f3c24aa44f452acd236",
+  "owners-after.log": "cff253e74fb2f8e7eb7f3e5b635acb144cc8c88217f347526f2bfc2b6b2b5862",
+  "owners.log": "3c751764a74e5f59085dc34b216308358dbdf417e05974905c38f1ca4e3186c8",
+  "PREREG.json": "5695e48f0b0f880a3eaf53c7d40c9388deed9e188b5d422a8c94f5c05d21fdd0",
+  "RESULT.md": "f57694bc4fb3ba28ef4f2f7dbcc1d9c602ea716445c76a9929715b3f13eb0515",
+  "stt-declarations.log": "3829e5420f6b99d62bd8735fe91fa786f8bd1253d533262666b6a981f13ecef9",
+  "test_effect_intent.py.before": "d9b2033942d1f2cb999c0f070b83d0b7e78b30eca40a6fb63401e0f34916dae3"
+}

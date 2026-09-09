@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-09T03:49:04.176830+00:00",
+  "registration_stage": "Recorded after test-first diagnosis and owner validation; not falsely labelled as sealed before initial reproduction.",
+  "finding": "Product541/543 H0079 fails clear time+battery reads in ES/EN. ES did not split quantity question; EN split but whole-request speech-act guard rejected it. Regional decime clock head and English how much/many were absent from shared query readers.",
+  "change": "Extend existing quantity-question boundary and speech-act/clock heads. Compose only independently direct clauses; existing global denials, unavailable operations and full-clause conservation remain. Preserve the old single-read boundary for closed CPU/RAM and OS/RAM combined scopes.",
+  "validation": {
+    "baseline": "6failed,103passed,1734deselected in1.38s",
+    "initial_focal": "2failed,107passed in1.27s; found missing shared heads",
+    "focal_after": "109passed,1734deselected in0.94s",
+    "first_owners": "1failed,3698passed+121subtests in56.21s; combined OS/RAM unnecessarily split",
+    "owners_after": "3699passed+121subtests,0skips in56.21s"
+  },
+  "owners": [
+    "test_effect_intent.py",
+    "test_system_status_scope_grounding.py",
+    "test_machine_status_scope.py",
+    "test_turn_policy.py",
+    "test_generalization_product_r6_development.py",
+    "test_planner.py",
+    "test_llm_plan_execution_gate_cases.py"
+  ],
+  "preserved_controls": "Hypothetical/past readings, other device, unknown fridge contents, independent RAM, incomplete catalog and quantity question inside quoted note content. The old historical H0079 abstention expectation is replaced by explicit preservation of both reads, not by accepting a subset.",
+  "scope": "Python only; actual product confirmation remains to be collected546; no new model/profile/visible reply. Full final still required."
+}

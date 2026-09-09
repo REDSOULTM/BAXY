@@ -1,0 +1,18 @@
+{
+  "verified_assets": [
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\e5-onnx-614241f6\\model.onnx",
+      "bytes": 470268510,
+      "sha256": "ca456c06b3a9505ddfd9131408916dd79290368331e7d76bb621f1cba6bc8665",
+      "downloaded": true
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\e5-onnx-614241f6\\model_qint8_avx512_vnni.onnx",
+      "bytes": 118346824,
+      "sha256": "dd476dd0c2514e9b9be83aeb3853fac0763e0bdf4a71645407587d77c48a2d88",
+      "downloaded": true
+    }
+  ],
+  "runtime_modified": false,
+  "benchmark_run": false
+}

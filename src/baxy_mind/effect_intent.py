@@ -7186,6 +7186,7 @@ _HARDWARE_MODEL_OPENING = (
 _STATE_QUERY_HEAD = (
     r"(?:en que|en cuanto|a cuanto|a que|de cuanto|"
     r"cuanto|cuanta|cuantos|cuantas|cuan|"
+    r"how\s+(?:much|many)|"
     r"queda|quedan|resta|hay|tengo|tiene|tienes|"
     rf"{_DATIVE_STATE_OPENING}|"
     r"am|do|does|have|has|"
@@ -9290,12 +9291,12 @@ def _review_system_and_network_effects(
 
     if _head_is(
         head,
-        r"(?:que|what|dime|show|muestra|tell|time|current|local|hora|fecha)",
+        r"(?:que|what|dime|decime|show|muestra|tell|time|current|local|hora|fecha)",
     ) and _has(
         folded,
         (
             r"\b(?:time\s+now|que\s+hora\s+es(?:\s+ahora)?|what\s+time\s+is\s+it"
-            r"(?:\s+now)?|(?:dime|muestra|show(?:\s+me)?|tell\s+me)\s+"
+            r"(?:\s+now)?|(?:dime|decime|muestra|show(?:\s+me)?|tell\s+me)\s+"
             r"(?:(?:la|the)\s+)?(?:local\s+)?(?:hora|fecha|time|date)"
             r"(?:\s+local)?|"
             r"hora\s+(?:actual|local)|(?:current|local)\s+time|"
@@ -11209,12 +11210,21 @@ def _request_clauses(text: str) -> tuple[str, ...]:
     )
     next_action_head = rf"(?=[¿?¡!\s]*(?:{action_after_clause})\b)"
     next_nominal_head = rf"(?=[¿?¡!\s]*{_SEQUENCE_NOMINAL_HEAD}\b)"
+    # Keep the pre-existing single-read boundary for the combined scopes that
+    # system.status already measures together (CPU/RAM and OS/RAM). Only add
+    # the new quantity-question boundary when it cannot use that same read.
+    quantity_question_head = (
+        ""
+        if _machine_status_scopes(text) in _COMBINED_MACHINE_SCOPES
+        and _machine_status_is_the_whole_clause(text)
+        else r"|cuant[oa]s?|how\s+(?:much|many)"
+    )
     next_effect_head = (
         rf"(?=[¿?¡!\s]*(?!(?:reproducela|reproducelo|play it|"
         rf"leerla con ocr|leerlo con ocr|read it with ocr)\b)"
         rf"(?:{action_after_clause}|{elliptical_head}|"
         rf"{_SEQUENCE_NOMINAL_HEAD}|como\s+esta|how\s+is|"
-        rf"what\s+time|que\s+hora)\b)"
+        rf"what\s+time|que\s+hora{quantity_question_head})\b)"
     )
     separator = re.compile(
         (
@@ -12959,6 +12969,13 @@ def resolve_explicit_effects(
         )
         or (
             not _is_direct_request(folded)
+            # A conjunction does not make independently explicit questions
+            # implicit. The clause resolver below must still account for all
+            # of them; this never grants a recognized subset authority.
+            and not (
+                len(clauses) > 1
+                and all(_is_direct_request(clause) for clause in clauses)
+            )
             and not _bounded_calendar_list_query(folded)
             and not _location_recommendation_request(folded)
             and _nominal_reminder_lookup_title(folded) is None
