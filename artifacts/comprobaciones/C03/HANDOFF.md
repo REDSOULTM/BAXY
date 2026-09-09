@@ -1,16 +1,15 @@
-# Handoff C03 — fuente630 validada — 2026-09-09
+# Handoff C03 — fuente633 validada
 
-## Estado
-Goal activo;25cubiertos/717abiertos/0NA, ninguna decisión pendiente. Autorización536: históricos/encuesta/nuevos con generalización ES/EN. BAXY manual cerrado; sin procesos de campaña/build/pruebas ni agentes. Main intacto5f572ee1. Fuente630 publicada en d9222a7e6614078ddf09bfb5765f84288d2f7237, remoto verificado.
+# Fuente633 y producto634 — alcance por aplicación conservado
 
-## Cambio y evidencia
-628 conserva nivel ausente tras a/al/en/to/at.630 transporta startsNewObjective opcional false para impedir que una nueva orden incompleta se concatene a la anterior; mantiene PreserveObjective para su siguiente fragmento. Sin efectos, modelo, sampler o prosa fija nuevos.
+633 cambia sólo Python: conserva la identidad del catálogo para preguntas de ventanas abiertas/cerradas y elige window.application.status. El argumento cruza su schema. Una mención de ventana, o de visibilidad, ya no basta para seleccionar window.active. No contiene nombres de aplicaciones fijados ni respuestas visibles nuevas; no cambia modelo, perfil ni provider.
 
-Full630 exit0:Python10253pass/3omisiones+466subtests(589,57s);.NET4457pass/1omisión agregada,0fallos;16omisiones opt-in impresas aparte. DueñasPython1254pass/1skip,.NET114pass. Fuente intacta durante Full. Detalle en astra-objective-continuity630/RESULT.json y FULL.log.
+Dueñas:3425pass+121subpruebas/0omisiones en64,10s; declaraciones de fuentes17pass/1omisión ambiental en1,95s. Fast exit0, Release23,46s/0warnings/errors. El Full630 sigue como línea base anterior;633 sólo toca Python y no se presenta como Full actual ni cierreC03.
 
-631 repite20casos629:16correctos frente a11;9/9aclaraciones de volumen. Siguen H0012, gramática missing-app/knowledge-discourse y missing-reference-en. Progreso sin regresión pero tercera persona pendiente. Ninguna prueba de pantalla/voz o ejecución del siguiente valor. Pico3499,559MiB GPU/2420,680MiB RAM;117,234s incluyen NativeAOT al arrancar. No mínimo conjunto acreditado.
+634 ejecuta12turnos del producto registrado, sin hooks.10/12finales correctos. Las8consultas por aplicación eligieron su lectura y nombre correctos; las2consultas de foco eligieron window.active. Steam y Chrome muestran ventanas; Spotify y Paint no. Volumen incompleto y prohibición conservan su conducta. Sólo lecturas, ninguna escritura ni cambio de aplicación. No hay comparación emparejada que permita afirmar cero regresiones globales.
 
-## Siguiente acción
-Fuente630/evidencia628–632 publicadas, remoto verificado; auditoría scratchpad/c03-audit-publication628-632.py --staged:5campañas/34pines. Después reparar H0040: auditoría632 demuestra ausencia inventada desde ventana enfocada y respuesta inglesa histórica sin lectura. effect_intent.py:7821–7823 casa cualquier ventana con window.active; _strict_catalog_request:8424 lo devuelve. Catálogo ya ofrece window.application.status. Probar aplicación abierta/cerrada, nombres, foco e idioma antes de acreditar. Registro H0040 actualizado con causa; SHA requisitos6b09a8af1c44d52274c7dd97af5ed759637db4a9f46f276b22bdcef2514d92af.
+Dos fallos impiden acreditar el requisito completo: Bloc de notas figura sin ventanas en window.application.status y luego aparece como ventana activa; Which window has focus? llega al compositor con idioma mixed y publica El ventana con enfoque… en español. La primera contradicción está en Inventory del provider, antes del modelo. Su reconocimiento usa tokens del nombre visible/ejecutables del AppID; el nombre localizado Bloc de notas y Microsoft.WindowsNotepad_8wekyb3d8bbwe!App no identifican el proceso empaquetado Notepad. Esta es una causa candidata que requiere reproducción y reparación; no basta admitir el texto del modelo.
 
-No reabrir609/619/615–617 sin causa nueva. Restan717requisitos,otras rutas,continuación real de aclaraciones,UI/voz/recuperación/VRAM conjunta y Full final. No cerrarC03 por este tramo.
+Recursos634:3497,559MiB GPU,1840,527MiB RAM del árbol medido,28,344s, sin infracciones. Es conductor oculto sin voz física: no acredita UI/voz conjunta ni el mínimo de BAXY. Encuesta25cubiertos/717abiertos/0NA; H0040 sigue abierto porque la generalización expuso el defecto de inventario. Fuente633 se adopta como corrección de alcance, no como cierre de ventanas niC03. Siguiente: identidad de aplicaciones empaquetadas en WindowsInstalledApplicationOpenProvider.cs:1011/1150 y después clasificación de idioma de foco.
+
+Sin procesos de campaña/pruebas activos; BAXY manual cerrado y aplicaciones del usuario sin cambios. Publicar antes de reparar provider.

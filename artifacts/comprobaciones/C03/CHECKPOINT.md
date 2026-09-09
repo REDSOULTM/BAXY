@@ -2,7 +2,7 @@
 
 **Estado vigente,2026-09-09:** goal activo; **ninguna decisión pendiente del dueño**. La [autorización536](AUTORIZACION_DUENO_536.md) permite usar históricos, encuesta y casos nuevos con generalización ES/EN. Los bloqueos534 descritos abajo son históricos y quedaron resueltos.
 
-Fuente630 publicada en d9222a7e6614078ddf09bfb5765f84288d2f7237, remoto verificado; main intacto. Full630 exit0:Python10253pass/3omisiones+466subpruebas,.NET4457pass/1omisión agregada.63116/20 y9/9aclaraciones de volumen, sin nuevas regresiones; persistencia de la respuesta siguiente aún requiere producto.628sola no bastaba y629se conserva como fallo. Encuesta25cubiertos/717abiertos/0NA; no confundir abiertos con fallos medidos. Estado operativo y siguiente acción en [HANDOFF.md](HANDOFF.md) y [RELEVO_ACTIVO.json](RELEVO_ACTIVO.json). Las entradas de cada tramo se conservan a continuación y sus cifras no describen automáticamente la fuente actual.
+Fuente633 validada, publicación pendiente. Dueñas3425pass+121subpruebas/0omisiones;17pass/1omisión de declaraciones;Fast exit0. Producto63410/12:selección de lecturas10/10, pero inventario de Bloc de notas e idioma del foco pendientes.25cubiertos/717abiertos/0NA. Full630 es línea base anterior, no Full633. Estado en HANDOFF.md y RELEVO_ACTIVO.json. Los tramos históricos no describen automáticamente la fuente actual.
 
 ## Registro histórico — fuente120713be y auditoría534
 
@@ -647,3 +647,21 @@ Encuesta25cubiertos/717abiertos/0NA.632 audita H0040: las negaciones541no estaba
 ## Publicación630 y evidencia628–632
 
 Fuente y evidencia publicadas en d9222a7e6614078ddf09bfb5765f84288d2f7237, HEAD=origin verificado; main intacto. Auditoría de staging:5campañas/34pines,bytes conservados. Full630exit0,63116/20 con9/9volumen ysinregresiones. La auditoría632 actualiza sólo la causa y evidencia de H0040;25cubiertos/717abiertos/0NA. BAXY manual cerrado, sin procesos en curso ni decisión pendiente del dueño. Siguiente: alcance específico de ventanas por aplicación antes de nuevas composiciones o modelos.
+
+
+## Candidato633 — alcance de ventanas por aplicación
+
+632 identifica la primera transformación errónea.633 reutiliza window.application.status con el catálogo autenticado y su schema; una ventana visible no implica foco.50focales iniciales verdes; dueñas3425pass+121subtests/0skips en64,10s, incluidos12controles añadidos de alcance/schema. Fast y producto634 pendientes. Sin cambio de modelo, provider o prosa fija.25cubiertos/717abiertos/0NA.
+
+
+# Fuente633 y producto634 — alcance por aplicación conservado
+
+633 cambia sólo Python: conserva la identidad del catálogo para preguntas de ventanas abiertas/cerradas y elige window.application.status. El argumento cruza su schema. Una mención de ventana, o de visibilidad, ya no basta para seleccionar window.active. No contiene nombres de aplicaciones fijados ni respuestas visibles nuevas; no cambia modelo, perfil ni provider.
+
+Dueñas:3425pass+121subpruebas/0omisiones en64,10s; declaraciones de fuentes17pass/1omisión ambiental en1,95s. Fast exit0, Release23,46s/0warnings/errors. El Full630 sigue como línea base anterior;633 sólo toca Python y no se presenta como Full actual ni cierreC03.
+
+634 ejecuta12turnos del producto registrado, sin hooks.10/12finales correctos. Las8consultas por aplicación eligieron su lectura y nombre correctos; las2consultas de foco eligieron window.active. Steam y Chrome muestran ventanas; Spotify y Paint no. Volumen incompleto y prohibición conservan su conducta. Sólo lecturas, ninguna escritura ni cambio de aplicación. No hay comparación emparejada que permita afirmar cero regresiones globales.
+
+Dos fallos impiden acreditar el requisito completo: Bloc de notas figura sin ventanas en window.application.status y luego aparece como ventana activa; Which window has focus? llega al compositor con idioma mixed y publica El ventana con enfoque… en español. La primera contradicción está en Inventory del provider, antes del modelo. Su reconocimiento usa tokens del nombre visible/ejecutables del AppID; el nombre localizado Bloc de notas y Microsoft.WindowsNotepad_8wekyb3d8bbwe!App no identifican el proceso empaquetado Notepad. Esta es una causa candidata que requiere reproducción y reparación; no basta admitir el texto del modelo.
+
+Recursos634:3497,559MiB GPU,1840,527MiB RAM del árbol medido,28,344s, sin infracciones. Es conductor oculto sin voz física: no acredita UI/voz conjunta ni el mínimo de BAXY. Encuesta25cubiertos/717abiertos/0NA; H0040 sigue abierto porque la generalización expuso el defecto de inventario. Fuente633 se adopta como corrección de alcance, no como cierre de ventanas niC03. Siguiente: identidad de aplicaciones empaquetadas en WindowsInstalledApplicationOpenProvider.cs:1011/1150 y después clasificación de idioma de foco.

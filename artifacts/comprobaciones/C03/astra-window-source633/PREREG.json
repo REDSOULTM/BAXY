@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-09T12:32:17.219309+00:00",
+  "source": 633,
+  "sources": {
+    "src/baxy_mind/effect_intent.py": "d96f0e922674cbb5bbc3be5e348d8698f2595f7ae75c8a4814c96ecb28edd961",
+    "src/baxy_mind/__main__.py": "3c66e6cbe15ae091590393946e1c5f1ad056c89869a2c6bb345de616f760b9c6"
+  },
+  "python_tree_sha256": "13f076532f82fb157a5423c5dbec885dc620c866b4fa0e91106ef6f52b64900b",
+  "python_files": 404,
+  "test_first": "46 failed/4 passed, including missing helper import;50 passed after implementation. Added4scope and8schema controls before owners.",
+  "owners": {
+    "passed": 3425,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 64.1
+  },
+  "cause": "632: foreground snapshot falsely used for named application absence. Use existing window.application.status with authenticated identity and exact schema; visible alone no longer authorizes foreground.",
+  "criteria": "Fast and current-pin owners green. Product634: real installed app names, open/closed observations, ES/EN/order, foreground controls, no write operation. No model/profile change or UI/voice credit. Record all outcomes, no survey coverage inferred from parser."
+}

@@ -3586,6 +3586,54 @@ def resolve_application_catalog_app_id(
     return None
 
 
+def resolve_application_window_status_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Resolve a named visible-window question against the app snapshot.
+
+    A foreground snapshot cannot establish absence of other windows. Conversely,
+    visible windows do not establish background process liveness. Keep this read
+    bounded to open/closed questions about one authenticated application; the
+    model still owns other formulations and unresolved application identities.
+    """
+    catalog = build_application_catalog_index(application_names)
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    folded = _strip_request_envelope(folded).strip(" ¿?¡!.")
+    if _other_device_effect_scope(folded):
+        return None
+    folded = re.sub(r"\s+(?:por favor|please|ahora|now)$", "", folded)
+    state = r"(?:abiert[oa]|cerrad[oa]|open|closed)"
+    inquiry = (
+        r"(?:(?:comprueba|revisa|verifica|confirma|averigua|dime)\s+si|"
+        r"(?:check|verify|confirm|see|find out|tell me)\s+(?:if|whether))\s+"
+    )
+    patterns = (
+        rf"(?:esta|is)\s+(?P<target>.+?)\s+{state}",
+        rf"esta\s+{state}\s+(?P<target>.+?)",
+        rf"{inquiry}(?P<target>.+?)\s+(?:esta|is)\s+{state}",
+        rf"{inquiry}esta\s+{state}\s+(?P<target>.+?)",
+        r"hay\s+(?:(?:alguna|una)\s+)?ventana\s+de\s+"
+        r"(?P<target>.+?)\s+abierta",
+        r"are\s+(?:any\s+)?windows\s+of\s+(?P<target>.+?)\s+open",
+    )
+    for pattern in patterns:
+        match = re.fullmatch(pattern, folded)
+        if match is None:
+            continue
+        target = match.group("target")
+        # Reuse the catalog's identity resolver, never a vocabulary of app
+        # names. Its aliases are also understood by the status provider.
+        # Whole-target forms prevent an extra clause becoming part of a name.
+        for form, _ in _application_target_forms(target):
+            key = _application_name_key(form)
+            exact = [name for name, candidate in catalog.entries if candidate == key]
+            if len(exact) == 1:
+                return exact[0]
+        return resolve_application_catalog_app_id(target, catalog)
+    return None
+
+
 def resolve_application_installed_name(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -7509,6 +7557,9 @@ def _strict_catalog_request(
             return None
         return EffectIntent(operations, evidence or tuple(text for _ in operations))
 
+    if resolve_application_window_status_name(text, application_names) is not None:
+        return intent("window.application.status")
+
     if _local_internet_connection_query(text):
         # The generic internet domain below means web content, not this local
         # observation. Match the whole clause so a second task is not dropped;
@@ -7819,7 +7870,10 @@ def _strict_catalog_request(
             ),
             (
                 "window.active",
-                r"\b(?:ventana|window)\b|\b(?:programa|program|application|app)\b.{0,48}"
+                r"\b(?:ventana|window)\b.{0,48}\b(?:activ[oa]|active|foco|focus|"
+                r"foreground|primer\s+plano|actual|current|frente|keystrokes)\b|"
+                r"\b(?:active|focused|foreground|current)\s+window\b|"
+                r"\b(?:programa|program|application|app)\b.{0,48}"
                 r"\b(?:teclas|keystrokes|typing\s+focus|foco\s+de\s+escritura)\b",
             ),
             (
@@ -9110,7 +9164,7 @@ def _strict_catalog_request(
         and _has(
             text,
             r"\b(?:activa|active|primer\s+plano|foreground|actual|current|foco|focus|"
-            r"focused|visible|al\s+frente|in\s+front|delante|in\s+front\s+of|"
+            r"focused|al\s+frente|in\s+front|delante|in\s+front\s+of|"
             r"recibe\s+el\s+teclado|recibiendo\s+mis\s+teclas|"
             r"receiving\s+(?:keyboard\s+focus|my\s+keystrokes|keyboard\s+input))\b",
         )

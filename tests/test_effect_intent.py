@@ -28,6 +28,71 @@ from baxy_mind.effect_intent import (
 )
 
 
+@pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+@pytest.mark.parametrize("surface", [
+    "hay alguna ventana de {name} abierta",
+    "¿Está {name} abierto?",
+    "¿Está abierta la aplicación {name}?",
+    "Baxy, por favor: comprueba si {name} está abierto",
+    "Is {name} open?",
+    "Please check whether {name} is closed",
+    "Are any windows of {name} open?",
+    "Baxy, is {name} open please?",
+])
+def test_named_window_status_preserves_application_scope(name, surface):
+    from baxy_mind.effect_intent import resolve_application_window_status_name
+
+    text = surface.format(name=name)
+    applications = (name, "Otra aplicación")
+    intent = resolve_explicit_effects(
+        text, ("window.active", "window.application.status", "app.open"),
+        application_names=applications,
+    )
+    assert intent is not None
+    assert intent.operations == ("window.application.status",)
+    assert resolve_application_window_status_name(text, applications) == name
+    without_status = resolve_explicit_effects(
+        text, ("window.active", "app.open"), application_names=applications,
+    )
+    assert without_status is None
+
+
+@pytest.mark.parametrize("text", [
+    "Spotify is open.", "Steam está abierto.",
+    "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+    "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+    "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+    "Is Spotify running in the background?", "Is it open?",
+    "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+    "¿Hay alguna ventana de oportunidad abierta?",
+])
+def test_named_window_status_does_not_invent_request_or_scope(text):
+    from baxy_mind.effect_intent import resolve_application_window_status_name
+
+    assert resolve_application_window_status_name(text, ("Spotify", "Steam")) is None
+
+
+@pytest.mark.parametrize("text", [
+    "¿Qué ventana está activa?", "Which window has focus?",
+    "Dime qué ventana está en primer plano", "What window receives my keystrokes?",
+])
+def test_named_window_status_preserves_foreground_queries(text):
+    intent = resolve_explicit_effects(text, ("window.active", "window.application.status"))
+    assert intent is not None
+    assert intent.operations == ("window.active",)
+
+
+@pytest.mark.parametrize("text", [
+    "¿Hay alguna ventana de Steam visible?",
+    "Are any windows of Spotify visible?",
+    "¿Está abierta la ventana del dormitorio?",
+    "¿Hay alguna ventana de oportunidad abierta?",
+])
+def test_window_mention_does_not_authorize_foreground_substitution(text):
+    intent = resolve_explicit_effects(text, ("window.active",))
+    assert intent is None
+
+
 @pytest.mark.parametrize("prefix", ["Si, ", "Sí, ", "Yes, ", "Okay, "])
 @pytest.mark.parametrize("user_text,operations", [
     ("abre steam", ("app.open",)),

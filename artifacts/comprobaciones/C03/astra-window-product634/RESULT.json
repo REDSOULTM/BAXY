@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-09T12:37:58.504875+00:00",
+  "source": 633,
+  "correct": 10,
+  "total": 12,
+  "application_operations_correct": 8,
+  "application_total": 8,
+  "foreground_operations_correct": 2,
+  "failed_cases": {
+    "window-name-es": "Provider reports zero Notepad windows, contradicted by the foreground Notepad observation later in the same run. The composer repeats this false observation.",
+    "focus-en": "English input is classified mixed and answered in Spanish with ungrammatical El ventana. The selected foreground observation itself is correct."
+  },
+  "read_operations": 10,
+  "write_operations": 0,
+  "ui_or_voice_credit": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1840.52734375,
+    "seconds": 28.344
+  },
+  "whole_window_requirement_accepted": false,
+  "private_hashes": {
+    "panel.json": "434f403ba6925eb46c75627ed625c3ccb42429a9965cd4ea0fd064a0516b36ad",
+    "capture/events.jsonl": "3589e7ee1a9a1dd9ffd815dcc72176e4d0561c1e3897214b06473dde34f86943",
+    "turn-audit.jsonl": "ccd51bd07eb211d0e230b4f435747d8975a3cc1c94103b8bc5474abaf1439699",
+    "shell-trace.jsonl": "2045199c3e81c7ca98fcb19e6705f05eeb458cb3f88c14cc71f6208b553f6b8d",
+    "compose-audit.jsonl": "8555d32aeecad402a842f2a9a4f6af22e5ad4818124c89eda349ab79778f2fa7",
+    "raw-replies.jsonl": "b4f1a9004ff6a617c528525210da81359b3f5e4264325240577bd3a8b9faec76",
+    "adjudication.json": "85a4b33e79f6e9e721c64fad2ca9aa17281b19e534da6149bd93e32d6ea835df",
+    "progress.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "RESULT.md": "101d253ca1d2ed0d34639e1ac9e7a39fe4d2d2f4595fe59298acbd75ae39aa86"
+  }
+}

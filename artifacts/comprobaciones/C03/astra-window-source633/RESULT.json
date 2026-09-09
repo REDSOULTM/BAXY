@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-09T12:37:58.713925+00:00",
+  "adopted": true,
+  "owners": {
+    "passed": 3425,
+    "skipped": 0,
+    "subtests": 121,
+    "seconds": 64.1
+  },
+  "current_pin_owners": {
+    "passed": 17,
+    "skipped": 1,
+    "seconds": 1.95
+  },
+  "fast_exit": 0,
+  "release_seconds": 23.46,
+  "source_files": {
+    "src/baxy_mind/effect_intent.py": "d96f0e922674cbb5bbc3be5e348d8698f2595f7ae75c8a4814c96ecb28edd961",
+    "src/baxy_mind/__main__.py": "3c66e6cbe15ae091590393946e1c5f1ad056c89869a2c6bb345de616f760b9c6",
+    "tests/test_effect_intent.py": "569ac1548aa89dcf4e636135f8bdc00ca0403acf0bdc47dcfe3d87cab65e2eb5",
+    "tests/test_turn_policy.py": "353856e79143e2d511514ca1187c1175143f5daed8f6cda5ea8a4f53ae08ab75",
+    "tests/test_price_v8_veto_damage_by_cause.py": "bfc72fb57e8a3b3ba43f3588f6910e2052ea5b5f87bf4d90ebce8e1c6a7f3e9d",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "1bd726ee91252b920fcca7e1efd4c8267aeabdfb206ddbb43e2ca18bebdb5e63",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "cccbcdc035fb3f6166b149db314280c4a914fd17c3ecf34f03c1e9933ca13764"
+  },
+  "source_unchanged_during_product": true,
+  "product634_correct": 10,
+  "product634_total": 12,
+  "goal_complete": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  }
+}

@@ -1,0 +1,944 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....                       [100%]
+================================== FAILURES ===================================
+_ test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-Steam] _
+
+name = 'Steam', surface = 'hay alguna ventana de {name} abierta'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-Spotify] _
+
+name = 'Spotify', surface = 'hay alguna ventana de {name} abierta'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'hay alguna ventana de {name} abierta'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'hay alguna ventana de {name} abierta'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-Steam] _
+
+name = 'Steam', surface = '¿Está {name} abierto?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-Spotify] _
+
+name = 'Spotify', surface = '¿Está {name} abierto?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = '¿Está {name} abierto?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = '¿Está {name} abierto?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-Steam] _
+
+name = 'Steam', surface = '¿Está abierta la aplicación {name}?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-Spotify] _
+
+name = 'Spotify', surface = '¿Está abierta la aplicación {name}?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = '¿Está abierta la aplicación {name}?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = '¿Está abierta la aplicación {name}?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-Steam] _
+
+name = 'Steam', surface = 'Baxy, por favor: comprueba si {name} está abierto'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-Spotify] _
+
+name = 'Spotify', surface = 'Baxy, por favor: comprueba si {name} está abierto'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-Bloc de notas] _
+
+name = 'Bloc de notas'
+surface = 'Baxy, por favor: comprueba si {name} está abierto'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-\xd3rbita 23] _
+
+name = 'Órbita 23'
+surface = 'Baxy, por favor: comprueba si {name} está abierto'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Is {name} open?-Steam] _
+
+name = 'Steam', surface = 'Is {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Is {name} open?-Spotify] _
+
+name = 'Spotify', surface = 'Is {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Is {name} open?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'Is {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Is {name} open?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'Is {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Please check whether {name} is closed-Steam] _
+
+name = 'Steam', surface = 'Please check whether {name} is closed'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Please check whether {name} is closed-Spotify] _
+
+name = 'Spotify', surface = 'Please check whether {name} is closed'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Please check whether {name} is closed-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'Please check whether {name} is closed'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Please check whether {name} is closed-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'Please check whether {name} is closed'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Are any windows of {name} open?-Steam] _
+
+name = 'Steam', surface = 'Are any windows of {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Are any windows of {name} open?-Spotify] _
+
+name = 'Spotify', surface = 'Are any windows of {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Are any windows of {name} open?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'Are any windows of {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Are any windows of {name} open?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'Are any windows of {name} open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-Steam] _
+
+name = 'Steam', surface = 'Baxy, is {name} open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-Spotify] _
+
+name = 'Spotify', surface = 'Baxy, is {name} open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'Baxy, is {name} open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'Baxy, is {name} open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:43: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Spotify is open.] _
+
+text = 'Spotify is open.'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Steam est\xe1 abierto.] _
+
+text = 'Steam está abierto.'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Translate 'Is Spotify open?'] _
+
+text = "Translate 'Is Spotify open?'"
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[No compruebes si Steam est\xe1 abierto] _
+
+text = 'No compruebes si Steam está abierto'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Is Spotify open on my phone?] _
+
+text = 'Is Spotify open on my phone?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[\xbfEst\xe1 Steam abierto en otro ordenador?] _
+
+text = '¿Está Steam abierto en otro ordenador?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Is the shop open?] _
+
+text = 'Is the shop open?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[\xbfEst\xe1 abierta la ventana del dormitorio?] _
+
+text = '¿Está abierta la ventana del dormitorio?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Is Spotify running in the background?] _
+
+text = 'Is Spotify running in the background?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+___ test_named_window_status_does_not_invent_request_or_scope[Is it open?] ____
+
+text = 'Is it open?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+___ test_named_window_status_does_not_invent_request_or_scope[Open Spotify] ___
+
+text = 'Open Spotify'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+___ test_named_window_status_does_not_invent_request_or_scope[Close Steam] ____
+
+text = 'Close Steam'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[Is Spotify open and close Steam] _
+
+text = 'Is Spotify open and close Steam'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+_ test_named_window_status_does_not_invent_request_or_scope[\xbfHay alguna ventana de oportunidad abierta?] _
+
+text = '¿Hay alguna ventana de oportunidad abierta?'
+
+    @pytest.mark.parametrize("text", [
+        "Spotify is open.", "Steam está abierto.",
+        "Translate 'Is Spotify open?'", "No compruebes si Steam está abierto",
+        "Is Spotify open on my phone?", "¿Está Steam abierto en otro ordenador?",
+        "Is the shop open?", "¿Está abierta la ventana del dormitorio?",
+        "Is Spotify running in the background?", "Is it open?",
+        "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
+        "¿Hay alguna ventana de oportunidad abierta?",
+    ])
+    def test_named_window_status_does_not_invent_request_or_scope(text):
+>       from baxy_mind.effect_intent import resolve_application_window_status_name
+E       ImportError: cannot import name 'resolve_application_window_status_name' from 'baxy_mind.effect_intent' (D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\effect_intent.py)
+
+tests\test_effect_intent.py:70: ImportError
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[hay alguna ventana de {name} abierta-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 {name} abierto?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfEst\xe1 abierta la aplicaci\xf3n {name}?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, por favor: comprueba si {name} est\xe1 abierto-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Is {name} open?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Is {name} open?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Is {name} open?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Is {name} open?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Please check whether {name} is closed-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Please check whether {name} is closed-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Please check whether {name} is closed-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Please check whether {name} is closed-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Are any windows of {name} open?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Are any windows of {name} open?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Are any windows of {name} open?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Are any windows of {name} open?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, is {name} open please?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Spotify is open.]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Steam est\xe1 abierto.]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Translate 'Is Spotify open?']
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[No compruebes si Steam est\xe1 abierto]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Is Spotify open on my phone?]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[\xbfEst\xe1 Steam abierto en otro ordenador?]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Is the shop open?]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[\xbfEst\xe1 abierta la ventana del dormitorio?]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Is Spotify running in the background?]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Is it open?]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Open Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Close Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[Is Spotify open and close Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_does_not_invent_request_or_scope[\xbfHay alguna ventana de oportunidad abierta?]
+46 failed, 4 passed, 1870 deselected in 4.25s

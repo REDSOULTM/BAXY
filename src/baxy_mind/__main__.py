@@ -4218,6 +4218,12 @@ def _explicit_arguments_from_evidence(
         title = effect_intent.explicit_window_title(evidence)
         return {"process": title, "byTitle": True} if title is not None else None
 
+    if operation == "window.application.status":
+        name = effect_intent.resolve_application_window_status_name(
+            evidence, application_names,
+        )
+        return {"name": name} if name is not None else None
+
     if operation == "app.open":
         app_id = resolve_application_catalog_app_id(evidence, application_names)
         return {"appId": app_id} if app_id is not None else None
@@ -4944,6 +4950,7 @@ def _ground_explicit_arguments(
         "media.control",
         "media.play.query",
         "system.status",
+        "window.application.status",
     }:
         # Core's verified installed application/game snapshots own identity
         # canonicalization. Requiring a canonical display name or opaque AppID

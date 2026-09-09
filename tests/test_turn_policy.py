@@ -3327,6 +3327,27 @@ def test_application_launch_requires_authenticated_installed_identity() -> None:
     assert vetoed["effect_operations"] == []
 
 
+@pytest.mark.parametrize("name", ["Steam", "Spotify", "Órbita 23", "Bloc de notas"])
+@pytest.mark.parametrize("surface", ["¿Está {name} abierto?", "Is {name} open?"])
+def test_window_status_argument_uses_catalog_identity_and_schema(name, surface):
+    schema = {
+        "type": "object", "properties": {"name": {"type": "string"}},
+        "required": ["name"], "additionalProperties": False,
+    }
+    text = surface.format(name=name)
+    assert _ground_explicit_arguments(
+        "window.application.status", text, schema, (name,),
+    ) == {"name": name}
+    assert _ground_explicit_arguments(
+        "window.application.status", text, schema, (),
+    ) is None
+    assert _ground_explicit_arguments(
+        "window.application.status", text,
+        {"type": "object", "properties": {}, "additionalProperties": False},
+        (name,),
+    ) is None
+
+
 def test_application_argument_grounding_uses_authenticated_provider_identity() -> None:
     applications = ("Bloc de notas", "Calculadora", "Google Chrome")
 
