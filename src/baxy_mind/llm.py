@@ -4604,6 +4604,7 @@ def compose_visible_defect(
     if isinstance(observed_dict.get("cpu"), dict) and observed_dict["cpu"] and re.search(
         r"\b(?:estoy\s+(?:usando|ocupando|consumiendo)|"
         r"tengo\s+(?:(?:un|una|el|la)\s+)?(?:procesador|cpu)|"
+        r"tengo\s+(?:(?:un|el)\s+)?(?:uso|consumo)\b[^.!?\n]{0,60}\b(?:cpu|procesador)|"
         r"mi\s+(?:equipo|pc|computador(?:a)?|ordenador|procesador|cpu)|"
         r"i(?:\s+am|'m|’m)\s+(?:using|consuming)|"
         r"i\s+have\s+(?:(?:an?|the|\d+)\s+[^.!?\n]{0,80})?(?:processors?|cpu|cores)|"

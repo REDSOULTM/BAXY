@@ -1,0 +1,19 @@
+{
+  "cause": "Actual product582 ordinal11 publishes Tengo un uso del50 por ciento de CPU. Existing guard catches Tengo un procesador but not possession of use/consumption.",
+  "change": "Extend existing scoped actor predicate to tengo + optional article + uso/consumo + bounded same-sentence CPU reference. No new inference, prompt, model, visible phrase, or grammar claim. Existing repair carries the actually rejected draft.",
+  "controls": "A reading of CPU use and a separate sentence saying Tengo el resultado remain valid. Three forms in direct and completed-mission observations; integration confirms actual draft and two requests.",
+  "baseline": {
+    "failed": 6,
+    "passed": 48,
+    "seconds": 2.25,
+    "population": "54 tests before adding final integration case"
+  },
+  "owners": {
+    "passed": 2165,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 28.28
+  },
+  "timing_context": "Owner tests ran while isolated583 inference was active; their speed and overlapping native timings are not clean performance benchmarks.",
+  "pending": "Fast/STT and actual product verification; grammar failure remains open."
+}

@@ -23,6 +23,9 @@ def facts(mission=False):
     "Estoy usando un 23,75% de la CPU.",
     "En este momento estoy ocupando un 23,75 por ciento del procesador.",
     "Tengo un procesador Example Processor con 6 núcleos físicos.",
+    "Tengo un uso del 23,75 por ciento de CPU.",
+    "Tengo un consumo de CPU del 23,75%.",
+    "Tengo el uso del procesador al 23,75%.",
     "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
     "I am using 23.75% of the CPU.",
     "I'm consuming 23.75 percent of the processor.",
@@ -75,6 +78,15 @@ def test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling():
     assert retry["max_tokens"] == first["max_tokens"]
 
 
+def test_possessive_usage_claim_enters_existing_repair_with_its_actual_draft():
+    bad = "Tengo un uso del 23,75 por ciento de CPU."
+    good = "El uso de la CPU es del 23,75%."
+    client = Recorder([bad, good])
+    assert client.compose_user_message("cuánto uso de CPU tengo", "status", facts()) == good
+    assert len(client.payloads) == 2
+    assert client.payloads[1]["messages"][-2]["content"] == bad
+
+
 def test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person():
     first = "Estoy usando un 23,75% de la CPU."
     second = "Mi equipo está usando un 23,75% de la CPU."
@@ -111,7 +123,12 @@ def test_missing_whole_cpu_observation_does_not_activate_machine_actor_repair(si
     assert result != "wrong_machine_actor"
 
 
-@pytest.mark.parametrize("reply", ["I have checked the CPU.", "Estoy midiendo el uso de CPU."])
+@pytest.mark.parametrize("reply", [
+    "I have checked the CPU.",
+    "Estoy midiendo el uso de CPU.",
+    "Tengo una lectura del uso de CPU: 23,75%.",
+    "El uso de CPU es del 23,75%. Tengo el resultado de la lectura.",
+])
 def test_reading_activity_is_not_cpu_ownership_or_process_usage(reply):
     assert llm.compose_visible_defect(reply, "status", "Read the CPU usage", facts()) != "wrong_machine_actor"
 

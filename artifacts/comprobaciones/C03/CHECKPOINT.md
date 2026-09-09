@@ -239,3 +239,34 @@ Reparaciones efectivas native8/11/13/22: mismos hechos, borrador rechazado, feed
 Fuente581 dueñas2156pass+121subtests/0skip; focalCPU46+STT12pass/1skip ambiental; Fast verde, Release1,76s. Full final pendiente. Main5f572ee intacto. No decisión del dueño pendiente, BAXY manual cerrado, goal activo.
 
 Siguiente: tras los intentos de instrucciones558/559 y reparación578–582, contrastar estrategia de razonamiento acotado9B con capturas reales sin cambiar sus instrucciones.567 tenía razonamiento ilimitado y no dio finales antes del timeout; no repetirlo ni inferir incapacidad semántica. Medir límite efectivo y calidad/recursos antes de adoptar. Continúan resto de encuesta/ocho rutas, UI real, loopback íntegro/AEC separado, consumo conjunto, aceptación y Full final. C08 humano sólo evidencia/reanudación.
+
+
+# Nativo583 — razonamiento limitado9B no adoptado
+
+Qwen3.5-9B Q4_K_M/b10865, perfil general oficialT1/p0,95/k20/min0/presence1,5/repeat1/seed0, NGL19, un contexto8192, q8KV, FA. Frente a567 se limita razonamiento256 y salida total768, conservando los prompts de desarrollo. Siete respuestas recibidas: seis EOS y una cortada. Confirmación, progreso, hora y distinción de memoria desactivada son utilizables; el guardado inventa el apelativo Bax y la recuperación dice «Mi nombre guardado es Jordan», atribuyéndolo a BAXY. La séptima llama físicos a16 procesadores lógicos, expone deliberación en inglés y acaba por length tras127,1s. Es una respuesta fallida, no una prueba de incapacidad con presupuesto suficiente. El razonamiento aparece separado al principio y luego sigue deliberando en el contenido final después del límite.
+
+Se detuvo sólo el servidor identificado en PROCESS tras esos fallos, sin promoverlo. La siguiente petición recibió ConnectionReset y ocho posteriores ConnectionRefused: nueve errores inducidos por el cierre, no nueve fallos semánticos. El complete:true del conductor sólo significa que recorrió su bucle; la campaña semántica quedó parcial con siete respuestas. No se evaluaron las cuatro capturasCPU recientes582. No extrapolar a todo9B ni repetir este perfil sin cambiar estrategia.
+
+GPU3428,148MiB/RAM3039,039MiB,478,094s; los seis EOS tardaron44,1–50,1s. Las pruebas Python584 se solaparon brevemente: no es un benchmark limpio de latencia. Ningún cambio del manifiesto, UI, voz, ejecución de efectos ni cobertura de encuesta. Fuentes oficiales consultadas2026-09-09: fichaQwen3.5-9B y llama.cpp discusión21445 sobre presupuesto; PR25961 sigue experimental, no se atribuyó como implementada en b10865.
+
+
+# Nativo585 — separar evidencia con roles no corrige el sujeto
+
+Ocho capturasCPU recientes582 por dos representaciones,16 EOS. La variante mueve la línea situation intacta a role:tool, precedida por una representación estructural sintética de la lectura ya observada; no es un tool_call producido en aquel turno. Identidad, pregunta, hechos, instrucciones, muestreo greedy/seed0 y límites permanecen iguales. El template efectivo contiene tool_call/tool_response conforme al template oficial exactoQwen2507. No se ejecutan herramientas ni se introduce un borrador de prosa escrito a mano.
+
+Ambos formatos conservan cuatro respuestas correctas (conteos4/9 y usos14/23), pero ambos fallan en los sujetos10/12/20/21. El formato tool sigue diciendo Estoy/I'm/Tengo al describir la CPU total. No hay mejora que justifique incorporarlo; no se modifica el producto. Esta comparación a muestreo constante aísla la representación, no clasifica modelos ni afirma que greedy sea su óptimo general.
+
+GPU3497,559MiB/RAM721,680MiB,8,829s. Fuentes consultadas2026-09-09: tokenizer_config oficialQwen3-4B-Instruct-2507 y documentaciónQwen3 de function calling. Sin UI/voz ni consumo conjunto final. Encuesta13 cubiertos/729 abiertos/0NA intacta.
+
+
+# Fuente584 validada — posesión del uso CPU
+
+Se amplía la guarda existente para Tengo + uso/consumo + referencia CPU en la misma frase. Repara el defecto real582 ordinal11; conserva las frases que atribuyen a BAXY una lectura realizada, sin atribuirle el consumo total. No nueva llamada, modelo, prompt ni plantilla. El reintento recibe su borrador real. La gramática incorrecta de582 ordinal7 sigue abierta y no se confunde con esta corrección.
+
+Baseline54:6fallos/48pass,2,25s. Dueñas finales2165pass+121subtests/0skips,28,28s. FocalCPU55+STT12=67pass/1skip ambiental,2,14s; faltan archivos de campaña ciega, no es voz aprobada. Ruff verde. Fast verde completo, Release19,81s/0advertencias/0errores. Árbol Python6ca99187a3a2f97e5ba3736c5b61e2bae9710f97ed44441f8a4819f7bbeadb7d/403; históricos intactos. SóloPython, Full final pendiente. Dueñas se solaparon con inferencia583; no comparar sus tiempos como benchmark limpio.
+
+582 publicado d87997d5, fuente581 en1dc8b33d. Encuesta13 cubiertos/729 abiertos/0NA, original742/rev1248 intacto. BAXY manual cerrado; no decisión del dueño pendiente; goal activo, main5f572ee intacto. Publicar584 y verificar producto587 antes de sumar cobertura.
+
+583: siete respuestas9B con límite256; seisEOS/una length. Fallan dos EOS (apelativo inventado y sujeto del nombre) y una salida que mezcla deliberación/idioma/count físico falso. Detenido su servidor; nueve errores de transporte inducidos, no semánticos. No adopción.585: roles tool conservan exactamente cuatro errores de sujeto de ocho casos;16EOS, sin mejora, no adopción.
+
+586 nativo completado: adaptador heredado piloto4 sóloCPU corrige el sujeto en12entradas, con redondeo entero en algunas; los tres controles fueraCPU mantienen la base. GPU3693,563MiB/RAM1030,723MiB,20,296s, sin UI/voz. Requiere adjudicación, segunda semilla/misiones y recursos conjuntos antes de implementar o promover. No nuevo entrenamiento ni modificación del runtime registrado. Pendientes resto de encuesta/ocho rutas, UI real, loopback íntegro/AEC por separado, aceptación, Full final y publicación final. C08 humano sólo evidencia/reanudación.

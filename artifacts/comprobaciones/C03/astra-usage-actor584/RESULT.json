@@ -1,0 +1,26 @@
+{
+  "adopted": true,
+  "baseline": {
+    "failed": 6,
+    "passed": 48
+  },
+  "owners": {
+    "passed": 2165,
+    "subtests": 121,
+    "skips": 0
+  },
+  "focal_stt": {
+    "passed": 67,
+    "environmental_skips": 1
+  },
+  "fast": "passed",
+  "release_seconds": 19.81,
+  "source_sha256": "fc00101937eee9f50357d36069190188bbf06ca14291391538faa392fe71a906",
+  "test_sha256": "d8942f48663760a9e3f433f90a063254b065d120a986012eed18be753a448871",
+  "actual_product": "pending587",
+  "survey": {
+    "covered": 13,
+    "open": 729,
+    "not_applicable": 0
+  }
+}

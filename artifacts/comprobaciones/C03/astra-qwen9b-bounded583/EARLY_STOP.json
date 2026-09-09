@@ -1,0 +1,5 @@
+{
+  "utc": "2026-09-09T07:07:47.224357+00:00",
+  "pid": 72608,
+  "reason": "No promotion possible: completed stored-name response has wrong actor; completed logical CPU response publishes false physical count, visible deliberation and length truncation after127s. Stop this profile without judging unexecuted cases or the model globally. Remaining transport errors are induced cleanup, not semantic failures."
+}

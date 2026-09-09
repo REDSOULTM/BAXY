@@ -1,0 +1,172 @@
+......FFFFFF..........................................                   [100%]
+================================== FAILURES ===================================
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un uso del 23,75 por ciento de CPU.-False] _
+
+reply = 'Tengo un uso del 23,75 por ciento de CPU.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Tengo un uso del 23,75 por ciento de CPU.",
+        "Tengo un consumo de CPU del 23,75%.",
+        "Tengo el uso del procesador al 23,75%.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "I have 8 logical processors.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+        user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
+>       assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:38: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un uso del 23,75 por ciento de CPU.-True] _
+
+reply = 'Tengo un uso del 23,75 por ciento de CPU.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Tengo un uso del 23,75 por ciento de CPU.",
+        "Tengo un consumo de CPU del 23,75%.",
+        "Tengo el uso del procesador al 23,75%.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "I have 8 logical processors.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+        user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
+>       assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:38: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un consumo de CPU del 23,75%.-False] _
+
+reply = 'Tengo un consumo de CPU del 23,75%.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Tengo un uso del 23,75 por ciento de CPU.",
+        "Tengo un consumo de CPU del 23,75%.",
+        "Tengo el uso del procesador al 23,75%.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "I have 8 logical processors.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+        user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
+>       assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:38: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un consumo de CPU del 23,75%.-True] _
+
+reply = 'Tengo un consumo de CPU del 23,75%.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Tengo un uso del 23,75 por ciento de CPU.",
+        "Tengo un consumo de CPU del 23,75%.",
+        "Tengo el uso del procesador al 23,75%.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "I have 8 logical processors.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+        user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
+>       assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:38: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo el uso del procesador al 23,75%.-False] _
+
+reply = 'Tengo el uso del procesador al 23,75%.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Tengo un uso del 23,75 por ciento de CPU.",
+        "Tengo un consumo de CPU del 23,75%.",
+        "Tengo el uso del procesador al 23,75%.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "I have 8 logical processors.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+        user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
+>       assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:38: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo el uso del procesador al 23,75%.-True] _
+
+reply = 'Tengo el uso del procesador al 23,75%.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Tengo un uso del 23,75 por ciento de CPU.",
+        "Tengo un consumo de CPU del 23,75%.",
+        "Tengo el uso del procesador al 23,75%.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "I have 8 logical processors.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+        user_text = "How much CPU am I using?" if reply.startswith(("I ", "I'm", "My ")) else "cuánta CPU estoy usando"
+>       assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:38: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un uso del 23,75 por ciento de CPU.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un uso del 23,75 por ciento de CPU.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un consumo de CPU del 23,75%.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un consumo de CPU del 23,75%.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo el uso del procesador al 23,75%.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo el uso del procesador al 23,75%.-True]
+6 failed, 48 passed in 2.25s

@@ -1,0 +1,27 @@
+{
+  "adopted": false,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 721.6796875,
+    "seconds": 8.829,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report_sha256": "e2c5bc5f96c4eed1810e4bcdac071dfab8655ebb1443b7a20a803764b7b6cf90",
+  "private_adjudication_sha256": "106fbbe7c37592cd4776e47fb8ee6e6a8f701c531989d3165052999984ca9043",
+  "survey": {
+    "covered": 13,
+    "open": 729,
+    "not_applicable": 0
+  },
+  "source_unchanged_by_experiment": true,
+  "received_responses": 16,
+  "correct_per_profile": 4,
+  "wrong_actor_per_profile": 4,
+  "template_sha256": {
+    "template-registered-user-envelope.json": "d3e29c23a5a2565766dde6d9b4113951a7fe087ada3749dffb361a6b77c49145",
+    "template-native-tool-envelope.json": "b30e20a53bd79ea27ee44f661b01421c8f3d0b9ba147463584e7ada96998ae8a"
+  }
+}

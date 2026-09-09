@@ -1,0 +1,27 @@
+{
+  "adopted": false,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3428.1484375,
+    "ram_peak_mib": 3039.0390625,
+    "seconds": 478.094,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report_sha256": "c7ec94331720b16ed177a50be990e1181f627f3089a16ff383bf3cb201298340",
+  "private_adjudication_sha256": "344ad4f53059bf9c0a5482e3d80193f1c72a3cec010f13638c22e197224eef0b",
+  "survey": {
+    "covered": 13,
+    "open": 729,
+    "not_applicable": 0
+  },
+  "source_unchanged_by_experiment": true,
+  "received_responses": 7,
+  "eos": 6,
+  "length": 1,
+  "correct": 4,
+  "failed_received": 3,
+  "induced_transport_errors": 9,
+  "campaign_complete": false
+}
