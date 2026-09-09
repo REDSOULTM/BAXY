@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-09T15:13:12.444134+00:00",
+  "source": 652,
+  "llm_sha256": "e6993ddb155b9586dd178e5814604eb4ec25f7baf853d68a9c855d3d6e41de45",
+  "python_tree_sha256": "d6516137ea188c291331c12e7a52a2d23fbbd5835770efedb56342ef34b8d7ea",
+  "parity": 25,
+  "source_adopted": false,
+  "full_baseline": 651,
+  "current_declarations": {
+    "tests/test_price_v8_veto_damage_by_cause.py": "e9377f72dd1ff12ef0af1a3f3465c2647218cea95cc9f5d1947348f652228337",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "8a5ed3a88ed148a1a2d89c87a91d363511ebe513f3d2b33e307ff719cf77615e",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "d061c3a895a66507bc3bd402336dbf780b845cf27b577a79f12578864cff53b8"
+  }
+}

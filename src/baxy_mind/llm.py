@@ -9282,6 +9282,23 @@ class LlmRuntime:
             cpu_prompt += "\n" + _PROGRESS_MESSAGE_INSTRUCTION
         if cpu_fallback:
             message_prompt = cpu_prompt
+        if (
+            situation.get("operation") == "window.application.status"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and situation.get("cause") != "acting"
+            and isinstance(_merged_observed(situation).get("installed"), bool)
+            and type(_merged_observed(situation).get("visibleWindowCount")) is int
+        ):
+            # Installation and visible windows cannot establish process
+            # liveness. Keep this scope in the first draft and existing retry.
+            scope = (
+                " This observation reports installation and visible windows only."
+                " It does not report background processes. Preserve installed,"
+                " hasVisibleWindow and visibleWindowCount; do not infer a process state."
+            )
+            message_prompt += scope
+            cpu_prompt += scope
         compose_sampling = _public_compose_sampling(gguf)
         adapter = getattr(self, "_cpu_prose_adapter", None)
         if adapter is not None and applies_to_cpu_prose(situation, _merged_observed(situation)):

@@ -1,0 +1,7 @@
+# 653: prosa de ventanas veraz en el panel; idioma del foco pendiente
+
+El mismo panel de veinte casos de 647 obtiene 19/20 finales correctos, frente a 18/20. La frase de Spotify ya se limita a instalación y ausencia de ventanas visibles; no añade que el proceso esté ejecutándose. Las 16 lecturas por aplicación conservan nombre, cantidad y las cuatro referencias. El único fallo del panel es «Which window has focus?» respondido en español.
+
+Los veinte mensajes BAXY de actividad durante los turnos coinciden con los veinte finales, sin progreso adicional. La bienvenida t0 se conserva en el diagnóstico de composición; esto no es inspección de una interfaz real. Las capturas independientes antes/después coinciden con las lecturas: Steam 2, Chrome 2, WhatsApp 1, y cero para Spotify, Paint y Bloc de notas. WhatsApp ahora tiene una ventana y Chrome dos: difieren de 647 y se responde con las cantidades actuales. AUMID, creación y errores se capturan con cada fila HWND, siguiendo la corrección del verificador 648; no hubo errores de identidad.
+
+Recursos: GPU 3497,559 MiB, RAM 1626,023 MiB y 38,203 s, sin infracciones y con registro intacto. No es una comparación emparejada de RAM/latencia ni un mínimo de BAXY completo; no acredita UI/voz conjunta. El contrato factual 649 sigue incompleto, aunque esta generación corrige el caso real observado. Encuesta al medir: 25 cubiertos, 717 abiertos, 0 no aplicables; H0040 dispone ahora de evidencia favorable para su actualización individual.

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T15:05:21.928572+00:00",
+  "confirmedAtUtc": "2026-09-09T15:23:51.142627+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Fuente 646/651 publicada e1c6db6b y remoto confirmado. Full 651 verde: Python10411/3skips+466subtests, .NET4469/1skip agregado. Encuesta25/717/0; H0040 actualizado. Siguiente650.",
-  "continuation": "Ejecutar650 diagnóstico nativo del alcance factual y adjudicar16borradores. No fuente factual adoptada aún. Matriz651 ya actualizada; publicar esta documentación. No campañas activas.",
+  "checkpoint": "652 adoptada,653 producto19/20. H0040 cubierto por16 variantes reales; encuesta26/716/0. Contrato649 e idioma siguen pendientes.",
+  "continuation": "Publicar650/652/653, actualizar matriz; después contrato649 e idioma.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,8 +24,8 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 25,
-    "open": 717,
+    "covered": 26,
+    "open": 716,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,

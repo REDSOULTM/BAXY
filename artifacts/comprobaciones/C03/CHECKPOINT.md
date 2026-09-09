@@ -852,3 +852,42 @@ Encuesta25cubiertos/717abiertos/0NA. Sin cierre global, mínimo deRAM/VRAM ni cr
 ## 651 publicada y siguiente diagnóstico
 
 Fuente combinada 646/651 publicada en e1c6db6bb79bf1aa69e3c5ec72acac5656804700; remoto confirmado y main intacto. Full verde: Python 10411 pases, 3 skips y 466 subpruebas; .NET 4469 pases, 1 skip agregado y 16 omisiones opt-in impresas aparte. Matriz G04.06/G06.06 actualizada y G06.01 conserva pendiente con 25/717/0. H0040 queda abierto por la prosa sin respaldo; su referencia ya está reparada. Experimento 650 preparado, sin ejecutar, con situación y payload visible de 647/t15 comprobados iguales. Herramienta de escritorio sky disponible; no UI realizada.
+
+
+# 650: una instrucción de alcance corrige el primer borrador observado
+
+El brazo actual reproduce literalmente «Spotify is installed and running, but no window is currently visible». La situación y su payload visible son iguales a los registrados en 647/t15. Al añadir únicamente una instrucción de sistema que distingue instalación/ventanas de procesos, responde «Spotify is installed but no visible windows are currently open».
+
+Resultado completo: 7/8 borradores correctos con el escritor actual, 8/8 con la instrucción. Los otros siete casos son fixtures declarados, con nombres, cantidades e idiomas distintos; no son estados reales de esas aplicaciones ni un replay completo del producto. Los 16 terminan por EOS. No se cambian modelo, perfil, backend ni los hechos entre brazos. La revisión es manual y conserva todos los textos; no usa el validador defectuoso de 649.
+
+Pico GPU 3497,559 MiB, RAM 719,625 MiB y 11,109 s del servidor y descendientes, sin infracciones. No acredita UI/voz conjunta ni un mínimo global. La instrucción pasa a candidata para integración y prueba de producto; todavía no se adopta fuente. El contrato factual 649 sigue incompleto: corregir la generación no demuestra que rechace cualquier afirmación sin respaldo. Encuesta: 25 cubiertos, 717 abiertos, 0 no aplicables.
+
+
+## Candidata 652 y siguiente producto 653
+
+650 terminó exit0 y quedó sellada:7/8→8/8 primeros borradores, reproducción literal del defecto647.652 integra la misma instrucción de sistema sólo para window.application.status verificado/correcto, con campos de instalación y cantidad, fuera de progreso. Mantiene la instrucción en el reintento existente.25comparaciones pasan:16payloads medidos650 y9controles de otras rutas/estados sin cambios. No nuevo modelo, estado o respuesta fija.
+
+Dueñas652 activas, sesión64330, TEMP/c03-window-scope652-owners.log. Luego declaraciones/Fast y producto653 (script preparado, NOejecutado). LLM SHA e6993ddb155b9586dd178e5814604eb4ec25f7baf853d68a9c855d3d6e41de45; árbolPython d6516137ea188c291331c12e7a52a2d23fbbd5835770efedb56342ef34b8d7ea. c03-prepare-window-scope652.py YAejecutado, no repetir. Contrato649 e idiomahas siguen abiertos. Encuesta25/717/0. Fuente651 publicada en e1c6db6b, docs ed7d31f3; Full651 verde, no Full652 todavía ni requerido como Python-only por encargo.
+
+
+# 653: prosa de ventanas veraz en el panel; idioma del foco pendiente
+
+El mismo panel de veinte casos de 647 obtiene 19/20 finales correctos, frente a 18/20. La frase de Spotify ya se limita a instalación y ausencia de ventanas visibles; no añade que el proceso esté ejecutándose. Las 16 lecturas por aplicación conservan nombre, cantidad y las cuatro referencias. El único fallo del panel es «Which window has focus?» respondido en español.
+
+Los veinte mensajes BAXY de actividad durante los turnos coinciden con los veinte finales, sin progreso adicional. La bienvenida t0 se conserva en el diagnóstico de composición; esto no es inspección de una interfaz real. Las capturas independientes antes/después coinciden con las lecturas: Steam 2, Chrome 2, WhatsApp 1, y cero para Spotify, Paint y Bloc de notas. WhatsApp ahora tiene una ventana y Chrome dos: difieren de 647 y se responde con las cantidades actuales. AUMID, creación y errores se capturan con cada fila HWND, siguiendo la corrección del verificador 648; no hubo errores de identidad.
+
+Recursos: GPU 3497,559 MiB, RAM 1626,023 MiB y 38,203 s, sin infracciones y con registro intacto. No es una comparación emparejada de RAM/latencia ni un mínimo de BAXY completo; no acredita UI/voz conjunta. El contrato factual 649 sigue incompleto, aunque esta generación corrige el caso real observado. Encuesta al medir: 25 cubiertos, 717 abiertos, 0 no aplicables; H0040 dispone ahora de evidencia favorable para su actualización individual.
+
+
+# 652: alcance de la observación integrado en el escritor
+
+Se integra exactamente la instrucción de sistema medida en 650 para lecturas verificadas y correctas de window.application.status con instalación y cantidad observadas. Se conserva también en el reintento existente. No afecta progreso, fallos, conversaciones, otras lecturas ni misiones de varios pasos. No añade modelo, estado, comprobación paralela ni frases visibles fijas.
+
+Validación: 16 payloads iguales a los brazos medidos de 650 y nueve controles de otras rutas sin cambios. Dueñas: 3902 pases + 121 subpruebas, sin skips, en 72,36 s. Declaraciones: 17 pases y 1 skip ambiental en 1,87 s. Fast exit 0, Release 27,28 s, sin advertencias o errores. Producto 653: 19/20 finales y 16/16 consultas por aplicación correctas; el foco inglés sigue en español. Se adopta esta fuente Python; Full 651 es la línea base anterior, no un Full de 652 ni cierre global.
+
+El validador 649 aún acepta contradicciones y estados de proceso sin observar. Esta mejora del primer borrador no lo da por reparado. Sigue el trabajo de C03 sobre ese contrato, idioma, encuesta, UI real, voz, recuperación y Full final. Modelo, perfil y backend permanecen iguales.
+
+
+## Publicación652 — adoptada, pendiente de publicación
+
+Encuesta26 cubiertos/716 abiertos/0NA, sólo H0040 actualizado con653; resto intacto. Ninguna decisión pendiente. Fuente y pruebas según RESULT652/653. Contrato factual e idioma siguen pendientes; no campañas activas.

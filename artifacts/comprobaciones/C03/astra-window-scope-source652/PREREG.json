@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-09T15:10:29.235722+00:00",
+  "source": 652,
+  "baseline_llm_sha256": "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e",
+  "inheritance": "650 native first-draft7/8→8/8, exact reproduction of647 unobserved running. Preserve the tested system instruction and existing retry path.649 validator still incomplete.",
+  "change": "Append the same observation scope only for a successful verified window.application.status observation with installation and visible count fields. Preserve other operations, conversations, progress, failed reads and mixed-step missions. No model/profile/provider/RPC changes.",
+  "criteria": "Current source first-request payload equals650 observation_scope for all8 cases; owner regression tests, source pins, Fast. Product653 repeats exact20panel647; all final and progress prose adjudicated, no inferred survey coverage. Full651 remains baseline, no claim of newFull for Python-only repair."
+}

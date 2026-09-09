@@ -104,7 +104,7 @@ V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
         "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070"
     ),
     "src/baxy_mind/llm.py": (
-        "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e"
+        "e6993ddb155b9586dd178e5814604eb4ec25f7baf853d68a9c855d3d6e41de45"
     ),
 }
 

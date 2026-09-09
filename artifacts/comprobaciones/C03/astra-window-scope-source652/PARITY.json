@@ -1,0 +1,156 @@
+{
+  "compared": 25,
+  "inference": false,
+  "results": [
+    {
+      "case_id": "observed647",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "c01abf95f9e9282673cbbd215376a787f7b2316af50c8befc56cc362732eb3b7"
+    },
+    {
+      "case_id": "observed647",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "549179b14b9bf414ac967c962ee83a328801a6057e6abf0118c2bb4c3b729078"
+    },
+    {
+      "case_id": "absence-es",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "0af21ea3fd68ca1fb0c9e2856cd0900feca6099ba388db1890a9f499756a4164"
+    },
+    {
+      "case_id": "absence-es",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "b2f5a1ec5706dd4c369763830804b159ad3306f6005b0b73005f3773e69dd25a"
+    },
+    {
+      "case_id": "one-en",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "880593034ac21583fe535af724b26bd5fbae151c201da317f27b4c66257a43cd"
+    },
+    {
+      "case_id": "one-en",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "4f91e52edfea1178c0ae9b7946bea0afc6b878af93f310d02ac49ae27b98b25b"
+    },
+    {
+      "case_id": "one-es",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "14d43407ba8006445135ca08992c0be4e0eadc1c02701b987c532816e1fc9a5f"
+    },
+    {
+      "case_id": "one-es",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "c5d0b97b0ec15aacf2dd7ee4f90c6466dc15ad81adffdee53acee8e7f02d4596"
+    },
+    {
+      "case_id": "count-en",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "10eb23e74bfa5b1eb03f45df0e34e6ff8e4dfba1fb838a4b9a709861395f06a0"
+    },
+    {
+      "case_id": "count-en",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "fa890d0d5b56866598fb5046bb1e2d4add960e3b0fbeb388f50490c20d6fe8c9"
+    },
+    {
+      "case_id": "count-es",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "3bbd66a93163c22fcffff828d4f75a5d0600164ed80b03409184dbc635061813"
+    },
+    {
+      "case_id": "count-es",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "93c16347a754fa896a8aac0dcd2cee15aa810e296b3aadeafc55b2633be7a0fc"
+    },
+    {
+      "case_id": "not-installed-en",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "ad98d973580c3b924051669077451a7011ecff8aaed85d533eb4a79e24897e38"
+    },
+    {
+      "case_id": "not-installed-en",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "4131d99a45c910cde036971fc916415764fd77e24386e5a9a4c4efbf819a58a6"
+    },
+    {
+      "case_id": "not-installed-es",
+      "arm": "current",
+      "payload_equal": true,
+      "sha256": "41cad541c26199e7bcf8ba6f9a86d956e1c8c0c4b9ebe5387da7b58543ab2960"
+    },
+    {
+      "case_id": "not-installed-es",
+      "arm": "observation_scope",
+      "payload_equal": true,
+      "sha256": "ba948a66cab7935a749d87df4f505dc1ad238bca3430fd24b43d673f460ac2b8"
+    },
+    {
+      "case_id": "unverified",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "c01abf95f9e9282673cbbd215376a787f7b2316af50c8befc56cc362732eb3b7"
+    },
+    {
+      "case_id": "unsuccessful",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "c01abf95f9e9282673cbbd215376a787f7b2316af50c8befc56cc362732eb3b7"
+    },
+    {
+      "case_id": "acting",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "69e80af2d402fa5ac6fbabbdc4528f9a609bfcdf46f9450bab611eb986f98526"
+    },
+    {
+      "case_id": "installation-read",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "e8f967f5548c3cdc8ac907d4a5a4f26b9a8792e5bef62a94a3549a6c23c2a026"
+    },
+    {
+      "case_id": "foreground-read",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "3f3032c74d7ea573f972194c9fcec371aed62a4c8f20996b75420ef46cb9e2e2"
+    },
+    {
+      "case_id": "conversation",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "5c505b87b89b636960ac38882a7a7c5c97d7ad1868944526c1387808cf34de0a"
+    },
+    {
+      "case_id": "missing-count",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "e347d067809e600ba062bf1000682b2afa20c29fe1bb32a0f37f42bea5831b82"
+    },
+    {
+      "case_id": "boolean-count",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "0e78fcb6f4400ba7d4c6f6f07a273e3d0cc5a169bd3f0a86fc05b16e0be36544"
+    },
+    {
+      "case_id": "mission-with-steps",
+      "arm": "unaffected_control",
+      "payload_equal": true,
+      "sha256": "a90ee78c726211f79822222f8beafa7b973a7a171df4282cc97df2cb4d5efc6d"
+    }
+  ]
+}

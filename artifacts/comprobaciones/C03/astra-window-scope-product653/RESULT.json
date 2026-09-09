@@ -1,0 +1,52 @@
+{
+  "utc": "2026-09-09T15:23:51.011018+00:00",
+  "source": 652,
+  "correct": 19,
+  "total": 20,
+  "failed_cases": [
+    "focus-en"
+  ],
+  "named_application_reads_correct": 16,
+  "contextual_fresh_reads_correct": 4,
+  "visible_activity_matches_finals": true,
+  "independent_counts": {
+    "before": {
+      "Steam": 2,
+      "Google Chrome": 2,
+      "WhatsApp": 1,
+      "Spotify": 0,
+      "Paint": 0,
+      "Bloc de notas": 0
+    },
+    "after": {
+      "Steam": 2,
+      "Google Chrome": 2,
+      "WhatsApp": 1,
+      "Spotify": 0,
+      "Paint": 0,
+      "Bloc de notas": 0
+    }
+  },
+  "aumid_captured_with_window_rows": true,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1626.0234375,
+    "seconds": 38.203
+  },
+  "ui_or_voice_credit": false,
+  "factual_validator649_repaired": false,
+  "private_hashes": {
+    "panel.json": "ee9a98f177f68b261e8d438d1d35f7274b1a69f32d75f221b138e7d0a6e66f89",
+    "capture/events.jsonl": "403310df9e4a946b8207eaf2e9c183a85bd4d8d5c0bbdd5cf131ba92c47093a8",
+    "compose-audit.jsonl": "09671f64c9b66044022a0d87e0fdde73145de1669773ef8778ba441ce7635611",
+    "turn-audit.jsonl": "cba9897af74505d90ee2487ec426ac0960d90bf63ca2f9b6b6f4a748920ee9c0",
+    "shell-trace.jsonl": "51a3951cad35996793b5a3c7ae0d781b93588f220cac493ac178c869e9e60150",
+    "raw-replies.jsonl": "b4f1a9004ff6a617c528525210da81359b3f5e4264325240577bd3a8b9faec76",
+    "windows-before.json": "1054d45a6db1348645d5c076d23e6aa77c034a80ece240c7b2ceffae0fdf5e6d",
+    "windows-after.json": "be35086b76e2a884e5231d3efa4ec390c83a5c1ef422a256f01c7af2cca6e277",
+    "adjudication.json": "0535c7626c037f7e345ef5b6658f01f10cab00da16bf19b7d40fb0b457afa850",
+    "RESULT.md": "1a8a919ff88f37304b88b018e4030275a4e6cfccafe2f724278738520f22122a"
+  }
+}
