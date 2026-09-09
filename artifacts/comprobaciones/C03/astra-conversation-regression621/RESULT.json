@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T10:54:51.413014+00:00",
+  "source": 619,
+  "correct_finals": 32,
+  "finals": 35,
+  "failed_cases": {
+    "H0012": "Existing identity question still becomes an interpretation failure.",
+    "greeting-variant-3": "Existing vocative confusion: assigns Atlas to the user.",
+    "H0032": "New tone regression: Vale, ya lo sé is a dismissive acknowledgement, compared with Está bien, gracias in605. Does not meet the warm companion criterion; a terminal is not automatically a correct response."
+  },
+  "source_adopted": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2482.796875,
+    "seconds": 91.968
+  },
+  "ui_or_voice_credit": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  },
+  "private_hashes": {
+    "panel.json": "5fc795dbaee81a49c269a86d2c1f1ffc7297f842503c7900f584e6d01e0311ec",
+    "capture/events.jsonl": "73a2777054b3d8a4d59595ad3afe273e6b2493895f1329e92a26052ab39d69c2",
+    "turn-audit.jsonl": "d6a9fb7d4908856bdff969b57e64c72b1ffa49de6dec41e9a3965eeaaca9b7c0",
+    "adjudication.json": "2770f71f4a6b37748f2478ac996580afc89b47492a4d995d9bd337a3f1567e7a",
+    "RESULT.md": "a1415eb8497591a63ffc4627e0d358f6133b75f344e6c451775ff09f3e79eafc"
+  }
+}

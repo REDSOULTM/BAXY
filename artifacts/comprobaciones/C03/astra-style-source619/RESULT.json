@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-09T10:54:52.395383+00:00",
+  "adopted": false,
+  "reason": "Registered Qwen621 tone regression H0032; Gemma620 gain does not justify changing the registered product.",
+  "owners": {
+    "passed": 1049,
+    "skipped": 1,
+    "reason": "blind STT campaign inputs absent"
+  },
+  "fast_initial_exit": 1,
+  "fast_initial_cause": "orchestration overlap with620 locking DLLs",
+  "fast_recovery_exit": 0,
+  "full_candidate_run": false,
+  "exact_source606_restored": true,
+  "restored_files": {
+    "src/baxy_mind/llm.py": "d9ace8ac4adcf83af955276d1ed072b9a9ddff2fe85a26f2fa4511433dcc9425",
+    "tests/test_price_v8_veto_damage_by_cause.py": "1b7cd39c5fff6e4d20f6c947c263a545b6abbc92c3e0ef7dac26e8f8bf6e6fad",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "a2b10d6f04733c06559785fafdb220face09b3a82b15afab07301ba026300043",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "ad28de76b7f2f2e791e30da056218661179dc899934d57a2da92dea3ee8ffce3"
+  }
+}

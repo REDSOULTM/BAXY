@@ -1,0 +1,53 @@
+diff --git a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+index b712dba1..45b19835 100644
+--- a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
++++ b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84"
++    "4cc1217ea8e0a5ce28543d317826013e85793b8adabd643b19b07d3fe4a1ce1d"
+ )
+ CONSUMED_BLIND_CONTRACT = (
+     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
+diff --git a/experiments/stt_quality/evaluate_reserved_stt.py b/experiments/stt_quality/evaluate_reserved_stt.py
+index 47ee67f2..3ed5f7ef 100644
+--- a/experiments/stt_quality/evaluate_reserved_stt.py
++++ b/experiments/stt_quality/evaluate_reserved_stt.py
+@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84"
++    "4cc1217ea8e0a5ce28543d317826013e85793b8adabd643b19b07d3fe4a1ce1d"
+ )
+ SAMPLE_RATE = 16_000
+ SILENCE_SAMPLES = SAMPLE_RATE // 5
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index eca63496..071ce975 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -95,7 +95,8 @@ LLM_WARMUP_CLOSE_TIMEOUT_SECONDS = 0.5
+ VALIDATED_CLASSIFIER_REUSE_CAPACITY = 32
+ 
+ SYSTEM_PROMPT = (
+-    "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. "
++    "Eres BAXY, un compañero que vive en el PC. "
++    "Habla de ti en masculino y dirígete al usuario de tú. "
+     "Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del "
+     "último mensaje del usuario, aunque el historial o estas instrucciones "
+     "estén en español. Solo existen las herramientas del catálogo activo. Las acciones "
+diff --git a/tests/test_price_v8_veto_damage_by_cause.py b/tests/test_price_v8_veto_damage_by_cause.py
+index 737b556b..a9d5b6a5 100644
+--- a/tests/test_price_v8_veto_damage_by_cause.py
++++ b/tests/test_price_v8_veto_damage_by_cause.py
+@@ -104,7 +104,7 @@ V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
+         "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
+     ),
+     "src/baxy_mind/llm.py": (
+-        "d9ace8ac4adcf83af955276d1ed072b9a9ddff2fe85a26f2fa4511433dcc9425"
++        "f902b15f904227986457f0631b43b9ca499cba1b0e47d2932d84143a3afd4145"
+     ),
+ }
+ 

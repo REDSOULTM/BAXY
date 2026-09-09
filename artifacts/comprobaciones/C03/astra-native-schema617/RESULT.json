@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-09T10:43:37.722176+00:00",
+  "per_arm": 20,
+  "strict_correct_by_arm": {
+    "direct": 0,
+    "thinking": 2
+  },
+  "actual_thinking_responses": 20,
+  "all40_finish_stop": true,
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 1679.98828125,
+    "ram_peak_mib": 969.4296875,
+    "seconds": 98.35899999999674,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "panel.json": "ceb0648582105a6067d9e779d7fcb9861abab9cfbd4284a48203e19439f5ed86",
+    "requests.jsonl": "c5ca94157e7c9feadad2c22e752abbc41371c150f789165ef230aa97677f6920",
+    "responses.jsonl": "bb668efa5e1c836f1a1c5dde8c168a9c8c4010fbe22af160e6c113b9763d5f66",
+    "adjudication.json": "340374dd21da0c6a6b700331726cf494769765e2ebb03dd3eccd97994726c5c2",
+    "RESULT.md": "a6f20a77924b39e3e5886e7eacc54112773c5276d97c0199592b5166cc34e62b"
+  }
+}

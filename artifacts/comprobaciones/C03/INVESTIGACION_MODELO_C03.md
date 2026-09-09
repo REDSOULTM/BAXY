@@ -343,3 +343,20 @@ La auditoría518, sin inferencia, resolvió las raíces de tres fuentes Function
 La [ficha exacta Qwen2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507), consultada2026-09-09, declara la variante sin pensamiento; la salida real debe verificarse. Con schema, b9980 y argv reasoningoff/budget0 hubo reasoning_content y cortes.598 conserva doce payloads y sólo cambia a b10865/5266f24da: no arregla las identidades.599 usa la plantilla oficial: elimina razonamiento/cortes en ese panel, pero sigue respondiendo identidad en español. Los doce renders de las dos plantillas son idénticos; esto no demuestra que su tratamiento de gramática/parseo sea idéntico. La [teoría inicial26781](https://github.com/ggml-org/llama.cpp/issues/26781) está refutada en la actualización del propio issue; no se usa como explicación. Sin promoción de backend ni plantilla por estos resultados.
 
 600 conserva todo el historial pero agrupa datos y petición: no mejora3/6.601 cambia la tarea de reparación: traducir el borrador completo real cuando sólo falla idioma, en vez de volver a responder con el historial. Mejora3/6→6/6, conserva sujetos/nombres/hechos y reduce el contexto medio466→337,8tokens.602 lo incorpora al reintento existente.603 revela una frase inglesa que el comienzo español ocultaba al guard.604 comprueba por frases;60533/35finales, fallosH0012/Atlas.606 corrige falsos rechazos de literales/código encontrados en la revisión. Full606 en curso al escribir esta entrada; no hay promoción nueva de modelo, parámetro o plantilla. La aceptación de progreso, UI/voz y recursos conjuntos sigue abierta.
+
+
+## 612–613: atribución de sujeto y lenguaje coloquial
+
+612 prueba8casos en5pasos (nativo, identidad, políticas, historial, greedy), todos512tokens y sin guardas.40stop y0reasoning; H0012 ya falla en nativo. Perfil documentado Qwen mejora un vocativo pero no resuelve el panel: no se adopta. Las salidas inglesas desviadas por historial son borradores, no finales del producto reparados por606.
+
+613 hereda el original Gemma E2B y perfil497 para una población/rol distintos: conversación libre sin herramientas. Conserva los rechazos operacionales y no deduce promoción global. Se reconsultaron2026-09-09 https://ai.google.dev/gemma/docs/core/prompt-formatting-gemma4, https://ai.google.dev/gemma/docs/capabilities/thinking y https://huggingface.co/google/gemma-4-E2B-it/blob/main/generation_config.json. El formato separa sistema/usuario/modelo, y thinking se configura por conversación; T1/p.95/k64 se conserva, min_p0 no añade filtro.3072tokens permite observar el pensamiento sin atribuir un corte a incapacidad semántica. Runtimeb10809/lazy-on ya medido497, sin MTP ni encoder multimodal. Corrida613 en curso; no resultado adelantado.
+
+
+## Cierre612–616 y aislamiento nativo617
+
+613 terminó: history-direct8/8, native-direct7/8, native-thinking8/8, history-thinking6/8. Producto61433/35: identidad/vocativo correctos, estilo H0218 y rechazo de pregunta social H0032 fallan.615 subtipo social baja15/20→12/20 normalizados; rechazado.616 perfil documentado no produce pensamientos reales con gramática, aun solicitándolos;12/20 frente11/20 no permite evaluar razonamiento.617 elimina la restricción de salida para observarlo, sin cambiar definiciones. Ninguna promoción. Full606 ya terminó verde:10218pass+466subtests/3skips Python;4452pass/1skip agregado .NET.
+
+
+## Cierre617–621
+
+617 confirma20razonamientos nativos pero esquema/semántica insuficientes; no más barrido del subtipo.618 instrucción de trato mejora11/12→12/12. Integración619 mejora Gemma620 a34/35, pero Qwen621 baja a32/35 por tono H0032.619rechazado; fuente606 restaurada byte a byte. Se conserva todo el contraste y la recuperación de Fast por solapamiento con producto; ningún modelo/promoción ni cobertura adicional.

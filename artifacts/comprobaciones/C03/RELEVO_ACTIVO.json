@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T09:58:31.838664+00:00",
+  "confirmedAtUtc": "2026-09-09T10:54:52.436228+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "609 rechazado:6106/12 y61133/35. Fuente606 restaurada exacta y publicada bbb3a951; Full606 verde. Encuesta25/717/0, H0021 por608. Sin procesos activos.",
-  "continuation": "Publicar evidencia608–611, luego aislar sujeto conversacional nativo→instrucciones→historial; H0012 y Atlas abiertos. No promover609. Aclaraciones, gramática, progreso, UI/voz/memoria conjunta y registroCPU pendientes.",
+  "checkpoint": "612–621 concluidos.619 rechazado por tono Qwen62132/35;606 restaurado exacto. Gemma62034/35 no promovido.25/717/0.",
+  "continuation": "Publicar evidencia612–621 y verificar HEAD=origin; fuente606 intacta. Cambiar de estrategia: herencia+perfil propio de otra alternativa para comprensión/tono antes de integración; no barrer prompts del guard ni repetir los mismos intentos. Pendientes C03 ocho rutas,717requisitos,UI/voz/error-restauración/recursos conjuntos y Full final.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,

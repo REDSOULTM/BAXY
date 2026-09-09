@@ -1,0 +1,59 @@
+{
+  "utc": "2026-09-09T10:16:31.331433+00:00",
+  "correct_by_arm": {
+    "native-thinking": 8,
+    "history-direct": 8,
+    "native-direct": 7,
+    "history-thinking": 6
+  },
+  "per_arm": 8,
+  "all32_finish_stop": true,
+  "actual_thinking_on_responses": 16,
+  "actual_thinking_off_responses": 16,
+  "metrics": {
+    "native-thinking": {
+      "requests": 8,
+      "mean_seconds": 3.1153749999975844,
+      "mean_completion_tokens": 315.5
+    },
+    "history-direct": {
+      "requests": 8,
+      "mean_seconds": 0.25600000000122236,
+      "mean_completion_tokens": 11.25
+    },
+    "native-direct": {
+      "requests": 8,
+      "mean_seconds": 0.2889999999970314,
+      "mean_completion_tokens": 22.375
+    },
+    "history-thinking": {
+      "requests": 8,
+      "mean_seconds": 3.273250000002008,
+      "mean_completion_tokens": 320.125
+    }
+  },
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 1681.98828125,
+    "ram_peak_mib": 987.5625,
+    "seconds": 60.234000000025844,
+    "manifest_unchanged": true
+  },
+  "qualified_for_next_probe": "history-direct profile only; eight correct first drafts without thoughts",
+  "product_promoted": false,
+  "source_changed": false,
+  "operational_failures497_retained": true,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  },
+  "private_hashes": {
+    "panel.json": "8cae98cc9048118a3578032334358cc21684567601311a1c0945d752e2bf284a",
+    "requests.jsonl": "589478248fc27cb79a47d784e35b630a48db917dc66cc415edb27f9f4307f589",
+    "responses.jsonl": "7fdf5d85f5d392d750acaa49ba80d65d69ee4442d698ef10795933862efca1b7",
+    "adjudication.json": "6e7a37b2940f8c49dea2c8152f5eeb9de529f44032251d72b14c624afbd2046f",
+    "RESULT.md": "0ad75e3c8d037090d10b0adf47281f1fed39de8cd8b28ef32f2d4d990bfcd4f8"
+  }
+}

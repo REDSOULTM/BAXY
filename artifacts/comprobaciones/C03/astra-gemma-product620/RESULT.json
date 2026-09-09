@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-09T10:50:23.113032+00:00",
+  "source": 619,
+  "correct_finals": 34,
+  "finals": 35,
+  "failed_cases": [
+    "H0032"
+  ],
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 1681.98828125,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2758.125,
+    "seconds": 87.344
+  },
+  "concurrent_build": true,
+  "comparative_performance_credit": false,
+  "ui_or_voice_credit": false,
+  "source_adoption_pending": true,
+  "product_promoted": false,
+  "private_hashes": {
+    "panel.json": "5fc795dbaee81a49c269a86d2c1f1ffc7297f842503c7900f584e6d01e0311ec",
+    "capture/events.jsonl": "07a860f180e4b458e3a14f2340c823e2a80a065abdd5fd38eb8d6355b28115af",
+    "http-posts.jsonl": "a2953e8107859290f6f177f940bcca0843069a20fe5c07c9ecc6e427841fe1e9",
+    "turn-audit.jsonl": "7e7b2c25daa5756af85aeca8238e16879cf8be6c6e07ee9c0a078f7f3c162ed0",
+    "adjudication.json": "b7400a73a8072343f985ae7b7be2eed073c8302ef588e78e04fcae5b3327c127",
+    "RESULT.md": "b099d919bbf511831b1ab851cb5b583093a94b5396180423248902f59e43ea72"
+  }
+}

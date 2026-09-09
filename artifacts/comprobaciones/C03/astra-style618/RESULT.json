@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-09T10:46:10.535929+00:00",
+  "per_arm": 12,
+  "correct_by_arm": {
+    "original": 11,
+    "explicit-style": 12
+  },
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 1681.98828125,
+    "ram_peak_mib": 966.01953125,
+    "seconds": 7.937000000005355,
+    "manifest_unchanged": true
+  },
+  "source_adoption_pending": true,
+  "private_hashes": {
+    "panel.json": "f9249220f5f2e36729bb93655bc4d468d34a39711a429848114d73f3290ef9f4",
+    "requests.jsonl": "46169c5f8e6efcc311b463cca5758cf964adb36109ff220bb6d54dd798203270",
+    "responses.jsonl": "e811122adea8781061a071deab4ab1e906967dd4c8ddd9ff6bf79f991bfc1c7c",
+    "adjudication.json": "d2211c41897c310ddbdb9ae46da9287e7834e46313b29075db7ad0b5f05edc4b",
+    "RESULT.md": "7fbdd3a6ff45f4c965863bc5867ac59a77d9c062eb3fcb7def5e291686d92cbc"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-09T10:06:41.292933+00:00",
+  "per_arm": 8,
+  "correct_by_arm": {
+    "native": 6,
+    "identity": 5,
+    "policy": 7,
+    "history": 6,
+    "greedy": 5
+  },
+  "all40_finish_stop": true,
+  "reasoning_content_responses": 0,
+  "adopted": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  },
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 719.296875,
+    "seconds": 16.98399999999674,
+    "manifest_unchanged": true
+  },
+  "interpretation": "H0012 already fails without the BAXY wrapper. Added policies/history introduce separate language/subject effects. Documented sampling improves the Morgan draft but does not solve H0012 or the whole panel. No truncation or reasoning leakage explains these40 outputs. This does not rank the model globally or certify current product finals.",
+  "private_hashes": {
+    "panel.json": "4fe1a8d44a244113539ae036284a70504f4039b5b998dd6173183861fbe7999b",
+    "requests.jsonl": "e15f5398cf0680599811b0d32abe080a67f2f7b905b9c9cb694087ee14e1b8c3",
+    "responses.jsonl": "5e6105e78319379832d534d2c0296246bca0f0dee29e4233de402fc571a9dcf3",
+    "adjudication.json": "adfac53c7c138ec0a4c3cc3f4538237ab929e51ac258292a1a88413c141c4e25",
+    "RESULT.md": "57c57bb606fc9a5b08c1452556425220a9eb54b9389531d303c118d10d483ad6"
+  }
+}

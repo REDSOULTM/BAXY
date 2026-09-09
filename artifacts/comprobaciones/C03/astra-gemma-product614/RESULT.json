@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T10:36:48.535012+00:00",
+  "source": 606,
+  "finals": 35,
+  "correct_finals": 33,
+  "failed_cases": {
+    "H0218": "Uses internal style word tuteo as the user addressee; unnatural response.",
+    "H0032": "Valid social acknowledgement becomes a false interpretation failure. Native chat returns a reasonable conversational question; the later knowledge-question-only guard rejects it because social subtype was erased."
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 1681.98828125,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2827.55078125,
+    "seconds": 74.906
+  },
+  "product_promoted": false,
+  "ui_or_voice_credit": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  },
+  "private_hashes": {
+    "panel.json": "5fc795dbaee81a49c269a86d2c1f1ffc7297f842503c7900f584e6d01e0311ec",
+    "capture/events.jsonl": "93a85d83d482645ffeb8d94dd60f44e483e961ad9d0dcbccc48c896c430d76df",
+    "http-posts.jsonl": "12208b1e6a6eff206e81125448718a38529bd43fdffae48d05900a21e6a8c600",
+    "adjudication.json": "696ad0966f4bb9954c752d2073a7177e7472a8715c3d1de38fb9407e3a7545eb",
+    "RESULT.md": "4f567f29c6c97d00c9594c5bb4b0478c317c0a32cfcd4b9659572d13203b1931",
+    "turn-audit.jsonl": "95aca03769bfbb6a8071640ff5101e523810dd35076d8ad4ab45203ed9a41dbd"
+  }
+}

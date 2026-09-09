@@ -1,0 +1,16 @@
+{
+  "launcher": 29592,
+  "command": [
+    "py",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation-profile620",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gemma-product620-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gemma-product620-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

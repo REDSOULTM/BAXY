@@ -476,3 +476,92 @@ Se restauraron byte a byte los cinco archivos del parche609 desde la fuente606 p
 H0021 queda verificado por su propio literal y tres variantes ES/EN/mixta de608, que usó fuente606; no recibe crédito del candidato rechazado. Encuesta25 cubiertos/717 abiertos/0 no aplicables, originales742/rev1248 intactos. H0012, Atlas, aclaraciones de valor/referencia, dos defectos gramaticales y prosa de progreso permanecen abiertos.
 
 Siguiente: aislar atribución de sujeto en el modelo nativo y añadir los componentes de conversación con payload efectivo. No repetir los prompts de guarda594/595 ni promover una clasificación intermedia como respuesta correcta.593 conserva argumentos reales de chat: H0012 tiene temperature0, response_language mixed y saludo previo.610 confirma que, con clasificación knowledge, el borrador invierte el sujeto. Reutilizar investigación Qwen2507/b9980; una comparación controlada no declara inferioridad global del modelo. Perfil registrado, UI/voz conjunta, recursos y resto C03 pendientes.
+
+
+## Diagnóstico nativo612 en curso
+
+Fuente606 sin cambios, HEAD y remoto aa42c09905c7f6ec61dce81eb9bc9ee9e9ca72a1. Se cerró y publicó evidencia del rechazo609; Full606 sigue válido para la fuente actual. Encuesta25/717/0.612 compara40 borradores locales de8casos, añadiendo identidad, políticas e historial, y separando el perfil documentado de Qwen del muestreo greedy. Presupuesto512 para distinguir truncamiento, sin clasificador, reintentos, kernel ni UI. No es reproducción exacta de la aplicación ni aceptación. Panel y expectativas congelados antes de iniciar. Sesión90596, TEMP/c03-native-subject612.log; no modificar ni registrar modelo/perfil durante la medición. Recoger y leer todos los borradores antes de decidir.
+
+
+# Diagnóstico612: el error coloquial también existe en el modelo nativo
+
+40 borradores completos, sin truncamiento ni reasoning_content. Aciertos por brazo de8casos: nativo6, identidad5, políticas7, historial6, greedy5. Son comparaciones de componentes y muestreo; no cinco candidatos equivalentes ni una aceptación del producto.
+
+H0012 falla ya sin BAXY: el modelo no reconoce bien la pregunta coloquial. Identidad introduce una interpretación de fútbol; políticas llegan a copiar SIEMPRE; con historial identifica a BAXY pero conserva una apertura irrelevante o invierte el sujeto. Cambiar al perfil recomendado no resuelve este caso. No se adopta otro prompt ni un cambio de muestreo.
+
+Las otras variantes muestran causas distintas: historial español desvía un borrador inglés (la reparación final de idioma no forma parte de esta prueba), y greedy llama Morgan al usuario aunque éste se dirigía al asistente. Por tanto la clasificación intermedia no basta para demostrar comprensión. Campo de sujeto, historial e inferencia deben evaluarse juntos antes de otro cambio.
+
+Servidor nativo:3495,559MiB GPU/719,297MiB RAM,16,984s para40peticiones; no son recursos de BAXY completo. Fuente606 y registro intactos. Encuesta25/717/0, cero crédito añadido por612. Todos los borradores y payloads permanecen locales, con huellas públicas; sin UI/voz ni selección de una corrida favorable.
+
+
+## Gemma613 en curso: cambio de candidato acotado
+
+Después de612 no se repiten prompts de guarda ni se adopta el sampler. Se reutiliza Gemma4-E2B-it original497, Q4_K_M SHA740185..., backendb10809/lazy-on con huellas verificadas. Sus fallos de interfaz/polaridad497 permanecen y bloquearían una promoción global. La hipótesis nueva es comprensión coloquial/sujeto en prosa sin herramientas: mismos8casos612, nativo e identidad/políticas/historial, cada uno thinking off/on, perfil GoogleT1/p.95/k64/min0.32peticiones con3072tokens y timeout90s; techo3800MiB y guardia240s. Documentación oficial de formato/thinking/generation_config reconsultada2026-09-09. No se modifica fuente ni registro. Sesión68066, TEMP/c03-gemma-subject613.log. Adjudicar todas las respuestas y censuras antes de decidir; sin crédito de aceptación, UI o voz.
+
+
+# Gemma613: ocho respuestas directas correctas con contexto
+
+Gemma4-E2B-it original497 Q4_K_M, perfil GoogleT1/p.95/k64/min0 y template/lazy-on medidos. Con identidad, políticas e historial, el modo directo resuelve8/8: H0012, variedades ES/EN, vocativos y nombres propios con sujeto correcto. Native-direct7/8; native-thinking8/8; history-thinking6/8. Thinking añade coste y vuelve a interpretar mal H0012; además copia una indicación interna de género. Se conservan todos los resultados, no sólo el brazo favorable.
+
+Las32 respuestas terminan normalmente. Se verificó reasoning_content en las16 peticiones con thinking y su ausencia en las16 directas. Servidor nativo:1681,988MiB GPU/987,563MiB RAM,60,234s; los tiempos por brazo están en RESULT.json. No son recursos de BAXY completo ni prueba de que todo el producto quepa en1,64GiB.
+
+Se califica únicamente el perfil directo para un contraste de integración614. Los errores de interfaz/polaridad de497 siguen abiertos y bloquearían una promoción global.614 repite los35 casos605 con el producto606, override aislado de modelo/backend y un hook de parámetros de chat/lazy-on; el resto de roles se conserva para localizar transformaciones. No se cambia registro, fuente, prompts, historial, guardas ni respuestas. Las métricas nativas no acreditan UI, voz, aceptación ni cobertura de encuesta:25/717/0.
+
+
+# Producto614: Gemma directo 33 de 35
+
+Fuente606 y registro Qwen intactos. Gemma original497 con perfil directo613 resuelve H0012 y el vocativo Atlas, pero falla H0218 (apelativo «tuteo») y H0032 (una pregunta social válida rechazada por presentarse como conocimiento). No se promueve: el resultado no mejora el total33/35 de605 y las herramientas497 siguen pendientes. No se acredita encuesta con este override ni se reabren casos cubiertos por la fuente registrada.
+
+Pico1681,988MiB GPU y2827,551MiB RAM en74,906s, sin infracciones. Es un conductor de producto sin UI/voz simultáneas, no el mínimo de BAXY completo. Encuesta25 cubiertos/717 abiertos/0 no aplicables. Fuente606 conserva Full606 verde.
+
+
+# Guardia615: clasificación social insuficiente
+
+40 llamadas nativas,20 casos por brazo. El subtipo reconoce cinco reacciones sociales, pero también etiqueta como social una pregunta de identidad y una petición de redactar un saludo. Una lectura de archivo pasa de external_read a environment_change. Ambos brazos conservan errores de negación, argumentos ausentes y cardinalidad compuesta. Los conteos crudos erróneos de conversación se distinguen de la normalización a cero que ya hace el runtime.
+
+No se adopta la nueva representación. Se conserva el resultado completo y se prueba616 con perfil Google y pensamiento directo/activado, manteniendo ambos brazos a3072tokens para verificar coste y cortes. Si no aparece una distinción general viable, se abandona esta vía; no se añaden alias ni excepciones de literal. Sin cambios de fuente, registro ni cobertura25/717/0.
+
+
+# Guardia616: no hubo razonamiento efectivo
+
+Mismos20 casos y subtipo615, perfil GoogleT1/p.95/k64/min0,3072tokens en ambos brazos. Todas40 salidas terminan, pero ninguna contiene reasoning_content, incluidas las20 con enable_thinking=true. Correctas normalizadas: directo12/20, opción thinking11/20. Es una comparación de configuración solicitada, no una medida válida de calidad con razonamiento. No se adopta el subtipo ni se sigue variando su instrucción semántica.
+
+El contraste617 cambia de estrategia: salida nativa, sin gramática forzada, con las mismas definiciones y una instrucción de serialización JSON.613 ya demostró razonamiento real en este backend sin gramática. Se separan formato y comprensión antes de concluir incapacidad del modelo; aún no se demuestra causalidad del formato. La documentación upstream distingue gramáticas inmediatas y diferidas: https://github.com/ggml-org/llama.cpp/blob/master/docs/development/parsing.md. Esa documentación general no sustituye la prueba de esta versión/modelo.
+
+Pico1679,988MiB GPU/1034,320MiB RAM,22,016s. Sin fuente ni registro modificados, sin UI/voz ni cobertura adicional:25/717/0. Fuente606 y su Full siguen siendo la versión validada.
+
+
+# Nativo617: descartar la vía del subtipo para este candidato
+
+Sin gramática forzada,20/20 peticiones thinking sí producen reasoning_content; las20 directas no. Todas terminan, pero aparecen conteos numéricos fuera del enum, JSON sin comillas y bloques Markdown. No se corrigen para dar puntos. Continúan las confusiones de identidad/redacción como social, negación como efecto y argumentos incompletos como completos. El pensamiento puede reconocer la lectura nombrada y la cuenta compuesta, pero no ofrece una clasificación general utilizable.
+
+Esto distingue la ausencia de razonamiento de616 de un límite semántico persistente. No se adopta salida libre, nueva gramática, subtipo, sampler ni modelo. Se abandona esta vía; no se siguen barriendo prompts de clasificación. Resultado íntegro privado, conteo estricto en RESULT.json. Recursos:1679,988MiB GPU/969,430MiB RAM,98,359s; no UI/voz.
+
+618 aborda por separado el fallo de estilo de614: expresar trato y género como instrucciones gramaticales claras, conservando identidad. Panel de12 casos con controles de sujeto e idiomas; sólo se considerará con prueba de producto. Fuente606 y registro intactos. Encuesta25/717/0, ninguna decisión pendiente del dueño.
+
+
+# Estilo618: instrucción explícita calificada para integración
+
+Cambiar «Eres un él. Tuteas.» por «Habla de ti en masculino y dirígete al usuario de tú.» corrige el apelativo tuteo en H0218. Ocho controles de identidad/sujeto y tres variantes de gratitud ES/EN/mixta se mantienen:11/12→12/12,24stop sin razonamiento. No se añade una respuesta fija ni un filtro de palabras. La variante mixta conserva política española, permitida por identidad.
+
+La primera preparación del script falló antes de guardar panel o iniciar inferencia: suponía JSON para el usuario social, que es texto directo. Se inspeccionó payload76 y corrigió el constructor; no se descartó ninguna generación ni se reusó una corrida. Fuente619 cambia sólo SYSTEM_PROMPT de conversación; la instrucción de compositor es otra ruta sin cambio. Debe pasar dueñas, Fast y regresiones de producto con Gemma620 y Qwen registrado621 antes de adoptarse. No arregla H0032 ni acredita nueva cobertura25/717/0.
+
+
+# Producto620: mejora de trato confirmada con Gemma
+
+Fuente619, mismo modelo/backend/perfil de614 y mismos35 casos:34correctos frente33. H0218 deja de usar tuteo como apelativo; identidad, vocativos e idiomas se conservan. H0032 sigue publicando un fallo de interpretación por el veto a la pregunta social: no se considera corregido ni se promueve Gemma globalmente.
+
+La ejecución se solapó por error de orquestación con el build Fast619. Baxy16336 y core98892 bloquearon DLL y el build terminó rojo; no es un fallo de fuente ni se oculta. Se repite Fast con el producto ya cerrado antes de621. La conducta capturada se conserva; los87,344s y2758,125MiB RAM no son una comparación limpia de rendimiento con614. GPU1681,988MiB, sin violación; no acredita recursos conjuntos UI/voz.
+
+619 aún requiere Fast recuperado y regresión621 con Qwen registrado antes de adoptarse. Dueñas1049pass/1skip ambiental por archivos de campaña STT ausentes. Encuesta25/717/0 intacta.
+
+
+# Fuente619 rechazada tras el contraste registrado621
+
+La instrucción más explícita de género y trato mejora Gemma61811/12→12/12 y producto62033/35→34/35. Sin embargo, Qwen registrado621 obtiene32/35: conserva H0012/Atlas y pierde naturalidad cálida en H0032 («Vale, ya lo sé», frente a «Está bien, gracias» en605). Se registra como regresión de tono, no error de operación ni formato. No se flexibiliza ese criterio para publicar la mejora de otro modelo.
+
+Se rechaza la fuente compartida619 y se restauran exactamente llm.py y los tres pins actuales al HEAD validado606. El parche candidato, las pruebas y todos los finales se conservan; no se reabre H0032 en el registro de requisitos porque la fuente candidata nunca fue adoptada. Encuesta25 cubiertos/717 abiertos/0 no aplicables.
+
+Dueñas619:1049pass/1skip ambiental por archivos de campaña STT ausentes. Fast inicial rojo por DLL bloqueadas durante620; recuperación posterior sin BAXY activo:verde, Release5,49s,0advertencias/errores. Esa validación no invalida el rechazo de conducta. No se ejecutó ni se afirma Full619. Full606 sigue ligado a la fuente restaurada:10218pass+466subtests/3skips Python;4452pass/1skip agregado .NET.
+
+621:3499,559MiB GPU/2482,797MiB RAM,91,968s, sin violaciones; no UI/voz conjunta. No cambia modelo, perfil registrado ni adaptador CPU. Se abandona la expansión del guard615–617 y no se encadena otro barrido de prompts. El siguiente contraste debe valorar una alternativa con evidencia y perfil propios sobre los fallos de comprensión/tono, antes de más integración.

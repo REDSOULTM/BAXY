@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-09T10:46:10.784311+00:00",
+  "method": "Single general conversation style clarification qualified618. No runtime, model, classifier, composer, output filters or response literals changed. Update only current V8/STT expected-source pins, consumed evidence untouched.",
+  "source_llm_sha256": "f902b15f904227986457f0631b43b9ca499cba1b0e47d2932d84143a3afd4145",
+  "python_tree_sha256": "4cc1217ea8e0a5ce28543d317826013e85793b8adabd643b19b07d3fe4a1ce1d",
+  "python_files": 404,
+  "acceptance": "Owner pytest turn_policy, price_v8 and STT evaluator suites, Fast gate, actual product620 Gemma same profile614 and621 registered Qwen. Preserve every prior failure; no source adoption if new product regressions.",
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  }
+}
