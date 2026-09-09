@@ -1,0 +1,42 @@
+{
+  "finals": 17,
+  "correct_ordinals": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "failed_ordinals": [
+    7,
+    11
+  ],
+  "newly_covered": [
+    "H0007"
+  ],
+  "survey_counts": {
+    "covered": 13,
+    "open": 729,
+    "not_applicable": 0
+  },
+  "source_commit": "1dc8b33dcd60cc1dcc99586d51ac108f7e127ba5",
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2475.28125,
+    "seconds": 45.375
+  },
+  "private_report_sha256": "7f6bd605a008980dee1977f2ea3f3a88c00d594010b454c47820e8a062b14c15",
+  "adjudication_sha256": "7fb34e9242fc3c57563b0975137d4a0f725dda697bddd259154d5bc6429c8186"
+}

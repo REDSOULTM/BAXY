@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T06:48:24.029587+00:00",
+  "confirmedAtUtc": "2026-09-09T06:59:58.823485+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "581 final: scoped CPU actor/numeric guards;2156pass+121subtests,CPU46+STT12pass/1skip,Fast green. Survey12/730/0; product582 pending.",
-  "continuation": "Publish581 and run582; adjudicate actual CPU generalization and controls. All remaining C03 obligations stay open.",
+  "checkpoint": "582 adjudicated:17 finals,15 correct; H0007 covered. CPU grammar/actor gaps remain. Survey13/729/0.",
+  "continuation": "Bounded reasoning native583 before any model adoption; all remaining C03 closure criteria stay open.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,12 +24,12 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 12,
-    "open": 730,
+    "covered": 13,
+    "open": 729,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "022416a05eb88bec4c291cf5969278a2de3bf7e2",
+  "publishedSourceCommit": "1dc8b33dcd60cc1dcc99586d51ac108f7e127ba5",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
