@@ -606,3 +606,8 @@ El narrador de progreso mixed recibe sólo el contrato español permitido por id
 Validación626:200pruebas focales; dueñas ampliadas1363pass/1skip ambiental por archivos de campaña STT ausentes; Fast verde, Release20,29s,0advertencias/errores. Se conservan los contratos de hechos y los pines históricos consumidos; sólo se actualizan los pines de la fuente vigente. No se ejecutó Full626: la fuente sólo toca Python y se exige Full del candidato final. Full606 queda como línea base histórica, no como prueba del código626.
 
 Producto627:3499,559MiB GPU/2361,191MiB RAM,88,750s, sin infracciones; UI y voz no estaban activas juntas. Encuesta25 cubiertos/717 abiertos/0 no aplicables. No se ha promovido un modelo ni se ha cerrado C03. Fuente626 y evidencia622–627 se publican en Goal-c03; main permanece intacto.
+
+
+## Publicacion626 confirmada
+
+Fuente y evidencia622–627 publicadas en `67085974c69c60034cba2ad95d156ddb096de6f6`; HEAD=origin/Goal-c03 y main intacto comprobados. Fuente626:1363pass/1skip+Fast; Full final pendiente. Siguiente bloqueo concreto: aclaracion missing-value608 y su dato perdido, sin repetir ajustes de modelos descartados. Encuesta25/717/0.

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T11:23:15.371417+00:00",
+  "confirmedAtUtc": "2026-09-09T11:26:12.967876+00:00",
   "branch": "Goal-c03",
   "checkpoint": "626 adoptada: progreso mixed sin metanarración.1363pass/1skip+Fast verde;62733/35sin regresión, dos etiquetas de progreso sin análisis del idioma.25/717/0.",
-  "continuation": "Publicar fuente626/evidencia622–627 y verificar remoto. Continuar C03: identidad H0012/vocativo Atlas, naturalidad de progreso y otras rutas;717requisitos abiertos, UI/voz/recuperación/recursos conjuntos/Full final. No repetir los cambios de estilo619 ni el subtipo615–617 ni promover Ministral622–624.",
+  "continuation": "Fuente626 publicada y remoto verificado. Siguiente: localizar la primera transformacion incorrecta de missing-value en C03-effect-controls608-private/turn-audit.jsonl y compose-audit.jsonl: Pon el volumen a... acaba en missing_literal_fact, no aclaracion. No repetir modelos ni corregir prompts antes de ver el dato perdido. C03/717 requisitos/UI/voz/recursos conjuntos/Full final pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "pending_publication_of_validated_source626",
+  "publishedSourceCommit": "67085974c69c60034cba2ad95d156ddb096de6f6",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "f0dcd98f87b588665d8397f45bd3bdb8a172e051",
+  "publishedEvidenceCommit": "67085974c69c60034cba2ad95d156ddb096de6f6",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
