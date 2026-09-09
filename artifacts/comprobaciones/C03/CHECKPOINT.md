@@ -36,3 +36,12 @@ Sólo cambia effect_intent.py y sus pruebas, más las dos declaraciones del árb
 Límite: reparación de alcance, no certificación del resultado final. La prosa española de541 confundió6287261696bytes dedicados con8GB; ese fallo es independiente y sigue abierto. También siguen memoria desactivada/capacidad, metadatos de guardado, discos plurales, curiosidades no verificadas y distinción de núcleos lógicos. Producto siguiente: comprobar los argumentos y hechos GPU reales con la fuente nueva antes de tocar su presentación.
 
 Encuesta:3cubiertos/739abiertos/0no aplicables, sóloH0002/H0016/H0021 acreditados con casos y variantes reales541. La corrida541 conservó25finales de44; se cortó correctamente por RAM libre del sistema inferior a768MiB. GPU3499,559MiB/RAM2430,715MiB, sin UI/voz. No se atribuye aceptación a las19entradas no ejecutadas.
+
+
+## Tramo543 — alcance confirmado y encuesta6/736/0
+
+Fuente542 publicada en564802461608df97a7fc38f822b164fdb794d4c4. Producto543:22finales, exit0, sin cortes;3controles GPU con gpu_identity verificado. GPU3497,559MiB/RAM2424,773MiB,65,344s; sin UI/voz. Completa19entradas no ejecutadas541 y añade3controles. Encuesta6cubiertos/736abiertos/0no aplicables: nuevosH0041/H0042/H0062. El resto permanece abierto con evidencia y causa porcase_id. VerRESULT.json/privados, no confundir emisión con éxito.
+
+Se observan fallos de sujeto en CPU, despedida metanarrada y hora+batería no resuelta. El workerE5 ocupa858,63MiB en la muestra máxima543: investigar ONNX del mismo encoder sin cambiar calidad, prefijos ni ranking antes de adoptar nada. Fuentes primarias e instrucciones de reanudación enHANDOFF. No hay descarga/benchmark nuevo aún.
+
+Se preservan bytes originales de evidencias537–543 mediante reglas -text específicas; corregir normalización de Git, verificarPINS y publicar. Ningún cambio de fuente después542. Full final y resto de C03 pendientes.
