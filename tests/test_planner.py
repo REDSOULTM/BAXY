@@ -2938,6 +2938,9 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
 
         def fake_schema(payload, label):
             seen.append(payload)
+            if len(seen) == 2:
+                self.assertEqual(label, "la respuesta contextual directa")
+                return {"answer": "Aquí estoy, dime qué necesitas."}
             self.assertEqual(
                 label,
                 "la resolución semántica de continuidad",
@@ -2957,7 +2960,8 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             tools=None,
         )
 
-        self.assertEqual(reply, "El usuario volvió a saludar.")
+        self.assertEqual(reply, "Aquí estoy, dime qué necesitas.")
+        self.assertEqual(len(seen), 2)
         self.assertEqual(calls, [])
         messages = seen[0]["messages"]
         user_messages = [message for message in messages if message["role"] == "user"]

@@ -6192,18 +6192,18 @@ class LlmRuntime:
         prior_normalized = {
             _normalized_dialogue_text(message["content"]) for message in prior_messages
         }
-        for candidate in (
-            resolution["direct_answer"].strip(),
-            resolution["resolved_meaning"].strip(),
+        # The reference interpretation is internal evidence, never a substitute
+        # for a user-facing answer. An invalid answer uses the existing bounded
+        # direct retry rather than exposing analysis such as "the user said...".
+        candidate = resolution["direct_answer"].strip()
+        normalized_candidate = _normalized_dialogue_text(candidate)
+        if (
+            candidate
+            and not candidate.rstrip().endswith(("?", "？"))
+            and normalized_candidate != _normalized_dialogue_text(current)
+            and normalized_candidate not in prior_normalized
         ):
-            normalized_candidate = _normalized_dialogue_text(candidate)
-            if (
-                candidate
-                and not candidate.rstrip().endswith(("?", "？"))
-                and normalized_candidate != _normalized_dialogue_text(current)
-                and normalized_candidate not in prior_normalized
-            ):
-                return candidate
+            return candidate
         # A schema-valid result can still contain only a repeated question or
         # a verbatim history echo. Give the presentation model one simplified
         # chance before escalating to total-turn recovery.

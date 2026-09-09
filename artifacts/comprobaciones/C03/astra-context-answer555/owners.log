@@ -1,0 +1,126 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 18%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+..............................................................F......... [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+.....................................................................................F........................... [ 57%]
+......................................................... [ 60%]
+..................................................................... [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+.........................................                                [100%]
+================================== FAILURES ===================================
+________ test_context_resolution_falls_back_from_an_exact_history_echo ________
+
+    def test_context_resolution_falls_back_from_an_exact_history_echo() -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads: list[dict] = []
+    
+        def contextual(payload: dict, label: str) -> dict:
+            payloads.append(payload)
+            assert label == "la resolución semántica de continuidad"
+            return {
+                "resolved_meaning": ("La acción falló al agotarse el tiempo disponible."),
+                "direct_answer": ("No pude completar la acción porque se agotó el tiempo."),
+            }
+    
+        runtime._post_schema_object = contextual  # type: ignore[method-assign]
+>       answer, _ = runtime.chat(
+            "¿Por qué?",
+            history=[
+                {
+                    "role": "assistant",
+                    "content": "No pude completar la acción porque se agotó el tiempo.",
+                }
+            ],
+            temperature=0.0,
+            conversation_kind="followup",
+            response_language="es",
+        )
+
+tests\test_turn_policy.py:10385: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:6381: in chat
+    contextual = self._resolve_contextual_answer(
+src\baxy_mind\llm.py:6210: in _resolve_contextual_answer
+    answer = direct_retry(2).strip()
+             ^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:6162: in direct_retry
+    fallback = self._post_schema_object(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+payload = {'messages': [{'role': 'system', 'content': 'Redacta solo una frase declarativa en español que parafrasee la causa pre...t":"No pude completar la acción porque se agotó el tiempo."}'}], 'temperature': 0.0, 'seed': 2, 'max_tokens': 192, ...}
+label = 'la respuesta contextual directa'
+
+    def contextual(payload: dict, label: str) -> dict:
+        payloads.append(payload)
+>       assert label == "la resolución semántica de continuidad"
+E       AssertionError: assert 'la respuesta...xtual directa' == 'la resolució...e continuidad'
+E         
+E         - la resolución semántica de continuidad
+E         + la respuesta contextual directa
+
+tests\test_turn_policy.py:10378: AssertionError
+_ PlannerLlmBoundaryTests.test_chat_does_not_repeat_the_current_user_turn_from_history _
+
+self = <test_planner.PlannerLlmBoundaryTests testMethod=test_chat_does_not_repeat_the_current_user_turn_from_history>
+
+    def test_chat_does_not_repeat_the_current_user_turn_from_history(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+    
+        def fake_schema(payload, label):
+            seen.append(payload)
+            self.assertEqual(
+                label,
+                "la resolución semántica de continuidad",
+            )
+            return {
+                "resolved_meaning": "El usuario volvió a saludar.",
+                "direct_answer": "¡Hola!",
+            }
+    
+        runtime._post_schema_object = fake_schema
+>       reply, calls = runtime.chat(
+            "hOLA",
+            history=[
+                {"role": "assistant", "content": "Hola."},
+                {"role": "user", "content": "  Ｈola  "},
+            ],
+            tools=None,
+        )
+
+tests\test_planner.py:2951: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:6381: in chat
+    contextual = self._resolve_contextual_answer(
+src\baxy_mind\llm.py:6210: in _resolve_contextual_answer
+    answer = direct_retry(2).strip()
+             ^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:6162: in direct_retry
+    fallback = self._post_schema_object(
+tests\test_planner.py:2941: in fake_schema
+    self.assertEqual(
+E   AssertionError: 'la respuesta contextual directa' != 'la resolución semántica de continuidad'
+E   - la respuesta contextual directa
+E   + la resolución semántica de continuidad
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_context_resolution_falls_back_from_an_exact_history_echo
+FAILED tests/test_planner.py::PlannerLlmBoundaryTests::test_chat_does_not_repeat_the_current_user_turn_from_history
+2 failed, 1934 passed, 121 subtests passed in 9.48s

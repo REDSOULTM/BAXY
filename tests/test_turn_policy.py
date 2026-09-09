@@ -10247,12 +10247,16 @@ def test_context_resolver_retries_a_simpler_schema_before_turn_recovery() -> Non
 
 def test_context_resolver_rejects_a_question_paraphrase_as_direct_answer() -> None:
     runtime = object.__new__(LlmRuntime)
-    runtime._post_schema_object = (  # type: ignore[method-assign]
-        lambda _payload, _label: {
-            "resolved_meaning": "La palabra inventada era Nimbo7391.",
-            "direct_answer": "¿Cuál era la palabra inventada?",
-        }
+    replies = iter(
+        [
+            {
+                "resolved_meaning": "La persona pide recuperar una palabra anterior.",
+                "direct_answer": "¿Cuál era la palabra inventada?",
+            },
+            {"answer": "La palabra inventada era Nimbo7391."},
+        ]
     )
+    runtime._post_schema_object = lambda _payload, _label: next(replies)  # type: ignore[method-assign]
 
     answer = runtime._resolve_contextual_answer(
         history=[
@@ -10265,6 +10269,62 @@ def test_context_resolver_rejects_a_question_paraphrase_as_direct_answer() -> No
     )
 
     assert answer == "La palabra inventada era Nimbo7391."
+
+
+@pytest.mark.parametrize(
+    ("current", "meaning", "reply"),
+    [
+        (
+            "Eso era todo, gracias.",
+            "El usuario ha indicado que ya no hay más temas por tratar.",
+            "De nada, aquí estoy si necesitas algo más.",
+        ),
+        (
+            "That is all, thanks.",
+            "The user is ending the conversation and expressing gratitude.",
+            "You're welcome. I'm here if you need anything else.",
+        ),
+        (
+            "Me refería a la última parte.",
+            "La persona está corrigiendo la referencia de su pregunta.",
+            "Esa parte explica por qué terminó la lectura.",
+        ),
+    ],
+)
+def test_context_resolver_does_not_publish_meaning_when_answer_echoes_user(
+    current: str, meaning: str, reply: str
+) -> None:
+    runtime = object.__new__(LlmRuntime)
+    calls: list[dict] = []
+
+    def contextual(payload: dict, _label: str) -> dict:
+        calls.append(payload)
+        if len(calls) == 1:
+            return {"resolved_meaning": meaning, "direct_answer": current}
+        return {"answer": reply}
+
+    runtime._post_schema_object = contextual  # type: ignore[method-assign]
+    answer = runtime._resolve_contextual_answer(history=[], current=current)
+
+    assert answer == reply
+    assert len(calls) == 2
+    assert calls[1]["response_format"]["json_schema"]["name"] == "contextual_direct_answer"
+    assert meaning not in repr(calls[1]["messages"])
+
+
+def test_context_resolver_keeps_failure_when_direct_retry_still_echoes() -> None:
+    runtime = object.__new__(LlmRuntime)
+    current = "Eso era todo, gracias."
+    replies = iter(
+        [
+            {"resolved_meaning": "El usuario se despide.", "direct_answer": current},
+            {"answer": current},
+        ]
+    )
+    runtime._post_schema_object = lambda _payload, _label: next(replies)  # type: ignore[method-assign]
+
+    with pytest.raises(ValueError, match="vacía o repetida"):
+        runtime._resolve_contextual_answer(history=[], current=current)
 
 
 def test_followup_offer_is_native_history_not_serialized_user_data() -> None:
@@ -10315,6 +10375,9 @@ def test_context_resolution_falls_back_from_an_exact_history_echo() -> None:
 
     def contextual(payload: dict, label: str) -> dict:
         payloads.append(payload)
+        if len(payloads) == 2:
+            assert label == "la respuesta contextual directa"
+            return {"answer": "La acción falló al agotarse el tiempo disponible."}
         assert label == "la resolución semántica de continuidad"
         return {
             "resolved_meaning": ("La acción falló al agotarse el tiempo disponible."),
@@ -10336,7 +10399,10 @@ def test_context_resolution_falls_back_from_an_exact_history_echo() -> None:
     )
 
     assert answer == "La acción falló al agotarse el tiempo disponible."
-    assert len(payloads) == 1
+    assert len(payloads) == 2
+    assert json.loads(payloads[1]["messages"][-1]["content"]) == {
+        "assistant_statement": "No pude completar la acción porque se agotó el tiempo."
+    }
 
 
 @pytest.mark.parametrize("text,prior,retain", [

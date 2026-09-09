@@ -1,0 +1,22 @@
+{
+  "adopted": true,
+  "owners": {
+    "passed": 1936,
+    "subtests": 121,
+    "skips": 0,
+    "seconds": 17.15
+  },
+  "stt_declarations": {
+    "passed": 12,
+    "environmental_skips": 1,
+    "seconds": 1.32
+  },
+  "fast": "passed",
+  "release_seconds": 21.57,
+  "product_verification": "pending556",
+  "survey": {
+    "covered": 7,
+    "open": 735,
+    "not_applicable": 0
+  }
+}

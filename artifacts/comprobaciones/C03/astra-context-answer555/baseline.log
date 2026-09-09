@@ -1,0 +1,203 @@
+.FFFFF                                                                   [100%]
+================================== FAILURES ===================================
+____ test_context_resolver_rejects_a_question_paraphrase_as_direct_answer _____
+
+    def test_context_resolver_rejects_a_question_paraphrase_as_direct_answer() -> None:
+        runtime = object.__new__(LlmRuntime)
+        replies = iter(
+            [
+                {
+                    "resolved_meaning": "La persona pide recuperar una palabra anterior.",
+                    "direct_answer": "¿Cuál era la palabra inventada?",
+                },
+                {"answer": "La palabra inventada era Nimbo7391."},
+            ]
+        )
+        runtime._post_schema_object = lambda _payload, _label: next(replies)  # type: ignore[method-assign]
+    
+        answer = runtime._resolve_contextual_answer(
+            history=[
+                {
+                    "role": "user",
+                    "content": "Explica por qué Nimbo7391 suena amistosa.",
+                }
+            ],
+            current="¿Qué palabra inventada mencioné antes?",
+        )
+    
+>       assert answer == "La palabra inventada era Nimbo7391."
+E       AssertionError: assert 'La persona p...bra anterior.' == 'La palabra i...ra Nimbo7391.'
+E         
+E         - La palabra inventada era Nimbo7391.
+E         + La persona pide recuperar una palabra anterior.
+
+tests\test_turn_policy.py:10271: AssertionError
+_ test_context_resolver_does_not_publish_meaning_when_answer_echoes_user[Eso era todo, gracias.-El usuario ha indicado que ya no hay m\xe1s temas por tratar.-De nada, aqu\xed estoy si necesitas algo m\xe1s.] _
+
+current = 'Eso era todo, gracias.'
+meaning = 'El usuario ha indicado que ya no hay más temas por tratar.'
+reply = 'De nada, aquí estoy si necesitas algo más.'
+
+    @pytest.mark.parametrize(
+        ("current", "meaning", "reply"),
+        [
+            (
+                "Eso era todo, gracias.",
+                "El usuario ha indicado que ya no hay más temas por tratar.",
+                "De nada, aquí estoy si necesitas algo más.",
+            ),
+            (
+                "That is all, thanks.",
+                "The user is ending the conversation and expressing gratitude.",
+                "You're welcome. I'm here if you need anything else.",
+            ),
+            (
+                "Me refería a la última parte.",
+                "La persona está corrigiendo la referencia de su pregunta.",
+                "Esa parte explica por qué terminó la lectura.",
+            ),
+        ],
+    )
+    def test_context_resolver_does_not_publish_meaning_when_answer_echoes_user(
+        current: str, meaning: str, reply: str
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        calls: list[dict] = []
+    
+        def contextual(payload: dict, _label: str) -> dict:
+            calls.append(payload)
+            if len(calls) == 1:
+                return {"resolved_meaning": meaning, "direct_answer": current}
+            return {"answer": reply}
+    
+        runtime._post_schema_object = contextual  # type: ignore[method-assign]
+        answer = runtime._resolve_contextual_answer(history=[], current=current)
+    
+>       assert answer == reply
+E       AssertionError: assert 'El usuario h...s por tratar.' == 'De nada, aqu...tas algo más.'
+E         
+E         - De nada, aquí estoy si necesitas algo más.
+E         + El usuario ha indicado que ya no hay más temas por tratar.
+
+tests\test_turn_policy.py:10309: AssertionError
+_ test_context_resolver_does_not_publish_meaning_when_answer_echoes_user[That is all, thanks.-The user is ending the conversation and expressing gratitude.-You're welcome. I'm here if you need anything else.] _
+
+current = 'That is all, thanks.'
+meaning = 'The user is ending the conversation and expressing gratitude.'
+reply = "You're welcome. I'm here if you need anything else."
+
+    @pytest.mark.parametrize(
+        ("current", "meaning", "reply"),
+        [
+            (
+                "Eso era todo, gracias.",
+                "El usuario ha indicado que ya no hay más temas por tratar.",
+                "De nada, aquí estoy si necesitas algo más.",
+            ),
+            (
+                "That is all, thanks.",
+                "The user is ending the conversation and expressing gratitude.",
+                "You're welcome. I'm here if you need anything else.",
+            ),
+            (
+                "Me refería a la última parte.",
+                "La persona está corrigiendo la referencia de su pregunta.",
+                "Esa parte explica por qué terminó la lectura.",
+            ),
+        ],
+    )
+    def test_context_resolver_does_not_publish_meaning_when_answer_echoes_user(
+        current: str, meaning: str, reply: str
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        calls: list[dict] = []
+    
+        def contextual(payload: dict, _label: str) -> dict:
+            calls.append(payload)
+            if len(calls) == 1:
+                return {"resolved_meaning": meaning, "direct_answer": current}
+            return {"answer": reply}
+    
+        runtime._post_schema_object = contextual  # type: ignore[method-assign]
+        answer = runtime._resolve_contextual_answer(history=[], current=current)
+    
+>       assert answer == reply
+E       assert 'The user is ...ng gratitude.' == "You're welco...nything else."
+E         
+E         - You're welcome. I'm here if you need anything else.
+E         + The user is ending the conversation and expressing gratitude.
+
+tests\test_turn_policy.py:10309: AssertionError
+_ test_context_resolver_does_not_publish_meaning_when_answer_echoes_user[Me refer\xeda a la \xfaltima parte.-La persona est\xe1 corrigiendo la referencia de su pregunta.-Esa parte explica por qu\xe9 termin\xf3 la lectura.] _
+
+current = 'Me refería a la última parte.'
+meaning = 'La persona está corrigiendo la referencia de su pregunta.'
+reply = 'Esa parte explica por qué terminó la lectura.'
+
+    @pytest.mark.parametrize(
+        ("current", "meaning", "reply"),
+        [
+            (
+                "Eso era todo, gracias.",
+                "El usuario ha indicado que ya no hay más temas por tratar.",
+                "De nada, aquí estoy si necesitas algo más.",
+            ),
+            (
+                "That is all, thanks.",
+                "The user is ending the conversation and expressing gratitude.",
+                "You're welcome. I'm here if you need anything else.",
+            ),
+            (
+                "Me refería a la última parte.",
+                "La persona está corrigiendo la referencia de su pregunta.",
+                "Esa parte explica por qué terminó la lectura.",
+            ),
+        ],
+    )
+    def test_context_resolver_does_not_publish_meaning_when_answer_echoes_user(
+        current: str, meaning: str, reply: str
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        calls: list[dict] = []
+    
+        def contextual(payload: dict, _label: str) -> dict:
+            calls.append(payload)
+            if len(calls) == 1:
+                return {"resolved_meaning": meaning, "direct_answer": current}
+            return {"answer": reply}
+    
+        runtime._post_schema_object = contextual  # type: ignore[method-assign]
+        answer = runtime._resolve_contextual_answer(history=[], current=current)
+    
+>       assert answer == reply
+E       AssertionError: assert 'La persona e... su pregunta.' == 'Esa parte ex...ó la lectura.'
+E         
+E         - Esa parte explica por qué terminó la lectura.
+E         + La persona está corrigiendo la referencia de su pregunta.
+
+tests\test_turn_policy.py:10309: AssertionError
+_____ test_context_resolver_keeps_failure_when_direct_retry_still_echoes ______
+
+    def test_context_resolver_keeps_failure_when_direct_retry_still_echoes() -> None:
+        runtime = object.__new__(LlmRuntime)
+        current = "Eso era todo, gracias."
+        replies = iter(
+            [
+                {"resolved_meaning": "El usuario se despide.", "direct_answer": current},
+                {"answer": current},
+            ]
+        )
+        runtime._post_schema_object = lambda _payload, _label: next(replies)  # type: ignore[method-assign]
+    
+>       with pytest.raises(ValueError, match="vacía o repetida"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_turn_policy.py:10326: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_context_resolver_rejects_a_question_paraphrase_as_direct_answer
+FAILED tests/test_turn_policy.py::test_context_resolver_does_not_publish_meaning_when_answer_echoes_user[Eso era todo, gracias.-El usuario ha indicado que ya no hay m\xe1s temas por tratar.-De nada, aqu\xed estoy si necesitas algo m\xe1s.]
+FAILED tests/test_turn_policy.py::test_context_resolver_does_not_publish_meaning_when_answer_echoes_user[That is all, thanks.-The user is ending the conversation and expressing gratitude.-You're welcome. I'm here if you need anything else.]
+FAILED tests/test_turn_policy.py::test_context_resolver_does_not_publish_meaning_when_answer_echoes_user[Me refer\xeda a la \xfaltima parte.-La persona est\xe1 corrigiendo la referencia de su pregunta.-Esa parte explica por qu\xe9 termin\xf3 la lectura.]
+FAILED tests/test_turn_policy.py::test_context_resolver_keeps_failure_when_direct_retry_still_echoes
+5 failed, 1 passed, 1026 deselected in 2.25s

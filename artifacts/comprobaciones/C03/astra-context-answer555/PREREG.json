@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-09T04:26:35.762986+00:00",
+  "registration_stage": "After test-first reproduction and focal success, before broad owner/Fast/product validation; not claimed as blinded preregistration.",
+  "cause": "Actual543 native27 returns direct_answer identical to the user closing, with resolved_meaning an internal third-person interpretation. _resolve_contextual_answer rejects the echo then publishes resolved_meaning. First faulty application transformation is demonstrated, not inferred as generic model/prose failure.",
+  "change": "Use only direct_answer as public candidate. If invalid, preserve existing bounded direct_retry and honest ValueError if retry is also unusable. Never promote resolved_meaning to final answer. No new layer, phrase list, fixed reply or model configuration.",
+  "baseline": "5 failed,1 passed,1026 deselected in2.25s",
+  "focal": "6 passed,1026 deselected in0.67s",
+  "controls": "ES/EN closings, referential correction, question paraphrase, schema recovery, repeated invalid retry fails honestly. Existing direct-answer and literal recall paths remain under broad owners.",
+  "publication": "Only Python source; current-tree STT attestations refreshed, historical pins unchanged. Product556 and source-quality gate required before claiming observed behavior fixed. No survey credit yet."
+}
