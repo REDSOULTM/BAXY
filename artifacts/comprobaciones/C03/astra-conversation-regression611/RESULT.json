@@ -1,0 +1,27 @@
+{
+  "source": 609,
+  "finals": 35,
+  "correct_finals": 33,
+  "failed_cases": {
+    "H0012": "Wrong subject: Eres tú, compañero does not answer who the assistant is.",
+    "greeting-variant-3": "The assistant addresses the user as Atlas, though the user was addressing the assistant; unsupported user-name attribution."
+  },
+  "adopted": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2485.98046875,
+    "seconds": 81.578
+  },
+  "ui_or_voice_credit": false,
+  "survey_credit_from_this_candidate": 0,
+  "private_hashes": {
+    "RESULT.md": "2090c225da3608a76669a0ee3a6daa8cc09dcc949013a7b3eca505f91e4de67e",
+    "adjudication.json": "e84427d06699f5ce87ff977e43bdce671f8d4ef2a88cda17485fe34f2d9c87e3",
+    "capture/events.jsonl": "a185a77d2b9b45e8a45122d409046a35d16b0455d4bb006c306587f039758323",
+    "raw-replies.jsonl": "200c04226cbe88eccbab5c15bf3eee79c7000a802201084aaa7cf5bd712642ec",
+    "turn-audit.jsonl": "7652372a9d1bbeca1bb8796b4ecc2dfc084a3def399004b97f2f4988553a8e29",
+    "compose-audit.jsonl": "4ae0bdddcf8dcc1c76d495d211ddc4ad91c37893f1032e49cfbffec3d9151f94"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "utc": "2026-09-09T09:50:54.045909+00:00",
+  "source": 606,
+  "finals": 12,
+  "correct_finals": 7,
+  "failed_cases": {
+    "H0012": "Identity question is replaced by an interpretation failure.",
+    "missing-app": "Asks the necessary application, but the preposition in the published question is ungrammatical. Correct clarification intent; prose defect retained.",
+    "missing-value": "No useful final: missing_literal_fact in original and recovery. Missing volume value should elicit a clarification.",
+    "missing-reference-en": "Declares an unsupported capability instead of clarifying missing content, recipient or reference.",
+    "knowledge-discourse": "Correct scientific content, but gender agreement in ciertos bacterias is wrong; naturalness defect retained."
+  },
+  "survey": {
+    "covered": 24,
+    "open": 718,
+    "not_applicable": 0
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2428.57421875,
+    "seconds": 67.391
+  },
+  "no_effect_operations_in_final_audit": true,
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "adjudication.json": "c2666a06c3ae5cb7d34426954eb559aba00dfcd2669f6038effd5759372214b2",
+    "RESULT.md": "6fb3ccf3298a462afcb2ed2ea57a1946b16e759e5afe87210dee7d983d79e97c",
+    "capture/events.jsonl": "e7636e1045787ba5b6d6179c24d218272766af0bda3ecbbfec3fae99c5b62995",
+    "turn-audit.jsonl": "b03e5973a9132e773cf3192615ff040dbce5ce1465660ba5b01956457355d08a",
+    "compose-audit.jsonl": "ef1ae8f2091a204045fc40a787edab0cb6adfc808279b1a506057fe1d93760ea"
+  }
+}

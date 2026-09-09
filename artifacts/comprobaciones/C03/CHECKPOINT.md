@@ -456,3 +456,23 @@ Producto605 sin hooks ni override da33/35finales correctos, conserva los agradec
 ## Continuación después de Full606
 
 Full606 terminó con salida 0. La reproducción aislada607 conserva 15 de 16 salidas y corrige sólo H0012 sin conceder autoridad de acción; fuente todavía sin esa modificación. Baseline de producto608 en curso, sesión80550, TEMP/c03-effect-controls608.log: 12 casos de identidad, campos ausentes, límites físicos, negación y conocimiento. No editar la fuente hasta que termine esta comparación. BAXY manual permanece cerrado.
+
+
+## Fuente609: presentación de capacidad, contraste del producto en curso
+
+Fuente606 publicada en bbb3a951337661d567da62f62869d81137a4cde3, remoto verificado y main intacto. Full606: Python 10218 pass / 3 omisiones / 466 subpruebas; .NET 4452 pass / 1 omisión agregada, 0 fallos. La validación no acredita omisiones ambientales ni UI/voz.
+
+Baseline608 terminó: 7/12 finales correctos. Fallan H0012, aclaración del volumen y referencia inglesa; además se conservan dos errores gramaticales (pregunta de aplicación y fotosíntesis). Ninguna operación de efecto en los finales del audit. No se había medido este panel antes: no es una regresión respecto a605.
+
+Fuente609 cambia sólo la condición de apply_conversation_effect_presentation: incomplete_effect no demuestra capacidad no disponible. Guardas, autorización y clasificación nativa intactas. Pruebas dueñas: 1391 pass / 1 omisión ambiental / 121 subpruebas, 9,44s. Fast salida0, Release20,37s sin advertencias/errores. Pins actuales V8/STT actualizados, históricos intactos. Producto610 repite los12 casos; sesión95048, TEMP/c03-effect-controls610.log. Mantener fuente inmóvil durante la corrida. Después repetir los35 de605 en611, adjudicar todos y sólo entonces adoptar/publicar609 si mejora sin nuevas regresiones. Encuesta24/718/0. Atlas, progreso, UI/voz conjunta, registroCPU y demás C03 pendientes; ninguna decisión del dueño pendiente.
+
+
+# Candidato609 descartado: permanece fuente606
+
+La proyección incompleto→no compatible era una transformación incorrecta para H0012, pero retirarla no bastó:610 y611 responden «Eres tú, compañero», confundiendo el sujeto. El panel608→610 pasa de7/12 a6/12; también falla un límite físico inglés previamente correcto. El panel35 de611 conserva33/35, los mismos dos fallos de identidad. No hay mejora final ni se adopta el candidato.
+
+Se restauraron byte a byte los cinco archivos del parche609 desde la fuente606 publicada. Se conserva candidate609.patch, pruebas1391 pass/1 omisión ambiental/121 subpruebas y Fast0; esos tests no sustituyen la calidad del producto. Full606 sigue correspondiendo exactamente a la fuente vigente; no se reclama Full609. No hay procesos de inferencia ni compuertas activas.
+
+H0021 queda verificado por su propio literal y tres variantes ES/EN/mixta de608, que usó fuente606; no recibe crédito del candidato rechazado. Encuesta25 cubiertos/717 abiertos/0 no aplicables, originales742/rev1248 intactos. H0012, Atlas, aclaraciones de valor/referencia, dos defectos gramaticales y prosa de progreso permanecen abiertos.
+
+Siguiente: aislar atribución de sujeto en el modelo nativo y añadir los componentes de conversación con payload efectivo. No repetir los prompts de guarda594/595 ni promover una clasificación intermedia como respuesta correcta.593 conserva argumentos reales de chat: H0012 tiene temperature0, response_language mixed y saludo previo.610 confirma que, con clasificación knowledge, el borrador invierte el sujeto. Reutilizar investigación Qwen2507/b9980; una comparación controlada no declara inferioridad global del modelo. Perfil registrado, UI/voz conjunta, recursos y resto C03 pendientes.

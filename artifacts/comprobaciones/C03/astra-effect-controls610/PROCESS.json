@@ -1,0 +1,16 @@
+{
+  "launcher": 56176,
+  "command": [
+    "py",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-effect-profile610",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-effect-controls610-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-effect-controls610-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

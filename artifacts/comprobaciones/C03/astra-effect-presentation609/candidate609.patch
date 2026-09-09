@@ -1,0 +1,99 @@
+diff --git a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+index b712dba1..28c74d0a 100644
+--- a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
++++ b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84"
++    "1f7c6b2dcf2a81cef6077a5329f5ec20810da6518b996e5565251fa1af06fa26"
+ )
+ CONSUMED_BLIND_CONTRACT = (
+     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
+diff --git a/experiments/stt_quality/evaluate_reserved_stt.py b/experiments/stt_quality/evaluate_reserved_stt.py
+index 47ee67f2..53d22cca 100644
+--- a/experiments/stt_quality/evaluate_reserved_stt.py
++++ b/experiments/stt_quality/evaluate_reserved_stt.py
+@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84"
++    "1f7c6b2dcf2a81cef6077a5329f5ec20810da6518b996e5565251fa1af06fa26"
+ )
+ SAMPLE_RATE = 16_000
+ SILENCE_SAMPLES = SAMPLE_RATE // 5
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 0f8a4288..e081533e 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -1309,7 +1309,10 @@ def apply_conversation_effect_presentation(
+         state, _ = llm._verify_semantic_effect_shape(objective)
+     except ValueError:
+         return decision
+-    if state not in {"complete", "not_complete"}:
++    # Missing arguments do not establish an unsupported capability. Preserve
++    # the primary conversation; the guard cannot supply a missing operation
++    # or turn uncertainty into a claim that the requested task is impossible.
++    if state != "complete":
+         return decision
+     unsupported = dict(decision)
+     unsupported["conversation_kind"] = "unsupported"
+diff --git a/tests/test_price_v8_veto_damage_by_cause.py b/tests/test_price_v8_veto_damage_by_cause.py
+index 737b556b..7cc69858 100644
+--- a/tests/test_price_v8_veto_damage_by_cause.py
++++ b/tests/test_price_v8_veto_damage_by_cause.py
+@@ -101,7 +101,7 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
+ # CPU actor/quantity repairs; consumed V8 evidence and verdict remain unchanged.
+ V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
+     "src/baxy_mind/__main__.py": (
+-        "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
++        "f1c4264d82d4489cb6265de8aa189889788db4dc97d93a9faab14b26c3e83d30"
+     ),
+     "src/baxy_mind/llm.py": (
+         "d9ace8ac4adcf83af955276d1ed072b9a9ddff2fe85a26f2fa4511433dcc9425"
+diff --git a/tests/test_turn_policy.py b/tests/test_turn_policy.py
+index b171488c..43046954 100644
+--- a/tests/test_turn_policy.py
++++ b/tests/test_turn_policy.py
+@@ -7834,9 +7834,18 @@ def test_action_grounding_gate_skips_llm_for_complete_explicit_literals() -> Non
+     assert accepted["effect_verification"] == "grounded"
+ 
+ 
+-def test_effect_guard_can_only_change_conversation_presentation_to_unsupported() -> (
+-    None
+-):
++@pytest.mark.parametrize(
++    ("guard_state", "expected_kind"),
++    [
++        ("complete", "unsupported"),
++        ("not_complete", "knowledge"),
++        ("no_effect", "knowledge"),
++        ("invalid", "knowledge"),
++    ],
++)
++def test_only_a_complete_effect_can_mark_primary_knowledge_as_unsupported(
++    guard_state: str, expected_kind: str,
++) -> None:
+     conversation = validate_turn_decision(
+         {
+             "mode": "conversation",
+@@ -7854,7 +7863,7 @@ def test_effect_guard_can_only_change_conversation_presentation_to_unsupported()
+     class GuardRuntime:
+         @staticmethod
+         def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
+-            return "not_complete", "one"
++            return guard_state, "one"
+ 
+     result = apply_conversation_effect_presentation(
+         conversation,
+@@ -7865,7 +7874,7 @@ def test_effect_guard_can_only_change_conversation_presentation_to_unsupported()
+     assert result["mode"] == "conversation"
+     assert result["operation"] is None
+     assert result["effect_operations"] == []
+-    assert result["conversation_kind"] == "unsupported"
++    assert result["conversation_kind"] == expected_kind
+ 
+ 
+ @pytest.mark.parametrize(

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T09:46:39.459594+00:00",
+  "confirmedAtUtc": "2026-09-09T09:58:31.838664+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "606 Full0: Python10218pass/3skips/466subtests; .NET4452pass/1omisión agregada.60533/35finales. Encuesta24/718/0. Fuente pendiente de publicación.",
-  "continuation": "Publicar fuente606 Full0 y evidencia593–607. Baseline608 activo sesión80550, TEMP/c03-effect-controls608.log; fuente inmóvil hasta terminar. Luego adoptar y validar la proyección607 si pasa el contraste completo; Atlas y prosa de progreso siguen pendientes.",
+  "checkpoint": "609 rechazado:6106/12 y61133/35. Fuente606 restaurada exacta y publicada bbb3a951; Full606 verde. Encuesta25/717/0, H0021 por608. Sin procesos activos.",
+  "continuation": "Publicar evidencia608–611, luego aislar sujeto conversacional nativo→instrucciones→historial; H0012 y Atlas abiertos. No promover609. Aclaraciones, gramática, progreso, UI/voz/memoria conjunta y registroCPU pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,12 +24,12 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 24,
-    "open": 718,
+    "covered": 25,
+    "open": 717,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "122c490f2f93b71de21756c269607c5b25024f04",
+  "publishedSourceCommit": "bbb3a951337661d567da62f62869d81137a4cde3",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

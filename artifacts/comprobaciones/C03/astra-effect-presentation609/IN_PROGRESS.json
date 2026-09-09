@@ -1,0 +1,45 @@
+{
+  "utc": "2026-09-09T09:52:10.258570+00:00",
+  "status": "candidate_under_product_regression",
+  "hypothesis": "Only complete semantic effects may relabel primary knowledge as unsupported; preserve uncertainty without granting action authority.",
+  "source_change": "One presentation predicate; no classifier, sampling, model, backend or runtime-manifest change.",
+  "baseline608": {
+    "correct_finals": 7,
+    "total": 12,
+    "failed_cases": [
+      "H0012",
+      "missing-app",
+      "missing-value",
+      "missing-reference-en",
+      "knowledge-discourse"
+    ]
+  },
+  "isolated607": "Only H0012 changed among16 cached native outputs;15 unchanged.",
+  "owner_tests": {
+    "exit_code": 0,
+    "passed": 1391,
+    "skipped": 1,
+    "subtests": 121,
+    "seconds": 9.44
+  },
+  "fast": {
+    "exit_code": 0,
+    "release_seconds": 20.37,
+    "warnings": 0,
+    "errors": 0
+  },
+  "full": "606 passed; source609 Python-only change requires owners/Fast now and Full on final candidate. No Full609 claimed.",
+  "product610": "running session95048, TEMP/c03-effect-controls610.log",
+  "survey": {
+    "covered": 24,
+    "open": 718,
+    "not_applicable": 0
+  },
+  "tree": {
+    "sha256": "1f7c6b2dcf2a81cef6077a5329f5ec20810da6518b996e5565251fa1af06fa26",
+    "files": 404,
+    "main_sha256": "f1c4264d82d4489cb6265de8aa189889788db4dc97d93a9faab14b26c3e83d30",
+    "llm_sha256": "d9ace8ac4adcf83af955276d1ed072b9a9ddff2fe85a26f2fa4511433dcc9425",
+    "historical_pins_unchanged": true
+  }
+}
