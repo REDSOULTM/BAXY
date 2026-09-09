@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T18:24:32.475690+00:00",
+  "confirmedAtUtc": "2026-09-09T18:41:35.773226+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "680 publicadae2ad0b5c6058d75b077ebc0549273a9945db9d4a; título reparado;2589dueñas+121subtests/0skip,600declaraciones/1skip ambiental,Fast0;679 corregido3/7,6814/7,682 completo.",
-  "continuation": "Reparar lectura fresca de t3/t5 sin cambiar sus entradas: effect_intent.py y frontera observation_not_recital en __main__.py. Prosa mixta682 permanece abierta. Encuesta26/716/0 y alcance íntegroC03; no publicación pendiente de fuente680.",
+  "checkpoint": "683 adoptada:7682dueñas/0skip;600declaraciones/1skip ambiental;Fast0.6847/7lecturas frescas,4/7finales;6853/5→4/5sin adopción.",
+  "continuation": "Auditar y publicar683/684/685; luego reparar el rechazo de respuestas identificadoras e inversión de sujeto en window_prose_facts. Conservar las preguntas originales y contradicciones; no declarar cubierta H0104 todavía.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -44,6 +44,6 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Reparación680 validada y producto confirma título; auditoría descubre y corrige sobrecrédito679 por lecturas no realizadas.682 localiza defecto léxico sin cambiar backend.",
+  "previousGoalTurnClassificationReason": "683 reparó las dos rutas que respondían desde historial; producto684 verifica siete lecturas frescas.685 aisló una cláusula de paráfrasis con mejora parcial y sin adopción.",
   "activeValidation": null
 }

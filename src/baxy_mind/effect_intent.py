@@ -4198,6 +4198,10 @@ _EXPLICIT_NON_ACTION_FRAME = (
     r")"
 )
 _REQUEST_PREFIX = (
+    # A delimited present-time frame leaves the following request intact.
+    # Future/past times and quoted content are not request wrappers.
+    r"(?:(?:ahora(?:\s+mismo)?|en\s+este\s+momento|actualmente|"
+    r"(?:right\s+)?now|at\s+(?:this|the)\s+moment|currently)\s*[,;:]\s*)?"
     # A language directive changes presentation, not the following speech act.
     # Require its separator; quoted content and unclosed clauses stay literal.
     r"(?:(?:(?:responde|contesta)\s+en|(?:answer|reply|respond)\s+in)\s+"
@@ -12567,16 +12571,25 @@ def resolve_explicit_effects(
         return resolve_explicit_effects(
             completed_level_request, available, application_names, game_catalog,
         )
-    if (previous_user_text and "system.time" in available
-            and _nominal_datetime_query(folded)):
-        # Inherit only the immediately preceding, independently resolved clock
+    contextual_read = (
+        "system.time" if _nominal_datetime_query(folded) else
+        "window.active" if re.fullmatch(
+            r"(?:(?:y|and)\s+)?(?:(?:ahora(?:\s+mismo)?|(?:right\s+)?now)\s+)?"
+            r"(?:cual|which(?:\s+one)?)\s+(?:(?:esta|is)\s+(?:activa|active)|"
+            r"(?:tiene|has)\s+(?:el\s+)?(?:foco|focus))"
+            r"(?:\s+(?:ahora(?:\s+mismo)?|(?:right\s+)?now))?",
+            folded.strip(" ¿?¡!."),
+        ) else None
+    )
+    if previous_user_text and contextual_read in available:
+        # Inherit only the immediately preceding, independently resolved read
         # request. The assistant's prose cannot authorize a read or manufacture
         # a referent; another topic or an absent antecedent stays unresolved.
         previous = resolve_explicit_effects(
             previous_user_text, available, application_names, game_catalog,
         )
-        if previous is not None and previous.operations == ("system.time",):
-            return EffectIntent(("system.time",), (folded,))
+        if previous is not None and previous.operations == (contextual_read,):
+            return EffectIntent((contextual_read,), (folded,))
     authenticated_applications = build_application_catalog_index(
         application_names,
     )

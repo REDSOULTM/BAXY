@@ -1,0 +1,726 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF................FFF                     [100%]
+================================== FAILURES ===================================
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Ahora mismo, ] _
+
+prefix = 'Ahora mismo, ', query = '¿Qué ventana tiene el foco?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-En este momento: ] _
+
+prefix = 'En este momento: ', query = '¿Qué ventana tiene el foco?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Actualmente, ] _
+
+prefix = 'Actualmente, ', query = '¿Qué ventana tiene el foco?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Right now, ] _
+
+prefix = 'Right now, ', query = '¿Qué ventana tiene el foco?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-At this moment: ] _
+
+prefix = 'At this moment: ', query = '¿Qué ventana tiene el foco?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Currently, ] _
+
+prefix = 'Currently, ', query = '¿Qué ventana tiene el foco?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[Which window is active?-window.active-Ahora mismo, ] _
+
+prefix = 'Ahora mismo, ', query = 'Which window is active?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[Which window is active?-window.active-En este momento: ] _
+
+prefix = 'En este momento: ', query = 'Which window is active?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[Which window is active?-window.active-Actualmente, ] _
+
+prefix = 'Actualmente, ', query = 'Which window is active?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[Which window is active?-window.active-Right now, ] _
+
+prefix = 'Right now, ', query = 'Which window is active?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[Which window is active?-window.active-At this moment: ] _
+
+prefix = 'At this moment: ', query = 'Which window is active?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[Which window is active?-window.active-Currently, ] _
+
+prefix = 'Currently, ', query = 'Which window is active?'
+operation = 'window.active'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Ahora mismo, ] _
+
+prefix = 'Ahora mismo, ', query = '¿Qué hora es?', operation = 'system.time'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-En este momento: ] _
+
+prefix = 'En este momento: ', query = '¿Qué hora es?', operation = 'system.time'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Actualmente, ] _
+
+prefix = 'Actualmente, ', query = '¿Qué hora es?', operation = 'system.time'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Right now, ] _
+
+prefix = 'Right now, ', query = '¿Qué hora es?', operation = 'system.time'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-At this moment: ] _
+
+prefix = 'At this moment: ', query = '¿Qué hora es?', operation = 'system.time'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Currently, ] _
+
+prefix = 'Currently, ', query = '¿Qué hora es?', operation = 'system.time'
+
+    @pytest.mark.parametrize("prefix", ["Ahora mismo, ", "En este momento: ", "Actualmente, ", "Right now, ", "At this moment: ", "Currently, "])
+    @pytest.mark.parametrize("query,operation", [
+        ("¿Qué ventana tiene el foco?", "window.active"),
+        ("Which window is active?", "window.active"),
+        ("¿Qué hora es?", "system.time"),
+    ])
+    def test_present_frame_preserves_the_observation(prefix, query, operation):
+        result = resolve_explicit_effects(prefix + query, AVAILABLE)
+>       assert result is not None and result.operations == (operation,)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:20: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[\xbfY ahora cu\xe1l est\xe1 activa?-\xbfQu\xe9 ventana est\xe1 activa?] _
+
+previous = '¿Qué ventana está activa?', query = '¿Y ahora cuál está activa?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[\xbfY ahora cu\xe1l est\xe1 activa?-Which window has focus?] _
+
+previous = 'Which window has focus?', query = '¿Y ahora cuál está activa?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[\xbfY ahora cu\xe1l est\xe1 activa?-Baxy, \xbfqu\xe9 window tiene focus ahora?] _
+
+previous = 'Baxy, ¿qué window tiene focus ahora?'
+query = '¿Y ahora cuál está activa?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[\xbfCu\xe1l tiene el foco ahora?-\xbfQu\xe9 ventana est\xe1 activa?] _
+
+previous = '¿Qué ventana está activa?', query = '¿Cuál tiene el foco ahora?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[\xbfCu\xe1l tiene el foco ahora?-Which window has focus?] _
+
+previous = 'Which window has focus?', query = '¿Cuál tiene el foco ahora?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[\xbfCu\xe1l tiene el foco ahora?-Baxy, \xbfqu\xe9 window tiene focus ahora?] _
+
+previous = 'Baxy, ¿qué window tiene focus ahora?'
+query = '¿Cuál tiene el foco ahora?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[And which one is active now?-\xbfQu\xe9 ventana est\xe1 activa?] _
+
+previous = '¿Qué ventana está activa?', query = 'And which one is active now?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[And which one is active now?-Which window has focus?] _
+
+previous = 'Which window has focus?', query = 'And which one is active now?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[And which one is active now?-Baxy, \xbfqu\xe9 window tiene focus ahora?] _
+
+previous = 'Baxy, ¿qué window tiene focus ahora?'
+query = 'And which one is active now?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[Which has focus right now?-\xbfQu\xe9 ventana est\xe1 activa?] _
+
+previous = '¿Qué ventana está activa?', query = 'Which has focus right now?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[Which has focus right now?-Which window has focus?] _
+
+previous = 'Which window has focus?', query = 'Which has focus right now?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[Which has focus right now?-Baxy, \xbfqu\xe9 window tiene focus ahora?] _
+
+previous = 'Baxy, ¿qué window tiene focus ahora?'
+query = 'Which has focus right now?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[Ahora mismo, \xbfcu\xe1l est\xe1 activa?-\xbfQu\xe9 ventana est\xe1 activa?] _
+
+previous = '¿Qué ventana está activa?'
+query = 'Ahora mismo, ¿cuál está activa?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[Ahora mismo, \xbfcu\xe1l est\xe1 activa?-Which window has focus?] _
+
+previous = 'Which window has focus?', query = 'Ahora mismo, ¿cuál está activa?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_immediate_user_reference_requests_a_new_read[Ahora mismo, \xbfcu\xe1l est\xe1 activa?-Baxy, \xbfqu\xe9 window tiene focus ahora?] _
+
+previous = 'Baxy, ¿qué window tiene focus ahora?'
+query = 'Ahora mismo, ¿cuál está activa?'
+
+    @pytest.mark.parametrize("previous", ["¿Qué ventana está activa?", "Which window has focus?", "Baxy, ¿qué window tiene focus ahora?"])
+    @pytest.mark.parametrize("query", [
+        "¿Y ahora cuál está activa?", "¿Cuál tiene el foco ahora?",
+        "And which one is active now?", "Which has focus right now?",
+        "Ahora mismo, ¿cuál está activa?",
+    ])
+    def test_immediate_user_reference_requests_a_new_read(previous, query):
+        result = resolve_explicit_effects(query, AVAILABLE, previous_user_text=previous)
+>       assert result is not None and result.operations == ("window.active",)
+E       assert (None is not None)
+
+tests\test_c03_fresh_window_queries.py:31: AssertionError
+_ test_shared_turn_pipeline_selects_observation_without_reciting_history[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-history0] _
+
+query = 'Ahora mismo, ¿qué ventana tiene el foco?', history = []
+
+    @pytest.mark.parametrize("query,history", [
+        ("Ahora mismo, ¿qué ventana tiene el foco?", []),
+        ("¿Y ahora cuál está activa?", [{"role": "user", "content": "Which window has focus?"},
+            {"role": "assistant", "content": "The old title was Atlas."}]),
+        ("Which one is active now?", [{"role": "user", "content": "¿Qué ventana está activa?"},
+            {"role": "assistant", "content": "The old title was Órbita 29."}]),
+    ])
+    def test_shared_turn_pipeline_selects_observation_without_reciting_history(query, history):
+        tool = {"type": "function", "function": {
+            "name": "window_active", "canonical_name": "window.active",
+            "description": "Read the current foreground window.", "risk": "read_only",
+            "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+        }}
+    
+        class NoModel:
+            _verify_semantic_effect_shape = None
+            retire_deferred_response_language = None
+    
+            def __getattr__(self, name):
+                raise AssertionError(f"A proved current read must not call {name}")
+    
+>       result = _prepare_turn_result(
+            {"id": "current-reference", "text": query, "history": history},
+            llm=NoModel(), planner_catalog=PlannerCatalog([tool]), turn_evidence=NoModel(),
+            encoder=lambda _texts: (), tool_by_name={"window.active": tool}, application_names=(),
+        )
+
+tests\test_c03_fresh_window_queries.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6085: in _prepare_turn_result
+    else turn_evidence.retrieve(
+         ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_fresh_window_queries.test_shared_turn_pipeline_selects_observation_without_reciting_history.<locals>.NoModel object at 0x000002146441E4E0>
+name = 'retrieve'
+
+    def __getattr__(self, name):
+>       raise AssertionError(f"A proved current read must not call {name}")
+E       AssertionError: A proved current read must not call retrieve
+
+tests\test_c03_fresh_window_queries.py:78: AssertionError
+_ test_shared_turn_pipeline_selects_observation_without_reciting_history[\xbfY ahora cu\xe1l est\xe1 activa?-history1] _
+
+query = '¿Y ahora cuál está activa?'
+history = [{'role': 'user', 'content': 'Which window has focus?'}, {'role': 'assistant', 'content': 'The old title was Atlas.'}]
+
+    @pytest.mark.parametrize("query,history", [
+        ("Ahora mismo, ¿qué ventana tiene el foco?", []),
+        ("¿Y ahora cuál está activa?", [{"role": "user", "content": "Which window has focus?"},
+            {"role": "assistant", "content": "The old title was Atlas."}]),
+        ("Which one is active now?", [{"role": "user", "content": "¿Qué ventana está activa?"},
+            {"role": "assistant", "content": "The old title was Órbita 29."}]),
+    ])
+    def test_shared_turn_pipeline_selects_observation_without_reciting_history(query, history):
+        tool = {"type": "function", "function": {
+            "name": "window_active", "canonical_name": "window.active",
+            "description": "Read the current foreground window.", "risk": "read_only",
+            "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+        }}
+    
+        class NoModel:
+            _verify_semantic_effect_shape = None
+            retire_deferred_response_language = None
+    
+            def __getattr__(self, name):
+                raise AssertionError(f"A proved current read must not call {name}")
+    
+>       result = _prepare_turn_result(
+            {"id": "current-reference", "text": query, "history": history},
+            llm=NoModel(), planner_catalog=PlannerCatalog([tool]), turn_evidence=NoModel(),
+            encoder=lambda _texts: (), tool_by_name={"window.active": tool}, application_names=(),
+        )
+
+tests\test_c03_fresh_window_queries.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6085: in _prepare_turn_result
+    else turn_evidence.retrieve(
+         ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_fresh_window_queries.test_shared_turn_pipeline_selects_observation_without_reciting_history.<locals>.NoModel object at 0x000002146443A0C0>
+name = 'retrieve'
+
+    def __getattr__(self, name):
+>       raise AssertionError(f"A proved current read must not call {name}")
+E       AssertionError: A proved current read must not call retrieve
+
+tests\test_c03_fresh_window_queries.py:78: AssertionError
+_ test_shared_turn_pipeline_selects_observation_without_reciting_history[Which one is active now?-history2] _
+
+query = 'Which one is active now?'
+history = [{'role': 'user', 'content': '¿Qué ventana está activa?'}, {'role': 'assistant', 'content': 'The old title was Órbita 29.'}]
+
+    @pytest.mark.parametrize("query,history", [
+        ("Ahora mismo, ¿qué ventana tiene el foco?", []),
+        ("¿Y ahora cuál está activa?", [{"role": "user", "content": "Which window has focus?"},
+            {"role": "assistant", "content": "The old title was Atlas."}]),
+        ("Which one is active now?", [{"role": "user", "content": "¿Qué ventana está activa?"},
+            {"role": "assistant", "content": "The old title was Órbita 29."}]),
+    ])
+    def test_shared_turn_pipeline_selects_observation_without_reciting_history(query, history):
+        tool = {"type": "function", "function": {
+            "name": "window_active", "canonical_name": "window.active",
+            "description": "Read the current foreground window.", "risk": "read_only",
+            "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+        }}
+    
+        class NoModel:
+            _verify_semantic_effect_shape = None
+            retire_deferred_response_language = None
+    
+            def __getattr__(self, name):
+                raise AssertionError(f"A proved current read must not call {name}")
+    
+>       result = _prepare_turn_result(
+            {"id": "current-reference", "text": query, "history": history},
+            llm=NoModel(), planner_catalog=PlannerCatalog([tool]), turn_evidence=NoModel(),
+            encoder=lambda _texts: (), tool_by_name={"window.active": tool}, application_names=(),
+        )
+
+tests\test_c03_fresh_window_queries.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6085: in _prepare_turn_result
+    else turn_evidence.retrieve(
+         ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_fresh_window_queries.test_shared_turn_pipeline_selects_observation_without_reciting_history.<locals>.NoModel object at 0x00000214633DD070>
+name = 'retrieve'
+
+    def __getattr__(self, name):
+>       raise AssertionError(f"A proved current read must not call {name}")
+E       AssertionError: A proved current read must not call retrieve
+
+tests\test_c03_fresh_window_queries.py:78: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Ahora mismo, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-En este momento: ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Actualmente, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Right now, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-At this moment: ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 ventana tiene el foco?-window.active-Currently, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[Which window is active?-window.active-Ahora mismo, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[Which window is active?-window.active-En este momento: ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[Which window is active?-window.active-Actualmente, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[Which window is active?-window.active-Right now, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[Which window is active?-window.active-At this moment: ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[Which window is active?-window.active-Currently, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Ahora mismo, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-En este momento: ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Actualmente, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Right now, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-At this moment: ]
+FAILED tests/test_c03_fresh_window_queries.py::test_present_frame_preserves_the_observation[\xbfQu\xe9 hora es?-system.time-Currently, ]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[\xbfY ahora cu\xe1l est\xe1 activa?-\xbfQu\xe9 ventana est\xe1 activa?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[\xbfY ahora cu\xe1l est\xe1 activa?-Which window has focus?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[\xbfY ahora cu\xe1l est\xe1 activa?-Baxy, \xbfqu\xe9 window tiene focus ahora?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[\xbfCu\xe1l tiene el foco ahora?-\xbfQu\xe9 ventana est\xe1 activa?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[\xbfCu\xe1l tiene el foco ahora?-Which window has focus?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[\xbfCu\xe1l tiene el foco ahora?-Baxy, \xbfqu\xe9 window tiene focus ahora?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[And which one is active now?-\xbfQu\xe9 ventana est\xe1 activa?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[And which one is active now?-Which window has focus?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[And which one is active now?-Baxy, \xbfqu\xe9 window tiene focus ahora?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[Which has focus right now?-\xbfQu\xe9 ventana est\xe1 activa?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[Which has focus right now?-Which window has focus?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[Which has focus right now?-Baxy, \xbfqu\xe9 window tiene focus ahora?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[Ahora mismo, \xbfcu\xe1l est\xe1 activa?-\xbfQu\xe9 ventana est\xe1 activa?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[Ahora mismo, \xbfcu\xe1l est\xe1 activa?-Which window has focus?]
+FAILED tests/test_c03_fresh_window_queries.py::test_immediate_user_reference_requests_a_new_read[Ahora mismo, \xbfcu\xe1l est\xe1 activa?-Baxy, \xbfqu\xe9 window tiene focus ahora?]
+FAILED tests/test_c03_fresh_window_queries.py::test_shared_turn_pipeline_selects_observation_without_reciting_history[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-history0]
+FAILED tests/test_c03_fresh_window_queries.py::test_shared_turn_pipeline_selects_observation_without_reciting_history[\xbfY ahora cu\xe1l est\xe1 activa?-history1]
+FAILED tests/test_c03_fresh_window_queries.py::test_shared_turn_pipeline_selects_observation_without_reciting_history[Which one is active now?-history2]
+36 failed, 16 passed in 1.90s

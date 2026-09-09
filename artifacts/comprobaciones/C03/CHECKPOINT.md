@@ -1167,3 +1167,26 @@ Python tree03d2cb9ef539220225bb0efff7fc499cd2707466cf98fb1160d899b5a0ba67d7/405a
 # Publicación680 verificada
 
 Fuente/evidencias publicadas en e2ad0b5c6058d75b077ebc0549273a9945db9d4a, remoto Goal-c03 verificado; main intacto.25pins públicos y de índice, privados, fuente/tree, encuesta y manifiesto auditados. Producto cerrado, sin campañas pendientes. Los logs crudos preservan CRLF y tres espacios finales de pytest; el chequeo de whitespace de fuente/documentación está limpio, no se reescriben logs sellados para cambiar su formato. Siguiente: lectura fresca t3/t5; prosa mixta682 abierta. Encuesta26cubiertos/716abiertos/0NA; C03 EN_CURSO.
+
+
+# 684 — siete consultas vuelven a leer Windows; finales4/7
+
+Mismo panel de siete consultas681, ahora con otro título de ventana real. Las siete pasan por explicit_effects/window.active y llevan observación verificada que coincide con el título/estado de snapshots independientes antes/después. t3/t5 ya no responden desde conversación: la reparación de alcance y referencia está confirmada. Cuatro finales correctos; t3/t4/t5 terminan en composition_failed porque el verificador no reconoce la forma de identificar la ventana o el sujeto pospuesto. Los borradores y las causas completas están en el informe privado.
+
+No se atribuye a683 una reparación léxica: el nombre/título observado cambió y llm.py no cambió. Las cuatro actividades coinciden con finales; ningún fallo cuenta como pase ni como lectura ausente. GPU3497,559MiB/RAM2363,301MiB/56,140s sin infracciones. Capturas antes/después no son observación continua; sin UI/voz conjunta. Encuesta26cubiertos/716abiertos/0NA, H0104abierto.
+
+
+# 685 — retirar la obligación de parafrasear no resuelve toda la cohorte
+
+Diez primeras respuestas nativas; los cinco controles reproducen682 exactamente. Se quita sólo «Expresa el mensaje con tus propias palabras»: mejora3/5→4/5, corrigiendo el nombre original, pero Atlas sigue descrito como ventanal. Los tres controles restantes conservan una respuesta válida. La petición, datos, idioma, identidad, requisitos de verdad y perfil permanecen iguales. No se adopta una reparación del caso original como solución general ni se cambia llm.py.
+
+10EOS, GPU3497,559MiB/RAM722,570MiB/4,922s, sin infracciones y manifiesto intacto. Diagnóstico nativo; no UI/voz/encuesta. Siguiente: reparar el contrato factual que rechaza respuestas identificadoras válidas de684; conservar esta hipótesis parcial y no repetir una retirada completa de instrucciones que ya produjo otras invenciones.
+
+
+# 683 — lectura fresca de marcos temporales y referencias adoptada
+
+El encabezado delimitado de tiempo presente se conserva como marco del pedido mediante _REQUEST_PREFIX. La rama contextual ya existente para lecturas de hora admite también una pregunta nominal de foco, sólo si el pedido inmediatamente anterior del usuario se resuelve independientemente y únicamente a window.active. No usa la prosa del asistente ni un estado viejo como evidencia; no hereda acciones, otro dominio o una petición compuesta. No añade dispatcher, modelo, respuesta visible fija ni cambios C#.
+
+52casos nuevos:36fallos/16pases→52pases. Incluyen ES/EN/mezcla, prefijos, referentes, ausencia de catálogo, otra máquina/tiempo, negación, citas, cambio de tema y la tubería real de decisión con un transporte que impide sustituir la lectura por charla. Dueñas31archivos7682pases/0skips92,42s; declaraciones600pases/1skip ambiental3,98s por entradas ausentes de campaña ciega STT. Fast exit0/Release19,50s,0advertencias/errores. Producto684 confirma7/7lecturas frescas, pero sólo4/7finales: siguen falsos rechazos de redacción en el verificador. La referencia explícita aquí es de un salto; no se declara comprensión universal de cadenas elípticas.
+
+Tree6c474bfe4350dd0203b70a509a39d816feda4b0bf85a9a620e43512e6ae23ae5/405archivos y declaraciones actuales actualizadas. Encuesta26/716/0 intacta; C03 EN_CURSO. Full651 sigue baseline, no Full683: otro Full al adoptar C#+Python juntos o candidato final. Durante una actualización auxiliar, RELEVO_ACTIVO quedó temporalmente null por una variable PowerShell equivocada; se restauró desde HEAD verificado y se reaplicó el progreso real antes de continuar. Fuente, encuesta y evidencias no se alteraron por ese incidente.

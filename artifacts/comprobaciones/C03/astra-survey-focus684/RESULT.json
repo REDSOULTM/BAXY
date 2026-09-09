@@ -1,0 +1,33 @@
+{
+  "source": 683,
+  "fresh_reads": 7,
+  "correct": 4,
+  "total": 7,
+  "failed_cases": [
+    "focus-order-es",
+    "focus-mixed",
+    "focus-reference-es"
+  ],
+  "all_decisions_explicit_window_active": true,
+  "same_panel681": true,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2363.30078125,
+    "seconds": 56.14
+  },
+  "ui_or_voice_credit": false,
+  "visible_activity_matches_finals": true,
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "d4a38b5768e2d63b7bd3bc262d1bf3c836a14d1752266fe879459e0bcb90d89c",
+    "capture/events.jsonl": "5292cd8fbf825ed3e6a833d20b294746c42740e7b8defedbf244a6f46081eed1",
+    "compose-audit.jsonl": "79600248efc35434e2f770123016820f60937b89a9d340362575a5dcd4c399d4",
+    "turn-audit.jsonl": "95673ad48e99d8446ac01b130e59ec288d81b0c371fca44dee606cc53200541c",
+    "foreground-before.json": "88c2f9afb44970ffdd191a3903f6f4e1d8c5057db969bc31455368feb1762c6b",
+    "foreground-after.json": "aec85080e04e1ed2e300c2b71a2653ff07fa6185246a818e8e71171b86538b33",
+    "adjudication.json": "cd1d80884ebc49e9ebf46fec94d6817253a4b0505ca8d3fdb36ff3d9f9bd3f96",
+    "RESULT.md": "5406c0af8f2f397507efe44f44a7e83be3419bb618abb410f08d1fe694c96bf7"
+  }
+}
