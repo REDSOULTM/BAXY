@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Baxy.Contracts;
 using Microsoft.Win32;
+using Microsoft.Win32.SafeHandles;
 
 namespace Baxy.Providers.Windows.Applications;
 
@@ -83,7 +84,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             before = _platform.Inventory(entry);
         }
-        catch (Exception exception) when (exception is InvalidOperationException
+        catch (Exception exception) when (exception is ApplicationInventoryException
+            or InvalidOperationException
             or System.ComponentModel.Win32Exception)
         {
             return Failure(request, entry.Name, ApplicationOpenErrorCodes.InventoryFailed);
@@ -101,7 +103,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     existing,
                     cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is InvalidOperationException
+            catch (Exception exception) when (exception is ApplicationInventoryException
+                or InvalidOperationException
                 or System.ComponentModel.Win32Exception)
             {
                 return Failure(
@@ -151,7 +154,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 IReadOnlyList<InstalledApplicationObservation> current = _platform.Inventory(entry);
                 candidate = Choose(current, before);
             }
-            catch (Exception exception) when (exception is InvalidOperationException
+            catch (Exception exception) when (exception is ApplicationInventoryException
+                or InvalidOperationException
                 or System.ComponentModel.Win32Exception)
             {
                 return Failure(
@@ -181,7 +185,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     candidate,
                     cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is InvalidOperationException
+            catch (Exception exception) when (exception is ApplicationInventoryException
+                or InvalidOperationException
                 or System.ComponentModel.Win32Exception)
             {
                 return Failure(
@@ -449,7 +454,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             observations = _platform.Inventory(resolution.Entry);
         }
-        catch (Exception exception) when (exception is InvalidOperationException
+        catch (Exception exception) when (exception is ApplicationInventoryException
+            or InvalidOperationException
             or System.ComponentModel.Win32Exception)
         {
             return new(applicationName, resolution.Entry.Name, true, false, 0, false,
@@ -1011,8 +1017,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     public IReadOnlyList<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry)
     {
-        HashSet<string> identities = BuildProcessIdentities(entry);
-        string normalizedDisplayName = InstalledApplicationResolver.Normalize(entry.Name);
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         try
@@ -1028,23 +1032,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
                     }
 
-                    string processName = InstalledApplicationResolver.Normalize(process.ProcessName);
-                    string title = InstalledApplicationResolver.Normalize(process.MainWindowTitle);
-                    bool identityMatch = identities.Any(identity =>
-                        processName == identity
-                        || (identity.Length >= 4 && processName.StartsWith(identity, StringComparison.Ordinal)));
-                    bool titleMatch = WindowTitleIdentifiesApplication(
-                        title,
-                        normalizedDisplayName);
-                    if (!identityMatch && !titleMatch)
-                    {
-                        continue;
-                    }
-
-                    nint operated = LargestTopLevelWindow(process.Id, includeHidden: false);
-                    if (operated == 0)
-                        operated = window;
-                    if (operated == 0 || !IsWindowVisible(operated))
+                    string? applicationId = entry.AppUserModelId.Contains('!')
+                        ? ReadApplicationUserModelId(process.Id)
+                        : null;
+                    if (!WindowProcessIdentifiesApplication(
+                            entry, process.ProcessName, process.MainWindowTitle, applicationId))
                     {
                         continue;
                     }
@@ -1056,13 +1048,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
                     }
 
-                    observations.Add(new InstalledApplicationObservation(
-                        process.Id,
-                        process.StartTime.ToUniversalTime().Ticks,
-                        executablePath,
-                        operated.ToInt64(),
-                        Visible: true,
-                        Foreground: GetForegroundWindow() == operated));
+                    long creationTime = process.StartTime.ToUniversalTime().Ticks;
+                    foreach (nint operated in VisibleTopLevelWindows(process.Id))
+                    {
+                        observations.Add(new InstalledApplicationObservation(
+                            process.Id,
+                            creationTime,
+                            executablePath,
+                            operated.ToInt64(),
+                            Visible: true,
+                            Foreground: GetForegroundWindow() == operated));
+                    }
                 }
                 catch (Exception exception) when (exception is InvalidOperationException
                     or System.ComponentModel.Win32Exception
@@ -1080,6 +1076,66 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
 
         return observations;
+    }
+
+    internal static bool WindowProcessIdentifiesApplication(
+        InstalledApplicationEntry entry,
+        string processName,
+        string windowTitle,
+        string? observedApplicationId)
+    {
+        if (entry.AppUserModelId.Contains('!'))
+        {
+            // The OS identity is independent of the localized display name,
+            // executable name and document title. A different package (or an
+            // unidentified process) cannot satisfy this catalog application.
+            return string.Equals(
+                entry.AppUserModelId, observedApplicationId, StringComparison.Ordinal);
+        }
+
+        string normalizedProcessName = InstalledApplicationResolver.Normalize(processName);
+        return BuildProcessIdentities(entry).Any(identity =>
+                normalizedProcessName == identity
+                || (identity.Length >= 4
+                    && normalizedProcessName.StartsWith(identity, StringComparison.Ordinal)))
+            || WindowTitleIdentifiesApplication(
+                InstalledApplicationResolver.Normalize(windowTitle),
+                InstalledApplicationResolver.Normalize(entry.Name));
+    }
+
+    private static string? ReadApplicationUserModelId(int processId)
+    {
+        using SafeProcessHandle handle = OpenProcess(0x1000, false, processId);
+        if (handle.IsInvalid)
+        {
+            throw new ApplicationInventoryException(
+                "The visible process application identity could not be opened.");
+        }
+
+        uint length = 0;
+        int result = GetApplicationUserModelId(handle, ref length, 0);
+        if (result == 15703) // APPMODEL_ERROR_NO_APPLICATION: classic desktop process.
+            return null;
+        if (result != 122 || length is 0 or > 1024)
+        {
+            throw new ApplicationInventoryException(
+                "The visible process application identity could not be sized.");
+        }
+
+        nint buffer = Marshal.AllocHGlobal(checked((int)length * sizeof(char)));
+        try
+        {
+            if (GetApplicationUserModelId(handle, ref length, buffer) != 0)
+            {
+                throw new ApplicationInventoryException(
+                    "The visible process application identity could not be read.");
+            }
+            return Marshal.PtrToStringUni(buffer);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
     }
 
     public bool Activate(InstalledApplicationEntry entry)
@@ -1117,10 +1173,6 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     public void RequestForeground(long windowHandle)
     {
         nint handle = checked((nint)windowHandle);
-        _ = GetWindowThreadProcessId(handle, out uint processId);
-        nint largest = LargestTopLevelWindow(unchecked((int)processId), includeHidden: true);
-        if (largest != 0)
-            handle = largest;
         nint foreground = GetForegroundWindow();
         uint currentThread = GetCurrentThreadId();
         uint foregroundThread = foreground == 0
@@ -1177,13 +1229,12 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return identities;
     }
 
-    private static nint LargestTopLevelWindow(int processId, bool includeHidden)
+    private static nint[] VisibleTopLevelWindows(int processId)
     {
-        nint best = 0;
-        long bestArea = 0;
+        var windows = new List<(nint Handle, long Area)>();
         EnumWindowsProc callback = (window, _) =>
         {
-            if (!includeHidden && !IsWindowVisible(window))
+            if (!IsWindowVisible(window))
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
             if (owner != unchecked((uint)processId))
@@ -1192,15 +1243,16 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 return true;
             long area = (long)Math.Max(0, rect.Right - rect.Left)
                 * Math.Max(0, rect.Bottom - rect.Top);
-            if (area > bestArea)
-            {
-                bestArea = area;
-                best = window;
-            }
+            if (area > 0)
+                windows.Add((window, area));
             return true;
         };
-        _ = EnumWindows(callback, nint.Zero);
-        return best;
+        if (!EnumWindows(callback, nint.Zero))
+            throw new ApplicationInventoryException("Visible windows could not be enumerated.");
+        // Preserve the preferred large window for opening, without discarding
+        // other observed handles from the status count or foreground choice.
+        return windows.OrderByDescending(item => item.Area)
+            .Select(item => item.Handle).ToArray();
     }
 
     [GeneratedRegex(@"(?<name>[A-Za-z0-9_-]+)\.exe", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
@@ -1231,6 +1283,14 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 
     [LibraryImport("kernel32.dll")]
     private static partial uint GetCurrentThreadId();
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial SafeProcessHandle OpenProcess(
+        uint desiredAccess, [MarshalAs(UnmanagedType.Bool)] bool inheritHandle, int processId);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial int GetApplicationUserModelId(
+        SafeProcessHandle process, ref uint length, nint applicationUserModelId);
 
     [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint window, out uint processId);

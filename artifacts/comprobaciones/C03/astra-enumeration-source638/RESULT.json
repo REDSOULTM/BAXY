@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-09T13:11:48.597282+00:00",
+  "adopted": true,
+  "providers_passed": 513,
+  "providers_aggregate_skipped": 0,
+  "providers_printed_opt_in_omissions": 4,
+  "integration_passed": 46,
+  "integration_skipped": 0,
+  "targeted_passed": 51,
+  "native_test_red_before": true,
+  "fast_exit": 0,
+  "release_seconds": 11.89,
+  "source_unchanged_during_product": true,
+  "product639_correct": 11,
+  "product639_total": 12,
+  "product640_correct": 14,
+  "product640_total": 20,
+  "python_unchanged": true,
+  "goal_complete": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  }
+}

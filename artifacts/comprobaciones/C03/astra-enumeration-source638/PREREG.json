@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-09T13:01:02.477167+00:00",
+  "source": 638,
+  "sources": {
+    "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs": "4dab2425ea8a05db54e1b392a7c7ccaf27f27e42a5ac31b9bf5b76fe2655a687",
+    "tests/Baxy.Providers.Windows.Tests/WindowsInstalledApplicationOpenProviderTests.cs": "b99e899ccd3dd38785dfcfee3dfc35e09b52ba39498efbc61372352714465d1d",
+    "tests/Baxy.Providers.Windows.Tests/InstalledApplicationWindowEnumerationTests.cs": "7d927d5fb1816f3666a149d94b6beff3c24a0d40f67533f1e8b6f975d0017900"
+  },
+  "python_unchanged": true,
+  "method": "Second difference after637: retain all visible top-level HWNDs with positive area, largest-first for launch selection; focus the exact selected handle instead of silently substituting the largest. Keep636 authenticated package identity and honest identity/enumeration errors.",
+  "test_first": "Real Win32 fixture with two visible HWNDs and one hidden HWND fails before change (one missing), then51targeted pass including it. Test windows offscreen, never activated, owned handles destroyed in finally. No user window touched.",
+  "owners": {
+    "passed": 513,
+    "aggregate_skipped": 0,
+    "printed_opt_in_omissions": 4,
+    "seconds": 46
+  },
+  "criteria": "Fast green; product639 same12panel634/637 plus independent native HWND snapshots before/after. Compare actual cardinality and exact observations. Preserve app scope, names, language; record known focus-en language failure separately. No UI/voice credit or survey coverage without per-case adjudication."
+}

@@ -1,0 +1,31 @@
+{
+  "source": 636,
+  "correct": 10,
+  "total": 12,
+  "baseline634_readjudicated_correct": 9,
+  "baseline634_original_correct": 10,
+  "notepad_presence_fixed": true,
+  "count_correct": false,
+  "failed_cases": {
+    "window-order-en": "Still says one Steam window;635 proves the single-window-per-process inventory undercounts.",
+    "focus-en": "English question still classified mixed and answered in Spanish."
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1826.87890625,
+    "seconds": 82.782
+  },
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "panel.json": "434f403ba6925eb46c75627ed625c3ccb42429a9965cd4ea0fd064a0516b36ad",
+    "capture/events.jsonl": "ab621a3a67f44b7160426023f2086ef1bcd8b64b8f5f2400b16113afe2952893",
+    "compose-audit.jsonl": "90506d71251d84a1de86727f0f829cf6222dc1a37614f3c865212be57873d698",
+    "turn-audit.jsonl": "ccd51bd07eb211d0e230b4f435747d8975a3cc1c94103b8bc5474abaf1439699",
+    "raw-replies.jsonl": "b4f1a9004ff6a617c528525210da81359b3f5e4264325240577bd3a8b9faec76",
+    "shell-trace.jsonl": "52221703c2dfd73139fe906efc65c11fa36d7aa03536197e64a4349a32de4ce7",
+    "adjudication.json": "2339deb3a1d5689faba20aaa2ac19becfe8a72cd913ebfc05b5f2436c4c9c6a6",
+    "RESULT.md": "95d02343c295430840d579e1b736aba7d86ee0a728714dd1ad5098c755d5fdb8"
+  }
+}

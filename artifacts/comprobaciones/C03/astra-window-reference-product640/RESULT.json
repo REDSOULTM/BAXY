@@ -1,0 +1,37 @@
+{
+  "source": 638,
+  "correct": 14,
+  "total": 20,
+  "failed_or_unverified_cases": {
+    "focus-en": "English input classified mixed and answered in Spanish.",
+    "reference-new-name-en": "And Spotify? unnecessarily asks what the user means instead of retaining the preceding window-status question.",
+    "reference-pronoun-en": "Is it open now? loses the Spotify reference and produces an interpretation failure.",
+    "reference-new-name-es": "Y Steam? produces another interpretation failure instead of a scoped read.",
+    "reference-pronoun-es": "The Steam application reference is lost; unnecessary clarification also leaks exactly into Spanish.",
+    "count-en": "The number matches the immediately preceding verified Spanish answer, but request94 is conversation/knowledge with no new typed observation. This does not demonstrate a current read; do not label the matching number fabricated or grant read coverage."
+  },
+  "packaged_positive_es_en_correct": 2,
+  "spanish_count_read_correct": true,
+  "english_count_new_read_verified": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2412.73828125,
+    "seconds": 85.828
+  },
+  "ui_or_voice_credit": false,
+  "whole_window_requirement_accepted": false,
+  "private_hashes": {
+    "panel.json": "ee9a98f177f68b261e8d438d1d35f7274b1a69f32d75f221b138e7d0a6e66f89",
+    "capture/events.jsonl": "8bcc901619b7cea1b8b60adf7e02c93377708347b188bdfacd2948f628360c54",
+    "compose-audit.jsonl": "845286355bd3c83edb35a925c059691293bfb7ad1c164299d7647c7d5be70d73",
+    "turn-audit.jsonl": "95901d154e824b334ee5d838458a8ee9baa1952ca27b5f2f9245d9b2c1699e3d",
+    "raw-replies.jsonl": "bc5b6e4f51cb1f74305076e44c4bd87ef5a144744f4a063d1b392269126fc58c",
+    "shell-trace.jsonl": "a0774b51ba7361913b9d11cb1c0829427bf3270377cf97a873b71020dcde60cf",
+    "adjudication.json": "f6734641b81ecf73bc8b062dd05eed4329ed598c26eac6939594de6345a410fa",
+    "RESULT.md": "9ad7b33f4671de01e6c2c2a4250cc5298c32c6b2c0d9594f14af6358d6a8836b",
+    "windows-before.json": "5479768b45bfcfe896a8e90723925fc9303aba1ac4b271f012433971595f3258",
+    "windows-after.json": "f046b3f7e81c68b5d24142a4569bd75f3f7e9f36b227bd91417ff7164177efd4"
+  }
+}

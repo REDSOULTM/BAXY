@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T12:40:34.729053+00:00",
+  "confirmedAtUtc": "2026-09-09T13:11:48.649517+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "633 adoptada:3425pass+121subtests/0skips;17pass/1skip de declaraciones;Fast exit0.63410/12:alcance10/10, inventarioNotepad e idioma foco pendientes.25/717/0.",
-  "continuation": "633/634 publicadas y remoto verificado, main intacto. Siguiente: reproducir identidad empaquetada en WindowsInstalledApplicationOpenProvider.cs:1011/1150. El AppID real de Bloc de notas es Microsoft.WindowsNotepad_8wekyb3d8bbwe!App y el proceso Notepad vive en WindowsApps. No ampliar títulos o prefijos sin identidad autenticada. Después reparar idioma de Which window has focus? (mixed). No procesos de campaña activos.25/717/0; UI/voz/recuperación/Full final pendientes.",
+  "checkpoint": "638 adoptada:513Providers/46integración/51focales+Fast.63911/12;64014/20, referencias/idioma/lectura inglesa pendientes.25/717/0.",
+  "continuation": "Publicar635–640. Después conservar consultas explícitas de cantidad (How many windows of Steam are open? devuelve knowledge94) y localizar primera pérdida de referencias15–18 en640. Foco inglés: read_request trata has como exclusivamenteES. No parchear prosa fija. No procesos activos; UI/voz/recuperación yFullfinal pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d",
+  "publishedSourceCommit": "pending_publication_of_validated_source638",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",

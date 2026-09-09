@@ -1,0 +1,5 @@
+#638/639 — conteos coinciden con Windows
+
+639 conserva exactamente los12casos637.11/12finales correctos: Steam muestra2ventanas en ambas lecturas ES/EN y Chrome1. Notepad ya no tenía ventanas ANTES de arrancar639 y tampoco después; su respuesta negativa ahora coincide con la observación independiente. No se atribuye la desaparición a un actor ni se confunde el cambio de estado con regresión. Todos los handles de ambas instantáneas son idénticos. Las8lecturas por aplicación conservan identidad y cantidad; sólo el foco inglés mantiene el fallo de idioma mixed→español.
+
+639:3497,559MiB GPU,1894,625MiB RAM,77,313s incluyen NativeAOT;sin infracciones.513dueñas Providers/4opt-in impresas aparte,46integración/0skips;Fast exit0,Release11,89s. La prueba Win32 nueva detectaba la pérdida de una de dos ventanas y ahora pasa, sin activar las ventanas de prueba. No interfaz/voz conjunta ni Full638. La coberturaH0040 aún espera640: otro paquete visible, referencias elípticas/pronominales y preguntas de cantidad; no se cierra con sólo los casos ya favorables.

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-09T13:06:46.708204+00:00",
+  "method": "Shared source638 product, base registered runtime, built-in diagnostics only. Same12window controls plus8declared packaged app, reference, alias and cardinality variants. Reference targets follow the exact previous question: WhatsApp then Spotify then Steam. Quantities must agree with real observations. No communication authorized. Same dialogue session, exact panel order. No parameter, payload, classification, draft or output replacement. No adapter override. This is development regression, not blind acceptance.",
+  "criteria": "Read every final and progress against the individual panel criterion; correct language, natural response and no invented facts or effects. Every literal receives an individual verdict; common family does not grant coverage by itself. Require the specific typed observation in the panel, not merely plausible prose. No write operation authorized. Visible windows do not prove background process liveness. No UI or voice credit from this hidden conductor.",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "panel_sha256": "ee9a98f177f68b261e8d438d1d35f7274b1a69f32d75f221b138e7d0a6e66f89",
+  "sources": {
+    "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs": "4dab2425ea8a05db54e1b392a7c7ccaf27f27e42a5ac31b9bf5b76fe2655a687",
+    "src/baxy_mind/effect_intent.py": "d96f0e922674cbb5bbc3be5e348d8698f2595f7ae75c8a4814c96ecb28edd961",
+    "src/baxy_mind/cpu_prose_adapter.py": "e0ff545eb8f8ffcec0bc5163629a42b018476feb050c1bd8462232c4e207e1e0",
+    "src/baxy_mind/llm.py": "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e",
+    "src/baxy_mind/__main__.py": "3c66e6cbe15ae091590393946e1c5f1ad056c89869a2c6bb345de616f760b9c6",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "9571e7fcca7d6920a0be469eb448f9aea41dbe9d0915faebfd95eabe391c32b0"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-window-reference-product640-private",
+  "case_count": 20,
+  "resource_limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "wall_time_seconds": 240
+  }
+}

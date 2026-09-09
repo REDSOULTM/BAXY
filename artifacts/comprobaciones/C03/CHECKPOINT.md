@@ -670,3 +670,44 @@ Recursos634:3497,559MiB GPU,1840,527MiB RAM del árbol medido,28,344s, sin infra
 ## Publicación633–634
 
 Fuente y evidencia publicadas en d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d. Auditoría de índice: 2 campañas, 15 pines íntegros. Las advertencias de whitespace de diff --check global corresponden a CRLF de evidencia y espacios de contexto del patch preservados byte a byte; el chequeo de fuente/tests/scripts/scratchpad/experiments pasó. No se alteraron los sellos. H0040 sigue abierto y enlaza634; SHA del registro privado afba54e3c585a8c79224f729d9cb4defad426bb7cd601b4a9187b587c40f4c75. Sin procesos de campaña activos.
+
+
+# Auditoría635 — identidad y multiplicidad
+
+GetApplicationUserModelId enlaza de forma exacta el proceso Notepad con Microsoft.WindowsNotepad_8wekyb3d8bbwe!App del catálogo.15procesos con ventanas visibles consultados, sin errores inesperados; ningún arranque, foco o cierre. El lector anterior no consulta esta identidad y los tokens del nombre localizado no coinciden.
+
+La inspección de los handles también confirma otra limitación:12ventanas Notepad, todas visibles, no cloaked, sin owner y con área positiva;2ventanas de steamwebhelper, una pequeña88x15. Inventory conserva sólo la más grande de cada proceso. Los conteos634deben tratarse como incompletos; su10/12anterior valoraba plausibilidad del conteo y no acredita cardinalidad. H0040 sigue abierto. No se corrige multiplicidad junto con identidad sin medir la primera diferencia636/637.
+
+Fuentes primarias consultadas2026-09-09: https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getapplicationusermodelid y https://learn.microsoft.com/en-us/windows/configuration/store/find-aumid . GetApplicationUserModelId requiere QUERY_LIMITED_INFORMATION y distingue identidad ausente de error de consulta. La implementación anterior de WindowsApplicationPlatform.QueryPackageString aporta el patrón acotado de doble consulta y error honesto; no se reutiliza su política específica de Notepad como alias de aplicaciones generales. No salió contenido del usuario.
+
+636 candidato:512pass/0omisiones agregadas y4opt-in impresas;Fast/producto637 pendientes.25/717/0.
+
+
+#636/637 — primera diferencia de identidad confirmada
+
+Notepad cambia de cero ventanas a visible=true y la respuesta ya reconoce que está abierto. Mismo panel12 y mismo perfil que634, sin hooks, sólo lecturas.637:10/12 correctos con el criterio de cardinalidad corregido por635; bajo ese criterio634tenía9/12, no10/12. Se conserva su adjudicación original y se explicita aquí la revisión. Persisten one window de Steam e idioma español ante pregunta inglesa. El número1de Notepad sigue siendo incompleto; sólo la existencia mejoró. No cobertura H0040 todavía.
+
+636 C# pasa512pruebas Providers,0skips agregados y4opt-in impresas aparte;Fast exit0/Release14,15s.637:3497,559MiB GPU,1826,879MiB RAM,82,782s incluyen NativeAOT. No UI/voz conjunta. Candidato636 necesario pero no se adopta como inventario terminado;638debe enumerar todos los handles visibles y mantener la selección/foco exactos.
+
+
+## Candidato638 — todos los handles observados
+
+La prueba Win32 falla antes: sólo una de dos ventanas visibles. Después51focales y513dueñas Providers verdes;4opt-in impresas aparte. Se conserva identidad636 y se retira la sustitución silenciosa del handle en foco. Fast y producto639 pendientes.637 detecta Notepad pero conserva conteo incompleto; no se fusionan las dos diferencias sin evidencia.25/717/0.
+
+
+#638/639 — conteos coinciden con Windows
+
+639 conserva exactamente los12casos637.11/12finales correctos: Steam muestra2ventanas en ambas lecturas ES/EN y Chrome1. Notepad ya no tenía ventanas ANTES de arrancar639 y tampoco después; su respuesta negativa ahora coincide con la observación independiente. No se atribuye la desaparición a un actor ni se confunde el cambio de estado con regresión. Todos los handles de ambas instantáneas son idénticos. Las8lecturas por aplicación conservan identidad y cantidad; sólo el foco inglés mantiene el fallo de idioma mixed→español.
+
+639:3497,559MiB GPU,1894,625MiB RAM,77,313s incluyen NativeAOT;sin infracciones.513dueñas Providers/4opt-in impresas aparte,46integración/0skips;Fast exit0,Release11,89s. La prueba Win32 nueva detectaba la pérdida de una de dos ventanas y ahora pasa, sin activar las ventanas de prueba. No interfaz/voz conjunta ni Full638. La coberturaH0040 aún espera640: otro paquete visible, referencias elípticas/pronominales y preguntas de cantidad; no se cierra con sólo los casos ya favorables.
+
+
+# Fuente638 adoptada — identidad empaquetada y conteo real
+
+636 enlaza procesos empaquetados mediante el AUMID de Windows y distingue errores de consulta de ausencia.637 confirma Notepad abierto.638 conserva todos los handles visibles con área positiva y enfoca el handle seleccionado sin sustituirlo por la ventana más grande. Se retira LargestTopLevelWindow; no otra capa, modelo ni respuesta fija. Sólo C# y pruebas de su provider.
+
+Validación638:513pass Providers,0omisiones agregadas y4opt-in impresas aparte;46pass integración/0omisiones;51focales, incluida una prueba Win32 que fallaba al perder una de dos ventanas. Fast exit0/Release11,89s. Full630 sigue como línea base anterior, no Full638 ni cierreC03.639:11/12 finales; los conteos coinciden con instantáneas Win32 idénticas antes/después. El estado Notepad había cambiado a cerrado antes de esa tanda; se registra el cambio sin atribuirlo a un actor.
+
+640 amplía a20casos y acredita14. WhatsApp abierto se verifica correctamente por identidad empaquetada en ambos idiomas. La cantidad española de Steam se lee y responde2. Persisten cuatro fallos de seguimiento: And Spotify?, Is it open now?, Y Steam? y Esa aplicación… pierden el contexto; el último además incluye exactly. El foco inglés sigue clasificado mixed. La cantidad inglesa coincide con la lectura española anterior, pero request94 elige conversation/knowledge sin una nueva observación tipada: no se acusa una cifra inventada, pero tampoco se acredita una consulta actual. H0040 sigue abierto;25cubiertos/717abiertos/0NA.
+
+Recursos640:3497,559MiB GPU/2412,738MiB RAM;85,828s, sin infracciones. No UI/voz conjunta.639:3497,559/1894,625MiB;77,313s incluyen NativeAOT. La variación de RAM depende de la sesión/carga; no se presenta como mínimo global. Fuente638 se adopta por las lecturas verificadas y pruebas dueñas; los defectos de contexto/idioma se conservan como pendientes de C03.

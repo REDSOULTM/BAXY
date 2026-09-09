@@ -1,0 +1,25 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Providers.Windows.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows [163 ms]
+  Mensaje de error:
+     Assert.That(handles, Does.Contain(first.ToInt64()))
+  Expected: some item equal to 23594986
+  But was:  < 2229444 >
+
+  Seguimiento de la pila:
+     at Baxy.Providers.Windows.Tests.InstalledApplicationWindowEnumerationTests.InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\InstalledApplicationWindowEnumerationTests.cs:line 31
+
+1)    at Baxy.Providers.Windows.Tests.InstalledApplicationWindowEnumerationTests.<>c__DisplayClass0_1.<InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows>b__2() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\InstalledApplicationWindowEnumerationTests.cs:line 33
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Providers.Windows.Tests.InstalledApplicationWindowEnumerationTests.InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\InstalledApplicationWindowEnumerationTests.cs:line 31
+
+
+
+Con error! - Con error:     1, Superado:     0, Omitido:     0, Total:     1, Duración: 163 ms - Baxy.Providers.Windows.Tests.dll (net10.0)

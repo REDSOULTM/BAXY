@@ -1,0 +1,34 @@
+{
+  "source": 638,
+  "correct": 11,
+  "total": 12,
+  "named_queries_count_and_scope_correct": 8,
+  "independent_snapshots_identical": true,
+  "notepad_visible_before": 0,
+  "notepad_visible_after": 0,
+  "steam_visible_count": 2,
+  "failed_cases": {
+    "focus-en": "English focus question remains classified mixed and answered in Spanish."
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1894.625,
+    "seconds": 77.313
+  },
+  "ui_or_voice_credit": false,
+  "whole_window_requirement_accepted": false,
+  "private_hashes": {
+    "panel.json": "434f403ba6925eb46c75627ed625c3ccb42429a9965cd4ea0fd064a0516b36ad",
+    "capture/events.jsonl": "99e5723cf9c7589fd89d6d95ae7d3c50f02cd81371ab3033ad8b11d7fe70122f",
+    "compose-audit.jsonl": "c980404dc8d868b40c19c2e6a49e0e73ab6d2c049d1e4912b3a286db21502c77",
+    "turn-audit.jsonl": "ccd51bd07eb211d0e230b4f435747d8975a3cc1c94103b8bc5474abaf1439699",
+    "raw-replies.jsonl": "b4f1a9004ff6a617c528525210da81359b3f5e4264325240577bd3a8b9faec76",
+    "shell-trace.jsonl": "e738de6079ddf5e69ad555b777bb41e2eba1bd6220fb0fe1de2a31a5d6d2d520",
+    "adjudication.json": "5b18f256c2f043fd7f0e3b164c3440a86a2be470c3a60625b74f836177cc10f0",
+    "RESULT.md": "c95b703ce733ae35b0d91c0d365bd50c39ce39c0adbfe9e46b914f92aa6a26b7",
+    "windows-before.json": "c24cc67ef118a391b125b6e1983478e82695820ac106f58947a453b34bfddb46",
+    "windows-after.json": "d01264cdf8ca4366761ca6e51ef9e5b0ce3ffb331981ee94b3e1035a07fb6414"
+  }
+}

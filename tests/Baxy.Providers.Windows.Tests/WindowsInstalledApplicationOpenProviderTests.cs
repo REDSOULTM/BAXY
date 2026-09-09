@@ -37,6 +37,32 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Is.EqualTo(expected));
     }
 
+    [TestCase("Bloc de notas", "Notepad", "Sin título", "Vendor.Editor_0123456789abc!Editor", true)]
+    [TestCase("Text Editor", "editorhost", "Untitled", "Vendor.Editor_0123456789abc!Editor", true)]
+    [TestCase("Éditeur 24", "unrelatedname", "Documento privado", "Vendor.Editor_0123456789abc!Editor", true)]
+    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", "Other.Editor_0123456789abc!Editor", false)]
+    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", "Vendor.Editor_0123456789abc!Other", false)]
+    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", null, false)]
+    [TestCase("Bloc de notas", "Notepad", "Bloc de notas", "Vendor.Editor_0123456789abc!EditorExtra", false)]
+    public void PackagedWindowIdentityUsesTheExactOsApplicationId(
+        string name, string process, string title, string? observedId, bool expected)
+    {
+        var entry = new InstalledApplicationEntry(name, "Vendor.Editor_0123456789abc!Editor");
+        Assert.That(WindowsInstalledApplicationPlatform.WindowProcessIdentifiesApplication(
+            entry, process, title, observedId), Is.EqualTo(expected));
+    }
+
+    [TestCase("Steam", "steamwebhelper", "Community", true)]
+    [TestCase("Google Chrome", "chrome", "Document", true)]
+    [TestCase("Steam", "notepad", "my steam notes", false)]
+    public void ClassicWindowIdentityKeepsTheExistingCatalogReader(
+        string name, string process, string title, bool expected)
+    {
+        InstalledApplicationEntry entry = Catalog.Single(item => item.Name == name);
+        Assert.That(WindowsInstalledApplicationPlatform.WindowProcessIdentifiesApplication(
+            entry, process, title, null), Is.EqualTo(expected));
+    }
+
     [Test]
     public void ExactNameBeatsRelatedStartMenuEntries()
     {
@@ -230,6 +256,29 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         {
             Assert.That(result.Verified, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.ApplicationAmbiguous));
+            Assert.That(platform.ActivateCalls, Is.Zero);
+            Assert.That(platform.FocusCalls, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task UnreadableApplicationIdentityDoesNotBecomeVerifiedAbsenceOrALaunch()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            InventoryFailure = new ApplicationInventoryException("Identity query failed."),
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+        ApplicationWindowStatusResult status = await provider.GetWindowStatusAsync(
+            "Bloc de notas", CancellationToken.None);
+        ApplicationOpenResult opened = await provider.OpenAsync(
+            Request("Bloc de notas"), CancellationToken.None);
+        Assert.Multiple(() =>
+        {
+            Assert.That(status.Verified, Is.False);
+            Assert.That(status.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.InventoryFailed));
+            Assert.That(opened.Verified, Is.False);
+            Assert.That(opened.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.InventoryFailed));
             Assert.That(platform.ActivateCalls, Is.Zero);
             Assert.That(platform.FocusCalls, Is.Zero);
         });
@@ -486,6 +535,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public Exception? CatalogFailure { get; init; }
 
+        public Exception? InventoryFailure { get; init; }
+
         public ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
             CancellationToken cancellationToken)
         {
@@ -500,7 +551,8 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         }
 
         public IReadOnlyList<InstalledApplicationObservation> Inventory(
-            InstalledApplicationEntry entry) => Observations;
+            InstalledApplicationEntry entry) => InventoryFailure is null
+                ? Observations : throw InventoryFailure;
 
         public bool Activate(InstalledApplicationEntry entry)
         {

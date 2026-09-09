@@ -1,0 +1,41 @@
+{
+  "utc": "2026-09-09T12:42:50.379911+00:00",
+  "source_modified": false,
+  "side_effects": false,
+  "catalog_matches": [
+    {
+      "name": "Bloc de notas",
+      "aumid": "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App",
+      "matched_processes": [
+        "Notepad.exe"
+      ]
+    },
+    {
+      "name": "Calculadora",
+      "aumid": "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App",
+      "matched_processes": []
+    },
+    {
+      "name": "Paint",
+      "aumid": "Microsoft.Paint_8wekyb3d8bbwe!App",
+      "matched_processes": []
+    },
+    {
+      "name": "Spotify",
+      "aumid": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+      "matched_processes": []
+    }
+  ],
+  "visible_processes": 15,
+  "unexpected_query_errors": [],
+  "private_hashes": {
+    "observations.json": "a777e316b3803855589bd2aec635e986c06ddfb1c01df9569e2e8c34d6a4fde6",
+    "catalog.json": "7afdbcdf94c3590903861ea707495925cf05ad0e8f4c175016556cdc065dee7d"
+  },
+  "documentation": "https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getapplicationusermodelid",
+  "window_details_sha256": "b7a487f805cad42b7cd1abd7ddad59f01f31e430cd3bcddd2e74012118ccc2f8",
+  "count_limitation_confirmed": {
+    "Notepad.exe": 12,
+    "steamwebhelper.exe": 2
+  }
+}

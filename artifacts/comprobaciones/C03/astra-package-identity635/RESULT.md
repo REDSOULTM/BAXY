@@ -1,0 +1,7 @@
+# Auditoría635 — identidad y multiplicidad
+
+GetApplicationUserModelId enlaza de forma exacta el proceso Notepad con Microsoft.WindowsNotepad_8wekyb3d8bbwe!App del catálogo.15procesos con ventanas visibles consultados, sin errores inesperados; ningún arranque, foco o cierre. El lector anterior no consulta esta identidad y los tokens del nombre localizado no coinciden.
+
+La inspección de los handles también confirma otra limitación:12ventanas Notepad, todas visibles, no cloaked, sin owner y con área positiva;2ventanas de steamwebhelper, una pequeña88x15. Inventory conserva sólo la más grande de cada proceso. Los conteos634deben tratarse como incompletos; su10/12anterior valoraba plausibilidad del conteo y no acredita cardinalidad. H0040 sigue abierto. No se corrige multiplicidad junto con identidad sin medir la primera diferencia636/637.
+
+Fuentes primarias consultadas2026-09-09: https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getapplicationusermodelid y https://learn.microsoft.com/en-us/windows/configuration/store/find-aumid . GetApplicationUserModelId requiere QUERY_LIMITED_INFORMATION y distingue identidad ausente de error de consulta. La implementación anterior de WindowsApplicationPlatform.QueryPackageString aporta el patrón acotado de doble consulta y error honesto; no se reutiliza su política específica de Notepad como alias de aplicaciones generales. No salió contenido del usuario.

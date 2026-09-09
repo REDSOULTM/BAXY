@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-09T12:48:33.685218+00:00",
+  "source": 636,
+  "sources": {
+    "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs": "48a57bb54f04b7b6ab3792e8516e9275e8da2b9a7bdf9674363dd61137c4de29",
+    "tests/Baxy.Providers.Windows.Tests/WindowsInstalledApplicationOpenProviderTests.cs": "b99e899ccd3dd38785dfcfee3dfc35e09b52ba39498efbc61372352714465d1d"
+  },
+  "python_unchanged": true,
+  "method": "First difference: exact OS AUMID for packaged catalog entries. Native query error becomes inventory_failed, not verified absence or launch. Preserve classic identity and window selection for separate multiplicity measurement.",
+  "owners": {
+    "passed": 512,
+    "aggregate_skipped": 0,
+    "printed_opt_in_omissions": 4,
+    "seconds": 55
+  },
+  "criteria": "Fast green then same12product634 in637. Notepad must be detected, Steam/Chrome/Spotify/Paint scope preserved. No write effects. Count remains known incomplete and cannot grant coverage. Focus English remains an independent known defect. No UI/voice/model/profile credit."
+}

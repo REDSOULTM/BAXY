@@ -1,0 +1,11 @@
+{
+  "adopted": false,
+  "providers_passed": 512,
+  "aggregate_skipped": 0,
+  "printed_opt_in_omissions": 4,
+  "fast_exit": 0,
+  "release_seconds": 14.15,
+  "product637_notepad_presence_fixed": true,
+  "next_candidate": 638,
+  "source_unchanged_during_product": true
+}
