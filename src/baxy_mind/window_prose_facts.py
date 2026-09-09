@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 
-from .effect_intent import _PERCENTAGE_WORD_VALUES
+from .effect_intent import _PERCENTAGE_WORD_VALUES, _strip_request_envelope
 from .request_reading import fold
 
 
@@ -60,8 +60,8 @@ _FOCUS_ASSERTION = re.compile(
 )
 
 
-def _requests_window_focus(user_text: str, window: dict) -> bool:
-    question = fold(user_text)
+def _window_focus_question(user_text: str, window: dict) -> str | None:
+    question = _strip_request_envelope(fold(user_text))
     names = {fold(window[key]) for key in ("title", "processName")
              if isinstance(window.get(key), str) and window[key]}
     for name in sorted(names, key=len, reverse=True):
@@ -81,7 +81,16 @@ def _requests_window_focus(user_text: str, window: dict) -> bool:
     question = re.sub(r"\b(?:active window|ventana activa)\b", "window", question)
     question = re.sub(r"\b(?:selected_window|the|el|la|window|ventana|it|currently|ahora|actualmente)\b", " ", question)
     question = re.sub(r"\s+", " ", question)
-    return bool(_FOCUS_ASSERTION.search(question))
+    predicate = _FOCUS_ASSERTION.search(question)
+    if predicate is None:
+        return None
+    prefix = question[:predicate.start()].strip(" ¿?¡!,")
+    if re.fullmatch(r"(?:(?:y|and)\s+)?(?:que|cual|what|which)(?:\s+one)?", prefix) and re.fullmatch(
+        r"(?:\s*(?:[?.!]|now|right now|at (?:this|the) moment|en este momento|please|por favor))*",
+        question[predicate.end():],
+    ):
+        return "identity"
+    return "state"
 
 
 def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict | None:
@@ -100,12 +109,20 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
     windows = [window for window in windows if isinstance(window, dict)]
     asserted = fold(text)
     answered_focus: set[int] = set()
+    identified_focus: set[int] = set()
     subjects: dict[str, set[int]] = {}
     for index, window in enumerate(windows):
         for field in ("title", "processName"):
             name = window.get(field)
             if isinstance(name, str) and name:
                 subjects.setdefault(fold(name), set()).add(index)
+    bare_identity = {
+        index for name, indices in subjects.items() for index in indices
+        if len(indices) == 1 and re.fullmatch(r"[\s\"'«]*" + re.escape(name) + r"[\"'»]*[.!]?[\s]*", asserted)
+    }
+    # A title such as "Is Active" is an identity, not a Boolean assertion.
+    if bare_identity:
+        asserted = ""
     for name in sorted(subjects, key=len, reverse=True):
         indices = subjects[name]
         if len(indices) != 1:
@@ -118,6 +135,35 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
             r"(?=[\"'»]*\s+(?:window|ventana|is|isn't|has|does|esta|no|tiene)\b)",
             f"window_subject_{index}", asserted,
         )
+        # Quoted titles are opaque identifiers. Their punctuation must not
+        # split a factual sentence (for example a title containing .txt).
+        asserted = re.sub(
+            r"[\"'«]" + re.escape(name) + r"[\"'»]", f"window_subject_{index}", asserted,
+        )
+
+    def postposed_subject(suffix: str) -> int | None:
+        for name in sorted(subjects, key=len, reverse=True):
+            indices = subjects[name]
+            if len(indices) != 1:
+                continue
+            index = next(iter(indices))
+            subject = re.match(
+                r"\s*(?:(?:la ventana|the window)\s+(?:(?:de|of)\s+)?)?[\"'«]*"
+                + rf"(?:{re.escape(name)}|window_subject_{index})(?!\w)", suffix,
+            )
+            if subject is None:
+                continue
+            tail = suffix[subject.end():].lstrip(' \"\'»')
+            if re.match(r"(?:titulada|titled|named)\b", tail):
+                title = windows[index].get("title")
+                if not isinstance(title, str) or not re.match(
+                    r"(?:titulada|titled|named)\s+[\"'«]*"
+                    + rf"(?:{re.escape(fold(title))}|window_subject_{index})(?!\w)", tail,
+                ):
+                    continue
+            return index
+        return None
+
     clauses = (
         clause
         for sentence in re.findall(r"[^.;!?\n]+(?:[.;!?]|$)", asserted)
@@ -125,11 +171,39 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
         for clause in re.split(r"\b(?:but|pero)\b", sentence)
     )
     for clause in clauses:
+        # Nominal focus descriptions identify a window through the same
+        # observed name, independent of whether the question repeats a verb.
+        for name, indices in subjects.items():
+            if len(indices) != 1:
+                continue
+            index = next(iter(indices))
+            identity = re.search(
+                r"\b(?:active window|window in the foreground|window with focus|"
+                r"ventana activa|ventana en primer plano|ventana con (?:el )?(?:foco|enfoque))"
+                r"\s+(?:is|es|se llama)\s+[\"'«]*"
+                + rf"(?:{re.escape(name)}|window_subject_{index})(?!\w)", clause,
+            )
+            if identity is None:
+                continue
+            prefix = clause[:identity.start()]
+            if _UNCERTAINTY.search(prefix) or re.search(r"\b(?:if|si|whether)\s+", prefix):
+                continue
+            window = windows[index]
+            focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
+            if not isinstance(focus, bool):
+                continue
+            if not focus:
+                return {"window_title": window.get("title") or window.get("processName"),
+                        "contradiction": {"predicate": "is_active_window", "observed_value": False, "draft_claim": True},
+                        "rejected_draft": text}
+            answered_focus.add(index)
+            identified_focus.add(index)
         for match in _FOCUS_ASSERTION.finditer(clause):
             prefix = clause[:match.start()]
             if _UNCERTAINTY.search(prefix) or re.search(r"\b(?:if|si|whether)\s+", prefix):
                 continue
             named = list(re.finditer(r"\bwindow_subject_(\d+)\b", prefix))
+            identified = False
             if named:
                 subject = named[-1]
                 # A different intervening subject is not the named window.
@@ -137,12 +211,19 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
                 if tail not in {"", "window", "ventana"}:
                     continue
                 index = int(subject[1])
-            elif len(windows) == 1 and prefix.strip(' ,\"\'') in {
-                "", "it", "the window", "la ventana", "no, la ventana", "si, la ventana",
-            }:
-                index = 0
+                identified = True
             else:
-                continue
+                plain_prefix = re.sub(r"\b(?:ahora|actualmente|currently|now)\b", "", prefix).strip(' ,\"\'')
+                suffix = clause[match.end():]
+                index = postposed_subject(suffix) if not plain_prefix else None
+                identified = index is not None
+                if index is None:
+                    if len(windows) == 1 and plain_prefix in {
+                        "", "it", "the window", "la ventana", "no, la ventana", "si, la ventana",
+                    } and re.match(r"\s*(?:[.,;!?]|$|(?:and|y|ni)\b)", suffix):
+                        index = 0
+                    else:
+                        continue
             window = windows[index]
             focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
             if not isinstance(focus, bool):
@@ -163,26 +244,24 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
                     "rejected_draft": text,
                 }
             answered_focus.add(index)
-    if len(windows) == 1 and _requests_window_focus(user_text, windows[0]):
+            if identified:
+                identified_focus.add(index)
+    question_kind = _window_focus_question(user_text, windows[0]) if len(windows) == 1 else None
+    if question_kind is not None:
         window = windows[0]
         focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
-        if not isinstance(focus, bool) or 0 in answered_focus:
+        if not isinstance(focus, bool) or (0 in answered_focus and (question_kind != "identity" or 0 in identified_focus)):
             return None
         name = window.get("title") or window.get("processName")
-        if isinstance(name, str) and name:
-            identity = re.search(
-                r"\b(?:active window|window in the foreground|window with focus|"
-                r"ventana activa|ventana en primer plano)\s+(?:is|es)\s+[\"'«]*"
-                + re.escape(fold(name)) + r"(?!\w)", fold(text),
-            )
-            if identity:
-                if focus:
-                    return None
-                return {"window_title": name,
-                        "contradiction": {"predicate": "is_active_window", "observed_value": False, "draft_claim": True},
-                        "rejected_draft": text}
+        if question_kind == "identity" and 0 in bare_identity:
+            if focus:
+                return None
+            return {"window_title": name,
+                    "contradiction": {"predicate": "is_active_window", "observed_value": False, "draft_claim": True},
+                    "rejected_draft": text}
         return {"window_title": name,
-                "missing_answer": {"predicate": "is_active_window", "observed_value": focus},
+                "missing_answer": {"predicate": "active_window_identity" if question_kind == "identity" else "is_active_window",
+                                   "observed_value": name if question_kind == "identity" else focus},
                 "rejected_draft": text}
     return None
 

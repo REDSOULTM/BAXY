@@ -1,0 +1,23 @@
+{
+  "correct": 17,
+  "total": 17,
+  "native_calls": 24,
+  "all_requests_and_finals_same677": true,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.296875,
+    "seconds": 11.328000000037719,
+    "manifest_unchanged": true
+  },
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "9678b21fe749dd94be5552b34b1dc56946ba5b9df360c3d811ccfcd54faa0992",
+    "requests.jsonl": "fd0da35572e29ba8441e6ef018d5e7b201dff3da13430e9fc14a9e6521bdd54b",
+    "responses.jsonl": "c7fdf704ac48ad2ef83ee0f7e9d6901fdd096eafd7af086a454023179330d7b1",
+    "finals.jsonl": "a74414eb59d77beeaf4dd414c92bb571c1262fcb0836f17ac5121d2e881561db",
+    "adjudication.json": "84877599e380f25d097db84253da5cb561a0c5f94e8ce5b463dd6688362a22e6",
+    "RESULT.md": "945f811177be46ee9c46a651e91dc83ff68764ea78c96beb3c1ccdbefb5719b0"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "utc": "2026-09-09T19:05:15.373551+00:00",
+  "adopted": false,
+  "parent_commit": "3e18aeb86c5aa2cb1e8f63982e731a3d3a3bd555",
+  "sources": {
+    "src/baxy_mind/window_prose_facts.py": "e126d859b850f66d96e03a573ec01d844f51b486c6b6fa8b68f69fda2fb50211",
+    "src/baxy_mind/effect_intent.py": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+    "src/baxy_mind/llm.py": "f2a938f32eafdfca72123f2563ab2f9b2a6c15f3834aba82aab25bdd51f5ca4c",
+    "tests/test_c03_window_identity_answers.py": "26f512a6322cabe9044bc4b3cb00b10d99f0ac34f587bbe3033a00e32089b0aa",
+    "tests/test_c03_window_focus_coverage.py": "74463d650a54ee261901f087fa4790b4ed2a06dc69da3de283818e01b3d4009a"
+  },
+  "python_tree_sha256": "50f0fb6bf6bd81210a800b72be09bf2a9544c7b9e482a54629c2141344ca1439",
+  "python_files": 405,
+  "owner_tests": [
+    "tests/test_active_decision_path_r280.py",
+    "tests/test_c03_calendar_date.py",
+    "tests/test_c03_compound_mute_query.py",
+    "tests/test_c03_cpu_actor.py",
+    "tests/test_c03_fresh_window_queries.py",
+    "tests/test_c03_internet_state.py",
+    "tests/test_c03_request_preservation.py",
+    "tests/test_c03_window_facts.py",
+    "tests/test_c03_window_focus_coverage.py",
+    "tests/test_c03_window_focus_subject_order.py",
+    "tests/test_c03_window_identity_answers.py",
+    "tests/test_c03_window_prose_projection.py",
+    "tests/test_c03_window_state_facts.py",
+    "tests/test_compose_contract.py",
+    "tests/test_cpu_prose_adapter.py",
+    "tests/test_first_signal.py",
+    "tests/test_forced_tool_choice_audit_r277.py",
+    "tests/test_goal06_voice.py",
+    "tests/test_llm_transport.py",
+    "tests/test_mind_budget_gate.py",
+    "tests/test_planner.py",
+    "tests/test_price_v8_veto_damage_by_cause.py",
+    "tests/test_process_lifecycle.py",
+    "tests/test_request_reading.py",
+    "tests/test_turn_policy.py",
+    "tests/test_turn_policy_gate.py"
+  ],
+  "design": "Distinguish explicitly requested window identity from Boolean focus state. Bind nominal and postposed claims to unambiguous observed title/process aliases; quoted titles are opaque identifiers. Preserve typed contradictions, uncertainty and compound requested predicate coverage. No new model, visible reply template, dispatcher, UI or backend change.",
+  "baseline": {
+    "failed": 50,
+    "passed": 21
+  },
+  "focal_passed": 415,
+  "inheritance": "Product684 has seven fresh window.active observations but three valid identifying drafts rejected missing_fact. Source680 owns relative-clause scope; source676 owns requested focus completeness. Native685 prompt ablation was partial and not adopted.",
+  "limits": "Bounded existing factual grammar, not universal semantic verification. Intermediate quoted filename failures are preserved. One previous nameless WH-answer test now uses its proper Boolean question; new controls require a name for WH identity.",
+  "next": "Owners, current declarations and Fast, then exact seven-query product687 and exact17 compositor regression688. Do not infer survey coverage from unit tests."
+}

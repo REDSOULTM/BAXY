@@ -1,0 +1,30 @@
+{
+  "source": 686,
+  "fresh_reads": 7,
+  "correct": 6,
+  "total": 7,
+  "failed_cases": [
+    "focus-mixed"
+  ],
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2286.984375,
+    "seconds": 31.672
+  },
+  "same_panel684": true,
+  "visible_activity_matches_finals": true,
+  "ui_or_voice_credit": false,
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "d4a38b5768e2d63b7bd3bc262d1bf3c836a14d1752266fe879459e0bcb90d89c",
+    "capture/events.jsonl": "d5aeb103a3d0c2e4059e0888fd2c5ac3bec089b32ff0bdc19caf2af517e4ad8d",
+    "compose-audit.jsonl": "8fca3bb31fadf65bda0089d1e5bdeea8518fd75d86fcb3a9f99d0c2f1404e1e6",
+    "turn-audit.jsonl": "7ab9cca2ec5b922b7200568900adac78f18587812c94194bd1fa9575b9480df3",
+    "foreground-before.json": "7154d3ab9c6475184a2e9fc06a7bc6fbc8349dce71e1ab3c0d43e402139c536d",
+    "foreground-after.json": "dd6852c4c1e99aa1bb8b7282fea882a29a6a6e79eaf66b398d7f1f516b138abf",
+    "adjudication.json": "c1c90d0b9ee88845656dc2189c4da5d20c321252b708383beb50da27d5112555",
+    "RESULT.md": "3e12633798c9e32d37a8ad6c4d2f81a8b8774d1cbd09adaac088ea10444e383c"
+  }
+}

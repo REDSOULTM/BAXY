@@ -1,0 +1,37 @@
+{
+  "adopted": true,
+  "sources": {
+    "src/baxy_mind/window_prose_facts.py": "e126d859b850f66d96e03a573ec01d844f51b486c6b6fa8b68f69fda2fb50211",
+    "src/baxy_mind/effect_intent.py": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+    "src/baxy_mind/llm.py": "f2a938f32eafdfca72123f2563ab2f9b2a6c15f3834aba82aab25bdd51f5ca4c",
+    "tests/test_c03_window_identity_answers.py": "26f512a6322cabe9044bc4b3cb00b10d99f0ac34f587bbe3033a00e32089b0aa",
+    "tests/test_c03_window_focus_coverage.py": "74463d650a54ee261901f087fa4790b4ed2a06dc69da3de283818e01b3d4009a"
+  },
+  "python_tree_sha256": "50f0fb6bf6bd81210a800b72be09bf2a9544c7b9e482a54629c2141344ca1439",
+  "baseline": {
+    "failed": 50,
+    "passed": 21
+  },
+  "focal_passed": 415,
+  "owners": {
+    "files": 26,
+    "passed": 2712,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 24.7
+  },
+  "declarations": {
+    "passed": 12,
+    "environmental_skipped": 1,
+    "seconds": 1.18
+  },
+  "fast_exit": 0,
+  "release_seconds": 20.72,
+  "product687_correct": 6,
+  "product687_total": 7,
+  "compositor688_correct": 17,
+  "full686_run": false,
+  "full_baseline": 651,
+  "goal_complete": false,
+  "private_hashes": {}
+}

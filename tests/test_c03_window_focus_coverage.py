@@ -36,7 +36,8 @@ def test_incidental_focus_does_not_add_a_question(question):
 ])
 def test_explicit_focus_or_identity_answers_remain_valid(answer):
     payload = _compose_situation_payload(situation(True), "en")
-    assert not _payload_fact_defect(answer, payload, "Which window is active?")
+    question = "Is Atlas active?" if answer == "Está activa." else "Which window is active?"
+    assert not _payload_fact_defect(answer, payload, question)
 
 
 def test_ambiguous_conjunction_does_not_establish_explicit_focus_answer():

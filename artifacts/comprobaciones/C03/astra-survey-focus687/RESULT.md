@@ -1,0 +1,5 @@
+# 687 — siete lecturas frescas y seis respuestas correctas
+
+El mismo panel684 pasa de4/7 a6/7 finales correctos. t3 y t5 ya publican la identidad; las siete decisiones ejecutan window.active y sus observaciones coinciden con snapshots independientes antes/después. El título real cambió al Explorador: no se atribuye al cambio una mejora léxica. t4 sigue fallando: su primer borrador correcto usa un sujeto descriptivo seguido de «con el título», relación que el verificador no reconoce. Su tercer borrador además tiene un error de concordancia. Todos los intentos y el fallo final se conservan; H0104 sigue abierto.
+
+Seis actividades coinciden con los finales; sin timeout. GPU3497,559MiB/RAM2286,984MiB/31,672s, sin infracciones. No prueba de UI/voz simultáneas ni mínimo global. Encuesta26cubiertos/716abiertos/0NA. El dueño pide desde ahora tandas de50 entradas o categorías completas: el caso pendiente se integra en la siguiente tanda de consultas de estado, conservando su criterio individual.

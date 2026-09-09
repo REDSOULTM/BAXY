@@ -1,0 +1,1020 @@
+{'baseline_module_sha256': '244e8a6828ff66e3385bb3b4a2f4dbc944f98b22a79f76286246cf1940634e20', 'filesystem_source_modified': False}
+FF.FFF.FFF.FFF.FFF.FFF.FFF.FFF.FFFFFFFFFFFFFFFFF..FFFF.........FFFF.F.F  [100%]
+================================== FAILURES ===================================
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-Atlas] _
+
+name = 'Atlas', question = 'Ahora mismo, ¿qué ventana tiene el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Ahora mismo, ¿qué ventana tiene el foco?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-\xd3rbita 29] _
+
+name = 'Órbita 29', question = 'Ahora mismo, ¿qué ventana tiene el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Ahora mismo, ¿qué ventana tiene el foco?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor'
+question = 'Ahora mismo, ¿qué ventana tiene el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Informe.txt - Editor', {'seen': {'windows': [{'title': 'Informe.txt - Editor', 'processName': 'Informe.txt - Editor', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Ahora mismo, ¿qué ventana tiene el foco?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which window is active?-Atlas] _
+
+name = 'Atlas', question = 'Which window is active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Which window is active?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which window is active?-\xd3rbita 29] _
+
+name = 'Órbita 29', question = 'Which window is active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Which window is active?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which window is active?-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', question = 'Which window is active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Informe.txt - Editor', {'seen': {'windows': [{'title': 'Informe.txt - Editor', 'processName': 'Informe.txt - Editor', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Which window is active?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[\xbfY ahora cu\xe1l est\xe1 activa?-Atlas] _
+
+name = 'Atlas', question = '¿Y ahora cuál está activa?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, '¿Y ahora cuál está activa?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[\xbfY ahora cu\xe1l est\xe1 activa?-\xd3rbita 29] _
+
+name = 'Órbita 29', question = '¿Y ahora cuál está activa?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, '¿Y ahora cuál está activa?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[\xbfY ahora cu\xe1l est\xe1 activa?-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', question = '¿Y ahora cuál está activa?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Informe.txt - Editor', {'seen': {'windows': [{'title': 'Informe.txt - Editor', 'processName': 'Informe.txt - Editor', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, '¿Y ahora cuál está activa?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which one has focus now?-Atlas] _
+
+name = 'Atlas', question = 'Which one has focus now?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Which one has focus now?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which one has focus now?-\xd3rbita 29] _
+
+name = 'Órbita 29', question = 'Which one has focus now?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Which one has focus now?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which one has focus now?-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', question = 'Which one has focus now?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("question", [
+        "Ahora mismo, ¿qué ventana tiene el foco?", "Which window is active?",
+        "¿Y ahora cuál está activa?", "Which one has focus now?",
+    ])
+    def test_identity_question_accepts_the_observed_title_without_boolean_repetition(name, question):
+        payload = _compose_situation_payload(situation(True, name=name), "es")
+>       assert not _payload_fact_defect(name, payload, question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Informe.txt - Editor', {'seen': {'windows': [{'title': 'Informe.txt - Editor', 'processName': 'Informe.txt - Editor', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Which one has focus now?')
+
+tests\test_c03_window_identity_answers.py:15: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con enfoque es "{name}".-Atlas] _
+
+name = 'Atlas', template = 'La ventana con enfoque es "{name}".', focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con enfoque es "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'La ventana con enfoque es "{name}".'
+focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con enfoque es "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', template = 'La ventana con enfoque es "{name}".'
+focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con foco es "{name}".-Atlas] _
+
+name = 'Atlas', template = 'La ventana con foco es "{name}".', focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con foco es "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'La ventana con foco es "{name}".', focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con foco es "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', template = 'La ventana con foco es "{name}".'
+focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-Ahora est\xe1 activa la ventana de "{name}".-Atlas] _
+
+name = 'Atlas', template = 'Ahora está activa la ventana de "{name}".'
+focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-Ahora est\xe1 activa la ventana de "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'Ahora está activa la ventana de "{name}".'
+focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-Ahora est\xe1 activa la ventana de "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor'
+template = 'Ahora está activa la ventana de "{name}".', focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-Actualmente tiene focus "{name}".-Atlas] _
+
+name = 'Atlas', template = 'Actualmente tiene focus "{name}".', focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-Actualmente tiene focus "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'Actualmente tiene focus "{name}".', focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[True-Actualmente tiene focus "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', template = 'Actualmente tiene focus "{name}".'
+focus = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == ''
+E         
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-Atlas] _
+
+name = 'Atlas', template = 'La ventana con enfoque es "{name}".', focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'La ventana con enfoque es "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-Is Active] _
+
+name = 'Is Active', template = 'La ventana con enfoque es "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', template = 'La ventana con enfoque es "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-Atlas] _
+
+name = 'Atlas', template = 'La ventana con foco es "{name}".', focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'La ventana con foco es "{name}".', focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-Is Active] _
+
+name = 'Is Active', template = 'La ventana con foco es "{name}".', focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', template = 'La ventana con foco es "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-Atlas] _
+
+name = 'Atlas', template = 'Ahora está activa la ventana de "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'Ahora está activa la ventana de "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-Is Active] _
+
+name = 'Is Active', template = 'Ahora está activa la ventana de "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor'
+template = 'Ahora está activa la ventana de "{name}".', focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-Atlas] _
+
+name = 'Atlas', template = 'Actualmente tiene focus "{name}".', focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-\xd3rbita 29] _
+
+name = 'Órbita 29', template = 'Actualmente tiene focus "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-Is Active] _
+
+name = 'Is Active', template = 'Actualmente tiene focus "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-Informe.txt - Editor] _
+
+name = 'Informe.txt - Editor', template = 'Actualmente tiene focus "{name}".'
+focus = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active", "Informe.txt - Editor"])
+    @pytest.mark.parametrize("template", [
+        'La ventana con enfoque es "{name}".',
+        'La ventana con foco es "{name}".',
+        'Ahora está activa la ventana de "{name}".',
+        'Actualmente tiene focus "{name}".',
+    ])
+    @pytest.mark.parametrize("focus", [True, False])
+    def test_identity_word_order_conserves_the_same_observed_boolean(name, template, focus):
+        payload = _compose_situation_payload(situation(focus, name=name), "es")
+>       assert _payload_fact_defect(template.format(name=name), payload, "Which window is active?") == ("" if focus else "reversed_result")
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:28: AssertionError
+_ test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer[Is Active-Is Active-True] _
+
+answer = 'Is Active', name = 'Is Active', identifies = True
+
+    @pytest.mark.parametrize("answer,name,identifies", [
+        ("Atlas", "Atlas", True), ('"Atlas"', "Atlas", True),
+        ("Is Active", "Is Active", True), ('"Is Active"', "Is Active", True),
+        ("It is active.", "Atlas", False), ("Está activa.", "Atlas", False),
+    ])
+    def test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer(answer, name, identifies):
+        payload = _compose_situation_payload(situation(True, name=name), "en")
+        question = f"Is {name} active and always on top?" if identifies else "Which window is active?"
+>       assert _payload_fact_defect(answer, payload, question) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_window_identity_answers.py:39: AssertionError
+_ test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer["Is Active"-Is Active-True] _
+
+answer = '"Is Active"', name = 'Is Active', identifies = True
+
+    @pytest.mark.parametrize("answer,name,identifies", [
+        ("Atlas", "Atlas", True), ('"Atlas"', "Atlas", True),
+        ("Is Active", "Is Active", True), ('"Is Active"', "Is Active", True),
+        ("It is active.", "Atlas", False), ("Está activa.", "Atlas", False),
+    ])
+    def test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer(answer, name, identifies):
+        payload = _compose_situation_payload(situation(True, name=name), "en")
+        question = f"Is {name} active and always on top?" if identifies else "Which window is active?"
+>       assert _payload_fact_defect(answer, payload, question) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_window_identity_answers.py:39: AssertionError
+_ test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer[It is active.-Atlas-False] _
+
+answer = 'It is active.', name = 'Atlas', identifies = False
+
+    @pytest.mark.parametrize("answer,name,identifies", [
+        ("Atlas", "Atlas", True), ('"Atlas"', "Atlas", True),
+        ("Is Active", "Is Active", True), ('"Is Active"', "Is Active", True),
+        ("It is active.", "Atlas", False), ("Está activa.", "Atlas", False),
+    ])
+    def test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer(answer, name, identifies):
+        payload = _compose_situation_payload(situation(True, name=name), "en")
+        question = f"Is {name} active and always on top?" if identifies else "Which window is active?"
+>       assert _payload_fact_defect(answer, payload, question) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_window_identity_answers.py:39: AssertionError
+_ test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer[Est\xe1 activa.-Atlas-False] _
+
+answer = 'Está activa.', name = 'Atlas', identifies = False
+
+    @pytest.mark.parametrize("answer,name,identifies", [
+        ("Atlas", "Atlas", True), ('"Atlas"', "Atlas", True),
+        ("Is Active", "Is Active", True), ('"Is Active"', "Is Active", True),
+        ("It is active.", "Atlas", False), ("Está activa.", "Atlas", False),
+    ])
+    def test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer(answer, name, identifies):
+        payload = _compose_situation_payload(situation(True, name=name), "en")
+        question = f"Is {name} active and always on top?" if identifies else "Which window is active?"
+>       assert _payload_fact_defect(answer, payload, question) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_window_identity_answers.py:39: AssertionError
+_ test_inverted_negative_assertion_cannot_be_accepted_as_identity[Ahora no est\xe1 activa la ventana de Atlas.] _
+
+answer = 'Ahora no está activa la ventana de Atlas.'
+
+    @pytest.mark.parametrize("answer", [
+        "Ahora no está activa la ventana de Atlas.", "Actualmente no tiene foco Atlas.",
+        "Ahora está inactiva Atlas.",
+    ])
+    def test_inverted_negative_assertion_cannot_be_accepted_as_identity(answer):
+>       assert _payload_fact_defect(answer, _compose_situation_payload(situation(True), "es"), "Which window is active?") == "reversed_result"
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:64: AssertionError
+_ test_inverted_negative_assertion_cannot_be_accepted_as_identity[Actualmente no tiene foco Atlas.] _
+
+answer = 'Actualmente no tiene foco Atlas.'
+
+    @pytest.mark.parametrize("answer", [
+        "Ahora no está activa la ventana de Atlas.", "Actualmente no tiene foco Atlas.",
+        "Ahora está inactiva Atlas.",
+    ])
+    def test_inverted_negative_assertion_cannot_be_accepted_as_identity(answer):
+>       assert _payload_fact_defect(answer, _compose_situation_payload(situation(True), "es"), "Which window is active?") == "reversed_result"
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:64: AssertionError
+_ test_inverted_negative_assertion_cannot_be_accepted_as_identity[Ahora est\xe1 inactiva Atlas.] _
+
+answer = 'Ahora está inactiva Atlas.'
+
+    @pytest.mark.parametrize("answer", [
+        "Ahora no está activa la ventana de Atlas.", "Actualmente no tiene foco Atlas.",
+        "Ahora está inactiva Atlas.",
+    ])
+    def test_inverted_negative_assertion_cannot_be_accepted_as_identity(answer):
+>       assert _payload_fact_defect(answer, _compose_situation_payload(situation(True), "es"), "Which window is active?") == "reversed_result"
+E       AssertionError: assert 'missing_fact' == 'reversed_result'
+E         
+E         - reversed_result
+E         + missing_fact
+
+tests\test_c03_window_identity_answers.py:64: AssertionError
+_ test_inverted_other_subject_does_not_inherit_the_observed_windows_state[Est\xe1 activa Vega.] _
+
+answer = 'Está activa Vega.'
+
+    @pytest.mark.parametrize("answer", ["Está activa Vega.", "Ahora tiene foco Vega."])
+    def test_inverted_other_subject_does_not_inherit_the_observed_windows_state(answer):
+>       assert not _payload_fact_defect(answer, _compose_situation_payload(situation(False), "es"))
+E       AssertionError: assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('Está activa Vega.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'})
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'es')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(False)
+
+tests\test_c03_window_identity_answers.py:69: AssertionError
+___ test_process_name_does_not_hide_a_different_reported_window_title[True] ___
+
+correct_title = True
+
+    @pytest.mark.parametrize("correct_title", [True, False])
+    def test_process_name_does_not_hide_a_different_reported_window_title(correct_title):
+        facts = situation(True, name="Atlas - Notes")
+        facts["observed"]["windows"][0]["processName"] = "Notes"
+        title = "Atlas - Notes" if correct_title else "Vega - Notes"
+        answer = f'Ahora está activa la ventana de Notes titulada "{title}".'
+        defect = _payload_fact_defect(answer, _compose_situation_payload(facts, "es"), "¿Y ahora cuál está activa?")
+>       assert not defect if correct_title else defect
+E       assert False
+
+tests\test_c03_window_identity_answers.py:79: AssertionError
+____________ test_renamed_real_product_shapes_publish_in_one_call _____________
+
+    def test_renamed_real_product_shapes_publish_in_one_call():
+        facts = situation(True, name="Atlas - Notes")
+        facts["observed"]["windows"][0]["processName"] = "Notes"
+        for question, answer in [
+            ("Ahora mismo, ¿qué ventana tiene el foco?", 'La ventana con enfoque es "Atlas - Notes".'),
+            ("Baxy, ¿qué window tiene focus ahora?", 'Actualmente tiene focus la ventana de Notes titulada "Atlas - Notes".'),
+            ("¿Y ahora cuál está activa?", 'Ahora está activa la ventana de Notes titulada "Atlas - Notes".'),
+        ]:
+            client = Recorder([answer])
+>           assert client.compose_user_message(question, "status", {"situation": facts}) == answer
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_window_identity_answers.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10149: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9216: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000023457A28DD0>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...La ventana con enfoque es \\"Atlas - Notes\\"."}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Ahora mismo, \xbfqu\xe9 ventana tiene el foco?-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which window is active?-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which window is active?-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which window is active?-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[\xbfY ahora cu\xe1l est\xe1 activa?-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[\xbfY ahora cu\xe1l est\xe1 activa?-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[\xbfY ahora cu\xe1l est\xe1 activa?-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which one has focus now?-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which one has focus now?-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_question_accepts_the_observed_title_without_boolean_repetition[Which one has focus now?-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con enfoque es "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con enfoque es "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con enfoque es "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con foco es "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con foco es "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-La ventana con foco es "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-Ahora est\xe1 activa la ventana de "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-Ahora est\xe1 activa la ventana de "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-Ahora est\xe1 activa la ventana de "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-Actualmente tiene focus "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-Actualmente tiene focus "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[True-Actualmente tiene focus "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-Is Active]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con enfoque es "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-Is Active]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-La ventana con foco es "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-Is Active]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Ahora est\xe1 activa la ventana de "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-Atlas]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-\xd3rbita 29]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-Is Active]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_word_order_conserves_the_same_observed_boolean[False-Actualmente tiene focus "{name}".-Informe.txt - Editor]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer[Is Active-Is Active-True]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer["Is Active"-Is Active-True]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer[It is active.-Atlas-False]
+FAILED tests/test_c03_window_identity_answers.py::test_identity_and_boolean_questions_cannot_use_each_others_incomplete_answer[Est\xe1 activa.-Atlas-False]
+FAILED tests/test_c03_window_identity_answers.py::test_inverted_negative_assertion_cannot_be_accepted_as_identity[Ahora no est\xe1 activa la ventana de Atlas.]
+FAILED tests/test_c03_window_identity_answers.py::test_inverted_negative_assertion_cannot_be_accepted_as_identity[Actualmente no tiene foco Atlas.]
+FAILED tests/test_c03_window_identity_answers.py::test_inverted_negative_assertion_cannot_be_accepted_as_identity[Ahora est\xe1 inactiva Atlas.]
+FAILED tests/test_c03_window_identity_answers.py::test_inverted_other_subject_does_not_inherit_the_observed_windows_state[Est\xe1 activa Vega.]
+FAILED tests/test_c03_window_identity_answers.py::test_process_name_does_not_hide_a_different_reported_window_title[True]
+FAILED tests/test_c03_window_identity_answers.py::test_renamed_real_product_shapes_publish_in_one_call
+50 failed, 21 passed in 0.87s

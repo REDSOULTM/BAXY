@@ -1195,3 +1195,30 @@ Tree6c474bfe4350dd0203b70a509a39d816feda4b0bf85a9a620e43512e6ae23ae5/405archivos
 # Publicación683 verificada
 
 Fuente y evidencias683–685 publicadas en 68a27bdec8179404d2d9295a09c1f6f6db859ef4; remoto verificado, main intacto.19pins públicos/índice, privados, fuentes/tree, manifiesto y encuesta auditados; BAXY cerrado. No nueva encuesta:26cubiertos/716abiertos/0NA. Siguiente: distinguir preguntas de identidad de ventana de preguntas Booleanas para eliminar los falsos missing_fact de684 sin dejar pasar contradicciones. C03 EN_CURSO.
+
+# 686 — candidato pendiente; RAM liberada a petición del dueño
+
+2026-09-09 19:02 UTC. El candidato de window_prose_facts.py distingue preguntas de identidad de estado Booleano y reconoce sujetos pospuestos y títulos citados. Cohorte nueva71casos: baseline contra fuente683 aislada50fallos/21pases; focal integrada415pases/0skips,1,43s. Logs %TEMP%/c03-window-identity686-expanded-baseline.log y c03-window-identity686-focal.log comprobados. Aún no adoptado ni publicado: faltan revisión, declaraciones actuales/tree, dueñas/Fast y producto687/regresión688. No se ha ejecutado ninguna de esas campañas. Encuesta26cubiertos/716abiertos/0NA intacta; H0104abierto, C03 EN_CURSO.
+
+RAM física al atender al dueño:11,07GiB usados y4,34libres de15,40. Steam y sus webhelpers sumaban aproximadamente1GiB de working set (no memoria física única). Se pidió cierre normal con steam.exe -shutdown; la comprobación posterior encontró cero procesos steam/steamwebhelper y10,46GiB usados/4,95libres. Descenso neto observado0,61GiB, sujeto a actividad concurrente. BAXY/llama-server siguen cerrados; no se atribuye la RAM total del PC a BAXY. Navegadores, chat y trabajo del dueño preservados; no se vaciaron cachés del sistema ni cambió la memoria virtual.
+
+
+# 687 — siete lecturas frescas y seis respuestas correctas
+
+El mismo panel684 pasa de4/7 a6/7 finales correctos. t3 y t5 ya publican la identidad; las siete decisiones ejecutan window.active y sus observaciones coinciden con snapshots independientes antes/después. El título real cambió al Explorador: no se atribuye al cambio una mejora léxica. t4 sigue fallando: su primer borrador correcto usa un sujeto descriptivo seguido de «con el título», relación que el verificador no reconoce. Su tercer borrador además tiene un error de concordancia. Todos los intentos y el fallo final se conservan; H0104 sigue abierto.
+
+Seis actividades coinciden con los finales; sin timeout. GPU3497,559MiB/RAM2286,984MiB/31,672s, sin infracciones. No prueba de UI/voz simultáneas ni mínimo global. Encuesta26cubiertos/716abiertos/0NA. El dueño pide desde ahora tandas de50 entradas o categorías completas: el caso pendiente se integra en la siguiente tanda de consultas de estado, conservando su criterio individual.
+
+
+# 688 — regresión integrada17/17 conservada
+
+Mismos17casos677 y mismas24 peticiones nativas: diez controles en una llamada, siete preguntas compuestas en dos. Los17finales también son idénticos y correctos, con foco y siempre encima separados. Todas24terminaciones EOS. GPU3497,559MiB/RAM720,297MiB/11,328s, sin infracciones ni cambios de registro. Es compositor real con transporte local, sin kernel/UI/voz. No añade cobertura de encuesta por sí solo.
+
+
+# 686 — distinción de identidad y estado adoptada
+
+El contrato factual diferencia el nombre pedido de la confirmación Booleana. Liga sujetos nominales o pospuestos a nombres observados únicos y mantiene los títulos citados como identificadores opacos, incluso con puntuación o nombres como «Is Active». Conserva contradicciones, incertidumbre y predicados compuestos. No cambia el modelo, primer prompt, backend, dispatcher ni texto visible fijo. Es gramática delimitada, sin afirmación de verificación semántica universal.
+
+71casos nuevos: baseline publicada683 aislada50fallos/21pases; focal415pases. Se conservan baseline inicial35fallos/18pases y regresión intermedia de nombres con punto8fallos/63pases. Un test antiguo que confundía identidad con respuesta sin nombre ahora pregunta por el Booleano; los nuevos controles exigen identidad en preguntas WH. Dueñas26archivos2712pases+121subpruebas/0skips24,70s; las declaraciones dueñas actuales12pases/1skip ambiental1,18s por entradas ausentes de campaña ciega STT (no se declara repetida la cohorte histórica600). Fast exit0/Release20,72s,0advertencias/errores.
+
+Producto6876/7 con siete lecturas frescas; compositor68817/17 conserva peticiones y finales677. Se adopta la reparación comprobada y se conserva el fallo descriptivo de t4 como pendiente, sin dar por cubierta H0104. Árbol Python50f0fb6bf6bd81210a800b72be09bf2a9544c7b9e482a54629c2141344ca1439/405archivos. Full651 sigue baseline: no Full por edición Python, Full final aún requerido. Encuesta26/716/0; C03 EN_CURSO. Siguiente tanda50 de estado del PC por dirección expresa del dueño, con adjudicación individual y variantes compartidas por conducta.
