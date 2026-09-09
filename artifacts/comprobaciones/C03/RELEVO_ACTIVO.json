@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T12:15:04.864310+00:00",
+  "confirmedAtUtc": "2026-09-09T12:18:35.385151+00:00",
   "branch": "Goal-c03",
   "checkpoint": "630 adoptada: Full exit0 Python10253pass/3skips+466subtests,.NET4457pass/1skip;63116/20,9/9volumen y0regresiones.25/717/0.",
-  "continuation": "Publicar630 y evidencia628–632, verificar remoto/main. Después reparar el alcance incorrecto de ventanas auditado632 en effect_intent.py:7821–7823/8424, con lectura por aplicación y regresión ES/EN. No tocar modelo/prosa antes de conservar hechos. UI/voz/recuperación/717requisitos yFullfinal pendientes.",
+  "continuation": "Fuente630 publicada y remoto verificado; sin procesos de campaña. Siguiente: reparar alcance de ventanas auditado632. Empezar en effect_intent.py:7821–7823 y _strict_catalog_request:8424, con window.application.status del catálogo y controles de aplicación abierta/cerrada, nombres, foco e idioma.25/717/0; demás rutas, continuación real de aclaraciones,UI/voz/recuperación/VRAM conjunta yFullfinal siguen pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "pending_publication_of_validated_source630",
+  "publishedSourceCommit": "d9222a7e6614078ddf09bfb5765f84288d2f7237",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "67085974c69c60034cba2ad95d156ddb096de6f6",
+  "publishedEvidenceCommit": "d9222a7e6614078ddf09bfb5765f84288d2f7237",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

@@ -2,7 +2,7 @@
 
 **Estado vigente,2026-09-09:** goal activo; **ninguna decisión pendiente del dueño**. La [autorización536](AUTORIZACION_DUENO_536.md) permite usar históricos, encuesta y casos nuevos con generalización ES/EN. Los bloqueos534 descritos abajo son históricos y quedaron resueltos.
 
-Fuente630 validada y lista para publicar; main intacto. Full630 exit0:Python10253pass/3omisiones+466subpruebas,.NET4457pass/1omisión agregada.63116/20 y9/9aclaraciones de volumen, sin nuevas regresiones; persistencia de la respuesta siguiente aún requiere producto.628sola no bastaba y629se conserva como fallo. Encuesta25cubiertos/717abiertos/0NA; no confundir abiertos con fallos medidos. Estado operativo y siguiente acción en [HANDOFF.md](HANDOFF.md) y [RELEVO_ACTIVO.json](RELEVO_ACTIVO.json). Las entradas de cada tramo se conservan a continuación y sus cifras no describen automáticamente la fuente actual.
+Fuente630 publicada en d9222a7e6614078ddf09bfb5765f84288d2f7237, remoto verificado; main intacto. Full630 exit0:Python10253pass/3omisiones+466subpruebas,.NET4457pass/1omisión agregada.63116/20 y9/9aclaraciones de volumen, sin nuevas regresiones; persistencia de la respuesta siguiente aún requiere producto.628sola no bastaba y629se conserva como fallo. Encuesta25cubiertos/717abiertos/0NA; no confundir abiertos con fallos medidos. Estado operativo y siguiente acción en [HANDOFF.md](HANDOFF.md) y [RELEVO_ACTIVO.json](RELEVO_ACTIVO.json). Las entradas de cada tramo se conservan a continuación y sus cifras no describen automáticamente la fuente actual.
 
 ## Registro histórico — fuente120713be y auditoría534
 
@@ -642,3 +642,8 @@ Full630:exit0, Python10253pass/3omisiones+466subpruebas en589,57s; .NET4457pass/
 631 midió3499,559MiB GPU y2420,680MiB RAM, sin infracciones.117,234s incluyen la publicación NativeAOT que main.py necesitó al arrancar: no comparar ese total con629como latencia de conversación. El turno reparado emitió su final en627,494ms, una sola decisión en vez de dos. UI y voz juntas y el mínimo global de recursos siguen pendientes.
 
 Encuesta25cubiertos/717abiertos/0NA.632 audita H0040: las negaciones541no estaban respaldadas por las observaciones; queda abierta la reparación del alcance de ventanas, con causa exacta y documentación primaria. Se publica en Goal-c03 sin tocar main. Ninguna decisión pendiente del dueño; autorización536 vigente.
+
+
+## Publicación630 y evidencia628–632
+
+Fuente y evidencia publicadas en d9222a7e6614078ddf09bfb5765f84288d2f7237, HEAD=origin verificado; main intacto. Auditoría de staging:5campañas/34pines,bytes conservados. Full630exit0,63116/20 con9/9volumen ysinregresiones. La auditoría632 actualiza sólo la causa y evidencia de H0040;25cubiertos/717abiertos/0NA. BAXY manual cerrado, sin procesos en curso ni decisión pendiente del dueño. Siguiente: alcance específico de ventanas por aplicación antes de nuevas composiciones o modelos.
