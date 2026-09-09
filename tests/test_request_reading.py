@@ -130,6 +130,44 @@ def test_conversation_language_only_decides_without_evidence() -> None:
 @pytest.mark.parametrize(
     "text, expected",
     [
+        ("Which window has focus?", "en"),
+        ("Which application has focus?", "en"),
+        ("Who has the document?", "en"),
+        ("Which process has the file open?", "en"),
+        ("Has Steam opened?", "en"),
+        ("Has the download finished?", "en"),
+        ("Who has Colorado open?", "en"),
+        ("Has cerrado Steam", "es"),
+        ("Has abierto Quasar", "es"),
+        ("Has guardado Orión", "es"),
+        ("Has terminado Vega", "es"),
+        ("Has escrito esto", "es"),
+        ("¿Has abierto la aplicación?", "es"),
+        ("Has abierto Spotify and paused playback", "mixed"),
+        ("Has cerrado Quasar and opened Vega", "mixed"),
+        ("Has guardado Orion and closed it", "mixed"),
+        ("¿Has cerrado Paint and opened Steam?", "mixed"),
+        ("Which window has focus? Responde en español", "es"),
+        ("Has abierto Quasar, reply in English", "en"),
+    ],
+)
+def test_shared_auxiliary_uses_unambiguous_words(
+    text: str, expected: str, previous_language: str,
+) -> None:
+    reading = read_request(text, conversation_language=previous_language)
+    assert reading.language == expected
+    assert reading.ask == text
+
+
+@pytest.mark.parametrize("previous_language", ["es", "en"])
+def test_shared_auxiliary_alone_keeps_conversation_language(previous_language: str) -> None:
+    assert read_request("has", conversation_language=previous_language).language == previous_language
+
+
+@pytest.mark.parametrize("previous_language", ["es", "en"])
+@pytest.mark.parametrize(
+    "text, expected",
+    [
         ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
         ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
     ],

@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-09T15:36:47.420746+00:00",
+  "source": 654,
+  "reader_sha256": "5598275ce957f36430063a0f4fb1811b87ec9bc077fb09900c5c69684c139025",
+  "python_tree_sha256": "bdcb3f8cbfcaa4f428cbf2329a3cd250c8c97b62c1018ab3594fe6fa9c10cadf",
+  "llm_unchanged_sha256": "e6993ddb155b9586dd178e5814604eb4ec25f7baf853d68a9c855d3d6e41de45",
+  "baseline": {
+    "failed": 13,
+    "passed": 27,
+    "deselected": 260,
+    "seconds": 0.76
+  },
+  "focal": {
+    "passed": 300,
+    "seconds": 0.82
+  },
+  "adopted": false,
+  "plan": "Owner suites, current-source declaration checks and Fast; exact20 product regression plus4 foreground language variants. Adjudicate every output before adoption; do not modify source during run.",
+  "inheritance": [
+    "astra-window-scope-product653",
+    "astra-language397",
+    "astra-decision-language377",
+    "biblioteca/gemma4-agent/dataset-finetune/out/_commit_msg2.txt"
+  ],
+  "research": [
+    {
+      "url": "https://www.rae.es/buen-uso-espa%C3%B1ol/conjugaci%C3%B3n-espa%C3%B1ola",
+      "finding": "has is a Spanish auxiliary as well as an English form; surrounding lexical evidence is necessary."
+    },
+    {
+      "url": "https://github.com/pemistahl/lingua-py",
+      "finding": "Statistical local alternative for short/mixed text. No new inference benchmark or quality ranking claimed here. Existing reader already carries one language decision; first test correcting its ambiguous word and missing common participles without an additional detector."
+    }
+  ],
+  "research_date": "2026-09-09",
+  "scope": "Neutral has; existing word tables gain common Spanish open/closed/saved/written/finished forms. No morphological suffix guesses that would count the name Colorado; no app names, new model or fixed prose. Finite word coverage is not universal language identification."
+}

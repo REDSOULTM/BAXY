@@ -46,20 +46,20 @@ _ENGLISH_CONTRACTION = re.compile(
 # términos compartidos por los dos idiomas: un token ambiguo no es evidencia.
 _ES_WORDS = frozenset(
     """
-    abras abre abrir actual ademas al algo alguna alguno alli ambos ante
+    abras abre abrir abierta abierto actual ademas al algo alguna alguno alli ambos ante
     antes aquello aqui asi aunque ayer borra buenas buenos busca cada
-    cancelar cierra cierre como con confirmar continuar contra crea cual cuales cuando cuanto cuenta
+    cancelar cerrada cerrado cierra cierre como con confirmar continuar contra crea cual cuales cuando cuanto cuenta
     cuentame de dejar del desde dias dice dices dime donde dos durante el
     ella ellas ellos encontrar encuentra entendi entiendo entonces era explica explicame
-    eres esa ese eso esta estan este esto estoy fue gracias hace hacer
-    haces hacia han has hasta haz hola hora horas hoy igual incluso la las
+    eres esa ese eso escrita escrito esta estan este esto estoy fue gracias guardada guardado hace hacer
+    haces hacia han hasta haz hola hora horas hoy igual incluso la las
     lee lista listo lo los luego manana mas mi mientras mis misma mismo
     modo mostrar mucha mucho muestra muy nada navega ninguna ninguno
     noches nos nota notas nuestra nuestro nunca ocupas otra otro para pero
     poco podia pon por porque procesos pude puede pueden puedes que quien
     quiere quieres quita reactiva reproduce sabes se segun ser si sido
     siempre siendo sigue silencia sobre sois somos son soy su sube sus
-    tambien tanto tardes tarea tareas tiene tienen tienes toda todas todo
+    tambien tanto tardes tarea tareas terminada terminado tiene tienen tienes toda todas todo
     todos trabajo tras tus un una unas uno unos usted ustedes vamos varias
     varios vez volumen vosotros voy y
     """.split()

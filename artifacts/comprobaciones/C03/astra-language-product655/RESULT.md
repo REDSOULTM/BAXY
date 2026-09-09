@@ -1,0 +1,5 @@
+# 655 — idioma inglés reparado, naturalidad pendiente en una variante
+
+El panel original653 mejora de19/20 a20/20; sólo cambia el final10: «The ChatGPT window has focus.». Las cuatro variantes añadidas dan3/4. La última responde «La ventana activa es ChatGPT. Está maximizada y está en el foreground.»: hechos conservados, pero tecnicismo inglés innecesario en español. Se cuenta como fallo de naturalidad; no se atribuye a una regresión de654 sin comparación anterior de esa variante. Total23/24.
+
+Las16 lecturas por aplicación, cantidades y cuatro referencias siguen correctas. Los24 mensajes de actividad coinciden con los24 finales. Capturas independientes con AUMID sin errores, cantidades y título/handle de primer plano coinciden antes/después; no equivalen a observación continua ni atómica. GPU3497,559MiB,RAM1864,781MiB,37,766s,sin infracciones. No mínimo global ni comparación de ahorro; UI/voz conjunta no acreditadas. Registro/modelo intactos. Encuesta26/716/0; no se acredita otra fila por pertenecer a la misma familia.

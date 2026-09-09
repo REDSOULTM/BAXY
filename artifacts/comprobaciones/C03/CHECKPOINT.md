@@ -896,3 +896,22 @@ Encuesta26 cubiertos/716 abiertos/0NA, sólo H0040 actualizado con653; resto int
 ## Publicación652 — publicada en d9fdf54ef75d8a0c686f44b124df2ef9334d7019, remoto verificado
 
 Encuesta26 cubiertos/716 abiertos/0NA, sólo H0040 actualizado con653; resto intacto. Ninguna decisión pendiente. Fuente y pruebas según RESULT652/653. Contrato factual e idioma siguen pendientes; no campañas activas.
+
+
+## Candidata654 — idioma del auxiliar compartido
+
+Baseline13 fallos/27 pases en40 controles ES/EN/mezcla con historia previa cruzada. Se neutraliza has y se completan participios frecuentes en la tabla existente; ningún nombre de aplicación ni regla por sufijo. Dueña300 pases. Pendientes dueñas integradas, declaraciones, Fast y producto655 de24casos. No adoptada aún. Modelo intacto; encuesta26/716/0.
+
+
+# 655 — idioma inglés reparado, naturalidad pendiente en una variante
+
+El panel original653 mejora de19/20 a20/20; sólo cambia el final10: «The ChatGPT window has focus.». Las cuatro variantes añadidas dan3/4. La última responde «La ventana activa es ChatGPT. Está maximizada y está en el foreground.»: hechos conservados, pero tecnicismo inglés innecesario en español. Se cuenta como fallo de naturalidad; no se atribuye a una regresión de654 sin comparación anterior de esa variante. Total23/24.
+
+Las16 lecturas por aplicación, cantidades y cuatro referencias siguen correctas. Los24 mensajes de actividad coinciden con los24 finales. Capturas independientes con AUMID sin errores, cantidades y título/handle de primer plano coinciden antes/después; no equivalen a observación continua ni atómica. GPU3497,559MiB,RAM1864,781MiB,37,766s,sin infracciones. No mínimo global ni comparación de ahorro; UI/voz conjunta no acreditadas. Registro/modelo intactos. Encuesta26/716/0; no se acredita otra fila por pertenecer a la misma familia.
+
+
+# 654 — lector de idioma adoptado
+
+La palabra compartida «has» deja de contarse como exclusivamente española. Las tablas existentes incorporan participios frecuentes inequívocos para conservar preguntas españolas y mixtas. No se añaden nombres de apps, reglas por sufijo, modelo, reintento ni prosa fija. Es una corrección del vocabulario finito existente, no detección universal de idioma.
+
+Baseline13 fallos/27 pases en40 controles cruzados ES/EN/historia; dueña300 pases. Integradas3942 pases+121 subpruebas/0 skips,71,00s. Declaraciones22 pases/1 skip ambiental,2,56s. Fast0,Release27,65s,sin advertencias/errores. Producto655: panel original20/20; ampliado23/24, inglés reparado y una variante española con jerga pendiente. Se adopta la fuente del lector; contrato factual649 sigue abierto. Full651 es línea base anterior, no Full654 ni cierre. Encuesta26/716/0, ninguna decisión del dueño pendiente.

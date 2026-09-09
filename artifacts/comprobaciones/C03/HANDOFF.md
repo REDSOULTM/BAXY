@@ -23,3 +23,14 @@ Full651 es línea base anterior,no Full652:exit0;Python10411 pases/3 skips+466 s
 Siguen encuesta,ocho rutas,UI real,loopback completo/AEC separado,error→restauración→petición normal y Full final. Continuidad C04–C09 documentada,no ejecutar esos goals. tools.mcp__node_repl__js con @oai/sky funciona para escritorio; skill computer-use y documentación leídos. Re-listar ventanas antes de seleccionar,observar antes de actuar y comprobar foco antes de escribir. No mezclar shell UIA con sky. Diagnóstico: py main.py y cerrar sólo instancia propia; no repetir launcher315 que dejaba BAXY abierto. Voz259 mide eco puro,no voz humana física C08.
 
 Python C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -X utf8. Dotnet C:/Users/usuario/.dotnet/dotnet.exe. No solapar build/Full e inferencia. Sellos -text,no normalizar bytes. Goal completo sólo con todos los criterios probados.
+
+
+## Actualización654/655 — manda sobre el siguiente anterior
+
+# 654 — lector de idioma adoptado
+
+La palabra compartida «has» deja de contarse como exclusivamente española. Las tablas existentes incorporan participios frecuentes inequívocos para conservar preguntas españolas y mixtas. No se añaden nombres de apps, reglas por sufijo, modelo, reintento ni prosa fija. Es una corrección del vocabulario finito existente, no detección universal de idioma.
+
+Baseline13 fallos/27 pases en40 controles cruzados ES/EN/historia; dueña300 pases. Integradas3942 pases+121 subpruebas/0 skips,71,00s. Declaraciones22 pases/1 skip ambiental,2,56s. Fast0,Release27,65s,sin advertencias/errores. Producto655: panel original20/20; ampliado23/24, inglés reparado y una variante española con jerga pendiente. Se adopta la fuente del lector; contrato factual649 sigue abierto. Full651 es línea base anterior, no Full654 ni cierre. Encuesta26/716/0, ninguna decisión del dueño pendiente.
+
+Scripts prepare654/close654-655 ya ejecutados; no repetir. Sesiones87181,44842,23598 recogidas exit0. Fuente actual reader SHA 5598275ce957f36430063a0f4fb1811b87ec9bc077fb09900c5c69684c139025; árbolPython bdcb3f8cbfcaa4f428cbf2329a3cd250c8c97b62c1018ab3594fe6fa9c10cadf. Publicar654/655 antes de nueva fuente. Ninguna campaña activa.

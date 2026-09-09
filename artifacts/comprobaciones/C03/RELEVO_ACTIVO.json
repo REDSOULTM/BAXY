@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-09T15:23:51.142627+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "652 adoptada,653 producto19/20. H0040 cubierto por16 variantes reales; encuesta26/716/0. Contrato649 e idioma siguen pendientes.",
-  "continuation": "Reparar contrato factual649 e idioma has; no campañas activas.",
+  "checkpoint": "654 adoptada;655 panel original20/20, ampliado23/24. Idioma inglés reparado; jerga española y contrato649 pendientes.",
+  "continuation": "Auditar/publicar654/655; continuar contrato factual649 y prosa sin jerga. Encuesta26/716/0. No campañas activas.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,

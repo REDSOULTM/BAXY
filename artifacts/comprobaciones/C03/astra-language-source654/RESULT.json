@@ -1,0 +1,25 @@
+{
+  "adopted": true,
+  "reader_sha256": "5598275ce957f36430063a0f4fb1811b87ec9bc077fb09900c5c69684c139025",
+  "python_tree_sha256": "bdcb3f8cbfcaa4f428cbf2329a3cd250c8c97b62c1018ab3594fe6fa9c10cadf",
+  "llm_unchanged_sha256": "e6993ddb155b9586dd178e5814604eb4ec25f7baf853d68a9c855d3d6e41de45",
+  "owners": {
+    "passed": 3942,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 71.0
+  },
+  "declarations": {
+    "passed": 22,
+    "environmental_skipped": 1,
+    "seconds": 2.56
+  },
+  "fast_exit": 0,
+  "release_seconds": 27.65,
+  "full_baseline": 651,
+  "full654_run": false,
+  "product655_correct": 23,
+  "product655_total": 24,
+  "goal_complete": false,
+  "private_hashes": {}
+}

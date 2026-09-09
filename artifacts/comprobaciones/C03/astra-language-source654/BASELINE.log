@@ -1,0 +1,510 @@
+FFFFFF..FFFFFF.........................F                                 [100%]
+================================== FAILURES ===================================
+_ test_shared_auxiliary_uses_unambiguous_words[Which window has focus?-en-es] _
+
+text = 'Which window has focus?', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Which window has focus?-en-en] _
+
+text = 'Which window has focus?', expected = 'en', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Which application has focus?-en-es] _
+
+text = 'Which application has focus?', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Which application has focus?-en-en] _
+
+text = 'Which application has focus?', expected = 'en', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+__ test_shared_auxiliary_uses_unambiguous_words[Who has the document?-en-es] __
+
+text = 'Who has the document?', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+__ test_shared_auxiliary_uses_unambiguous_words[Who has the document?-en-en] __
+
+text = 'Who has the document?', expected = 'en', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+____ test_shared_auxiliary_uses_unambiguous_words[Has Steam opened?-en-es] ____
+
+text = 'Has Steam opened?', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+____ test_shared_auxiliary_uses_unambiguous_words[Has Steam opened?-en-en] ____
+
+text = 'Has Steam opened?', expected = 'en', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Has the download finished?-en-es] _
+
+text = 'Has the download finished?', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Has the download finished?-en-en] _
+
+text = 'Has the download finished?', expected = 'en', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Who has Colorado open?-en-es] __
+
+text = 'Who has Colorado open?', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_ test_shared_auxiliary_uses_unambiguous_words[Who has Colorado open?-en-en] __
+
+text = 'Who has Colorado open?', expected = 'en', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("Which window has focus?", "en"),
+            ("Which application has focus?", "en"),
+            ("Who has the document?", "en"),
+            ("Which process has the file open?", "en"),
+            ("Has Steam opened?", "en"),
+            ("Has the download finished?", "en"),
+            ("Who has Colorado open?", "en"),
+            ("Has cerrado Steam", "es"),
+            ("Has abierto Quasar", "es"),
+            ("Has guardado Orión", "es"),
+            ("Has terminado Vega", "es"),
+            ("Has escrito esto", "es"),
+            ("¿Has abierto la aplicación?", "es"),
+            ("Has abierto Spotify and paused playback", "mixed"),
+            ("Has cerrado Quasar and opened Vega", "mixed"),
+            ("Has guardado Orion and closed it", "mixed"),
+            ("¿Has cerrado Paint and opened Steam?", "mixed"),
+            ("Which window has focus? Responde en español", "es"),
+            ("Has abierto Quasar, reply in English", "en"),
+        ],
+    )
+    def test_shared_auxiliary_uses_unambiguous_words(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+        reading = read_request(text, conversation_language=previous_language)
+>       assert reading.language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:158: AssertionError
+_________ test_shared_auxiliary_alone_keeps_conversation_language[en] _________
+
+previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    def test_shared_auxiliary_alone_keeps_conversation_language(previous_language: str) -> None:
+>       assert read_request("has", conversation_language=previous_language).language == previous_language
+E       AssertionError: assert 'es' == 'en'
+E         
+E         - en
+E         + es
+
+tests\test_request_reading.py:164: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Which window has focus?-en-es]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Which window has focus?-en-en]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Which application has focus?-en-es]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Which application has focus?-en-en]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Who has the document?-en-es]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Who has the document?-en-en]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Has Steam opened?-en-es]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Has Steam opened?-en-en]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Has the download finished?-en-es]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Has the download finished?-en-en]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Who has Colorado open?-en-es]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_uses_unambiguous_words[Who has Colorado open?-en-en]
+FAILED tests/test_request_reading.py::test_shared_auxiliary_alone_keeps_conversation_language[en]
+13 failed, 27 passed, 260 deselected in 0.76s

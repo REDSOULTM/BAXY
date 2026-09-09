@@ -1,0 +1,56 @@
+{
+  "source": 654,
+  "correct": 23,
+  "total": 24,
+  "original_panel_correct": 20,
+  "failed_cases": [
+    "focus-variant-es"
+  ],
+  "application_reads_correct": 16,
+  "contextual_fresh_reads_correct": 4,
+  "changed_original_final_indices": [
+    10
+  ],
+  "visible_activity_matches_finals": true,
+  "independent_counts": {
+    "before": {
+      "Steam": 2,
+      "Google Chrome": 2,
+      "WhatsApp": 1,
+      "Spotify": 0,
+      "Paint": 0,
+      "Bloc de notas": 0
+    },
+    "after": {
+      "Steam": 2,
+      "Google Chrome": 2,
+      "WhatsApp": 1,
+      "Spotify": 0,
+      "Paint": 0,
+      "Bloc de notas": 0
+    }
+  },
+  "foreground_snapshots_agree": true,
+  "continuous_foreground_credit": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1864.78125,
+    "seconds": 37.766
+  },
+  "ui_or_voice_credit": false,
+  "factual_validator649_repaired": false,
+  "private_hashes": {
+    "panel.json": "39c05cf36d8c0770ee6e30dddf0c6901c48f8339fb8253b0e25d020d8d2cd2ea",
+    "capture/events.jsonl": "0c924f6f48654bc2a9e1e240a28ef5f704176769a9b55ae76c4bffc066c2d1ac",
+    "compose-audit.jsonl": "3c317087c87792100f10906481fcbd6219334213bc53b04ae737054517b39dc0",
+    "turn-audit.jsonl": "7b2345c6efdad94d5cec47a45f498de0ddf8ab37e0dd70fb72a36a843d551cc8",
+    "shell-trace.jsonl": "05a84e425c91b1775f2179877487eac500c6420c0383f1643729eb8fe780aaf2",
+    "raw-replies.jsonl": "b4f1a9004ff6a617c528525210da81359b3f5e4264325240577bd3a8b9faec76",
+    "windows-before.json": "bfb79ff2245e2111d79afb986477561467eb46b6fcf3df5d2c256d25192b7d38",
+    "windows-after.json": "0189278065a9151bb20ecba62d07ee3e5653f387ff304264820d395b79460585",
+    "adjudication.json": "1d7faf65d64d2f9b085da1598c77a69ac20d5b22f1f1938e385bcc50906446e0",
+    "RESULT.md": "f731db74c0da973936c18c7ee9ba3c8ee1a55eec8287717f141f711135fb3bb1"
+  }
+}
