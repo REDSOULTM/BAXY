@@ -1,0 +1,36 @@
+{
+  "verified": [
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a\\README.md",
+      "bytes": 6741,
+      "sha256": "f28aebb1babf603b5c5c107670645f2b00e09a2e9a39132293ad0a9a7ab6fa34"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a\\config.json",
+      "bytes": 1032,
+      "sha256": "79862295be1538a947e0f56d495ef8d658c3eaebcfb42c7ad96229d195ca745d"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a\\onnx\\model.onnx",
+      "bytes": 428127016,
+      "sha256": "79f8cda2b1230585a95ea0514a6f1bd21c5c986ba0529bb3261213a3e195fa6e"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a\\special_tokens_map.json",
+      "bytes": 280,
+      "sha256": "06e405a36dfe4b9604f484f6a1e619af1a7f7d09e34a8555eb0b77b66318067f"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a\\tokenizer.json",
+      "bytes": 17082758,
+      "sha256": "098c131bb4423163db239755e309facaa6850059f850f9f3d88a78344a4b631c"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a\\tokenizer_config.json",
+      "bytes": 565,
+      "sha256": "86139ce1f39e814bcdb99a6fe30c0c4983911508aad07417e616d994fb74eb25"
+    }
+  ],
+  "runtime_modified": false,
+  "inference_run": false
+}

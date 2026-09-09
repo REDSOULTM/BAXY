@@ -1,0 +1,33 @@
+{
+  "label_parity": 31,
+  "total": 31,
+  "native_tokenizer_parity": true,
+  "max_probability_abs_difference": 1.8477439880371094e-06,
+  "tolerance": 0.001,
+  "backend_equivalent_for_panel": true,
+  "candidate_qualified": false,
+  "runtime_modified": false,
+  "resources": {
+    "exit_code": 0,
+    "peak_rss_mib": 1006.70703125,
+    "seconds": 21.78100000001723,
+    "violations": []
+  },
+  "backend": {
+    "torch": "2.13.0+cpu",
+    "transformers": "5.14.1",
+    "attention_implementation": "eager",
+    "dtype": "float32",
+    "device": "cpu",
+    "intra_threads": 2,
+    "inter_threads": 1,
+    "eval": true,
+    "native_fast_tokenizer_parity": true,
+    "load_seconds": 0.9424967000377364
+  },
+  "private_hashes": {
+    "results.json": "82576d5de01fdd09cf62469d7750e9a903aa6e03440b852f48ef14325dbdf2c6",
+    "backend.json": "3e9e6fd96d84c239c94b74badf8abb3d4d85c8011700a558e54aab80cea44e5a",
+    "worker.log": "1892682cefca786cbd8ebd0fb8bed4e96a27efb9b6de10c49858d8f68064381e"
+  }
+}

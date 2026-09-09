@@ -931,3 +931,27 @@ Dos perfiles de Qwen2507, greedy y receta documentada, producen las mismas decis
 Sobre los11 controles originales649 mejora de4/11 a9/11 decisiones binarias, pero sigue aceptando dos errores. Los20 añadidos incluyen nombres, cantidades, rangos, negaciones, abstenciones, sujeto distinto, unidades y lecturas frente a efectos. Su baseline_defect bruto puede incluir idioma/estilo por texto vacío; no se usa como comparación factual equivalente. Los perfiles no cambian los cuatro errores. No se incorpora este juez ni se añade su llamada al producto.
 
 Medianas cercanas a0,25s por clasificación; GPU3497,559MiB,RAM734,102MiB,18,953s de campaña,sin infracciones. Son recursos del servidor diagnóstico, no incremento ni mínimo de BAXY. Registro y fuentes intactos. La comprobación sólo evaluó apoyo factual, no naturalidad ni suficiencia. El contrato649 y la jerga de655 siguen pendientes; encuesta26/716/0. Próxima estrategia: contrastar verificación factual entrenada y representación explícita de observaciones, con casos bilingües y recursos medidos, antes de otra regla por frase o una capa de runtime. No repetir este juez con otro seed buscando un verde.
+# 657–659 — verificador NLI CPU, aún sin adopción
+
+657 descargó y verificó por revisión/hash el ONNX FP32 y tokenizer oficiales de multilingual-MiniLMv2-L6-mnli-xnli, fuera del repositorio y sin cambiar runtime. 658 evaluó los mismos31 casos656 con premisas naturales bilingües y perfiles CPU2/4 hilos. Ambos terminaron exit0 sin infracciones, pero rechazan respuestas válidas y aceptan una instalación contradicha. No se adopta ni se atribuye aún el fallo al modelo: 659 contrasta pesos originales PyTorch FP32, tokenizer nativo y probabilidades contra ONNX antes de decidir. Sesión65951876; TEMP/c03-nli-native-parity659.log. Ninguna fuente de producto editada desde654, encuesta26/716/0. Fuente654 y diagnóstico656 publicados; este tramo es WIP propio. No decisión pendiente del dueño.
+
+
+# 658 — NLI multilingüe pequeño no cualifica para el contrato factual
+
+El modelo oficial multilingual-MiniLMv2-L6-mnli-xnli, revisión0a71e92a, recibe pares premisa/hipótesis nativos en CPU FP32. Misma población31 de656; los hechos pasan a premisas naturales bilingües con límites explícitos. Cambian modelo y representación: no es una comparación causal de un único factor.
+
+Perfiles2/4 hilos producen las mismas etiquetas:21/31 decisiones binarias, una falsa aceptación y nueve falsos rechazos por perfil. Acepta que Brújula está instalada frente a instalado=false; rechaza descripciones verdaderas, abstenciones y una conversión correcta de RAM. Se conservan las probabilidades y los textos. No se cambia umbral ni se excluyen ejemplos para aprobar.
+
+CPUExecutionProvider confirmado, máscara y pares nativos, sin cortes (todos≤512tokens). Picos RSS816,418MiB con2hilos y771,473MiB con4;4,344s/3,812s incluyendo proceso y carga. Sin infracciones. No son mínimos ni incrementos medidos en BAXY conjunto. El backend se contrasta con pesos originales en659 antes de atribuir el resultado al candidato. Modelo no incorporado al runtime; encuesta26/716/0.
+
+
+# 659 — ONNX y pesos nativos coinciden
+
+Se descargaron los pesos safetensors originales de la misma revisión y se verificó su SHA. PyTorch2.13.0+cpu/Transformers5.14.1, FP32/eval/inference_mode, atención eager y2/1hilos reproducen las31 etiquetas ONNX. Token IDs y máscara del tokenizer nativo coinciden exactamente; diferencia máxima de probabilidad0,000001848, por debajo de0,001 predefinido. La mala clasificación de658 no se explica por esos caminos de backend ni por truncamiento.
+
+Pico RSS1006,707MiB y21,781s de proceso nativo, sin infracciones. No se presenta como perfil óptimo ni consumo conjunto del producto. Esta comprobación valida la comparación, no la calidad: el candidato sigue sin cualificar para este contrato. No se cambia el modelo de BAXY ni se introduce un juez adicional. Fuente654 y encuesta26/716/0 intactas.
+
+
+## Estado al terminar659
+
+657/658/659 terminados y sellados, sesiones77561/51876 recogidas;658 terminal directo exit0. Ningún proceso activo. NLI pequeño21/31binarias con9rechazos falsos; paridad nativa31/31. No incorporado. Fuente654 publicada, encuesta26/716/0. Publicar evidencia657–659; siguiente: reparar límites factuales en el contrato existente y aislar fuga de metadatos en prosa655. No tercera colección de clasificadores ni barrido de seeds sobre estos errores.

@@ -1,0 +1,63 @@
+{
+  "utc": "2026-09-09T15:55:08.553024+00:00",
+  "repo": "MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+  "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+  "destination": "D:\\BAXYRuntime\\experiments\\models\\minilm-nli-0a71e92a",
+  "files": [
+    {
+      "rfilename": "README.md",
+      "blobId": "d6b6cc4a442d4b593cb6a3f3df2572c2fdea1cec",
+      "size": 6741
+    },
+    {
+      "rfilename": "config.json",
+      "blobId": "43a6b699feac31f6eda6b77d6d605e7b4ebdb86e",
+      "size": 1032
+    },
+    {
+      "rfilename": "onnx/model.onnx",
+      "blobId": "01f59044aeafecc3e70ea01dadd528f1484fc72c",
+      "size": 428127016,
+      "lfs": {
+        "sha256": "79f8cda2b1230585a95ea0514a6f1bd21c5c986ba0529bb3261213a3e195fa6e",
+        "size": 428127016,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "special_tokens_map.json",
+      "blobId": "d5698132694f4f1bcff08fa7d937b1701812598e",
+      "size": 280
+    },
+    {
+      "rfilename": "tokenizer.json",
+      "blobId": "d7048a3ec8fc3377864ada37c0f9bb25a260489f",
+      "size": 17082758,
+      "lfs": {
+        "sha256": "098c131bb4423163db239755e309facaa6850059f850f9f3d88a78344a4b631c",
+        "size": 17082758,
+        "pointerSize": 133
+      }
+    },
+    {
+      "rfilename": "tokenizer_config.json",
+      "blobId": "9aae6d8fa4201fe47deabe3c13e47cc684b02258",
+      "size": 565
+    }
+  ],
+  "runtime_modified": false,
+  "purpose": "656 same-writer judge still accepts four unsupported assertions. Evaluate a trained multilingual NLI model on CPU before another runtime layer. Acquisition alone is not quality evidence.",
+  "inheritance": [
+    "astra-native-fact-judge656",
+    "artifacts/research/full_catalog_mdeberta_v2_onnx.json",
+    "experiments/mind_router_spike/export_benchmark_mdeberta_onnx.py"
+  ],
+  "inheritance_limit": "Existing mDeBERTa checkpoints are operation classifiers, not entailment checkpoints. Reuse CPU/ONNX measurement approach, not their weights or quality scores.",
+  "sources": [
+    "https://huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+    "https://aclanthology.org/2024.emnlp-main.499/",
+    "https://github.com/Liyan06/MiniCheck"
+  ],
+  "profile_plan": "Official ONNX FP32 and tokenizer, native pair premise/hypothesis; confirm config label order, CPUExecutionProvider, attention mask, sequence length and no truncation. Same31 cases656 with deterministic factual premises in the reply language; language selection declared fixture metadata. Compare 2/4 CPU threads with separate processes. No zero-shot topic template, no sampling or forced answer text. Quantization requires a later parity/quality comparison; no global rejection from one profile.",
+  "privacy": "Only public metadata and model files requested; no user/history/panel payload sent to a remote inference service."
+}

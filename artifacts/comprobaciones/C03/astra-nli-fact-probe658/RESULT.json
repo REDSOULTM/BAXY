@@ -1,0 +1,84 @@
+{
+  "adopted": false,
+  "stats": {
+    "2": {
+      "exact_correct": 15,
+      "binary_correct": 21,
+      "false_accept": 1,
+      "false_reject": 9,
+      "total": 31,
+      "median_inference_seconds": 0.014016600034665316,
+      "median_pair_seconds": 0.014678100007586181,
+      "max_tokens": 81,
+      "false_accept_cases": [
+        "not-installed-false"
+      ],
+      "false_reject_cases": [
+        "bounded-en",
+        "bounded-unknown-en",
+        "bounded-es",
+        "name-digits-true",
+        "named-running-true",
+        "abstention-en",
+        "absence-en",
+        "windows-present-es",
+        "ram-unit-good"
+      ]
+    },
+    "4": {
+      "exact_correct": 15,
+      "binary_correct": 21,
+      "false_accept": 1,
+      "false_reject": 9,
+      "total": 31,
+      "median_inference_seconds": 0.011768300028052181,
+      "median_pair_seconds": 0.012461500009521842,
+      "max_tokens": 81,
+      "false_accept_cases": [
+        "not-installed-false"
+      ],
+      "false_reject_cases": [
+        "bounded-en",
+        "bounded-unknown-en",
+        "bounded-es",
+        "name-digits-true",
+        "named-running-true",
+        "abstention-en",
+        "absence-en",
+        "windows-present-es",
+        "ram-unit-good"
+      ]
+    }
+  },
+  "thread_profiles_same_labels": true,
+  "resources": [
+    {
+      "threads": 2,
+      "exit_code": 0,
+      "peak_rss_mib": 816.41796875,
+      "seconds": 4.3439999999827705,
+      "violations": []
+    },
+    {
+      "threads": 4,
+      "exit_code": 0,
+      "peak_rss_mib": 771.47265625,
+      "seconds": 3.8119999999762513,
+      "violations": []
+    }
+  ],
+  "runtime_modified": false,
+  "product_or_ui_or_voice_credit": false,
+  "model_only_causal_comparison_to656": false,
+  "private_hashes": {
+    "panel.json": "71435bf21c0363c3eb5f5a6ae4b079051b4262812af1a5d0cee2c4886262afe2",
+    "results-2.jsonl": "77e2e258588200dfe64dbbf21bd339e26c12c3ca4b44d92fd9021affd658f2d2",
+    "results-4.jsonl": "7162c2101db5c546c8a9763000ea0716db123735d535c9e53913674c977b42d9",
+    "backend-2.json": "a888b47c07fa6b1db2f17214d319a017a3447325e28231af4dc6a09d2aafb057",
+    "backend-4.json": "f90a868b46f35a1706d35ac73f9257022331aa543df45f61e6b51750bf3b904d",
+    "worker-2.log": "f865278f2ddd7b47de04577dca81662527522dd04d2e33253f6b538c706c4954",
+    "worker-4.log": "33c7cee319e02cc951e73731db2e9d1a1082637d6ea0c0124d26b1e2f6f60c80",
+    "adjudication.json": "3c236df21fe89291e7759f58ff213863e06e3b81e506dbebdf22fdcbf0e579c7",
+    "RESULT.md": "1d4179e20e433224f57746392dfbef926a2fde195e01b3a649dc349f5c0ee020"
+  }
+}

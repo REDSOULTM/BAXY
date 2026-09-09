@@ -1,0 +1,10 @@
+{
+  "pid": 68872,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-nli-native-parity659.py",
+    "--worker"
+  ]
+}

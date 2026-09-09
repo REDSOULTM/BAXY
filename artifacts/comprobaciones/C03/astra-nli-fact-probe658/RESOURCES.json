@@ -1,0 +1,16 @@
+[
+  {
+    "threads": 2,
+    "exit_code": 0,
+    "peak_rss_mib": 816.41796875,
+    "seconds": 4.3439999999827705,
+    "violations": []
+  },
+  {
+    "threads": 4,
+    "exit_code": 0,
+    "peak_rss_mib": 771.47265625,
+    "seconds": 3.8119999999762513,
+    "violations": []
+  }
+]

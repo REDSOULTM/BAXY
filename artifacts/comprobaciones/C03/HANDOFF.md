@@ -25,3 +25,11 @@ Full651 previo exit0:Python10411 pases/3skips+466subpruebas,732,07s;.NET4469pase
 Registro SHA13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed. Qwen3-4B-Instruct-2507 Q4_K_M y b9980 registrados intactos. CPUproseadapter590 opcional,no promovido. Python C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -X utf8. Dotnet C:/Users/usuario/.dotnet/dotnet.exe. No solapar build/Full e inferencia. Lectura UTF-8-sig en JSONL conBOM. No grep sobre tests/data enormes ni recorrer artifacts/biblioteca.
 
 Desktop disponible mediante tools.mcp__node_repl__js y @oai/sky; skill computer-use/guidance/confirmations/api leídos. Re-listar y observar antes de actuar; comprobar foco antes de escribir; no mezclar shellUIA. DiagnósticoUI py main.py, cerrar propia instancia; no repetir launcher315 que deja abierto. Voz259 sólo eco puro, no voz humanaC08. Goal sigue activo hasta probar cierre real.
+
+
+## Actualización659 — vigente sobre la estrategia anterior
+
+656 está publicado en1654c492552b53c5c6edb706f5c24b63dd3bf6c9.657–659 terminados,sellados,sin procesos activos. MiniLM NLI revisión0a71e92a,activos D:/BAXYRuntime/experiments/models/minilm-nli-0a71e92a.658 CPU2/4hilos ambos21/31binarias,1aceptación falsa/9rechazos falsos.659 pesosPyTorchFP32 y tokenizer nativo reproducen31/31etiquetas, diferencia máxima1,848e-6; no es un problema de esos backends. Nada promovido. No repetir estos jueces con seeds o probar colección de modelos. Próximo: contrato factual existente y aislamiento de fuga del metadato foreground en el primer borrador655/t24. Heredar648–653 y payload real; no vetar sólo la palabra ni fabricar prosa fija. Encuesta26/716/0, fuente654 intacta. Scripts657/658/659 y close-nli657-659 YAejecutados,no repetir. Auditar y publicar este tramo antes de nueva fuente.
+## Siguiente trabajo tras la publicación de este tramo
+
+Este handoff acompaña la evidencia657–659 en su commit; comprobar HEAD/remoto al reanudar, sin repetir las campañas ni sus scripts de cierre. La fuente de producto vigente es654. Seguir con el contrato factual existente y la fuga de metadatos en655/t24. Encuesta26/716/0 y goal activo, sin decisión pendiente ni proceso activo. No se ha probado el cierre global.

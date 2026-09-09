@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-09T15:59:37.174714+00:00",
+  "cases": 31,
+  "purpose": "658 rejects true scoped claims. Before attributing failure to the NLI model, compare official ONNX FP32 with original PyTorch FP32 and native pair tokenizer. Preserve all658 failures and hypotheses unchanged.",
+  "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+  "weights_sha256": "91b323ccf247ec1e3b5925d566230bae7c52de8147e6062b42e250089a3fc80b",
+  "weights_bytes": 427997022,
+  "source": "https://huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+  "profile": "CPU, FP32, eval/inference_mode, eager attention, 2 intra/1 inter threads, native AutoTokenizer exact token equality with658, no padding/truncation, no fine tuning.",
+  "criteria": "Report all predicted labels and probabilities; backend equivalence requires31/31 labels equal and maximum absolute probability difference <=0.001. A mismatch blocks attribution to model quality and requires backend diagnosis. No model or validator promotion.",
+  "limits": {
+    "worker_seconds": 180,
+    "minimum_free_ram_mib": 768
+  },
+  "runtime_modified": false
+}

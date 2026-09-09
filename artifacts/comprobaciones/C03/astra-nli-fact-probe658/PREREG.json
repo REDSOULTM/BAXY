@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-09T15:57:17.212278+00:00",
+  "cases": 31,
+  "profiles": [
+    2,
+    4
+  ],
+  "method": "Official six-layer multilingual NLI ONNX FP32 on CPU, native premise/hypothesis pairs. One independent warmup, no case retries. Same31 hypotheses/expectations656; deterministic natural-language premises preserve field values and explicitly state observation limits. Per-case premise language is declared fixture metadata, not another tested classifier.",
+  "criteria": "Exact three-way labels and supported/unsupported decision; false acceptance/rejection separately. Do not relax threshold, change labels, omit abstentions or promote on average score. Record every probability/token count and actual provider/thread configuration. No silent truncation.",
+  "comparison_limit": "656 uses Qwen with structured JSON facts;658 uses a trained NLI model and native text premises. Two factors change, so differences cannot be attributed to model alone. This is appropriate-use candidate evaluation, not a single-factor causal ranking.",
+  "source": "https://huggingface.co/MoritzLaurer/multilingual-MiniLMv2-L6-mnli-xnli",
+  "revision": "0a71e92a985b6e1ad1828cf67ce9c459639c1dca",
+  "model_sha256": "79f8cda2b1230585a95ea0514a6f1bd21c5c986ba0529bb3261213a3e195fa6e",
+  "tokenizer_sha256": "098c131bb4423163db239755e309facaa6850059f850f9f3d88a78344a4b631c",
+  "panel_sha256": "71435bf21c0363c3eb5f5a6ae4b079051b4262812af1a5d0cee2c4886262afe2",
+  "resource_limits": {
+    "seconds_per_profile": 180,
+    "minimum_free_ram_mib": 768,
+    "device": "CPU only"
+  },
+  "runtime_modified": false,
+  "ui_or_voice_or_product_credit": false
+}

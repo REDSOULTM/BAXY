@@ -1,0 +1,2 @@
+{"threads": 2, "pid": 112912, "command": ["C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe", "-X", "utf8", "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-nli-fact-probe658.py", "--worker", "2"]}
+{"threads": 4, "pid": 97216, "command": ["C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe", "-X", "utf8", "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-nli-fact-probe658.py", "--worker", "4"]}
