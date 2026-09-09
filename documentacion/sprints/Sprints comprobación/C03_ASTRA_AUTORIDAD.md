@@ -1,5 +1,7 @@
 # C03 — completar la respuesta veraz de BAXY
 
+Decisión posterior vigente: [autorización del dueño536](../../../artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md). Se permite usar mensajes nuevos y todo el histórico, incluidos los acreditados y esperados de la encuesta, para completar C03. Ya no bloquea la falta de saludos o mensajes inéditos. Priorizar español, conservar inglés y demostrar generalización más allá del literal. Esta decisión sustituye las restricciones de frescura incompatibles de los párrafos anteriores conservados abajo; no rebaja veracidad, calidad, identidad, cobertura ni validación.
+
 Actualización vigente del objetivo, 2026-09-08: [texto íntegro del dueño](../../../artifacts/comprobaciones/C03/astra-baseline-full526/GOAL_OBJECTIVE.md), SHA-256 `6ca6aec0928cb4e50a5cfeb29108d962e7669b9b63a7e2eb77ea92b02889bb5a`. Sustituye las cláusulas anteriores sobre publicación, Full, reserva, encuesta, audio y escalado. Todo lo demás conserva su alcance.
 
 Actualización directa del dueño, 2026-09-08: continuar C03 incorporando todos sus

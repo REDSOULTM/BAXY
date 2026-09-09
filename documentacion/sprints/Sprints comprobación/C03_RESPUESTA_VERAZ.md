@@ -1,5 +1,7 @@
 # C03 — La respuesta final conserva la verdad y tiene voz propia
 
+Autoridad posterior: [decisión del dueño536](../../../artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md) permite históricos y casos nuevos, prioriza español con inglés obligatorio y exige generalización. Las restricciones anteriores de frescura se sustituyen por esta decisión; el material reutilizado se identifica honestamente y no se etiqueta como prueba ciega.
+
 Actualización de alcance del dueño, 2026-09-08: la reserva, publicación, Full, encuesta y audio se rigen por [el objetivo vigente](../../../artifacts/comprobaciones/C03/astra-baseline-full526/GOAL_OBJECTIVE.md). Las cifras y exigencias anteriores de este prompt se interpretan con esa sustitución explícita.
 
 **Un goal, tramos A–D reanudables. Encargo actual: C03_ASTRA_AUTORIDAD.md, 2026-09-06.**

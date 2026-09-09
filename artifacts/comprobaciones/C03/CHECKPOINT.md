@@ -18,3 +18,8 @@ Después de la aclaración: completar auditoría de contexto/duplicados, cerrar 
 
 
 Estado posterior, 2026-09-09T02:23:09.079040+00:00: el goal de ejecución se marcó **blocked** tras tres turnos consecutivos con la misma aclaración requerida y sin respuesta. El turno anterior fue no_progress: sólo revalidó el estado. La cláusula de escalado del objetivo obliga a detener campañas ante material insuficiente. No hay proceso vivo cuya espera permita avanzar. C03 no está terminado; sus criterios siguen EN_CURSO. Reanudar con la decisión del dueño sobre bienvenida automática o saludos nuevos, conservando todo el alcance. Encuesta:0cubiertos/742abiertos/0no aplicables.
+
+
+## Reanudación536 por decisión directa del dueño
+
+El impedimento de frescura queda resuelto por AUTORIZACION_DUENO_536.md: usar mensajes nuevos e históricos, incluidos los acreditados y esperados de la encuesta, priorizando español y manteniendo inglés; demostrar generalización. No esperar saludos nuevos ni continuar auditorías de frescura como bloqueo. C03 sigue EN_CURSO y el trabajo se reanuda autónomamente. Encuesta:0cubiertos/742abiertos/0no aplicables. Siguiente: reparar la presentación de hechos de memoria que falla en521, heredar523–525 sin repetir sus hipótesis; luego integrar cobertura por conducta y panel de las ocho rutas.
