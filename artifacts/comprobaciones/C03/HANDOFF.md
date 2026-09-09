@@ -1,6 +1,6 @@
 # C03 — alcance de ventanas validado; contrato factual e idioma pendientes
 
-Goal activo, rama Goal-c03; main intacto. Fuente 652 adoptada, pendiente de publicación. Ninguna decisión pendiente del dueño. Autorización 536 y reiteración actual permiten histórico, encuesta y casos nuevos, con procedencia honesta y generalización ES/EN. BAXY manual cerrado. Sin agentes ni campañas activas.
+Goal activo, rama Goal-c03; main intacto. Fuente 652 publicada en d9fdf54ef75d8a0c686f44b124df2ef9334d7019, remoto verificado. Ninguna decisión pendiente del dueño. Autorización 536 y reiteración actual permiten histórico, encuesta y casos nuevos, con procedencia honesta y generalización ES/EN. BAXY manual cerrado. Sin agentes ni campañas activas.
 
 ## Estado y validación
 
@@ -14,7 +14,7 @@ Encuesta742/rev1248:26 cubiertos,716 abiertos,0 no aplicables. Sólo H0040 cambi
 
 ## Siguiente
 
-Publicar650/652/653 y actualizar matriz/RELEVO con commit remoto verificado. Reparar contrato factual649 (4/11,siete contradicciones/afirmaciones sin respaldo aceptadas) e idioma de has en request_reading.py. No basta prohibir una palabra ni rechazar abstenciones válidas; conservar español y mezcla. No fuente ni tests nuevos para esas dos reparaciones.
+Publicación verificada y matriz actualizada. Reparar contrato factual649 (4/11,siete contradicciones/afirmaciones sin respaldo aceptadas) e idioma de has en request_reading.py. No basta prohibir una palabra ni rechazar abstenciones válidas; conservar español y mezcla. No fuente ni tests nuevos para esas dos reparaciones.
 
 Full651 es línea base anterior,no Full652:exit0;Python10411 pases/3 skips+466 subpruebas,732,07s;.NET4469 pases/1 skip agregado y16 omisiones opt-in impresas aparte. Fuente651 e1c6db6bb79bf1aa69e3c5ec72acac5656804700. Full646 rojo original preservado;24 regresiones de633 reparadas por651 sin cambiar oráculos. El encargo requiere Full al adoptar C#+Python juntos y al cierre final,no en cada edición Python.
 

@@ -891,3 +891,8 @@ El validador 649 aún acepta contradicciones y estados de proceso sin observar. 
 ## Publicación652 — adoptada, pendiente de publicación
 
 Encuesta26 cubiertos/716 abiertos/0NA, sólo H0040 actualizado con653; resto intacto. Ninguna decisión pendiente. Fuente y pruebas según RESULT652/653. Contrato factual e idioma siguen pendientes; no campañas activas.
+
+
+## Publicación652 — publicada en d9fdf54ef75d8a0c686f44b124df2ef9334d7019, remoto verificado
+
+Encuesta26 cubiertos/716 abiertos/0NA, sólo H0040 actualizado con653; resto intacto. Ninguna decisión pendiente. Fuente y pruebas según RESULT652/653. Contrato factual e idioma siguen pendientes; no campañas activas.

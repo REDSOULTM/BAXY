@@ -5,7 +5,7 @@
   "confirmedAtUtc": "2026-09-09T15:23:51.142627+00:00",
   "branch": "Goal-c03",
   "checkpoint": "652 adoptada,653 producto19/20. H0040 cubierto por16 variantes reales; encuesta26/716/0. Contrato649 e idioma siguen pendientes.",
-  "continuation": "Publicar650/652/653, actualizar matriz; después contrato649 e idioma.",
+  "continuation": "Reparar contrato factual649 e idioma has; no campañas activas.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "e1c6db6bb79bf1aa69e3c5ec72acac5656804700",
+  "publishedSourceCommit": "d9fdf54ef75d8a0c686f44b124df2ef9334d7019",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "e1c6db6bb79bf1aa69e3c5ec72acac5656804700",
+  "publishedEvidenceCommit": "d9fdf54ef75d8a0c686f44b124df2ef9334d7019",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
