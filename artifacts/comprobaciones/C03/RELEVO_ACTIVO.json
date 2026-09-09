@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-09T15:23:51.142627+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Fuente660 publicada en db47edca6f521e29ca102b830b2134f3489337b9, remoto verificado y main intacto. Contrato factual acotado: misma cohorte104 mejora60 fallos/44 pases a104 pases; compositor completo con transporte simulado, sin otro modelo ni inferencia. Dueñas4046 pases+121 subpruebas/0 skips; declaraciones22 pases/1 skip ambiental; Fast0. Producto661 mantiene23/24 y las24 respuestas655 sin cambios; jerga española pendiente. Full651 es línea base anterior, no Full660 ni cierre global. Encuesta26/716/0; UI/voz conjunta, cobertura y Full final siguen pendientes.",
-  "continuation": "Aislar fuga del metadato foreground en prosa655/661 con payload y primera petición reales. Después continuar encuesta y cierreC03. No decisiones pendientes ni procesos activos.",
+  "checkpoint": "664 rechazada:66523/24 por concordancia,666 parcial por RAM libre21/35. Fuente660 restaurada, encuesta26/716/0.",
+  "continuation": "Publicar evidencia662–666. Seguir representación semántica663 con fuente660; revisar RAM libre antes de inferencia. No decisiones pendientes ni procesos activos.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,

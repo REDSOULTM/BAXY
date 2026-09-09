@@ -1,0 +1,5 @@
+# 662 — instrucción adicional y muestreo no corrigen la fuga
+
+Diez primeros borradores por brazo, todos EOS. Actual9/10, instrucción adicional de semántica9/10 y perfilQwen documentado9/10. El actual reproduce literalmente661/t24; los dos cambios conservan foreground como estado en la respuesta española. Nombres, estados normal/maximizado, cantidades y controles ingleses se conservan, incluido Foreground como nombre propio. No se adopta ninguno de los cambios ni se añade una llamada.
+
+Servidor nativo con primeras peticiones del compositor, sin kernel/reintentos/validación/UI. Un caso usa situación y payload reales; nueve fixtures son desarrollo declarado. GPU3497,559MiB,RAM720,199MiB,14,797s,sin infracciones y registro intacto; no recursos conjuntos ni ahorro de producto. Carter11:105–117 y las fuentes enlazadas en PREREG fundamentan el contraste, no prueban el resultado de BAXY. Sigue663: reemplazar la excepción ambigua en su ubicación final frente a cambiar sólo la etiqueta del campo, manteniendo todos los hechos. Encuesta26/716/0,fuente660 intacta.

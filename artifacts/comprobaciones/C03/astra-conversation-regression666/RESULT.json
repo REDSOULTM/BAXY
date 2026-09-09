@@ -1,0 +1,35 @@
+{
+  "source": 664,
+  "adopted": false,
+  "planned": 35,
+  "evaluated": 21,
+  "correct": 20,
+  "failed": 1,
+  "not_evaluated": 14,
+  "failed_cases": [
+    "H0012"
+  ],
+  "exit_code": 1,
+  "visible_activity_matches_finals": true,
+  "minimum_system_available_mib": 707.3046875,
+  "resources": {
+    "violations": [
+      "system_free_ram_bound"
+    ],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2388.0703125,
+    "seconds": 68.422
+  },
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "panel.json": "5fc795dbaee81a49c269a86d2c1f1ffc7297f842503c7900f584e6d01e0311ec",
+    "capture/events.jsonl": "cd7cff4b5043eb8b94be7a43e4163e7e740cf7d0ec26d282f3ee8b50bb6bcb5a",
+    "compose-audit.jsonl": "a2377d7fda818a9b44668b3cc6c3e7dcdf368561130bb8d53dfb66f054ec8f42",
+    "turn-audit.jsonl": "d305fdc98ec40fa816412efc30938e8e25b170ac414bad3d81d797167a1b1030",
+    "raw-replies.jsonl": "195e50986097ddc3af7d88fd97365f5a4a86a32868589ca7304a982fb701f429",
+    "memory-samples.json": "01f5dfd9443248bb98bc8f4eef691017bdf1d29d87bc00d0c7d0fe2885f7cc46",
+    "adjudication.json": "70f54813ce4eb6bdad03cf6610ca9ea81b4f42c516c04a70711fcc024330b05c",
+    "RESULT.md": "542309cd6fb559b9b6434e26ce4fb11189499490df86c489089b82728d722e65"
+  }
+}

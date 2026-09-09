@@ -1,0 +1,28 @@
+{
+  "scores": {
+    "literal_contract": 10,
+    "descriptive_field": 10,
+    "current": 9
+  },
+  "total_per_arm": 10,
+  "all_eos": true,
+  "all_current_reproduce662": true,
+  "selected_candidate": "literal_contract",
+  "adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 719.2890625,
+    "seconds": 14.625,
+    "manifest_unchanged": true
+  },
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "panel.json": "ababcad94a192fee04fe2cc1ca286a20d24da40b78e2f44b1b2089b1fcd2b30c",
+    "requests.jsonl": "a455c3e6c0a505736d0c489e5817e32eb0dfa26060a584d9c9945a90000f4c7b",
+    "responses.jsonl": "bf818a26dd4c76c924d5b14e2b05b9450d9ad503d0815c069252c80fe0d45227",
+    "adjudication.json": "02a46c240d7a09856ac81e156da6ff4c3f3905d66756106995f2742f456965a6",
+    "RESULT.md": "ba0d7b93ab05708b39faf2dffe46b931a02be0e8a573fdd4f9ac04f80fa15c49"
+  }
+}

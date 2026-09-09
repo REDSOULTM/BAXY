@@ -1,0 +1,5 @@
+# 665 — foco reparado, regresión en concordancia española
+
+Las24 respuestas se revisaron con sus observaciones y capturas independientes.23/24 correctas: t24 elimina foreground y conserva el foco/maximización; t13 ahora dice «tiene un ventana visible». Los hechos de instalación/cantidad se mantienen, pero la concordancia española falla. Antes661 ese mismo caso era correcto. No se adopta664: cambiar el fallo de lugar no demuestra mejora global.
+
+Todas24 actividades igualan los finales. Las16 lecturas de aplicaciones y cuatro referencias conservan sus hechos; Chrome tiene ahora una ventana, no dos como661, y la respuesta respeta la observación actual. Snapshots antes/después coinciden, con AUMID sin errores; no son captura continua ni UI. GPU3497,559MiB,RAM2276,344MiB,40,297s,sin infracciones y registro/fuente estables durante la prueba. No mínimo global ni ahorro ni UI/voz conjunta. Encuesta26/716/0. Completar666 antes de restaurar la fuente660 y seguir la alternativa de representación medida663.

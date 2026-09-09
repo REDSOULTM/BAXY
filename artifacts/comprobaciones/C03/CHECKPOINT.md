@@ -983,3 +983,47 @@ Dueñas4046 pases+121 subpruebas,0 skips,70,46s. Declaraciones22 pases/1 skip am
 Fuente660 publicada en db47edca6f521e29ca102b830b2134f3489337b9, remoto verificado y main intacto. Contrato factual acotado: misma cohorte104 mejora60 fallos/44 pases a104 pases; compositor completo con transporte simulado, sin otro modelo ni inferencia. Dueñas4046 pases+121 subpruebas/0 skips; declaraciones22 pases/1 skip ambiental; Fast0. Producto661 mantiene23/24 y las24 respuestas655 sin cambios; jerga española pendiente. Full651 es línea base anterior, no Full660 ni cierre global. Encuesta26/716/0; UI/voz conjunta, cobertura y Full final siguen pendientes.
 
 Sesiones79799/85214/6196 terminadas y recogidas exit0. BAXY manual cerrado; no campaña activa. Prepare660,close660-661,record-publication660 ejecutados: no repetir. Auditoría660-661 de sólo lectura:19 pins públicos y fuentes/privados/registro/encuesta/main verificados; índice auditado antes del commit. Siguiente: diagnóstico de la fuga foreground con el primer borrador real t24 de655/661 y controles ES/EN, conservando todos los hechos; sin vetar una palabra ni añadir respuestas fijas. Índice de biblioteca y títulos revisados; falta contraste acotado y prueba nativa para ese siguiente defecto. No se ha iniciado ni editado otra fuente.
+
+## Diagnóstico662 — semántica de etiquetas frente a nombres literales
+
+Fuente660 publicada, HEAD documental eff3c779.662 activo sesión88588, TEMP/c03-native-schema-prose662.log. Diez casos por tres brazos: primera petición actual, misma petición con una instrucción sobre etiquetas/nombres, y perfil Qwen documentado con instrucciones actuales. Caso real661/t24 conserva situación y payload; nueve fixtures declarados cambian nombres, estados, pregunta, idioma y operación. No se descarta información ni se transforma salida. Biblioteca Carter11:105–117 advierte sobre reescritores; artículo Yin2025 de serialización en entity matching sólo motiva una hipótesis de representación, no acredita prosaBAXY. Ficha oficial Qwen revisada. Producto y registro sin cambios, encuesta26/716/0. Adjudicar30 primeros borradores y conservar fallos antes de decidir.
+
+
+# 662 — instrucción adicional y muestreo no corrigen la fuga
+
+Diez primeros borradores por brazo, todos EOS. Actual9/10, instrucción adicional de semántica9/10 y perfilQwen documentado9/10. El actual reproduce literalmente661/t24; los dos cambios conservan foreground como estado en la respuesta española. Nombres, estados normal/maximizado, cantidades y controles ingleses se conservan, incluido Foreground como nombre propio. No se adopta ninguno de los cambios ni se añade una llamada.
+
+Servidor nativo con primeras peticiones del compositor, sin kernel/reintentos/validación/UI. Un caso usa situación y payload reales; nueve fixtures son desarrollo declarado. GPU3497,559MiB,RAM720,199MiB,14,797s,sin infracciones y registro intacto; no recursos conjuntos ni ahorro de producto. Carter11:105–117 y las fuentes enlazadas en PREREG fundamentan el contraste, no prueban el resultado de BAXY. Sigue663: reemplazar la excepción ambigua en su ubicación final frente a cambiar sólo la etiqueta del campo, manteniendo todos los hechos. Encuesta26/716/0,fuente660 intacta.
+
+
+# 663 — excepción literal y etiqueta aisladas
+
+Los diez controles actuales reproducen662 literalmente:9/10. Reemplazar sólo la excepción española sobre literales del contrato da10/10; renombrar sólo foreground como in_front_of_other_windows, conservando el booleano y todos los campos, también10/10. Todos30 terminan EOS. Se mantienen estados, nombres y cantidades, incluido Foreground como título. La causa es sensible a la política de literales y a la representación; no se atribuye a un único factor exclusivo ni a incapacidad global del modelo.
+
+Se elige como candidata la sustitución de la instrucción existente: conserva el esquema original, sin otra capa, llamada o respuesta fija. No se adopta todavía; exige dueñas y producto. GPU3497,559MiB,RAM719,289MiB,14,625s,sin infracciones. Registro intacto; nativo sin UI/voz, sin medición conjunta ni ahorro. Fuente660 estuvo intacta durante662/663; después se preparó candidata664. Encuesta26/716/0.
+
+
+## Candidata664 — validación en curso
+
+662/663 selladas; sesiones88588/75548 recogidas exit0.663 política de literales9/10→10/10, alternativa de etiqueta también10/10. Se elige reemplazar sólo la excepción española existente, conservando esquema e instrucciones EN/mezcla. Paridad10 peticiones exactas663. Dueñas4046 pases+121 subpruebas,0skips,71,24s; declaraciones22pases/1skip ambiental,1,99s. Fast5205 activo. Preflight665 seis capas sin ejecutar capturas/producto. Luego665 mismas24 consultas661 y666 mismas35 conversaciones611; adjudicar todos los resultados antes de adopción. Prepare664/close662/close663 ya ejecutados,no repetir. SHA LLM5f1296192e6154cd1137163f05d3e6d30d2081e1ec4f02e81a67fa4aced03465, árbolc8fec037d295260b3ab6e3b161142a883b2162588ec375258d4d034a0239a4c9. Encuesta26/716/0. Fuente660 publicada;664NOadoptada.
+
+
+# 665 — foco reparado, regresión en concordancia española
+
+Las24 respuestas se revisaron con sus observaciones y capturas independientes.23/24 correctas: t24 elimina foreground y conserva el foco/maximización; t13 ahora dice «tiene un ventana visible». Los hechos de instalación/cantidad se mantienen, pero la concordancia española falla. Antes661 ese mismo caso era correcto. No se adopta664: cambiar el fallo de lugar no demuestra mejora global.
+
+Todas24 actividades igualan los finales. Las16 lecturas de aplicaciones y cuatro referencias conservan sus hechos; Chrome tiene ahora una ventana, no dos como661, y la respuesta respeta la observación actual. Snapshots antes/después coinciden, con AUMID sin errores; no son captura continua ni UI. GPU3497,559MiB,RAM2276,344MiB,40,297s,sin infracciones y registro/fuente estables durante la prueba. No mínimo global ni ahorro ni UI/voz conjunta. Encuesta26/716/0. Completar666 antes de restaurar la fuente660 y seguir la alternativa de representación medida663.
+
+
+# 666 — campaña parcial por RAM libre del sistema
+
+El límite declarado detuvo la corrida:21 finales de35,20 correctos y el fallo conocidoH0012;14 casos sin evaluar. No se presenta como una suite35 verde ni se completan respuestas con otra sesión. Las21 actividades coinciden con los21 finales. Fuente y registro permanecieron intactos durante la campaña.
+
+Violación system_free_ram_bound; el último sample registra707,305MiB libres frente al suelo768. Pico del árbol BAXY RAM2388,070MiB,GPU3499,559MiB y68,422s. Esta observación no atribuye toda la presión de memoria del PC al producto; tampoco acredita UI/voz conjunta. El conductor cerró su árbol. Comprobación posterior: ningún proceso BAXY/llama y1250,703MiB disponibles. No se relaja el suelo ni se vuelve a lanzar una carga equivalente sin revisar margen. Candidata664 ya no cualifica por regresión gramatical665; no es necesario repetir esta candidata para decidir su rechazo. Encuesta26/716/0.
+
+
+# 664 — candidata rechazada, fuente660 restaurada
+
+Diez peticiones coinciden exactamente con el brazo663 medido. Dueñas4046 pases+121 subpruebas/0 skips,71,24s; declaraciones22 pases/1 skip ambiental,1,99s; Fast0,Release26,21s,sin advertencias/errores. Esos verdes no bastan: producto665 corrige foreground pero introduce «un ventana», manteniendo23/24. Producto666 se detiene por RAM libre tras21 de35 turnos y conserva el fallo de identidad. No se adopta la instrucción general española.
+
+Patch y logs del candidato preservados. Se restauran únicamente los cuatro ficheros propios a la fuente660 y sus declaraciones; igualdad contra HEAD comprobada, LLM SHA61c9da7e0975dabd54f0698f20eef06ade160988b4d8b64b8621516cdd454300. Modelo/registro/encuesta intactos. Ningún Full664 ni crédito de cierre. Siguiente: alternativa de representación medida663, comprobando gramática y márgenes de RAM antes de otro producto. No seguir acumulando instrucciones equivalentes para estos dos defectos.

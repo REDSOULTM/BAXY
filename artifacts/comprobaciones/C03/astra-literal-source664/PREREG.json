@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-09T16:41:56.213569+00:00",
+  "source": 664,
+  "adopted": false,
+  "llm_sha256": "5f1296192e6154cd1137163f05d3e6d30d2081e1ec4f02e81a67fa4aced03465",
+  "python_tree_sha256": "c8fec037d295260b3ab6e3b161142a883b2162588ec375258d4d034a0239a4c9",
+  "python_files": 405,
+  "measured_payload_parity": 10,
+  "design": "Replace ambiguous Spanish contract-literal exemption with preservation of names/titles/paths and Spanish state descriptions. English/mixed contracts unchanged. No field projection, extra rule, inference or fixed response.",
+  "evidence": "662 added system instruction and sampling failed9/10.663 same current9/10; policy replacement10/10 and independent field rename10/10. Choose smaller existing-policy edit with original schema intact; no universal conclusion.",
+  "next": "Owner suites/current declarations/Fast then product665 exact24 window queries and666 exact35 conversation regression. Inspect all outputs before adoption. No Full needed per Python-only rule until final closure."
+}

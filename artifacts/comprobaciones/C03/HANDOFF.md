@@ -57,3 +57,19 @@ Sesiones79799/85214/6196 recogidas exit0; ninguna activa. Close660-661 ejecutado
 Fuente660 publicada en db47edca6f521e29ca102b830b2134f3489337b9, remoto verificado y main intacto. Contrato factual acotado: misma cohorte104 mejora60 fallos/44 pases a104 pases; compositor completo con transporte simulado, sin otro modelo ni inferencia. Dueñas4046 pases+121 subpruebas/0 skips; declaraciones22 pases/1 skip ambiental; Fast0. Producto661 mantiene23/24 y las24 respuestas655 sin cambios; jerga española pendiente. Full651 es línea base anterior, no Full660 ni cierre global. Encuesta26/716/0; UI/voz conjunta, cobertura y Full final siguen pendientes.
 
 Sesiones79799/85214/6196 terminadas y recogidas exit0. BAXY manual cerrado; no campaña activa. Prepare660,close660-661,record-publication660 ejecutados: no repetir. Auditoría660-661 de sólo lectura:19 pins públicos y fuentes/privados/registro/encuesta/main verificados; índice auditado antes del commit. Siguiente: diagnóstico de la fuga foreground con el primer borrador real t24 de655/661 y controles ES/EN, conservando todos los hechos; sin vetar una palabra ni añadir respuestas fijas. Índice de biblioteca y títulos revisados; falta contraste acotado y prueba nativa para ese siguiente defecto. No se ha iniciado ni editado otra fuente.
+
+
+## Candidata664 — validación en curso
+
+662/663 selladas; sesiones88588/75548 recogidas exit0.663 política de literales9/10→10/10, alternativa de etiqueta también10/10. Se elige reemplazar sólo la excepción española existente, conservando esquema e instrucciones EN/mezcla. Paridad10 peticiones exactas663. Dueñas4046 pases+121 subpruebas,0skips,71,24s; declaraciones22pases/1skip ambiental,1,99s. Fast5205 activo. Preflight665 seis capas sin ejecutar capturas/producto. Luego665 mismas24 consultas661 y666 mismas35 conversaciones611; adjudicar todos los resultados antes de adopción. Prepare664/close662/close663 ya ejecutados,no repetir. SHA LLM5f1296192e6154cd1137163f05d3e6d30d2081e1ec4f02e81a67fa4aced03465, árbolc8fec037d295260b3ab6e3b161142a883b2162588ec375258d4d034a0239a4c9. Encuesta26/716/0. Fuente660 publicada;664NOadoptada.
+
+
+## Cierre662–666 — fuente660 restaurada
+
+# 664 — candidata rechazada, fuente660 restaurada
+
+Diez peticiones coinciden exactamente con el brazo663 medido. Dueñas4046 pases+121 subpruebas/0 skips,71,24s; declaraciones22 pases/1 skip ambiental,1,99s; Fast0,Release26,21s,sin advertencias/errores. Esos verdes no bastan: producto665 corrige foreground pero introduce «un ventana», manteniendo23/24. Producto666 se detiene por RAM libre tras21 de35 turnos y conserva el fallo de identidad. No se adopta la instrucción general española.
+
+Patch y logs del candidato preservados. Se restauran únicamente los cuatro ficheros propios a la fuente660 y sus declaraciones; igualdad contra HEAD comprobada, LLM SHA61c9da7e0975dabd54f0698f20eef06ade160988b4d8b64b8621516cdd454300. Modelo/registro/encuesta intactos. Ningún Full664 ni crédito de cierre. Siguiente: alternativa de representación medida663, comprobando gramática y márgenes de RAM antes de otro producto. No seguir acumulando instrucciones equivalentes para estos dos defectos.
+
+Sesiones88588/75548/2009/5205/34747 recogidas exit0;40680 exit1 por suelo de RAM libre. Ninguna activa. Campañas662/663/665/666 y candidata664 selladas. No repetir scripts de preparación/cierre/rechazo.

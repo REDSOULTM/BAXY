@@ -1,0 +1,25 @@
+{
+  "adopted": false,
+  "restored_source": 660,
+  "candidate_sha256": "5f1296192e6154cd1137163f05d3e6d30d2081e1ec4f02e81a67fa4aced03465",
+  "payload_parity": 10,
+  "owners": {
+    "passed": 4046,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 71.24
+  },
+  "declarations": {
+    "passed": 22,
+    "environmental_skipped": 1,
+    "seconds": 1.99
+  },
+  "fast_exit": 0,
+  "release_seconds": 26.21,
+  "product665_correct": 23,
+  "product665_total": 24,
+  "product666_evaluated": 21,
+  "product666_planned": 35,
+  "goal_complete": false,
+  "private_hashes": {}
+}
