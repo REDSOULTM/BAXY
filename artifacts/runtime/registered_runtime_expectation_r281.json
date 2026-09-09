@@ -9,19 +9,19 @@
     "voice_stt_wake_exercised": false
   },
   "expected": {
-    "ggufName": "granite-4.2-3b-Q4_K_M.gguf",
-    "ggufSha256": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
-    "gpuLayers": 99,
+    "ggufName": "Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "ggufSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
     "llamaServerName": "llama-server.exe",
     "llamaServerSha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
-    "nativeToolPolicyEnabled": false,
     "pythonSha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "gpuLayers": 99,
+    "wakeOnStart": true,
     "sttSha256": "5a70e0862ca0ed713a2bb1bfd50bf4886ae027815c8634a3800da7bdec6ab28f",
+    "wakeName": "baxy-wakeword-v1.json",
+    "wakeManifestSha256": "fefb95176c5db615e0d61b85744729fe242444697bc9c3315ad17a73fa3f6dfe",
     "ttsName": "es_MX-claude-high.onnx",
     "ttsSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
-    "wakeManifestSha256": "fefb95176c5db615e0d61b85744729fe242444697bc9c3315ad17a73fa3f6dfe",
-    "wakeName": "baxy-wakeword-v1.json",
-    "wakeOnStart": true
+    "nativeToolPolicyEnabled": false
   },
   "manifestIsVersioned": true,
   "manifestPresent": true,
@@ -34,5 +34,6 @@
   },
   "schema": "baxy.registered-runtime-expectation.r281.v1",
   "section_7_met": false,
-  "whyThisExists": "R280 found the meta document claiming Qwen3-4B while the machine ran Gemma-4, and the decision path differs between them. Goal 03 measured both on a fresh paraphrase population and promoted Qwen3-4B. Goal 09 adds the STT/TTS/wake hashes so a silent voice-engine swap also turns the gate red. C03 (2026-09-05) registra Granite 4.2 3B Q4_K_M como candidato pedido por el dueño: el GGUF de la máquina cambió y esta expectativa lo declara para que el siguiente cambio vuelva a ponerse en rojo. llama-server, Python, STT, TTS y wake conservan los mismos hashes: la voz no se ha vuelto a medir y esta actualización no lo afirma."
+  "whyThisExists": "R280 found the meta document claiming Qwen3-4B while the machine ran Gemma-4, and the decision path differs between them. Goal 03 measured both on a fresh paraphrase population and promoted Qwen3-4B. Goal 09 adds the STT/TTS/wake hashes so a silent voice-engine swap also turns the gate red. C03 (2026-09-05) registra Granite 4.2 3B Q4_K_M como candidato pedido por el dueño: el GGUF de la máquina cambió y esta expectativa lo declara para que el siguiente cambio vuelva a ponerse en rojo. llama-server, Python, STT, TTS y wake conservan los mismos hashes: la voz no se ha vuelto a medir y esta actualización no lo afirma.",
+  "currentDeclarationEvidence": "C03 control892c506 and registered product521; refreshed531 after checking GGUF/server bytes. Candidate registration is not C03 acceptance."
 }

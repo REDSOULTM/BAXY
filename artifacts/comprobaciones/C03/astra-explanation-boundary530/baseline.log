@@ -1,0 +1,643 @@
+......FFFF.............................................................. [ 96%]
+FF.                                                                      [100%]
+================================== FAILURES ===================================
+_ test_explicit_stable_no_effect_turns_keep_zero_action_authority[Do not read my clipboard; only explain its purpose-knowledge-en] _
+
+text = 'Do not read my clipboard; only explain its purpose', kind = 'knowledge'
+language = 'en'
+
+    @pytest.mark.parametrize(
+        ("text", "kind", "language"),
+        [
+            ("¿Qué es una GPU y para qué sirve?", "knowledge", "es"),
+            ("What is a GPU and what is it used for?", "knowledge", "en"),
+            ("Ayer abrí Spotify y escuché música.", "unsupported", "es"),
+            ("Yesterday I opened Spotify and listened to music.", "unsupported", "en"),
+            ("No abras Spotify; solo dime qué es.", "knowledge", "es"),
+            ("Do not open Spotify; just tell me what it is.", "knowledge", "en"),
+            ("Do not read my clipboard; only explain its purpose", "knowledge", "en"),
+            ("Never open the file; only explain encryption", "knowledge", "en"),
+            ("Don't change the volume; only define decibels", "knowledge", "en"),
+            ("Hey Baxy, please: do not open Firefox; only explain browsers.", "knowledge", "en"),
+            ("No abras el archivo; solo explica el cifrado", "knowledge", "es"),
+            ("Abre YouTube en el teléfono de mi hermana.", "unsupported", "es"),
+            ("Open YouTube on my sister's phone.", "unsupported", "en"),
+            ("How do I take a screenshot in Windows?", "knowledge", "en"),
+            ("How can I open the Windows calculator?", "knowledge", "en"),
+            ("¿Cómo puedo hacer una captura de pantalla?", "knowledge", "es"),
+            ("Explícame cómo abrir el administrador de tareas.", "knowledge", "es"),
+            ("Can you play a board game with me?", "unsupported", "en"),
+            ("¿Quieres jugar algo conmigo?", "unsupported", "es"),
+            ("Cierre de Word podía perder trabajo", "followup", "es"),
+            ("Closing Word could lose unsaved work", "followup", "en"),
+            ("Sí, sí, te oigo", "social", "es"),
+            ("Yeah, yeah I hear you", "social", "en"),
+            ("Contame un chiste corto", "knowledge", "es"),
+            (
+                "I would like to hear some good funny jokes",
+                "knowledge",
+                "en",
+            ),
+            ("find me a joke related to baseball", "knowledge", "en"),
+            ("What do you think about pineapple on pizza?", "knowledge", "en"),
+            ("¿Qué no puedes hacer?", "knowledge", "es"),
+            (
+                "A question: Rewrite the sentence close every tab more politely",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una duda: Dame una receta de risotto para una mañana ventosa",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Baxy: just curious: Define an operating system without inspecting my PC.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Look, Baxy: a brief question: If I bought a tablet, I would open my notes there.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "One small question: What would happen if another computer lost its Wi-Fi?",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una pregunta simple: Si comprara una tableta, abriría allí mis notas.",
+                "knowledge",
+                "es",
+            ),
+            (
+                "One brief question: Do not capture anything; explain what screenshot means",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Quiero preguntarte algo sin pedir una acción: pon el volumen al veinte por ciento",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Just a quick thought, with no computer action: mute the speakers",
+                "knowledge",
+                "en",
+            ),
+            (
+                # Spanglish real: el lexicón anterior no reconocía «this» ni
+                # «computer» y lo daba por español. La lectura única lo conserva
+                # como mezcla, que es lo que pide el contrato de idioma.
+                "Baxy, haz this: tengo una quick question, sin computer action: abre Spotify",
+                "knowledge",
+                "mixed",
+            ),
+            (
+                "I want it to be able to tell me statistics about things it has done for me.",
+                "unsupported",
+                "en",
+            ),
+            (
+                "Me gustaría que Baxy pudiera resumir todo lo que ha hecho por mí.",
+                "unsupported",
+                "es",
+            ),
+            ("No hables hasta que te pregunte.", "followup", "es"),
+            ("Don't say anything until I ask.", "followup", "en"),
+            ("I want to play um Mario against Julie.", "unsupported", "en"),
+            ("Pon vídeos.", "followup", "es"),
+            ("Abre eso", "followup", "es"),
+            (
+                "quien es el actual primer ministro de rusia",
+                "unsupported",
+                "es",
+            ),
+            (
+                "puedes mostrarme una lista de todos mis comandos recientes",
+                "unsupported",
+                "es",
+            ),
+            ("describe el disco duro del ordenador", "knowledge", "es"),
+            ("describe about the computer hard disk", "knowledge", "en"),
+            ("tell me about india location", "knowledge", "en"),
+            ("please tell me the score of the game", "knowledge", "en"),
+            ("what sound does a dog make", "knowledge", "en"),
+            ("give details of rock sand", "knowledge", "en"),
+            ("cuéntame todo sobre el huracán", "knowledge", "es"),
+            ("my day is going well add a memo", "social", "en"),
+            ("encontrar ruta", "knowledge", "es"),
+            ("dime la dirección de billy crytals", "unsupported", "es"),
+        ],
+    )
+    def test_explicit_stable_no_effect_turns_keep_zero_action_authority(
+        text: str,
+        kind: str,
+        language: str,
+    ) -> None:
+        decision = _explicit_stable_no_effect_turn_decision(text)
+    
+>       assert decision is not None
+E       assert None is not None
+
+tests\test_turn_policy.py:1634: AssertionError
+_ test_explicit_stable_no_effect_turns_keep_zero_action_authority[Never open the file; only explain encryption-knowledge-en] _
+
+text = 'Never open the file; only explain encryption', kind = 'knowledge'
+language = 'en'
+
+    @pytest.mark.parametrize(
+        ("text", "kind", "language"),
+        [
+            ("¿Qué es una GPU y para qué sirve?", "knowledge", "es"),
+            ("What is a GPU and what is it used for?", "knowledge", "en"),
+            ("Ayer abrí Spotify y escuché música.", "unsupported", "es"),
+            ("Yesterday I opened Spotify and listened to music.", "unsupported", "en"),
+            ("No abras Spotify; solo dime qué es.", "knowledge", "es"),
+            ("Do not open Spotify; just tell me what it is.", "knowledge", "en"),
+            ("Do not read my clipboard; only explain its purpose", "knowledge", "en"),
+            ("Never open the file; only explain encryption", "knowledge", "en"),
+            ("Don't change the volume; only define decibels", "knowledge", "en"),
+            ("Hey Baxy, please: do not open Firefox; only explain browsers.", "knowledge", "en"),
+            ("No abras el archivo; solo explica el cifrado", "knowledge", "es"),
+            ("Abre YouTube en el teléfono de mi hermana.", "unsupported", "es"),
+            ("Open YouTube on my sister's phone.", "unsupported", "en"),
+            ("How do I take a screenshot in Windows?", "knowledge", "en"),
+            ("How can I open the Windows calculator?", "knowledge", "en"),
+            ("¿Cómo puedo hacer una captura de pantalla?", "knowledge", "es"),
+            ("Explícame cómo abrir el administrador de tareas.", "knowledge", "es"),
+            ("Can you play a board game with me?", "unsupported", "en"),
+            ("¿Quieres jugar algo conmigo?", "unsupported", "es"),
+            ("Cierre de Word podía perder trabajo", "followup", "es"),
+            ("Closing Word could lose unsaved work", "followup", "en"),
+            ("Sí, sí, te oigo", "social", "es"),
+            ("Yeah, yeah I hear you", "social", "en"),
+            ("Contame un chiste corto", "knowledge", "es"),
+            (
+                "I would like to hear some good funny jokes",
+                "knowledge",
+                "en",
+            ),
+            ("find me a joke related to baseball", "knowledge", "en"),
+            ("What do you think about pineapple on pizza?", "knowledge", "en"),
+            ("¿Qué no puedes hacer?", "knowledge", "es"),
+            (
+                "A question: Rewrite the sentence close every tab more politely",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una duda: Dame una receta de risotto para una mañana ventosa",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Baxy: just curious: Define an operating system without inspecting my PC.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Look, Baxy: a brief question: If I bought a tablet, I would open my notes there.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "One small question: What would happen if another computer lost its Wi-Fi?",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una pregunta simple: Si comprara una tableta, abriría allí mis notas.",
+                "knowledge",
+                "es",
+            ),
+            (
+                "One brief question: Do not capture anything; explain what screenshot means",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Quiero preguntarte algo sin pedir una acción: pon el volumen al veinte por ciento",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Just a quick thought, with no computer action: mute the speakers",
+                "knowledge",
+                "en",
+            ),
+            (
+                # Spanglish real: el lexicón anterior no reconocía «this» ni
+                # «computer» y lo daba por español. La lectura única lo conserva
+                # como mezcla, que es lo que pide el contrato de idioma.
+                "Baxy, haz this: tengo una quick question, sin computer action: abre Spotify",
+                "knowledge",
+                "mixed",
+            ),
+            (
+                "I want it to be able to tell me statistics about things it has done for me.",
+                "unsupported",
+                "en",
+            ),
+            (
+                "Me gustaría que Baxy pudiera resumir todo lo que ha hecho por mí.",
+                "unsupported",
+                "es",
+            ),
+            ("No hables hasta que te pregunte.", "followup", "es"),
+            ("Don't say anything until I ask.", "followup", "en"),
+            ("I want to play um Mario against Julie.", "unsupported", "en"),
+            ("Pon vídeos.", "followup", "es"),
+            ("Abre eso", "followup", "es"),
+            (
+                "quien es el actual primer ministro de rusia",
+                "unsupported",
+                "es",
+            ),
+            (
+                "puedes mostrarme una lista de todos mis comandos recientes",
+                "unsupported",
+                "es",
+            ),
+            ("describe el disco duro del ordenador", "knowledge", "es"),
+            ("describe about the computer hard disk", "knowledge", "en"),
+            ("tell me about india location", "knowledge", "en"),
+            ("please tell me the score of the game", "knowledge", "en"),
+            ("what sound does a dog make", "knowledge", "en"),
+            ("give details of rock sand", "knowledge", "en"),
+            ("cuéntame todo sobre el huracán", "knowledge", "es"),
+            ("my day is going well add a memo", "social", "en"),
+            ("encontrar ruta", "knowledge", "es"),
+            ("dime la dirección de billy crytals", "unsupported", "es"),
+        ],
+    )
+    def test_explicit_stable_no_effect_turns_keep_zero_action_authority(
+        text: str,
+        kind: str,
+        language: str,
+    ) -> None:
+        decision = _explicit_stable_no_effect_turn_decision(text)
+    
+>       assert decision is not None
+E       assert None is not None
+
+tests\test_turn_policy.py:1634: AssertionError
+_ test_explicit_stable_no_effect_turns_keep_zero_action_authority[Don't change the volume; only define decibels-knowledge-en] _
+
+text = "Don't change the volume; only define decibels", kind = 'knowledge'
+language = 'en'
+
+    @pytest.mark.parametrize(
+        ("text", "kind", "language"),
+        [
+            ("¿Qué es una GPU y para qué sirve?", "knowledge", "es"),
+            ("What is a GPU and what is it used for?", "knowledge", "en"),
+            ("Ayer abrí Spotify y escuché música.", "unsupported", "es"),
+            ("Yesterday I opened Spotify and listened to music.", "unsupported", "en"),
+            ("No abras Spotify; solo dime qué es.", "knowledge", "es"),
+            ("Do not open Spotify; just tell me what it is.", "knowledge", "en"),
+            ("Do not read my clipboard; only explain its purpose", "knowledge", "en"),
+            ("Never open the file; only explain encryption", "knowledge", "en"),
+            ("Don't change the volume; only define decibels", "knowledge", "en"),
+            ("Hey Baxy, please: do not open Firefox; only explain browsers.", "knowledge", "en"),
+            ("No abras el archivo; solo explica el cifrado", "knowledge", "es"),
+            ("Abre YouTube en el teléfono de mi hermana.", "unsupported", "es"),
+            ("Open YouTube on my sister's phone.", "unsupported", "en"),
+            ("How do I take a screenshot in Windows?", "knowledge", "en"),
+            ("How can I open the Windows calculator?", "knowledge", "en"),
+            ("¿Cómo puedo hacer una captura de pantalla?", "knowledge", "es"),
+            ("Explícame cómo abrir el administrador de tareas.", "knowledge", "es"),
+            ("Can you play a board game with me?", "unsupported", "en"),
+            ("¿Quieres jugar algo conmigo?", "unsupported", "es"),
+            ("Cierre de Word podía perder trabajo", "followup", "es"),
+            ("Closing Word could lose unsaved work", "followup", "en"),
+            ("Sí, sí, te oigo", "social", "es"),
+            ("Yeah, yeah I hear you", "social", "en"),
+            ("Contame un chiste corto", "knowledge", "es"),
+            (
+                "I would like to hear some good funny jokes",
+                "knowledge",
+                "en",
+            ),
+            ("find me a joke related to baseball", "knowledge", "en"),
+            ("What do you think about pineapple on pizza?", "knowledge", "en"),
+            ("¿Qué no puedes hacer?", "knowledge", "es"),
+            (
+                "A question: Rewrite the sentence close every tab more politely",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una duda: Dame una receta de risotto para una mañana ventosa",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Baxy: just curious: Define an operating system without inspecting my PC.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Look, Baxy: a brief question: If I bought a tablet, I would open my notes there.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "One small question: What would happen if another computer lost its Wi-Fi?",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una pregunta simple: Si comprara una tableta, abriría allí mis notas.",
+                "knowledge",
+                "es",
+            ),
+            (
+                "One brief question: Do not capture anything; explain what screenshot means",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Quiero preguntarte algo sin pedir una acción: pon el volumen al veinte por ciento",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Just a quick thought, with no computer action: mute the speakers",
+                "knowledge",
+                "en",
+            ),
+            (
+                # Spanglish real: el lexicón anterior no reconocía «this» ni
+                # «computer» y lo daba por español. La lectura única lo conserva
+                # como mezcla, que es lo que pide el contrato de idioma.
+                "Baxy, haz this: tengo una quick question, sin computer action: abre Spotify",
+                "knowledge",
+                "mixed",
+            ),
+            (
+                "I want it to be able to tell me statistics about things it has done for me.",
+                "unsupported",
+                "en",
+            ),
+            (
+                "Me gustaría que Baxy pudiera resumir todo lo que ha hecho por mí.",
+                "unsupported",
+                "es",
+            ),
+            ("No hables hasta que te pregunte.", "followup", "es"),
+            ("Don't say anything until I ask.", "followup", "en"),
+            ("I want to play um Mario against Julie.", "unsupported", "en"),
+            ("Pon vídeos.", "followup", "es"),
+            ("Abre eso", "followup", "es"),
+            (
+                "quien es el actual primer ministro de rusia",
+                "unsupported",
+                "es",
+            ),
+            (
+                "puedes mostrarme una lista de todos mis comandos recientes",
+                "unsupported",
+                "es",
+            ),
+            ("describe el disco duro del ordenador", "knowledge", "es"),
+            ("describe about the computer hard disk", "knowledge", "en"),
+            ("tell me about india location", "knowledge", "en"),
+            ("please tell me the score of the game", "knowledge", "en"),
+            ("what sound does a dog make", "knowledge", "en"),
+            ("give details of rock sand", "knowledge", "en"),
+            ("cuéntame todo sobre el huracán", "knowledge", "es"),
+            ("my day is going well add a memo", "social", "en"),
+            ("encontrar ruta", "knowledge", "es"),
+            ("dime la dirección de billy crytals", "unsupported", "es"),
+        ],
+    )
+    def test_explicit_stable_no_effect_turns_keep_zero_action_authority(
+        text: str,
+        kind: str,
+        language: str,
+    ) -> None:
+        decision = _explicit_stable_no_effect_turn_decision(text)
+    
+>       assert decision is not None
+E       assert None is not None
+
+tests\test_turn_policy.py:1634: AssertionError
+_ test_explicit_stable_no_effect_turns_keep_zero_action_authority[Hey Baxy, please: do not open Firefox; only explain browsers.-knowledge-en] _
+
+text = 'Hey Baxy, please: do not open Firefox; only explain browsers.'
+kind = 'knowledge', language = 'en'
+
+    @pytest.mark.parametrize(
+        ("text", "kind", "language"),
+        [
+            ("¿Qué es una GPU y para qué sirve?", "knowledge", "es"),
+            ("What is a GPU and what is it used for?", "knowledge", "en"),
+            ("Ayer abrí Spotify y escuché música.", "unsupported", "es"),
+            ("Yesterday I opened Spotify and listened to music.", "unsupported", "en"),
+            ("No abras Spotify; solo dime qué es.", "knowledge", "es"),
+            ("Do not open Spotify; just tell me what it is.", "knowledge", "en"),
+            ("Do not read my clipboard; only explain its purpose", "knowledge", "en"),
+            ("Never open the file; only explain encryption", "knowledge", "en"),
+            ("Don't change the volume; only define decibels", "knowledge", "en"),
+            ("Hey Baxy, please: do not open Firefox; only explain browsers.", "knowledge", "en"),
+            ("No abras el archivo; solo explica el cifrado", "knowledge", "es"),
+            ("Abre YouTube en el teléfono de mi hermana.", "unsupported", "es"),
+            ("Open YouTube on my sister's phone.", "unsupported", "en"),
+            ("How do I take a screenshot in Windows?", "knowledge", "en"),
+            ("How can I open the Windows calculator?", "knowledge", "en"),
+            ("¿Cómo puedo hacer una captura de pantalla?", "knowledge", "es"),
+            ("Explícame cómo abrir el administrador de tareas.", "knowledge", "es"),
+            ("Can you play a board game with me?", "unsupported", "en"),
+            ("¿Quieres jugar algo conmigo?", "unsupported", "es"),
+            ("Cierre de Word podía perder trabajo", "followup", "es"),
+            ("Closing Word could lose unsaved work", "followup", "en"),
+            ("Sí, sí, te oigo", "social", "es"),
+            ("Yeah, yeah I hear you", "social", "en"),
+            ("Contame un chiste corto", "knowledge", "es"),
+            (
+                "I would like to hear some good funny jokes",
+                "knowledge",
+                "en",
+            ),
+            ("find me a joke related to baseball", "knowledge", "en"),
+            ("What do you think about pineapple on pizza?", "knowledge", "en"),
+            ("¿Qué no puedes hacer?", "knowledge", "es"),
+            (
+                "A question: Rewrite the sentence close every tab more politely",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una duda: Dame una receta de risotto para una mañana ventosa",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Baxy: just curious: Define an operating system without inspecting my PC.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Look, Baxy: a brief question: If I bought a tablet, I would open my notes there.",
+                "knowledge",
+                "en",
+            ),
+            (
+                "One small question: What would happen if another computer lost its Wi-Fi?",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Una pregunta simple: Si comprara una tableta, abriría allí mis notas.",
+                "knowledge",
+                "es",
+            ),
+            (
+                "One brief question: Do not capture anything; explain what screenshot means",
+                "knowledge",
+                "en",
+            ),
+            (
+                "Quiero preguntarte algo sin pedir una acción: pon el volumen al veinte por ciento",
+                "knowledge",
+                "es",
+            ),
+            (
+                "Just a quick thought, with no computer action: mute the speakers",
+                "knowledge",
+                "en",
+            ),
+            (
+                # Spanglish real: el lexicón anterior no reconocía «this» ni
+                # «computer» y lo daba por español. La lectura única lo conserva
+                # como mezcla, que es lo que pide el contrato de idioma.
+                "Baxy, haz this: tengo una quick question, sin computer action: abre Spotify",
+                "knowledge",
+                "mixed",
+            ),
+            (
+                "I want it to be able to tell me statistics about things it has done for me.",
+                "unsupported",
+                "en",
+            ),
+            (
+                "Me gustaría que Baxy pudiera resumir todo lo que ha hecho por mí.",
+                "unsupported",
+                "es",
+            ),
+            ("No hables hasta que te pregunte.", "followup", "es"),
+            ("Don't say anything until I ask.", "followup", "en"),
+            ("I want to play um Mario against Julie.", "unsupported", "en"),
+            ("Pon vídeos.", "followup", "es"),
+            ("Abre eso", "followup", "es"),
+            (
+                "quien es el actual primer ministro de rusia",
+                "unsupported",
+                "es",
+            ),
+            (
+                "puedes mostrarme una lista de todos mis comandos recientes",
+                "unsupported",
+                "es",
+            ),
+            ("describe el disco duro del ordenador", "knowledge", "es"),
+            ("describe about the computer hard disk", "knowledge", "en"),
+            ("tell me about india location", "knowledge", "en"),
+            ("please tell me the score of the game", "knowledge", "en"),
+            ("what sound does a dog make", "knowledge", "en"),
+            ("give details of rock sand", "knowledge", "en"),
+            ("cuéntame todo sobre el huracán", "knowledge", "es"),
+            ("my day is going well add a memo", "social", "en"),
+            ("encontrar ruta", "knowledge", "es"),
+            ("dime la dirección de billy crytals", "unsupported", "es"),
+        ],
+    )
+    def test_explicit_stable_no_effect_turns_keep_zero_action_authority(
+        text: str,
+        kind: str,
+        language: str,
+    ) -> None:
+        decision = _explicit_stable_no_effect_turn_decision(text)
+    
+>       assert decision is not None
+E       assert None is not None
+
+tests\test_turn_policy.py:1634: AssertionError
+_ test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions[Do not open Firefox; just explain browsers; set the volume to 24] _
+
+text = 'Do not open Firefox; just explain browsers; set the volume to 24'
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Dime el uso actual de RAM de este computador.",
+            "What is the current speaker volume?",
+            "Describe el uso actual del disco duro.",
+            "Conecta mi teléfono por Bluetooth.",
+            "Pair my phone over Bluetooth.",
+            "Abre Spotify.",
+            "Open YouTube on this computer.",
+            "Play Beat It on Spotify.",
+            "Juega Counter Strike.",
+            "I want you to open Spotify.",
+            "I want Baxy to open Spotify.",
+            "Quiero que abras Spotify.",
+            "Quiero que Baxy abra Spotify.",
+            "Sí, sí, te oigo, apaga la alarma.",
+            "Do not read my clipboard; only explain its purpose; open Notepad",
+            "Do not open Firefox; just explain browsers; set the volume to 24",
+            "No abras el archivo; solo explica el cifrado; abre Calculadora",
+        ],
+    )
+    def test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions(
+        text: str,
+    ) -> None:
+>       assert _explicit_stable_no_effect_turn_decision(text) is None
+E       AssertionError: assert {'mode': 'conversation', 'operation': None, 'question': '', 'conversation_kind': 'knowledge', ...} is None
+E        +  where {'mode': 'conversation', 'operation': None, 'question': '', 'conversation_kind': 'knowledge', ...} = _explicit_stable_no_effect_turn_decision('Do not open Firefox; just explain browsers; set the volume to 24')
+
+tests\test_turn_policy.py:1667: AssertionError
+_ test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions[No abras el archivo; solo explica el cifrado; abre Calculadora] _
+
+text = 'No abras el archivo; solo explica el cifrado; abre Calculadora'
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Dime el uso actual de RAM de este computador.",
+            "What is the current speaker volume?",
+            "Describe el uso actual del disco duro.",
+            "Conecta mi teléfono por Bluetooth.",
+            "Pair my phone over Bluetooth.",
+            "Abre Spotify.",
+            "Open YouTube on this computer.",
+            "Play Beat It on Spotify.",
+            "Juega Counter Strike.",
+            "I want you to open Spotify.",
+            "I want Baxy to open Spotify.",
+            "Quiero que abras Spotify.",
+            "Quiero que Baxy abra Spotify.",
+            "Sí, sí, te oigo, apaga la alarma.",
+            "Do not read my clipboard; only explain its purpose; open Notepad",
+            "Do not open Firefox; just explain browsers; set the volume to 24",
+            "No abras el archivo; solo explica el cifrado; abre Calculadora",
+        ],
+    )
+    def test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions(
+        text: str,
+    ) -> None:
+>       assert _explicit_stable_no_effect_turn_decision(text) is None
+E       AssertionError: assert {'mode': 'conversation', 'operation': None, 'question': '', 'conversation_kind': 'knowledge', ...} is None
+E        +  where {'mode': 'conversation', 'operation': None, 'question': '', 'conversation_kind': 'knowledge', ...} = _explicit_stable_no_effect_turn_decision('No abras el archivo; solo explica el cifrado; abre Calculadora')
+
+tests\test_turn_policy.py:1667: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_explicit_stable_no_effect_turns_keep_zero_action_authority[Do not read my clipboard; only explain its purpose-knowledge-en]
+FAILED tests/test_turn_policy.py::test_explicit_stable_no_effect_turns_keep_zero_action_authority[Never open the file; only explain encryption-knowledge-en]
+FAILED tests/test_turn_policy.py::test_explicit_stable_no_effect_turns_keep_zero_action_authority[Don't change the volume; only define decibels-knowledge-en]
+FAILED tests/test_turn_policy.py::test_explicit_stable_no_effect_turns_keep_zero_action_authority[Hey Baxy, please: do not open Firefox; only explain browsers.-knowledge-en]
+FAILED tests/test_turn_policy.py::test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions[Do not open Firefox; just explain browsers; set the volume to 24]
+FAILED tests/test_turn_policy.py::test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions[No abras el archivo; solo explica el cifrado; abre Calculadora]
+6 failed, 69 passed, 953 deselected in 2.84s

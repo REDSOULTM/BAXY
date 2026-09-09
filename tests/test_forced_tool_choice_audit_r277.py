@@ -29,18 +29,18 @@ def test_r277_reads_the_registered_decision_contract() -> None:
     contract = _module().build(ROOT)["contract"]
 
     assert contract["decisionFunction"] == "_post_native_tool_selection"
-    assert contract["toolChoice"] == "required"
-    # `required` forbids the abstention the same payload's prompt demands.
-    assert contract["modelMayDeclineToCall"] is False
+    assert contract["toolChoice"] == "auto"
+    # Current selection permits abstention; the consumed forced run stays sealed below.
+    assert contract["modelMayDeclineToCall"] is True
     assert contract["declaredNoFunctionTurnClassCount"] == 7
-    assert contract["emptyToolCallBranchExistsButIsUnreachable"] is True
-    assert contract["promptAndDecoderContradict"] is True
+    assert contract["emptyToolCallBranchExistsButIsUnreachable"] is False
+    assert contract["promptAndDecoderContradict"] is False
 
 
 def test_r277_prices_the_open_population_without_starting_a_model() -> None:
     result = _module().build(ROOT)
 
-    assert result["verdict"] == "forced_tool_choice_leaves_abstention_undecodable"
+    assert result["verdict"] == "decision_contract_permits_abstention"
     pricing = result["openPopulationPricing"]
     assert pricing["servedRows"] == 12
     # No effect-free raw proposal was ever observed under the forced contract.

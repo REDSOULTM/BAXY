@@ -1,0 +1,45 @@
+{
+  "historical_campaigns_rewritten": false,
+  "runtime_modified": false,
+  "files": {
+    "src/baxy_mind/__main__.py": {
+      "old_current_pin": "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3",
+      "current_pin": "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
+    },
+    "src/baxy_mind/llm.py": {
+      "old_current_pin": "5c3db6952201a8099cf13992adb09e55cd895ed2db5a1f26041629d0b067e7fa",
+      "current_pin": "c79d818f05ff1f4c843a9a039d933cb04caa4e605d1c06ab5294c5b0d5fba783"
+    },
+    "experiments/stt_quality/evaluate_reserved_stt.py": {
+      "old_current_tree_pin": "1ca420662d30083f35b2d1cb51d243c593d0b339b17a3792f037609b4b4011ce",
+      "current_tree_pin": "0eb1d84ae1d32b71f265c00ada735565b62566071260d09233c6faebbf036194"
+    },
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": {
+      "old_current_tree_pin": "1ca420662d30083f35b2d1cb51d243c593d0b339b17a3792f037609b4b4011ce",
+      "current_tree_pin": "0eb1d84ae1d32b71f265c00ada735565b62566071260d09233c6faebbf036194"
+    }
+  },
+  "template_restoration": {
+    "path": "artifacts/comprobaciones/C03/astra-qwen-documented-profile/effective-template.jinja",
+    "before_sha256": "9878e426abe9aa950f7090d5db44bf2a383185cb101614617376b4d6d41dd2a5",
+    "restored_sha256": "c979e0e71a3e21b8f208e6ab120d5cb29327885f29d2a8b18fda67a723798e18",
+    "historical_seal": "c979e0e71a3e21b8f208e6ab120d5cb29327885f29d2a8b18fda67a723798e18"
+  },
+  "gguf_verified_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "llama_server_verified_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "runtime_declaration_delta": {
+    "ggufName": {
+      "before": "granite-4.2-3b-Q4_K_M.gguf",
+      "current": "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    },
+    "ggufSha256": {
+      "before": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
+      "current": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+    }
+  },
+  "current_tree": {
+    "sha256": "0eb1d84ae1d32b71f265c00ada735565b62566071260d09233c6faebbf036194",
+    "python_files": 403
+  },
+  "private_backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-current-expectations531-private"
+}

@@ -213,3 +213,6 @@
 /tests/data/turn_evidence_public_holdout.v1.jsonl -text
 /tests/data/turn_evidence_public_manifest.v1.json -text
 scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs merge=lfs -text
+
+# C03 template restored to its published LF byte identity (531).
+/artifacts/comprobaciones/C03/astra-qwen-documented-profile/effective-template.jinja -text

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T01:49:00.819836+00:00",
+  "confirmedAtUtc": "2026-09-09T02:04:55.3719054Z",
   "branch": "Goal-c03",
-  "checkpoint": "527: control892c506; Full526 rojo (25fallos Python); encuesta0cubiertos/742abiertos/0NA.",
-  "continuation": "Diagnosticar fallos de Full526 empezando test_c03_request_preservation.py; sin nuevas campañas de modelo. Objetivo actualizado en526/GOAL_OBJECTIVE.md.",
+  "checkpoint": "531: dueñas de25fallos Full526 resueltas; fuente530/contratos531 validados. Encuesta0cubiertos/742abiertos/0NA.",
+  "continuation": "Publicar fuentes validadas; auditar cobertura y reserva. Full final pendiente. Objetivo vigente526/GOAL_OBJECTIVE.md.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,

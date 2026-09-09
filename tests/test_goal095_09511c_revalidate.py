@@ -96,7 +96,9 @@ def test_live_planner_veto_and_r6_postconditions() -> None:
         assert chain["open_args"]["appId"] == "Steam"
         assert chain["unresolved"] is False
     assert chains["halt"]["holds"] is True
-    assert chains["halt"]["veto_mode"] == "conversation"
+    assert chains["halt"]["veto_mode"] == "recovery"
+    assert chains["halt"]["veto_reason"] == "unresolved_compound_effects"
+    assert chains["halt"]["veto_effects"] == []
     sealed = live_r6(REPO)
     assert sealed["holds"] is True
     assert sealed["orphan"] == 0

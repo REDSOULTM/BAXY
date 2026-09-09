@@ -1508,6 +1508,11 @@ def test_assistant_preference_question_is_conversation_not_a_task_action() -> No
         ("Yesterday I opened Spotify and listened to music.", "unsupported", "en"),
         ("No abras Spotify; solo dime qué es.", "knowledge", "es"),
         ("Do not open Spotify; just tell me what it is.", "knowledge", "en"),
+        ("Do not read my clipboard; only explain its purpose", "knowledge", "en"),
+        ("Never open the file; only explain encryption", "knowledge", "en"),
+        ("Don't change the volume; only define decibels", "knowledge", "en"),
+        ("Hey Baxy, please: do not open Firefox; only explain browsers.", "knowledge", "en"),
+        ("No abras el archivo; solo explica el cifrado", "knowledge", "es"),
         ("Abre YouTube en el teléfono de mi hermana.", "unsupported", "es"),
         ("Open YouTube on my sister's phone.", "unsupported", "en"),
         ("How do I take a screenshot in Windows?", "knowledge", "en"),
@@ -1651,6 +1656,9 @@ def test_explicit_stable_no_effect_turns_keep_zero_action_authority(
         "Quiero que abras Spotify.",
         "Quiero que Baxy abra Spotify.",
         "Sí, sí, te oigo, apaga la alarma.",
+        "Do not read my clipboard; only explain its purpose; open Notepad",
+        "Do not open Firefox; just explain browsers; set the volume to 24",
+        "No abras el archivo; solo explica el cifrado; abre Calculadora",
     ],
 )
 def test_explicit_stable_no_effect_turn_never_swallows_current_pc_actions(

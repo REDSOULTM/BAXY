@@ -1,46 +1,17 @@
-# Estado de BAXY y cierre C03
+# Estado de C03 — actualización531
 
-C03 continúa activo. La encuesta completa (742 respuestas) y tus instrucciones están incorporadas como base de conducta. BAXY sigue cerrado para uso manual. Las pruebas se hacen en perfiles aislados cuando necesitan efectos de memoria.
+C03 sigue abierto. El trabajo está conservado en892c506 y88fca650, en Goal-c03; main sigue intacto. La publicación remota espera la validación de las dueñas pendientes.
 
-## Lo que ya cambió y se comprobó
+Se ha reparado la procedencia de datos en el historial, retirado el atajo de prosa del selector, ampliado la configuración de memoria privada mediante una gramática acotada y eliminado una instrucción que inducía observaciones inventadas del PC. Las mediciones y pruebas de cada cambio se conservan en sus tramos. La regla de evaluar cada modelo con documentación, papers, reproducciones y parámetros efectivos ya está en AGENTS.md.
 
-- Se reparó la comprensión de órdenes de audio, incluidas las variantes de desmutear de tu sesión, niveles dados como continuación y pedidos compuestos. El plan conserva el orden y el argumento correcto de silenciar o reactivar.
-- Se retiró el atajo que publicaba como respuesta la prosa interna del selector de operaciones. La conversación pasa por su generador propio; no se añadieron respuestas visibles fijas.
-- Se corrigió cómo el generador recibe el historial para preguntas de conocimiento: conserva el texto y quién lo escribió, y distingue tus declaraciones de una respuesta anterior equivocada de BAXY. También puede contestar qué había dicho él, sin convertirlo en un dato tuyo.
-- La fuente512 pasó siete suites de Python: 3406 pruebas y 121 subpruebas aprobadas, cero skips, en 53,88 s. Fast y compilación Release pasaron sin advertencias ni errores. Después, el protocolo real superó 24/24 casos de desarrollo y 11/11 comprobaciones de operaciones y argumentos, con el runtime registrado y sin tratamiento privado.
-- La memoria del producto habilita, guarda y recupera el nombre sintético del perfil aislado. Distingue el nombre persistido del usado en la conversación. Sin embargo, algunas narraciones de resultados y progreso siguen usando lenguaje interno; eso aún impide dar esas rutas por cerradas.
-- La prueba515 de retirar metadatos del redactor no resolvió ese problema y no se adoptó. También reveló que «desactiva la memoria privada» no llegaba a una operación que sí existe. La fuente516 sustituye alias de configuración por una gramática acotada. Sus 36 controles focales y 1962 pruebas de memoria pasan, sin omisiones. Fast y Release también pasan. El producto517 confirmó la deshabilitación real.
+La última medición del producto registrado, astra-private-product521, dio3497,56MiB de GPU (3,42GiB) y2013,48MiB de RAM (1,97GiB). Es un conductor de producto con memoria aislada: no acredita el consumo conjunto con interfaz y voz. BAXY usa RAM adicional; no está todo en VRAM. Los4GB son el techo, buscando menos consumo sin perder calidad.
 
-La fuente520 elimina una instrucción que inducía una afirmación no observada sobre cambios en el PC. Pasaron 3406 pruebas Python y 121 subpruebas, cero skips, en52,67s, más Fast/Release. El producto521 confirmó la mejora sin tratamiento:9/11 finales útiles, con guardado narrado de forma interna y una confusión entre capacidad y activación aún pendientes. El ensayo523 compara el muestreo del redactor con la receta documentada de Qwen sobre los payloads exactos, sin alterar sus datos.
+Ese panel dio9/11respuestas finales útiles. Siguen abiertos dos fallos: narrar un guardado mediante metadatos internos y confundir memoria desactivada con capacidad inexistente. Las comparaciones523–525 no justificaron promocionar otro modelo. No hay un mínimo universal de VRAM demostrado para todo BAXY.
 
-## Recursos medidos
+Full526 terminó en rojo: estática/build aprobados; .NET4427pass/0fail/1skip agregado, además de otros mensajes opt-in omitidos en el log; Python9984pass/25fail/3skip y466subtests. Se conserva el resultado completo.528 resolvió15fallos de expectativas antiguas:168/168tests, sin omisiones.530 corrige «only explain» tras una prohibición y evita que oculte una acción posterior:4002pass y121subtests, sin omisiones.531 verifica las demás expectativas actuales y sus activos; falta recoger su resultado. No se ha repetido Full.
 
-| Sesión y carga | RAM máxima | VRAM máxima | Alcance |
-|---|---:|---:|---|
-| Producto antes del ajuste422 | 5,18 GiB | 3,10 GiB | Se detuvo por falta de RAM libre |
-| Producto Qwen3.5,437 | 2,75 GiB | 3,10 GiB | Conductor, 7/8 respuestas útiles |
-| Producto Gemma E2B,464 | 2,59 GiB | 1,65 GiB | Conductor, 7/8 respuestas útiles |
-| Compositor Gemma E2B,462 | 0,98 GiB | 1,65 GiB | Servidor y compositor; no toda la aplicación |
-| Mente y planes Qwen registrado,513 | 1,75 GiB | 3,42 GiB | 24/24 casos de desarrollo; sin UI/voz |
-| Producto Qwen registrado,515 base | 1,54 GiB | 3,42 GiB | Perfil aislado, 7/9 finales útiles; sin UI/voz |
-| Producto Qwen registrado,515 vista | 1,82 GiB | 3,42 GiB | Mismos casos, 7/9 finales útiles; filtro rechazado |
-| Producto Qwen registrado,521 | 1,97 GiB | 3,42 GiB | 9/11 finales útiles; sin UI/voz |
+La encuesta conserva742respuestas, revisión1248. El registro privado cuenta0casos acreditados individualmente,742abiertos y0no aplicables. Son adjudicaciones de evidencia, no742fallos de producto. Faltan los enlaces por caso y las variantes verificadas con nombres, valores, orden, referencias e idioma distintos. Las3expectativas negativas y18sin marca siguen siendo límites.
 
-Se redujo RAM mediante ajustes de caché y mapeo; la carga bajo demanda de Gemma redujo RAM del compositor sin alterar sus respuestas en esa comparación. Las distintas filas no son una comparación justa entre modelos: cambian la carga y el alcance medido. BAXY sigue usando RAM y disco. No se ha demostrado que todo resida en VRAM ni un mínimo universal. Falta medir el candidato final con interfaz, micrófono, reconocimiento y activación por voz dentro del techo conjunto de 4 GiB.
+Falta cerrar las ocho rutas y los incidentes de uso; acreditar la generalización de la encuesta; auditar contexto/exposición y congelar hasta100turnos españoles humanos, con inglés y mezcla aparte sin cuotas; verificar recuperación, interfaz real, loopback completo y supresión AEC; comprobar recursos conjuntos, Full final y publicación. Voz humana física, calibración wake y FAR/FRR son deC08. La matriz enlaza la evidencia disponible paraC04/C07/C08 sin cerrar sus filas.
 
-## Cómo se comparan los modelos
-
-Tu regla está incorporada en AGENTS.md y en la autoridad C03: investigar papers, documentación y reproducciones de usuarios; fijar modelo, cuantización, llama.cpp, plantilla y parámetros efectivos; medir calidad, tiempo, RAM y VRAM. Una prueba con defaults no basta para descartar un modelo. Tampoco se presume que una receta recomendada sea el óptimo.
-
-Se contrastaron llama.cpp b9980, estable b10809 y posterior b10865, junto con las correcciones aplicables a cada familia. La revisión522 detectó b10867: su delta sólo afecta ARM NEON y carga diferida AUTO en dispositivos sin mmap. Por inspección de la fuente CUDA, no se espera que altere los perfiles observados de esta RTX discreta; no se presenta como un benchmark de b10867. Actualizar el backend por sí solo no arregló los fallos semánticos medidos. Qwen Q8 y Qwen3.5-9B se evaluaron con perfiles documentados, pero no resolvieron todas las confirmaciones y lecturas de memoria; no se promovieron. Se compararon también checkpoints de Gemma, distinguiendo sus errores de generación de los del protocolo.
-
-En conversación, el perfil registrado y el recomendado de Qwen2507 empataron en los dos grupos de semillas (5/7 y 6/7 tras revisión semántica). El fallo de historial exigió corregir su representación. Con los contenidos conservados como datos, el ensayo510 corrigió el nombre pero mostró una respuesta con comentarios internos;511 aisló temperatura0 en 22 payloads emparejados y consiguió22/22 útiles. La adopción512 y la prueba real513 confirmaron la mejora con la configuración registrada. Estas cifras son desarrollo, nunca los cien turnos frescos de aceptación.
-
-## Qué falta para terminar
-
-1. Cerrar las ocho rutas de respuesta y los incidentes de tu sesión manual, incluyendo aplicaciones, reproducción, capacidades y cierre de BAXY; completar narración de resultados, confirmaciones y progreso.
-2. Certificar y congelar 100 turnos humanos frescos, separados del desarrollo, y obtener100/100 respuestas útiles y fieles en español, inglés y mezcla natural. De204 candidatos potenciales, el cruce518 con15510 filas de tres conjuntos heredados encontró92 coincidencias de entrenamiento/evaluación. Quedan112 sin coincidencia en ese cruce,101 con original completo; esto aún no acredita frescura. Ninguno está certificado ni ejecutado para aceptación. Faltan contexto, otras fuentes, actualización de exposición y mensajes de mezcla natural sin ese solapamiento.
-3. Verificar averías y recuperación, interfaz real de escritorio, voz y audio físico, ASR/wake y recursos del conjunto.
-4. Comprobar runtime e instalación, continuidad C04–C09, Full final íntegramente verde y publicación fuera de main.
-
-No hay un porcentaje de cierre ni un plazo fiable todavía. Las mejoras anteriores están verificadas en su alcance; las comprobaciones pendientes no se cuentan como realizadas. CHECKPOINT.md y HANDOFF.md conservan el siguiente paso y los registros de cada prueba.
+No hay una estimación fiable de tiempo. CHECKPOINT.md conserva el estado ejecutable y la siguiente acción. Los informes anteriores están preservados en astra-baseline-state527.

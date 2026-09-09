@@ -3152,7 +3152,7 @@ def _explicit_stable_no_effect_turn_decision(
         re.match(
             (
                 r"^(?:no|nunca|jamas|do\s+not|don't|never)\b[^;]{1,160};\s*"
-                r"(?:(?:solo|solamente|just)\s+)?"
+                r"(?:(?:solo|solamente|just|only)\s+)?"
                 r"(?:explica|explicame|explain|define|dime\s+que|tell\s+me\s+what|"
                 r"what\s+does)\b"
             ),
@@ -3160,6 +3160,9 @@ def _explicit_stable_no_effect_turn_decision(
             re.IGNORECASE,
         )
         is not None
+        # Explaining after a prohibition cannot cancel a later requested effect.
+        # Reuse the clause reader, which splits at independent action heads.
+        and len(effect_intent._request_clauses(folded)) == 1
     )
     opinion_prompt = (
         re.match(

@@ -1,0 +1,13 @@
+{"restorable": ["artifacts/comprobaciones/C03/astra-qwen-documented-profile/effective-template.jinja"], "restorableCount": 1}
+{"runtime_diff": {"ggufName": {"old": "granite-4.2-3b-Q4_K_M.gguf", "current": "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"}, "ggufSha256": {"old": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5", "current": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"}}}
+{"blind_holdout": true, "case_id": "r6-out-of-scope-28-plain", "case_type": "conversation", "compatible_effect_operation_sets": [[]], "compatible_terminal_operation_sets": [[]], "execution_authority": false, "family": "out_of_scope", "language": "en", "outcome": "conversation", "owner": "mind_sidecar", "schema": "baxy.generalization-product-holdout.v6", "surface": "plain", "text": "Do not read my clipboard; only explain its purpose"}
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-full-diagnosis529.py", line 32, in <module>
+    live_mission_chains()
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scripts\goal095_09511c_revalidate.py", line 618, in live_mission_chains
+    vetoed = apply_compound_effect_conservation_veto(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\__main__.py", line 1819, in apply_compound_effect_conservation_veto
+    raise PlannerContractError("unresolved_compound_effects")
+baxy_mind.planner.PlannerContractError: unresolved_compound_effects
+{"blind_holdout": true, "case_id": "r6-out-of-scope-28-addressed", "case_type": "conversation", "compatible_effect_operation_sets": [[]], "compatible_terminal_operation_sets": [[]], "execution_authority": false, "family": "out_of_scope", "language": "en", "outcome": "conversation", "owner": "mind_sidecar", "schema": "baxy.generalization-product-holdout.v6", "surface": "addressed", "text": "Hey Baxy, please: do not read my clipboard; only explain its purpose."}

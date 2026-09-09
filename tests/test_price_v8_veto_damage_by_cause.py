@@ -95,12 +95,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # Fuente383 conserva el borrador nativo primario pasando por las guardas de chat.
 # Fuente395 conserva el historial ya acotado al reparar ese borrador; V8 sigue histórico.
 # Fuente397 separa la tilde de un nombre de las palabras del idioma de la respuesta.
+# C03 531 pins source506/520/530: single chat route, quoted history, verified
+# status instructions and explanation boundaries. V8 evidence/numbers stay sealed.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3"
+        "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
     ),
     "src/baxy_mind/llm.py": (
-        "5c3db6952201a8099cf13992adb09e55cd895ed2db5a1f26041629d0b067e7fa"
+        "c79d818f05ff1f4c843a9a039d933cb04caa4e605d1c06ab5294c5b0d5fba783"
     ),
 }
 

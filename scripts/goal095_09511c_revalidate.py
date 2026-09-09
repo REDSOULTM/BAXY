@@ -29,6 +29,7 @@ from baxy_mind.effect_intent import (
     resolve_explicit_effects,
     unresolved_compound_contract,
 )
+from baxy_mind.planner import PlannerContractError
 from baxy_mind.first_signal import (
     KIND_MILESTONE,
     PATH_CLOSED_CONVERSATION,
@@ -615,16 +616,23 @@ def live_mission_chains() -> dict[str, Any]:
     halt_contract = unresolved_compound_contract(
         halt_text, AVAILABLE, application_names=APPS
     )
-    vetoed = apply_compound_effect_conservation_veto(
-        {
-            "mode": "plan",
-            "operation": "app.open",
-            "effect_operations": ["app.open"],
-            "effect_count": "one",
-            "effect_verification": "pending",
-        },
-        halt_contract,
-    )
+    veto_reason = None
+    try:
+        vetoed = apply_compound_effect_conservation_veto(
+            {
+                "mode": "plan",
+                "operation": "app.open",
+                "effect_operations": ["app.open"],
+                "effect_count": "one",
+                "effect_verification": "pending",
+            },
+            halt_contract,
+        )
+    except PlannerContractError as error:
+        # The product now requests bounded recovery before dispatch. Report that
+        # boundary; an incomplete mission must not become general conversation.
+        veto_reason = str(error)
+        vetoed = {"mode": "recovery", "effect_operations": []}
     return {
         "chains": chains,
         "languages": [item["language"] for item in chains],
@@ -633,11 +641,13 @@ def live_mission_chains() -> dict[str, Any]:
             "intent_is_none": halt_intent is None,
             "minimum_effects": getattr(halt_contract, "minimum_effects", None),
             "veto_mode": vetoed.get("mode"),
+            "veto_reason": veto_reason,
             "veto_effects": list(vetoed.get("effect_operations") or []),
             "holds": (
                 halt_intent is None
                 and halt_contract is not None
-                and vetoed.get("mode") == "conversation"
+                and vetoed.get("mode") == "recovery"
+                and veto_reason == "unresolved_compound_effects"
                 and list(vetoed.get("effect_operations") or []) == []
             ),
         },
