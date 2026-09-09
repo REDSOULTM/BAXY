@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-09T03:16:17.861172+00:00",
+  "stage": "Source repair following original product541 and failing owner test reproduction; registered after the test-first edit, not misrepresented as a before-run seal.",
+  "finding": "English GPU plus dedicated video memory was read as GPU+system RAM; explicit scope abstained, native argument grounding failed, then a summary without adapters led to a fabricated integrated-only GPU answer. Qualified video-memory nouns must belong only to GPU. A separate RAM clause must remain separate.",
+  "change": "One shared lexical definition for video/graphics/GPU memory in EN and memoria gráfica/de video/de la GPU in ES. Reuse for GPU evidence and exclude only those noun phrases from generic RAM recognition. No catalog expansion, new layer, model profile or fixed reply.",
+  "validation_so_far": {
+    "baseline": "8 failed,43 passed in0.82s: six qualified GPU variants and two mixed GPU/RAM controls fail before source edit.",
+    "owners": "1917 passed in45.50s; test_system_status_scope_grounding.py, test_machine_status_scope.py, test_effect_intent.py"
+  },
+  "limits": "Fixes selection/argument grounding, not the independent GPU byte-to-VRAM prose error or all survey failures. Full not required for this Python-only source adoption; final Full remains mandatory."
+}

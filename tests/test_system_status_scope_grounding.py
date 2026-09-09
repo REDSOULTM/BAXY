@@ -37,6 +37,12 @@ from baxy_mind.__main__ import (
         ("espacio disponible en la unidad c", "disk"),
         ("que gpu tiene este equipo", "gpu_identity"),
         ("what gpu is in this machine", "gpu_identity"),
+        ("What GPU is installed, and how much dedicated video memory does it have?", "gpu_identity"),
+        ("How much video memory does this computer have?", "gpu_identity"),
+        ("Which graphics card is installed and how much graphics memory does it have?", "gpu_identity"),
+        ("¿Qué tarjeta gráfica tengo y cuánta memoria de video tiene?", "gpu_identity"),
+        ("¿Cuánta memoria gráfica tiene este equipo?", "gpu_identity"),
+        ("¿Qué GPU tengo y cuánta memoria de la GPU hay instalada?", "gpu_identity"),
         ("cuanta vram se esta usando", "gpu_usage"),
         ("show vram usage", "gpu_usage"),
         ("dime la version de windows que tengo", "os"),
@@ -84,6 +90,9 @@ def test_a_selected_scope_cannot_be_dropped_to_fit_an_incompatible_catalog() -> 
         # Dos alcances que el enum no mide de una vez.
         "cuanta bateria queda y cuanta ram tengo",
         "cuanto disco libre hay y cuanta bateria queda",
+        "How much video memory and RAM does this computer have?",
+        "¿Cuánta memoria de video tengo y cuánta memoria RAM queda?",
+        "What GPU do I have and how much system memory is free?",
         # GPU sin decir si se pregunta identidad o uso.
         "chequea la vram porfa",
         "muestra mi VRAM",

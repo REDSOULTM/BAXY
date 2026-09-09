@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-09T03:08:56.470179+00:00",
+  "decision": "rejected_no_source_adoption",
+  "reason": "No adoptado. Las descripciones canónicas no reparan el guardado ni la capacidad. El resultado de capacidad añade el límite no demostrado «Solo tengo acceso a la información que se me proporciona en cada interacción».",
+  "limitation": "El watchdog heredado lanzó TypeError al comparar la primera lectura GPU None con3800. El proceso terminó y fue cerrado, y el muestreador registró3497,56MiB; esta corrida NO acredita vigilancia activa ni cumplimiento continuo del límite. Se corrigió la espera acotada de telemetría en538–540, sin alterar537 ni repetirlo.",
+  "response_count": 22,
+  "eos_count": 22,
+  "survey": {
+    "covered": 0,
+    "open": 742,
+    "not_applicable": 0
+  }
+}

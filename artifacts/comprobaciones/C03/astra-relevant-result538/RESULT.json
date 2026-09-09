@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-09T03:08:56.499714+00:00",
+  "decision": "rejected_no_source_adoption",
+  "reason": "No adoptado. El contrato general más claro mantiene metanarración al guardar y añade «no sensitive data was processed», que el indicador de ruta sensitive:false no demuestra. La respuesta de capacidad distingue estado inactivo, pero no compensa el defecto del guardado.",
+  "limitation": "22 respuestas EOS. Modelo, configuración registrada y hechos originales sin cambios; vigilancia con adquisición acotada de telemetría.",
+  "response_count": 22,
+  "eos_count": 22,
+  "survey": {
+    "covered": 0,
+    "open": 742,
+    "not_applicable": 0
+  }
+}

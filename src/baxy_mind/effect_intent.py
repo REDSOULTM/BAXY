@@ -4425,6 +4425,11 @@ def _is_effect_receipt_clause(text: str) -> bool:
 # Los alcances medibles del descriptor `system.status` del catálogo. Nombrar
 # uno de ellos no inventa una operación: solo identifica el dominio físico que
 # esa operación ya mide. El orden no importa; ninguno concede autoridad.
+_GPU_MEMORY_TERMS = (
+    r"\b(?:(?:video|graphics|gpu)\s+memory|"
+    r"memoria\s+(?:grafica|de\s+video|de\s+(?:la\s+)?gpu))\b"
+)
+
 _MACHINE_STATUS_SCOPES: tuple[tuple[str, str], ...] = (
     (
         "battery",
@@ -4433,7 +4438,8 @@ _MACHINE_STATUS_SCOPES: tuple[tuple[str, str], ...] = (
     (
         "gpu",
         r"\b(?:gpu|gpus|vram|nvidia-smi|graphics\s+card|video\s+card|"
-        r"tarjeta\s+(?:grafica|de\s+video)|placa\s+de\s+video)\b",
+        r"tarjeta\s+(?:grafica|de\s+video)|placa\s+de\s+video)\b|"
+        + _GPU_MEMORY_TERMS,
     ),
     (
         "cpu",
@@ -4504,8 +4510,13 @@ def _machine_status_scopes(text: str) -> frozenset[str]:
     """Name every closed `system.status` scope this request measures."""
 
     named = {scope for scope, pattern in _MACHINE_STATUS_SCOPES if _has(text, pattern)}
+    # Qualified video memory names the GPU scope, not a second RAM reading.
+    # Remove only that noun phrase: an independent RAM/system-memory request
+    # must still survive so a combined request cannot silently lose a scope.
+    memory_text = re.sub(_GPU_MEMORY_TERMS, " ", text)
     if _has(text, r"\bram\b") or (
-        _has(text, r"\b(?:memoria|memory)\b") and _has(text, _MEMORY_SCOPE_MEASURE)
+        _has(memory_text, r"\b(?:memoria|memory)\b")
+        and _has(text, _MEMORY_SCOPE_MEASURE)
     ):
         named.add("memory")
     return frozenset(named)

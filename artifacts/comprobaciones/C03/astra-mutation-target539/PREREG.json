@@ -1,0 +1,77 @@
+{
+  "utc": "2026-09-09T03:04:06.745401+00:00",
+  "method": "Native ablation of a concrete projection loss: Core MemoryMutationWireResult contains verified selector; MemoryOperationResponseProjection.TryProjectMutation validates and discards it. Capture521 save result receives only confirm and bookkeeping flags. Add seen.label using that selector, keep every existing flag, original prompt, shape and request. Four labels include actual synthetic name and three counterfactual verified receipts; no claim those counterfactual records were really saved.",
+  "criteria": "Describe the actual saved target naturally without claiming its value or subject. Do not recite false corrections/sensitivity or invent effects. If no gain, reject; do not adopt target propagation solely on a plausible causal explanation.",
+  "sources": [
+    "src/Baxy.Core/Operations/MemoryHandlers.cs:336",
+    "src/Baxy.App/MemoryOperationResponseProjection.cs:126"
+  ],
+  "inheritance": "537 descriptors and538 system-contract changes failed and are not applied. Return to original source520 prompt. 515 removed false flags without target grounding and failed; this keeps those flags and tests only lost target.",
+  "authorization": "AUTORIZACION_DUENO_536.md; development, not blind acceptance.",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "capture_sha256": "216cd5344e501020f5cc4f8d4d927c73ea546175ae737231154bebc1986d074b",
+  "server_command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "56193",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mutation-target539-private\\server.log"
+  ],
+  "profiles": [
+    [
+      "baseline",
+      {
+        "seed": 0
+      }
+    ],
+    [
+      "verified-selector",
+      {
+        "seed": 0
+      }
+    ]
+  ],
+  "cases": [
+    "name",
+    "favorite color",
+    "pet name",
+    "delivery preference"
+  ],
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 360,
+    "request_seconds": 60
+  }
+}

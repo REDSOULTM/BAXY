@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-09T03:08:56.556847+00:00",
+  "decision": "rejected_no_source_adoption",
+  "reason": "No adoptado. Aislar sólo la distinción entre configuración y existencia conserva la precisión de estado inactivo, pero sigue agregando «no sensitive data was detected» al guardar y más lenguaje interno al habilitar. No se incorpora una instrucción global con esas regresiones.",
+  "limitation": "22 respuestas EOS. Se aisló una cláusula medida de538; ninguna modificación del producto ni promoción de runtime.",
+  "response_count": 22,
+  "eos_count": 22,
+  "survey": {
+    "covered": 0,
+    "open": 742,
+    "not_applicable": 0
+  }
+}

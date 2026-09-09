@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-09T03:08:56.528153+00:00",
+  "decision": "rejected_no_source_adoption",
+  "reason": "No adoptado. Recuperar el selector verificado que descarta la proyección mejora el tema de tres variantes, pero las cuatro siguen recitando indicadores. El caso name agrega que no hubo contenido sensible sin demostrarlo. El hallazgo de pérdida del selector no basta para cambiar la proyección.",
+  "limitation": "8 respuestas EOS. Una captura original y tres recibos contrafactuales de desarrollo; no se afirma haber guardado esos tres registros. Valores de memoria nunca añadidos.",
+  "response_count": 8,
+  "eos_count": 8,
+  "survey": {
+    "covered": 0,
+    "open": 742,
+    "not_applicable": 0
+  }
+}

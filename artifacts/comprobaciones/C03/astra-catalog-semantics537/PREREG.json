@@ -1,0 +1,114 @@
+{
+  "utc": "2026-09-09T02:59:17.594283+00:00",
+  "method": "Eleven exact native captures521, two arms. Sole treatment: append operationDescription from canonical ProductCatalog for the already supplied operation. Keep original request, all facts, prompts, sampling, backend and model. No inference of operation from request, no capability invented from enabled:false. This is a semantic-grounding diagnostic, not the rejected metadata filtering515, sampler523, larger-model524 or question removal525.",
+  "criteria": "Repair disabled-capability denial and internal save receipt without losing cause, pending confirmation, recall subject/value, disable state, clock, language or adding unverified effects. Review every literal. A native improvement requires whole-product validation before source adoption.",
+  "authorization": "AUTORIZACION_DUENO_536.md permits historical and survey reuse; these are consumed synthetic development captures, never a blind holdout.",
+  "catalog_sha256": "6651ac1b649418f6cd0da3a5891aac94f87e65ddd6e52f7b826863e717e9b85c",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "capture_sha256": "216cd5344e501020f5cc4f8d4d927c73ea546175ae737231154bebc1986d074b",
+  "server_command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "65132",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-catalog-semantics537-private\\server.log"
+  ],
+  "profiles": [
+    [
+      "baseline",
+      {
+        "seed": 0
+      }
+    ],
+    [
+      "catalog-description",
+      {
+        "seed": 0
+      }
+    ]
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "case": "disabled-save-error"
+    },
+    {
+      "id": 2,
+      "case": "enable-confirmation"
+    },
+    {
+      "id": 3,
+      "case": "enable-result"
+    },
+    {
+      "id": 4,
+      "case": "save-result"
+    },
+    {
+      "id": 6,
+      "case": "app-clarification"
+    },
+    {
+      "id": 7,
+      "case": "stored-name-en"
+    },
+    {
+      "id": 11,
+      "case": "stored-name-es"
+    },
+    {
+      "id": 12,
+      "case": "progress"
+    },
+    {
+      "id": 17,
+      "case": "disable-result"
+    },
+    {
+      "id": 18,
+      "case": "clock-result"
+    },
+    {
+      "id": 19,
+      "case": "memory-capability-disabled"
+    }
+  ],
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 360,
+    "request_seconds": 60
+  },
+  "inheritance": "523 fixed-model sampling failed; retain registered greedy to isolate data semantics. No model ranking or joint UI/audio resource claim."
+}
