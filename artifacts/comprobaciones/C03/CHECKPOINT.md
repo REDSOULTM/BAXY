@@ -1123,3 +1123,8 @@ La proyección mantiene el significado de foreground sin confundirlo con siempre
 Nueva cohorte de cobertura64: baseline de conducta50fallos/14pases→64pases; el error previo de API64fallos se conserva aparte. Focal integrada733pases/0skips,4,52s. Dueñas declaradas23ficheros:2566pases+121subpruebas/0skips,25,18s. Declaraciones600pases/1skip ambiental,5,05s: faltan entradas de campaña ciega STT. Fast exit0,Release31,47s,0advertencias/errores. Se conserva el preflight fallido por usar inicialmente Python de producto sin ruff; el gate verde usa BAXYQuality configurado.
 
 Compositor677 mismos17casos15/17→17/17:24llamadas EOS, diez controles en una llamada y siete compuestos en dos. Producto67824/24 sin alterar respuestas669, con observaciones independientes. La gramática es delimitada; no prueba comprensión universal, cobertura de todas las preguntas ni todas las negaciones. Se adopta esta reparación acotada. Encuesta26/716/0, ocho rutas/reserva/UI/voz/recuperación/Full final siguen abiertos. Full651 es baseline anterior, no validación final676; el encargo sólo exige otro Full al adoptar C#+Python juntos o cerrar C03, y esta tanda es Python.
+
+
+## Publicación676 verificada
+
+Fuente2138d2d6e96d79c2cda025bd9f7c2367744abb3b coincide con origin/Goal-c03; árbol limpio y main intacto al verificar. Auditoría21pins públicos/índice, privados y fuentes/declaraciones/registro/encuesta correcta. Dueñas2566+121subpruebas/0skips, declaraciones600pases/1skip ambiental, Fast0; compositor67717/17 y producto67824/24. Encuesta26/716/0; ninguna fila global de C03 se cierra con esta tanda.

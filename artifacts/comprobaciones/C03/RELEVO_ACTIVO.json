@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T17:54:32.223030+00:00",
+  "confirmedAtUtc": "2026-09-09T17:59:30.668880+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "676 adoptada:733 focales;2566dueñas+121subtests;declaraciones600/1skip ambiental;Fast0;67717/17;67824/24.",
-  "continuation": "Auditar/commitear/push676-678 ahora; main intacto. Luego acreditar H0104 con literal y variantes del producto, sin adjudicar por familia; encuesta26/716/0 intacta. BAXY cerrado, ninguna decisión pendiente.",
+  "checkpoint": "676 publicada2138d2d6;dueñas2566+121subtests/0skips,declaraciones600/1skip ambiental,Fast0;67717/17 y67824/24.",
+  "continuation": "Siguiente: acreditar H0104 con literal y variantes del producto, sin crédito por familia. Fuente676 publicada y árbol limpio al verificar remoto; main/registro/encuesta intactos. Resto C03 completo sigue abierto.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "db47edca6f521e29ca102b830b2134f3489337b9",
+  "publishedSourceCommit": "2138d2d6e96d79c2cda025bd9f7c2367744abb3b",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "db47edca6f521e29ca102b830b2134f3489337b9",
+  "publishedEvidenceCommit": "2138d2d6e96d79c2cda025bd9f7c2367744abb3b",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
