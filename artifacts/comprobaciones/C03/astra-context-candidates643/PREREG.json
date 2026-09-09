@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-09T13:35:00.801307+00:00",
+  "source_modified": false,
+  "method": "Compare lexical candidates with current input only and the existing bounded evidence query. No model calls, dispatch, history rewriting in a model prompt, or effect authority. Use actual product642 history and independent topic-shift controls. Candidate presence alone is not behavior coverage.",
+  "inheritance": [
+    "product640 and642 candidate lists omit window.application.status for named follow-ups",
+    "biblioteca/gemma4-agent/documentacion/07_latencia/research/4_contexto.md: context for ellipsis rather than every utterance",
+    "src/baxy_mind/llm.py: product360 already rejected quoting previous requests as current commands"
+  ],
+  "research": [
+    "https://aclanthology.org/2022.emnlp-main.311/",
+    "https://aclanthology.org/2024.findings-acl.792/"
+  ],
+  "research_limit": "Conversational retrieval papers motivate relevant context and warn about noisy history. They do not validate a BAXY retrieval strategy or authorize old effects.",
+  "core_sha256": "8bcb000ccdcdde2e45fa5040df3e72c2bdd268518abd78d53dc6ec34d5e812a2",
+  "sources": {
+    "src/baxy_mind/planner.py": "e3a73e70d8542c4c31df22ed97705dec0746d2a8cd7bdc157967d613bb91e28f",
+    "src/baxy_mind/__main__.py": "3c66e6cbe15ae091590393946e1c5f1ad056c89869a2c6bb345de616f760b9c6"
+  }
+}

@@ -734,3 +734,41 @@ Validación: 16 rojos iniciales → 72 focales verdes; 3455 pruebas dueñas y 12
 Recursos 642: GPU 3497,559 MiB, RAM 2400,695 MiB, duración 59,297 s, sin infracciones. Registro y fuentes permanecieron intactos durante la prueba. Estos datos corresponden al conductor, sin crédito de interfaz ni voz simultáneas; no son el mínimo global de BAXY.
 
 Próxima frontera: 640 muestra que `window.application.status` falta en las candidatas de «And Spotify?» y «¿Y Steam?». El modelo sí recibe la historia con sus roles originales; la pérdida ocurre antes, al recuperar con el texto actual solamente. Investigar candidatos contextuales acotados, sin convertir peticiones anteriores en autorización. `¿Esa aplicación…?` sí propone la operación y pierde el referente después: defecto distinto, aún sin reparar.
+
+
+# 643 — el contexto completo no sustituye al mensaje actual
+
+Recuperación léxica real del catálogo autenticado: window.application.status pasa de ausente a los puestos 5 y 9 para los dos seguimientos ingleses. Para «¿Y Steam?» sigue ausente tras respuestas previas fallidas. La referencia española ya tenía la operación en el puesto 1 y la concatenación la baja al 22. En controles de cambio de tema, network.status pasa del puesto 22 a ausente; reloj y volumen siguen presentes. El control de ficheros tenía un error de anotación (`file.list`); la operación real `filesystem.list` ocupa los puestos 7 y 10, preservados en ADJUDICATION.json sin alterar las listas originales.
+
+No se adopta concatenación general de historia. Es evidencia de recuperación, sin inferencia, dispatch ni cobertura de conducta. La literatura de recuperación conversacional orienta a seleccionar contexto relevante; no demuestra este algoritmo: https://aclanthology.org/2022.emnlp-main.311/ y https://aclanthology.org/2024.findings-acl.792/. Herencia: biblioteca/gemma4-agent/documentacion/07_latencia/research/4_contexto.md; product360 ya rechazó volver a presentar órdenes antiguas como actuales.
+
+
+# 644 — selección nativa aislada
+
+Resultado: {'current': 3, 'diagnostic_candidate': 6}, diez casos por brazo. Cuatro historias de cuatro mensajes tomadas de 642 y seis controles independientes con historia coherente. No es repetición exacta de toda la historia del producto. Los conjuntos de candidatos diagnósticos incluyen deliberadamente window.application.status; eso no es una política de recuperación implementada ni acredita generalización. Se conserva el texto nativo completo en el informe privado.
+
+644 modifica sólo la disponibilidad de la candidata: corrige tres selecciones inglesas; los seguimientos españoles y la prohibición siguen fallando. La prohibición produce una lectura en ambos brazos del selector aislado, no demuestra una regresión del producto, cuya guardia previa no ejecutó efectos en642.
+
+Recursos del servidor aislado: GPU 3497.559 MiB, RAM 741.863 MiB, 31.437 s, sin infracciones. Registro intacto; sin dispatch, interfaz, voz ni cobertura de encuesta. C03 continúa activo: 25 cubiertos, 717 abiertos, 0 no aplicables.
+
+
+# 645 — selección nativa aislada
+
+Resultado: {'candidate_only': 5, 'context_contract': 6}, diez casos por brazo. Cuatro historias de cuatro mensajes tomadas de 642 y seis controles independientes con historia coherente. No es repetición exacta de toda la historia del producto. Los conjuntos de candidatos diagnósticos incluyen deliberadamente window.application.status; eso no es una política de recuperación implementada ni acredita generalización. Se conserva el texto nativo completo en el informe privado.
+
+645 mantiene idénticas candidatas y modifica sólo una regla del sistema sobre referencia contextual y lectura nueva del estado actual. Su resultado no permite saltarse la recuperación, los argumentos, las guardias ni el compositor. No se adopta fuente o perfil con esta prueba sola.
+
+Recursos del servidor aislado: GPU 3497.559 MiB, RAM 731.832 MiB, 41.281 s, sin infracciones. Registro intacto; sin dispatch, interfaz, voz ni cobertura de encuesta. C03 continúa activo: 25 cubiertos, 717 abiertos, 0 no aplicables.
+
+
+## 643–645: causa contextual delimitada, sin promoción
+
+641–642 publicadas en b20bff2472ede886a7edea4a947849328e574672, origin/Goal-c03 confirmado. 642 acredita 15/20, nueva lectura inglesa de cantidad; 3455 dueñas +121 subpruebas /0 skips y Fast exit0. Fuente registrada, main y modelo intactos. Encuesta 25/717/0.
+
+643 demuestra que sustituir el texto actual por cuatro mensajes de contexto recupera dos candidatos ingleses pero pierde network.status en un cambio de tema. No se adopta. El control de ficheros se corrige explícitamente en ADJUDICATION.json: filesystem.list, puestos 7→10; el nombre file.list del resultado crudo era un error de anotación.
+
+644 aísla la disponibilidad de window.application.status manteniendo historia y parámetros: 3/10→6/10 selecciones correctas. Corrige tres inglesas, no las españolas ni la prohibición. Es candidata introducida para diagnóstico, no recuperación implementada ni producto. 645 prueba sólo una regla general de contexto/lectura nueva con las mismas candidatas: 5/10→6/10; siguen los defectos españoles y de prohibición. El control inglés coherente varía entre corridas incluso con el mismo payload: no atribuir toda diferencia entre campañas a la regla. No se adopta ni se continúa ajustando frases de prompt sobre estos mismos fallos.
+
+Siguiente trabajo: resolver la referencia de la petición antes de recuperar, conservando el texto original y la frontera de autorización. Reutilizar la lectura contextual existente; comprobar si basta una expansión acotada basada en peticiones del usuario, sin revivir acciones anteriores ni introducir estado paralelo. Aún no hay diseño o fuente adoptados. Leer `request_reading.py:622`, `__main__.py:535,5952` y `_previous_user_request`; evaluar cambios de tema, varios referentes y negación junto con nombres nuevos ES/EN. La pérdida posterior de argumentos en t18 y la clasificación inglesa `has` son defectos distintos. No cerrar por disponibilidad de candidata solamente.
+
+643 no ejecutó modelo ni efectos. 644/645 sólo servidor, sin dispatch: GPU 3497,559 MiB; RAM 741,863/731,832 MiB; 31,437/41,281 s; sin infracciones y registro intacto. No sumar esos números a crédito de UI/voz. Full630 sigue siendo línea base histórica; faltan encuesta, rutas de prosa, UI real, loopback/AEC, recuperación y Full final. Ninguna decisión pendiente del dueño.

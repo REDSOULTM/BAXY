@@ -1,0 +1,54 @@
+{
+  "corrected_ranks": [
+    {
+      "case_id": "reference-new-name-en",
+      "operation": "window.application.status",
+      "current_rank": null,
+      "context_rank": 5
+    },
+    {
+      "case_id": "reference-pronoun-en",
+      "operation": "window.application.status",
+      "current_rank": null,
+      "context_rank": 9
+    },
+    {
+      "case_id": "reference-new-name-es",
+      "operation": "window.application.status",
+      "current_rank": null,
+      "context_rank": null
+    },
+    {
+      "case_id": "reference-pronoun-es",
+      "operation": "window.application.status",
+      "current_rank": 1,
+      "context_rank": 22
+    },
+    {
+      "case_id": "shift-time-es",
+      "operation": "system.time",
+      "current_rank": 2,
+      "context_rank": 13
+    },
+    {
+      "case_id": "shift-volume-en",
+      "operation": "audio.volume",
+      "current_rank": 1,
+      "context_rank": 4
+    },
+    {
+      "case_id": "shift-network-es",
+      "operation": "network.status",
+      "current_rank": 22,
+      "context_rank": null
+    },
+    {
+      "case_id": "shift-files-en",
+      "operation": "filesystem.list",
+      "current_rank": 7,
+      "context_rank": 10
+    }
+  ],
+  "control_annotation_correction": "Raw shift-files-en accidentally named nonexistent file.list. Existing candidate arrays show canonical filesystem.list at7 current and10 contextual. Preserve original output; this is an annotation correction, not a retrieval change.",
+  "no_global_history_concatenation_adopted": true
+}

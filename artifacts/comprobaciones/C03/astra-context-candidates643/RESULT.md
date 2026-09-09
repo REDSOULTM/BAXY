@@ -1,0 +1,5 @@
+# 643 — el contexto completo no sustituye al mensaje actual
+
+Recuperación léxica real del catálogo autenticado: window.application.status pasa de ausente a los puestos 5 y 9 para los dos seguimientos ingleses. Para «¿Y Steam?» sigue ausente tras respuestas previas fallidas. La referencia española ya tenía la operación en el puesto 1 y la concatenación la baja al 22. En controles de cambio de tema, network.status pasa del puesto 22 a ausente; reloj y volumen siguen presentes. El control de ficheros tenía un error de anotación (`file.list`); la operación real `filesystem.list` ocupa los puestos 7 y 10, preservados en ADJUDICATION.json sin alterar las listas originales.
+
+No se adopta concatenación general de historia. Es evidencia de recuperación, sin inferencia, dispatch ni cobertura de conducta. La literatura de recuperación conversacional orienta a seleccionar contexto relevante; no demuestra este algoritmo: https://aclanthology.org/2022.emnlp-main.311/ y https://aclanthology.org/2024.findings-acl.792/. Herencia: biblioteca/gemma4-agent/documentacion/07_latencia/research/4_contexto.md; product360 ya rechazó volver a presentar órdenes antiguas como actuales.

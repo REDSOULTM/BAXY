@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T13:32:01.311443+00:00",
+  "confirmedAtUtc": "2026-09-09T13:41:33.959376+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "641 validada: 3455 dueñas +121 subpruebas /0 skips, Fast. 642:15/20 con nueva lectura inglesa. 25/717/0.",
-  "continuation": "Publicar 641–642. Después medir candidatos contextuales para seguimientos: shortlist actual no incluye window.application.status en t15/t17. No reescribir historia como mandato ni cambiar composición. Referente de argumentos t18 y detección de idioma has son fronteras separadas. UI/voz/recuperación/encuesta/Full final siguen pendientes.",
+  "checkpoint": "641 publicada; 642:15/20. 643 contexto general pierde candidatos. 644 selección 3→6/10;645 regla5→6/10 sin reparar ES: no adoptada.25/717/0.",
+  "continuation": "Publicar evidencia643–645 y luego resolver referencia contextual antes de recuperación con texto original conservado. No concatenación general ni más ajuste de prompt645. Argumentos t18 y has inglés siguen separados. BAXY manual cerrado; sin pruebas activas. UI/voz/recuperación/encuesta/Full final pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "pending_publication_of_validated_source641",
+  "publishedSourceCommit": "b20bff2472ede886a7edea4a947849328e574672",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "9e3507cf870446a85fb913722662a690ab532128",
+  "publishedEvidenceCommit": "b20bff2472ede886a7edea4a947849328e574672",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -44,5 +44,5 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Fresh English quantity read verified in product642; owners and Fast pass."
+  "previousGoalTurnClassificationReason": "Published verified count repair and isolated missing-candidate vs native context failures without promoting ineffective rules."
 }

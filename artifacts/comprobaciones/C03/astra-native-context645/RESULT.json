@@ -1,0 +1,26 @@
+{
+  "source_modified": false,
+  "scores": {
+    "candidate_only": 5,
+    "context_contract": 6
+  },
+  "per_arm": 10,
+  "one_difference_verified": true,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 731.83203125,
+    "seconds": 41.280999999988126,
+    "manifest_unchanged": true
+  },
+  "diagnostic_candidate_only": true,
+  "product_or_coverage_credit": false,
+  "private_hashes": {
+    "panel.json": "5dfa1f665894561e81d4d8f3eff2ece33dec2cf9c84c2aee06943cd06efdd83a",
+    "requests.jsonl": "3dbb8f6e70419b002bf92d7b809a3ce7b5ab59d946cd86e1e6d056f72dac85ef",
+    "responses.jsonl": "1f063fb420cfba79453b856aac7055db553014bf6b27480edafa4b185e578b77",
+    "adjudication.json": "7c3d91e1e19505b2a73d5ea4d8db5e9c5cb7be41640cb023de9a2fe28058e11a",
+    "RESULT.md": "140a208f218767317bfa84e00c675171d47465e5e1f0dd49c6de68ddde386860"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "source_modified": false,
+  "scores": {
+    "current": 3,
+    "diagnostic_candidate": 6
+  },
+  "per_arm": 10,
+  "one_difference_verified": true,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 741.86328125,
+    "seconds": 31.437000000005355,
+    "manifest_unchanged": true
+  },
+  "diagnostic_candidate_only": true,
+  "product_or_coverage_credit": false,
+  "private_hashes": {
+    "panel.json": "f1b699a19fb1fdb598d682dde95d74e5bee4341462196d1b05c0fc6b5ffe2ea7",
+    "requests.jsonl": "81b4dbe7575eff1a7c8f4cc100494c301645d23cb77ca15840eca1c01d05ca22",
+    "responses.jsonl": "8fd256eadbd7d8b477761a849447a1f412acb28d1f3b450859cfeb808b3879cd",
+    "adjudication.json": "cd9d2da8260f4c1b6c63030aa640319099fa552a53bfb10bc035c070cc2990ed",
+    "RESULT.md": "07c6d2c667e5098cec07fa1239a54e3160e2bfd26001accbc406a9d6f36fc453"
+  }
+}
