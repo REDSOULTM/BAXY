@@ -97,12 +97,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # Fuente397 separa la tilde de un nombre de las palabras del idioma de la respuesta.
 # C03 531 pins source506/520/530: single chat route, quoted history, verified
 # status instructions and explanation boundaries. V8 evidence/numbers stay sealed.
+# C03 590 pins the current CPU prose adapter integration and the published
+# CPU actor/quantity repairs; consumed V8 evidence and verdict remain unchanged.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
     ),
     "src/baxy_mind/llm.py": (
-        "c79d818f05ff1f4c843a9a039d933cb04caa4e605d1c06ab5294c5b0d5fba783"
+        "0abdca23f116e1d2cd18a52da75f318dbe2a2d5a54ef4f82f49fc8b51ea157e2"
     ),
 }
 

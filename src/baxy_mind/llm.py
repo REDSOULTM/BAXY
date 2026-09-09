@@ -44,6 +44,7 @@ from .effect_intent import (
     explicit_negative_constraint,
     explicit_non_action_body,
 )
+from .cpu_prose_adapter import CpuProseAdapter, applies_to_cpu_prose
 from .llm_transport import (
     ChatCompletionCancellation,
     ChatCompletionConnectionPool,
@@ -5143,6 +5144,7 @@ class LlmRuntime:
         self._gguf = gguf
         self._server = server
         self._endpoint = endpoint
+        self._cpu_prose_adapter = CpuProseAdapter.from_environment(gguf)
         # AUTO can abstain; the previously rejected REQUIRED policy could not.
         # Native selection preserves scope that the separate type classifier
         # erased in C03. Downstream catalog, argument and invocation checks own
@@ -5235,6 +5237,9 @@ class LlmRuntime:
             command.append("--no-mmap")
         if parallel > 1:
             command.append("--cont-batching")
+        adapter = getattr(self, "_cpu_prose_adapter", None)
+        if adapter is not None:
+            command.extend(adapter.server_arguments())
         if not kv_offload:
             command.append("--no-kv-offload")
         if cpu_only:
@@ -5413,13 +5418,13 @@ class LlmRuntime:
             self._raise_if_closed()
             if process is not None and process.poll() is not None:
                 raise RuntimeError(f"llama-server terminó (exit {process.returncode})")
+            healthy = False
             try:
                 with urllib.request.urlopen(
                     f"{endpoint}/health",
                     timeout=min(LLM_HEALTH_POLL_TIMEOUT_SECONDS, remaining),
                 ) as response:
-                    if response.status == 200 and current_remaining() > 0.0:
-                        return
+                    healthy = response.status == 200 and current_remaining() > 0.0
             except Exception:
                 remaining = current_remaining()
                 if remaining <= 0.0:
@@ -5430,6 +5435,11 @@ class LlmRuntime:
                     close_event.wait(timeout=pause)
                 else:
                     time.sleep(pause)
+            if healthy:
+                adapter = getattr(self, "_cpu_prose_adapter", None)
+                if adapter is not None:
+                    adapter.initialize(endpoint, current_remaining())
+                return
         raise TimeoutError("llama-server no quedó listo")
 
     def _lifecycle_lock_for(self) -> threading.Lock:
@@ -5818,6 +5828,8 @@ class LlmRuntime:
         # The role builders supply a prefix of identity, task and language
         # instructions. Serialize that prefix together without moving or
         # changing any dialogue, or mutating a payload retained for retries.
+        if getattr(self, "_cpu_prose_adapter", None) is not None:
+            payload = {"lora": [{"id": 0, "scale": 0.0}], **payload}
         messages = payload.get("messages", [])
         system_prefix = []
         for message in messages:
@@ -9220,6 +9232,9 @@ class LlmRuntime:
         if cpu_fallback:
             message_prompt = cpu_prompt
         compose_sampling = _public_compose_sampling(gguf)
+        adapter = getattr(self, "_cpu_prose_adapter", None)
+        if adapter is not None and applies_to_cpu_prose(situation, _merged_observed(situation)):
+            compose_sampling = adapter.sampling()
         # Literal contract fields are rendered once below in a compact form and
         # validated again after generation. Repeating them inside the JSON made
         # every CPU composition re-evaluate the same facts up to three times;

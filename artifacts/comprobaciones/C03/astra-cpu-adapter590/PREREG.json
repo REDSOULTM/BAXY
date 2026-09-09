@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-09T07:37:52.943401+00:00",
+  "cause": "587 base still breaks Spanish after actor repair.586/588 role-scoped inherited adapter succeeds across seeds/changed values/missions;58917 actual finals correct with experimental override.",
+  "source": "Separate CPU adapter asset/profile owner; explicit zero on other POSTs, scoped CPU sampling at payload construction, no context/thread-local mutation in product. Startup verifies loaded adapter and resets/reads global0 before readiness; mismatches fail immediately outside the health retry catch. Hash-bound artifact and base. Optional closed registration in C#, Python tooling and PowerShell setup; explicit other-model overrides do not inherit adapter. Shared benchmark launchers export the profile consistently.",
+  "baseline_product": "587, unchanged prompts/facts versus589 experimental selection; no claim new unit tests existed before new owner module.",
+  "owners": {
+    "python": 2240,
+    "subtests": 121,
+    "skips": 0
+  },
+  "final_new_tests": {
+    "passed": 32,
+    "seconds": 8.96
+  },
+  "dotnet_discovery": {
+    "passed": 29,
+    "skips": 0,
+    "seconds": 0.619
+  },
+  "pending": "Mandatory Full because C#+Python shared registration, source review, actual source-built product without hook, joint memory/UI/voice, registration/promotion. No default manifest changed."
+}

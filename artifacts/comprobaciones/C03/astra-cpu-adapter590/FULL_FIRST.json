@@ -1,0 +1,15 @@
+{
+  "exit_code": 1,
+  "dotnet_passed": 4452,
+  "dotnet_failed": 0,
+  "dotnet_summary_skipped": 1,
+  "python_passed": 10199,
+  "python_failed": 1,
+  "python_skipped": 3,
+  "python_subtests": 466,
+  "python_seconds": 609.51,
+  "failed_test": "tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported",
+  "cause": "Current program hash still pins source531; actual llm.py includes published555/581/584 and source590. Historical V8 artifacts, arithmetic and verdict did not fail.",
+  "observed_llm_sha256": "0abdca23f116e1d2cd18a52da75f318dbe2a2d5a54ef4f82f49fc8b51ea157e2",
+  "log_sha256": "d58a414aeb6b028b273a07017fdd08f882180446ae7978a6d3e955b972127f68"
+}

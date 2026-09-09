@@ -1,0 +1,25 @@
+{
+  "source": "590 WIP, hashes in PREREG; cross-language Full rerun pending",
+  "runtime_manifest_unchanged": true,
+  "no_hooks": true,
+  "finals": 35,
+  "correct_finals": 29,
+  "failed_cases": {
+    "H0012": "interpretation_failure_for_identity_question",
+    "identity-variant-1": "interpretation_failure_for_identity_question",
+    "identity-variant-2": "identity_answer_contaminated_by_interpretation_failure",
+    "greeting-variant-3": "unsupported_user_name_attribution",
+    "H0241": "grammar_failure",
+    "small-talk-variant-1": "grammar_failure"
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2419.53125,
+    "seconds": 97.062
+  },
+  "private_report_sha256": "ef460763ff7be499d4e71f2471effcf3b1c9de544e1c4f3cadb7c5c500f75da6",
+  "private_adjudication_sha256": "9d9665362fbee5ec5f4c347b6c1c30b2bfcf096525d5351d9ecdfea67b47c9b6",
+  "ui_or_voice_credit": false
+}

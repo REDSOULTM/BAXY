@@ -1,0 +1,10 @@
+# Diagnóstico posterior, sin otra inferencia
+
+Los tres fallos de identidad tienen dos causas distintas; no un único fallo de clasificación.
+
+- H0012, `to quien chuta eres.`: las dos decisiones nativas dicen `knowledge` y cero efectos. La presentación recibe `unsupported`, redacta una negativa a una acción inexistente y su reparación estructurada acaba truncada. La revisión apunta a `apply_conversation_effect_presentation` y la clasificación posterior en `src/baxy_mind/__main__.py:1292`. La consulta aislada de los predicados confirma que la reclasificación posterior mantiene `unsupported` porque el primer término es `to`; no detecta la pregunta incrustada. Falta capturar la transición completa para atribuir cuál la introdujo; no se afirma que ya esté reparada.
+- `What is your name?` y `Tell me who you are.`: la presentación sí recibe `knowledge`. El borrador responde en español con el texto de las identidades anteriores, pese a la petición inglesa. La reparación vuelve a producir la misma frase española dentro de JSON; se rechaza por idioma y el turno acaba en recuperación. No se arregla convirtiéndolas de `unsupported` a `knowledge`: ya llegan como conocimiento. El contexto guarda cinco turnos anteriores. El contador `history_users: 0` del audit del reintento omite ese argumento y no demuestra que se enviara historial vacío; el código conserva `generation_history`.
+
+La primera respuesta se captura antes de los vetos y la segunda antes de deserializar el JSON. Los hashes de petición permiten ligarlas inequívocamente a los literales del panel. No se reejecutó el modelo para este diagnóstico ni se modificó la fuente mientras corre el segundo Full590.
+
+La atribución de Atlas al usuario y la gramática de conversación breve quedan como defectos separados. No modificar un validador de idioma para aceptar el español de las preguntas inglesas, ni añadir equivalencias por literal. Contrastar la configuración de conversación y el tratamiento del historial con las mediciones ya existentes antes de la próxima prueba.

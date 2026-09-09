@@ -1,0 +1,73 @@
+{
+  "utc": "2026-09-09T08:34:45.447514+00:00",
+  "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+  "gate_exit_code": 0,
+  "source_changed_during_run": false,
+  "static_and_release": "passed; Release 00:00:02.89,0warnings,0errors",
+  "dotnet": [
+    {
+      "failed": 0,
+      "passed": 60,
+      "skipped": 0,
+      "total": 60,
+      "duration": "214 ms",
+      "suite": "Baxy.Contracts.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 3274,
+      "skipped": 1,
+      "total": 3275,
+      "duration": "9 m 22 s",
+      "suite": "Baxy.Integration.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 140,
+      "skipped": 0,
+      "total": 140,
+      "duration": "1 s",
+      "suite": "Baxy.Kernel.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 501,
+      "skipped": 0,
+      "total": 501,
+      "duration": "40 s",
+      "suite": "Baxy.Providers.Windows.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 477,
+      "skipped": 0,
+      "total": 477,
+      "duration": "1 m 17 s",
+      "suite": "Baxy.Setup.Tests.dll"
+    }
+  ],
+  "python": {
+    "passed": 10200,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 546.99
+  },
+  "dotnet_printed_omissions": 16,
+  "omissions_note": "Optional/environmental omissions are not passes or evidence of UI, hardware, acoustic or acceptance coverage. No skips or thresholds were added or relaxed by590.",
+  "python_tree": {
+    "before": "6ca99187a3a2f97e5ba3736c5b61e2bae9710f97ed44441f8a4819f7bbeadb7d",
+    "sha256": "48f6ba493ddd27006319a550b6457258b666020ff56fbf239e4e9c3d2fe22d11",
+    "files": 404,
+    "historical_pins_unchanged": true
+  },
+  "full_sha256": "5e42f00d034b870c2c1213a906fc3517c01b9692fcef8d18e02b7db3644ac0a3",
+  "registered_manifest_changed": false,
+  "goal_status": "EN_CURSO",
+  "survey": {
+    "covered": 16,
+    "open": 726,
+    "not_applicable": 0
+  },
+  "product_validation": "591:17 correct CPU/control finals without hooks;592:29 correct/6 failed conversational finals on base. See separate complete reports; no registered adapter promotion.",
+  "pending": "Actual registered candidate and joint UI/voice/resources;592 identity presentation/grammar failures. Remaining survey, eight routes, recovery, acoustic and final acceptance remain open."
+}

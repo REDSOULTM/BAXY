@@ -5,6 +5,7 @@ param(
     [string]$Gguf,
     [string]$LlamaServer,
     [string]$SttDirectory,
+    [string]$CpuProseAdapter,
     [ValidateRange(0, 999)]
     [int]$GpuLayers = 99,
     [switch]$NoWake
@@ -185,6 +186,18 @@ $manifest = [ordered]@{
     tts_sha256 = $ttsSha
     ngl = $GpuLayers
     wake_on_start = $wakeOnStart
+}
+if (-not [string]::IsNullOrWhiteSpace($CpuProseAdapter)) {
+    $adapterFull = Resolve-RequiredFile -Path $CpuProseAdapter -Description 'Adaptador CPU'
+    if ([IO.Path]::GetExtension($adapterFull) -ine '.gguf') {
+        throw 'cpu_prose_adapter_must_be_gguf'
+    }
+    $manifest.cpu_prose_adapter = [ordered]@{
+        schema = 'baxy-cpu-prose-adapter-v1'
+        gguf = $adapterFull
+        gguf_sha256 = Get-BaxySha256 -Path $adapterFull
+        base_gguf_sha256 = $manifest.gguf_sha256
+    }
 }
 $temporaryPath = Join-Path $registrationRoot ('.mind-runtime-' + [Guid]::NewGuid().ToString('N') + '.tmp')
 $null = New-Item -ItemType Directory -Path $registrationRoot -Force

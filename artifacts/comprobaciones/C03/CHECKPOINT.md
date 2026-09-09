@@ -302,3 +302,39 @@ Fuente584 publicadae2215905b7177dd4000ace66b15b9919e6063bf8, más un override ex
 17finales correctos/sin cortes: seis topologías, siete preguntas de uso y cuatro controles de nombre/identidad/hora-audio/red. Los usos reales incluyen22,875816993→22,9%,13,75%,13,29113924→13,3%,24,375%,35% y46,89655172→46,9%. Desaparecen tanto Estoy/Tengo como Esto computadora. Las doce llamadas de composiciónCPU reciben escala1 y los demás POST escala0; una pregunta inglesa de uso se contesta desde el contexto conversacional previo13,3%, sin fingir una lectura nueva. Las misiones de topología conservan sus lecturas completas. No hubo reintentos CPU de reparación del sujeto en esta corrida.
 
 GPU3575,559MiB/RAM2589,078MiB,41,922s. Son3,49GiB de VRAM y2,53GiB de RAM en conductor sin ventana/voz; no consumo conjunto final. Manifiesto13b971b3 sin cambios. Es la primera verificación integrada de esta selección por rol, no una promoción ni un cierre deC03. H0065/H0350 quedan abiertos en el registro vigente hasta incorporación y verificación sin hook; evidencia candidata enlazada. Encuesta13 cubiertos/729 abiertos/0NA,742/rev1248 intacto. BAXY manual cerrado, ninguna decisión del dueño pendiente.
+
+
+## Fuente590 en curso
+
+Runtime CPU adapter y registro opcional implementados en Python/C#/PowerShell, todavía sin adoptar ni registrar. Focal122pass; registro Python/PowerShell8pass; MindRuntimeDiscovery29pass/0skip. Dueñas amplias en curso. Falta revisar continuidad de launchers/setup, sellos Python actuales, Full obligatorio por contrato C#+Python y producto sin hook. Los tres lectores incluyen scripts/mind_runtime_manifest.ps1 además de los dos indicados arriba. No inferir promoción de589.
+
+
+# Producto591: 17 finales correctos desde fuente590
+
+Se ejecuta el producto con el perfil candidato CPU y sin sitecustomize, monkeypatch ni wrapper de observación. Seis preguntas de topología, siete de uso y cuatro controles conservan hechos, sujeto e idioma. Una lectura15,625% produjo inicialmente15%; la guarda de precisión rechazó ese borrador y el reintento publicó15,6%. Los demás usos fueron17,1233→17%,20,6897→21%,18,75%,34,0278→34% y31,25%. Una pregunta inglesa recuperó21% del contexto precedente, sin atribuirle una lectura nueva. Modelo real AMD Ryzen7 5800H,8 físicos/16 lógicos.
+
+El argv real captura una única carga del adaptador e28d7728 sobre Qwen3605803b/b9980. La auditoría incorporada conserva contexto y borradores; no es una captura del payload HTTP final, por lo que no acredita por sí sola cada escala0/1. Eso se comprueba en las pruebas dueñas590. El arranque real pasa la verificación del archivo y escala global0 exigida por el módulo antes de readiness.
+
+GPU3583,559MiB. RAM del árbol completo del lanzador2551,102MiB; árbol de Baxy.exe y sus hijos2427,707MiB. Duración total96,344s, incluida compilación nativa previa; la aplicación aparece entre51,906 y96,203s. No confundir compilación con latencia de respuesta. Sin ventana/voz ni consumo conjunto final. Manifiesto intacto; candidato aún sin registrar, H0065/H0350 pendientes de promoción verificable. C03 abierto.
+
+
+# Producto592: 29 finales correctos y 6 fallidos
+
+Base registrada, fuente590 sin activar adaptador;35 turnos en orden,21 literales de encuesta y14 variantes ES/EN/mezcla, sin hooks. Las variantes de agradecimiento y los cuatro literales asociados pasan. Las seis identidades españolas restantes pasan, pero no se acredita su grupo: H0012 y What is your name? terminan explicando un fallo de interpretación; Tell me who you are. mezcla la identidad con ese fallo. Hola Atlas atribuye Atlas al usuario sin fundamento. H0241 y Estoy bien, ¿y tú? producen ¿Y tú cómo va hoy?, fallo gramatical conservado. Son29 finales correctos y6 fallidos, no35 aciertos.
+
+Los ocho saludos literales son correctos, incluido Carter sin renombrar BAXY, pero la variante con otro nombre falla; el grupo permanece abierto conforme al panel preregistrado. El grupo de conversación breve tampoco se acredita por su gramática. H0021, antes cubierto, se reabre por el fallo de generalización inglesa de identidad. Se cubren sólo H0115/H0200/H0218/H0298, cada literal y sus tres variantes de agradecimiento leídos individualmente. Encuesta16 cubiertos/726 abiertos/0 no aplicables;742/rev1248 original intacto.
+
+GPU3499,559MiB/RAM2419,531MiB,97,062s. Sin UI/voz ni efectos reales. La primera traza de H0012 muestra decisión nativa knowledge seguida de presentación unsupported y agotamiento de la reparación estructurada; debe localizarse esa transformación antes de tocar el modelo o añadir alias. Los fallos son desarrollo abierto, no fallo de la activación CPU: esta tanda conserva la base sin adaptador.
+
+
+# Fuente590: adaptador CPU y registro reproducible
+
+Se incorpora el soporte opcional del adaptador cualificado en586/588/589. El perfil verifica el archivo, su hash y el modelo base. El servidor debe cargar el mismo archivo y confirmar escala cero antes de quedar listo. Cada petición ajena a resultados exclusivamente de CPU mantiene escala cero; sólo esa composición usa el perfil medido. No se copia el mecanismo experimental por hilo ni se añaden respuestas fijas o llamadas de composición. Los lectores C#, Python y PowerShell comparten el perfil cerrado. El manifiesto del usuario sigue intacto; incorporar soporte no promociona el adaptador.
+
+Validación: `scripts/test_source_quality.ps1 -Mode Full`, salida0. Estática y Release aprobados, tiempo de compilación 00:00:02.89,0 advertencias/errores. .NET: 4452 aprobadas,0 fallos,1 omisiones en resúmenes; el log imprime 16 omisiones opt-in en total. Python: 10200 aprobadas,3 omisiones,466 subpruebas aprobadas,546.99s. Ninguna omisión acredita una prueba ejecutada. No se han añadido skips ni relajado umbrales. Dueñas previas:2240 pass+121 subtests/0 skips;32 pruebas nuevas finales;29 de descubrimiento C#/0 skips. Árbol Python `48f6ba493ddd27006319a550b6457258b666020ff56fbf239e4e9c3d2fe22d11`,404 archivos; sellos históricos intactos.
+
+El primer Full se conserva en `full-before-current-pin.log`: .NET4452 pass/0 fallos/1 omisión agregada; Python10199 pass/1 fallo/3 omisiones/466 subpruebas,609,51s. Falló únicamente el hash del programa actual en la auditoría V8, que todavía apuntaba a fuente531. Se actualizó ese pin a la fuente590 revisada, sin modificar los seis sellos históricos, su aritmética ni veredicto; su suite completa pasó5/5 en0,40s. La segunda ejecución completa comprueba ese ajuste.
+
+Producto591:17 finales correctos desde el módulo productivo, sin hooks; GPU3583,559MiB y árbol de Baxy.exe2427,707MiB de RAM. El perfil sigue siendo candidato por entorno. Producto592 con base sin adaptador:29/35 finales correctos;6 fallos conservados de identidad, atribución de nombre y gramática. Se cubren cuatro requisitos de agradecimiento y se reabre H0021 por la generalización inglesa fallida.
+
+Encuesta16 cubiertos/726 abiertos/0 no aplicables,742/rev1248 original intacto. BAXY manual cerrado; sin decisión pendiente del dueño; C03 EN_CURSO. Faltan corregir592, verificar el registro sin override, recursos conjuntos con interfaz/voz, resto de encuesta/ocho rutas, recuperación y aceptación final. Este Full no cierra C03.

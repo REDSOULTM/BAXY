@@ -945,6 +945,80 @@ public sealed class MindRuntimeDiscoveryTests
         }
     }
 
+    [TestCase("valid", true)]
+    [TestCase("changed_asset", false)]
+    [TestCase("wrong_base", false)]
+    [TestCase("extra_field", false)]
+    [TestCase("null", false)]
+    [TestCase("missing_hash", false)]
+    public void CpuAdapterRegistrationIsBoundToBothArtifacts(string mutation, bool expected)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-cpu-adapter-" + Guid.NewGuid());
+        try
+        {
+            RuntimeFixture fixture = CreateRuntimeFixture(root);
+            string adapter = Touch(Path.Combine(root, "cpu.gguf"));
+            File.WriteAllBytes(adapter, [2]);
+            var document = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(fixture.Manifest))!.AsObject();
+            var profile = new System.Text.Json.Nodes.JsonObject
+            {
+                ["schema"] = "baxy-cpu-prose-adapter-v1",
+                ["gguf"] = adapter,
+                ["gguf_sha256"] = Sha256(adapter),
+                ["base_gguf_sha256"] = Sha256(fixture.Gguf),
+            };
+            if (mutation == "changed_asset") { File.WriteAllBytes(adapter, [3]); }
+            if (mutation == "wrong_base") { profile["base_gguf_sha256"] = new string('0', 64); }
+            if (mutation == "extra_field") { profile["global"] = true; }
+            if (mutation == "missing_hash") { profile.Remove("gguf_sha256"); }
+            document["cpu_prose_adapter"] = mutation == "null" ? null : profile;
+            File.WriteAllText(fixture.Manifest, document.ToJsonString());
+            MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.LoadRegistered(fixture.Manifest);
+            Assert.That(runtime is not null, Is.EqualTo(expected));
+            if (expected)
+            {
+                Assert.That(runtime!.CpuProseAdapter, Does.Contain("baxy-cpu-prose-adapter-v1"));
+            }
+        }
+        finally { Directory.Delete(root, recursive: true); }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    [NonParallelizable]
+    public void CpuAdapterDoesNotLeakIntoAnExplicitModelOverride(bool overrideModel)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-cpu-scope-" + Guid.NewGuid());
+        Dictionary<string, string?> previous = CaptureRuntimeEnvironment();
+        try
+        {
+            ClearRuntimeEnvironment();
+            RuntimeFixture fixture = CreateRuntimeFixture(root);
+            string adapter = Touch(Path.Combine(root, "cpu.gguf"));
+            var document = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(fixture.Manifest))!.AsObject();
+            document["cpu_prose_adapter"] = new System.Text.Json.Nodes.JsonObject
+            {
+                ["schema"] = "baxy-cpu-prose-adapter-v1",
+                ["gguf"] = adapter,
+                ["gguf_sha256"] = Sha256(adapter),
+                ["base_gguf_sha256"] = Sha256(fixture.Gguf),
+            };
+            File.WriteAllText(fixture.Manifest, document.ToJsonString());
+            if (overrideModel)
+            {
+                Environment.SetEnvironmentVariable("BAXY_MIND_LLM_GGUF", Touch(Path.Combine(root, "other.gguf")));
+            }
+            Assert.That(MindRuntimeDiscovery.TryConfigureCurrentProcess(fixture.Manifest), Is.True);
+            Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER") is not null,
+                Is.EqualTo(!overrideModel));
+        }
+        finally
+        {
+            RestoreRuntimeEnvironment(previous);
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static readonly string[] SttFiles =
     [
         "encoder.int8.onnx",
@@ -955,6 +1029,7 @@ public sealed class MindRuntimeDiscoveryTests
 
     private static readonly string[] RuntimeEnvironmentNames =
     [
+        "BAXY_MIND_CPU_PROSE_ADAPTER",
         MindSidecarClient.DisabledEnvironmentVariable,
         MindSidecarClient.PythonEnvironmentVariable,
         MindSidecarClient.PythonPathEnvironmentVariable,

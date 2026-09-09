@@ -234,3 +234,22 @@ journal HMAC validado:
 - Regresión: `scripts/test_mind_router_oracles.py` (675/675 contra oráculos),
   `scripts/measure_mind_budget.py` (gate 12), `scripts/test_mind_voice.py`
   (gate 7 headless).
+
+
+## Adaptador opcional de prosa CPU
+
+El perfil `cpu_prose_adapter` de `mind-runtime-v1.json` contiene `schema`
+(`baxy-cpu-prose-adapter-v1`), `gguf`, `gguf_sha256` y `base_gguf_sha256`.
+El registro verifica el adaptador y su correspondencia con el modelo base.
+`register_mind_runtime.ps1 -CpuProseAdapter <archivo.gguf>` prepara ese perfil
+con hashes calculados; omitirlo mantiene el runtime sin adaptador. Esta capacidad
+no equivale a promover automáticamente un archivo ni a validar otros modelos.
+
+El shell exporta el perfil verificado al sidecar. El owner `cpu_prose_adapter.py`
+comprueba los bytes, verifica la carga en llama.cpp y establece/consulta escala
+cero antes de publicar readiness. Cada petición ajena a la prosa CPU lleva escala
+cero explícita. Sólo las observaciones completas de CPU en composición usan el
+perfil cualificado; conversación, clasificación, progreso, confirmaciones,
+observaciones mixtas y fallos conservan el modelo base. No se crean respuestas
+fijas ni llamadas adicionales de composición. Los errores de identidad/carga del
+adaptador detienen el arranque; no se ocultan desactivándolo silenciosamente.

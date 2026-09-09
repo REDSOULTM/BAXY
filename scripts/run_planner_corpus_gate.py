@@ -124,6 +124,7 @@ def main() -> None:
             ),
         }
     )
+    environment.update(runtime.adapter_environment())
     capabilities = core_capabilities(environment, core_path)
     process = subprocess.Popen(
         [str(runtime.python), "-X", "utf8", "-m", "baxy_mind"],

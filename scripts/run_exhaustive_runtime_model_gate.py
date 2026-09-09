@@ -237,6 +237,7 @@ class MindClient:
         )
         environment["PYTHONUTF8"] = "1"
         environment["BAXY_MIND_LLM_GGUF"] = str(self._runtime.gguf)
+        environment.update(self._runtime.adapter_environment())
         environment["BAXY_MIND_LLAMA_SERVER"] = str(
             self._runtime.llama_server
         )

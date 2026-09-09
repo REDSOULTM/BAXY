@@ -15,7 +15,8 @@ internal sealed record MindRuntimeConfiguration(
     string? SttDirectory,
     string? WakeManifest,
     int GpuLayers,
-    bool WakeOnStart);
+    bool WakeOnStart,
+    string? CpuProseAdapter = null);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
     string? Disabled,
@@ -29,7 +30,8 @@ internal sealed record MindRuntimeEnvironmentSnapshot(
     string? WakeCascadeManifest,
     string? WakeOnStart,
     string? Offline,
-    string? AssetDescriptor);
+    string? AssetDescriptor,
+    string? CpuProseAdapter = null);
 
 internal sealed record MindRuntimeDiscoveryResult(
     MindRuntimeEnvironmentSnapshot Environment,
@@ -179,6 +181,14 @@ internal static class MindRuntimeDiscovery
             SetIfMissing(MindSidecarClient.PythonPathEnvironmentVariable, runtime.PythonPath);
             SetIfMissing("BAXY_MIND_LLM_GGUF", runtime.Gguf);
             SetIfMissing("BAXY_MIND_LLAMA_SERVER", runtime.LlamaServer);
+            if (runtime.CpuProseAdapter is not null
+                && string.Equals(
+                    Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"),
+                    runtime.Gguf,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                SetIfMissing("BAXY_MIND_CPU_PROSE_ADAPTER", runtime.CpuProseAdapter);
+            }
             SetIfMissing(
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
@@ -258,7 +268,9 @@ internal static class MindRuntimeDiscovery
                 });
             JsonElement root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object
-                || !HasExactProperties(root, RegistrationProperties)
+                || !HasExactProperties(root, root.TryGetProperty("cpu_prose_adapter", out _)
+                    ? [.. RegistrationProperties, "cpu_prose_adapter"]
+                    : RegistrationProperties)
                 || !string.Equals(
                     RequiredString(root, "schema"),
                     RegistrationSchema,
@@ -349,6 +361,33 @@ internal static class MindRuntimeDiscovery
                 return null;
             }
 
+            string? cpuProseAdapter = null;
+            if (root.TryGetProperty("cpu_prose_adapter", out JsonElement adapter))
+            {
+                if (adapter.ValueKind != JsonValueKind.Object
+                    || !HasExactProperties(adapter, ["schema", "gguf", "gguf_sha256", "base_gguf_sha256"])
+                    || RequiredString(adapter, "schema") != "baxy-cpu-prose-adapter-v1"
+                    || RequiredString(adapter, "base_gguf_sha256") != RequiredString(root, "gguf_sha256"))
+                {
+                    return null;
+                }
+                string? adapterFile = ExistingFile(
+                    RequiredString(adapter, "gguf"),
+                    expectedName: null,
+                    RequiredString(adapter, "gguf_sha256"));
+                if (adapterFile is null || !adapterFile.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase))
+                {
+                    return null;
+                }
+                cpuProseAdapter = JsonSerializer.Serialize(new
+                {
+                    schema = "baxy-cpu-prose-adapter-v1",
+                    gguf = adapterFile,
+                    gguf_sha256 = RequiredString(adapter, "gguf_sha256"),
+                    base_gguf_sha256 = RequiredString(adapter, "base_gguf_sha256"),
+                });
+            }
+
             return new MindRuntimeConfiguration(
                 info.FullName,
                 python,
@@ -358,7 +397,8 @@ internal static class MindRuntimeDiscovery
                 stt,
                 wakeManifest,
                 ngl,
-                wakeOnStart);
+                wakeOnStart,
+                cpuProseAdapter);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -561,7 +601,8 @@ internal static class MindRuntimeDiscovery
             Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_CASCADE_MANIFEST"),
             Environment.GetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START"),
             Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
-            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"));
+            Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),
+            Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER"));
 
     private static bool EnvironmentMatches(MindRuntimeEnvironmentSnapshot expected) =>
         string.Equals(
@@ -607,6 +648,10 @@ internal static class MindRuntimeDiscovery
         && string.Equals(
             Environment.GetEnvironmentVariable("HF_HUB_OFFLINE"),
             expected.Offline,
+            StringComparison.Ordinal)
+        && string.Equals(
+            Environment.GetEnvironmentVariable("BAXY_MIND_CPU_PROSE_ADAPTER"),
+            expected.CpuProseAdapter,
             StringComparison.Ordinal)
         && string.Equals(
             Environment.GetEnvironmentVariable("BAXY_ASSET_DESCRIPTOR"),

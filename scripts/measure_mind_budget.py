@@ -711,6 +711,7 @@ def sidecar_environment(
     environment["PYTHONUTF8"] = "1"
     environment["HF_HUB_OFFLINE"] = "1"
     environment["BAXY_MIND_LLM_GGUF"] = str(runtime.gguf)
+    environment.update(runtime.adapter_environment())
     environment["BAXY_MIND_LLAMA_SERVER"] = str(runtime.llama_server)
     environment["BAXY_MIND_NGL"] = str(gpu_layers)
     environment["BAXY_MIND_CTX"] = "4096"

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T07:23:39.718411+00:00",
+  "confirmedAtUtc": "2026-09-09T08:34:45.447514+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "589:17 correct shared-product finals with experimental CPU-only pilot4;586/588 seeds and changed facts qualified. No adapter source or registration yet. Survey13/729/0.",
-  "continuation": "Implement and validate reproducible scoped adapter, then actual product without hook and joint resources. C#/Python adoption requires Full. Remaining C03 criteria stay open.",
+  "checkpoint": "590: cross-language Full exit0; omissions disclosed, no source mutation during gate.59117 correct no-hook CPU finals;59229/35 correct,6 failures retained. CPU adapter support validated, manifest unchanged. Survey16/726/0.",
+  "continuation": "Publish validated590 source and591/592 evidence. Diagnose592 knowledge-to-unsupported transformation, then repair identity/grammar. Joint UI/voice/memory and registered promotion pending; finish remaining C03 criteria.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,8 +24,8 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 13,
-    "open": 729,
+    "covered": 16,
+    "open": 726,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,

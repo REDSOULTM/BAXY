@@ -90,10 +90,13 @@ function Get-BaxyMindRuntimeStatus {
         return [pscustomobject]$result
     }
     $actualProperties = @($runtime.PSObject.Properties.Name)
+    $expectedProperties = @($script:BaxyMindRuntimeProperties)
+    $hasCpuAdapter = $actualProperties -ccontains 'cpu_prose_adapter'
+    if ($hasCpuAdapter) { $expectedProperties += 'cpu_prose_adapter' }
     if ([string]$runtime.schema -cne $script:BaxyMindRuntimeSchema -or
-        $actualProperties.Count -ne $script:BaxyMindRuntimeProperties.Count -or
+        $actualProperties.Count -ne $expectedProperties.Count -or
         @($actualProperties | Where-Object {
-            $script:BaxyMindRuntimeProperties -cnotcontains $_
+            $expectedProperties -cnotcontains $_
         }).Count -ne 0) {
         $result.Code = 'runtime_manifest_schema_obsolete'
         $result.Detail = "El manifiesto de runtime es obsoleto o tiene campos inesperados: $manifestFull"
@@ -146,6 +149,30 @@ function Get-BaxyMindRuntimeStatus {
         @('GGUF conversacional', $gguf, [string]$runtime.gguf_sha256),
         @('llama-server', $server, [string]$runtime.llama_server_sha256)
     )
+    if ($hasCpuAdapter) {
+        $adapter = $runtime.cpu_prose_adapter
+        if ($null -eq $adapter -or $adapter -isnot [pscustomobject]) {
+            $result.Code = 'runtime_cpu_adapter_invalid'
+            $result.Detail = 'El adaptador CPU debe ser un objeto de perfil.'
+            return [pscustomobject]$result
+        }
+        $fields = @('schema', 'gguf', 'gguf_sha256', 'base_gguf_sha256')
+        $keys = @($adapter.PSObject.Properties.Name)
+        if ($keys.Count -ne $fields.Count -or
+            @($keys | Where-Object { $fields -cnotcontains $_ }).Count -ne 0 -or
+            [string]$adapter.schema -cne 'baxy-cpu-prose-adapter-v1' -or
+            -not (Test-BaxySha256Text $adapter.gguf_sha256) -or
+            [string]$adapter.base_gguf_sha256 -cne [string]$runtime.gguf_sha256 -or
+            $adapter.gguf -isnot [string] -or
+            -not [IO.Path]::IsPathRooted([string]$adapter.gguf) -or
+            [IO.Path]::GetExtension([string]$adapter.gguf) -ine '.gguf' -or
+            -not (Test-Path -LiteralPath $adapter.gguf -PathType Leaf)) {
+            $result.Code = 'runtime_cpu_adapter_invalid'
+            $result.Detail = 'El adaptador CPU no corresponde al modelo registrado.'
+            return [pscustomobject]$result
+        }
+        $hashChecks += ,@('Adaptador CPU', [string]$adapter.gguf, [string]$adapter.gguf_sha256)
+    }
     foreach ($check in $hashChecks) {
         if ((Get-BaxySha256 -Path $check[1]) -cne $check[2]) {
             $result.Code = 'runtime_asset_hash_mismatch'

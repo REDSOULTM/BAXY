@@ -200,6 +200,7 @@ def main() -> None:
         }
     )
     cases = build_cases(run_id, document_prefix)
+    environment.update(runtime.adapter_environment())
     physical_voice_text = os.environ.get("BAXY_LLM_GATE_PHYSICAL_VOICE_TEXT", "")
     physical_voice_expected = os.environ.get(
         "BAXY_LLM_GATE_PHYSICAL_VOICE_EXPECTED", ""

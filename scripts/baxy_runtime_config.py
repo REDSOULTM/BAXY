@@ -54,6 +54,15 @@ class RuntimeConfig:
     gpu_layers: int
     source: str
     manifest_sha256: str
+    cpu_prose_adapter: dict[str, str] | None = None
+
+    def adapter_environment(self) -> dict[str, str]:
+        return {
+            "BAXY_MIND_CPU_PROSE_ADAPTER": (
+                json.dumps(self.cpu_prose_adapter, ensure_ascii=False)
+                if self.cpu_prose_adapter is not None else ""
+            ),
+        }
 
 
 def file_sha256(path: Path) -> str:
@@ -157,9 +166,10 @@ def resolve_runtime(
             core - OPTIONAL_WAKE_PROPERTIES,
         )
         valid_properties = {
-            frozenset(properties | optional)
+            frozenset(properties | optional | adapter_fields)
             for properties in base_property_sets
             for optional in (set(), OPTIONAL_TTS_PROPERTIES)
+            for adapter_fields in (set(), {"cpu_prose_adapter"})
         }
         if (
             manifest.get("schema") != "baxy-mind-runtime-v1"
@@ -226,6 +236,24 @@ def resolve_runtime(
                 raise ValueError("hash SHA-256 no coincide: wake_manifest")
 
     layers = gpu_layers
+    cpu_prose_adapter = manifest.get("cpu_prose_adapter")
+    if "cpu_prose_adapter" in manifest:
+        fields = {"schema", "gguf", "gguf_sha256", "base_gguf_sha256"}
+        if (
+            not isinstance(cpu_prose_adapter, dict)
+            or set(cpu_prose_adapter) != fields
+            or cpu_prose_adapter.get("schema") != "baxy-cpu-prose-adapter-v1"
+            or not all(isinstance(cpu_prose_adapter[key], str) for key in fields)
+            or cpu_prose_adapter["base_gguf_sha256"] != manifest.get("gguf_sha256")
+        ):
+            raise ValueError("cpu_prose_adapter_schema_invalid")
+        adapter = Path(cpu_prose_adapter["gguf"])
+        if not adapter.is_absolute() or adapter.suffix.lower() != ".gguf":
+            raise ValueError("cpu_prose_adapter_path_invalid")
+        adapter = _required_file(adapter, "cpu_prose_adapter")
+        if file_sha256(adapter) != cpu_prose_adapter["gguf_sha256"]:
+            raise ValueError("cpu_prose_adapter_hash_mismatch")
+        cpu_prose_adapter = {**cpu_prose_adapter, "gguf": str(adapter)}
     if layers is None:
         layers = int(manifest.get("ngl") or 99)
     if not 0 <= layers <= 999:
@@ -246,6 +274,7 @@ def resolve_runtime(
         gpu_layers=layers,
         source=source,
         manifest_sha256=manifest_sha256,
+        cpu_prose_adapter=cpu_prose_adapter,
     )
 
 
@@ -307,5 +336,10 @@ def public_runtime_identity(runtime: RuntimeConfig) -> dict[str, Any]:
         "profiles": {
             "gpu_layers": runtime.gpu_layers,
             "cpu_fallback_layers": 0,
+        },
+        "cpu_prose_adapter": None if runtime.cpu_prose_adapter is None else {
+            "name": Path(runtime.cpu_prose_adapter["gguf"]).name,
+            "sha256": runtime.cpu_prose_adapter["gguf_sha256"],
+            "base_gguf_sha256": runtime.cpu_prose_adapter["base_gguf_sha256"],
         },
     }
