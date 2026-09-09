@@ -1,0 +1,32 @@
+{
+  "correct": 5,
+  "total": 7,
+  "failed_cases": [
+    "focus-mixed",
+    "focus-title-es"
+  ],
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2368.01953125,
+    "seconds": 50.969
+  },
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "goal_complete": false,
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "panel.json": "d4a38b5768e2d63b7bd3bc262d1bf3c836a14d1752266fe879459e0bcb90d89c",
+    "capture/events.jsonl": "464f3659ca577b15671e26d124a56b31aa4a4e6110deaaa3f5715f1773e71583",
+    "compose-audit.jsonl": "2e16d532d4c79b351db56ea4dc9c6c55157508dc8a58f80e5e3f6fc059e40032",
+    "turn-audit.jsonl": "d72409c12acf160dc8ed3d84f01ee167a31957da87b919322d711b2cb0ff1179",
+    "foreground-before.json": "58dac813e8651e63d8387d6e1f73e8d3875953ddb39e20baddb955caf7431690",
+    "foreground-after.json": "e15168ff454aed7b90d4b7b2d1df373669d727050695a349a3e567ddfa61f163",
+    "adjudication.json": "3543e47f410c6936566526b737447d6c3bc8159cbe898cbeee50fb68763427f2",
+    "RESULT.md": "c9645b8cc00a5d17f03d55074c99ce8caa97d62312794215c47616197bb9ed67"
+  }
+}

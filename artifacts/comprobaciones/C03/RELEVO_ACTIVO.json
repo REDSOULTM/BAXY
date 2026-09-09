@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T17:59:30.668880+00:00",
+  "confirmedAtUtc": "2026-09-09T18:21:28.070619+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "676 publicada2138d2d6;dueñas2566+121subtests/0skips,declaraciones600/1skip ambiental,Fast0;67717/17 y67824/24.",
-  "continuation": "Siguiente: acreditar H0104 con literal y variantes del producto, sin crédito por familia. Fuente676 publicada y árbol limpio al verificar remoto; main/registro/encuesta intactos. Resto C03 completo sigue abierto.",
+  "checkpoint": "680 adoptada: nombre de ventana reparado;2589dueñas+121subtests/0skips,600declaraciones/1skip ambiental,Fast0.679 corregido3/7;6814/7;682 diagnóstico nativo completo.",
+  "continuation": "Auditar y publicar680 con evidencias679/681/682; luego reparar t3/t5: el clasificador nativo los trata como conversación sin lectura fresca. Prosa mixta localizada en compositor completo682. Sin nueva encuesta ni cambio de modelo.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -44,6 +44,6 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Reparación de foco y cobertura676 validada y adoptada; mismas17consultas compositor completas y producto24/24 sin regresión observada.",
+  "previousGoalTurnClassificationReason": "Reparación680 validada y producto confirma título; auditoría descubre y corrige sobrecrédito679 por lecturas no realizadas.682 localiza defecto léxico sin cambiar backend.",
   "activeValidation": null
 }

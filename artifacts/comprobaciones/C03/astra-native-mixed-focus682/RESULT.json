@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "native_facts": 1,
+    "identity_facts": 5,
+    "compositor": 3
+  },
+  "total_per_arm": 5,
+  "native_calls": 15,
+  "all_eos": true,
+  "original_compositor_reproduces679": true,
+  "model_promoted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 723.28125,
+    "seconds": 20.139999999955762,
+    "manifest_unchanged": true
+  },
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "81334cef6db625d4df324c163ae037ab1bb279c81e6c744fefccd86e4287ef32",
+    "requests.jsonl": "cc5d5c1f6345e274fe1a6396c1b06429b2e91114b57557edc8879aa84accfb41",
+    "responses.jsonl": "2bb321732007dddc9c3d80177294d221c568c958a01f0cbf163ccc6fd373862d",
+    "adjudication.json": "a900310a6d948481c7adbd1e97a4c9025e47f3418e01dbd0648b715f6eb13bb8",
+    "RESULT.md": "b1be5033c9fcea0a027687281655b451357062889760a04c8cd34d036804c4f4"
+  }
+}

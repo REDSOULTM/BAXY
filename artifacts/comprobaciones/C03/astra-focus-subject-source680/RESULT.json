@@ -1,0 +1,35 @@
+{
+  "adopted": true,
+  "sources": {
+    "src/baxy_mind/window_prose_facts.py": "244e8a6828ff66e3385bb3b4a2f4dbc944f98b22a79f76286246cf1940634e20",
+    "src/baxy_mind/llm.py": "f2a938f32eafdfca72123f2563ab2f9b2a6c15f3834aba82aab25bdd51f5ca4c",
+    "tests/test_c03_window_focus_subject_order.py": "4500b8624a5181347efad6f622fcd4e37fb9208a604b1b22730affa91f701043"
+  },
+  "python_tree_sha256": "03d2cb9ef539220225bb0efff7fc499cd2707466cf98fb1160d899b5a0ba67d7",
+  "baseline": {
+    "failed": 9,
+    "passed": 14
+  },
+  "new_tests": 23,
+  "focal_passed": 344,
+  "owners": {
+    "files": 24,
+    "passed": 2589,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 24.13
+  },
+  "declarations": {
+    "passed": 600,
+    "environmental_skipped": 1,
+    "seconds": 4.96
+  },
+  "fast_exit": 0,
+  "release_seconds": 25.37,
+  "product681_correct": 4,
+  "product681_total": 7,
+  "full680_run": false,
+  "full_baseline": 651,
+  "goal_complete": false,
+  "private_hashes": {}
+}

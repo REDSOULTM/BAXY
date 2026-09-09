@@ -1,0 +1,7 @@
+# 680 — alcance de relativas adoptado, sin cambio de modelo
+
+La validación de cobertura distingue identificar una ventana («el nombre de la ventana que está en primer plano») de preguntar si está activa. Conserva el predicado principal en preguntas con relativas y mantiene el rechazo de contradicciones. Sólo10líneas en window_prose_facts; no cambio de primer prompt, borrador, reintentos, backend ni respuesta fija.23casos nuevos:9fallos/14pases antes→23pases. Focal344pases; dueñas24archivos2589pases+121subpruebas/0skips24,13s. Declaraciones600pases/1skip ambiental4,96s por campaña ciega STT ausente. Fast exit0,Release25,37s,0advertencias/errores.
+
+Producto681 demuestra el nombre reparado en una llamada y conserva pendientes el caso mixto y las dos lecturas frescas omitidas. Recuento estricto6793/7→6814/7; el5/7anterior omitía el requisito de lectura fresca y queda corregido explícitamente en681. Encuesta26cubiertos/716abiertos/0NA intacta. El primer intento del script de preparación encontró una fila diagnóstica sin trace; se corrigió su acceso opcional antes de sellar679, sin repetir inferencia ni alterar fuente por ello.
+
+Python tree03d2cb9ef539220225bb0efff7fc499cd2707466cf98fb1160d899b5a0ba67d7/405archivos, declaraciones actuales actualizadas y sellos históricos intactos. No Full680: Full651 sigue baseline; otro Full al adoptar C#+Python juntos o candidato final según el encargo. C03 no completo: ocho rutas, encuesta, cien respuestas, UI real, loopback íntegro/AEC separado, recuperación y recursos conjuntos/Full final siguen pendientes.

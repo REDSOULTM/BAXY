@@ -1,0 +1,37 @@
+{
+  "correct": 4,
+  "total": 7,
+  "corrected679_correct": 3,
+  "previous679_reported": 5,
+  "failed_cases": [
+    "focus-order-es",
+    "focus-mixed",
+    "focus-reference-es"
+  ],
+  "title_repaired_with_identical_first_draft": true,
+  "same_panel": true,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2387.8828125,
+    "seconds": 48.594
+  },
+  "visible_activity_matches_terminals": true,
+  "ui_or_voice_credit": false,
+  "corrected679_private_hashes": {
+    "adjudication-freshness.json": "e4fb7acbd4dc18ce7c2cb473d6b46bf05c454186eb6056f2e7c8df30c8233619",
+    "RESULT-freshness.md": "4946b1e46d09e7cd4019dab93e251512846667e48e9a4b19feb16522ab6dbe3d"
+  },
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "d4a38b5768e2d63b7bd3bc262d1bf3c836a14d1752266fe879459e0bcb90d89c",
+    "capture/events.jsonl": "87b0db676c74596c753751d5088ec353754d192a19de269efbdf1e481af2ad80",
+    "compose-audit.jsonl": "8754b0c1437e63bf33c95f37b4eef79b631a2d74aea55a2e3935e72e52b06fed",
+    "turn-audit.jsonl": "b262c8e407809a502621fbcd20e6c4dfac088945b4c8a52f8e4f703f6d95541f",
+    "foreground-before.json": "45d3d7d7c3b8acbac441fc51f60d6845cfe8183abc4da3dd1db367dda323b307",
+    "foreground-after.json": "14472bbd128c3400feda97fce76f84ac17c52faf5b3eae660f3a145dcb6554c3",
+    "adjudication-freshness.json": "8c2098ee777f09444a80d649567bbf3f0e860275ffef662486fdb55858984c32",
+    "RESULT-freshness.md": "a756c2ffdafc0381b369e50c0268e7d9fa41f99e8492f0ea419c50289b9b77f8"
+  }
+}

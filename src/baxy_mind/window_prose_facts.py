@@ -66,6 +66,16 @@ def _requests_window_focus(user_text: str, window: dict) -> bool:
              if isinstance(window.get(key), str) and window[key]}
     for name in sorted(names, key=len, reverse=True):
         question = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", "selected_window", question, count=1)
+    # A relative clause identifies the subject: asking its name does not
+    # also ask whether it has focus. Removing just that clause preserves
+    # the main predicate in "Is the window that is maximized active?".
+    question = re.sub(
+        r"\b(window|ventana)\s+(?:that|which|que)\s+"
+        r"(?:(?:is|esta)\s+(?:active|activa|in the foreground|en primer plano|"
+        r"maximized|maximizada|minimized|minimizada|visible)|"
+        r"(?:has|tiene)\s+(?:el\s+)?(?:focus|foco))\b",
+        r"\1", question,
+    )
     # "Is the active window maximized?" uses focus to identify the subject;
     # it asks about maximization, not about whether that subject has focus.
     question = re.sub(r"\b(?:active window|ventana activa)\b", "window", question)

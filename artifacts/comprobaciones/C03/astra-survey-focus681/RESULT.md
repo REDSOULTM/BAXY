@@ -1,0 +1,7 @@
+# 681 — petición de nombre reparada; resultado estricto3/7→4/7
+
+Se corrige explícitamente el recuento6795/7: eran cinco finales aparentemente correctos, pero t3/t5 carecían de una nueva lectura de ventana. El preregistro679 ya exigía window.active fresco. La adjudicación revisada da3/7 y se conserva junto a los originales sellados, sin reescribir sus bytes.681 alcanza4/7 bajo ese mismo criterio. No se relaja ni se sustituye la entrada: los siete casos y su orden son idénticos.
+
+La petición del nombre pasa de composition_failed a «ChatGPT» en una llamada, con el mismo primer borrador y payload observado que679. El cambio sólo modifica la lectura de la relativa usada por la validación de cobertura. t4 sigue fallando por prosa mixta. t3/t5 ya se clasificaban como conversación en679, sin operación: en681 t3 pide aclaración innecesaria y t5 recuerda el Administrador de tareas aunque t4 ya observó ChatGPT. No es una regresión introducida por680: es el fallo previo de lectura fresca ahora expuesto con foco variable.
+
+Antes y después del panel el snapshot independiente muestra ChatGPT. Durante t2, el provider observa Administrador de tareas; no se atribuye a las capturas antes/después una observación continua. Las seis actividades publicadas coinciden con sus terminales, incluidas la aclaración y la respuesta histórica incorrectas; la emisión no equivale a aceptación. GPU3497,559MiB/RAM2387,883MiB/48,594s sin infracciones. Sin UI/voz conjunta. Encuesta26cubiertos/716abiertos/0NA; H0104 permanece abierto.

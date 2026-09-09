@@ -1,0 +1,194 @@
+FF....FF.FF...FF......F                                                  [100%]
+================================== FAILURES ===================================
+_ test_title_of_foreground_subject_accepts_just_the_observed_name[Dime el nombre de la ventana que est\xe1 en primer plano.-Atlas] _
+
+name = 'Atlas'
+question = 'Dime el nombre de la ventana que está en primer plano.'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("question", [
+        "Dime el nombre de la ventana que está en primer plano.",
+        "What is the name of the window that is in the foreground?",
+        "Tell me the title of the window which has focus.",
+        "¿Cómo se llama la ventana que tiene el foco?",
+    ])
+    def test_title_of_foreground_subject_accepts_just_the_observed_name(name, question):
+>       assert not _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Dime el nombre de la ventana que está en primer plano.')
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(True, name='Atlas')
+
+tests\test_c03_window_focus_subject_order.py:16: AssertionError
+_ test_title_of_foreground_subject_accepts_just_the_observed_name[Dime el nombre de la ventana que est\xe1 en primer plano.-\xd3rbita 29] _
+
+name = 'Órbita 29'
+question = 'Dime el nombre de la ventana que está en primer plano.'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("question", [
+        "Dime el nombre de la ventana que está en primer plano.",
+        "What is the name of the window that is in the foreground?",
+        "Tell me the title of the window which has focus.",
+        "¿Cómo se llama la ventana que tiene el foco?",
+    ])
+    def test_title_of_foreground_subject_accepts_just_the_observed_name(name, question):
+>       assert not _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Dime el nombre de la ventana que está en primer plano.')
+E        +    where {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(True, name='Órbita 29')
+
+tests\test_c03_window_focus_subject_order.py:16: AssertionError
+_ test_title_of_foreground_subject_accepts_just_the_observed_name[Tell me the title of the window which has focus.-Atlas] _
+
+name = 'Atlas', question = 'Tell me the title of the window which has focus.'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("question", [
+        "Dime el nombre de la ventana que está en primer plano.",
+        "What is the name of the window that is in the foreground?",
+        "Tell me the title of the window which has focus.",
+        "¿Cómo se llama la ventana que tiene el foco?",
+    ])
+    def test_title_of_foreground_subject_accepts_just_the_observed_name(name, question):
+>       assert not _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Tell me the title of the window which has focus.')
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(True, name='Atlas')
+
+tests\test_c03_window_focus_subject_order.py:16: AssertionError
+_ test_title_of_foreground_subject_accepts_just_the_observed_name[Tell me the title of the window which has focus.-\xd3rbita 29] _
+
+name = 'Órbita 29'
+question = 'Tell me the title of the window which has focus.'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("question", [
+        "Dime el nombre de la ventana que está en primer plano.",
+        "What is the name of the window that is in the foreground?",
+        "Tell me the title of the window which has focus.",
+        "¿Cómo se llama la ventana que tiene el foco?",
+    ])
+    def test_title_of_foreground_subject_accepts_just_the_observed_name(name, question):
+>       assert not _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, 'Tell me the title of the window which has focus.')
+E        +    where {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(True, name='Órbita 29')
+
+tests\test_c03_window_focus_subject_order.py:16: AssertionError
+_ test_title_of_foreground_subject_accepts_just_the_observed_name[\xbfC\xf3mo se llama la ventana que tiene el foco?-Atlas] _
+
+name = 'Atlas', question = '¿Cómo se llama la ventana que tiene el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("question", [
+        "Dime el nombre de la ventana que está en primer plano.",
+        "What is the name of the window that is in the foreground?",
+        "Tell me the title of the window which has focus.",
+        "¿Cómo se llama la ventana que tiene el foco?",
+    ])
+    def test_title_of_foreground_subject_accepts_just_the_observed_name(name, question):
+>       assert not _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Atlas', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, '¿Cómo se llama la ventana que tiene el foco?')
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(True, name='Atlas')
+
+tests\test_c03_window_focus_subject_order.py:16: AssertionError
+_ test_title_of_foreground_subject_accepts_just_the_observed_name[\xbfC\xf3mo se llama la ventana que tiene el foco?-\xd3rbita 29] _
+
+name = 'Órbita 29', question = '¿Cómo se llama la ventana que tiene el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("question", [
+        "Dime el nombre de la ventana que está en primer plano.",
+        "What is the name of the window that is in the foreground?",
+        "Tell me the title of the window which has focus.",
+        "¿Cómo se llama la ventana que tiene el foco?",
+    ])
+    def test_title_of_foreground_subject_accepts_just_the_observed_name(name, question):
+>       assert not _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question)
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Órbita 29', {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'}, '¿Cómo se llama la ventana que tiene el foco?')
+E        +    where {'seen': {'windows': [{'title': 'Órbita 29', 'processName': 'Órbita 29', 'is_current_window_for_user_interaction': True, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(True, name='Órbita 29')
+
+tests\test_c03_window_focus_subject_order.py:16: AssertionError
+_ test_separate_focus_question_still_requires_its_answer[Is the window that is maximized active?-Atlas] _
+
+name = 'Atlas', question = 'Is the window that is maximized active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29"])
+    @pytest.mark.parametrize("question", [
+        "¿La ventana que está maximizada tiene el foco?",
+        "Is the window that is maximized active?",
+        "Dime el nombre y si la ventana está activa.",
+        "Tell me the title and whether the window is active.",
+    ])
+    def test_separate_focus_question_still_requires_its_answer(name, question):
+>       assert _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_window_focus_subject_order.py:27: AssertionError
+_ test_separate_focus_question_still_requires_its_answer[Is the window that is maximized active?-\xd3rbita 29] _
+
+name = 'Órbita 29', question = 'Is the window that is maximized active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29"])
+    @pytest.mark.parametrize("question", [
+        "¿La ventana que está maximizada tiene el foco?",
+        "Is the window that is maximized active?",
+        "Dime el nombre y si la ventana está activa.",
+        "Tell me the title and whether the window is active.",
+    ])
+    def test_separate_focus_question_still_requires_its_answer(name, question):
+>       assert _payload_fact_defect(name, _compose_situation_payload(situation(True, name=name), "en"), question) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_window_focus_subject_order.py:27: AssertionError
+______ test_product_title_request_publishes_observed_name_without_retry _______
+
+    def test_product_title_request_publishes_observed_name_without_retry():
+        client = Recorder(["Atlas"])
+>       assert client.compose_user_message(
+            "Dime el nombre de la ventana que está en primer plano.", "status", {"situation": situation(True)},
+        ) == "Atlas"
+
+tests\test_c03_window_focus_subject_order.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10149: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9216: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x000001C38C6A2690>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...served_value": true}, "rejected_draft": "Atlas"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_focus_subject_order.py::test_title_of_foreground_subject_accepts_just_the_observed_name[Dime el nombre de la ventana que est\xe1 en primer plano.-Atlas]
+FAILED tests/test_c03_window_focus_subject_order.py::test_title_of_foreground_subject_accepts_just_the_observed_name[Dime el nombre de la ventana que est\xe1 en primer plano.-\xd3rbita 29]
+FAILED tests/test_c03_window_focus_subject_order.py::test_title_of_foreground_subject_accepts_just_the_observed_name[Tell me the title of the window which has focus.-Atlas]
+FAILED tests/test_c03_window_focus_subject_order.py::test_title_of_foreground_subject_accepts_just_the_observed_name[Tell me the title of the window which has focus.-\xd3rbita 29]
+FAILED tests/test_c03_window_focus_subject_order.py::test_title_of_foreground_subject_accepts_just_the_observed_name[\xbfC\xf3mo se llama la ventana que tiene el foco?-Atlas]
+FAILED tests/test_c03_window_focus_subject_order.py::test_title_of_foreground_subject_accepts_just_the_observed_name[\xbfC\xf3mo se llama la ventana que tiene el foco?-\xd3rbita 29]
+FAILED tests/test_c03_window_focus_subject_order.py::test_separate_focus_question_still_requires_its_answer[Is the window that is maximized active?-Atlas]
+FAILED tests/test_c03_window_focus_subject_order.py::test_separate_focus_question_still_requires_its_answer[Is the window that is maximized active?-\xd3rbita 29]
+FAILED tests/test_c03_window_focus_subject_order.py::test_product_title_request_publishes_observed_name_without_retry
+9 failed, 14 passed in 0.87s

@@ -1,0 +1,45 @@
+{
+  "utc": "2026-09-09T18:12:34.364553+00:00",
+  "adopted": false,
+  "parent_commit": "d7776f8eb06941215fc81da1acd1a4ff86783510",
+  "sources": {
+    "src/baxy_mind/window_prose_facts.py": "244e8a6828ff66e3385bb3b4a2f4dbc944f98b22a79f76286246cf1940634e20",
+    "src/baxy_mind/llm.py": "f2a938f32eafdfca72123f2563ab2f9b2a6c15f3834aba82aab25bdd51f5ca4c",
+    "tests/test_c03_window_focus_subject_order.py": "4500b8624a5181347efad6f622fcd4e37fb9208a604b1b22730affa91f701043"
+  },
+  "python_tree_sha256": "03d2cb9ef539220225bb0efff7fc499cd2707466cf98fb1160d899b5a0ba67d7",
+  "python_files": 405,
+  "owner_tests": [
+    "tests/test_active_decision_path_r280.py",
+    "tests/test_c03_calendar_date.py",
+    "tests/test_c03_compound_mute_query.py",
+    "tests/test_c03_cpu_actor.py",
+    "tests/test_c03_internet_state.py",
+    "tests/test_c03_request_preservation.py",
+    "tests/test_c03_window_facts.py",
+    "tests/test_c03_window_focus_coverage.py",
+    "tests/test_c03_window_focus_subject_order.py",
+    "tests/test_c03_window_prose_projection.py",
+    "tests/test_c03_window_state_facts.py",
+    "tests/test_compose_contract.py",
+    "tests/test_cpu_prose_adapter.py",
+    "tests/test_first_signal.py",
+    "tests/test_forced_tool_choice_audit_r277.py",
+    "tests/test_goal06_voice.py",
+    "tests/test_llm_transport.py",
+    "tests/test_mind_budget_gate.py",
+    "tests/test_planner.py",
+    "tests/test_price_v8_veto_damage_by_cause.py",
+    "tests/test_process_lifecycle.py",
+    "tests/test_request_reading.py",
+    "tests/test_turn_policy.py",
+    "tests/test_turn_policy_gate.py"
+  ],
+  "design": "Remove only a window-identifying relative clause when deciding whether focus was asked. Preserve the main predicate and all contradiction checks. No native request or model change.",
+  "baseline": {
+    "failed": 9,
+    "passed": 14
+  },
+  "focal_passed": 344,
+  "next": "Owners, declarations, Fast, then exact seven-query product681. Mixed wording remains independent and must not receive coverage by this patch."
+}

@@ -1,0 +1,5 @@
+# 682 — la prosa mixta falla al aplicar el compositor completo
+
+Cinco casos por tres variantes de instrucciones,15EOS. La petición mixta original reproduce exactamente «Ahora tiene focus el ventanal de ChatGPT» en el primer borrador del compositor real; el mismo defecto aparece con Atlas y desaparece con Órbita29. Con identidad y hechos,5/5respuestas aceptables; compositor3/5; hechos solos1/5 por afirmaciones de única ventana visible no respaldadas por una observación de foco o por exposición de metadatos. Se conservan todos los borradores, no sólo el original favorable.
+
+GPU3497,559MiB/RAM723,281MiB/20,140s sin infracciones; registro y perfiles iguales. Es un diagnóstico nativo, no otro producto, promoción de modelo ni prueba de ahorro conjunto. Quitar todas las instrucciones no es solución: la variante sin ellas introduce otros defectos. Próximo: aislar el contrato de prosa que induce la palabra impropia y reparar la lectura fresca de t3/t5 en su módulo dueño; no aceptar un texto sólo porque menciona el título correcto.

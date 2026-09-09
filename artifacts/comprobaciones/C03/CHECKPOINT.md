@@ -1128,3 +1128,37 @@ Compositor677 mismos17casos15/17→17/17:24llamadas EOS, diez controles en una l
 ## Publicación676 verificada
 
 Fuente2138d2d6e96d79c2cda025bd9f7c2367744abb3b coincide con origin/Goal-c03; árbol limpio y main intacto al verificar. Auditoría21pins públicos/índice, privados y fuentes/declaraciones/registro/encuesta correcta. Dueñas2566+121subpruebas/0skips, declaraciones600pases/1skip ambiental, Fast0; compositor67717/17 y producto67824/24. Encuesta26/716/0; ninguna fila global de C03 se cierra con esta tanda.
+
+
+# 679 — foco correcto en Windows; producto 5/7
+
+Original H0104 y cuatro variantes publican respuestas veraces. La variante mezclada y la petición de nombre terminan en composition_failed; no se adjudica el diagnóstico terminal como prosa visible. Ambas tienen window.active verificado y ChatGPT maximizada coincide en snapshots independientes antes/después.
+
+En la petición de nombre, el primer borrador «ChatGPT» es suficiente, pero el verificador interpreta la relativa «que está en primer plano» como otra pregunta de foco y lo rechaza. Rechaza también «La ventana en primer plano se llama "ChatGPT"». Es una falsa omisión introducida por cobertura676. En mezcla, el borrador «Ahora tiene focus el ventanal de ChatGPT» ya tiene un término impropio y el verificador tampoco reconoce su orden invertido. No se adjudica ese borrador como calidad válida ni se resuelve cambiando la entrada del usuario.
+
+GPU3497,559MiB/RAM2368,020MiB/50,969s sin infracciones; sin UI/voz conjunta. H0104 sigue abierto, encuesta26cubiertos/716abiertos/0NA. No nueva promoción de modelo. Fuente680 abordará sólo la pérdida de alcance de la relativa, con controles de preguntas explícitas y contradicciones; el borrador mixto requiere diagnóstico independiente.
+
+
+# 681 — petición de nombre reparada; resultado estricto3/7→4/7
+
+Se corrige explícitamente el recuento6795/7: eran cinco finales aparentemente correctos, pero t3/t5 carecían de una nueva lectura de ventana. El preregistro679 ya exigía window.active fresco. La adjudicación revisada da3/7 y se conserva junto a los originales sellados, sin reescribir sus bytes.681 alcanza4/7 bajo ese mismo criterio. No se relaja ni se sustituye la entrada: los siete casos y su orden son idénticos.
+
+La petición del nombre pasa de composition_failed a «ChatGPT» en una llamada, con el mismo primer borrador y payload observado que679. El cambio sólo modifica la lectura de la relativa usada por la validación de cobertura. t4 sigue fallando por prosa mixta. t3/t5 ya se clasificaban como conversación en679, sin operación: en681 t3 pide aclaración innecesaria y t5 recuerda el Administrador de tareas aunque t4 ya observó ChatGPT. No es una regresión introducida por680: es el fallo previo de lectura fresca ahora expuesto con foco variable.
+
+Antes y después del panel el snapshot independiente muestra ChatGPT. Durante t2, el provider observa Administrador de tareas; no se atribuye a las capturas antes/después una observación continua. Las seis actividades publicadas coinciden con sus terminales, incluidas la aclaración y la respuesta histórica incorrectas; la emisión no equivale a aceptación. GPU3497,559MiB/RAM2387,883MiB/48,594s sin infracciones. Sin UI/voz conjunta. Encuesta26cubiertos/716abiertos/0NA; H0104 permanece abierto.
+
+
+# 682 — la prosa mixta falla al aplicar el compositor completo
+
+Cinco casos por tres variantes de instrucciones,15EOS. La petición mixta original reproduce exactamente «Ahora tiene focus el ventanal de ChatGPT» en el primer borrador del compositor real; el mismo defecto aparece con Atlas y desaparece con Órbita29. Con identidad y hechos,5/5respuestas aceptables; compositor3/5; hechos solos1/5 por afirmaciones de única ventana visible no respaldadas por una observación de foco o por exposición de metadatos. Se conservan todos los borradores, no sólo el original favorable.
+
+GPU3497,559MiB/RAM723,281MiB/20,140s sin infracciones; registro y perfiles iguales. Es un diagnóstico nativo, no otro producto, promoción de modelo ni prueba de ahorro conjunto. Quitar todas las instrucciones no es solución: la variante sin ellas introduce otros defectos. Próximo: aislar el contrato de prosa que induce la palabra impropia y reparar la lectura fresca de t3/t5 en su módulo dueño; no aceptar un texto sólo porque menciona el título correcto.
+
+
+# 680 — alcance de relativas adoptado, sin cambio de modelo
+
+La validación de cobertura distingue identificar una ventana («el nombre de la ventana que está en primer plano») de preguntar si está activa. Conserva el predicado principal en preguntas con relativas y mantiene el rechazo de contradicciones. Sólo10líneas en window_prose_facts; no cambio de primer prompt, borrador, reintentos, backend ni respuesta fija.23casos nuevos:9fallos/14pases antes→23pases. Focal344pases; dueñas24archivos2589pases+121subpruebas/0skips24,13s. Declaraciones600pases/1skip ambiental4,96s por campaña ciega STT ausente. Fast exit0,Release25,37s,0advertencias/errores.
+
+Producto681 demuestra el nombre reparado en una llamada y conserva pendientes el caso mixto y las dos lecturas frescas omitidas. Recuento estricto6793/7→6814/7; el5/7anterior omitía el requisito de lectura fresca y queda corregido explícitamente en681. Encuesta26cubiertos/716abiertos/0NA intacta. El primer intento del script de preparación encontró una fila diagnóstica sin trace; se corrigió su acceso opcional antes de sellar679, sin repetir inferencia ni alterar fuente por ello.
+
+Python tree03d2cb9ef539220225bb0efff7fc499cd2707466cf98fb1160d899b5a0ba67d7/405archivos, declaraciones actuales actualizadas y sellos históricos intactos. No Full680: Full651 sigue baseline; otro Full al adoptar C#+Python juntos o candidato final según el encargo. C03 no completo: ocho rutas, encuesta, cien respuestas, UI real, loopback íntegro/AEC separado, recuperación y recursos conjuntos/Full final siguen pendientes.
