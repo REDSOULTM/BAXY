@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T02:04:55.3719054Z",
+  "confirmedAtUtc": "2026-09-09T02:19:34.475825+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "531: dueñas de25fallos Full526 resueltas; fuente530/contratos531 validados. Encuesta0cubiertos/742abiertos/0NA.",
-  "continuation": "Publicar fuentes validadas; auditar cobertura y reserva. Full final pendiente. Objetivo vigente526/GOAL_OBJECTIVE.md.",
+  "checkpoint": "535: fuente120713be publicada; dueñas25fallos resueltas; reserva534 deja63ES completos. Encuesta0/742/0.",
+  "continuation": "Esperar respuesta del dueño a la aclaración de bienvenida (automática en arranque o nuevos saludos humanos), después seguir C03. No congelar/ejecutar reserva sin resolverla.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -27,5 +27,7 @@
     "covered": 0,
     "open": 742,
     "not_applicable": 0
-  }
+  },
+  "pendingOwnerClarification": "Fresh reserve has no unused human greeting: automatic startup welcome or new owner-authored greetings?",
+  "publishedSourceCommit": "120713be877aaf426820174ece35a642923f5eda"
 }

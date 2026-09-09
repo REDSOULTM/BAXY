@@ -1,0 +1,31 @@
+{
+  "utc": "2026-09-09T02:08:34.948890+00:00",
+  "audited_files": 408,
+  "audited_rows": 10998,
+  "stable_files": 408,
+  "malformed_lines": 0,
+  "matched_pool_ids": 7,
+  "newly_exposed_since532": 0,
+  "reserve475_count": 204,
+  "reserve475_matched": 0,
+  "remaining_reserve_count": 204,
+  "remaining_semantic_languages": {
+    "es": 195,
+    "en": 2,
+    "undetermined": 5,
+    "mixed": 2
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-private-exposure533-private",
+  "review_sha256": "cc552daf34b8aaf52a648140fbc4a4e67031fbcde7376f82e992090c2a23247c",
+  "sources_sha256": "649f33694e15929a4209749a5a7d2aaea479371fadf8932747a6bf2487c23baa",
+  "certified_fresh": 0,
+  "frozen": false,
+  "replayed": 0,
+  "limitations": [
+    "Bounded known private C03 logs, not every possible historical project/cache.",
+    "Exact full-string/line match; aliases, paraphrases and formatted inline fragments remain separate review.",
+    "All matched development evidence is conservatively excluded; no authorship conclusion.",
+    "Historical training/splits and context remain necessary.",
+    "Any malformed or unstable files are recorded as unresolved, not silently accepted."
+  ]
+}

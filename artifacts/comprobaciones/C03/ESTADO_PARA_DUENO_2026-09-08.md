@@ -1,17 +1,17 @@
-# Estado de C03 — actualización531
+# Estado de C03
 
-C03 sigue abierto. El trabajo está conservado en892c506 y88fca650, en Goal-c03; main sigue intacto. La publicación remota espera la validación de las dueñas pendientes.
+**C03 sigue abierto.** El código validado está publicado en `Goal-c03` hasta `120713be`; `main` permanece intacto.
 
-Se ha reparado la procedencia de datos en el historial, retirado el atajo de prosa del selector, ampliado la configuración de memoria privada mediante una gramática acotada y eliminado una instrucción que inducía observaciones inventadas del PC. Las mediciones y pruebas de cada cambio se conservan en sus tramos. La regla de evaluar cada modelo con documentación, papers, reproducciones y parámetros efectivos ya está en AGENTS.md.
+Se ha corregido la procedencia de los datos del historial, retirado un atajo que publicaba la prosa del selector, ampliado la configuración de memoria privada y eliminado una instrucción que inducía observaciones inventadas del PC. La última corrección conserva las explicaciones tras una prohibición sin ocultar una acción posterior. La regla de investigar cada modelo y verificar su configuración efectiva está en AGENTS.md.
 
-La última medición del producto registrado, astra-private-product521, dio3497,56MiB de GPU (3,42GiB) y2013,48MiB de RAM (1,97GiB). Es un conductor de producto con memoria aislada: no acredita el consumo conjunto con interfaz y voz. BAXY usa RAM adicional; no está todo en VRAM. Los4GB son el techo, buscando menos consumo sin perder calidad.
+El Full de línea base terminó con 25 fallos Python. Sus pruebas dueñas ya pasan: 168 aprobadas en 528; 4.002 y121 subpruebas en 530; 37 aprobadas y 1 omisión ambiental en 531. Fast también pasó, con cero advertencias y errores de compilación. No se ha repetido el Full final ni se considera cerrado C03.
 
-Ese panel dio9/11respuestas finales útiles. Siguen abiertos dos fallos: narrar un guardado mediante metadatos internos y confundir memoria desactivada con capacidad inexistente. Las comparaciones523–525 no justificaron promocionar otro modelo. No hay un mínimo universal de VRAM demostrado para todo BAXY.
+La última medición del producto registrado dio **3,42 GiB de VRAM y 1,97 GiB de RAM**. Fue un conductor sin interfaz y voz; falta medir todo junto. BAXY usa RAM adicional. Los 4 GB de VRAM siguen siendo el techo, buscando menos consumo sin perder calidad.
 
-Full526 terminó en rojo: estática/build aprobados; .NET4427pass/0fail/1skip agregado, además de otros mensajes opt-in omitidos en el log; Python9984pass/25fail/3skip y466subtests. Se conserva el resultado completo.528 resolvió15fallos de expectativas antiguas:168/168tests, sin omisiones.530 corrige «only explain» tras una prohibición y evita que oculte una acción posterior:4002pass y121subtests, sin omisiones.531 verifica las demás expectativas actuales y sus activos; falta recoger su resultado. No se ha repetido Full.
+El panel de memoria dio 9 de 11 respuestas finales útiles. Siguen abiertos el guardado explicado mediante metadatos y la confusión entre memoria desactivada y capacidad inexistente. Las comparaciones de modelos no justificaron una promoción.
 
-La encuesta conserva742respuestas, revisión1248. El registro privado cuenta0casos acreditados individualmente,742abiertos y0no aplicables. Son adjudicaciones de evidencia, no742fallos de producto. Faltan los enlaces por caso y las variantes verificadas con nombres, valores, orden, referencias e idioma distintos. Las3expectativas negativas y18sin marca siguen siendo límites.
+La encuesta conserva 742 respuestas: **0 casos acreditados individualmente, 742 abiertos y 0 no aplicables**. Es el estado de evidencia vinculada, no 742 fallos de producto. Faltan la adjudicación y variantes verificadas; se preservan las 3 expectativas negativas y 18 sin marca.
 
-Falta cerrar las ocho rutas y los incidentes de uso; acreditar la generalización de la encuesta; auditar contexto/exposición y congelar hasta100turnos españoles humanos, con inglés y mezcla aparte sin cuotas; verificar recuperación, interfaz real, loopback completo y supresión AEC; comprobar recursos conjuntos, Full final y publicación. Voz humana física, calibración wake y FAR/FRR son deC08. La matriz enlaza la evidencia disponible paraC04/C07/C08 sin cerrar sus filas.
+La revisión de puntuación y tildes apartó 43 candidatos ya expuestos. Quedan 63 españoles con original completo, además de 1 inglés y 2 entradas sin idioma determinado. Falta contexto/deduplicación y no hay reserva congelada. Está pendiente tu aclaración sobre evaluar la bienvenida automática al arrancar o aportar saludos nuevos: no queda un saludo humano fresco entre esos candidatos.
 
-No hay una estimación fiable de tiempo. CHECKPOINT.md conserva el estado ejecutable y la siguiente acción. Los informes anteriores están preservados en astra-baseline-state527.
+Después quedan las conductas y cobertura de C03, aceptación reservada, recuperación, interfaz real, loopback completo y supresión AEC, recursos conjuntos, Full final y publicación del cierre. Voz humana física, calibración wake y FAR/FRR son de C08. No hay una estimación fiable de tiempo todavía; CHECKPOINT conserva la siguiente acción.

@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-09T02:12:23.820611+00:00",
+  "why": "Freshness checks532/533/518 ignored punctuation and accent equivalence: a question without ¿? or an accented command cannot be credited as a new independent case merely by spelling. This only excludes conservatively, never certifies a nonmatch.",
+  "method": "NFKD, casefold, remove combining marks, compare complete sequences of alphanumeric words. Preserve word order/numbers; no stemming, translations or semantic relabelling. Sources are exact inventories532/533/518, no new traversal or model inference.",
+  "source_count": 3452,
+  "reserve": 204,
+  "privacy": "Only counts/hashes public; exact matches and originals stay private."
+}
