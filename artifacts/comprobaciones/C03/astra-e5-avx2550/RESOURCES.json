@@ -1,0 +1,8 @@
+{
+  "build": {
+    "exit_code": 1,
+    "peak_ram_mib": 49.9765625,
+    "seconds": 0.764999999984866,
+    "violations": []
+  }
+}

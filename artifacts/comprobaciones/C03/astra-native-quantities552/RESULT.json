@@ -1,0 +1,19 @@
+{
+  "responses": 22,
+  "finish_stop": 22,
+  "adopted": false,
+  "adjudication": "GiB derivados arreglan magnitud pero el modelo publica frecuentemente GB para valores binarios. Añade principal a la RTX3060 sin evidencia y confunde conteo de tarjetas/instancias. Rechazado.",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 722.47265625,
+    "seconds": 17.5,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-quantities552-private\\RESULT.md",
+  "private_report_sha256": "b37935c493049ce2d9e1d8aea36af777146cda895b537cff072c06accffb8e18",
+  "requests_sha256": "8a7f9a9649212e410b68fc07e76ac1f32f4ba1471097e336ea90cdb7b4bb8368",
+  "responses_sha256": "917455b0b54e304796c2e2cc5a6323eeb5609c7f834d2350caee664ba7ac30f2"
+}

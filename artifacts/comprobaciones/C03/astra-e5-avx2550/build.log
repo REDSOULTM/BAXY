@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-e5-avx2550.py", line 14, in <module>
+    import onnx
+  File "D:\BAXYRuntime/experiments/python/onnx550\onnx\__init__.py", line 130, in <module>
+    from onnx import (
+  File "D:\BAXYRuntime/experiments/python/onnx550\onnx\compose.py", line 8, in <module>
+    from onnx import (
+  File "D:\BAXYRuntime/experiments/python/onnx550\onnx\helper.py", line 18, in <module>
+    from onnx import _mapping, defs
+  File "D:\BAXYRuntime/experiments/python/onnx550\onnx\_mapping.py", line 8, in <module>
+    import ml_dtypes
+ModuleNotFoundError: No module named 'ml_dtypes'

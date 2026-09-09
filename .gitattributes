@@ -227,3 +227,10 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/astra-survey-resume543/** -text
 /artifacts/comprobaciones/C03/astra-coordinate-queries545/** -text
 /artifacts/comprobaciones/C03/astra-e5-assets544/** -text
+/artifacts/comprobaciones/C03/astra-coordinate-product546/** -text
+/artifacts/comprobaciones/C03/astra-e5-backend547/** -text
+/artifacts/comprobaciones/C03/astra-e5-retrieval549/** -text
+/artifacts/comprobaciones/C03/astra-e5-avx2550/** -text
+/artifacts/comprobaciones/C03/astra-e5-avx2551/** -text
+/artifacts/comprobaciones/C03/astra-native-quantities552/** -text
+/artifacts/comprobaciones/C03/astra-native-quantities553/** -text

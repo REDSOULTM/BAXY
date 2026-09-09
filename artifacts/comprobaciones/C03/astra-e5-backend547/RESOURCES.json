@@ -1,0 +1,20 @@
+{
+  "torch": {
+    "exit_code": 0,
+    "ram_peak_mib": 848.91796875,
+    "seconds": 21.171999999991385,
+    "violations": []
+  },
+  "onnx-fp32": {
+    "exit_code": 0,
+    "ram_peak_mib": 833.34375,
+    "seconds": 7.312000000005355,
+    "violations": []
+  },
+  "onnx-int8": {
+    "exit_code": 0,
+    "ram_peak_mib": 494.546875,
+    "seconds": 5.578000000008615,
+    "violations": []
+  }
+}

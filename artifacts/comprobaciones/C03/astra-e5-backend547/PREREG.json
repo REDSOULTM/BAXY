@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-09T04:01:19.281718+00:00",
+  "method": "Separate local processes: current SemanticEncoder CPU torch, official ONNX FP32, official INT8. Same immutable E5 revision/tokenizer, query prefix,512token limit, attention-mask mean/L2 normalization and384dimensions. Batch8 throughput and total process RSS; not interactive-turn latency, cold-boot latency or whole BAXY budget. No generator/process concurrently launched by this harness.",
+  "sources": [
+    "https://www.sbert.net/docs/sentence_transformer/usage/efficiency.html",
+    "https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html"
+  ],
+  "profile": "CPUExecutionProvider,8intra-op threads for8physical cores,1inter-op thread,sequential. Torch keeps current product defaults and records effective thread count. INT8 artifact namedAVX512_VNNI is only a portability/quality probe on AVX2, not final optimal AMD profile.",
+  "cases": 742,
+  "excluded_over_encoder_contract": [],
+  "registry_sha256": "a77d54254495d5379ec71ef1efd8cb7cd7b95bc650cef44c83b21f6ddd2a7172",
+  "queries_sha256": "d07de46cfc450e5496fa1c6c7393b11186cf8023b7b1bc4df158dce19c9be8a1",
+  "authorization": "AUTORIZACION_DUENO_536.md; consumed development data, never blind acceptance.",
+  "criteria": "FP32 embedding equivalence first; report all numerical drift and nearest frozen-bank entry changes forINT8. Frozen intent-bank nearest entry is a diagnostic, not product operation authority or proof of correct retrieval. No adoption without actual operation-retrieval/product regression. No relaxed routing thresholds or replaced frozen vectors.",
+  "limits": {
+    "minimum_free_ram_mib": 768,
+    "process_seconds": 360
+  },
+  "privacy": "Public graphs already downloaded544; all owner messages and vectors remain local; child processes offline."
+}

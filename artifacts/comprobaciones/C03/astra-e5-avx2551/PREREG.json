@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-09T04:13:44.919836+00:00",
+  "method": "Documented AVX2 non-VNNI saturation countermeasure: dynamic per-channel QInt8 with reduce_range=True; same official FP32 graph and MatMul/Gather ops, no calibration or owner training. ONNX1.22.0 installed only in external experiments/python/onnx550; production runtime unchanged. Run same effective-tokenizer549 inference and actual PlannerCatalog comparison with saved torch vectors549.",
+  "source": "https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html#when-to-use-reduce-range-and-per-channel-quantization",
+  "rationale": "The official downloaded file names AVX512_VNNI.549 showed numerical drift and206 top1 changes on Ryzen5800H. Saturation is a hypothesis, not established cause; no model rejection from that profile. Reduce range sacrifices one weight bit to prevent AVX2 intermediate saturation. If it does not improve quality, stop this bounded quantization line and retain production encoder.",
+  "limits": {
+    "free_ram_mib": 768,
+    "seconds_per_process": 180
+  },
+  "acceptance": "Compare numerical drift, actual shortlist inclusion and ordering, RAM and warmed latency. No promotion solely for speed or cosine. Public model assets only; owner text remains local."
+}

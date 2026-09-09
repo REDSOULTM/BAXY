@@ -1,0 +1,5 @@
+# astra-e5-avx2551
+
+Construcción e inferencia AVX2 completadas sin cortes. ONNX dinámico QInt8 por canal con reduce_range=True, MatMul/Gather, mismo FP32. La documentación deORT propone este perfil para saturación U8S8 enAVX2 sinVNNI; la hipótesis no se da por demostrada. Construcción2459,328MiB, inferencia491,363MiB. Mínimo coseno0,986444/media0,996460;188 primeras operaciones distintas y741 cambios de inclusión, frente a206/742 conel archivoVNNI. Mejora insuficiente para adoptar o declarar igual calidad. El harness terminó con import faltante al adjudicar; c03-finish-avx2551.py completó sólo la comparación con los arrays ya guardados, sin repetir construcción ni inferencia. Dos perfiles cuantizados medidos: cerrar esta línea y conservarTorch. Advertencia deORT sobre preprocesamiento preservada; no representa una búsqueda exhaustiva ni descarta otras optimizaciones futuras.
+
+Fuentes: [eficiencia de Sentence Transformers](https://www.sbert.net/docs/sentence_transformer/usage/efficiency.html), [cuantización ORT](https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html).

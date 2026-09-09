@@ -54,3 +54,13 @@ Se amplía el lector existente para conservar todas las lecturas de preguntas co
 Test-first:6 fallos/103 pass; focal final109 pass. Dueñas finales:3699 pass y121 subtests,0 skips,56,21s. Declaraciones STT:12 pass/1 skip ambiental,1,46s; ese skip no es validación de audio. Fast verde, Release21,23s,0 advertencias/errores. Fuente actual399e73203f5eafca73a8573083703cd2e10756b2c8544e992c8c40cb24b80138/403 archivos; sellos históricos intactos. Producto546 pendiente: no adjudicar todavía H0079. Full final pendiente.
 
 Encuesta6 cubiertos/736 abiertos/0 no aplicables. E5 ONNX544 descargado y verificado, sin adopción; comparación547 preparada y aún no ejecutada. Goal API confirmado active; bloqueo anterior resuelto por autorización536, ninguna decisión pendiente del dueño.
+
+
+## Tramo546 — composición confirmada en producto
+
+Fuente545 publicada en1d08cc29. Producto546 completó6 finales sin cortes; hora+batería verificadas enES/EN/orden inverso. Encuesta7 cubiertos/735 abiertos/0NA, nuevoH0079; presentación general de recursos abierta. GPU3497,559MiB/RAM1893,363MiB,28,296s, sinUI/voz. E5 comparación547 completada; tokenizer548 identifica divergencia por normalización, no defecto de FP32.549 contrasta tokenizador efectivo y shortlist real; sin adopción.
+
+
+## Tramo553 — diagnósticos cerrados sin alterar producción
+
+Encoder:547–551 concluyen sin promoción; comparación con tokenizer real yPlannerCatalog en549, AVX2reduce_range551 insuficiente. Fallo de dependencia550 y recuperación de adjudicación551 documentados aparte. Cantidades552/553 corrigen algunas cifras pero introducen unidades/afirmaciones no verificadas:22EOS porcampaña,no adopción. Cambiar estrategia, no repetir estos enriquecimientos genéricos. Fuente545 y modelo registrado intactos; encuesta7/735/0. HANDOFF553 contiene rutas y reanudación. Ninguna decisión pendiente del dueño; C03 EN_CURSO.

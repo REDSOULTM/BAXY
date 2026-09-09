@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-09T04:08:52.367953+00:00",
+  "method": "Use effective tokenizer exported from pinned AutoTokenizer548, not an assumed strip patch. Compare current torch query vectors547 with newly encoded actual PlannerCatalog passages and three ONNX profiles. Query and passage prefixes, mean pooling, L2 norm,512 limit unchanged. Full actual shortlist ordering and inclusion compared on742 development survey messages. Diagnostic only; no execution authority or product adoption.",
+  "cause": "547 FP32 drift isolated to H0166/H0704 trailing whitespace; AutoTokenizer changes normalizer and adds WhitespaceSplit versus tokenizer.json.548 confirms token difference and exports actual backend. INT8 still needs retrieval-quality evidence.",
+  "tokenizer_sha256": "d020d4870659e46d43cbc0c21d8f0f4e73044860822e6cf329dad3ee4aa69bc7",
+  "queries_sha256": "d07de46cfc450e5496fa1c6c7393b11186cf8023b7b1bc4df158dce19c9be8a1",
+  "catalog_sha256": "f584598f13e6b89fe6d705452f945babd6d0a6e6efcaa1efe13f26b0e36a14fb",
+  "profiles": [
+    "torch",
+    "fp32",
+    "fp32-no-arena",
+    "int8"
+  ],
+  "limits": {
+    "free_ram_mib": 768,
+    "seconds_per_process": 360
+  },
+  "criteria": "FP32 numerical equivalence and zero shortlist changes. INT8 changes require individual quality adjudication, not automatic rejection or acceptance. No-arena only disables ORT allocator retention; same FP32 graph and optimizations. Timings are warmed local queries, not product latency. No voice/UI or joint VRAM claim."
+}

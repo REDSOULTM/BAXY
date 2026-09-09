@@ -1,0 +1,14 @@
+{
+  "build": {
+    "exit_code": 0,
+    "peak_ram_mib": 2459.328125,
+    "seconds": 13.671999999991385,
+    "violations": []
+  },
+  "int8": {
+    "exit_code": 0,
+    "peak_ram_mib": 491.36328125,
+    "seconds": 4.765999999974156,
+    "violations": []
+  }
+}

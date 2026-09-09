@@ -1,0 +1,26 @@
+{
+  "torch": {
+    "exit_code": 0,
+    "peak_ram_mib": 832.9921875,
+    "seconds": 19.60999999998603,
+    "violations": []
+  },
+  "fp32": {
+    "exit_code": 0,
+    "peak_ram_mib": 1226.38671875,
+    "seconds": 7.546999999991385,
+    "violations": []
+  },
+  "fp32-no-arena": {
+    "exit_code": 0,
+    "peak_ram_mib": 1225.8203125,
+    "seconds": 8.546000000002095,
+    "violations": []
+  },
+  "int8": {
+    "exit_code": 0,
+    "peak_ram_mib": 491.7890625,
+    "seconds": 5.030999999988126,
+    "violations": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "official_operator_counts": {
+    "Constant": 284,
+    "Unsqueeze": 99,
+    "Shape": 97,
+    "Gather": 100,
+    "DequantizeLinear": 3,
+    "Cast": 97,
+    "Add": 172,
+    "Sub": 26,
+    "Slice": 1,
+    "Mul": 242,
+    "ReduceMean": 50,
+    "Pow": 25,
+    "Sqrt": 25,
+    "Div": 49,
+    "DynamicQuantizeLinear": 96,
+    "MatMulInteger": 96,
+    "Concat": 48,
+    "Reshape": 48,
+    "Transpose": 48,
+    "Softmax": 12,
+    "Erf": 12
+  },
+  "official_int8_initializers": 144,
+  "onnx_version": "1.22.0",
+  "sha256": "99ca5eebc0d6036f90c550b0b2db8021ba7ded20848027081f4e45e7ac2f0a58",
+  "bytes": 118308811
+}

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T03:59:47.085085+00:00",
+  "confirmedAtUtc": "2026-09-09T04:19:50.815549+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "545: coordinated questions; 3699 pass +121 subtests; Fast green; product546 pending.",
-  "continuation": "Repair compound time+battery and factual presentation; investigate measured encoder RAM without sacrificing ranking. Continue C03, no owner clarification pending.",
+  "checkpoint": "553: encoder and numeric-evidence diagnostics closed without adoption; source545 published; survey7/735/0.",
+  "continuation": "Resolve source/subject and capability semantics using native evidence and real product; no more generic numeric enrichment or unchanged quantization trials. Full C03 still open.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,12 +24,12 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 6,
-    "open": 736,
+    "covered": 7,
+    "open": 735,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "564802461608df97a7fc38f822b164fdb794d4c4",
+  "publishedSourceCommit": "1d08cc297547ebc1d38d98492a41973816423416",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
