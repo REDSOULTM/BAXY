@@ -9214,6 +9214,14 @@ class LlmRuntime:
         response_language = reading.language
         trace_id = str(facts.get("traceId") or "")[:128]
         previous_answer = str(facts.get("context") or "").strip()[:320]
+        situation = _situation_from_facts(facts)
+        # Progress has no request text to interpret. For mixed input, Spanish
+        # is a valid output language; the full conversation policy instead
+        # made the writer narrate its language analysis (C03 product605).
+        # Explicit English requests are already resolved by RequestReading.
+        progress_in_spanish = (
+            response_language == "mixed" and situation.get("cause") == "acting"
+        )
         language_contract = {
             "es": (
                 "Idioma obligatorio: español. Fuera de los literales del contrato, "
@@ -9224,10 +9232,9 @@ class LlmRuntime:
                 "not introduce Spanish words such as «Listo» or «encontré»."
             ),
             "mixed": MIXED_RESPONSE_LANGUAGE_POLICY,
-        }[response_language]
+        }["es" if progress_in_spanish else response_language]
         cpu_fallback = os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
         gguf = getattr(self, "_gguf", None)
-        situation = _situation_from_facts(facts)
         message_prompt, cpu_prompt = _public_compose_prompts(gguf)
         if (
             _public_compose_uses_granite_42(gguf)

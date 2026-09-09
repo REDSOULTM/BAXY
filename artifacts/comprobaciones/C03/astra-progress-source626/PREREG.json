@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-09T11:17:02.911567+00:00",
+  "method": "Only mixed-language progress selects the existing Spanish output policy. RequestReading continues to honor explicit English; other conversational prose retains the complete mixed policy. No phase, addressee, model, sampling, catalog, visible response or retry limit changed. Current source pins resealed; consumed STT/V8 evidence untouched.",
+  "native_evidence": "625 removes language metanarration with phases/step counts intact; other progress naturalness defects retained.",
+  "source_llm_sha256": "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e",
+  "python_tree_sha256": "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a",
+  "python_files": 404,
+  "criteria": "Owner tests and Fast green, product627 on registered source with35 finals and actual progress events. No new final or phase regressions. Not C03 completion or UI/voice qualification.",
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  }
+}

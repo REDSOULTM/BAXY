@@ -1,0 +1,40 @@
+{
+  "utc": "2026-09-09T11:23:15.214558+00:00",
+  "source": 626,
+  "finals": 35,
+  "correct_finals": 33,
+  "failed_cases": {
+    "H0012": "Existing colloquial identity question still becomes an interpretation failure.",
+    "greeting-variant-3": "Existing addressee error: calls the user Atlas."
+  },
+  "new_final_regressions": 0,
+  "progress_events": 83,
+  "published_progress_events": 48,
+  "unique_progress_labels": [
+    "Estoy revisando la solicitud del usuario. Aún no se han obtenido los resultados solicitados.",
+    "I'm currently reviewing the request. No results are available yet."
+  ],
+  "language_metanarration_removed": true,
+  "whole_progress_route_accepted": false,
+  "ui_or_voice_credit": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2361.19140625,
+    "seconds": 88.75
+  },
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  },
+  "private_hashes": {
+    "panel.json": "5fc795dbaee81a49c269a86d2c1f1ffc7297f842503c7900f584e6d01e0311ec",
+    "capture/events.jsonl": "1cb1ab0d2a60a48e8c9cfa28b58fc04e53fb4834645b1adc70ae30b3a52d75fe",
+    "turn-audit.jsonl": "41c3bc0453f9b9f98e936de13270bb1abb7452383b77fe3c73a2f6bd93bde77e",
+    "adjudication.json": "76522e38ee13ccca4a98db0b263bd0fd58b331ce64e7a0509a97199c5c5c2421",
+    "progress-adjudication.json": "294a421454afc607a72a9768838fdd2484b81af441562d3bccab96ddad5eb47f",
+    "RESULT.md": "54110f6fef7f345b3db5cf207db6891fdf742d62043c50dae1f3720d0d495c39"
+  }
+}

@@ -360,3 +360,13 @@ La [ficha exacta Qwen2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507), 
 ## Cierre617–621
 
 617 confirma20razonamientos nativos pero esquema/semántica insuficientes; no más barrido del subtipo.618 instrucción de trato mejora11/12→12/12. Integración619 mejora Gemma620 a34/35, pero Qwen621 baja a32/35 por tono H0032.619rechazado; fuente606 restaurada byte a byte. Se conserva todo el contraste y la recuperación de Fast por solapamiento con producto; ningún modelo/promoción ni cobertura adicional.
+
+
+## Ministral622–624
+
+Se reconsultaron2026-09-09 la ficha oficial https://huggingface.co/mistralai/Ministral-3-3B-Instruct-2512-GGUF y el informe https://arxiv.org/abs/2601.08584. PerfilT0,05/p0,95/k0/min0, sin penalización: sóloT<0,1 se atribuye a la recomendación oficial. Guard62214/20 y11/20; luego Jinja500 por user-user.623 conserva los contenidos unidos:4/12prosa.624 localiza ficción al introducir identidad: nativo8/12, identidad0/12,1corte. No promoción ni nueva ronda de prompts. Costes y salidas íntegras en artefactos privados sellados; no se borra el rechazo previo por coste.
+
+
+## Progreso625–627
+
+565 había rechazado reformular el destinatario.625 conserva destinatario/fase/modelo/sampler y elimina sólo metadatos de política mixed que605 narraba. Cuatro fases mixtas y ocho controles ES/EN conservan estado/pasos; la metanarración desaparece, la tercera persona no.626 integra la selección de español para progreso mixed, con inglés explícito intacto y política completa en conversación.1363pass/1skip+Fast;62733/35finales y transporte de progreso sin explicación del idioma. Fuente parcial adoptada, no cierre de ruta/UI/voz ni nueva promoción de modelo.

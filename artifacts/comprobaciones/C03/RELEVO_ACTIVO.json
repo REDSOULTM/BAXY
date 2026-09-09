@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T10:54:52.436228+00:00",
+  "confirmedAtUtc": "2026-09-09T11:23:15.371417+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "612–621 concluidos.619 rechazado por tono Qwen62132/35;606 restaurado exacto. Gemma62034/35 no promovido.25/717/0.",
-  "continuation": "Publicar evidencia612–621 y verificar HEAD=origin; fuente606 intacta. Cambiar de estrategia: herencia+perfil propio de otra alternativa para comprensión/tono antes de integración; no barrer prompts del guard ni repetir los mismos intentos. Pendientes C03 ocho rutas,717requisitos,UI/voz/error-restauración/recursos conjuntos y Full final.",
+  "checkpoint": "626 adoptada: progreso mixed sin metanarración.1363pass/1skip+Fast verde;62733/35sin regresión, dos etiquetas de progreso sin análisis del idioma.25/717/0.",
+  "continuation": "Publicar fuente626/evidencia622–627 y verificar remoto. Continuar C03: identidad H0012/vocativo Atlas, naturalidad de progreso y otras rutas;717requisitos abiertos, UI/voz/recuperación/recursos conjuntos/Full final. No repetir los cambios de estilo619 ni el subtipo615–617 ni promover Ministral622–624.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,8 +29,12 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "bbb3a951337661d567da62f62869d81137a4cde3",
-  "blockedAudit": {
+  "publishedSourceCommit": "pending_publication_of_validated_source626",
+  "workStatus": "resumed_by_explicit_owner_instruction",
+  "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
+  "previousGoalTurnClassification": "progress",
+  "publishedEvidenceCommit": "f0dcd98f87b588665d8397f45bd3bdb8a172e051",
+  "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
     "previous_goal_turn_classification": "no_progress",
@@ -39,7 +43,5 @@
     "no_acceptance_frozen": true,
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
-  },
-  "workStatus": "resumed_by_explicit_owner_instruction",
-  "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending."
+  }
 }

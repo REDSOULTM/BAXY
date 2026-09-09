@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-09T11:10:07.446226+00:00",
+  "planned_calls": 52,
+  "completed_calls": 40,
+  "failed_http_calls": 1,
+  "unattempted_calls": 11,
+  "normalized_correct_by_arm": {
+    "original": 14,
+    "social-subtype": 11
+  },
+  "failure": "Jinja rejects consecutive user roles before first prose decode",
+  "resources": {
+    "complete": false,
+    "violations": [],
+    "gpu_peak_mib": 2906.17578125,
+    "ram_peak_mib": 770.375,
+    "seconds": 16.280999999988126,
+    "manifest_unchanged": true
+  },
+  "source_adopted": false,
+  "private_hashes": {
+    "panel.json": "148a96b991be3e1205fd1ffb915cf3a2204990309dd679cd2260f06b22974634",
+    "requests.jsonl": "c8985c7efcd4c53d49936d4191b7132e164ce3957197f38c8f8b46a8d134c844",
+    "responses.jsonl": "6bb475f5d70838fdb4d44d215e7ff5e7ce19d46a9c803dad95f01ff81c1e0b15",
+    "server.log": "263b9245794491a17e77c609afb91400caf052839a50453cab9388325de70d01",
+    "adjudication.json": "525e4e3ea450d923524662d0fe53045c1135dd89f81d4a14c6e55d738fefefec",
+    "RESULT.md": "1b1bc50ac7a334bdf61e4d44b0d94eae7cad4fb1cf6e9bfcffb4c45242029c6d"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-09T11:23:15.339500+00:00",
+  "adopted": true,
+  "scoped_change": "Progress-only mixed output language; remove irrelevant conversation/language-analysis metadata.",
+  "targeted_passed": 200,
+  "owners_passed": 1363,
+  "owners_skipped": 1,
+  "owners_skip_reason": "blind STT campaign inputs absent",
+  "fast_exit": 0,
+  "release_seconds": 20.29,
+  "release_warnings": 0,
+  "release_errors": 0,
+  "full_run": false,
+  "registered_product627_final_correct": 33,
+  "registered_product627_final_total": 35,
+  "new_final_regressions": 0,
+  "whole_progress_route_accepted": false,
+  "source_files": {
+    "src/baxy_mind/llm.py": "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e",
+    "tests/test_c03_request_preservation.py": "feaa07c95f489e65bbca126b53c165ce0641cd1965b4f5e9587431b9eb4d6eac",
+    "tests/test_price_v8_veto_damage_by_cause.py": "49d21df3871cd8581dab52e668f78baf3482c2cd1ddff5cea4acdffbc49d25ce",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "27ec22ce42814305d689ce314da0b2c66f9e2d977010266ab566aa494572b21a",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "96e1d99f60ba65a40dcb42342f184f420e0341fe1637c9de601ec79db282c725"
+  }
+}

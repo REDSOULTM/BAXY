@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-09T11:10:07.501796+00:00",
+  "correct_by_arm": {
+    "merged-consecutive-users": 4
+  },
+  "calls": 12,
+  "cuts": 0,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 2906.17578125,
+    "ram_peak_mib": 746.0625,
+    "seconds": 9.26500000001397,
+    "manifest_unchanged": true
+  },
+  "source_adopted": false,
+  "private_hashes": {
+    "panel.json": "0745ad58051efd02f202a2ebeaafaebaa6df4095c9101fb9c011406b74229771",
+    "requests.jsonl": "abf21c7f7aaf2b246ee2651cd3947814e30c980c9646745fdca842ab73ad67e0",
+    "responses.jsonl": "c5e04fc7c6d696743f01b780216fd0be4ef0075fed2ea5202b99c812caa8ba5f",
+    "adjudication.json": "25768dfae0a434770cfd53d3c2c00daa6e7195565f99aa2c21611aed628160fe",
+    "RESULT.md": "67b04f11a82401f3327d7daf10479240d338be3a0cfb1fd328825d28a4d8be69"
+  }
+}

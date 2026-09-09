@@ -334,6 +334,61 @@ def test_progress_retry_keeps_narration_role_and_does_not_prescribe_visible_word
         assert "Still working." not in payload["messages"][0]["content"]
 
 
+@pytest.mark.parametrize("user_text,language", [
+    ("Explain encryption, pero en simple", "mixed"),
+    ("Responde en spanglish: dime la hora y el uso de CPU.", "mixed"),
+    ("Dime la hora y el uso de CPU; responde en inglés.", "en"),
+    ("Dime la hora y el uso de CPU.", "es"),
+])
+@pytest.mark.parametrize("step,total", [(2, 5), (4, 9)])
+def test_progress_language_scope_survives_retry_without_losing_phase(
+    user_text: str, language: str, step: int, total: int,
+) -> None:
+    assert read_request(user_text).language == language
+    corrected = (
+        f"I'm working on step {step} out of {total}."
+        if language == "en"
+        else f"Estoy trabajando en el paso {step} de {total}."
+    )
+    client = Recorder(["La CPU está al 45%.", corrected])
+    client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    facts = {"situation": {
+        "kind": "status", "cause": "acting", "polarity": "success",
+        "phase": "acting", "step": step, "totalSteps": total,
+    }}
+
+    assert client.compose_user_message(user_text, "status", facts) == corrected
+    assert len(client.payloads) == 2
+    for payload in client.payloads:
+        content = payload["messages"][-1]["content"]
+        wire_text = "\n".join(message["content"] for message in payload["messages"])
+        assert user_text not in wire_text
+        assert llm.MIXED_RESPONSE_LANGUAGE_POLICY not in wire_text
+        language_instruction = (
+            "Mandatory language: English" if language == "en"
+            else "Idioma obligatorio: español"
+        )
+        assert language_instruction in wire_text
+        line = next(line for line in content.splitlines() if line.startswith("situation: "))
+        projected = json.loads(line.removeprefix("situation: "))
+        assert projected["state"] == "working on the current step"
+        assert projected["step"] == step
+        assert projected["totalSteps"] == total
+
+
+def test_conversation_retains_mixed_language_policy_and_request() -> None:
+    request = "Responde en spanglish: ¿qué es la caché?"
+    reply = "La caché conserva datos para volver a consultarlos más rápido."
+    client = Recorder([reply])
+    client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    assert client.compose_user_message(request, "conversation", {
+        "situation": {"kind": "conversation", "polarity": "success"},
+    }) == reply
+    content = client.payloads[0]["messages"][-1]["content"]
+    assert request in content
+    assert llm.MIXED_RESPONSE_LANGUAGE_POLICY in content
+
+
 @pytest.mark.parametrize("phase,state", [
     ("understanding", "reviewing the person's request"),
     ("preparing_steps", "preparing the steps for the request"),
@@ -705,8 +760,8 @@ def test_progress_is_not_projected_as_a_completed_transition() -> None:
         ("cuánto es doce por ocho", "Sigo calculando el resultado.", "Idioma obligatorio: español"),
         (
             "Explain encryption, pero en simple",
-            "Sigo preparando la explicación, keeping it simple.",
-            "spanglish",
+            "Sigo preparando la explicación de forma sencilla.",
+            "Idioma obligatorio: español",
         ),
     ],
 )

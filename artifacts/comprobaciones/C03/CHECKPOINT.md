@@ -565,3 +565,44 @@ Se rechaza la fuente compartida619 y se restauran exactamente llm.py y los tres 
 Dueñas619:1049pass/1skip ambiental por archivos de campaña STT ausentes. Fast inicial rojo por DLL bloqueadas durante620; recuperación posterior sin BAXY activo:verde, Release5,49s,0advertencias/errores. Esa validación no invalida el rechazo de conducta. No se ejecutó ni se afirma Full619. Full606 sigue ligado a la fuente restaurada:10218pass+466subtests/3skips Python;4452pass/1skip agregado .NET.
 
 621:3499,559MiB GPU/2482,797MiB RAM,91,968s, sin violaciones; no UI/voz conjunta. No cambia modelo, perfil registrado ni adaptador CPU. Se abandona la expansión del guard615–617 y no se encadena otro barrido de prompts. El siguiente contraste debe valorar una alternativa con evidencia y perfil propios sobre los fallos de comprensión/tono, antes de más integración.
+
+
+# Ministral622: clasificación insuficiente y formato incompatible
+
+Ministral3-3B-Instruct2512 Q4 heredado, hash verificado9ed150d4; backendb10809, perfilT0,05/p0,95/k0/min0/repetición neutra. La ficha oficial recomiendaT<0,1; no se presenta el resto del perfil como óptimo. Se consultaron la ficha GGUF y el informe técnico2601.08584, además de los rechazos previos de coste y aritmética. Los52 casos previstos no se completaron:40 respuestas de clasificación, luegoHTTP500 en la primera prosa y11sin intentar.
+
+Guardia original14/20 y subtipo11/20 normalizados. Se conservan errores de completitud, cardinalidad y lecturas actuales; el subtipo no se adopta. El HTTP500 se debe a la plantilla Jinja: el historial como datos ocupa un mensaje user y la petición otro user consecutivo. Es un error de serialización anterior al decode, no una respuesta incorrecta del modelo.
+
+623 conserva todos los textos y roles al unir sólo user consecutivos; no borra historial ni inventa una respuesta intermedia. Esta avería y las40 clasificaciones quedan separadas. Ningún cambio de fuente/registro/cobertura:25/717/0.
+
+
+# Ministral623: formato resuelto, calidad insuficiente
+
+623 une los mensajes user consecutivos conservando todo el texto:12/12 HTTP completados y stop, pero sólo4/12 respuestas adecuadas. 624 aísla usuario nativo frente a una frase de identidad:8/12 frente0/12. El brazo nativo ya inventa contexto de herramientas/interfaz y deja una plantilla sin resolver; al añadir la identidad del compañero de PC aparece una persona ficticia con cuerpo y hechos inventados. Una de24 salidas624 agota512tokens; no se amplía el presupuesto para disimular repetición. Las políticas completas623 reducen la ficción, pero no solucionan los idiomas ni la respuesta a lo pedido.
+
+No se adopta Ministral, la serialización experimental ni otra variante del prompt de identidad. No se afirma inferioridad universal: es un fallo de estos papeles con el perfil declarado. Se preservan costes, versión y todos los borradores. Fuente606/registro intactos;25/717/0.
+
+
+# Ministral624: formato resuelto, calidad insuficiente
+
+623 une los mensajes user consecutivos conservando todo el texto:12/12 HTTP completados y stop, pero sólo4/12 respuestas adecuadas. 624 aísla usuario nativo frente a una frase de identidad:8/12 frente0/12. El brazo nativo ya inventa contexto de herramientas/interfaz y deja una plantilla sin resolver; al añadir la identidad del compañero de PC aparece una persona ficticia con cuerpo y hechos inventados. Una de24 salidas624 agota512tokens; no se amplía el presupuesto para disimular repetición. Las políticas completas623 reducen la ficción, pero no solucionan los idiomas ni la respuesta a lo pedido.
+
+No se adopta Ministral, la serialización experimental ni otra variante del prompt de identidad. No se afirma inferioridad universal: es un fallo de estos papeles con el perfil declarado. Se preservan costes, versión y todos los borradores. Fuente606/registro intactos;25/717/0.
+
+
+# Progreso625: reparación parcial de metadatos de idioma
+
+24 respuestas, cuatro fases en ES/EN/mixed por dos brazos. Sustituir sólo la política mixed larga por el contrato español existente elimina la narración de análisis de idiomas en understanding. Las ocho parejas ES/EN son controles idénticos, incluidas sus salidas; las cuatro fases mixtas conservan actividad y pasos. No se incorporan el pedido original ni resultados futuros.
+
+No se afirma que todo el panel de prosa esté resuelto: understanding aún habla de «la solicitud del usuario» y quedan formulaciones de progreso por mejorar. Se califica únicamente retirar metadatos conversacionales irrelevantes del narrador de progreso, sin nueva regresión observada.626 lo integra con pruebas de reintento, fases/pasos, petición explícita en inglés y conservación de la política mixed fuera de progreso. La encuesta permanece25/717/0 y no hay crédito de UI/voz.
+
+
+# Fuente626 adoptada: el progreso no narra la política de idioma
+
+El narrador de progreso mixed recibe sólo el contrato español permitido por identidad. Las peticiones explícitas de inglés conservan su idioma; el resto de la conversación conserva la política completa de spanglish. No se cambian modelo, sampler, fases, números, guardas de hechos ni presupuesto/reintentos. La instrucción simplificada se conserva también al reparar un borrador.
+
+625 verificó las cuatro fases y ocho controles ES/EN.627, con Qwen registrado y sin hooks, mantiene33/35 finales como605; siguen H0012 y Atlas, sin nuevas regresiones. El transporte boot_stage ya no contiene la explicación interna de mezcla de idiomas. Esto no acredita pantalla ni voz y la referencia española a «la solicitud del usuario» sigue pendiente: la ruta completa de progreso no está cerrada.
+
+Validación626:200pruebas focales; dueñas ampliadas1363pass/1skip ambiental por archivos de campaña STT ausentes; Fast verde, Release20,29s,0advertencias/errores. Se conservan los contratos de hechos y los pines históricos consumidos; sólo se actualizan los pines de la fuente vigente. No se ejecutó Full626: la fuente sólo toca Python y se exige Full del candidato final. Full606 queda como línea base histórica, no como prueba del código626.
+
+Producto627:3499,559MiB GPU/2361,191MiB RAM,88,750s, sin infracciones; UI y voz no estaban activas juntas. Encuesta25 cubiertos/717 abiertos/0 no aplicables. No se ha promovido un modelo ni se ha cerrado C03. Fuente626 y evidencia622–627 se publican en Goal-c03; main permanece intacto.

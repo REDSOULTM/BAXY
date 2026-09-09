@@ -1,0 +1,147 @@
+diff --git a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+index b712dba1..445ad116 100644
+--- a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
++++ b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84"
++    "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a"
+ )
+ CONSUMED_BLIND_CONTRACT = (
+     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
+diff --git a/experiments/stt_quality/evaluate_reserved_stt.py b/experiments/stt_quality/evaluate_reserved_stt.py
+index 47ee67f2..8fd95ced 100644
+--- a/experiments/stt_quality/evaluate_reserved_stt.py
++++ b/experiments/stt_quality/evaluate_reserved_stt.py
+@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "37cfd94ffc5a02acdd401a33e9ffac1a6d850d2e10cb0b40490c7dc162f39c84"
++    "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a"
+ )
+ SAMPLE_RATE = 16_000
+ SILENCE_SAMPLES = SAMPLE_RATE // 5
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index eca63496..db563f03 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9214,6 +9214,14 @@ class LlmRuntime:
+         response_language = reading.language
+         trace_id = str(facts.get("traceId") or "")[:128]
+         previous_answer = str(facts.get("context") or "").strip()[:320]
++        situation = _situation_from_facts(facts)
++        # Progress has no request text to interpret. For mixed input, Spanish
++        # is a valid output language; the full conversation policy instead
++        # made the writer narrate its language analysis (C03 product605).
++        # Explicit English requests are already resolved by RequestReading.
++        progress_in_spanish = (
++            response_language == "mixed" and situation.get("cause") == "acting"
++        )
+         language_contract = {
+             "es": (
+                 "Idioma obligatorio: español. Fuera de los literales del contrato, "
+@@ -9224,10 +9232,9 @@ class LlmRuntime:
+                 "not introduce Spanish words such as «Listo» or «encontré»."
+             ),
+             "mixed": MIXED_RESPONSE_LANGUAGE_POLICY,
+-        }[response_language]
++        }["es" if progress_in_spanish else response_language]
+         cpu_fallback = os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+         gguf = getattr(self, "_gguf", None)
+-        situation = _situation_from_facts(facts)
+         message_prompt, cpu_prompt = _public_compose_prompts(gguf)
+         if (
+             _public_compose_uses_granite_42(gguf)
+diff --git a/tests/test_c03_request_preservation.py b/tests/test_c03_request_preservation.py
+index 83df2bf1..a9f46dc4 100644
+--- a/tests/test_c03_request_preservation.py
++++ b/tests/test_c03_request_preservation.py
+@@ -334,6 +334,61 @@ def test_progress_retry_keeps_narration_role_and_does_not_prescribe_visible_word
+         assert "Still working." not in payload["messages"][0]["content"]
+ 
+ 
++@pytest.mark.parametrize("user_text,language", [
++    ("Explain encryption, pero en simple", "mixed"),
++    ("Responde en spanglish: dime la hora y el uso de CPU.", "mixed"),
++    ("Dime la hora y el uso de CPU; responde en inglés.", "en"),
++    ("Dime la hora y el uso de CPU.", "es"),
++])
++@pytest.mark.parametrize("step,total", [(2, 5), (4, 9)])
++def test_progress_language_scope_survives_retry_without_losing_phase(
++    user_text: str, language: str, step: int, total: int,
++) -> None:
++    assert read_request(user_text).language == language
++    corrected = (
++        f"I'm working on step {step} out of {total}."
++        if language == "en"
++        else f"Estoy trabajando en el paso {step} de {total}."
++    )
++    client = Recorder(["La CPU está al 45%.", corrected])
++    client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
++    facts = {"situation": {
++        "kind": "status", "cause": "acting", "polarity": "success",
++        "phase": "acting", "step": step, "totalSteps": total,
++    }}
++
++    assert client.compose_user_message(user_text, "status", facts) == corrected
++    assert len(client.payloads) == 2
++    for payload in client.payloads:
++        content = payload["messages"][-1]["content"]
++        wire_text = "\n".join(message["content"] for message in payload["messages"])
++        assert user_text not in wire_text
++        assert llm.MIXED_RESPONSE_LANGUAGE_POLICY not in wire_text
++        language_instruction = (
++            "Mandatory language: English" if language == "en"
++            else "Idioma obligatorio: español"
++        )
++        assert language_instruction in wire_text
++        line = next(line for line in content.splitlines() if line.startswith("situation: "))
++        projected = json.loads(line.removeprefix("situation: "))
++        assert projected["state"] == "working on the current step"
++        assert projected["step"] == step
++        assert projected["totalSteps"] == total
++
++
++def test_conversation_retains_mixed_language_policy_and_request() -> None:
++    request = "Responde en spanglish: ¿qué es la caché?"
++    reply = "La caché conserva datos para volver a consultarlos más rápido."
++    client = Recorder([reply])
++    client._gguf = "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
++    assert client.compose_user_message(request, "conversation", {
++        "situation": {"kind": "conversation", "polarity": "success"},
++    }) == reply
++    content = client.payloads[0]["messages"][-1]["content"]
++    assert request in content
++    assert llm.MIXED_RESPONSE_LANGUAGE_POLICY in content
++
++
+ @pytest.mark.parametrize("phase,state", [
+     ("understanding", "reviewing the person's request"),
+     ("preparing_steps", "preparing the steps for the request"),
+@@ -705,8 +760,8 @@ def test_progress_is_not_projected_as_a_completed_transition() -> None:
+         ("cuánto es doce por ocho", "Sigo calculando el resultado.", "Idioma obligatorio: español"),
+         (
+             "Explain encryption, pero en simple",
+-            "Sigo preparando la explicación, keeping it simple.",
+-            "spanglish",
++            "Sigo preparando la explicación de forma sencilla.",
++            "Idioma obligatorio: español",
+         ),
+     ],
+ )
+diff --git a/tests/test_price_v8_veto_damage_by_cause.py b/tests/test_price_v8_veto_damage_by_cause.py
+index 737b556b..6a199d31 100644
+--- a/tests/test_price_v8_veto_damage_by_cause.py
++++ b/tests/test_price_v8_veto_damage_by_cause.py
+@@ -104,7 +104,7 @@ V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
+         "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
+     ),
+     "src/baxy_mind/llm.py": (
+-        "d9ace8ac4adcf83af955276d1ed072b9a9ddff2fe85a26f2fa4511433dcc9425"
++        "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e"
+     ),
+ }
+ 
