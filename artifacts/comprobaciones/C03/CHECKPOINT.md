@@ -1190,3 +1190,8 @@ El encabezado delimitado de tiempo presente se conserva como marco del pedido me
 52casos nuevos:36fallos/16pases→52pases. Incluyen ES/EN/mezcla, prefijos, referentes, ausencia de catálogo, otra máquina/tiempo, negación, citas, cambio de tema y la tubería real de decisión con un transporte que impide sustituir la lectura por charla. Dueñas31archivos7682pases/0skips92,42s; declaraciones600pases/1skip ambiental3,98s por entradas ausentes de campaña ciega STT. Fast exit0/Release19,50s,0advertencias/errores. Producto684 confirma7/7lecturas frescas, pero sólo4/7finales: siguen falsos rechazos de redacción en el verificador. La referencia explícita aquí es de un salto; no se declara comprensión universal de cadenas elípticas.
 
 Tree6c474bfe4350dd0203b70a509a39d816feda4b0bf85a9a620e43512e6ae23ae5/405archivos y declaraciones actuales actualizadas. Encuesta26/716/0 intacta; C03 EN_CURSO. Full651 sigue baseline, no Full683: otro Full al adoptar C#+Python juntos o candidato final. Durante una actualización auxiliar, RELEVO_ACTIVO quedó temporalmente null por una variable PowerShell equivocada; se restauró desde HEAD verificado y se reaplicó el progreso real antes de continuar. Fuente, encuesta y evidencias no se alteraron por ese incidente.
+
+
+# Publicación683 verificada
+
+Fuente y evidencias683–685 publicadas en 68a27bdec8179404d2d9295a09c1f6f6db859ef4; remoto verificado, main intacto.19pins públicos/índice, privados, fuentes/tree, manifiesto y encuesta auditados; BAXY cerrado. No nueva encuesta:26cubiertos/716abiertos/0NA. Siguiente: distinguir preguntas de identidad de ventana de preguntas Booleanas para eliminar los falsos missing_fact de684 sin dejar pasar contradicciones. C03 EN_CURSO.

@@ -1,6 +1,6 @@
-# C03 — fuente683 adoptada; publicar antes de otra reparación
+# C03 — fuente683 publicada; verificación de identidad pendiente
 
-Goal activo en Goal-c03; main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. Objetivo C:/Users/usuario/.codex/attachments/b424eff2-0702-4cc9-871a-451d31ecf314/goal-objective.md. Sin agentes/decisión pendiente. Preservar otra tarea del dueño en VSCode. Fuente anterior680publicadae2ad0b5c, HEAD previo8c79def4. Ahora683adoptada y aún sin commit.
+Goal activo en Goal-c03; main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. Objetivo C:/Users/usuario/.codex/attachments/b424eff2-0702-4cc9-871a-451d31ecf314/goal-objective.md. Sin agentes/decisión pendiente. Preservar otra tarea del dueño en VSCode. Fuente683publicada68a27bdec8179404d2d9295a09c1f6f6db859ef4, remoto verificado. Este registro sólo cambia documentación.
 
 683 extiende el marco temporal presente delimitado y reutiliza la rama de lectura contextual de hora para foco nominal con único antecedente de usuario. Sóloeffect_intent.py; no nuevo dispatcher/LLM/C#.52nuevos36fail16pass→52pass; dueñas31archivos7682pass/0skip92,42s;600declaraciones/1skip ambiental3,98s;Fast0/Release19,50s. Tree6c474bfe4350dd0203b70a509a39d816feda4b0bf85a9a620e43512e6ae23ae5/405archivos. No Full683 por regla Python-only; Full651baseline, Full final pendiente.
 
@@ -8,7 +8,7 @@ Goal activo en Goal-c03; main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. O
 
 685diagnóstico nativo10EOS: retirar sólo«Expresa el mensaje con tus propias palabras»da3/5→4/5; originalChatGPTmejora, Atlas sigueventanal. No se adopta ni cambia llm.py. Cinco controles reproducen682exactamente. Mantener685cerrado, no repetir: es una mejora parcial, no solución general.
 
-Siguiente tras publicación: distinguir respuesta de identidad («qué/cuál ventana») de Booleano («está Atlas activa») en la validación de cobertura, y comprobar contradicciones/inversión de sujeto con pruebas de nombres/valores. Evitar listas de frases de respuesta: el fallo es el tipo de respuesta exigida. Pregunta original de679yvariantes intactas. H0104abierto; encuesta742/rev1248:26cubiertos/716abiertos/0NA, SHA237c14900a9e36e2e5f6071f132ad916a234ecb39a77e0dd497ef2565eceb2b7.
+Siguiente: distinguir respuesta de identidad («qué/cuál ventana») de Booleano («está Atlas activa») en la validación de cobertura, y comprobar contradicciones/inversión de sujeto con pruebas de nombres/valores. Evitar listas de frases de respuesta: el fallo es el tipo de respuesta exigida. Pregunta original de679yvariantes intactas. H0104abierto; encuesta742/rev1248:26cubiertos/716abiertos/0NA, SHA237c14900a9e36e2e5f6071f132ad916a234ecb39a77e0dd497ef2565eceb2b7.
 
 683fuente/evidencia pública astra-fresh-window-source683; producto astra-survey-focus684; diagnóstico astra-native-paraphrase685. Scripts prepare683/product684/native685/close683-685 YA ejecutados. Sesiones63475/70980/20597 terminalesexit0;685 terminó en su llamada. BAXY cerrado, ninguna campaña activa.684GPU3497,559MiB/RAM2363,301MiB/56,140s;685RAM722,570MiB/4,922s. Sin UI/voz conjunta ni mínimo global. RAM libre tras cierre normal buildservers4262,5MiB antes684.
 
