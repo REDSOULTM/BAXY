@@ -2,7 +2,7 @@
 
 **Estado vigente,2026-09-09:** goal activo; **ninguna decisión pendiente del dueño**. La [autorización536](AUTORIZACION_DUENO_536.md) permite usar históricos, encuesta y casos nuevos con generalización ES/EN. Los bloqueos534 descritos abajo son históricos y quedaron resueltos.
 
-Fuente633 publicada en d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d; remoto verificado y main intacto. Dueñas3425pass+121subpruebas/0omisiones;17pass/1omisión de declaraciones;Fast exit0. Producto63410/12:selección de lecturas10/10, pero inventario de Bloc de notas e idioma del foco pendientes.25cubiertos/717abiertos/0NA. Full630 es línea base anterior, no Full633. Estado en HANDOFF.md y RELEVO_ACTIVO.json. Los tramos históricos no describen automáticamente la fuente actual.
+Fuente638 publicada en 9e3507cf870446a85fb913722662a690ab532128; remoto verificado y main intacto. Identidad empaquetada y todos los handles visibles corregidos.513pass Providers/4opt-in impresas aparte;46pass integración;Fast exit0.63911/12 y64014/20: referencias, idioma del foco y lectura inglesa de cantidad siguen abiertos.25cubiertos/717abiertos/0NA. Full630 es línea base anterior, no Full638. HANDOFF.md y RELEVO_ACTIVO.json contienen la reanudación. Las cifras históricas no describen automáticamente la fuente actual.
 
 ## Registro histórico — fuente120713be y auditoría534
 
@@ -711,3 +711,8 @@ Validación638:513pass Providers,0omisiones agregadas y4opt-in impresas aparte;4
 640 amplía a20casos y acredita14. WhatsApp abierto se verifica correctamente por identidad empaquetada en ambos idiomas. La cantidad española de Steam se lee y responde2. Persisten cuatro fallos de seguimiento: And Spotify?, Is it open now?, Y Steam? y Esa aplicación… pierden el contexto; el último además incluye exactly. El foco inglés sigue clasificado mixed. La cantidad inglesa coincide con la lectura española anterior, pero request94 elige conversation/knowledge sin una nueva observación tipada: no se acusa una cifra inventada, pero tampoco se acredita una consulta actual. H0040 sigue abierto;25cubiertos/717abiertos/0NA.
 
 Recursos640:3497,559MiB GPU/2412,738MiB RAM;85,828s, sin infracciones. No UI/voz conjunta.639:3497,559/1894,625MiB;77,313s incluyen NativeAOT. La variación de RAM depende de la sesión/carga; no se presenta como mínimo global. Fuente638 se adopta por las lecturas verificadas y pruebas dueñas; los defectos de contexto/idioma se conservan como pendientes de C03.
+
+
+## Publicación635–640
+
+Fuente/evidencia 9e3507cf870446a85fb913722662a690ab532128, remoto verificado; main intacto. Auditoría del índice:6campañas/36pines íntegros; fuente/tests/scripts/scratchpad sin errores de whitespace. BAXY/Core/llama-server ausentes al cierre, build servers apagados. H0040 sigue abierto por seguimientos y consulta inglesa sin nueva observación; registro SHA1690681dedef92f03cb75afec5b4030f978acd0c9f5902de4d723d457d37caa1. Ninguna decisión pendiente del dueño.
