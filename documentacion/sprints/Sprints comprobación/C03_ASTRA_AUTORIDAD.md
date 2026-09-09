@@ -1,5 +1,7 @@
 # C03 — completar la respuesta veraz de BAXY
 
+Actualización vigente del objetivo, 2026-09-08: [texto íntegro del dueño](../../../artifacts/comprobaciones/C03/astra-baseline-full526/GOAL_OBJECTIVE.md), SHA-256 `6ca6aec0928cb4e50a5cfeb29108d962e7669b9b63a7e2eb77ea92b02889bb5a`. Sustituye las cláusulas anteriores sobre publicación, Full, reserva, encuesta, audio y escalado. Todo lo demás conserva su alcance.
+
 Actualización directa del dueño, 2026-09-08: continuar C03 incorporando todos sus
 mensajes de esta tarea y toda la encuesta como base para generalizar conductas.
 Trazabilidad literal y prioridades vigentes en
@@ -18,7 +20,7 @@ papers, documentación y experiencias reproducibles de usuarios. Una comparació
 con parámetros idénticos sirve para aislar causas, no para declarar inferioridad
 global. Medir perfiles adecuados por candidato y explicar calidad, latencia,
 RAM y VRAM; no presumir que defaults o una recomendación garantizan el óptimo.
-Los100 casos humanos frescos y el resto del cierre C03 siguen obligatorios.
+La reserva humana auditada y el resto del cierre C03 siguen obligatorios conforme a la actualización del objetivo.
 
 Encargo consolidado y actualizado el 2026-09-06 con todos los mensajes del dueño
 disponibles en este chat y los dos textos adjuntos. Las reiteraciones se fusionan;
@@ -169,10 +171,7 @@ la hipótesis. No abras una colección de modelos ni repitas cien turnos para
 buscar una corrida favorable. Usa contexto acotado y validación por ownership;
 Full corresponde al candidato integrado, no a cada edición. Elige la vía más
 corta que conserve calidad y cobertura, sin prometer plazos que no hayas medido.
-Actualización expresa del dueño: no repetir Full entre cambios o tramos. Usa
-pruebas dueñas y mediciones del producto durante la reparación; ejecuta Full
-cuando esté resuelto todo lo necesario para cerrar C03 y comprueba verde entero.
-La ejecución ya iniciada puede terminar; no autoriza encadenar otra compuerta.
+Actualización vigente del dueño: commit de control de todo el WIP y Full de línea base inmediato, publicando su resultado real. Después, Full al adoptar una fuente que toque C# y Python juntos y Full de cierre sobre el candidato final; no por cada edición. Cada fuente adoptada se commitea con sus dueñas verdes y checkpoint, y se publica en Goal-c03 cuando sus dueñas estén verdes. Main permanece intacto.
 
 Mantén razonamiento alto como base conforme a AGENTS; dedica más análisis sólo a
 una causa que lo necesite. El objetivo de eficiencia es reducir intentos y trabajo
@@ -232,22 +231,20 @@ se conservan en artifacts/comprobaciones/C03/ACLARACION_DUENO_2026-09-06.md.
 
 C03 termina cuando se cumplen todos los criterios del goal formal, incluidos:
 
-1. Cien turnos normales frescos, congelados antes de ejecutarlos y leídos y
-   adjudicados individualmente: 100/100 útiles y fieles a lo pedido, en los tres
-   idiomas y distribuidos entre las ocho rutas de respuesta. Sin hechos o
-   palabras inventados, plantillas, fugas internas, agotamientos ni silencios.
+1. Hasta 100 turnos españoles humanos acreditados, con procedencia, contexto y exposición auditados, distribuidos entre las ocho rutas y congelados antes de ejecutarse; todos útiles y fieles. Inglés y mezcla natural se adjudican aparte con el material humano disponible, incluidos los cuatro ejemplos aprobados, sin cuotas ni traducciones. Sin hechos o palabras inventados, plantillas, fugas internas, agotamientos ni silencios.
 2. Los errores conservan su causa y permiten recuperar la sesión. Las averías
    inyectadas se evalúan aparte y no se cuentan entre los cien turnos normales.
 3. El recorrido compartido de producto, la UI real y el runtime registrado
    satisfacen las comprobaciones de C03. La salida de un conductor sin ventana
    no acredita por sí sola pantalla ni audio físico.
-4. Pruebas dueñas y `scripts/test_source_quality.ps1 -Mode Full` verdes sobre el
+4. Cobertura consultable de los 742 casos en el registro privado: `verification_status` por `case_id` y evidencia de variantes que cambien nombres, valores, orden, referencias e idioma. Cada checkpoint cuenta cubiertos, abiertos y no aplicables; los 3 negativos y 18 sin marca siguen siendo límites.
+5. Loopback: recuperar íntegramente la publicación de voz. Micrófono con AEC: medir supresión de la propia voz de BAXY. Voz humana física, calibración wake y FAR/FRR corresponden a C08; dejar estado, evidencia y reanudación en sus filas sin cerrarlas.
+6. Pruebas dueñas y `scripts/test_source_quality.ps1 -Mode Full` verdes sobre el
    candidato final, sin omitir fallos ni relajar criterios. Runtime y evidencia
    reproducibles; trabajo propio publicado en la rama de trabajo.
 
 Cuenta respuestas correctas, no mensajes publicados ni tests estructurales.
-Mantén C03 EN_CURSO hasta demostrar el cierre. Si aparece un bloqueo externo
-real que no puedes resolver, documenta la evidencia y la reanudación exacta.
+Mantén C03 EN_CURSO hasta demostrar el cierre. Actualiza filas propias de la matriz al cumplirlas; en filas ajenas añade «evidencia disponible — owner CXX» sin cambiar su estado. Repara defectos ajenos sólo si bloquean C03. Ante exigencias contradictorias o material insuficiente para cumplir una, detente y pregunta al dueño antes de gastar más campañas.
 La dificultad, el consumo de contexto o un contratiempo reparable no cierran
 el goal. Informa con prosa breve: qué cambió, qué se midió y qué falta.
 

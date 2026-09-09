@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-09T01:14:54.972451+00:00",
+  "updated_objective_sha256": "6ca6aec0928cb4e50a5cfeb29108d962e7669b9b63a7e2eb77ea92b02889bb5a",
+  "head": "892c506cdd1a583048ed80af8e63703ec329a236",
+  "branch": "Goal-c03",
+  "main_unchanged": "5f572ee1b48cb5e2543ee5e06510e51057c9c845",
+  "control_commit": "892c506cdd1a583048ed80af8e63703ec329a236",
+  "purpose": "Owner explicitly superseded no-commit/no-Full restrictions. Control snapshot of all WIP created first, including existing 305MB dependency through installed Git LFS. Run baseline Full now, publish its actual result whether green or red. No source edits or GPU experiments during baseline.",
+  "command": "scripts/test_source_quality.ps1 -Mode Full",
+  "publication": "Push Goal-c03 when owner suites are green, preserve main; no force push. Baseline failure remains visible and does not close C03.",
+  "next_requirements": [
+    "Update current authority/matrix with revised owner-specific evidence rules.",
+    "Per-case private questionnaire verification_status with counts covered/open/not-applicable.",
+    "Up to100 accredited fresh Spanish human turns; English/natural mixture separate without quotas.",
+    "Loopback completeness and microphone AEC echo suppression assessed separately; physical human/wake FAR/FRR belongs toC08.",
+    "Ask owner promptly about genuine contradictions/unattainable requirements rather than spending more diagnostic campaigns."
+  ]
+}

@@ -373,7 +373,9 @@ def test_language_wrapper_keeps_explanation_prompt_and_literal_request(
     client.chat(user_text, conversation_kind="knowledge", response_language="mixed")
     assert len(client.payloads) == 1
     messages = client.payloads[0]["messages"]
-    assert messages[0]["content"] == llm.SYSTEM_PROMPT
+    assert messages[0]["content"] == (
+        llm.SYSTEM_PROMPT + " " + llm.CONVERSATION_FACT_PROVENANCE_PROMPT
+    )
     assert messages[-1]["content"] == user_text
 
 
@@ -1092,7 +1094,11 @@ def test_typed_operation_error_survives_nested_mission_projection(language: str,
     projected = llm._compose_situation_payload(
         {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
          "reason": operation_result}, language)
-    assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+    assert projected["reason"] == {
+        "outcome": "failed",
+        "cause": error.replace("_", " "),
+        "operation": "filesystem.read.text",
+    }
     assert operation_result["error"] == error
 
 
@@ -1240,7 +1246,11 @@ def test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabil
     payload = llm._compose_situation_payload(situation, language, "cancelar")
     assert payload["outcome"] == "cancelled"
     steps = payload["completedStepsInOrder"]
-    assert steps[0]["resultAtThisStep"] == {"readOnly": False, "seen": {"level": 35}}
+    assert steps[0]["resultAtThisStep"] == {
+        "readOnly": False,
+        "seen": {"level": 35},
+        "operation": "audio.set_volume",
+    }
     assert steps[1]["resultAtThisStep"]["seen"]["windows"] == [
         {"processName": "Example", "state": "maximized"}
     ]

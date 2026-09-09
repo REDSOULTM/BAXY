@@ -1,5 +1,7 @@
 # C03 — La respuesta final conserva la verdad y tiene voz propia
 
+Actualización de alcance del dueño, 2026-09-08: la reserva, publicación, Full, encuesta y audio se rigen por [el objetivo vigente](../../../artifacts/comprobaciones/C03/astra-baseline-full526/GOAL_OBJECTIVE.md). Las cifras y exigencias anteriores de este prompt se interpretan con esa sustitución explícita.
+
 **Un goal, tramos A–D reanudables. Encargo actual: C03_ASTRA_AUTORIDAD.md, 2026-09-06.**
 Predecesor: C02 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
 [protocolo vigente](../00_PROTOCOLO_EJECUCION.md). Este prompt sustituye las

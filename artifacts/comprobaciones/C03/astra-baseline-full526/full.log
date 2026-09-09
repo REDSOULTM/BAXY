@@ -1,0 +1,1019 @@
+source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified
+source_quality_stage_started: powershell-source
+source_quality_stage_passed: powershell-source
+source_quality_stage_started: python-ruff
+All checks passed!
+source_quality_stage_passed: python-ruff
+source_quality_stage_started: python-compileall
+source_quality_stage_passed: python-compileall
+source_quality_stage_started: field-ui-eslint
+source_quality_stage_passed: field-ui-eslint
+source_quality_stage_started: field-ui-tsc-app
+source_quality_stage_passed: field-ui-tsc-app
+source_quality_stage_started: field-ui-tsc-node
+source_quality_stage_passed: field-ui-tsc-node
+source_quality_stage_started: dotnet-format
+source_quality_stage_passed: dotnet-format
+source_quality_stage_started: dotnet-build-release
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Contracts.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Kernel.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll
+  Baxy.Setup -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Setup\bin\Release\net10.0-windows10.0.19041.0\win-x64\Baxy.Setup.dll
+  Baxy.Setup.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Providers.Windows.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:23.46
+source_quality_stage_passed: dotnet-build-release
+source_quality_stage_started: dotnet-tests
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+
+Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 243 ms - Baxy.Contracts.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareLegacyAndCurrentJsonHotPaths [1 ms]
+  Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]
+  Omitidas EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [21 ms]
+  Omitidas SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]
+  Omitidas OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam","Steam") [< 1 ms]
+  Omitidas ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Bloc de notas","Bloc de notas") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Discord si está instalado","Discord") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam pero no maximices ni lances juegos","Steam") [< 1 ms]
+shell_visible_indication_ms p50=0.141 p95=0.414 max=0.414
+shell_published_text_ms_without_llm_composition p50=45.126 p95=59.983 max=59.983
+
+
+Correctas! - Con error:     0, Superado:  3263, Omitido:     1, Total:  3264, Duración: 10 m 22 s - Baxy.Integration.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareMemoryStreamAndArrayBufferWriterImplementations [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   140, Omitido:     0, Total:   140, Duración: 1 s - Baxy.Kernel.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas NativeAotCoreAudioJsonlRoundTripReplaysWithoutAnotherEffectAndRestoresBaseline [1 ms]
+  Omitidas WifiStatusReadsActualWindowsStateTwice [< 1 ms]
+  Omitidas DxgiAndPdhProduceOneCoherentLocalSnapshot [< 1 ms]
+  Omitidas ActualIpListReturnsStableParseableAddressesWithoutInterfaceNames [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   487, Omitido:     0, Total:   487, Duración: 46 s - Baxy.Providers.Windows.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas InstallationMoveWorksWhileAnExecutableRunsFromTheRoot [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 22 s - Baxy.Setup.Tests.dll (net10.0)
+source_quality_stage_passed: dotnet-tests
+source_quality_stage_started: python-tests
+........................................................................ [  0%]
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  2%]
+..........FFF........................................................... [  3%]
+................................FFFFFFFFF.........FFF................... [  4%]
+........................................................................ [  5%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+........................................................................ [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+................................................................. [ 32%]
+.....................................................FF................. [ 33%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+......................................FF................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+..................................................................F..... [ 71%]
+........................................................................ [ 71%]
+..................................... [ 72%]
+....................................... [ 72%]
+..........F............................................................. [ 73%]
+....................................................................................................................................... [ 74%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+................................................................................................................... [ 77%]
+.............................................................. [ 77%]
+.............................................................. [ 78%]
+.....................F............................................... [ 79%]
+...................................................................... [ 79%]
+......F................................................................. [ 80%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+......................................................s..... [ 82%]
+.................................................................. [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 84%]
+.F..sF............................................................s....................................................... [ 85%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+......................................                                   [100%]
+================================== FAILURES ===================================
+_ test_language_wrapper_keeps_explanation_prompt_and_literal_request[responde en spanglish: qu\xe9 es una copia de seguridad] _
+
+user_text = 'responde en spanglish: qué es una copia de seguridad'
+
+    @pytest.mark.parametrize(
+        "user_text",
+        [
+            "responde en spanglish: qué es una copia de seguridad",
+            "Answer in Spanish: what is a backup",
+            "Hola, contesta en inglés: qué es el cifrado",
+        ],
+    )
+    def test_language_wrapper_keeps_explanation_prompt_and_literal_request(
+        user_text: str,
+    ) -> None:
+        client = Recorder(["A backup keeps a copy of your data for recovery."])
+        client.chat(user_text, conversation_kind="knowledge", response_language="mixed")
+        assert len(client.payloads) == 1
+        messages = client.payloads[0]["messages"]
+>       assert messages[0]["content"] == llm.SYSTEM_PROMPT
+E       AssertionError: assert 'Eres BAXY, u...e esos datos.' == 'Eres BAXY, u...o ejecutaste.'
+E         
+E         Skipping 764 identical leading characters in diff, use -v to show
+E         - ejecutaste.
+E         + ejecutaste. Cuando recuerdes datos personales, usa las declaraciones de la persona, incluidas sus correcciones. Tus respuestas anteriores son contexto de lo que dijiste, no verificación de esos datos.
+
+tests\test_c03_request_preservation.py:376: AssertionError
+_ test_language_wrapper_keeps_explanation_prompt_and_literal_request[Answer in Spanish: what is a backup] _
+
+user_text = 'Answer in Spanish: what is a backup'
+
+    @pytest.mark.parametrize(
+        "user_text",
+        [
+            "responde en spanglish: qué es una copia de seguridad",
+            "Answer in Spanish: what is a backup",
+            "Hola, contesta en inglés: qué es el cifrado",
+        ],
+    )
+    def test_language_wrapper_keeps_explanation_prompt_and_literal_request(
+        user_text: str,
+    ) -> None:
+        client = Recorder(["A backup keeps a copy of your data for recovery."])
+        client.chat(user_text, conversation_kind="knowledge", response_language="mixed")
+        assert len(client.payloads) == 1
+        messages = client.payloads[0]["messages"]
+>       assert messages[0]["content"] == llm.SYSTEM_PROMPT
+E       AssertionError: assert 'Eres BAXY, u...e esos datos.' == 'Eres BAXY, u...o ejecutaste.'
+E         
+E         Skipping 764 identical leading characters in diff, use -v to show
+E         - ejecutaste.
+E         + ejecutaste. Cuando recuerdes datos personales, usa las declaraciones de la persona, incluidas sus correcciones. Tus respuestas anteriores son contexto de lo que dijiste, no verificación de esos datos.
+
+tests\test_c03_request_preservation.py:376: AssertionError
+_ test_language_wrapper_keeps_explanation_prompt_and_literal_request[Hola, contesta en ingl\xe9s: qu\xe9 es el cifrado] _
+
+user_text = 'Hola, contesta en inglés: qué es el cifrado'
+
+    @pytest.mark.parametrize(
+        "user_text",
+        [
+            "responde en spanglish: qué es una copia de seguridad",
+            "Answer in Spanish: what is a backup",
+            "Hola, contesta en inglés: qué es el cifrado",
+        ],
+    )
+    def test_language_wrapper_keeps_explanation_prompt_and_literal_request(
+        user_text: str,
+    ) -> None:
+        client = Recorder(["A backup keeps a copy of your data for recovery."])
+        client.chat(user_text, conversation_kind="knowledge", response_language="mixed")
+        assert len(client.payloads) == 1
+        messages = client.payloads[0]["messages"]
+>       assert messages[0]["content"] == llm.SYSTEM_PROMPT
+E       AssertionError: assert 'Eres BAXY, u...e esos datos.' == 'Eres BAXY, u...o ejecutaste.'
+E         
+E         Skipping 764 identical leading characters in diff, use -v to show
+E         - ejecutaste.
+E         + ejecutaste. Cuando recuerdes datos personales, usa las declaraciones de la persona, incluidas sus correcciones. Tus respuestas anteriores son contexto de lo que dijiste, no verificación de esos datos.
+
+tests\test_c03_request_preservation.py:376: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-es] _
+
+language = 'es', error = 'invalid_utf8'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '...invalid utf8'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-en] _
+
+language = 'en', error = 'invalid_utf8'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '...invalid utf8'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-mixed] _
+
+language = 'mixed', error = 'invalid_utf8'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '...invalid utf8'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[file_too_large-es] _
+
+language = 'es', error = 'file_too_large'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '...le too large'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[file_too_large-en] _
+
+language = 'en', error = 'file_too_large'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '...le too large'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[file_too_large-mixed] _
+
+language = 'mixed', error = 'file_too_large'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '...le too large'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-es] _
+
+language = 'es', error = 'invalid_resource_id'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '... resource id'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-en] _
+
+language = 'en', error = 'invalid_resource_id'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '... resource id'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-mixed] _
+
+language = 'mixed', error = 'invalid_resource_id'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("error", ["invalid_utf8", "file_too_large", "invalid_resource_id"])
+    def test_typed_operation_error_survives_nested_mission_projection(language: str, error: str) -> None:
+        operation_result = {"kind": "operation", "operation": "filesystem.read.text",
+                            "polarity": "failure", "verified": False, "succeeded": False,
+                            "error": error}
+        projected = llm._compose_situation_payload(
+            {"kind": "failure", "cause": "mission_failed", "polarity": "failure",
+             "reason": operation_result}, language)
+>       assert projected["reason"] == {"outcome": "failed", "cause": error.replace("_", " ")}
+E       AssertionError: assert {'outcome': '...em.read.text'} == {'outcome': '... resource id'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'filesystem.read.text'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1095: AssertionError
+_ test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[es] _
+
+language = 'es'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    def test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities(
+        language: str,
+    ) -> None:
+        situation = {
+            "kind": "status",
+            "polarity": "success",
+            "cause": "remaining_steps_cancelled",
+            "cancelledAction": {
+                "operation": "app.close",
+                "arguments": {"windowId": "win_secret"},
+            },
+            "steps": [
+                {
+                    "kind": "operation",
+                    "operation": "audio.set_volume",
+                    "readOnly": False,
+                    "observed": {"level": 35},
+                },
+                {
+                    "kind": "operation",
+                    "operation": "window.resolve",
+                    "readOnly": True,
+                    "observed": {
+                        "windows": [
+                            {
+                                "windowId": "win_secret",
+                                "processName": "Example",
+                                "state": "maximized",
+                            }
+                        ]
+                    },
+                },
+            ],
+        }
+        payload = llm._compose_situation_payload(situation, language, "cancelar")
+        assert payload["outcome"] == "cancelled"
+        steps = payload["completedStepsInOrder"]
+>       assert steps[0]["resultAtThisStep"] == {"readOnly": False, "seen": {"level": 35}}
+E       AssertionError: assert {'readOnly': ...o.set_volume'} == {'readOnly': ...{'level': 35}}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'audio.set_volume'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1243: AssertionError
+_ test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[en] _
+
+language = 'en'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    def test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities(
+        language: str,
+    ) -> None:
+        situation = {
+            "kind": "status",
+            "polarity": "success",
+            "cause": "remaining_steps_cancelled",
+            "cancelledAction": {
+                "operation": "app.close",
+                "arguments": {"windowId": "win_secret"},
+            },
+            "steps": [
+                {
+                    "kind": "operation",
+                    "operation": "audio.set_volume",
+                    "readOnly": False,
+                    "observed": {"level": 35},
+                },
+                {
+                    "kind": "operation",
+                    "operation": "window.resolve",
+                    "readOnly": True,
+                    "observed": {
+                        "windows": [
+                            {
+                                "windowId": "win_secret",
+                                "processName": "Example",
+                                "state": "maximized",
+                            }
+                        ]
+                    },
+                },
+            ],
+        }
+        payload = llm._compose_situation_payload(situation, language, "cancelar")
+        assert payload["outcome"] == "cancelled"
+        steps = payload["completedStepsInOrder"]
+>       assert steps[0]["resultAtThisStep"] == {"readOnly": False, "seen": {"level": 35}}
+E       AssertionError: assert {'readOnly': ...o.set_volume'} == {'readOnly': ...{'level': 35}}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'audio.set_volume'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1243: AssertionError
+_ test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[mixed] _
+
+language = 'mixed'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    def test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities(
+        language: str,
+    ) -> None:
+        situation = {
+            "kind": "status",
+            "polarity": "success",
+            "cause": "remaining_steps_cancelled",
+            "cancelledAction": {
+                "operation": "app.close",
+                "arguments": {"windowId": "win_secret"},
+            },
+            "steps": [
+                {
+                    "kind": "operation",
+                    "operation": "audio.set_volume",
+                    "readOnly": False,
+                    "observed": {"level": 35},
+                },
+                {
+                    "kind": "operation",
+                    "operation": "window.resolve",
+                    "readOnly": True,
+                    "observed": {
+                        "windows": [
+                            {
+                                "windowId": "win_secret",
+                                "processName": "Example",
+                                "state": "maximized",
+                            }
+                        ]
+                    },
+                },
+            ],
+        }
+        payload = llm._compose_situation_payload(situation, language, "cancelar")
+        assert payload["outcome"] == "cancelled"
+        steps = payload["completedStepsInOrder"]
+>       assert steps[0]["resultAtThisStep"] == {"readOnly": False, "seen": {"level": 35}}
+E       AssertionError: assert {'readOnly': ...o.set_volume'} == {'readOnly': ...{'level': 35}}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'operation': 'audio.set_volume'}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:1243: AssertionError
+______________ test_r277_reads_the_registered_decision_contract _______________
+
+    def test_r277_reads_the_registered_decision_contract() -> None:
+        contract = _module().build(ROOT)["contract"]
+    
+        assert contract["decisionFunction"] == "_post_native_tool_selection"
+>       assert contract["toolChoice"] == "required"
+E       AssertionError: assert 'auto' == 'required'
+E         
+E         - required
+E         + auto
+
+tests\test_forced_tool_choice_audit_r277.py:32: AssertionError
+________ test_r277_prices_the_open_population_without_starting_a_model ________
+
+    def test_r277_prices_the_open_population_without_starting_a_model() -> None:
+        result = _module().build(ROOT)
+    
+>       assert result["verdict"] == "forced_tool_choice_leaves_abstention_undecodable"
+E       AssertionError: assert 'decision_con...ts_abstention' == 'forced_tool_...n_undecodable'
+E         
+E         - forced_tool_choice_leaves_abstention_undecodable
+E         + decision_contract_permits_abstention
+
+tests\test_forced_tool_choice_audit_r277.py:43: AssertionError
+_ test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract[r6-out-of-scope-28-plain] _
+
+row = {'blind_holdout': True, 'case_id': 'r6-out-of-scope-28-plain', 'case_type': 'conversation', 'compatible_effect_operation_sets': [[]], ...}
+
+    @pytest.mark.parametrize(
+        "row",
+        MIND_CONVERSATION_ROWS,
+        ids=lambda row: str(row["case_id"]),
+    )
+    def test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract(
+        row: dict[str, object],
+    ) -> None:
+        text = str(row["text"])
+        assert resolve_explicit_effects(text, AVAILABLE, APPLICATIONS) is None
+        assert resolve_explicit_clarification_intent(text, AVAILABLE) is None
+        decision = _explicit_stable_no_effect_turn_decision(text)
+    
+>       assert decision is not None
+E       assert None is not None
+
+tests\test_generalization_product_r6_development.py:133: AssertionError
+_ test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract[r6-out-of-scope-28-addressed] _
+
+row = {'blind_holdout': True, 'case_id': 'r6-out-of-scope-28-addressed', 'case_type': 'conversation', 'compatible_effect_operation_sets': [[]], ...}
+
+    @pytest.mark.parametrize(
+        "row",
+        MIND_CONVERSATION_ROWS,
+        ids=lambda row: str(row["case_id"]),
+    )
+    def test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract(
+        row: dict[str, object],
+    ) -> None:
+        text = str(row["text"])
+        assert resolve_explicit_effects(text, AVAILABLE, APPLICATIONS) is None
+        assert resolve_explicit_clarification_intent(text, AVAILABLE) is None
+        decision = _explicit_stable_no_effect_turn_decision(text)
+    
+>       assert decision is not None
+E       assert None is not None
+
+tests\test_generalization_product_r6_development.py:133: AssertionError
+________________ test_live_planner_veto_and_r6_postconditions _________________
+
+    def test_live_planner_veto_and_r6_postconditions() -> None:
+>       chains = live_mission_chains()
+                 ^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_goal095_09511c_revalidate.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts\goal095_09511c_revalidate.py:618: in live_mission_chains
+    vetoed = apply_compound_effect_conservation_veto(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+decision = {'mode': 'plan', 'operation': 'app.open', 'effect_operations': ['app.open'], 'effect_count': 'one', ...}
+contract = CompoundEffectContract(minimum_effects=2, required_clause_sequences=(('app.open',),), clause_requirements=(('abre steam', ('app.open',)), ('envia un mensaje a ana', ())))
+tool_by_name = None, llm = None, application_names = ()
+
+    def apply_compound_effect_conservation_veto(
+        decision: dict[str, object],
+        contract: CompoundEffectContract | None,
+        tool_by_name: dict[str, dict] | None = None,
+        llm: object | None = None,
+        application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    ) -> dict[str, object]:
+        """Prevent a semantic proposal from executing only part of a compound."""
+    
+        if contract is None or decision.get("mode") not in {"action", "plan"}:
+            return decision
+        operations = decision.get("effect_operations")
+        assignments = (
+            _unresolved_compound_assignments(operations, contract)
+            if isinstance(operations, list)
+            and all(isinstance(operation, str) for operation in operations)
+            else None
+        )
+        if assignments and tool_by_name is not None and llm is not None:
+            compatibility = getattr(
+                llm,
+                "_compound_clause_is_fully_compatible",
+                None,
+            )
+            if callable(compatibility):
+                try:
+                    verification_inputs: list[tuple[str, str, dict[str, object]]] = []
+                    for clause, operation in assignments:
+                        if (
+                            operation_domain_is_grounded(
+                                clause,
+                                operation,
+                                application_names,
+                            )
+                            is False
+                        ):
+                            break
+                        operation_contract = _turn_operation_contract(
+                            tool_by_name.get(operation),
+                            operation,
+                            clause,
+                            application_names,
+                        )
+                        if operation_contract is None:
+                            break
+                        verification_inputs.append((clause, operation, operation_contract))
+                    if len(verification_inputs) == len(assignments) and (
+                        _prepare_parallel_compound_verification(
+                            llm,
+                            verification_inputs,
+                        )
+                        and _compound_compatibility_all(
+                            compatibility,
+                            verification_inputs,
+                        )
+                    ):
+                        # A recognized clause is preserved exactly in source order,
+                        # while every unresolved clause has one independently
+                        # verified closed-catalog identity. Argument grounding,
+                        # Core risk/confirmation and provider verification remain.
+                        return decision
+                except Exception:  # noqa: BLE001 - uncertainty removes authority
+                    pass
+        # Failing to preserve the requested effects is an interpretation failure,
+        # not evidence that the request can be answered from general knowledge.
+        # Reuse bounded turn recovery instead of inviting chat to invent the
+        # observation that was just withheld. No effects have been dispatched.
+>       raise PlannerContractError("unresolved_compound_effects")
+E       baxy_mind.planner.PlannerContractError: unresolved_compound_effects
+
+src\baxy_mind\__main__.py:1819: PlannerContractError
+_______ test_r278_reports_a_repaired_tree_with_no_restorable_files_left _______
+
+    def test_r278_reports_a_repaired_tree_with_no_restorable_files_left() -> None:
+        result = _module().classify(ROOT)
+    
+        # The sweep already ran, so nothing may still be broken by the checkout.
+>       assert result["restorableCount"] == 0
+E       assert 1 == 0
+
+tests\test_line_ending_seal_damage_r278.py:26: AssertionError
+_______ test_published_split_and_ceiling_are_the_numbers_r144_reported ________
+
+    def test_published_split_and_ceiling_are_the_numbers_r144_reported() -> None:
+        candidate = _module()
+        report = candidate.build()
+    
+        integrity = report["integrity"]
+        assert integrity["v8_artifacts"]["observed"] == V8_EVIDENCE_SHA256
+        # What moved since the campaign, named file by file and split by kind: the
+        # catalogue aliases moved with the catalogue (157 -> 158 operations), and
+        # goal 03 replaced the two decision-path programs.
+        identity = integrity["program_identity"]
+>       assert {
+            row["file"]: row["observed_sha256"]
+            for row in identity["files"]
+            if not row["identical"] and not row["file"].startswith("tests/")
+        } == {
+            **V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN,
+            **V8_PROGRAMS_REPLACED_BY_GOAL_03,
+        }
+E       AssertionError: assert {'src/baxy_mi...c5b0d5fba783'} == {'src/baxy_mi...29d0b067e7fa'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'src/baxy_mind/llm.py': 'c79d818f05ff1f4c843a9a039d933cb04caa4e605d1c06ab5294c5b0d5fba783'} != {'src/baxy_mind/llm.py': '5c3db6952201a8099cf13992adb09e55cd895ed2db5a1f26041629d0b067e7fa'}
+E         {'src/baxy_mind/__main__.py': 'b6d23414d607e221ecc721cbc95770785236ee190263c617893614c2fefddb3d'} != {'src/baxy_mind/__main__.py': '6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3'}
+E         Use -v to get more diff
+
+tests\test_price_v8_veto_damage_by_cause.py:169: AssertionError
+____________ test_local_manifest_matches_the_published_expectation ____________
+
+    def test_local_manifest_matches_the_published_expectation() -> None:
+        module = _module()
+        manifest = module.read_manifest()
+        if manifest is None:
+            pytest.skip("no registered runtime manifest on this machine")
+    
+        published = json.loads(EXPECTATION.read_text(encoding="utf-8"))
+        observed = module.describe(manifest)
+    
+        # A schema change or a binary swap changes these; the tree must not stay
+        # silent about either.
+        assert module.manifest_schema(manifest) == published["manifestSchema"]
+>       assert observed["ggufName"] == published["expected"]["ggufName"]
+E       AssertionError: assert 'Qwen3-4B-Ins...7-Q4_K_M.gguf' == 'granite-4.2-3b-Q4_K_M.gguf'
+E         
+E         - granite-4.2-3b-Q4_K_M.gguf
+E         + Qwen3-4B-Instruct-2507-Q4_K_M.gguf
+
+tests\test_registered_runtime_expectation_r281.py:50: AssertionError
+_________ test_stt_evaluator_freezes_final_contract_and_blind_engines _________
+
+    def test_stt_evaluator_freezes_final_contract_and_blind_engines() -> None:
+        evaluator = load_module(
+            "baxy_stt_reserved_evaluator",
+            "experiments/stt_quality/evaluate_reserved_stt.py",
+        )
+    
+        assert evaluator.CONTRACT_SCHEMA == "baxy.stt-evaluator-preopen-contract.v3"
+        assert evaluator.REPORT_SCHEMA == "baxy.stt-real-audio-evaluation.v3"
+        assert evaluator.THRESHOLDS["minds14"]["blind"]["expectedCases"] == 196
+        assert evaluator.THRESHOLDS["audio_arena"]["blind"]["expectedCases"] == 50
+        assert (
+>           evaluator._program_tree(ROOT)["sha256"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            == evaluator.EXPECTED_PROGRAM_TREE_SHA256
+        )
+
+tests\test_stt_quality_evaluators.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\evaluate_reserved_stt.py:353: RuntimeError
+_____ test_fresh_postweight_source_audit_is_preacquisition_and_text_blind _____
+
+    def test_fresh_postweight_source_audit_is_preacquisition_and_text_blind() -> None:
+        audit_module = load_module(
+            "baxy_fresh_postweight_stt_source_audit",
+            "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+        )
+        pages: dict[str, str] = {}
+        private_samples: list[str] = []
+        for language in ("es", "en"):
+            page, samples = _fake_mdc_page(audit_module, language)
+            pages[audit_module.MDC_EXPECTED[language]["url"]] = page
+            private_samples.extend(samples)
+        pages[audit_module.GIGASPEECHBENCH_API] = json.dumps(
+            {
+                "sha": audit_module.GIGASPEECHBENCH_COMMIT,
+                "lastModified": audit_module.GIGASPEECHBENCH_LAST_MODIFIED,
+                "gated": False,
+                "private": False,
+                "tags": [],
+                "siblings": [
+                    {"rfilename": f"data/file-{index:03d}.parquet"} for index in range(155)
+                ],
+            }
+        )
+    
+>       audit = audit_module.build_audit(
+            repository_root=ROOT,
+            audited_at_utc="2026-08-11T00:00:00Z",
+            fetch_text=pages.__getitem__,
+        )
+
+tests\test_stt_quality_evaluators.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:523: in build_audit
+    "wakeProgramTree": _program_tree(repository_root),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:380: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_language_wrapper_keeps_explanation_prompt_and_literal_request[responde en spanglish: qu\xe9 es una copia de seguridad]
+FAILED tests/test_c03_request_preservation.py::test_language_wrapper_keeps_explanation_prompt_and_literal_request[Answer in Spanish: what is a backup]
+FAILED tests/test_c03_request_preservation.py::test_language_wrapper_keeps_explanation_prompt_and_literal_request[Hola, contesta en ingl\xe9s: qu\xe9 es el cifrado]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-es]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-en]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-mixed]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[file_too_large-es]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[file_too_large-en]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[file_too_large-mixed]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-es]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-en]
+FAILED tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-mixed]
+FAILED tests/test_c03_request_preservation.py::test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[es]
+FAILED tests/test_c03_request_preservation.py::test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[en]
+FAILED tests/test_c03_request_preservation.py::test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[mixed]
+FAILED tests/test_forced_tool_choice_audit_r277.py::test_r277_reads_the_registered_decision_contract
+FAILED tests/test_forced_tool_choice_audit_r277.py::test_r277_prices_the_open_population_without_starting_a_model
+FAILED tests/test_generalization_product_r6_development.py::test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract[r6-out-of-scope-28-plain]
+FAILED tests/test_generalization_product_r6_development.py::test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract[r6-out-of-scope-28-addressed]
+FAILED tests/test_goal095_09511c_revalidate.py::test_live_planner_veto_and_r6_postconditions
+FAILED tests/test_line_ending_seal_damage_r278.py::test_r278_reports_a_repaired_tree_with_no_restorable_files_left
+FAILED tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported
+FAILED tests/test_registered_runtime_expectation_r281.py::test_local_manifest_matches_the_published_expectation
+FAILED tests/test_stt_quality_evaluators.py::test_stt_evaluator_freezes_final_contract_and_blind_engines
+FAILED tests/test_stt_quality_evaluators.py::test_fresh_postweight_source_audit_is_preacquisition_and_text_blind
+25 failed, 9984 passed, 3 skipped, 466 subtests passed in 676.16s (0:11:16)

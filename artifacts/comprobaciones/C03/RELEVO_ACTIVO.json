@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T00:50:42.189363+00:00",
+  "confirmedAtUtc": "2026-09-09T01:49:00.819836+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "524 cerrado9/11greedy8/11doc, no promoción; fuente520/C#516 validadas.",
-  "continuation": "525 probar marco de lecturas ya resueltas,9nativos. Respetar cuenta/welcome/idioma/formatos antes de eventual fuente. C03 íntegro activo.",
+  "checkpoint": "527: control892c506; Full526 rojo (25fallos Python); encuesta0cubiertos/742abiertos/0NA.",
+  "continuation": "Diagnosticar fallos de Full526 empezando test_c03_request_preservation.py; sin nuevas campañas de modelo. Objetivo actualizado en526/GOAL_OBJECTIVE.md.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -22,5 +22,10 @@
     "answers": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner-questionnaire-20260907\\answers.json",
     "automaticClose": false,
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
+  },
+  "surveyVerificationCounts": {
+    "covered": 0,
+    "open": 742,
+    "not_applicable": 0
   }
 }

@@ -179,3 +179,5 @@ goal.
 - **`MainWindowViewModel.HandlePendingNoteChoiceAsync`** — tres `AddMessage` con prosa de paginación/cancelación y un interpolate de «Esa opción no está visible». El censo no las cuenta (no disparan `PALABRAS_ES`). No bloquean 09.5.11B. *Goal 09.5.11B.*
 
 - 2026-09-04, revisión autorizada de sprints: quedan sustituidas las reglas de 350K+150K, cierre en una sesión y aceptación fresca por cambio de GGUF; véase `documentacion/sprints/REVISION_SPRINTS_2026-09-04.md`. Hardware/instalación/firma diferidos conservan compromiso y tienen owner en fase 12; no son capacidad certificada por 11.16.
+
+- C03, 2026-09-08: el objetivo actualizado (artifacts/comprobaciones/C03/astra-baseline-full526/GOAL_OBJECTIVE.md) sustituye las antiguas restricciones no-commit/no-Full, cuota trilingüe y voz humana física dentro de C03; las anteriores se conservan sólo como evidencia.

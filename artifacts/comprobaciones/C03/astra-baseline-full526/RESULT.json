@@ -1,0 +1,90 @@
+{
+  "utc": "2026-09-09T01:45:56.859120+00:00",
+  "command": "scripts/test_source_quality.ps1 -Mode Full",
+  "exit_code": 1,
+  "head": "892c506cdd1a583048ed80af8e63703ec329a236",
+  "status": "FAILED",
+  "log_sha256": "af58d5bfe1026bb7b0d53fc31c670b1e0d3d4d4b0df2e598a607b41c752a4d9e",
+  "source_changed_during_run": false,
+  "static_and_release": "passed; 0 warnings, 0 errors; 23.46 seconds",
+  "dotnet": [
+    {
+      "failed": 0,
+      "passed": 60,
+      "skipped": 0,
+      "total": 60,
+      "duration": "243 ms",
+      "suite": "Baxy.Contracts.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 3263,
+      "skipped": 1,
+      "total": 3264,
+      "duration": "10 m 22 s",
+      "suite": "Baxy.Integration.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 140,
+      "skipped": 0,
+      "total": 140,
+      "duration": "1 s",
+      "suite": "Baxy.Kernel.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 487,
+      "skipped": 0,
+      "total": 487,
+      "duration": "46 s",
+      "suite": "Baxy.Providers.Windows.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 477,
+      "skipped": 0,
+      "total": 477,
+      "duration": "1 m 22 s",
+      "suite": "Baxy.Setup.Tests.dll"
+    }
+  ],
+  "dotnet_skipped_messages": 16,
+  "skip_reporting_note": "VSTest prints additional opt-in skipped messages beyond its aggregate skipped count. Neither kind is counted as demonstrated hardware/UI coverage.",
+  "python": {
+    "failed": 25,
+    "passed": 9984,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 676.16
+  },
+  "failures": [
+    "tests/test_c03_request_preservation.py::test_language_wrapper_keeps_explanation_prompt_and_literal_request[responde en spanglish: qu\\xe9 es una copia de seguridad]",
+    "tests/test_c03_request_preservation.py::test_language_wrapper_keeps_explanation_prompt_and_literal_request[Answer in Spanish: what is a backup]",
+    "tests/test_c03_request_preservation.py::test_language_wrapper_keeps_explanation_prompt_and_literal_request[Hola, contesta en ingl\\xe9s: qu\\xe9 es el cifrado]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-es]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-en]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_utf8-mixed]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[file_too_large-es]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[file_too_large-en]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[file_too_large-mixed]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-es]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-en]",
+    "tests/test_c03_request_preservation.py::test_typed_operation_error_survives_nested_mission_projection[invalid_resource_id-mixed]",
+    "tests/test_c03_request_preservation.py::test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[es]",
+    "tests/test_c03_request_preservation.py::test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[en]",
+    "tests/test_c03_request_preservation.py::test_cancelled_mission_keeps_prior_effects_and_removes_opaque_window_capabilities[mixed]",
+    "tests/test_forced_tool_choice_audit_r277.py::test_r277_reads_the_registered_decision_contract",
+    "tests/test_forced_tool_choice_audit_r277.py::test_r277_prices_the_open_population_without_starting_a_model",
+    "tests/test_generalization_product_r6_development.py::test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract[r6-out-of-scope-28-plain]",
+    "tests/test_generalization_product_r6_development.py::test_every_opened_r6_conversation_has_a_stable_zero_effect_turn_contract[r6-out-of-scope-28-addressed]",
+    "tests/test_goal095_09511c_revalidate.py::test_live_planner_veto_and_r6_postconditions",
+    "tests/test_line_ending_seal_damage_r278.py::test_r278_reports_a_repaired_tree_with_no_restorable_files_left",
+    "tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported",
+    "tests/test_registered_runtime_expectation_r281.py::test_local_manifest_matches_the_published_expectation",
+    "tests/test_stt_quality_evaluators.py::test_stt_evaluator_freezes_final_contract_and_blind_engines",
+    "tests/test_stt_quality_evaluators.py::test_fresh_postweight_source_audit_is_preacquisition_and_text_blind"
+  ],
+  "goal": "EN_CURSO",
+  "next": "Diagnose failures without suppressing tests or changing sealed historical evidence to match the current tree."
+}
