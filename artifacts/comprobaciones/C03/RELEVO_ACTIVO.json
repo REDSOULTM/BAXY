@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T08:34:45.447514+00:00",
+  "confirmedAtUtc": "2026-09-09T08:36:31.011976+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "590: cross-language Full exit0; omissions disclosed, no source mutation during gate.59117 correct no-hook CPU finals;59229/35 correct,6 failures retained. CPU adapter support validated, manifest unchanged. Survey16/726/0.",
-  "continuation": "Publish validated590 source and591/592 evidence. Diagnose592 knowledge-to-unsupported transformation, then repair identity/grammar. Joint UI/voice/memory and registered promotion pending; finish remaining C03 criteria.",
+  "checkpoint": "Fuente590 publicada y Full salida0:10200pass/3skips/466subtests; .NET4452pass/1omisión agregada.59117finales correctos;59229correctos/6fallos. Encuesta16/726/0.",
+  "continuation": "Ejecutar observación593 preparada de11turnos: capturar transición H0012 y payloads ingleses sin tratamiento. Luego reparar causa demostrada, probar dueñas, actualizar sólo pins actuales V8/STT y publicar. CPUregistro/UI/voz/recursos conjuntos y resto C03 pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "e2215905b7177dd4000ace66b15b9919e6063bf8",
+  "publishedSourceCommit": "122c490f2f93b71de21756c269607c5b25024f04",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
