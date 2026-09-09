@@ -1222,3 +1222,17 @@ El contrato factual diferencia el nombre pedido de la confirmación Booleana. Li
 71casos nuevos: baseline publicada683 aislada50fallos/21pases; focal415pases. Se conservan baseline inicial35fallos/18pases y regresión intermedia de nombres con punto8fallos/63pases. Un test antiguo que confundía identidad con respuesta sin nombre ahora pregunta por el Booleano; los nuevos controles exigen identidad en preguntas WH. Dueñas26archivos2712pases+121subpruebas/0skips24,70s; las declaraciones dueñas actuales12pases/1skip ambiental1,18s por entradas ausentes de campaña ciega STT (no se declara repetida la cohorte histórica600). Fast exit0/Release20,72s,0advertencias/errores.
 
 Producto6876/7 con siete lecturas frescas; compositor68817/17 conserva peticiones y finales677. Se adopta la reparación comprobada y se conserva el fallo descriptivo de t4 como pendiente, sin dar por cubierta H0104. Árbol Python50f0fb6bf6bd81210a800b72be09bf2a9544c7b9e482a54629c2141344ca1439/405archivos. Full651 sigue baseline: no Full por edición Python, Full final aún requerido. Encuesta26/716/0; C03 EN_CURSO. Siguiente tanda50 de estado del PC por dirección expresa del dueño, con adjudicación individual y variantes compartidas por conducta.
+
+
+# Publicación686 y tanda50 registrada
+
+Fuente686 y evidencias687–688 publicadas en d7ddd926a2b382acade4f9c9b69818490b44c68e; remoto verificado.21pins públicos/índice y fuentes/tree/encuesta/runtime auditados. Main intacto. Tanda689 inicia50requisitos históricos positivos abiertos y23variantes de desarrollo de diez categorías de consultas de estado del PC, por dirección expresa del dueño. Plan STATUS_BATCH689_PLAN.json congelado antes de ejecución; panel privado con textos/notas originales y criterio por fila. Ninguna cobertura automática por categoría. Watchdog de campaña900s por73turnos; límites GPU3800MiB y RAMlibre768MiB iguales, sin relajar calidad individual. Sesión33172. Encuesta26/716/0 intacta, C03 EN_CURSO.
+
+
+# 689 — tanda50 ejecutada y adjudicada completa
+
+73turnos:50requisitos de encuesta y23variantes de diez grupos, con textos/notas/criterios fijados antes de ejecutar.35respuestas correctas en esta corrida,32fallos y6pendientes de verificar distinción entre memoria instalada/utilizable y unidades. Son resultados observados, no35coberturas nuevas: encuesta26cubiertos/716abiertos/0NA intacta. Todos los finales y hechos se conservan en el informe privado.
+
+Causas compartidas: enumeración de ventanas no ejecutada; lecturas claras que se rechazan o responden desde historial; valores de memoria/GPU confundidos y cantidades derivables omitidas; falso rechazo descriptivo de foco687; confirmación de wifi.status que arrastra consultas posteriores independientes. No atribuir los fallos de procesos/audio a sus proveedores: no llegaron a ejecutarse. La correlación de decisiones usa request_id de shell-trace, no posición (56decisiones para73turnos). Una sonda inicial por posición produjo IndexError y se descartó antes de adjudicar.
+
+GPU3499,559MiB/RAM2519,566MiB/140,484s, sin infracciones ni timeout; registro y fuente686publicada intactos. No UI/voz conjunta ni mínimo global. Siguiente reparación por causas compartidas de esta misma tanda, conservando sus50requisitos y23variantes: primero recuperar el contrato de lectura y las cantidades observadas, y separar la política/confirmación pendiente de la capacidad del proveedor. Herencia542 ya documentó confusión de8GBGPU: arregló alcance, no presentación; no repetir su investigación. No fuente nueva adoptada por esta evaluación.
