@@ -1,11 +1,11 @@
 {
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
-  "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T02:19:34.475825+00:00",
+  "goalStatus": "blocked",
+  "confirmedAtUtc": "2026-09-09T02:23:09.079040+00:00",
   "branch": "Goal-c03",
   "checkpoint": "535: fuente120713be publicada; dueñas25fallos resueltas; reserva534 deja63ES completos. Encuesta0/742/0.",
-  "continuation": "Esperar respuesta del dueño a la aclaración de bienvenida (automática en arranque o nuevos saludos humanos), después seguir C03. No congelar/ejecutar reserva sin resolverla.",
+  "continuation": "Goal workflow blocked after three consecutive turns with the same required owner clarification. Resume only when the owner resolves automatic startup welcome versus new human greetings; then continue full C03 without narrowing scope.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,5 +29,14 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": "Fresh reserve has no unused human greeting: automatic startup welcome or new owner-authored greetings?",
-  "publishedSourceCommit": "120713be877aaf426820174ece35a642923f5eda"
+  "publishedSourceCommit": "120713be877aaf426820174ece35a642923f5eda",
+  "blockedAudit": {
+    "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
+    "consecutive_goal_turns": 3,
+    "previous_goal_turn_classification": "no_progress",
+    "objective_sha256": "6ca6aec0928cb4e50a5cfeb29108d962e7669b9b63a7e2eb77ea92b02889bb5a",
+    "goal_tool_confirmed_status": "blocked",
+    "no_acceptance_frozen": true,
+    "no_model_campaign_running": true
+  }
 }
