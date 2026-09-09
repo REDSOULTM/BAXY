@@ -76,7 +76,7 @@ from .request_reading import (
     starts_new_definition_topic,
 )
 from .time_budget import remaining_seconds
-from .window_prose_facts import window_fact_defect, window_status_assertions
+from .window_prose_facts import window_fact_defect, window_focus_feedback, window_status_assertions
 
 
 MAX_CONTEXT_TOKENS = 4096
@@ -3435,8 +3435,16 @@ def _compose_situation_payload(
         ):
             visible_seen.pop(key, None)
         if isinstance(visible_seen.get("windows"), list):
+            # The canonical snapshot stays unchanged. Describe its Boolean
+            # meaning to the narrator: the short API label leaked into Spanish
+            # prose. Activation does not establish z-order above topmost windows.
             visible_seen["windows"] = [
-                {key: value for key, value in window.items() if key != "windowId"}
+                {
+                    ("is_current_window_for_user_interaction" if key == "foreground"
+                     and isinstance(value, bool) and "is_current_window_for_user_interaction" not in window
+                     else key): value
+                    for key, value in window.items() if key != "windowId"
+                }
                 if isinstance(window, dict)
                 else window
                 for window in visible_seen["windows"]
@@ -3713,7 +3721,7 @@ def _names_the_boundary(folded_reply: str) -> str | bool:
     )
 
 
-def _payload_fact_defect(text: str, payload: dict) -> str:
+def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
     Sin esto, «el volumen es el número correspondiente» pasaba con `level` en
@@ -3724,7 +3732,7 @@ def _payload_fact_defect(text: str, payload: dict) -> str:
 
     if not isinstance(payload, dict) or not payload:
         return ""
-    window_defect = window_fact_defect(text, payload)
+    window_defect = window_fact_defect(text, payload, user_text)
     if window_defect:
         return window_defect
     folded = _reading_fold(text)
@@ -9882,7 +9890,7 @@ class LlmRuntime:
                 bool(compose_visible_defect(candidate, intent, user_text, facts))
                 or echoes_an_instruction(candidate)
                 or _truncated_fact_word(candidate, visible_situation)
-                or bool(_payload_fact_defect(candidate, visible_situation))
+                or bool(_payload_fact_defect(candidate, visible_situation, user_text))
             )
 
         def publishable(candidate: str) -> bool:
@@ -9900,7 +9908,7 @@ class LlmRuntime:
                 return "copied_instruction"
             if _truncated_fact_word(candidate, visible_situation):
                 return "invented"
-            payload_defect = _payload_fact_defect(candidate, visible_situation)
+            payload_defect = _payload_fact_defect(candidate, visible_situation, user_text)
             if payload_defect:
                 return payload_defect
             if intent == "status" and _starts_with_request_imperative(candidate):
@@ -10127,6 +10135,9 @@ class LlmRuntime:
         )
         retry_system = f"{retry_system_base}\n{correction}"
         retry_user = _compose_user_content(user_text, prompt_facts, "", include_request=cause != "acting")
+        focus_correction = window_focus_feedback(text, visible_situation, user_text)
+        if focus_correction is not None:
+            retry_user += "\nVerified factual correction: " + json.dumps(focus_correction, ensure_ascii=False)
         retry_payload["messages"] = [
             {"role": "system", "content": retry_system},
             {"role": "user", "content": retry_user},
@@ -10169,6 +10180,9 @@ class LlmRuntime:
             "One sentence. First person. No JSON. No codes."
         )
         third_user = _compose_user_content(user_text, prompt_facts, "", include_request=cause != "acting")
+        focus_correction = window_focus_feedback(retry_text, visible_situation, user_text)
+        if focus_correction is not None:
+            third_user += "\nVerified factual correction: " + json.dumps(focus_correction, ensure_ascii=False)
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},

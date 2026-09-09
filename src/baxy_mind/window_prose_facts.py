@@ -51,6 +51,130 @@ _UNCERTAINTY = re.compile(
     r"no\s+puedo\s+(?:saber|confirmar|determinar)|desconozco)\b"
 )
 _SEPARATORS = re.compile(r"([.;!?]|\b(?:but|pero|and|y)\b)")
+_FOCUS_ASSERTION = re.compile(
+    r"\b(?P<before>no\s+)?(?P<verb>esta|estan|is|are|isn['’]t|aren['’]t)"
+    r"\s+(?P<after>not\s+)?(?P<state>active|inactive|activ[oa]s?|inactiv[oa]s?|"
+    r"en primer plano|in the foreground)\b|"
+    r"\b(?P<focus_negative>no\s+|does not\s+|doesn['’]t\s+)?"
+    r"(?:tiene|has|have)\s+(?:el\s+)?(?P<focus>foco|focus)\b"
+)
+
+
+def _requests_window_focus(user_text: str, window: dict) -> bool:
+    question = fold(user_text)
+    names = {fold(window[key]) for key in ("title", "processName")
+             if isinstance(window.get(key), str) and window[key]}
+    for name in sorted(names, key=len, reverse=True):
+        question = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", "selected_window", question, count=1)
+    # "Is the active window maximized?" uses focus to identify the subject;
+    # it asks about maximization, not about whether that subject has focus.
+    question = re.sub(r"\b(?:active window|ventana activa)\b", "window", question)
+    question = re.sub(r"\b(?:selected_window|the|el|la|window|ventana|it|currently|ahora|actualmente)\b", " ", question)
+    question = re.sub(r"\s+", " ", question)
+    return bool(_FOCUS_ASSERTION.search(question))
+
+
+def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict | None:
+    """Bind explicit focus assertions to their window, never to display state.
+
+    Single-window focus coverage is checked only when explicitly requested.
+    Unknown subjects and untyped fields stay unknown. Ambiguous conjunction
+    negation does not establish a Boolean claim to contradict.
+    """
+    seen = payload.get("seen")
+    if not str(payload.get("operation", "")).startswith("window.") or not isinstance(seen, dict):
+        return None
+    windows = seen.get("windows")
+    if not isinstance(windows, list):
+        return None
+    windows = [window for window in windows if isinstance(window, dict)]
+    asserted = fold(text)
+    answered_focus: set[int] = set()
+    subjects: dict[str, set[int]] = {}
+    for index, window in enumerate(windows):
+        for field in ("title", "processName"):
+            name = window.get(field)
+            if isinstance(name, str) and name:
+                subjects.setdefault(fold(name), set()).add(index)
+    for name in sorted(subjects, key=len, reverse=True):
+        indices = subjects[name]
+        if len(indices) != 1:
+            continue
+        index = next(iter(indices))
+        # Replace only a subject occurrence. A title called "Is Active"
+        # must not erase the assertion in "Is Active is active".
+        asserted = re.sub(
+            rf"(?<!\w){re.escape(name)}(?!\w)"
+            r"(?=[\"'»]*\s+(?:window|ventana|is|isn't|has|does|esta|no|tiene)\b)",
+            f"window_subject_{index}", asserted,
+        )
+    clauses = (
+        clause
+        for sentence in re.findall(r"[^.;!?\n]+(?:[.;!?]|$)", asserted)
+        if not sentence.rstrip().endswith("?") and "¿" not in sentence
+        for clause in re.split(r"\b(?:but|pero)\b", sentence)
+    )
+    for clause in clauses:
+        for match in _FOCUS_ASSERTION.finditer(clause):
+            prefix = clause[:match.start()]
+            if _UNCERTAINTY.search(prefix) or re.search(r"\b(?:if|si|whether)\s+", prefix):
+                continue
+            named = list(re.finditer(r"\bwindow_subject_(\d+)\b", prefix))
+            if named:
+                subject = named[-1]
+                # A different intervening subject is not the named window.
+                tail = prefix[subject.end():].strip(' ,\"\'')
+                if tail not in {"", "window", "ventana"}:
+                    continue
+                index = int(subject[1])
+            elif len(windows) == 1 and prefix.strip(' ,\"\'') in {
+                "", "it", "the window", "la ventana", "no, la ventana", "si, la ventana",
+            }:
+                index = 0
+            else:
+                continue
+            window = windows[index]
+            focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
+            if not isinstance(focus, bool):
+                continue
+            negative = bool(match["before"] or match["after"] or match["focus_negative"]
+                            or (match["verb"] and "n't" in match["verb"].replace("’", "'")))
+            if match["state"] and match["state"].startswith("inactiv"):
+                negative = not negative
+            # not(A and B) does not establish not(A). A later explicit
+            # assertion can still be checked on its own.
+            if negative and re.match(r"\s+and\b", clause[match.end():]):
+                continue
+            if (not negative) != focus:
+                return {
+                    "window_title": window.get("title") or window.get("processName"),
+                    "contradiction": {"predicate": "is_active_window",
+                                      "observed_value": focus, "draft_claim": not negative},
+                    "rejected_draft": text,
+                }
+            answered_focus.add(index)
+    if len(windows) == 1 and _requests_window_focus(user_text, windows[0]):
+        window = windows[0]
+        focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
+        if not isinstance(focus, bool) or 0 in answered_focus:
+            return None
+        name = window.get("title") or window.get("processName")
+        if isinstance(name, str) and name:
+            identity = re.search(
+                r"\b(?:active window|window in the foreground|window with focus|"
+                r"ventana activa|ventana en primer plano)\s+(?:is|es)\s+[\"'«]*"
+                + re.escape(fold(name)) + r"(?!\w)", fold(text),
+            )
+            if identity:
+                if focus:
+                    return None
+                return {"window_title": name,
+                        "contradiction": {"predicate": "is_active_window", "observed_value": False, "draft_claim": True},
+                        "rejected_draft": text}
+        return {"window_title": name,
+                "missing_answer": {"predicate": "is_active_window", "observed_value": focus},
+                "rejected_draft": text}
+    return None
 
 
 def _seen(payload: dict) -> dict | None:
@@ -91,7 +215,10 @@ def window_status_assertions(
     return assertions
 
 
-def window_fact_defect(text: str, payload: dict) -> str:
+def window_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+    feedback = window_focus_feedback(text, payload, user_text)
+    if feedback is not None:
+        return "reversed_result" if "contradiction" in feedback else "missing_fact"
     seen = _seen(payload)
     if seen is None:
         return ""

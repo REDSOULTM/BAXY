@@ -1,0 +1,26 @@
+{
+  "correct": 17,
+  "total": 17,
+  "previous_same_cohort_correct": 15,
+  "all_first_requests_and_drafts_identical": true,
+  "single_call_controls": 10,
+  "two_call_compound_cases": 7,
+  "native_calls": 24,
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.1640625,
+    "seconds": 16.26600000000326,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "panel.json": "443a37a452cd4750cd087e7a4c86d224532dd3b10317ca8c32f164b73c1312da",
+    "requests.jsonl": "fd0da35572e29ba8441e6ef018d5e7b201dff3da13430e9fc14a9e6521bdd54b",
+    "responses.jsonl": "38ce5e4fb1708a5d6c24026ce2f01cbecaa6079b58de04647108be34da204e22",
+    "finals.jsonl": "ae8aae67224ccc6ab4a02a4df89198d72de8c1589cd7dbe9fd930d53d97ffb0c",
+    "adjudication.json": "683c2c08e608de7e52fc63d515fd565dfb1cda9588413ef4881a41736f2d62aa",
+    "RESULT.md": "e0303f86b5acca13b94e2dfba24c8dcb22d0925ec6646026f43b2e4b0690624e"
+  }
+}

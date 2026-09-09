@@ -1,0 +1,1255 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF         [100%]
+================================== FAILURES ===================================
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Atlas] _
+
+name = 'Atlas', focus = True
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = True
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Nimbus 41] _
+
+name = 'Nimbus 41', focus = True
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Is Active] _
+
+name = 'Is Active', focus = True
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Atlas] _
+
+name = 'Atlas', focus = False
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = False
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Nimbus 41] _
+
+name = 'Nimbus 41', focus = False
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Is Active] _
+
+name = 'Is Active', focus = False
+question = 'Is the {name} window active and configured to stay always on top?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Atlas] _
+
+name = 'Atlas', focus = True
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = True
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Nimbus 41] _
+
+name = 'Nimbus 41', focus = True
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Is Active] _
+
+name = 'Is Active', focus = True
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Atlas] _
+
+name = 'Atlas', focus = False
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = False
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Nimbus 41] _
+
+name = 'Nimbus 41', focus = False
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Is Active] _
+
+name = 'Is Active', focus = False
+question = '¿La ventana {name} está activa y se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_____ test_requested_focus_cannot_disappear[Is {name} active?-True-Atlas] _____
+
+name = 'Atlas', focus = True, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is {name} active?-True-Br\xfajula 7] __
+
+name = 'Brújula 7', focus = True, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+___ test_requested_focus_cannot_disappear[Is {name} active?-True-Nimbus 41] ___
+
+name = 'Nimbus 41', focus = True, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+___ test_requested_focus_cannot_disappear[Is {name} active?-True-Is Active] ___
+
+name = 'Is Active', focus = True, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+____ test_requested_focus_cannot_disappear[Is {name} active?-False-Atlas] _____
+
+name = 'Atlas', focus = False, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Is {name} active?-False-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = False, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+__ test_requested_focus_cannot_disappear[Is {name} active?-False-Nimbus 41] ___
+
+name = 'Nimbus 41', focus = False, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+__ test_requested_focus_cannot_disappear[Is {name} active?-False-Is Active] ___
+
+name = 'Is Active', focus = False, question = 'Is {name} active?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Atlas] _
+
+name = 'Atlas', focus = True, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = True, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Nimbus 41] _
+
+name = 'Nimbus 41', focus = True, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Is Active] _
+
+name = 'Is Active', focus = True, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Atlas] _
+
+name = 'Atlas', focus = False, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = False, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Nimbus 41] _
+
+name = 'Nimbus 41', focus = False, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Is Active] _
+
+name = 'Is Active', focus = False, question = '¿Está activa {name}?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+__ test_requested_focus_cannot_disappear[Does {name} have focus?-True-Atlas] __
+
+name = 'Atlas', focus = True, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-True-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = True, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-True-Nimbus 41] _
+
+name = 'Nimbus 41', focus = True, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-True-Is Active] _
+
+name = 'Is Active', focus = True, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-False-Atlas] __
+
+name = 'Atlas', focus = False, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-False-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = False, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-False-Nimbus 41] _
+
+name = 'Nimbus 41', focus = False, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[Does {name} have focus?-False-Is Active] _
+
+name = 'Is Active', focus = False, question = 'Does {name} have focus?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Atlas] _
+
+name = 'Atlas', focus = True, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = True, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Nimbus 41] _
+
+name = 'Nimbus 41', focus = True, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Is Active] _
+
+name = 'Is Active', focus = True, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Atlas] _
+
+name = 'Atlas', focus = False, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Br\xfajula 7] _
+
+name = 'Brújula 7', focus = False, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Nimbus 41] _
+
+name = 'Nimbus 41', focus = False, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Is Active] _
+
+name = 'Is Active', focus = False, question = '¿Tiene {name} el foco?'
+
+    @pytest.mark.parametrize("name", ["Atlas", "Brújula 7", "Nimbus 41", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("question", [
+        "Is the {name} window active and configured to stay always on top?",
+        "¿La ventana {name} está activa y se mantiene siempre encima?",
+        "Is {name} active?", "¿Está activa {name}?",
+        "Does {name} have focus?", "¿Tiene {name} el foco?",
+    ])
+    def test_requested_focus_cannot_disappear(name, focus, question):
+        payload = _compose_situation_payload(situation(focus, name=name), "en")
+>       assert _payload_fact_defect("The window is in normal state.", payload, question.format(name=name)) == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:18: TypeError
+_ test_incidental_focus_does_not_add_a_question[Is the active window maximized?] _
+
+question = 'Is the active window maximized?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_incidental_focus_does_not_add_a_question[\xbfEst\xe1 maximizada la ventana activa?] _
+
+question = '¿Está maximizada la ventana activa?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_incidental_focus_does_not_add_a_question[Is Atlas configured to stay always on top?] _
+
+question = 'Is Atlas configured to stay always on top?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_incidental_focus_does_not_add_a_question[\xbfAtlas se mantiene siempre encima?] _
+
+question = '¿Atlas se mantiene siempre encima?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_incidental_focus_does_not_add_a_question[What is the title of the active window?] _
+
+question = 'What is the title of the active window?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_incidental_focus_does_not_add_a_question[\xbfCu\xe1l es el t\xedtulo de la ventana activa?] _
+
+question = '¿Cuál es el título de la ventana activa?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+___ test_incidental_focus_does_not_add_a_question[Is Is Active maximized?] ____
+
+question = 'Is Is Active maximized?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_incidental_focus_does_not_add_a_question[\xbfEst\xe1 maximizada Is Active?] _
+
+question = '¿Está maximizada Is Active?'
+
+    @pytest.mark.parametrize("question", [
+        "Is the active window maximized?", "¿Está maximizada la ventana activa?",
+        "Is Atlas configured to stay always on top?", "¿Atlas se mantiene siempre encima?",
+        "What is the title of the active window?", "¿Cuál es el título de la ventana activa?",
+        "Is Is Active maximized?", "¿Está maximizada Is Active?",
+    ])
+    def test_incidental_focus_does_not_add_a_question(question):
+        payload = _compose_situation_payload(situation(True, name="Is Active" if "Is Active" in question else "Atlas"), "en")
+>       assert not _payload_fact_defect("The window is in normal state.", payload, question)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:29: TypeError
+_ test_explicit_focus_or_identity_answers_remain_valid[La ventana activa es "Atlas".] _
+
+answer = 'La ventana activa es "Atlas".'
+
+    @pytest.mark.parametrize("answer", [
+        'La ventana activa es "Atlas".', 'The active window is "Atlas".',
+        'La ventana en primer plano es Atlas.', 'Atlas has focus.',
+        'La ventana Atlas está activa.', 'Está activa.',
+    ])
+    def test_explicit_focus_or_identity_answers_remain_valid(answer):
+        payload = _compose_situation_payload(situation(True), "en")
+>       assert not _payload_fact_defect(answer, payload, "Which window is active?")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:39: TypeError
+_ test_explicit_focus_or_identity_answers_remain_valid[The active window is "Atlas".] _
+
+answer = 'The active window is "Atlas".'
+
+    @pytest.mark.parametrize("answer", [
+        'La ventana activa es "Atlas".', 'The active window is "Atlas".',
+        'La ventana en primer plano es Atlas.', 'Atlas has focus.',
+        'La ventana Atlas está activa.', 'Está activa.',
+    ])
+    def test_explicit_focus_or_identity_answers_remain_valid(answer):
+        payload = _compose_situation_payload(situation(True), "en")
+>       assert not _payload_fact_defect(answer, payload, "Which window is active?")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:39: TypeError
+_ test_explicit_focus_or_identity_answers_remain_valid[La ventana en primer plano es Atlas.] _
+
+answer = 'La ventana en primer plano es Atlas.'
+
+    @pytest.mark.parametrize("answer", [
+        'La ventana activa es "Atlas".', 'The active window is "Atlas".',
+        'La ventana en primer plano es Atlas.', 'Atlas has focus.',
+        'La ventana Atlas está activa.', 'Está activa.',
+    ])
+    def test_explicit_focus_or_identity_answers_remain_valid(answer):
+        payload = _compose_situation_payload(situation(True), "en")
+>       assert not _payload_fact_defect(answer, payload, "Which window is active?")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:39: TypeError
+___ test_explicit_focus_or_identity_answers_remain_valid[Atlas has focus.] ____
+
+answer = 'Atlas has focus.'
+
+    @pytest.mark.parametrize("answer", [
+        'La ventana activa es "Atlas".', 'The active window is "Atlas".',
+        'La ventana en primer plano es Atlas.', 'Atlas has focus.',
+        'La ventana Atlas está activa.', 'Está activa.',
+    ])
+    def test_explicit_focus_or_identity_answers_remain_valid(answer):
+        payload = _compose_situation_payload(situation(True), "en")
+>       assert not _payload_fact_defect(answer, payload, "Which window is active?")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:39: TypeError
+_ test_explicit_focus_or_identity_answers_remain_valid[La ventana Atlas est\xe1 activa.] _
+
+answer = 'La ventana Atlas está activa.'
+
+    @pytest.mark.parametrize("answer", [
+        'La ventana activa es "Atlas".', 'The active window is "Atlas".',
+        'La ventana en primer plano es Atlas.', 'Atlas has focus.',
+        'La ventana Atlas está activa.', 'Está activa.',
+    ])
+    def test_explicit_focus_or_identity_answers_remain_valid(answer):
+        payload = _compose_situation_payload(situation(True), "en")
+>       assert not _payload_fact_defect(answer, payload, "Which window is active?")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:39: TypeError
+____ test_explicit_focus_or_identity_answers_remain_valid[Est\xe1 activa.] ____
+
+answer = 'Está activa.'
+
+    @pytest.mark.parametrize("answer", [
+        'La ventana activa es "Atlas".', 'The active window is "Atlas".',
+        'La ventana en primer plano es Atlas.', 'Atlas has focus.',
+        'La ventana Atlas está activa.', 'Está activa.',
+    ])
+    def test_explicit_focus_or_identity_answers_remain_valid(answer):
+        payload = _compose_situation_payload(situation(True), "en")
+>       assert not _payload_fact_defect(answer, payload, "Which window is active?")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:39: TypeError
+_____ test_ambiguous_conjunction_does_not_establish_explicit_focus_answer _____
+
+    def test_ambiguous_conjunction_does_not_establish_explicit_focus_answer():
+        payload = _compose_situation_payload(situation(True), "en")
+        reply = "No, the Atlas window is not active and configured to stay always on top."
+>       assert _payload_fact_defect(reply, payload, "Is Atlas active and always on top?") == "missing_fact"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: _payload_fact_defect() takes 2 positional arguments but 3 were given
+
+tests\test_c03_window_focus_coverage.py:45: TypeError
+__ test_compositor_missing_feedback_does_not_invent_a_rejected_boolean_claim __
+
+    def test_compositor_missing_feedback_does_not_invent_a_rejected_boolean_claim():
+        import json
+        first = "Atlas is not configured to stay always on top."
+        good = "Atlas is active, but not configured to stay always on top."
+        client = Recorder([first, good, good])
+        facts = situation(True)
+        facts["observed"]["windows"][0]["alwaysOnTop"] = False
+>       assert client.compose_user_message("Is Atlas active and always on top?", "status", {"situation":facts}) == good
+E       AssertionError: assert 'Atlas is not...lways on top.' == 'Atlas is act...lways on top.'
+E         
+E         - Atlas is active, but not configured to stay always on top.
+E         ?         ------------
+E         + Atlas is not configured to stay always on top.
+
+tests\test_c03_window_focus_coverage.py:55: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-True-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is the {name} window active and configured to stay always on top?-False-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-True-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfLa ventana {name} est\xe1 activa y se mantiene siempre encima?-False-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-True-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-True-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-True-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-True-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-False-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-False-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-False-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Is {name} active?-False-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-True-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfEst\xe1 activa {name}?-False-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-True-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-True-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-True-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-True-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-False-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-False-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-False-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[Does {name} have focus?-False-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-True-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Atlas]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Br\xfajula 7]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Nimbus 41]
+FAILED tests/test_c03_window_focus_coverage.py::test_requested_focus_cannot_disappear[\xbfTiene {name} el foco?-False-Is Active]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[Is the active window maximized?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[\xbfEst\xe1 maximizada la ventana activa?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[Is Atlas configured to stay always on top?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[\xbfAtlas se mantiene siempre encima?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[What is the title of the active window?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[\xbfCu\xe1l es el t\xedtulo de la ventana activa?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[Is Is Active maximized?]
+FAILED tests/test_c03_window_focus_coverage.py::test_incidental_focus_does_not_add_a_question[\xbfEst\xe1 maximizada Is Active?]
+FAILED tests/test_c03_window_focus_coverage.py::test_explicit_focus_or_identity_answers_remain_valid[La ventana activa es "Atlas".]
+FAILED tests/test_c03_window_focus_coverage.py::test_explicit_focus_or_identity_answers_remain_valid[The active window is "Atlas".]
+FAILED tests/test_c03_window_focus_coverage.py::test_explicit_focus_or_identity_answers_remain_valid[La ventana en primer plano es Atlas.]
+FAILED tests/test_c03_window_focus_coverage.py::test_explicit_focus_or_identity_answers_remain_valid[Atlas has focus.]
+FAILED tests/test_c03_window_focus_coverage.py::test_explicit_focus_or_identity_answers_remain_valid[La ventana Atlas est\xe1 activa.]
+FAILED tests/test_c03_window_focus_coverage.py::test_explicit_focus_or_identity_answers_remain_valid[Est\xe1 activa.]
+FAILED tests/test_c03_window_focus_coverage.py::test_ambiguous_conjunction_does_not_establish_explicit_focus_answer
+FAILED tests/test_c03_window_focus_coverage.py::test_compositor_missing_feedback_does_not_invent_a_rejected_boolean_claim
+64 failed in 1.07s

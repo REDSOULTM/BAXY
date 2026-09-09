@@ -1100,3 +1100,26 @@ En los mismos14casos672, la candidata mejora10/14→13/14. Se añaden tres nombr
 Dos fallos quedan abiertos: el inglés activo=true mantiene negación ambigua sin aclarar foco; Brújula7 activo=true omite foco desde el primer borrador, de modo que la guardia de contradicciones no dispara reparación. No se aprueba por haber eliminado salidas vacías. Siguiente: comprobar cobertura de los hechos realmente preguntados dentro del contrato existente, preservando preguntas sólo de maximización o topmost, nombres y negaciones. Distinguir falta de respuesta de contradicción en los datos de reparación; no inventar un valor que el borrador nunca afirmó.
 
 GPU3497,559MiB/RAM719,934MiB/14,234s sin infracciones. Registro intacto; no kernel/UI/voz.674 sigue WIP no adoptado, sin dueñas amplias/Fast. Encuesta26/716/0; C03 activo.
+
+
+# 677 — mismos17casos, todos completos y veraces
+
+Mismos17casos675, sin sustituir preguntas ni relajar criterios:15/17→17/17. Las17primeras peticiones y sus borradores coinciden exactamente. Diez controles correctos conservan su respuesta y una llamada. Siete compuestos requieren un reintento; ahora también se reparan la omisión inicial de Brújula7 y el foco inglés ambiguo. Los datos de falta de respuesta no inventan un valor afirmado por el borrador.
+
+Veinticuatro llamadas, todasEOS; GPU3497,559MiB/RAM720,164MiB/16,266s sin infracciones. Registro intacto. No kernel/UI/voz ni mínimo conjunto. Candidata676 aún no adoptada: dueñas/declaraciones y Fast/producto678 completarán su validación. Encuesta26/716/0; C03 sigue abierto con su alcance completo.
+
+
+# 678 — regresión de producto24/24
+
+Las24consultas y sus respuestas finales coinciden con669. Veintidós observaciones revisadas con snapshots independientes antes/después:16 lecturas por aplicación y cuatro referencias correctas, foco ChatGPT y cantidades actuales estables. Todas24actividades igualan los finales. Steam/WhatsApp siguen cerrados y Chrome tiene una ventana; no se acredita su estado positivo de661/665.
+
+GPU3497,559MiB/RAM2297,262MiB/40,938s, sin infracciones y con fuentes/registro intactos. No UI/voz conjunta ni comparación emparejada de ahorro. La primera comprobación de margen tuvo2604,5MiB disponibles y no lanzó el producto; tras cierre normal de servidores MSBuild/compilador hubo3665,8MiB y se ejecutó una única campaña678. BAXY volvió a quedar cerrado. Encuesta26/716/0; C03 no completo.
+
+
+# 676 — conservación y reparación del foco adoptadas
+
+La proyección mantiene el significado de foreground sin confundirlo con siempre encima. El contrato factual contrasta afirmaciones explícitas con el foco tipado de cada ventana. Si se pregunta directamente por foco en una observación de una sola ventana, detecta también su omisión; identificar la ventana activa para preguntar por maximización no añade una petición de foco. El feedback distingue contradicción de falta de respuesta y deriva sujeto/valores del snapshot. Va en los datos del reintento existente; no cambia primer borrador, sistema, modelo ni máximo de llamadas. No respuestas visibles fijas ni segunda capa de narración.
+
+Nueva cohorte de cobertura64: baseline de conducta50fallos/14pases→64pases; el error previo de API64fallos se conserva aparte. Focal integrada733pases/0skips,4,52s. Dueñas declaradas23ficheros:2566pases+121subpruebas/0skips,25,18s. Declaraciones600pases/1skip ambiental,5,05s: faltan entradas de campaña ciega STT. Fast exit0,Release31,47s,0advertencias/errores. Se conserva el preflight fallido por usar inicialmente Python de producto sin ruff; el gate verde usa BAXYQuality configurado.
+
+Compositor677 mismos17casos15/17→17/17:24llamadas EOS, diez controles en una llamada y siete compuestos en dos. Producto67824/24 sin alterar respuestas669, con observaciones independientes. La gramática es delimitada; no prueba comprensión universal, cobertura de todas las preguntas ni todas las negaciones. Se adopta esta reparación acotada. Encuesta26/716/0, ocho rutas/reserva/UI/voz/recuperación/Full final siguen abiertos. Full651 es baseline anterior, no validación final676; el encargo sólo exige otro Full al adoptar C#+Python juntos o cerrar C03, y esta tanda es Python.

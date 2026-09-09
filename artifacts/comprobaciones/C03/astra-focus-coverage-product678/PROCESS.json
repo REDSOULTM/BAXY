@@ -1,0 +1,16 @@
+{
+  "launcher": 88972,
+  "command": [
+    "py",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-focus-coverage-profile678",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-focus-coverage-product678-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-focus-coverage-product678-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}
