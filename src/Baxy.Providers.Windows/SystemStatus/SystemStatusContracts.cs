@@ -26,7 +26,8 @@ public static class SystemStatusErrorCodes
 public sealed record CpuStatus(
     double UsagePercent,
     int LogicalProcessorCount,
-    string? Model);
+    string? Model,
+    int? PhysicalCoreCount = null);
 
 public sealed record MemoryStatus(
     ulong TotalBytes,

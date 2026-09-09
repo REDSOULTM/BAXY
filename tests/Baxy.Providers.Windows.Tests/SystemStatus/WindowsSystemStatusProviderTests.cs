@@ -15,6 +15,7 @@ public sealed class WindowsSystemStatusProviderTests
         var probe = new FakeSystemStatusProbe
         {
             LogicalProcessorCount = 16,
+            PhysicalCoreCount = 10,
             CpuModel = "  Example CPU  ",
             Memory = new MemoryReading(32 * Gibibyte, 12 * Gibibyte),
             Disk = new DiskReading(512L * (long)Gibibyte, 123L * (long)Gibibyte),
@@ -36,6 +37,7 @@ public sealed class WindowsSystemStatusProviderTests
             Assert.That(snapshot.Cpu, Is.Not.Null);
             Assert.That(snapshot.Cpu!.UsagePercent, Is.EqualTo(66.6666666667d).Within(0.000001d));
             Assert.That(snapshot.Cpu.LogicalProcessorCount, Is.EqualTo(16));
+            Assert.That(snapshot.Cpu.PhysicalCoreCount, Is.EqualTo(10));
             Assert.That(snapshot.Cpu.Model, Is.EqualTo("Example CPU"));
             Assert.That(snapshot.Memory, Is.EqualTo(new MemoryStatus(32 * Gibibyte, 12 * Gibibyte)));
             Assert.That(
@@ -194,6 +196,35 @@ public sealed class WindowsSystemStatusProviderTests
             Is.EqualTo(new SystemStatusFailure(
                 SystemStatusScope.Cpu,
                 SystemStatusErrorCodes.InvalidMeasurement)));
+    }
+
+    [TestCase(0)]
+    [TestCase(-1)]
+    [TestCase(9)]
+    public async Task InvalidPhysicalCoreCountFailsCpuMetric(int physicalCoreCount)
+    {
+        var probe = ValidCpuProbe();
+        probe.PhysicalCoreCount = physicalCoreCount;
+        SystemStatusSnapshot snapshot = await CreateProvider(probe).GetStatusAsync(
+            SystemStatusScope.Cpu, CancellationToken.None);
+
+        Assert.That(snapshot.Cpu, Is.Null);
+        Assert.That(snapshot.Failures.Single(), Is.EqualTo(new SystemStatusFailure(
+            SystemStatusScope.Cpu, SystemStatusErrorCodes.InvalidMeasurement)));
+    }
+
+    [Test]
+    public async Task PhysicalTopologyFailureDoesNotInferCoresFromLogicalCount()
+    {
+        var probe = ValidCpuProbe();
+        probe.PhysicalCoreException = new IOException("private probe detail");
+        SystemStatusSnapshot snapshot = await CreateProvider(probe).GetStatusAsync(
+            SystemStatusScope.Cpu | SystemStatusScope.Memory, CancellationToken.None);
+
+        Assert.That(snapshot.Cpu, Is.Null);
+        Assert.That(snapshot.Memory, Is.Not.Null);
+        Assert.That(snapshot.Failures.Single(), Is.EqualTo(new SystemStatusFailure(
+            SystemStatusScope.Cpu, SystemStatusErrorCodes.MeasurementFailed)));
     }
 
     [Test]
@@ -390,6 +421,10 @@ public sealed class WindowsSystemStatusProviderTests
 
         public int LogicalProcessorCount { get; set; } = 8;
 
+        public int PhysicalCoreCount { get; set; } = 4;
+
+        public Exception? PhysicalCoreException { get; set; }
+
         public string? CpuModel { get; set; } = "Example CPU";
 
         public MemoryReading Memory { get; set; } = new(16 * Gibibyte, 8 * Gibibyte);
@@ -453,6 +488,10 @@ public sealed class WindowsSystemStatusProviderTests
         }
 
         public int ReadLogicalProcessorCount() => LogicalProcessorCount;
+
+        public int ReadPhysicalCoreCount() => PhysicalCoreException is null
+            ? PhysicalCoreCount
+            : throw PhysicalCoreException;
 
         public string? ReadCpuModel() => CpuModel;
 

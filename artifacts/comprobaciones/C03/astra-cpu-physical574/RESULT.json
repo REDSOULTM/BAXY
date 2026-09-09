@@ -1,0 +1,25 @@
+{
+  "adopted": true,
+  "provider_tests": {
+    "passed": 31,
+    "skipped": 0,
+    "milliseconds": 80
+  },
+  "integration_tests": {
+    "passed": 80,
+    "skipped": 0,
+    "milliseconds": 172
+  },
+  "fast": "passed",
+  "release_seconds": 6.15,
+  "source_languages_changed": [
+    "C#"
+  ],
+  "product": "pending575",
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  },
+  "source": "https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformationex"
+}

@@ -1,0 +1,21 @@
+{
+  "native_finals": 12,
+  "physical_observation_promising": true,
+  "production_adoption": false,
+  "cpu_actor_fixed": false,
+  "private_report_sha256": "ad8615a09468344e5b6e00851c25c984310bedb96e8a04e1252d244ab62e26a4",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.5546875,
+    "seconds": 8.016,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  }
+}

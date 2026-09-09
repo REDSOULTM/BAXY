@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -39,6 +40,8 @@ internal interface ISystemStatusProbe
     CpuTimeSample ReadCpuTimes();
 
     int ReadLogicalProcessorCount();
+
+    int ReadPhysicalCoreCount();
 
     string? ReadCpuModel();
 
@@ -92,6 +95,76 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
         }
 
         return checked((int)count);
+    }
+
+    public int ReadPhysicalCoreCount()
+    {
+        const int relationProcessorCore = 0;
+        const int errorInsufficientBuffer = 122;
+        uint length = 0;
+        if (GetLogicalProcessorInformationEx(relationProcessorCore, IntPtr.Zero, ref length) != 0
+            || Marshal.GetLastPInvokeError() != errorInsufficientBuffer)
+        {
+            throw CreateLastWin32Exception("Windows did not return processor topology size.");
+        }
+
+        if (length is < 32 or > 16 * 1024 * 1024)
+        {
+            throw new IOException("Windows returned an invalid processor topology size.");
+        }
+
+        int capacity = checked((int)length);
+        IntPtr buffer = Marshal.AllocHGlobal(capacity);
+        try
+        {
+            if (GetLogicalProcessorInformationEx(relationProcessorCore, buffer, ref length) == 0)
+            {
+                throw CreateLastWin32Exception("Windows did not return processor topology.");
+            }
+
+            if (length == 0 || length > capacity)
+            {
+                throw new IOException("Windows returned an invalid processor topology length.");
+            }
+
+            var topology = new byte[checked((int)length)];
+            Marshal.Copy(buffer, topology, 0, topology.Length);
+            return CountPhysicalCores(topology);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    internal static int CountPhysicalCores(ReadOnlySpan<byte> topology)
+    {
+        // RelationProcessorCore returns one variable-size record per active physical core.
+        // Processor masks describe its logical processors; their bit count is not a core count.
+        int count = 0;
+        while (!topology.IsEmpty)
+        {
+            if (topology.Length < 32)
+            {
+                throw new IOException("Windows returned truncated processor topology.");
+            }
+
+            uint relationship = BinaryPrimitives.ReadUInt32LittleEndian(topology);
+            uint size = BinaryPrimitives.ReadUInt32LittleEndian(topology[4..]);
+            ushort groups = BinaryPrimitives.ReadUInt16LittleEndian(topology[30..]);
+            int requiredSize = 32 + groups * (IntPtr.Size + 8);
+            if (relationship != 0 || groups == 0 || size < requiredSize || size > topology.Length)
+            {
+                throw new IOException("Windows returned invalid processor core data.");
+            }
+
+            count++;
+            topology = topology[checked((int)size)..];
+        }
+
+        return count > 0
+            ? count
+            : throw new IOException("Windows returned no physical processor cores.");
     }
 
     public string? ReadCpuModel()
@@ -283,6 +356,12 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial uint GetActiveProcessorCount(ushort groupNumber);
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial int GetLogicalProcessorInformationEx(
+        int relationship,
+        IntPtr buffer,
+        ref uint returnedLength);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial int GlobalMemoryStatusEx(ref NativeMemoryStatus buffer);

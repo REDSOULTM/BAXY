@@ -468,7 +468,8 @@ internal sealed class SystemStatusHandler : IOperationHandler
                 : new SystemStatusCpuResult(
                     snapshot.Cpu.UsagePercent,
                     snapshot.Cpu.LogicalProcessorCount,
-                    snapshot.Cpu.Model),
+                    snapshot.Cpu.Model,
+                    snapshot.Cpu.PhysicalCoreCount),
             snapshot.Memory is null
                 ? null
                 : new SystemStatusMemoryResult(
@@ -545,6 +546,8 @@ internal sealed class SystemStatusHandler : IOperationHandler
         double.IsFinite(status.UsagePercent)
         && status.UsagePercent is >= 0 and <= 100
         && status.LogicalProcessorCount is > 0 and <= 4096
+        && (status.PhysicalCoreCount is null
+            || status.PhysicalCoreCount > 0 && status.PhysicalCoreCount <= status.LogicalProcessorCount)
         && IsValidOptionalText(status.Model, 512);
 
     private static bool IsValid(MemoryStatus status) =>

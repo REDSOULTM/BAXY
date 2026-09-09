@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-09T05:44:24.764448+00:00",
+  "method": "Shared product, registered Qwen2507/b9980 and source555. Audio/mute same failed instruction boundary568/570, EN equivalent, compound time/mute ES/EN, original volume reading and network regression. Published source571; actual readings only, no volume changes. Verify every final against actual native observations. Where muted is supplied by nested state or mission result, no instruction may claim it is absent. Compound clock and mute must both be conserved. No new survey credit from repeating already covered requirements. Isolated profile, no manual desktop/voice credit.",
+  "authorization": "AUTORIZACION_DUENO_536.md; current owner-approved historical inputs and explicit new development variants. No outgoing user content, private memory mutations or app launches requested.",
+  "criteria": "Observed mute/volume polarity and clock must survive shared composition; no false absence instruction. Native receipt, final and posterior state checked. No physical audio output, AEC or UI proof from this headless conductor.",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "panel_sha256": "90ce6d75b7c002acf48503fe51f54b3e5616bbb7669b7166420804d15347b72b",
+  "source_sha256": {
+    "src/baxy_mind/llm.py": "07d48a5db19b2179c9ff22e275932835ee836c84afc6eef6fdfc05a8eab909ba",
+    "src/baxy_mind/__main__.py": "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1",
+    "src/baxy_mind/effect_intent.py": "3d435f6208106f8defe032441a5ea7e8c3b07e499f7729ce55fc26050105e7a5"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio-product572-private",
+  "case_count": 6,
+  "resource_limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "wall_time_seconds": 240
+  }
+}

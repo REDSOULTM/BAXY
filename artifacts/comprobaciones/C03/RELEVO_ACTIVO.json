@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T05:43:31.123043+00:00",
+  "confirmedAtUtc": "2026-09-09T06:01:53.515884+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "571: nested audio observations retained;1966pass+121subtests/1environmental skip,Fast green. Survey12/730/0; product572 pending.",
-  "continuation": "Publish571, verify product572. Investigate missing verified CPU physical topology instead of repeating ownership/units prompt sweeps; remaining C03 obligations open.",
+  "checkpoint": "574: native physical CPU count adopted; provider31/integration80 pass,0skips; Fast green. Survey12/730/0.",
+  "continuation": "Publish574, verify CPU product575, then compound clock/mute first incorrect transform. Final C03 obligations open.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "a9f053b77f93033a110c2fc8d61634a29d962ba8",
+  "publishedSourceCommit": "3c368a55a2bdc59f5ce4f00c820cb47d65a4be1e",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

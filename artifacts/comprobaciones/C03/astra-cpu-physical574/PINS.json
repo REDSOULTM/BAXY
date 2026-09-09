@@ -1,0 +1,15 @@
+{
+  "before-CoreOperationModels.cs": "5f0a38534be1fad160490caaca1a9737e0487bd5f480aaa4cf10fe6081d76e3d",
+  "before-SystemStatusContracts.cs": "7839230f207e519d40b31603bb2587fd63896044730e76ec6ffc4b93f9ce052c",
+  "before-SystemStatusHandler.cs": "7729bdb6468b7d47c8334e98ab3cb46ad297f6031b338a6e4a104af10d01094a",
+  "before-SystemStatusHandlerTests.cs": "d3f909b0b8de1a911e6adf4a6c61cb539b6a5babc591352a4c4459840eec4efc",
+  "before-WindowsSystemStatusProbe.cs": "2152faee191f56154f7fc42536e875a4acac5b195376ff6d2af4b50351b8b53e",
+  "before-WindowsSystemStatusProvider.cs": "f1b264ce9e2c1a64ad66d82c2e5a01071d7d327cb93ac11aef7a2be9213b510d",
+  "before-WindowsSystemStatusProviderTests.cs": "9a76bc2c0992e4d0e065d6b8ab0aef0644afe3f775b2a1ad0d7dcf9d4c267bb8",
+  "fast.log": "84120802676153115c77fb3419baa56b2753459560bdbd68fd2d4bd687895740",
+  "integration.log": "c1f608d1a16c3f5bcbf5f84b0e1b2ee4d6487bd4d9ac7f4c74724eb1f0b312d7",
+  "provider.log": "4fbad10117a0abf519af97d401398703d7dfe65a2f492f1623947c66e911e765",
+  "RESULT.json": "de4de487843952516ef310a4da14147e6a75c8134e4cdc38bc3fee52ecb93dec",
+  "RESULT.md": "3d6fd489312f8f60dd5831e8f70759a4743c64c6734cf882c1701cb9b843ff4b",
+  "SOURCES.json": "d0f79ec641e2167cea96eafdcbbfda7e6d5b2d673c0d1cd75c1ea891d3f5a7e5"
+}

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-09T05:47:05.097752+00:00",
+  "physicalCoreCount": 8,
+  "logicalProcessorCount": 16,
+  "bytes": 384,
+  "repeated_read_equal": true,
+  "api": "GetLogicalProcessorInformationEx(RelationProcessorCore) and GetActiveProcessorCount(ALL_PROCESSOR_GROUPS)",
+  "source": "https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformationex"
+}

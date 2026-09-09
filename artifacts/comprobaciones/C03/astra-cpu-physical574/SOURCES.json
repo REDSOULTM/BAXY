@@ -1,0 +1,10 @@
+{
+  "src/Baxy.Providers.Windows/SystemStatus/WindowsSystemStatusProbe.cs": "90645df009ed1ff48cab0fb0269e888cc7bca000a15901fdad717d2726f4418f",
+  "src/Baxy.Providers.Windows/SystemStatus/WindowsSystemStatusProvider.cs": "242f6877f2fb1d43177d0dc6c188412cb7b64ad7acc1fbe74a20ae9af8af230f",
+  "src/Baxy.Providers.Windows/SystemStatus/SystemStatusContracts.cs": "4ce93b6060b112990c3fc4f144e45f259c7a4a87f5ee913f1fd3192a284a8474",
+  "src/Baxy.Core/Operations/CoreOperationModels.cs": "4a27ee472586173e1713a9dde36e3d41bdd906c7266bb0dc67a78ec6d6d61a89",
+  "src/Baxy.Core/Operations/SystemStatusHandler.cs": "d94aef094b343bf74e608306fd8ee4507f29c7741ce99f0a1b9e52605b81263c",
+  "tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsSystemStatusProviderTests.cs": "bfc3a4e167908ccd5eb514249f1b75768a00faf280dd931ed815143ab61d77ab",
+  "tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessorTopologyTests.cs": "6a6d0f05201f0570c569283227a4efb75eb7b9bf39f2f5bacac6032042f6279a",
+  "tests/Baxy.Integration.Tests/SystemStatusHandlerTests.cs": "37f926c42fb24a9bbfe85f207e3d1be86c8ed8ccb97e94b2f9873606c2c1f763"
+}

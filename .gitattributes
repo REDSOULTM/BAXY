@@ -252,3 +252,6 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/astra-internet-query569/** -text
 /artifacts/comprobaciones/C03/astra-network-product570/** -text
 /artifacts/comprobaciones/C03/astra-audio-observation571/** -text
+/artifacts/comprobaciones/C03/astra-audio-product572/** -text
+/artifacts/comprobaciones/C03/astra-cpu-topology573/** -text
+/artifacts/comprobaciones/C03/astra-cpu-physical574/** -text

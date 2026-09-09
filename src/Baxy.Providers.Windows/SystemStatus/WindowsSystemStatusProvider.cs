@@ -142,17 +142,19 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
     {
         CpuTimeSample first = _probe.ReadCpuTimes();
         int logicalProcessorCount = _probe.ReadLogicalProcessorCount();
+        int physicalCoreCount = _probe.ReadPhysicalCoreCount();
         string? model = NormalizeCpuModel(_probe.ReadCpuModel());
         await _probe.DelayAsync(_cpuSamplingInterval, cancellationToken).ConfigureAwait(false);
         CpuTimeSample second = _probe.ReadCpuTimes();
 
         if (logicalProcessorCount < 1
+            || physicalCoreCount < 1 || physicalCoreCount > logicalProcessorCount
             || !TryCalculateCpuUsage(first, second, out double usagePercent))
         {
             return null;
         }
 
-        return new CpuStatus(usagePercent, logicalProcessorCount, model);
+        return new CpuStatus(usagePercent, logicalProcessorCount, model, physicalCoreCount);
     }
 
     private static bool TryCalculateCpuUsage(
