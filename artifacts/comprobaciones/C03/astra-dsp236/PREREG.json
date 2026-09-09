@@ -1,0 +1,204 @@
+{
+  "utc": "2026-09-07T19:28:33.571794+00:00",
+  "scriptSha256": "87774043f93dad41400af73673a738ced3d8156670799c22e3ab899d6182f997",
+  "method": "Ten fixed timelines times fresh Speex or unchanged DTLN128 adapter182. Exact physical221/232 plus eight constructed human RAW213 timelines, no new gain/delay/model search. Save full cleaned frames and actual returned-pair guard results. Every Speex output must reproduce its existing capture213/221/232 exactly. No ASR until outputs frozen.",
+  "newEvidenceJustifyingComparison": "Earlier DTLN rejection preceded RAW bypass of Windows adaptive AEC/NS and numerical normalization fix baxy.2. Current comparison isolates backend under these corrected conditions.",
+  "next": "All20 outputs through source230 real segmentation/Silero and installed baxy.2 without hints; compare full literals and interruption decisions. Four human fixed windows additionally isolate segmentation from ASR if needed.",
+  "limitations": "Fixed speaking mask for both algorithms. Physical masks are actual221/232; constructed-human mask is approximate212 and does not change after counterfactual cancellation. No physical human acceptance or runtime promotion.",
+  "source230": {
+    "src/baxy_mind/voice.py": "d615692af02a4b79c7287a53b60310cc4eaf46c46dfdb9d26aba0bbb89891f3a",
+    "src/baxy_mind/voice_capture.py": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+    "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "src/baxy_mind/requirements-voice.txt": "2dc4c33303fe0411556bd4bce045754119829663ecb6834d9db2b24358318e15",
+    "scripts/build_sherpa_runtime.py": "66dc09466f29e6032459a03534c8462e4ba1bb1de77c6dbbabfea381a595874f",
+    "scripts/verify_python_runtime_lock.py": "43a9eb2b4f98094e9c5df4d00041708141c47305957be4b2cf999d6b7656ea46",
+    "scripts/lock_python_dependencies.ps1": "c187c4a9135c256ee710141a32b4f701b49364deaa3c1bb3518be2125a9e0baa",
+    "constraints-runtime-win-x64.txt": "f5f78b60be0203e06eb9a12ab58cc1a2ef8f472271270393628ac036ba26d734",
+    "pylock.runtime-win-x64.toml": "c3e8c469f57113a336ac71ee475c2843675048f4414fa05a3283cf076275c10f",
+    "tests/test_mind_voice_runtime.py": "cf3c644b058e697040c19245940ed09cb93ab500060ef44a0c4a7a434e163d81",
+    "tests/test_python_runtime_lock.py": "a3ecdefd8292640176d52e5b26c7b34d659ea728e83cf4aba153a3d896ac661f",
+    "tests/test_sherpa_runtime_package.py": "7a3032514588868b42f3d8fc100a9e6376f4e03fcbc4b9056e0743b2d6ab93ff",
+    "runtime_wheels/sherpa-nemo-stream-decoder.patch": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163",
+    "runtime_wheels/sherpa-nemo-normalization.patch": "79cb34698cf0fb6083d8f66ab194970e5fddef9e26422f469183822412e87c48",
+    "runtime_wheels/README.md": "0e8818f013f1aae6382a63f90c5bb8c2b7846ad5d820aac9e50da1c1e3a5b39f",
+    "docs/AI_CONTEXT_MAP.md": "49a18a6ffdd15e80c6462c0f11bb3350d9525d45e92bfce5f6888c75ffbfc570",
+    "tests/test_voice_capture_clock.py": "1317aae21d1f56fa2bfbace4be4ee7913b52c69dc89528f60fc453cd884f880c"
+  },
+  "adapterSha256": "245715cb0cf4163742323ac8d974153b257bcaeb89e4821b2462541d3ba8780e",
+  "dtlnDownloads": [
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\dtln_aec_128_1.tflite",
+      "bytes": 1996600,
+      "sha256": "8d241b3a732af8ca140b2e30043e56a6c3c7800c46e22c26f4eea2f70974ad1e",
+      "gitBlob": "5d39fff209ca7d5532023ae9a7404614973a5061",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_128_1.tflite"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\dtln_aec_128_2.tflite",
+      "bytes": 5277012,
+      "sha256": "350bb01a1152ae3cabe09fe5e868ef2f7d8b988a9f22aae44f140195f6493126",
+      "gitBlob": "1e94471399329a9b8d60c322b9b939d7024b05ae",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_128_2.tflite"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\LICENSE",
+      "bytes": 1075,
+      "sha256": "aa95acd8c8a7341bfcdb2823694dcbb27a2a4143e860bb52db1ff0f29c85e5a1",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/LICENSE"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\README.md",
+      "bytes": 2446,
+      "sha256": "54ccc6bc7761f47a8b2ca68bc846f44b0009593715fdde90501147c2ebeaef37",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/README.md"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\run_aec.py",
+      "bytes": 8687,
+      "sha256": "99e4c179b8a2838bb0f257308e24a28a8565d1f93f40546bbdf585f4305dc317",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/run_aec.py"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\ai_edge_litert-2.2.0-cp312-cp312-win_amd64.whl",
+      "bytes": 17914562,
+      "sha256": "86815ff3378ac9fa4bb5548bcede1be7d050bd59a8ebaf1c056b7aef69fedcee",
+      "url": "https://files.pythonhosted.org/packages/32/81/818bc82bad14f176c2ac6a42e28750a87aa7b3732ebcc2c94a617de2f26b/ai_edge_litert-2.2.0-cp312-cp312-win_amd64.whl"
+    }
+  ],
+  "cases": [
+    {
+      "id": "echo221",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\tap221.npz",
+      "sourceSha256": "c6c6e6d8d07727731a749ecfa34b27c4e828e674062749539a4406c3fd789f3d",
+      "human": null,
+      "referenceText": null
+    },
+    {
+      "id": "echo232",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice232-private\\tap232.npz",
+      "sourceSha256": "f3f22d7ba30f8b44a0dd83661151164b11f9539b9d60b7639fad6dad930f8b74",
+      "human": null,
+      "referenceText": null
+    },
+    {
+      "id": "h0-near",
+      "human": 0,
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1001146817223348054.wav",
+      "originalSha256": "861ceedc4d50fbe52fc89b6d0c0fa740b9cd6fa668388e754064847386af0faf",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    {
+      "id": "h0-raw",
+      "human": 0,
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1001146817223348054.wav",
+      "originalSha256": "861ceedc4d50fbe52fc89b6d0c0fa740b9cd6fa668388e754064847386af0faf",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    {
+      "id": "h1-near",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1008205615316519958.wav",
+      "originalSha256": "0576e73da35ef17b6ce6396d31b32830b7ab19cea98f9f5db68de3756dc3d4fc",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    {
+      "id": "h1-raw",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1008205615316519958.wav",
+      "originalSha256": "0576e73da35ef17b6ce6396d31b32830b7ab19cea98f9f5db68de3756dc3d4fc",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    {
+      "id": "h2-near",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-1003119935936341070.wav",
+      "originalSha256": "33aca50159ec2e3cbcc894eb26faa916d6badb1b49fb75994973561540a7f012",
+      "gain": 2.685755280268361,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    {
+      "id": "h2-raw",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-1003119935936341070.wav",
+      "originalSha256": "33aca50159ec2e3cbcc894eb26faa916d6badb1b49fb75994973561540a7f012",
+      "gain": 2.685755280268361,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    {
+      "id": "h3-near",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-10052240106321793346.wav",
+      "originalSha256": "7603cae3294309ef70d234180cefccc3b13865ee525262228a636069b9b62841",
+      "gain": 0.11946231772179287,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    {
+      "id": "h3-raw",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-10052240106321793346.wav",
+      "originalSha256": "7603cae3294309ef70d234180cefccc3b13865ee525262228a636069b9b62841",
+      "gain": 0.11946231772179287,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    }
+  ]
+}

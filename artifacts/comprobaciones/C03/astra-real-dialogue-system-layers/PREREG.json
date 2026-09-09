@@ -1,0 +1,39 @@
+{
+  "cases": [
+    {
+      "id": "t3",
+      "text": "cuál es la capital de francia"
+    },
+    {
+      "id": "t4",
+      "text": "El agua es h2o?"
+    },
+    {
+      "id": "t5",
+      "text": "El aire es h20?"
+    },
+    {
+      "id": "t6",
+      "text": "ahora explicame que es Steam"
+    },
+    {
+      "id": "t11",
+      "text": "no subas el volumen"
+    },
+    {
+      "id": "t20",
+      "text": "no silencies el audio"
+    }
+  ],
+  "variants": [
+    "bare",
+    "identity",
+    "baseline"
+  ],
+  "change": {
+    "before": "Política interna del turno: conocimiento o explicación. ",
+    "after": "Política interna del turno: conocimiento o explicación. Atiende las restricciones negativas sin convertirlas en tareas ni pedir datos para abstenerte. "
+  },
+  "method": "Six consumed real-log cases, standalone chat knowledge/es, same model/cache/sampling and normal guards. Bare removes system messages; identity retains one minimal BAXY identity plus no-unverified-actions constraint; baseline retains existing system/policies. No PC effects or fresh acceptance. Tests whether system/policy layers degrade the actual negative request and knowledge controls.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

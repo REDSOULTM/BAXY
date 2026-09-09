@@ -1,0 +1,216 @@
+[
+  {
+    "id": "positive-but",
+    "selection_correct": true,
+    "knowledge_control": false,
+    "assessment": "Conserva selección y orden; argumentos y ejecución pendientes",
+    "reply": {
+      "type": "turn.result",
+      "id": "positive-but",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    }
+  },
+  {
+    "id": "owner51-resumed",
+    "selection_correct": false,
+    "knowledge_control": false,
+    "assessment": "Falla: error de análisis, aclaración distorsionada o incapacidad no probada",
+    "reply": {
+      "type": "turn.result",
+      "id": "owner51-resumed",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "preserveObjective": false,
+      "question": "",
+      "reply": "No pude aumentar el volumen ni desmutarlo. El sistema no respondió a la solicitud.",
+      "turn_attempts": 2,
+      "turn_recovery": "protocol_fallback",
+      "recovery_attempts": 1,
+      "failure_code": "turn_runtime_failure"
+    }
+  },
+  {
+    "id": "owner44",
+    "selection_correct": true,
+    "knowledge_control": false,
+    "assessment": "Conserva selección y orden; argumentos y ejecución pendientes",
+    "reply": {
+      "type": "turn.result",
+      "id": "owner44",
+      "kind": "action",
+      "operation": "audio.volume",
+      "intentOperations": [
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    }
+  },
+  {
+    "id": "owner46",
+    "selection_correct": false,
+    "knowledge_control": false,
+    "assessment": "Falla: error de análisis, aclaración distorsionada o incapacidad no probada",
+    "reply": {
+      "type": "turn.result",
+      "id": "owner46",
+      "kind": "clarify",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "preserveObjective": false,
+      "question": "¿Te refieres a que quieras que el sonido esté completamente activo y sin silencio, o que se active de forma inmediata sin retraso?",
+      "reply": "",
+      "turn_attempts": 2,
+      "turn_recovery": "semantic_clarification",
+      "recovery_attempts": 1,
+      "failure_code": "turn_runtime_failure"
+    }
+  },
+  {
+    "id": "owner51",
+    "selection_correct": false,
+    "knowledge_control": false,
+    "assessment": "Falla: error de análisis, aclaración distorsionada o incapacidad no probada",
+    "reply": {
+      "type": "turn.result",
+      "id": "owner51",
+      "kind": "clarify",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "preserveObjective": false,
+      "question": "¿Quieres que el volumen esté en el 100% y que el sonido se apague completamente?",
+      "reply": "",
+      "turn_attempts": 2,
+      "turn_recovery": "semantic_clarification",
+      "recovery_attempts": 1,
+      "failure_code": "turn_runtime_failure"
+    }
+  },
+  {
+    "id": "clitic-alone",
+    "selection_correct": true,
+    "knowledge_control": false,
+    "assessment": "Conserva selección y orden; argumentos y ejecución pendientes",
+    "reply": {
+      "type": "turn.result",
+      "id": "clitic-alone",
+      "kind": "action",
+      "operation": "audio.mute",
+      "intentOperations": [
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    }
+  },
+  {
+    "id": "volume-unmute",
+    "selection_correct": true,
+    "knowledge_control": false,
+    "assessment": "Conserva selección y orden; argumentos y ejecución pendientes",
+    "reply": {
+      "type": "turn.result",
+      "id": "volume-unmute",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    }
+  },
+  {
+    "id": "unmute-volume",
+    "selection_correct": true,
+    "knowledge_control": false,
+    "assessment": "Conserva selección y orden; argumentos y ejecución pendientes",
+    "reply": {
+      "type": "turn.result",
+      "id": "unmute-volume",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    }
+  },
+  {
+    "id": "negative-unmute",
+    "selection_correct": true,
+    "knowledge_control": false,
+    "assessment": "Conserva selección y orden; argumentos y ejecución pendientes",
+    "reply": {
+      "type": "turn.result",
+      "id": "negative-unmute",
+      "kind": "action",
+      "operation": "audio.volume",
+      "intentOperations": [
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    }
+  },
+  {
+    "id": "word-meaning",
+    "selection_correct": false,
+    "knowledge_control": true,
+    "assessment": "Definición parcialmente correcta; prosa interna y ofrece control de micrófono no acreditado",
+    "reply": {
+      "type": "turn.result",
+      "id": "word-meaning",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "No se requiere ninguna acción específica para responder a esta pregunta. \"Desmutear\" significa restaurar o activar el estado de sonido de un dispositivo, como el micrófono o la salida de audio, para que pueda captar o emitir sonido nuevamente. Si necesitas que se realice una acción específica como desmutar el micrófono, por ejemplo, puedo ayudarte con eso.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    }
+  }
+]

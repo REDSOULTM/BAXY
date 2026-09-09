@@ -93,3 +93,28 @@ sustituyen por schedulers que duermen: 4 Hz en reposo, 30 Hz durante conversaci�
 y 1 Hz sin render oculto, además de la suspensión nativa. No cambian
 layout, bridge, autoridad, red ni navegación. `dist/` se regeneró de forma
 deliberada con el grafo fijado; los hashes vigentes quedan en `ORIGIN.md`.
+
+## Reapertura de progreso — 2026-09-07
+
+C03 UI102 demuestra que el aviso generado llega antes del final, pero el lector
+lo coloca en el placeholder del input todavía ocupado por la petición. Se mueve
+la etiqueta a una región `role=status` encima del input, usando el mismo estado
+React y su borrado al completar. Se conserva el borrador y se retira su uso como
+placeholder de progreso. No se añade otro lector en el bridge ni otra autoridad.
+Source y dist se regeneran deliberadamente como unidad; el sello se actualiza en
+ORIGIN.md y MainWindowShellContractTests. La comprobación física antes/después y
+sus límites se conservan en los informes UI102 y tramo103 de C03.
+
+## Reapertura de error de composición — 2026-09-07
+
+C03 UI107 observa un fallo total real del servidor: la cola agota sus intentos,
+pero el grafo vuelve a Idle y la actividad muestra un código interno. El estado
+tipado `error` proyecta HasCompositionError desde la App y se conserva también
+al conectar el lector; la cola pendiente proyecta thinking sin bloquear entrada.
+El lector React existente consume state sin añadir otro canal o autoridad.
+Error/Response error son etiquetas de estado de interfaz, no una respuesta de
+BAXY ni una explicación generada. El diagnóstico composition_failed conserva
+causa/ruta en su evento tipado y deja de duplicarse como texto de conversación.
+Una región alert persistente identifica el error sin mover foco; se conserva
+la posibilidad de una nueva petición. No se reejecutan efectos automáticamente.
+Source/dist y sello se regeneran deliberadamente; ORIGIN registra las huellas.

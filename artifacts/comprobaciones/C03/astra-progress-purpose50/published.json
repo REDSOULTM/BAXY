@@ -1,0 +1,22 @@
+[
+  {
+    "text": "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "answer": "La hora es 14:30, el audio está en curso y el uso de CPU es del 45%."
+  },
+  {
+    "text": "Dime la hora y el estado del audio.",
+    "answer": "La hora no está disponible, pero el audio está en progreso."
+  },
+  {
+    "text": "Tell me the time and the volume.",
+    "answer": "Still working."
+  },
+  {
+    "text": "What time is it y cómo está el audio?",
+    "answer": "No sé la hora ni el estado del audio, sigue en progreso."
+  },
+  {
+    "text": "Dime la hora y revisa la CPU",
+    "answer": "Sigo, la CPU está en proceso."
+  }
+]

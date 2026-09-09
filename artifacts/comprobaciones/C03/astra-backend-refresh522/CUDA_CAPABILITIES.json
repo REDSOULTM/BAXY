@@ -1,0 +1,18 @@
+{
+  "url": "https://raw.githubusercontent.com/ggml-org/llama.cpp/f3f1a8f2760f28325a5ec20c05b171e5b7c83a29/ggml/src/ggml-cuda/ggml-cuda.cu",
+  "source_sha256": "adaf10ac4e23e73678d56aaddc9ba03adc45aeec43ce53a733159917a45bafbb",
+  "hits": [
+    {
+      "line": 5035,
+      "context": [
+        "        /* .host_buffer           = */ host_buffer,",
+        "        /* .buffer_from_host_ptr  = */ false,",
+        "        /* .events                = */ events,",
+        "        /* .mmap_support          = */ props->type != GGML_BACKEND_DEVICE_TYPE_IGPU,",
+        "    };",
+        "}",
+        ""
+      ]
+    }
+  ]
+}

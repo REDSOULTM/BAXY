@@ -1,0 +1,14 @@
+Exception in thread Thread-3 (guard):
+Traceback (most recent call last):
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-native-compose-profile525.py", line 68, in guard
+    if gpu.peak_mib>3800:violations.append('gpu_stop')
+       ^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'
+completed stored-name-en
+completed stored-name-es
+completed memory-capability-disabled
+9 native writer requests collected; adjudication pending.

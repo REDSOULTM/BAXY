@@ -465,6 +465,13 @@ public sealed class MemoryOperationProtectionTests
     [TestCase("no", "Cancel")]
     [TestCase("cancelar", "Cancel")]
     [TestCase("never mind", "Cancel")]
+    [TestCase("cancel that", "Cancel")]
+    [TestCase("Cancel it!", "Cancel")]
+    [TestCase("cancela eso", "Cancel")]
+    [TestCase("cancelar eso.", "Cancel")]
+    [TestCase("cancel that and delete the file", "Invalid")]
+    [TestCase("cancela eso y abre Paint", "Invalid")]
+    [TestCase("cancel the download", "Invalid")]
     [TestCase("yes and export it", "Invalid")]
     [TestCase("maybe", "Invalid")]
     public void ConfirmationReplyIsStandaloneAndFinite(string text, string expected)

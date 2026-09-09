@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-history-ablation.py", line 37, in <module>
+    client=LlmRuntime(); gpu=ProcessTreeGpuSampler(os.getpid()); ram=RamSampler(os.getpid()); gpu.start();ram.start();started=time.monotonic()
+           ^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 4652, in __init__
+    raise FileNotFoundError(f"llama-server no encontrado: {server}")
+FileNotFoundError: llama-server no encontrado: None

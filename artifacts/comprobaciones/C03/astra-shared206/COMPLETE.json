@@ -1,0 +1,24 @@
+{
+  "readings": 94,
+  "identical": 94,
+  "rejections": [
+    {
+      "method": "greedy_search",
+      "hotwords": true,
+      "error": "Greedy NeMo decoder cannot use hotwords"
+    },
+    {
+      "method": "unknown_decoder",
+      "hotwords": false,
+      "error": "Unsupported per-stream NeMo decoder"
+    }
+  ],
+  "mixedBatchTexts": [
+    "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    ""
+  ],
+  "buildSeconds": 2.7660000000032596,
+  "rssMiB": 985.8671875,
+  "incrementRssMiB": 932.83203125,
+  "runtimeUnchanged": true
+}

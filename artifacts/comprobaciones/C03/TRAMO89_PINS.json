@@ -1,0 +1,9 @@
+{
+  "scope": "Development context and negation evidence; not acceptance",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_RECUPERACION86_89_91.md": "a724aa4783abd413ef43431ce21f967751c6e5ab5754eca25e70fe66b831b2e9",
+    "artifacts/comprobaciones/C03/astra-context89/PREREG.json": "8a94673f9e934bcd60b32c66e9a8a65d520caa96e450f08998cd95bb1e11e934",
+    "artifacts/comprobaciones/C03/astra-context89/RESULT.json": "c9fa360f1cf415a0104933a972bf83fdc47beeea0e4fd3083f77a3b2439ac1e3",
+    "artifacts/comprobaciones/C03/astra-context89/posts.jsonl": "5d5cafb34e117831213e8287027763d0d6e480c790a31a19760e9b49c54ee7e7"
+  }
+}

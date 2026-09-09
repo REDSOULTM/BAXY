@@ -1,0 +1,449 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "Son las 08:25.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "cfff472a1c5c64d0804cf6b091011f640f97f70f1eb2e0cfd7d37c87576c48de",
+        "payload": {
+          "clock": "08:25"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:25:59.3252355+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es las ocho y veinticinco."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "19e2c75e577592b39f48e6664766d7454796976bf5493e342c52435dd5456d64",
+        "payload": {
+          "clock": "08:25"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:25:59.3252355+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 08:25."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Dime la hora y el estado del audio.",
+    "terminal": "published_final",
+    "final": "La hora local es 08:26. El audio está muteado con nivel de volumen en 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 75,
+        "draft_sha256": "613b7604ccad719b361326d9d567a61cfdc53b4e2dc3eb15efddda8c171042f0",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:26",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:26:07.6837140+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:26:07.6837140+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 08:26. El audio está muteado con nivel de volumen en 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 08:26.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "0e3cf06826f48e3d8062bcb80528d3ae15083668a15c589e37c68ed6f969f030",
+        "payload": {
+          "clock": "08:26"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:26:13.4791747+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 08:26."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Tell me the time and the volume.",
+    "terminal": "published_final",
+    "final": "The local clock is 08:26. The volume level is 100. Mute is set to true.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 71,
+        "draft_sha256": "a2a850a08f805c47d5ed7822bd23348a1cccedf746928f9bff0c28bc01ae20f5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:26",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:26:14.3254386+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:26:14.3254386+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "The local clock is 08:26. The volume level is 100. Mute is set to true."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "It's 08:26. The clock shows 08:26.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 34,
+        "draft_sha256": "d889c585988e30c2ff070e4b3016404bd218b2c6e5d2e684d9df07e288617eef",
+        "payload": {
+          "clock": "08:26"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:26:15.9359613+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 08:26. The clock shows 08:26."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What time is it y cómo está el audio?",
+    "terminal": "published_final",
+    "final": "La hora local es 08:26. El audio está muteado al nivel 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 60,
+        "draft_sha256": "48f472e514902065463d53bdefdc70391bd5ae8640058a6b2cb0feec032965c5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:26",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:26:17.1751443+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:26:17.1751443+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 08:26. El audio está muteado al nivel 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "Hey, ¿qué tal? Bien, ¿cómo estás?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "mixed_language_needs_review": false,
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 38,
+        "draft_sha256": "3230123821fdc78baeb2ad725796f560e55d786949eca6b2115406175a517c9d",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, ¿qué tal? Bien, ¿cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "published_final",
+    "final": "Encryption is like a secret code that makes your data safe. When you send something, it turns into a jumble of letters and numbers that only the right person can unscramble. It's like a lock that keeps your messages hidden from anyone who shouldn't see them.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "machine_slot_ask",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 258,
+        "draft_sha256": "db49426d417570e8fb2d5b1fa344b4235f913b8f4f8eb5f17cdd4d592477f030",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption is like a secret code that makes your data safe. When you send something, it turns into a jumble of letters and numbers that only the right person can unscramble. It's like a lock that keeps your messages hidden from anyone who shouldn't see them."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es un duplicado de tus datos para protegerlos en caso de pérdida o daño. Es como tener un respaldo, pero no es el mismo que el original.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 197,
+        "draft_sha256": "61c17ca5338d580c4a92c9f23bbfbf1858e7885ae0027722935583dbade2da66",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Una copia de seguridad es un **backup** de tus datos, que te permite recuperar información en caso de pérdida o daño. Es como tener un **mirror** de tu contenido en otro lugar, por si algo pasa."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 161,
+        "draft_sha256": "34a8d119ea18e20010bcb3a57fb0be5e43d7f589c94aab682d51686925b04795",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Una copia de seguridad es un duplicado de tus datos para protegerlos en caso de pérdida o daño. Es como tener un respaldo, pero no es el mismo que el original."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "Explain gravity, pero sin tecnicismos",
+    "terminal": "published_final",
+    "final": "¿Cuál es el título del tema a resolver?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t11",
+    "request": "no abras Paint",
+    "terminal": "published_final",
+    "final": "No abriré Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "71ea952a0ab66f6e5bfefa424865bfb9fbb012012975edfd991e7a3c86c50b05",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abriré Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "La capital de Perú es Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

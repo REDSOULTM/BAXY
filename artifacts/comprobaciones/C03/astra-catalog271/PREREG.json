@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-07T23:34:15.703723+00:00",
+  "hypothesis": "Native selector can retain app.open when the retrieval omission is removed.",
+  "method": "Exact UI263 HTTP5 before/after; replace only last candidate with authenticated app.open, retaining28 tools. Same history, current literal, system, sampling and backend. Diagnostic oracle intervention, NOT a deployable retrieval algorithm.",
+  "criteria": "After selects only app.open; before reproduces no selection. No operation executes.",
+  "catalogSha256": "7e062d540823fc261c3367d6ba7e982619e5d90ae61209b39c3159fe48293e97",
+  "wireSha256": "3cf84b699dc30eb8a828bdc534db4e155bf92c4df1612c3bbc553af48ea77812",
+  "replacedTool": "baxy_task__reopen",
+  "backend": "http://127.0.0.1:57485",
+  "backendPid": 89232,
+  "limits": "Development case; no argument grounding, UI or acceptance claim."
+}

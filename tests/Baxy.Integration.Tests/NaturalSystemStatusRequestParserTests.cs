@@ -6,6 +6,18 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class NaturalSystemStatusRequestParserTests
 {
+    [TestCase("Dime la hora, please, en spanglish", true)]
+    [TestCase("Tell me the time in Spanish.", true)]
+    [TestCase("Dime la hora en inglés", true)]
+    [TestCase("What time is it in spanglish?", true)]
+    [TestCase("Explica qué es un reloj en spanglish", false)]
+    [TestCase("Translate what time is it to Spanish", false)]
+    [TestCase("Tell me the time in London", false)]
+    public void ResponseLanguageDoesNotReplaceTheClockRequest(string text, bool expected)
+    {
+        Assert.That(NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text), Is.EqualTo(expected));
+    }
+
     [TestCase("qué hora es")]
     [TestCase("¿Qué hora es ahora?")]
     [TestCase("dime la hora actual")]

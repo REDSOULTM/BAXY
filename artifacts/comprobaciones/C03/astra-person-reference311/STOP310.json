@@ -1,0 +1,85 @@
+{
+  "snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui310-snapshot311",
+  "owned": [
+    {
+      "pid": 102648,
+      "createTime": 1788832445.9449587,
+      "exe": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe"
+    },
+    {
+      "pid": 32476,
+      "createTime": 1788832447.618122,
+      "exe": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe"
+    },
+    {
+      "pid": 107744,
+      "createTime": 1788832447.7650466,
+      "exe": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe"
+    },
+    {
+      "pid": 104764,
+      "createTime": 1788832459.1323173,
+      "exe": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe"
+    },
+    {
+      "pid": 66100,
+      "createTime": 1788832459.155396,
+      "exe": "C:\\Windows\\System32\\conhost.exe"
+    },
+    {
+      "pid": 47656,
+      "createTime": 1788832459.1926336,
+      "exe": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "pid": 75204,
+      "createTime": 1788832463.9010623,
+      "exe": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe"
+    },
+    {
+      "pid": 58088,
+      "createTime": 1788832466.900192,
+      "exe": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe"
+    },
+    {
+      "pid": 113168,
+      "createTime": 1788832466.92004,
+      "exe": "C:\\Windows\\System32\\conhost.exe"
+    },
+    {
+      "pid": 63508,
+      "createTime": 1788832466.9644887,
+      "exe": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "pid": 61528,
+      "createTime": 1788832447.846372,
+      "exe": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe"
+    },
+    {
+      "pid": 52944,
+      "createTime": 1788832448.3202865,
+      "exe": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe"
+    },
+    {
+      "pid": 44656,
+      "createTime": 1788832448.3487744,
+      "exe": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe"
+    },
+    {
+      "pid": 116244,
+      "createTime": 1788832448.4125073,
+      "exe": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe"
+    },
+    {
+      "pid": 76564,
+      "createTime": 1788832448.5912013,
+      "exe": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe"
+    },
+    {
+      "pid": 72548,
+      "createTime": 1788832447.6452196,
+      "exe": "C:\\Windows\\System32\\conhost.exe"
+    }
+  ]
+}

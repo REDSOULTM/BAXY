@@ -1,0 +1,290 @@
+[
+  {
+    "output": 1,
+    "channel": "microphone",
+    "samples": [
+      533352,
+      642364
+    ],
+    "speakingSeconds": 4.813256025314331,
+    "normalized": false,
+    "peak": 0.056365966796875,
+    "rms": 0.0048997048288583755,
+    "activityRms001SecondsInWindow": [
+      2.16,
+      5.54
+    ],
+    "text": "Hola, aquí Paxi. ¿En qué te puedo ayudar hoy?",
+    "decodeSeconds": 0.46899999999732245
+  },
+  {
+    "output": 1,
+    "channel": "microphone",
+    "samples": [
+      533352,
+      642364
+    ],
+    "speakingSeconds": 4.813256025314331,
+    "normalized": true,
+    "peak": 0.056365966796875,
+    "rms": 0.0048997048288583755,
+    "activityRms001SecondsInWindow": [
+      2.16,
+      5.54
+    ],
+    "text": "Hola, aquí Baxi. ¿En qué te puedo ayudar hoy?",
+    "decodeSeconds": 0.4380000000091968
+  },
+  {
+    "output": 1,
+    "channel": "loopback",
+    "samples": [
+      534381,
+      643393
+    ],
+    "speakingSeconds": 4.813256025314331,
+    "normalized": false,
+    "peak": 0.12680169939994812,
+    "rms": 0.024396779015660286,
+    "activityRms001SecondsInWindow": [
+      2.12,
+      5.5600000000000005
+    ],
+    "text": "Hola, aquí Baxi. ¿En qué te puedo ayudar hoy?",
+    "decodeSeconds": 0.40699999999196734
+  },
+  {
+    "output": 1,
+    "channel": "loopback",
+    "samples": [
+      534381,
+      643393
+    ],
+    "speakingSeconds": 4.813256025314331,
+    "normalized": true,
+    "peak": 0.12680169939994812,
+    "rms": 0.024396779015660286,
+    "activityRms001SecondsInWindow": [
+      2.12,
+      5.5600000000000005
+    ],
+    "text": "Hola, aquí Baxi. ¿En qué te puedo ayud hoy?",
+    "decodeSeconds": 0.46900000001187436
+  },
+  {
+    "output": 2,
+    "channel": "microphone",
+    "samples": [
+      725071,
+      809002
+    ],
+    "speakingSeconds": 3.2456979751586914,
+    "normalized": false,
+    "peak": 0.043121337890625,
+    "rms": 0.0031100416090339422,
+    "activityRms001SecondsInWindow": [
+      2.3000000000000003,
+      3.96
+    ],
+    "text": "Son las diez cincuenta y cinco.",
+    "decodeSeconds": 0.4220000000059372
+  },
+  {
+    "output": 2,
+    "channel": "microphone",
+    "samples": [
+      725071,
+      809002
+    ],
+    "speakingSeconds": 3.2456979751586914,
+    "normalized": true,
+    "peak": 0.043121337890625,
+    "rms": 0.0031100416090339422,
+    "activityRms001SecondsInWindow": [
+      2.3000000000000003,
+      3.96
+    ],
+    "text": "Son las diez.",
+    "decodeSeconds": 0.34299999999348074
+  },
+  {
+    "output": 2,
+    "channel": "loopback",
+    "samples": [
+      726100,
+      810031
+    ],
+    "speakingSeconds": 3.2456979751586914,
+    "normalized": false,
+    "peak": 0.12427100539207458,
+    "rms": 0.02352028712630272,
+    "activityRms001SecondsInWindow": [
+      2.24,
+      3.98
+    ],
+    "text": "Son las diez.",
+    "decodeSeconds": 0.40600000000267755
+  },
+  {
+    "output": 2,
+    "channel": "loopback",
+    "samples": [
+      726100,
+      810031
+    ],
+    "speakingSeconds": 3.2456979751586914,
+    "normalized": true,
+    "peak": 0.12427100539207458,
+    "rms": 0.02352028712630272,
+    "activityRms001SecondsInWindow": [
+      2.24,
+      3.98
+    ],
+    "text": "Son las diez.",
+    "decodeSeconds": 0.3899999999994179
+  },
+  {
+    "output": 3,
+    "channel": "microphone",
+    "samples": [
+      873786,
+      950401
+    ],
+    "speakingSeconds": 2.7884469032287598,
+    "normalized": false,
+    "peak": 0.041107177734375,
+    "rms": 0.0026220253203064203,
+    "activityRms001SecondsInWindow": [
+      2.16,
+      3.58
+    ],
+    "text": "",
+    "decodeSeconds": 0.375
+  },
+  {
+    "output": 3,
+    "channel": "microphone",
+    "samples": [
+      873786,
+      950401
+    ],
+    "speakingSeconds": 2.7884469032287598,
+    "normalized": true,
+    "peak": 0.041107177734375,
+    "rms": 0.0026220253203064203,
+    "activityRms001SecondsInWindow": [
+      2.16,
+      3.58
+    ],
+    "text": "",
+    "decodeSeconds": 0.40600000000267755
+  },
+  {
+    "output": 3,
+    "channel": "loopback",
+    "samples": [
+      874814,
+      951430
+    ],
+    "speakingSeconds": 2.7884469032287598,
+    "normalized": false,
+    "peak": 0.12478035688400269,
+    "rms": 0.013665162026882172,
+    "activityRms001SecondsInWindow": [
+      2.1,
+      3.56
+    ],
+    "text": "It is ten.",
+    "decodeSeconds": 0.40600000000267755
+  },
+  {
+    "output": 3,
+    "channel": "loopback",
+    "samples": [
+      874814,
+      951430
+    ],
+    "speakingSeconds": 2.7884469032287598,
+    "normalized": true,
+    "peak": 0.12478035688400269,
+    "rms": 0.013665162026882172,
+    "activityRms001SecondsInWindow": [
+      2.1,
+      3.56
+    ],
+    "text": "It is ten.",
+    "decodeSeconds": 0.375
+  },
+  {
+    "output": 4,
+    "channel": "microphone",
+    "samples": [
+      1032678,
+      1112786
+    ],
+    "speakingSeconds": 3.006775140762329,
+    "normalized": false,
+    "peak": 0.033660888671875,
+    "rms": 0.0028432102408260107,
+    "activityRms001SecondsInWindow": [
+      2.2,
+      3.7600000000000002
+    ],
+    "text": "Son las diez cincuenta y seis.",
+    "decodeSeconds": 0.375
+  },
+  {
+    "output": 4,
+    "channel": "microphone",
+    "samples": [
+      1032678,
+      1112786
+    ],
+    "speakingSeconds": 3.006775140762329,
+    "normalized": true,
+    "peak": 0.033660888671875,
+    "rms": 0.0028432102408260107,
+    "activityRms001SecondsInWindow": [
+      2.2,
+      3.7600000000000002
+    ],
+    "text": "Son las diez cincuenta y seis.",
+    "decodeSeconds": 0.34300000000803266
+  },
+  {
+    "output": 4,
+    "channel": "loopback",
+    "samples": [
+      1033707,
+      1113815
+    ],
+    "speakingSeconds": 3.006775140762329,
+    "normalized": false,
+    "peak": 0.12464160472154617,
+    "rms": 0.022484371438622475,
+    "activityRms001SecondsInWindow": [
+      2.14,
+      3.8000000000000003
+    ],
+    "text": "Son las diez.",
+    "decodeSeconds": 0.375
+  },
+  {
+    "output": 4,
+    "channel": "loopback",
+    "samples": [
+      1033707,
+      1113815
+    ],
+    "speakingSeconds": 3.006775140762329,
+    "normalized": true,
+    "peak": 0.12464160472154617,
+    "rms": 0.022484371438622475,
+    "activityRms001SecondsInWindow": [
+      2.14,
+      3.8000000000000003
+    ],
+    "text": "Son las diez.",
+    "decodeSeconds": 0.3899999999994179
+  }
+]

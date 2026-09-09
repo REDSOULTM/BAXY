@@ -1,0 +1,978 @@
+[
+  {
+    "request": "El agua es h2o?",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "El agua es h2o?",
+          "ts": "21:01:46"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739306610,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739308609,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739309610,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739311610,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno.",
+          "ts": "21:01:51",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739311767,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "El aire es h20?",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "El aire es h20?",
+          "ts": "21:01:51"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739311825,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739312826,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739314826,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739316826,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire.",
+          "ts": "21:01:57",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739317337,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "ahora explicame que es Steam",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "Steam es una plataforma de distribución y comercio de juegos online, creada por Valve, donde puedes comprar, descargar, jugar y gestionar juegos, así como acceder a contenido adicional como mods, música y aplicaciones.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "ahora explicame que es Steam",
+          "ts": "21:01:57"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739317387,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739319388,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739321387,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739323387,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "Steam es una plataforma de distribución y comercio de juegos online, creada por Valve, donde puedes comprar, descargar, jugar y gestionar juegos, así como acceder a contenido adicional como mods, música y aplicaciones.",
+          "ts": "21:02:05",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739325137,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What is an SSID?",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "An SSID is the name of a Wi-Fi network that devices connect to when joining the internet.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "What is an SSID?",
+          "ts": "21:02:05"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739325161,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "An SSID is the name of a Wi-Fi network that devices connect to when joining the internet.",
+          "ts": "21:02:06",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739326111,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿y para qué sirve?",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "¿De qué cosa quieres saber el propósito?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "¿y para qué sirve?",
+          "ts": "21:02:06"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739326122,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739328122,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739330121,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "¿De qué cosa quieres saber el propósito?",
+          "ts": "21:02:10",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739330712,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "SSID",
+        "published": true,
+        "draft_bytes": 43,
+        "draft_sha256": "6c35e2e7c841a3fef3a32131762fd66106b235b2ed9587940a5d8163d4d293f9",
+        "payload": {
+          "kind": "clarification",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"clarification\",\"polarity\":\"pending\",\"cause\":\"ambiguous_request\"}",
+        "draft": "¿De qué cosa quieres saber el propósito?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "define DNS",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "published_final",
+    "final": "DNS es un sistema que convierte nombres de dominio en direcciones IP para que los dispositivos puedan comunicarse en internet.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "define DNS",
+          "ts": "21:02:10"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739330765,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739330765,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739331766,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "BAXY",
+          "msg": "DNS es un sistema que convierte nombres de dominio en direcciones IP para que los dispositivos puedan comunicarse en internet.",
+          "ts": "21:02:13",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739333271,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739333271,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 157,
+        "draft_sha256": "13d8f3794de5c984c9dffe8f8855037355319f631463804f504f789daf5d058c",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "El DNS es un sistema que traduce nombres de dominio, como www.google.com, en direcciones IP que el ordenador puede entender y usar para acceder a sitios web."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 126,
+        "draft_sha256": "bfa1e1b6f0a1b76bbcdd3f56e4fc008ac6986392848293dcb8c4ce24393339ac",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS es un sistema que convierte nombres de dominio en direcciones IP para que los dispositivos puedan comunicarse en internet."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 13,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": "internal_code"
+    }
+  },
+  {
+    "request": "explain what DNS does",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "I explain what DNS does by translating domain names into IP addresses so devices can find and connect to websites.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "explain what DNS does",
+          "ts": "21:02:13"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739333323,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739334324,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "I explain what DNS does by translating domain names into IP addresses so devices can find and connect to websites.",
+          "ts": "21:02:15",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739335855,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788739335855,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 127,
+        "draft_sha256": "438a2ef3858d00878152c1eb08157a3b0cfa0c41b89af8e1c11958e3e28cd43d",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS translates domain names (like www.example.com) into IP addresses that computers use to identify each other on the internet."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 124,
+        "draft_sha256": "4d8056d2cdf9ee78af8b3719b89d541bb870a3f06968d0c4fd28ed3ed10a1c04",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS translates domain names (like www.example.com) into IP addresses that computers use to identify and connect to websites."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 114,
+        "draft_sha256": "ba00d18a89831561fc9c48c236059aefae584fa3465ef1ee3e1fbcfb6ad14f99",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I explain what DNS does by translating domain names into IP addresses so devices can find and connect to websites."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 15,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": "internal_code"
+    }
+  }
+]

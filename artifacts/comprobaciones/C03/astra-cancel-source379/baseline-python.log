@@ -1,0 +1,88 @@
+FFFF.                                                                    [100%]
+================================== FAILURES ===================================
+___ test_memory_cancellation_retains_the_withdrawn_operation[memory.enable] ___
+
+operation = 'memory.enable'
+
+    @pytest.mark.parametrize("operation", [
+        "memory.enable", "memory.forget", "memory.export", "memory.sensitive.save",
+    ])
+    def test_memory_cancellation_retains_the_withdrawn_operation(operation: str) -> None:
+        action = {"operation": operation, "target": "private local memory"}
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "memory_cancelled",
+            "cancelledAction": action,
+        }, "en", "cancel")
+>       assert payload["outcome"] == "cancelled"
+E       AssertionError: assert 'completed' == 'cancelled'
+E         
+E         - cancelled
+E         + completed
+
+tests\test_compose_contract.py:41: AssertionError
+___ test_memory_cancellation_retains_the_withdrawn_operation[memory.forget] ___
+
+operation = 'memory.forget'
+
+    @pytest.mark.parametrize("operation", [
+        "memory.enable", "memory.forget", "memory.export", "memory.sensitive.save",
+    ])
+    def test_memory_cancellation_retains_the_withdrawn_operation(operation: str) -> None:
+        action = {"operation": operation, "target": "private local memory"}
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "memory_cancelled",
+            "cancelledAction": action,
+        }, "en", "cancel")
+>       assert payload["outcome"] == "cancelled"
+E       AssertionError: assert 'completed' == 'cancelled'
+E         
+E         - cancelled
+E         + completed
+
+tests\test_compose_contract.py:41: AssertionError
+___ test_memory_cancellation_retains_the_withdrawn_operation[memory.export] ___
+
+operation = 'memory.export'
+
+    @pytest.mark.parametrize("operation", [
+        "memory.enable", "memory.forget", "memory.export", "memory.sensitive.save",
+    ])
+    def test_memory_cancellation_retains_the_withdrawn_operation(operation: str) -> None:
+        action = {"operation": operation, "target": "private local memory"}
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "memory_cancelled",
+            "cancelledAction": action,
+        }, "en", "cancel")
+>       assert payload["outcome"] == "cancelled"
+E       AssertionError: assert 'completed' == 'cancelled'
+E         
+E         - cancelled
+E         + completed
+
+tests\test_compose_contract.py:41: AssertionError
+_ test_memory_cancellation_retains_the_withdrawn_operation[memory.sensitive.save] _
+
+operation = 'memory.sensitive.save'
+
+    @pytest.mark.parametrize("operation", [
+        "memory.enable", "memory.forget", "memory.export", "memory.sensitive.save",
+    ])
+    def test_memory_cancellation_retains_the_withdrawn_operation(operation: str) -> None:
+        action = {"operation": operation, "target": "private local memory"}
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "memory_cancelled",
+            "cancelledAction": action,
+        }, "en", "cancel")
+>       assert payload["outcome"] == "cancelled"
+E       AssertionError: assert 'completed' == 'cancelled'
+E         
+E         - cancelled
+E         + completed
+
+tests\test_compose_contract.py:41: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_memory_cancellation_retains_the_withdrawn_operation[memory.enable]
+FAILED tests/test_compose_contract.py::test_memory_cancellation_retains_the_withdrawn_operation[memory.forget]
+FAILED tests/test_compose_contract.py::test_memory_cancellation_retains_the_withdrawn_operation[memory.export]
+FAILED tests/test_compose_contract.py::test_memory_cancellation_retains_the_withdrawn_operation[memory.sensitive.save]
+4 failed, 1 passed, 96 deselected in 0.56s

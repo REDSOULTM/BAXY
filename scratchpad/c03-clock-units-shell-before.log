@@ -1,0 +1,51 @@
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error ObservedClockAcceptsNamedUnitsWithoutChangingTheTime("Son las 07 horas y 58 minutos.",True) [186 ms]
+  Mensaje de error:
+     Assert.That(defect, valid ? Is.Null : Is.Not.Null)
+  Expected: null
+  But was:  "missing_literal_fact"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(String answer, Boolean valid) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 348
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(String answer, Boolean valid) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 348
+
+
+  Con error ObservedClockAcceptsNamedUnitsWithoutChangingTheTime("It is 07 hours and 58 minutes.",True) [2 ms]
+  Mensaje de error:
+     Assert.That(defect, valid ? Is.Null : Is.Not.Null)
+  Expected: null
+  But was:  "missing_literal_fact"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(String answer, Boolean valid) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 348
+   at InvokeStub_PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(String answer, Boolean valid) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 348
+   at InvokeStub_PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(Object, Span`1)
+
+
+  Con error ObservedClockAcceptsNamedUnitsWithoutChangingTheTime("Son las 07:58, o las 08 horas y 58 minutos.",False) [45 ms]
+  Mensaje de error:
+     Assert.That(defect, valid ? Is.Null : Is.Not.Null)
+  Expected: not null
+  But was:  null
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(String answer, Boolean valid) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 348
+   at InvokeStub_PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(String answer, Boolean valid) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 348
+   at InvokeStub_PlannerAppBoundaryTests.ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(Object, Span`1)
+
+
+
+Con error! - Con error:     3, Superado:     2, Omitido:     0, Total:     5, Duración: 239 ms - Baxy.Integration.Tests.dll (net10.0)

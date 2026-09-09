@@ -1,0 +1,6 @@
+{"id": 1, "arm": "current", "response": null, "error": "TimeoutError: timed out", "seconds": 38.031}
+{"id": 2, "arm": "current", "response": "Es cuarenta y tres.", "error": null, "seconds": 18.344}
+{"id": 3, "arm": "current", "response": "Fourteen times six is eighty-four.", "error": null, "seconds": 18.563}
+{"id": 4, "arm": "current", "response": null, "error": "TimeoutError: timed out", "seconds": 38.015}
+{"id": 5, "arm": "current", "response": null, "error": "TimeoutError: timed out", "seconds": 38.031}
+{"id": 6, "arm": "current", "response": null, "error": "TimeoutError: timed out", "seconds": 38.032}

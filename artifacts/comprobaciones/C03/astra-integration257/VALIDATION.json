@@ -1,0 +1,54 @@
+{
+  "pytest": {
+    "ownerPass": 138,
+    "additionalPass": 33,
+    "totalPass": 171,
+    "skips": 0,
+    "secondsEach": [
+      6.18,
+      6.18
+    ]
+  },
+  "fast": {
+    "passed": true,
+    "releaseSeconds": 3.3,
+    "warnings": 0,
+    "errors": 0
+  },
+  "dspParity": {
+    "cases": 12,
+    "frames": 13433,
+    "impulsePeaks": [
+      8256,
+      8256,
+      8256
+    ],
+    "allExact": true,
+    "wheelSha256": "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb",
+    "limitation": "Installed source257 AEC owner parity; actual capture/ASR/UI/physical validation still needed. C03 stays active with all acceptance requirements."
+  },
+  "captureAsrParity": {
+    "timelines": 11,
+    "fixedHumanWindowsReused": 8,
+    "segmentsDecoded": 9,
+    "allExactlyMatch253": true,
+    "exitCode": 0
+  },
+  "physical": {
+    "frames": 1315,
+    "seconds": 42.08,
+    "tts": 4,
+    "falseInterruptions": 0,
+    "transcripts": 0,
+    "volumeRestored": true,
+    "workersClosed": true
+  },
+  "terminalHandles": {
+    "96205": 0,
+    "12196": 0,
+    "59049": 0
+  },
+  "activeOwnProcesses": [],
+  "fullRun": false,
+  "remaining": "C03 all eight routes, fresh100/100, faults/recovery, real UI/voice/LLM/resources, runtime promotion/installation, C04-C09 continuity, finalFull/publication outside main."
+}

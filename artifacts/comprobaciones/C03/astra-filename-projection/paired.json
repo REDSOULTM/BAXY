@@ -1,0 +1,440 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio",
+    "terminal": "published_final",
+    "final": "No puedo borrar el archivo C03-Prueba-Respuesta-20260906.txt porque la solicitud es ambigua.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "22b1b1b01accd9f2cfff7bd37ce0b68e54fe975047d1aa3af5c7a64eb8ab9da9",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Borro el archivo C03-Prueba-Respuesta-20260906.txt del escritorio."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "cc29a453088581c15f02d71342e4f20084177744f621d2c11b6759efbab5641c",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Borré el archivo C03-Prueba-Respuesta-20260906.txt del escritorio."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 141,
+        "draft_sha256": "48bb65a8b54ca5f50010458d1bfddede8d29129cda108cfd4b8d48cd94456952",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Borrar el archivo C03-Prueba-Respuesta-20260906.txt del escritorio no tiene sentido porque no se especifica con claridad qué se desea hacer."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "22b1b1b01accd9f2cfff7bd37ce0b68e54fe975047d1aa3af5c7a64eb8ab9da9",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Borro el archivo C03-Prueba-Respuesta-20260906.txt del escritorio."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 55,
+        "draft_sha256": "172f81ef932ad3947db7c0edc29ad16cdde64f491176be2ec647fa4bae576c0d",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "El archivo no se borra porque la solicitud no es clara."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 106,
+        "draft_sha256": "cea018f0dbb941cc59b065e020a41249503e994f4aba5c455c949f83bb43cc51",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Borrar el archivo C03-Prueba-Respuesta-20260906.txt del escritorio falla porque la solicitud no era clara."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "22b1b1b01accd9f2cfff7bd37ce0b68e54fe975047d1aa3af5c7a64eb8ab9da9",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Borro el archivo C03-Prueba-Respuesta-20260906.txt del escritorio."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 92,
+        "draft_sha256": "1c422cff9c17ba2d10d247db0826184b2323153ad8b9f35f24627d1674ee2ec0",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo borrar el archivo C03-Prueba-Respuesta-20260906.txt porque la solicitud es ambigua."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "No puedo procesar la solicitud por falta de claridad.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 101,
+        "draft_sha256": "9f7958503c970e2c00d7560d95b8b55d395cb3c72ba38b05aaf8dac1878a149a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo cancelar porque la solicitud no es clara. Por favor, dime exactamente qué quieres que haga."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 59,
+        "draft_sha256": "60d76f4a5b0facd652a0bab3e2ed68a07ab33a901757588106f943b1d1068459",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No se puede cancelar por falta de claridad en la solicitud."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 54,
+        "draft_sha256": "adaa44d1cc367356e005f62e2ce2f02319887ae163d0075183d78cd3f7ca02c9",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo continuar porque la solicitud no está clara."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 102,
+        "draft_sha256": "4cdcfb87e19075b30b106a5a640c47bf538603d328c2b82d19f768d9c102381e",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo ayudarte si la solicitud está sin claridad. Por favor, especifica mejor lo que deseas hacer."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "5fa3cf4c411c2f7727cb67bbf5098ea6f80938071db695f22f6f9f27deaec6d4",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo cancelar porque la solicitud no está clara."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "5fa3cf4c411c2f7727cb67bbf5098ea6f80938071db695f22f6f9f27deaec6d4",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo cancelar porque la solicitud no está clara."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 95,
+        "draft_sha256": "4b6877a019b312cb93be4f3273086517dc5c5c9ac15da6c6cfe3f4762c3d64cc",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo ayudar si el pedido no está claro. Por favor, especifica mejor qué quieres cancelar."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 53,
+        "draft_sha256": "47fea90a6578812b4f48876fe60a194212b0e0a9508b37f192db4d7807411927",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo procesar la solicitud por falta de claridad."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 28,
+        "draft_sha256": "b93d40d7ac6d8ea6f076788d6675cf5c2fa91b98264e5ae4f7bacd7a63a98b42",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "The capital of Peru is Lima."
+      }
+    ]
+  }
+]

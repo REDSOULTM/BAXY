@@ -1,0 +1,50 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t6": {
+    "verdict": "FALLO",
+    "reason": "No hubo respuesta final publicada."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t8": {
+    "verdict": "FALLO",
+    "reason": "Aclaración sin estado pendiente (t8) y negativa falsa a la mezcla lingüística (t9); el 40% solicitado no se aplicó."
+  },
+  "t9": {
+    "verdict": "FALLO",
+    "reason": "Aclaración sin estado pendiente (t8) y negativa falsa a la mezcla lingüística (t9); el 40% solicitado no se aplicó."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  }
+}

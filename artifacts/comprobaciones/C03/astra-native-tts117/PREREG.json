@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-07T10:43:49.498536+00:00",
+  "method": "Same source112 engine/PAD, john medium voice/config and three consumed texts114. Only add the actual final period to the exact observed CLI phoneme string. All three inputs are single sentences ending in period. Upstream Piper phonemizer preserves clause terminator, current CLI adapter discards it. This is a scoped native experiment, not a general punctuation implementation, no product edit. Same Parakeet CPU/no hints, no fixed ONNX noise seed, no physical audio.",
+  "cases": [
+    "It is 07:14.",
+    "The file read failed because the content is invalid UTF-8.",
+    "I couldn't read the file because it wasn't found in the sandbox."
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\voice\\c03-john114\\en_US-john-medium.onnx",
+  "modelSha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+  "configSha256": "af60f177b6b550f3d7a302720c0fb89e7f94a82b5dca464775ef63b1c69ba09a",
+  "sourceSha256": "979ed2bd0cad5d8762633bf85c6591fbf66ffdd99bf49f71ca3737a7dd61aeaa",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source": "https://raw.githubusercontent.com/rhasspy/piper-phonemize/master/src/phonemize.cpp:99-119; consulted2026-09-07",
+  "limitation": "Punctuation/NFD/language flags/sentence segmentation differ in the manual frontend. This experiment isolates only final period; do not claim canonical frontend parity."
+}

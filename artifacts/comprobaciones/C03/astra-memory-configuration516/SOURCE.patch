@@ -1,0 +1,147 @@
+--- a/src/Baxy.App/NaturalMemoryRequestParser.cs
++++ b/src/Baxy.App/NaturalMemoryRequestParser.cs
+@@ -765,8 +765,6 @@
+                     "persistent",
+                     expectedValue: "azul",
+                     kind: "preference"),
+-            "desactiva la memoria local de baxy" => Configure(enabled: false),
+-            "enable baxy's private local memory" => Configure(enabled: true),
+             "exporta una copia privada de todo lo que baxy recuerda de mí" => Export(),
+             "muéstrame la lista de recuerdos locales que guardaste" => List(),
+             "what do you remember about my preferred editor" =>
+@@ -823,10 +821,6 @@
+                     "technical_and_brief",
+                     "persistent",
+                     kind: "preference"),
+-            "activa la memoria" or "habilita la memoria" or "enable memory"
+-                or "turn memory on" => Configure(enabled: true),
+-            "desactiva la memoria" or "disable memory" or "turn memory off" =>
+-                Configure(enabled: false),
+             "tienes memoria" or "tienes memoria local" or "do you have memory" =>
+                 Status(),
+             "lista mi memoria" or "muestra toda mi memoria" or "show my memories"
+@@ -843,6 +837,16 @@
+         out MemoryRoutedOperation? operation)
+     {
+         operation = null;
++
++        Match configuration = MemoryConfigurationRequestPattern().Match(command);
++        if (configuration.Success)
++        {
++            // Qualifiers describe the same private store, not a new operation.
++            // Require the whole imperative: mentions, negations, other stores
++            // and additional effects cannot authorize a configuration change.
++            operation = Configure(enabled: configuration.Groups["enable"].Success);
++            return true;
++        }
+ 
+         if ((MemoryStatusRequestPattern().IsMatch(command)
+                 || LeadingMemoryStatusRequestPattern().IsMatch(command)
+@@ -1502,6 +1506,17 @@
+         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+     private static partial Regex TrailingSocialClosurePattern();
+ 
++    private const string EnglishConfigurationMemoryTarget =
++        "(?:(?:the|your|baxy['’]s)[ ]+)?(?:(?:private|local|personal)[ ]+){0,3}memory";
++
++    [GeneratedRegex(
++        "^(?:(?:(?<enable>activa|habilita)|(?<disable>desactiva|deshabilita))[ ]+"
++        + "(?:la|tu)[ ]+memoria(?:[ ]+(?:privada|local|personal)){0,3}(?:[ ]+de[ ]+baxy)?|"
++        + "(?:(?<enable>enable)|(?<disable>disable))[ ]+" + EnglishConfigurationMemoryTarget + "|"
++        + "turn[ ]+" + EnglishConfigurationMemoryTarget + "[ ]+(?:(?<enable>on)|(?<disable>off)))$",
++        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
++    private static partial Regex MemoryConfigurationRequestPattern();
++
+     [GeneratedRegex(
+         "^(?:dime|muestra(?:me)?|consulta|revisa|comprueba|checkea|indica|confirma|"
+         + "show|tell|check|review|give|state|confirm|report|i[ ]+need).{0,96}(?:"
+--- a/tests/Baxy.Integration.Tests/NaturalMemoryRequestParserTests.cs
++++ b/tests/Baxy.Integration.Tests/NaturalMemoryRequestParserTests.cs
+@@ -496,6 +496,58 @@
+         });
+     }
+ 
++    [TestCase("Desactiva la memoria privada.", false)]
++    [TestCase("Deshabilita tu memoria personal local.", false)]
++    [TestCase("Activa la memoria privada local de BAXY.", true)]
++    [TestCase("Habilita tu memoria local.", true)]
++    [TestCase("Disable your private local memory.", false)]
++    [TestCase("Enable BAXY's personal memory.", true)]
++    [TestCase("Turn the private memory off.", false)]
++    [TestCase("Turn your local memory on.", true)]
++    [TestCase("Baxy, please, disable your private memory.", false)]
++    [TestCase("Baxy, por favor, activa tu memoria privada.", true)]
++    [TestCase("disable memory", false)]
++    [TestCase("habilita la memoria", true)]
++    [TestCase("turn memory on", true)]
++    [TestCase("turn memory off", false)]
++    [TestCase("desactiva la memoria local de baxy", false)]
++    [TestCase("enable baxy's private local memory", true)]
++    public void ConfigurationRecognizesItsOwnQualifiedMemoryTarget(string text, bool enabled)
++    {
++        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
++
++        Assert.Multiple(() =>
++        {
++            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
++            Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"));
++            Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled));
++        });
++    }
++
++    [TestCase("No desactives la memoria privada.")]
++    [TestCase("No desactiva la memoria privada.")]
++    [TestCase("Do not disable your private memory.")]
++    [TestCase("Never enable private memory.")]
++    [TestCase("¿Qué significa desactiva la memoria privada?")]
++    [TestCase("Explain how to disable private memory.")]
++    [TestCase("Is your private memory enabled?")]
++    [TestCase("Dime si la memoria privada está activa.")]
++    [TestCase("If I asked you to disable memory, what would happen?")]
++    [TestCase("Repite: desactiva la memoria privada.")]
++    [TestCase("\"Disable your private memory\"")]
++    [TestCase("Desactiva la memoria privada de Chrome.")]
++    [TestCase("Disable Windows virtual memory.")]
++    [TestCase("Desactiva la memoria RAM.")]
++    [TestCase("Activa la memoria privada y abre Steam.")]
++    [TestCase("Disable your memory and erase all my files.")]
++    public void ConfigurationDoesNotTreatOtherMemoryMentionsAsConsent(string text)
++    {
++        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
++
++        Assert.That(result.Operation?.Name,
++            Is.Not.EqualTo("memory.configure").And.Not.EqualTo("memory.enable").And.Not.EqualTo("memory.disable"));
++    }
++
+     [TestCase("activa la memoria", "memory.configure", "enabled", true)]
+     [TestCase("enable memory", "memory.configure", "enabled", true)]
+     [TestCase("desactiva la memoria", "memory.configure", "enabled", false)]
+--- a/tests/Baxy.Integration.Tests/MemoryHandlersTests.cs
++++ b/tests/Baxy.Integration.Tests/MemoryHandlersTests.cs
+@@ -323,6 +323,9 @@
+                 "secret",
+                 StringComparison.Ordinal));
+         string text = Encoding.UTF8.GetString(firstBytes);
++        Assert.That(projected, Is.True);
++        using JsonDocument projectedFacts = JsonDocument.Parse(projection!.Message);
++        JsonElement observed = projectedFacts.RootElement.GetProperty("observed");
+ 
+         Assert.Multiple(() =>
+         {
+@@ -338,8 +341,14 @@
+                 "^memory-export-[0-9a-f]{64}\\.json$"));
+             Assert.That(firstHash, Is.EqualTo(
+                 Convert.ToHexStringLower(SHA256.HashData(firstBytes))));
+-            Assert.That(projected, Is.True);
+-            Assert.That(projection!.Message, Does.Contain("Documentos/BAXY"));
++            Assert.That(projectedFacts.RootElement.GetProperty("operation").GetString(),
++                Is.EqualTo("memory.export"));
++            Assert.That(observed.GetProperty("destination").GetString(), Is.EqualTo("Documents/BAXY"));
++            Assert.That(observed.GetProperty("recordCount").GetInt32(), Is.EqualTo(2));
++            Assert.That(observed.GetProperty("integrityVerified").GetBoolean(), Is.True);
++            Assert.That(observed.GetProperty("integrityAlgorithm").GetString(), Is.EqualTo("SHA-256"));
++            Assert.That(observed.GetProperty("mayRedirectOrSync").GetBoolean(), Is.True);
++            Assert.That(observed.GetProperty("replayed").GetBoolean(), Is.False);
+             Assert.That(projection.Message, Does.Not.Contain(path));
+             Assert.That(projection.Message, Does.Not.Contain(firstHash));
+             Assert.That(projection.Message, Does.Not.Contain(Canary));

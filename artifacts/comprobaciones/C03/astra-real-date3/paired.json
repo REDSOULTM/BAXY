@@ -1,0 +1,412 @@
+[
+  {
+    "request": "Dime que hora es",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "Son las 18 horas y 1 minuto.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "Dime que hora es",
+          "ts": "18:01:07"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728467467,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728467592,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "Son las 18 horas y 1 minuto.",
+          "ts": "18:01:08",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728468161,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 28,
+        "draft_sha256": "ba5519a49f315210b1d35e8f82b98a5aa15386a58dd319dc490c89b50cea78db",
+        "payload": {
+          "clock": "18:01"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T21:01:07.6880720+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 18 horas y 1 minuto."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "y la fecha?",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "¿De qué fecha te refieres?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "y la fecha?",
+          "ts": "18:01:08"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728468217,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728469217,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "¿De qué fecha te refieres?",
+          "ts": "18:01:10",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728470886,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 28,
+        "draft_sha256": "afb42c6acd8d001995b5fc31cf032db01cf6a1edb453987e983c2da23765502a",
+        "payload": {
+          "kind": "clarification",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"clarification\",\"polarity\":\"pending\",\"cause\":\"ambiguous_request\"}",
+        "draft": "¿De qué fecha te refieres?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "what time is it?",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "It's 18:01.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "what time is it?",
+          "ts": "18:01:10"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728470953,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728470953,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728470975,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "It's 18:01.",
+          "ts": "18:01:11",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788728471454,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "a9273c4dff6f05adafaca6f3c8ba3ef50e5292cfb3455cc4c92a6d71fdc3c2d4",
+        "payload": {
+          "clock": "18:01"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T21:01:11.0678914+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 18:01."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

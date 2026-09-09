@@ -1,0 +1,331 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Ajusta el volumen.",
+    "terminal": "published_final",
+    "final": "¿Cuánto deseas ajustar el volumen y en qué dirección (subir o bajar)?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "La clarificación fue cancelada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 32,
+        "draft_sha256": "fd84d76249551a195c05e4cf2f9188e598d760a73db25283f1a3092f77f8fbb0",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "state": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "La clarificación fue cancelada."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Abre EstudioC03Inexistente.",
+    "terminal": "published_final",
+    "final": "Este pedido está fuera de lo que hago en este PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "Set the volume.",
+    "terminal": "published_final",
+    "final": "How much and in which direction should the volume be adjusted?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t5",
+    "request": "cancel",
+    "terminal": "published_final",
+    "final": "La clarificación fue cancelada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 32,
+        "draft_sha256": "fd84d76249551a195c05e4cf2f9188e598d760a73db25283f1a3092f77f8fbb0",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "state": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "La clarificación fue cancelada."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "Open EstudioC03Inexistente.",
+    "terminal": "published_final",
+    "final": "This is outside what I do on this PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t7",
+    "request": "Set the volume, por favor.",
+    "terminal": "published_final",
+    "final": "¿A qué volumen te refieres?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 29,
+        "draft_sha256": "cf8cff40c5f80e789ee65a8dc8ade8d7f9b47e26f24a293de2113342cbc8261b",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "¿A qué volumen te refieres?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "Entendido, se cancela.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 22,
+        "draft_sha256": "63accfde71e99a66eb7c0ae0f3ed5b086ce45d7e7fdf558fe1a073f452eb435f",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Entendido, se cancela."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "Open EstudioC03Inexistente, por favor.",
+    "terminal": "published_final",
+    "final": "No puedo abrir EstudioC03Inexistente, eso está fuera de mi ámbito.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "error",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 68,
+        "draft_sha256": "49746bbc791781cad89dc2aa3a6648ffabf1aab4a5e033038a9ceee23f84c1ac",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "No puedo abrir EstudioC03Inexistente, eso está fuera de mi ámbito."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "¡Hola! Bienvenido. ¿Cómo estás?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "99b49a436f32690e9fa3d49750f16142a8c16531021d7b9a0205afbbc9cb88eb",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hola! Bienvenido. ¿Cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 15:25.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "6ed94f50bbc41fe0ae4aa9e405a8f44abfc4705057d6fb894df9811131ca4031",
+        "payload": {
+          "clock": "15:25"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T18:25:47.5180545+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 15:25."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "¿Cómo está el audio?",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 48,
+        "draft_sha256": "83903c6e89f5326c715c1ca7ddfcbef9f039dfd858faef22e944e895c2eb696e",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false}}}",
+        "draft": "El audio está activo y el volumen está en 100."
+      }
+    ]
+  }
+]

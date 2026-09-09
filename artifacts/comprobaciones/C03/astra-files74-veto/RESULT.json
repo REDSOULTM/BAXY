@@ -1,0 +1,9 @@
+{
+  "exitCode": 0,
+  "stopReason": null,
+  "elapsedSeconds": 123.12,
+  "gpuPeakMiB": 3177.5625,
+  "gpuAttributionAvailable": true,
+  "ramPeakMiB": 6983.546875,
+  "registrationUnchanged": true
+}

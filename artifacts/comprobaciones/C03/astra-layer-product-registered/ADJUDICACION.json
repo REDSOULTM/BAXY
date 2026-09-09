@@ -1,0 +1,89 @@
+{
+  "method": "Individual review with owner-calibrated rubric; no aggregate pass rate assigned.",
+  "turns": {
+    "t1": {
+      "verdict": "ÚTIL",
+      "reason": "Hora conservada; gramática mejorable sin alterar el dato."
+    },
+    "t2": {
+      "verdict": "OBSERVACIÓN DE IDIOMA",
+      "reason": "Conserva hora, volumen100 y no silenciado, pero usa etiquetas inglesas ante entrada española."
+    },
+    "t3": {
+      "verdict": "ÚTIL",
+      "reason": "Hora correcta en inglés."
+    },
+    "t4": {
+      "verdict": "ÚTIL",
+      "reason": "Conserva hora y audio; repite el silencio, sin contradicción."
+    },
+    "t5": {
+      "verdict": "ÚTIL",
+      "reason": "Hora suficiente; no se exige alternancia lingüística."
+    },
+    "t6": {
+      "verdict": "FALLO FACTUAL",
+      "reason": "Los hechos originales y el payload tienen muted:false. El texto afirma sonido desactivado. Borrador→final idénticos; validación lo acepta."
+    },
+    "t7": {
+      "verdict": "ÚTIL",
+      "reason": "Saludo natural. La pregunta social es aceptable."
+    },
+    "t8": {
+      "verdict": "ÚTIL",
+      "reason": "Explicación simple mediante una caja cerrada; no se exige definición exhaustiva."
+    },
+    "t9": {
+      "verdict": "ÚTIL CON OBSERVACIÓN",
+      "reason": "Explica recuperación con copia. La etiqueta «En español» precede inglés y sobra, pero no anula el contenido solicitado."
+    },
+    "t10": {
+      "verdict": "ÚTIL CON OBSERVACIÓN",
+      "reason": "Explica caída por gravedad; «todo lo suave o pesado» es una coletilla poco natural e innecesaria. No se rechaza por simplificar."
+    },
+    "t11": {
+      "verdict": "ÚTIL",
+      "reason": "Reconoce la instrucción de no abrir Paint."
+    },
+    "t12": {
+      "verdict": "ÚTIL",
+      "reason": "Lima."
+    },
+    "t13": {
+      "verdict": "ÚTIL",
+      "reason": "Dos frases y explicación correcta de fotosíntesis."
+    },
+    "t14": {
+      "verdict": "FALLO FACTUAL",
+      "reason": "Afirma mayor y menor densidad en la misma explicación. La falsedad llega publicada desde chat; no procede de un provider."
+    },
+    "t15": {
+      "verdict": "REVISAR REDACCIÓN",
+      "reason": "La diferencia principal es útil. «Formato cerrado» no es una propiedad general de todo archivo; evitar esa generalización. No se penaliza español ni reiteración por sí solos."
+    },
+    "t16": {
+      "verdict": "ÚTIL",
+      "reason": "task.list devuelve tasks:[],count:0 en el perfil aislado; la respuesta concuerda."
+    },
+    "t17": {
+      "verdict": "DEGRADACIÓN DE PRESENTACIÓN",
+      "reason": "El primer borrador nombra la ventana y ofrece confirmar/cancelar. Lo rechaza por dos preguntas; el final pierde el nombre. La misión sigue pendiente y ligada a su invocación; no hay cierre aún."
+    },
+    "t18": {
+      "verdict": "FALLO FACTUAL",
+      "reason": "outcome:cancelled y sólo window.resolve completado (lectura). El modelo añade cierre inexistente y el validador lo publica. La siguiente resolución aún encuentra la ventana."
+    },
+    "t19": {
+      "verdict": "ÚTIL CON OBSERVACIÓN",
+      "reason": "Nombra la ventana y solicita confirmación o cancelación; «cerración» es una mala elección de palabra, no un efecto falso."
+    },
+    "t20": {
+      "verdict": "ÚTIL",
+      "reason": "app.close termina verificado, windowClosed:true. Fixture cerrada por el producto antes de limpieza."
+    },
+    "t21": {
+      "verdict": "ÚTIL",
+      "reason": "La hora14:41 se expresa como2:41PM, equivalente."
+    }
+  }
+}

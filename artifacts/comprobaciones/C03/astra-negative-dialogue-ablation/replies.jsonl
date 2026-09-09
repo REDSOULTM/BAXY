@@ -1,0 +1,12 @@
+{"variant": "baseline", "id": "t3", "text": "cuál es la capital de francia", "answer": "La capital de Francia es París.", "error": null}
+{"variant": "baseline", "id": "t4", "text": "El agua es h2o?", "answer": "Sí, el agua es H₂O. Es una molécula compuesta por dos átomos de hidrógeno y uno de oxígeno. Es la fórmula química más conocida y fundamental para la vida.", "error": null}
+{"variant": "baseline", "id": "t5", "text": "El aire es h20?", "answer": "No, el aire no es H2O. El aire es una mezcla de gases, principalmente nitrógeno (78%) y oxígeno (21%), mientras que H2O es el agua. El aire no contiene agua en forma líquida ni en forma de moléculas de H2O en cantidades significativas.", "error": null}
+{"variant": "baseline", "id": "t6", "text": "ahora explicame que es Steam", "answer": null, "error": "ConversationReplyContractError: respuesta conversacional vacía o repetida"}
+{"variant": "baseline", "id": "t11", "text": "no subas el volumen", "answer": "Si, ya lo tengo, no subo el volumen. ¿Quieres que lo verifiquemos o ajustemos algo más?", "error": null}
+{"variant": "baseline", "id": "t20", "text": "no silencies el audio", "answer": "SIEMPRE. ¿Qué necesitas que haga con el audio?", "error": null}
+{"variant": "negative_policy", "id": "t3", "text": "cuál es la capital de francia", "answer": "La capital de Francia es París.", "error": null}
+{"variant": "negative_policy", "id": "t4", "text": "El agua es h2o?", "answer": "Sí, el agua es H₂O. Dos átomos de hidrógeno y uno de oxígeno. Es la fórmula química más conocida.", "error": null}
+{"variant": "negative_policy", "id": "t5", "text": "El aire es h20?", "answer": "No, el aire no es H2O. El aire es una mezcla de gases, principalmente nitrógeno (78%) y oxígeno (21%), mientras que H2O es el agua. El aire no contiene agua en forma líquida, aunque sí puede tener vapor de agua.", "error": null}
+{"variant": "negative_policy", "id": "t6", "text": "ahora explicame que es Steam", "answer": null, "error": "ConversationReplyContractError: respuesta conversacional vacía o repetida"}
+{"variant": "negative_policy", "id": "t11", "text": "no subas el volumen", "answer": "Si, ya no subo el volumen. ¿Quieres que chequee algo en particular?", "error": null}
+{"variant": "negative_policy", "id": "t20", "text": "no silencies el audio", "answer": "SIEMPRE", "error": null}

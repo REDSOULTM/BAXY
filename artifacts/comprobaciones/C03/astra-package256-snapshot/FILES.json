@@ -1,0 +1,7 @@
+{
+  "scripts/build_webrtc_runtime.py": "be806bf029edbc46cf138aee8b60cbca0ff85cd4855a50abd973308193b91bd8",
+  "tests/test_webrtc_runtime_package.py": "239356223241b8f65021ec8760a98a47a590fbb673a492ab60e37b0b4c32ab07",
+  "runtime_wheels/webrtc-linear-output.patch": "548763188c319936ae00475b03885e75bf986d1917b8bba8b86ed1746f0fe020",
+  "runtime_wheels/README.md": "4f20df999eea4b3214170efab5aa6f58dcafcc84f279dc321ee33beffaeed9a8",
+  "runtime_wheels/pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl": "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb"
+}

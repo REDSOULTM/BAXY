@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "request": "perfecto, necesito lo dessilencies pls",
+    "seed": 0,
+    "finish": "stop",
+    "choice": {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "El sonido ya está activo y el volumen está en el 100."
+      }
+    }
+  },
+  {
+    "id": 6,
+    "request": "perfecto, necesito lo dessilencies pls",
+    "seed": 0,
+    "finish": "stop",
+    "choice": {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "El volumen ha sido activado y el sonido ahora está en funcionamiento."
+      }
+    }
+  },
+  {
+    "id": 11,
+    "request": "perfecto, necesito lo dessilencies pls",
+    "seed": 17,
+    "finish": "stop",
+    "choice": {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "El volumen ha sido activado y el sonido ahora está en funcionamiento."
+      }
+    }
+  },
+  {
+    "id": 15,
+    "request": "perfecto, necesito lo dessilencies pls",
+    "seed": 17,
+    "finish": "stop",
+    "choice": {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "El volumen ha sido activado y el sonido ahora está en funcionamiento."
+      }
+    }
+  },
+  {
+    "id": 20,
+    "request": "Al 100, pero desmutealo",
+    "seed": 0,
+    "finish": "tool_calls",
+    "choice": {
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "type": "function",
+            "function": {
+              "name": "baxy_audio__volume",
+              "arguments": "{}"
+            },
+            "id": "3bgB6ksxrkh2tRaNejKh1B0c9jiQn9Ae"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": 25,
+    "request": "Al 100, pero desmutealo",
+    "seed": 0,
+    "finish": "tool_calls",
+    "choice": {
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "type": "function",
+            "function": {
+              "name": "baxy_audio__volume",
+              "arguments": "{}"
+            },
+            "id": "P5vIX14bIjLT9EZBNZzPjz7XUula2p8P"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": 30,
+    "request": "Al 100, pero desmutealo",
+    "seed": 17,
+    "finish": "tool_calls",
+    "choice": {
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "type": "function",
+            "function": {
+              "name": "baxy_audio__volume",
+              "arguments": "{}"
+            },
+            "id": "RkL0CCg2DAMZA70CrcdLEk0bwy1qJz7P"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": 34,
+    "request": "Al 100, pero desmutealo",
+    "seed": 17,
+    "finish": "tool_calls",
+    "choice": {
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "type": "function",
+            "function": {
+              "name": "baxy_audio__volume",
+              "arguments": "{}"
+            },
+            "id": "WrzInZeDJ0OqNNI9F96r9qvPUHsUyVNy"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": 41,
+    "request": "Qué significa desmutear?",
+    "seed": 0,
+    "finish": "stop",
+    "choice": {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "No se requiere ninguna acción para responder a esta pregunta. \"Desmutear\" significa habilitar o activar el micrófono para que se pueda capturar sonido desde el dispositivo."
+      }
+    }
+  },
+  {
+    "id": 43,
+    "request": "¿Qué significa desmutear?",
+    "seed": 0,
+    "finish": "stop",
+    "choice": {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "No se puede determinar el significado de \"desmutear\" con las herramientas disponibles. Se requiere una explicación o consulta de conocimiento general, que no se puede realizar con las funciones actuales."
+      }
+    }
+  }
+]

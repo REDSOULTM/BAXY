@@ -1,0 +1,23 @@
+n=21 published=21 other=0
+
+001	t1	published_final	¿Qué hora es?	Son las 13:23.
+002	t2	published_final	Dime la hora y el estado del audio.	Son las 13:23 y el volumen está al 100%; audio no está silenciado.
+003	t3	published_final	What time is it?	It is 13:23.
+004	t4	published_final	Tell me the time and the volume.	The time is 13:23; audio volume is 100% and the sound is not muted.
+005	t5	published_final	Dime la hora, please, en spanglish	Son las tres y veintitres; it’s 13:23.
+006	t6	published_final	What time is it y cómo está el audio?	Son las 13:23; el volumen está al 100% y el audio no está silenciado.
+007	t7	published_final	Hey, buenas	¡Hola! Bienvenido; welcome to the chat.
+008	t8	published_final	Explain encryption, pero en simple	La criptografía protege los datos usando códigos; only authorized users can read them.
+009	t9	published_final	responde en spanglish: qué es una copia de seguridad	Una copia de seguridad es un archivo; it stores data in case the original is lost or corrupted.
+010	t10	published_final	Explain gravity, pero sin tecnicismos	La gravedad mantiene que objetos caigan al suelo; it pulls things toward each other.
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima is the capital of Peru.
+013	t13	published_final	Explain photosynthesis in two sentences.	Plants absorb sunlight to make food; they release oxygen as a byproduct.
+014	t14	published_final	Explícame por qué el hielo flota.	El hielo flota porque el agua sólida es menos densa que el líquido.
+015	t15	published_final	¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.	Un archivo es un objeto; a folder contains several files.
+016	t16	published_final	What is on my to do list?	You don't have any tasks on your to do list.
+017	t17	published_final	cierra la ventana titulada Ventana C03 de prueba	¿Confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?
+018	t18	published_final	cancelar	Se ha cancelado la solicitud para cerrar la ventana titulada "Ventana C03 de prueba".
+019	t19	published_final	cierra la ventana titulada Ventana C03 de prueba	¿Confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?
+020	t20	published_final	confirmar	La ventana titulada "Ventana C03 de prueba" se cerró.
+021	t21	published_final	What time is it?	It is 13:24.

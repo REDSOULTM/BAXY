@@ -13,6 +13,7 @@ import pytest
 
 from baxy_mind.__main__ import (
     _explicit_system_status_scope,
+    _ground_explicit_arguments,
     _SYSTEM_STATUS_SCOPES,
 )
 
@@ -55,6 +56,26 @@ def test_an_unambiguous_scope_is_supplied_without_the_model(
     supplied = _explicit_system_status_scope(text)
     assert supplied == {"scope": scope}
     assert scope in _SYSTEM_STATUS_SCOPES
+    # The direct turn crosses grounding after selecting the scope. Optional
+    # enums must survive that boundary even when their wire name is not a
+    # literal substring of the request (GPU -> gpu_identity, RAM -> memory).
+    schema = {
+        "type": "object",
+        "properties": {"scope": {"type": "string", "enum": sorted(_SYSTEM_STATUS_SCOPES)}},
+        "required": [],
+        "additionalProperties": False,
+    }
+    assert _ground_explicit_arguments("system.status", text, schema) == supplied
+
+
+def test_a_selected_scope_cannot_be_dropped_to_fit_an_incompatible_catalog() -> None:
+    schema = {
+        "type": "object",
+        "properties": {"scope": {"type": "string", "enum": ["summary"]}},
+        "required": [],
+        "additionalProperties": False,
+    }
+    assert _ground_explicit_arguments("system.status", "Que gpu tengo?", schema) is None
 
 
 @pytest.mark.parametrize(

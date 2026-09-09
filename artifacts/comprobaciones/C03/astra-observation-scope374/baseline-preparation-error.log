@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_turn_policy.py __________________
+tests/test_turn_policy.py::test_personal_conversation_facts_are_not_machine_observations: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR tests/test_turn_policy.py - Failed: tests/test_turn_policy.py::test_per...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.56s

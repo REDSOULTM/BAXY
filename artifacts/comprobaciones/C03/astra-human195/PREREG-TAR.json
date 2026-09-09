@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-07T16:18:41.305099+00:00",
+  "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+  "reasonForAccessChange": "Dataset viewer rows and first-rows return HTTP500:703MB row group exceeds300MB scan limit. No recordings or recognizer outputs obtained by that attempt.",
+  "selection": "First two distinct transcript IDs per locale in author tar member order with metadata duration <=20s. Stop at100 members or64MiB compressed input; no choice by recognized text or quality.",
+  "locales": [
+    "es_419",
+    "en_us"
+  ],
+  "split": "test",
+  "method": "Read original WAV bytes directly from pinned archive without unpacking filesystem paths. Read public TSV for expected text. Preserve native audio; no gain or resampling.",
+  "license": "Google FLEURS, Conneau et al.2022, CC-BY-4.0; https://huggingface.co/datasets/google/fleurs; https://arxiv.org/abs/2205.12446",
+  "limitation": "Human read speech for AEC diagnostics, not user requests, physical microphone acceptance or the C03 reserved100."
+}

@@ -1,0 +1,84 @@
+[
+  {
+    "path": "src/baxy_mind/speex_aec.py",
+    "existed": true,
+    "bytes": 5905,
+    "sha256": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5"
+  },
+  {
+    "path": "src/baxy_mind/dtln_aec.py",
+    "existed": false
+  },
+  {
+    "path": "src/baxy_mind/voice.py",
+    "existed": true,
+    "bytes": 124242,
+    "sha256": "d615692af02a4b79c7287a53b60310cc4eaf46c46dfdb9d26aba0bbb89891f3a"
+  },
+  {
+    "path": "src/baxy_mind/requirements-voice.txt",
+    "existed": true,
+    "bytes": 295,
+    "sha256": "2dc4c33303fe0411556bd4bce045754119829663ecb6834d9db2b24358318e15"
+  },
+  {
+    "path": "tests/test_speex_aec.py",
+    "existed": true,
+    "bytes": 6188,
+    "sha256": "8592c94ca910816d2cf8646cb40bd0e8374f3d342005cd02053ff076a24810f3"
+  },
+  {
+    "path": "tests/test_dtln_aec.py",
+    "existed": false
+  },
+  {
+    "path": "tests/test_mind_voice_runtime.py",
+    "existed": true,
+    "bytes": 94535,
+    "sha256": "cf3c644b058e697040c19245940ed09cb93ab500060ef44a0c4a7a434e163d81"
+  },
+  {
+    "path": "scripts/run_voice_system_gate.py",
+    "existed": true,
+    "bytes": 15281,
+    "sha256": "219e49f32f23bcde86b17068fb72773441afebd3148f0a08802b366de38c3a82"
+  },
+  {
+    "path": "scripts/install_dtln_aec.py",
+    "existed": false
+  },
+  {
+    "path": "assets.manifest.json",
+    "existed": true,
+    "bytes": 9474,
+    "sha256": "d1f9891f670928f8cb30dcd8ad747c80d364dad06f320fc10e40e7d4efd599ba"
+  },
+  {
+    "path": "constraints-runtime-win-x64.txt",
+    "existed": true,
+    "bytes": 1252,
+    "sha256": "f5f78b60be0203e06eb9a12ab58cc1a2ef8f472271270393628ac036ba26d734"
+  },
+  {
+    "path": "pylock.runtime-win-x64.toml",
+    "existed": true,
+    "bytes": 22027,
+    "sha256": "c3e8c469f57113a336ac71ee475c2843675048f4414fa05a3283cf076275c10f"
+  },
+  {
+    "path": "docs/AI_CONTEXT_MAP.md",
+    "existed": true,
+    "bytes": 7762,
+    "sha256": "49a18a6ffdd15e80c6462c0f11bb3350d9525d45e92bfce5f6888c75ffbfc570"
+  },
+  {
+    "path": "src/baxy_mind/licenses/DTLN-aec.txt",
+    "existed": false
+  },
+  {
+    "path": "tests/test_python_runtime_lock.py",
+    "existed": true,
+    "bytes": 5190,
+    "sha256": "a3ecdefd8292640176d52e5b26c7b34d659ea728e83cf4aba153a3d896ac661f"
+  }
+]

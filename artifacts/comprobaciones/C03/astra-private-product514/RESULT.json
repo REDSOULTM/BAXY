@@ -1,0 +1,31 @@
+{
+  "utc": "2026-09-08T23:44:31.740474+00:00",
+  "session": 39353,
+  "exit": 0,
+  "useful_finals": 7,
+  "total_finals": 8,
+  "independent_progress_failure": "Label addresses the request as belonging to the user and says results have not been obtained; actual progress payload only proves work in progress, not absence of underlying results. Inspect the progress instruction separately, not as a failed name recall.",
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1803.26953125,
+    "seconds": 28.093
+  },
+  "manifest_unchanged": true,
+  "isolated_store_files": {
+    "current.bin": {
+      "bytes": 1242,
+      "sha256": "8b334211ef453c6cb58e3d1cbd0c3a61e972f656a4c8e936420c47aac1dadb45"
+    },
+    "recovery.bin": {
+      "bytes": 1242,
+      "sha256": "8b334211ef453c6cb58e3d1cbd0c3a61e972f656a4c8e936420c47aac1dadb45"
+    },
+    "watermark.bin": {
+      "bytes": 208,
+      "sha256": "32b39ff3de6603a9aed58aa55919c01b7844be4fda6e248572bddaf4d8032658"
+    }
+  },
+  "limits": "Actual C# shell/viewmodel/core and isolated persistence through hidden conductor. Stored Jordan/current conversationalÁlvaro are distinguished. No visible UI, physical voice or restart acceptance. Do not invent a retention disclosure requirement in the middle of this panel: T1 fulfils its preregistered decision/target criterion."
+}

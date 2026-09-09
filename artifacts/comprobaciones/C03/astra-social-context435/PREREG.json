@@ -1,0 +1,71 @@
+{
+  "utc": "2026-09-08T15:19:21.724455+00:00",
+  "method": "Ten paired native requests. First baseline is exact captured434T5; others substitute only the last user text, retaining captured system language (Spanish) and history so they are controlled synthetic payloads, not normal product routing. Variant removes prior user/assistant history only for a closed standalone social decision with no pending clarification. Keeps all system messages/current user/settings exactly. Nonclosed recall/compound and explicit pending control are byte-identical. No source edits, prompt change, effects or promotion.",
+  "hypothesis": "434T5 routes correctly to social chat but falsely repeats the earlier private save as a new update. A closed greeting/declaration/wellbeing report is self-contained; actual stored dialogue remains intact for referential turns. Inherit chat.starts_new_definition_topic scoping, not global history removal.429 conversation composition without historical save context produced4/4 useful names; this tests history alone before changing renderer or prompts.",
+  "criteria": "First baseline reproduces false save; four names/social acts must yield useful acknowledgment without new memory/PC claims. No history removal for pending, compound, or name recall. English substitutions retain Spanish system language deliberately: evaluate semantic/no-effect behavior here, real ES/EN rendering requires later product/runtime verification. No100-human acceptance or UI/physical voice.",
+  "cases": [
+    {
+      "id": "actual434-t5",
+      "text": "Me llamo Álvaro.",
+      "scope_history": true
+    },
+    {
+      "id": "name-en",
+      "text": "My name is Nina.",
+      "scope_history": true
+    },
+    {
+      "id": "compound-name",
+      "text": "Mi nombre es Ana María.",
+      "scope_history": true
+    },
+    {
+      "id": "hyphenated-name",
+      "text": "My name is Jean-Luc.",
+      "scope_history": true
+    },
+    {
+      "id": "gratitude",
+      "text": "Muchas gracias.",
+      "scope_history": true
+    },
+    {
+      "id": "wellbeing",
+      "text": "mi día fue extremadamente duro",
+      "scope_history": true
+    },
+    {
+      "id": "farewell",
+      "text": "Goodbye Baxy.",
+      "scope_history": true
+    },
+    {
+      "id": "name-recall-control",
+      "text": "¿Cómo me llamo?",
+      "scope_history": false
+    },
+    {
+      "id": "compound-control",
+      "text": "Me llamo Ana abre Steam",
+      "scope_history": false
+    },
+    {
+      "id": "pending-control",
+      "text": "Me llamo Álvaro.",
+      "scope_history": false
+    }
+  ],
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": {
+    "src/baxy_mind/__main__.py": "7d723a0d078506a8307b21a3ab033b40aec2cccbf3559e2edbc2a7c8ebe1ee52",
+    "src/baxy_mind/llm.py": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627"
+  },
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 40
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-social-context435-private"
+}

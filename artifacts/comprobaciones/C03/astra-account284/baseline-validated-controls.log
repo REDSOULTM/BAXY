@@ -1,0 +1,40 @@
+FF...F.F....F                                                            [100%]
+================================== FAILURES ===================================
+_ test_composed_identity_preserves_the_observed_account[usuario-Hola, soy BAXY.-quien soy-missing_name] _
+tests\test_compose_contract.py:162: in test_composed_identity_preserves_the_observed_account
+    assert llm_mod._payload_fact_defect(answer, payload) == expected
+E   AssertionError: assert '' == 'missing_name'
+E     
+E     - missing_name
+_ test_composed_identity_preserves_the_observed_account[usuario-Tu nombre es Emmanuel.-quien soy-missing_name] _
+tests\test_compose_contract.py:162: in test_composed_identity_preserves_the_observed_account
+    assert llm_mod._payload_fact_defect(answer, payload) == expected
+E   AssertionError: assert '' == 'missing_name'
+E     
+E     - missing_name
+_ test_composed_identity_preserves_the_observed_account[\xe1lvaro-Tu cuenta es alvaro.-quien soy-missing_name] _
+tests\test_compose_contract.py:162: in test_composed_identity_preserves_the_observed_account
+    assert llm_mod._payload_fact_defect(answer, payload) == expected
+E   AssertionError: assert '' == 'missing_name'
+E     
+E     - missing_name
+_ test_composed_identity_preserves_the_observed_account[dev-user-The signed-in account is dev-user2.-Who am I?-missing_name] _
+tests\test_compose_contract.py:162: in test_composed_identity_preserves_the_observed_account
+    assert llm_mod._payload_fact_defect(answer, payload) == expected
+E   AssertionError: assert '' == 'missing_name'
+E     
+E     - missing_name
+________ test_composed_identity_retries_an_answer_about_the_assistant _________
+tests\test_compose_contract.py:178: in test_composed_identity_retries_an_answer_about_the_assistant
+    assert answer == "Tu usuario en este equipo es usuario."
+E   AssertionError: assert 'Hola, soy BAXY.' == 'Tu usuario e...ipo es usuario.'
+E     
+E     - Tu usuario en este equipo es usuario.
+E     + Hola, soy BAXY.
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_composed_identity_preserves_the_observed_account[usuario-Hola, soy BAXY.-quien soy-missing_name]
+FAILED tests/test_compose_contract.py::test_composed_identity_preserves_the_observed_account[usuario-Tu nombre es Emmanuel.-quien soy-missing_name]
+FAILED tests/test_compose_contract.py::test_composed_identity_preserves_the_observed_account[\xe1lvaro-Tu cuenta es alvaro.-quien soy-missing_name]
+FAILED tests/test_compose_contract.py::test_composed_identity_preserves_the_observed_account[dev-user-The signed-in account is dev-user2.-Who am I?-missing_name]
+FAILED tests/test_compose_contract.py::test_composed_identity_retries_an_answer_about_the_assistant
+5 failed, 8 passed, 30 deselected in 0.41s

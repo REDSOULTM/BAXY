@@ -1,0 +1,9 @@
+{
+  "scope": "Development evidence, not human acceptance or model promotion",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_PROGRESO85.md": "7082f09a60f4ab0594f6aacf983b27bcd9c732343591636b644ea94836cbe860",
+    "artifacts/comprobaciones/C03/astra-progress-phase85/PREREG.json": "179e557fca5f0d2b7c1c28a0a7825a6b68653888327e4f6f951cb2c757a415d0",
+    "artifacts/comprobaciones/C03/astra-progress-phase85/RESULT.json": "d6ea9521d9a8172a30ea69283e448290d7ad6a02a659775462af14576c0686a8",
+    "artifacts/comprobaciones/C03/astra-progress-phase85/posts.jsonl": "35cc3980a829c8d8de72d9d3c6c787d027f0400ba3b6dbe168dac386f723e387"
+  }
+}

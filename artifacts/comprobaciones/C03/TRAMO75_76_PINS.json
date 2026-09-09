@@ -1,0 +1,18 @@
+{
+  "scope": "HTTP diagnostic and native template comparison; no model promotion",
+  "files": {
+    "artifacts/comprobaciones/C03/astra-files75-http/PREREG.json": "40dadc47ddb85b04cdebb7781da5662cffdfdbd0b167ad7cb3e9e245d2e2e614",
+    "artifacts/comprobaciones/C03/astra-files75-http/RESULT.json": "0b9a6a87af65e4bc6a36de86fb00d025dbe43b3fe4079448e357aec842523953",
+    "artifacts/comprobaciones/C03/astra-files75-http/paired.json": "cb9b22fb1d08f280795cd73060c1b6c5eed19d4173c84f287d4da0eb39e35993",
+    "artifacts/comprobaciones/C03/astra-files75-http/wire-36724.jsonl": "78c7efd7d3a56cf30a45a6e5261211916d198f9911f08d9dc7741c982cf1f2eb",
+    "artifacts/comprobaciones/C03/astra-template76-qwen35/PREREG.json": "ee0e7a55f6aaa1cb474c78389f07e7e6ec3e1e75158e64cba7f4c05876af433d",
+    "artifacts/comprobaciones/C03/astra-template76-qwen35/RESULT.json": "0a1b7854401282cd2930a071667587bb1cc7769e6ec5943cada8c86f58ff5e46",
+    "artifacts/comprobaciones/C03/astra-template76-qwen35/posts.jsonl": "777737c6ea15b3d42ee48677c5bad9a2070914bb278133de63bc9c26ab0b8ab6",
+    "artifacts/comprobaciones/C03/astra-template76-qwen35/llama-command.json": "3fd947a4d866d2cc22b5f40f54f91c6737ccbe7971c12aa524ef78facd7e967a",
+    "artifacts/comprobaciones/C03/astra-template76-registered/PREREG.json": "4f3095f36d733524403408ee896cbe44b0c10da46de1f61fcf9062344b7e2018",
+    "artifacts/comprobaciones/C03/astra-template76-registered/RESULT.json": "b39ef334fb702fa3f3ab8028baaa815251369deb3e6582f27c5bf6aaab752cb5",
+    "artifacts/comprobaciones/C03/astra-template76-registered/posts.jsonl": "beb70eb800bbfe12e085e5c84e75d5e24fd0689c211f0bda7e103e2f341a38ef",
+    "artifacts/comprobaciones/C03/astra-template76-registered/llama-command.json": "fa53f3a02b3cd4a8f2b1f1610ba7fff5a6bf8854a55dbe1c7c069624cc4e3e0a",
+    "artifacts/comprobaciones/C03/PRUEBAS_TEMPLATE75_76.md": "8137eb0001242e0dfe1cb0ed318666f2ec712606bed05fb43e1a45936c77d00f"
+  }
+}

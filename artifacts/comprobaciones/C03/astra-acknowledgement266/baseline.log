@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+________________ ERROR collecting tests/test_effect_intent.py _________________
+tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR tests/test_effect_intent.py - Failed: tests/test_effect_intent.py::test...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.20s

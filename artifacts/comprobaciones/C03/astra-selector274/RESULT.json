@@ -1,0 +1,142 @@
+[
+  {
+    "variant": "actual_description_28",
+    "seconds": 1.3280000000086147,
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Steam ya está abierto."
+          }
+        }
+      ],
+      "created": 1788824364,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 2311,
+        "total_tokens": 2317,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-NHo0JpXhirqwrpeNfuG6A5drPSL4JMDh",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 2311,
+        "prompt_ms": 1218.856,
+        "prompt_per_token_ms": 0.5274149718736477,
+        "prompt_per_second": 1896.040221322289,
+        "predicted_n": 6,
+        "predicted_ms": 73.751,
+        "predicted_per_token_ms": 12.291833333333335,
+        "predicted_per_second": 81.35482908706322
+      }
+    }
+  },
+  {
+    "variant": "actual_description_only_app",
+    "seconds": 0.7649999999994179,
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "tool_calls",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "baxy_app__open",
+                  "arguments": "{}"
+                },
+                "id": "2U4KepO5vnl1E2cfrBwMZP3vs20UYilA"
+              }
+            ]
+          }
+        }
+      ],
+      "created": 1788824364,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 17,
+        "prompt_tokens": 595,
+        "total_tokens": 612,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "id": "chatcmpl-tgnY74kTP9JBeNiqKbolKw3qW1TfWTQy",
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 594,
+        "prompt_ms": 412.782,
+        "prompt_per_token_ms": 0.6949191919191919,
+        "prompt_per_second": 1439.016236173089,
+        "predicted_n": 17,
+        "predicted_ms": 220.295,
+        "predicted_per_token_ms": 12.958529411764705,
+        "predicted_per_second": 77.16925032342995
+      }
+    }
+  },
+  {
+    "variant": "simple_control_only_app",
+    "seconds": 0.39100000000325963,
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "tool_calls",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "baxy_app__open",
+                  "arguments": "{}"
+                },
+                "id": "TpQWBVI2Y2lgThiJulEsUo5ExkStFXGP"
+              }
+            ]
+          }
+        }
+      ],
+      "created": 1788824365,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 17,
+        "prompt_tokens": 591,
+        "total_tokens": 608,
+        "prompt_tokens_details": {
+          "cached_tokens": 502
+        }
+      },
+      "id": "chatcmpl-Da0kOmu3NEeCVeh0GjRHmN0B7PnKt2rx",
+      "timings": {
+        "cache_n": 502,
+        "prompt_n": 89,
+        "prompt_ms": 140.682,
+        "prompt_per_token_ms": 1.580696629213483,
+        "prompt_per_second": 632.6324618643466,
+        "predicted_n": 17,
+        "predicted_ms": 223.762,
+        "predicted_per_token_ms": 13.162470588235294,
+        "predicted_per_second": 75.97357907061968
+      }
+    }
+  }
+]

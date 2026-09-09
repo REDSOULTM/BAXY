@@ -21,7 +21,7 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
-from .effect_intent import enumerated_note_dependency_order
+from .effect_intent import enumerated_note_dependency_order, has_named_window_target
 
 MAX_PLAN_STEPS = 16
 # Cuántas operaciones ve el decisor. El ranking es por operación: no hay ventana
@@ -209,8 +209,10 @@ def conditional_predecessors(
 
     predecessors = _CONDITIONAL_IDENTITY_PREDECESSORS.get(operation, ())
     opaque_evidence = _OPAQUE_ID_EVIDENCE.get(operation)
-    if predecessors and objective and (
-        opaque_evidence is not None and opaque_evidence.search(objective)
+    if (
+        predecessors
+        and objective
+        and (opaque_evidence is not None and opaque_evidence.search(objective))
     ):
         return ()
     return predecessors
@@ -533,7 +535,9 @@ def validate_skeleton(
         return PlanProposal(kind, "", ())
     if kind == "clarify":
         if not question.strip() or steps:
-            raise PlannerContractError("clarify requiere una sola pregunta y cero pasos")
+            raise PlannerContractError(
+                "clarify requiere una sola pregunta y cero pasos"
+            )
         return PlanProposal(kind, question, ())
     if not steps:
         raise PlannerContractError("plan requiere pasos")
@@ -560,7 +564,9 @@ def validate_skeleton(
         if step_id in seen:
             raise PlannerContractError("los step IDs deben ser únicos")
         if not isinstance(operation, str) or operation not in allowed:
-            raise PlannerContractError(f"step {step_id} usa una operación fuera de shortlist")
+            raise PlannerContractError(
+                f"step {step_id} usa una operación fuera de shortlist"
+            )
         tool = catalog.get(operation)
         if tool is None:
             raise PlannerContractError(f"step {step_id} usa una operación desconocida")
@@ -568,7 +574,10 @@ def validate_skeleton(
         if (
             not isinstance(dependencies, list)
             or len(dependencies) > MAX_PLAN_STEPS - 1
-            or any(not isinstance(value, str) or value not in seen for value in dependencies)
+            or any(
+                not isinstance(value, str) or value not in seen
+                for value in dependencies
+            )
             or len(set(dependencies)) != len(dependencies)
         ):
             raise PlannerContractError(
@@ -625,9 +634,7 @@ def validate_skeleton(
                 for dependency in dependencies
                 if by_id[dependency].operation != "note.create"
             )
-            dependencies = tuple(
-                dict.fromkeys((*dependencies, requested_dependency))
-            )
+            dependencies = tuple(dict.fromkeys((*dependencies, requested_dependency)))
             mode = "after_dependencies"
         conditional = conditional_predecessors(step.operation, objective)
         if conditional and objective:
@@ -637,7 +644,8 @@ def validate_skeleton(
             ):
                 producer = next(
                     (
-                        candidate for candidate in reversed(parsed[:index])
+                        candidate
+                        for candidate in reversed(parsed[:index])
                         if candidate.operation in conditional
                     ),
                     None,
@@ -653,13 +661,15 @@ def validate_skeleton(
                 mode = "after_dependencies"
         required_predecessors = _required_predecessors(step.operation)
         if not required_predecessors:
-            normalized.append(ProposedStep(
-                step.step_id,
-                step.operation,
-                step.purpose,
-                dependencies,
-                mode,
-            ))
+            normalized.append(
+                ProposedStep(
+                    step.step_id,
+                    step.operation,
+                    step.purpose,
+                    dependencies,
+                    mode,
+                )
+            )
             continue
         if not any(
             by_id[dependency].operation in required_predecessors
@@ -692,7 +702,9 @@ def attach_arguments(
         arguments = arguments_by_step.get(step.step_id)
         if step.arguments_mode == "literal":
             tool = catalog.get(step.operation)
-            if tool is None or not validate_json_schema_instance(arguments, tool.schema):
+            if tool is None or not validate_json_schema_instance(
+                arguments, tool.schema
+            ):
                 raise PlannerContractError(
                     f"los argumentos de {step.step_id} no cumplen el schema"
                 )
@@ -761,7 +773,11 @@ def _validate_property(value: Any, contract: Any) -> bool:
     enum = contract.get("enum")
     if isinstance(enum, list) and value not in enum:
         return False
-    if isinstance(value, bool) and "const" in contract and value is not contract["const"]:
+    if (
+        isinstance(value, bool)
+        and "const" in contract
+        and value is not contract["const"]
+    ):
         return False
     if isinstance(value, int) and not isinstance(value, bool):
         if "minimum" in contract and value < contract["minimum"]:
@@ -773,7 +789,10 @@ def _validate_property(value: Any, contract: Any) -> bool:
             return False
         if "maxLength" in contract and len(value) > contract["maxLength"]:
             return False
-        if "x-maxUtf8Bytes" in contract and len(value.encode("utf-8")) > contract["x-maxUtf8Bytes"]:
+        if (
+            "x-maxUtf8Bytes" in contract
+            and len(value.encode("utf-8")) > contract["x-maxUtf8Bytes"]
+        ):
             return False
         if contract.get("x-nonWhitespace") is True and not value.strip():
             return False
@@ -806,6 +825,14 @@ def validate_argument_grounding(
     properties = schema.get("properties")
     if not isinstance(properties, dict):
         return False
+    if (
+        "byTitle" in properties
+        and has_named_window_target(identity_text(trusted_source))
+        and arguments.get("byTitle") is not True
+    ):
+        # Removing an optional selector must not silently turn a title into
+        # a process name. Unlike a default limit, it changes target identity.
+        return False
     for name, value in arguments.items():
         property_schema = properties.get(name)
         if not isinstance(property_schema, dict):
@@ -835,14 +862,22 @@ def normalize_grounded_arguments(
 
     if not isinstance(arguments, dict) or not isinstance(schema, dict):
         return None
-    required = {
-        value for value in schema.get("required", []) if isinstance(value, str)
-    }
+    required = {value for value in schema.get("required", []) if isinstance(value, str)}
     candidate = dict(arguments)
     if validate_argument_grounding(candidate, schema, trusted_source):
         return candidate
+    properties = schema.get("properties")
+    if not isinstance(properties, dict):
+        return None
     for name in tuple(candidate):
-        if name not in required:
+        property_schema = properties.get(name)
+        if name not in required and (
+            not isinstance(property_schema, dict)
+            or not _validate_property(candidate[name], property_schema)
+            or not _value_is_grounded(
+                candidate[name], property_schema, trusted_source, property_name=name
+            )
+        ):
             candidate.pop(name)
     return (
         candidate
@@ -886,7 +921,10 @@ def _safe_text(
 
 
 def _contains_unsafe_text(value: str) -> bool:
-    return any(ord(character) in _UNSAFE_FORMAT_CODEPOINTS or char_is_control(character) for character in value)
+    return any(
+        ord(character) in _UNSAFE_FORMAT_CODEPOINTS or char_is_control(character)
+        for character in value
+    )
 
 
 def char_is_control(character: str) -> bool:
@@ -938,6 +976,7 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
     return {
         "app.close": ("window.resolve", "window.active"),
         "bluetooth.device.pair": ("bluetooth.device.list",),
+        "filesystem.read.text": ("filesystem.search", "filesystem.list"),
         "game.install.commit": ("game.install.prepare",),
         "game.purchase.commit": ("game.purchase.prepare",),
         "message.send": ("message.recipient.resolve",),
@@ -966,7 +1005,8 @@ def required_predecessors(operation: str) -> tuple[str, ...]:
 
 def is_required_predecessor(operation: str, steps: Sequence[ProposedStep]) -> bool:
     return any(
-        operation in (
+        operation
+        in (
             *_required_predecessors(step.operation),
             *_CONDITIONAL_IDENTITY_PREDECESSORS.get(step.operation, ()),
         )
@@ -992,6 +1032,10 @@ def _value_is_grounded(
     if isinstance(value, bool):
         if "const" in schema:
             return value is schema["const"]
+        if property_name == "byTitle":
+            # A selector describes which identity the request supplies; it is
+            # not an on/off effect requiring "enable" or "disable" vocabulary.
+            return value is has_named_window_target(identity_text(source))
         tokens = _tokens(source)
         true_signal = bool(tokens & _TRUE_CUES)
         false_signal = bool(tokens & _FALSE_CUES)
@@ -1027,7 +1071,10 @@ def _value_is_grounded(
             value.casefold() in source.casefold()
         )
     if property_name.endswith("Id"):
-        return _OPAQUE_ID.fullmatch(value) is not None and value.casefold() in source.casefold()
+        return (
+            _OPAQUE_ID.fullmatch(value) is not None
+            and value.casefold() in source.casefold()
+        )
     value_key = identity_text(value)
     source_key = identity_text(source)
     if not value_key:
@@ -1095,8 +1142,10 @@ def _dependency_operations(names: set[str]) -> tuple[str, ...]:
         required.add("window.resolve")
     if "app.close" in names:
         required.add("window.resolve")
-    if any(name in names for name in {"backup.create", "filesystem.read.text"}):
+    if "backup.create" in names:
         required.add("filesystem.list")
+    if "filesystem.read.text" in names and not {"filesystem.search", "filesystem.list"} & names:
+        required.add("filesystem.search")
     if any(name.endswith(".pair") for name in names):
         required.add("bluetooth.device.list")
     if "game.install.commit" in names:

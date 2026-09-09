@@ -1,0 +1,12 @@
+{
+  "frames": 250,
+  "audioSeconds": 8.0,
+  "adcFirst": 101709.8674698,
+  "adcLast": 101717.8352363,
+  "adcDeltaMin": 0.029337799991481006,
+  "adcDeltaMax": 0.03426190000027418,
+  "adcSpanSeconds": 7.967766500005382,
+  "effects": [],
+  "pcmRetained": false,
+  "exitCode": 0
+}

@@ -1,0 +1,10 @@
+n=8 published=6 other=2
+
+001	t1	published_final	abre la calculadora	No puedo abrir la calculadora, mi mente no está disponible.
+002	t2	composition_failed	cierra la calculadora	composition_failed
+003	t3	published_final	cancelar	Entendido, se cancela.
+004	t4	published_final	¿Qué hora es?	Son las 07:33.
+005	t5	composition_failed	close the calculator	composition_failed
+006	t6	published_final	cancel	¿Te refieres a cancelar algo en particular o simplemente quieres dejar de usar el calculador?
+007	t7	published_final	Tell me the time and the volume.	The local clock is 07:34. The volume level is 100. The audio is muted.
+008	t8	published_final	no abras Paint	El programa se llama Paint. No lo abriré.

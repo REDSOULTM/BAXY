@@ -1,0 +1,137 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 32%]
+........................................................................ [ 40%]
+........................................................................ [ 48%]
+........................................................................ [ 57%]
+.....................................................................F.. [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 81%]
+........................................................................ [ 89%]
+........................................................................ [ 97%]
+....................                                                     [100%]
+================================== FAILURES ===================================
+_____________ test_turn_policy_initial_payload_contract_is_exact ______________
+
+    def test_turn_policy_initial_payload_contract_is_exact() -> None:
+        runtime = object.__new__(LlmRuntime)
+        captured: dict[str, object] = {}
+        history = [
+            {"role": "user", "content": "Primer mensaje."},
+            {"role": "assistant", "content": "Primera respuesta."},
+            {"role": "user", "content": "Segundo mensaje."},
+            {"role": "assistant", "content": "Segunda respuesta."},
+            {"role": "user", "content": "Tercer mensaje."},
+            {"role": "assistant", "content": "Tercera respuesta."},
+            {"role": "user", "content": "Cuarto mensaje."},
+        ]
+    
+        def constrained(payload: dict, label: str) -> dict:
+            captured["payload"] = payload
+            captured["label"] = label
+            return {
+                "mode": "clarify",
+                "operation": "",
+                "question": "¿Qué necesitas?",
+                "conversation_kind": "",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "response_language": "mixed",
+            }
+    
+        runtime._post_schema_object = constrained  # type: ignore[method-assign]
+        runtime.decide_turn(
+            "Haz algo concreto.",
+            [
+                turn_candidate("app.open", "Abre una aplicación."),
+                turn_candidate("audio.volume", "Ajusta el volumen."),
+            ],
+            history=history,
+        )
+    
+        expected_schema = {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": ["conversation", "clarify", "action", "plan"],
+                },
+                # No `operation` and no `effect_count`: BAXY derives both rather
+                # than paying the model to write them.
+                "question": {"type": "string", "maxLength": 512},
+                "conversation_kind": {
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "social",
+                        "knowledge",
+                        "followup",
+                        "unsupported",
+                    ],
+                },
+                "effect_operations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": ["app.open", "audio.volume"],
+                    },
+                    "maxItems": 8,
+                },
+                "response_language": {
+                    "type": "string",
+                    "enum": ["es", "en", "mixed"],
+                },
+            },
+            "required": [
+                "mode",
+                "question",
+                "conversation_kind",
+                "effect_operations",
+                "response_language",
+            ],
+            "additionalProperties": False,
+        }
+        expected_payload = {
+            "messages": [
+                {"role": "system", "content": TURN_POLICY_PROMPT},
+                *history[-6:],
+                {
+                    "role": "user",
+                    "content": (
+                        "Operaciones candidatas:\n"
+                        "app.open | Abre una aplicación.\n"
+                        "audio.volume | Ajusta el volumen.\n\n"
+                        "Mensaje actual:\nHaz algo concreto."
+                    ),
+                },
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_turn_decision",
+                    "strict": True,
+                    "schema": expected_schema,
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 160,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+    
+        assert captured["label"] == "la política de turno"
+        payload = captured["payload"]
+        assert isinstance(payload, dict)
+>       assert payload == expected_payload
+E       AssertionError: assert {'messages': ...ns': 160, ...} == {'messages': ...ns': 160, ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'messages': [{'role': 'system', 'content': 'Eres la política contextual de turnos de BAXY. Con el mensaje actual, el ...uesta.'}, {'role': 'user', 'content': 'Tercer mensaje.'}, {'role': 'assistant', 'content': 'Tercera respuesta.'}, ...]} != {'messages': [{'role': 'system', 'content': 'Eres la política contextual de turnos de BAXY. Con el mensaje actual, el ...uesta.'}, {'role': 'user', 'content': 'Tercer mensaje.'}, {'role': 'assistant', 'content': 'Tercera respuesta.'}, ...]}
+E         Use -v to get more diff
+
+tests\test_turn_policy.py:6043: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_turn_policy_initial_payload_contract_is_exact
+1 failed, 883 passed in 5.63s

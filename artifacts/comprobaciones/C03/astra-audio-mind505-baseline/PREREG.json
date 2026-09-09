@@ -1,0 +1,91 @@
+{
+  "utc": "2026-09-08T22:21:48.912643+00:00",
+  "method": "505 baseline: identical seven consumed development conversations, fresh sidecar; private chat-boundary observer. See parent astra-chat-draft505/PREREG.json.",
+  "profile_reason": "Current registered runtime baseline for source regression, not a model-capability ranking or claim that defaults are optimal. Model-specific profile research448-484 remains; a bad result here is inspected at its first boundary, not a new default-based model rejection.",
+  "cases": [
+    {
+      "id": "definition-es",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "definition-en",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "ram-new-topic",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "name-es",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "name-en",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "recall-es",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "recall-en",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": []
+    }
+  ],
+  "criteria": "Seven prior development cases: useful direct definition, correct human name/actor, correct language, no selector prose, no invented machine state or operation. All guards retained. Compare latency and resources; no provider, reserve, acceptance or model-ranking credit.",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "server": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+  "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "core": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+  "core_sha256": "5bed2b1e4d15c7d21d07ca9c906193778797096dfe62c045ec9298368a3fa6ec",
+  "source_sha256": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py": "efe4545df50a755ccdd55ff80b70d26e925d33b918af1ba437177e85991bee90",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\llm.py": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\__main__.py": "a884ba797eae6117cd556d660fe2f1a6f68967e0dab1360af29fd246dd6a4923"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio-mind505-baseline-private",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 90
+  }
+}

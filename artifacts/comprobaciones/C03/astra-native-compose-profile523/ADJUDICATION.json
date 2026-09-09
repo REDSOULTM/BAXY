@@ -1,0 +1,415 @@
+{
+  "rows": [
+    {
+      "case": "disabled-save-error",
+      "profile": "registered-seed0",
+      "text": "The memory save operation failed because memory was disabled.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.25,
+      "completion_tokens": 11
+    },
+    {
+      "case": "disabled-save-error",
+      "profile": "documented-seed0",
+      "text": "The memory save operation failed because memory was disabled.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.2340000000258442,
+      "completion_tokens": 11
+    },
+    {
+      "case": "disabled-save-error",
+      "profile": "documented-seed17",
+      "text": "The memory save operation failed because memory was disabled.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.21899999998277053,
+      "completion_tokens": 11
+    },
+    {
+      "case": "enable-confirmation",
+      "profile": "documented-seed0",
+      "text": "Alright, Jordan. I remember your name. Want to confirm or cancel the memory enable action? Pick either confirm or cancel.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "Still asks a decision, but names a memory enable action with less clear private/local scope and internal phrasing; not a quality improvement.",
+      "control_result": null,
+      "seconds": 0.48399999999674037,
+      "completion_tokens": 26
+    },
+    {
+      "case": "enable-confirmation",
+      "profile": "documented-seed17",
+      "text": "Alright, Jordan. I remember your name. Want to confirm or cancel the memory enable action? Pick either confirm or cancel.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "Still asks a decision, but names a memory enable action with less clear private/local scope and internal phrasing; not a quality improvement.",
+      "control_result": null,
+      "seconds": 0.5,
+      "completion_tokens": 26
+    },
+    {
+      "case": "enable-confirmation",
+      "profile": "registered-seed0",
+      "text": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.625,
+      "completion_tokens": 37
+    },
+    {
+      "case": "enable-result",
+      "profile": "documented-seed17",
+      "text": "Memory configuration enabled successfully. Operation completed.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "Still a configuration/operation receipt, with redundant completion language; no improvement in voice.",
+      "control_result": null,
+      "seconds": 0.21900000001187436,
+      "completion_tokens": 9
+    },
+    {
+      "case": "enable-result",
+      "profile": "registered-seed0",
+      "text": "Memory configuration enabled successfully. Operation completed.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "Still a configuration/operation receipt, with redundant completion language; no improvement in voice.",
+      "control_result": null,
+      "seconds": 0.21899999998277053,
+      "completion_tokens": 9
+    },
+    {
+      "case": "enable-result",
+      "profile": "documented-seed0",
+      "text": "Memory configuration enabled successfully. Operation completed.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "Still a configuration/operation receipt, with redundant completion language; no improvement in voice.",
+      "control_result": null,
+      "seconds": 0.1870000000053551,
+      "completion_tokens": 9
+    },
+    {
+      "case": "save-result",
+      "profile": "registered-seed0",
+      "text": "Memory saved successfully. No corrections made. Status confirmed as completed.",
+      "finish_reason": "stop",
+      "critical_target_fixed": false,
+      "issue": "Same internal correction/completion metadata narration with both profiles; critical target not repaired.",
+      "control_result": null,
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 14
+    },
+    {
+      "case": "save-result",
+      "profile": "documented-seed0",
+      "text": "Memory saved successfully. No corrections made. Status confirmed as completed.",
+      "finish_reason": "stop",
+      "critical_target_fixed": false,
+      "issue": "Same internal correction/completion metadata narration with both profiles; critical target not repaired.",
+      "control_result": null,
+      "seconds": 0.2659999999741558,
+      "completion_tokens": 14
+    },
+    {
+      "case": "save-result",
+      "profile": "documented-seed17",
+      "text": "Memory saved successfully. No corrections made. Status confirmed as completed.",
+      "finish_reason": "stop",
+      "critical_target_fixed": false,
+      "issue": "Same internal correction/completion metadata narration with both profiles; critical target not repaired.",
+      "control_result": null,
+      "seconds": 0.2970000000204891,
+      "completion_tokens": 14
+    },
+    {
+      "case": "app-clarification",
+      "profile": "documented-seed0",
+      "text": "¿Cuál aplicación específicamente quieres que abra?",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.23399999999674037,
+      "completion_tokens": 12
+    },
+    {
+      "case": "app-clarification",
+      "profile": "documented-seed17",
+      "text": "¿De qué aplicación te refieres?",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.1870000000053551,
+      "completion_tokens": 9
+    },
+    {
+      "case": "app-clarification",
+      "profile": "registered-seed0",
+      "text": "¿De qué aplicación te refieres?",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.2029999999795109,
+      "completion_tokens": 9
+    },
+    {
+      "case": "progress",
+      "profile": "documented-seed17",
+      "text": "Estoy revisando la solicitud del usuario. No se han obtenido aún los resultados solicitados.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "First-person verb but refers to the user in third person and asserts result absence from the progress instruction; no improvement.",
+      "control_result": null,
+      "seconds": 0.375,
+      "completion_tokens": 21
+    },
+    {
+      "case": "progress",
+      "profile": "registered-seed0",
+      "text": "Estoy revisando la solicitud del usuario. Aún no se han obtenido los resultados solicitados.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "First-person verb but refers to the user in third person and asserts result absence from the progress instruction; no improvement.",
+      "control_result": null,
+      "seconds": 0.39100000000325963,
+      "completion_tokens": 22
+    },
+    {
+      "case": "progress",
+      "profile": "documented-seed0",
+      "text": "Estoy revisando la solicitud del usuario. No se han obtenido resultados aún.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": "First-person verb but refers to the user in third person and asserts result absence from the progress instruction; no improvement.",
+      "control_result": null,
+      "seconds": 0.32800000000861473,
+      "completion_tokens": 18
+    },
+    {
+      "case": "disable-result",
+      "profile": "registered-seed0",
+      "text": "La memoria privada ha sido desactivada. El estado actual indica que está deshabilitada.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.375,
+      "completion_tokens": 22
+    },
+    {
+      "case": "disable-result",
+      "profile": "documented-seed0",
+      "text": "La memoria privada ha sido desactivada. El estado actual indica que está deshabilitada.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.375,
+      "completion_tokens": 22
+    },
+    {
+      "case": "disable-result",
+      "profile": "documented-seed17",
+      "text": "La memoria privada ha sido desactivada. El estado actual indica que está deshabilitada.",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.375,
+      "completion_tokens": 22
+    },
+    {
+      "case": "clock-result",
+      "profile": "documented-seed0",
+      "text": "21:24",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.1879999999946449,
+      "completion_tokens": 6
+    },
+    {
+      "case": "clock-result",
+      "profile": "documented-seed17",
+      "text": "21:24",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.17199999999138527,
+      "completion_tokens": 6
+    },
+    {
+      "case": "clock-result",
+      "profile": "registered-seed0",
+      "text": "21:24",
+      "finish_reason": "stop",
+      "critical_target_fixed": null,
+      "issue": null,
+      "control_result": "Factual useful control retained; acceptable variation in clarification. Captured clock is replayed evidence, not live time.",
+      "seconds": 0.20300000000861473,
+      "completion_tokens": 6
+    },
+    {
+      "case": "memory-capability-disabled",
+      "profile": "documented-seed17",
+      "text": "No, no tengo memoria local. El estado indica que la memoria local está desactivada.",
+      "finish_reason": "stop",
+      "critical_target_fixed": false,
+      "issue": "Denies having local memory while the observed store exists but is disabled; critical target not repaired.",
+      "control_result": null,
+      "seconds": 0.375,
+      "completion_tokens": 20
+    },
+    {
+      "case": "memory-capability-disabled",
+      "profile": "registered-seed0",
+      "text": "No, no tengo memoria local. El estado actual indica que la memoria local está deshabilitada.",
+      "finish_reason": "stop",
+      "critical_target_fixed": false,
+      "issue": "Denies having local memory while the observed store exists but is disabled; critical target not repaired.",
+      "control_result": null,
+      "seconds": 0.40599999998812564,
+      "completion_tokens": 22
+    },
+    {
+      "case": "memory-capability-disabled",
+      "profile": "documented-seed0",
+      "text": "No, no tengo memoria local. El estado indica que la memoria local está desactivada.",
+      "finish_reason": "stop",
+      "critical_target_fixed": false,
+      "issue": "Denies having local memory while the observed store exists but is disabled; critical target not repaired.",
+      "control_result": null,
+      "seconds": 0.375,
+      "completion_tokens": 20
+    }
+  ],
+  "effective_sampler_counts": {
+    "registered": 9,
+    "documented": 18
+  },
+  "effective_sampler_log": [
+    {
+      "line": 221,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 240,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 259,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 278,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 297,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 316,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 335,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 354,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 373,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 392,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 411,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 430,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 449,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 468,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 487,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 506,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 525,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 544,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 563,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 582,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 601,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 620,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 639,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 658,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 677,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 696,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 715,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    }
+  ]
+}

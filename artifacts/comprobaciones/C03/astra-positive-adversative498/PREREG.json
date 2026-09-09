@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-08T20:58:40.170019+00:00",
+  "hypothesis": "An explicit second action after pero/but is lost by the clause separator, independently of the model.",
+  "source_before_sha256": "29be609fc50ea37788483422c62a5cccf5fe7d409f17c831d1c57fbdb35923d8",
+  "tests_preregistered_sha256": "d9e0e7287c9e95af4f7527e9c159ac5cfb7e729be9ece1d781883c1bb0eb0b7d",
+  "cases": "Nine synthetic development cases in test_positive_adversative*: six positive ordered pairs, two quoted-content controls, one unavailable operation.",
+  "intervention": "Add pero/but as a positive separator only when the existing explicit action head follows; preserve independent negative and genuine correction guards.",
+  "validation": "Record new focal baseline first. Then new focal plus sixteen existing487 tests; five owner suites and Fast gate after green. No Full during repair.",
+  "limits": "Does not reconstruct the antecedent for owner264 turn51, execute effects, qualify a runtime, or use the fresh human reserve."
+}

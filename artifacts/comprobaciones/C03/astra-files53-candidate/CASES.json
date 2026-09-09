@@ -1,0 +1,37 @@
+{
+  "kind": "consumed and synthetic technical development; not human acceptance",
+  "texts": [
+    "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/ausente47.txt\".",
+    "Lee el contenido del archivo \"c03-lectura.txt\" del sandbox.",
+    "Read the file \"c03-invalid-utf8.txt\" in the sandbox.",
+    "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/files53-outside/c03-sombra.txt\".",
+    "Dime la hora."
+  ],
+  "profile": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\comprobaciones-c03-files53-candidate",
+  "expectations": [
+    "Useful scope boundary or scoped lookup result; do not ask for the path already given.",
+    "Read the real UTF8 fixture and report its literal content.",
+    "Report the real UTF8 failure with a useful cause, without fabricated content.",
+    "Do not substitute the sandbox file with the same basename for the explicit outside path.",
+    "Verified clock recovery in the same product process."
+  ],
+  "fixtures": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\comprobaciones-c03-files53-candidate\\filesystem-sandbox\\c03-lectura.txt": {
+      "bytes": 55,
+      "sha256": "5f235e263178800a191a8bb3a0f2bc722a9f10a53ca511c7239a49f4c3f290e8"
+    },
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\comprobaciones-c03-files53-candidate\\filesystem-sandbox\\c03-invalid-utf8.txt": {
+      "bytes": 20,
+      "sha256": "01005bfa8d1964065ed0c116bd1f835cfc40bdb0346adf66454cc0a3943fce05"
+    },
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\comprobaciones-c03-files53-candidate\\filesystem-sandbox\\c03-sombra.txt": {
+      "bytes": 56,
+      "sha256": "2bcf58883c1ed0aa433354e274c957029b690a04eef63121303b67fc0cda628c"
+    },
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-fixtures\\files53-outside\\c03-sombra.txt": {
+      "bytes": 56,
+      "sha256": "fde25fd8f330ad40f2f8df45de475823eac83f16804c6d3ffb0464adb4ff3980"
+    }
+  },
+  "absentPath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-fixtures\\ausente47.txt"
+}

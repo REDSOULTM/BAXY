@@ -1,0 +1,293 @@
+[
+  {
+    "turnId": "t1",
+    "request": "cierra la calculadora",
+    "terminal": "published_final",
+    "final": "No puedo cerrar la calculadora porque no es una acción segura.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 63,
+        "draft_sha256": "fe46f5abde258c14589920cec5bca447a18178e2127372625440a63ee5f4bffc",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unsafe completion"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"unsafe_completion\"}",
+        "draft": "No puedo cerrar la calculadora porque no es una acción segura."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "Entendido, se cancela.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "person_metadiscourse",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 22,
+        "draft_sha256": "63accfde71e99a66eb7c0ae0f3ed5b086ce45d7e7fdf558fe1a073f452eb435f",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Entendido, se cancela."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "¿Qué hora es?",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "missing_literal_fact;recovery:missing_literal_fact;retry_exhausted",
+    "compositionFailure": "missing_literal_fact;recovery:missing_literal_fact;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "a959a9447785de0042eecaf8c2e7c24d0e848ea87fa416b5d4c5e3149e720f34",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 horas y 58 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 16,
+        "draft_sha256": "18048fd3dd2ac27e7b0dd7e6b0db2594fc5ca2b51f9ad1ab74786d2c2a642c3b",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 y 58."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "a959a9447785de0042eecaf8c2e7c24d0e848ea87fa416b5d4c5e3149e720f34",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 horas y 58 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "a959a9447785de0042eecaf8c2e7c24d0e848ea87fa416b5d4c5e3149e720f34",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 horas y 58 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 16,
+        "draft_sha256": "18048fd3dd2ac27e7b0dd7e6b0db2594fc5ca2b51f9ad1ab74786d2c2a642c3b",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 y 58."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "a959a9447785de0042eecaf8c2e7c24d0e848ea87fa416b5d4c5e3149e720f34",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 horas y 58 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "a959a9447785de0042eecaf8c2e7c24d0e848ea87fa416b5d4c5e3149e720f34",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 horas y 58 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 16,
+        "draft_sha256": "18048fd3dd2ac27e7b0dd7e6b0db2594fc5ca2b51f9ad1ab74786d2c2a642c3b",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 y 58."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "a959a9447785de0042eecaf8c2e7c24d0e848ea87fa416b5d4c5e3149e720f34",
+        "payload": {
+          "clock": "07:58"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:58:26.7754686+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07 horas y 58 minutos."
+      }
+    ]
+  }
+]

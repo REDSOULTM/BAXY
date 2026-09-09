@@ -1,0 +1,175 @@
+{
+  "utc": "2026-09-07T18:55:42.874787+00:00",
+  "public": [
+    {
+      "path": "scratchpad\\c03-capture220.py",
+      "sha256": "3cd93206f30f1b9d6f15319d59854ee71da2833a4bd023a57db9ba37f259802f"
+    },
+    {
+      "path": "scratchpad\\c03-voice221.py",
+      "sha256": "a0a416f68119e1e17ccdbd733cf4678c314a7efcfd025d3ef6c911543e706dcf"
+    },
+    {
+      "path": "scratchpad\\c03-replay222.py",
+      "sha256": "4b34269de324e9ea1d52cd66ad1dadc2b1303c2805475671e77c51aeb50aaf90"
+    },
+    {
+      "path": "scratchpad\\c03-seal222.py",
+      "sha256": "3721384734eb82f167c1e7427f91f23168a5236cc63228652dc55753a86b05b6"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_RAW220_221.md",
+      "sha256": "e321f9a1fdbd99249921c42f6e3e8d93209d86e77bbacc72bcdf42e7930d48c6"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\DIAGNOSTICO_SEGMENTACION222.md",
+      "sha256": "25ce8707665cceb352989b3ca89c8a49b2989055206f828ab12b4b5285108771"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-capture220\\ACTUAL_STREAM_EFFECTS.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-capture220\\COMPLETE.json",
+      "sha256": "46ce5dd1fb52c932b0917025dc5383cb9d4f164cd79919530b4a8fadd6b97ca0"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-capture220\\Fast.log",
+      "sha256": "815ab8caec34807a2c443b8e045594ddeb8e653d973b7b8efc94a46a9b87142a"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-capture220\\PREREG.json",
+      "sha256": "f74a945a1d8eb479422dd34d4df0b525a1d845d0d0bf492f66d647c68b921366"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice221\\AUDIO_SETUP.json",
+      "sha256": "fd4b406eb897d47f26aebd98ba8925938fd9683f222a483814e145561f215b0f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice221\\COMPLETE.json",
+      "sha256": "c008ab0a2b1001cf81b00cd08b12c53e144c2cd24e04a33ae2f53da904050fde"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice221\\PREREG.json",
+      "sha256": "cbe3cf62b45286f344f53ef3fdbe20c7d36c717da9dd96a0e62ae1ee8ecde838"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice221\\RESULTS.json",
+      "sha256": "011cd3eed9419881fc2987bf5296361ac7a161c22219c0c62f5679ccb5a1aadf"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-replay222\\PREREG.json",
+      "sha256": "b1d6d1e56f1ec841eee84df2a930ed1e29c9d556ad6eb13e06101a25536c5cd1"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-replay222\\RESULTS.json",
+      "sha256": "170d55c2befb81c599b5c8921cdf7572baed594a72544fc6aa0b2602f2b6d6a5"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-replay222\\SPEECH_FRAMES.json",
+      "sha256": "7b9b4e810e3b02cbbe1d474ac4081df75ff220657d05492e9e064b71a69d6bed"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\constraints-runtime-win-x64.txt",
+      "sha256": "f5f78b60be0203e06eb9a12ab58cc1a2ef8f472271270393628ac036ba26d734"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\FILES.json",
+      "sha256": "2dc819eb179e3c8e31c518922f8c3607373284381769fa707688c84ad3371392"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\pylock.runtime-win-x64.toml",
+      "sha256": "c3e8c469f57113a336ac71ee475c2843675048f4414fa05a3283cf076275c10f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\docs\\AI_CONTEXT_MAP.md",
+      "sha256": "49a18a6ffdd15e80c6462c0f11bb3350d9525d45e92bfce5f6888c75ffbfc570"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\runtime_wheels\\README.md",
+      "sha256": "0e8818f013f1aae6382a63f90c5bb8c2b7846ad5d820aac9e50da1c1e3a5b39f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\runtime_wheels\\sherpa-nemo-normalization.patch",
+      "sha256": "79cb34698cf0fb6083d8f66ab194970e5fddef9e26422f469183822412e87c48"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\runtime_wheels\\sherpa-nemo-stream-decoder.patch",
+      "sha256": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\scripts\\build_sherpa_runtime.py",
+      "sha256": "66dc09466f29e6032459a03534c8462e4ba1bb1de77c6dbbabfea381a595874f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\scripts\\lock_python_dependencies.ps1",
+      "sha256": "c187c4a9135c256ee710141a32b4f701b49364deaa3c1bb3518be2125a9e0baa"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\scripts\\verify_python_runtime_lock.py",
+      "sha256": "43a9eb2b4f98094e9c5df4d00041708141c47305957be4b2cf999d6b7656ea46"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\tests\\test_mind_voice_runtime.py",
+      "sha256": "f104d71658637f70ac768dfd8daf2312025a7a074688ea178c467b1989742384"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\tests\\test_python_runtime_lock.py",
+      "sha256": "a3ecdefd8292640176d52e5b26c7b34d659ea728e83cf4aba153a3d896ac661f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\tests\\test_sherpa_runtime_package.py",
+      "sha256": "7a3032514588868b42f3d8fc100a9e6376f4e03fcbc4b9056e0743b2d6ab93ff"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\tests\\test_voice_capture_clock.py",
+      "sha256": "1317aae21d1f56fa2bfbace4be4ee7913b52c69dc89528f60fc453cd884f880c"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\src\\baxy_mind\\requirements-voice.txt",
+      "sha256": "2dc4c33303fe0411556bd4bce045754119829663ecb6834d9db2b24358318e15"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\src\\baxy_mind\\speex_aec.py",
+      "sha256": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\src\\baxy_mind\\voice.py",
+      "sha256": "87f3e491d909515d592d190b82d5262e4fecd1d5d03e5a1b91c00d480a4450d1"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source220-snapshot\\src\\baxy_mind\\voice_capture.py",
+      "sha256": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3"
+    }
+  ],
+  "private": [
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\EVENTS.json",
+      "sha256": "6b00bc90c62caef21639eb5160b5d8fda98f29806147fe0ec5f92b2f360d5a25"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\generated221.json",
+      "sha256": "3e84bfb7dedcccedea37b13dddd91688fa96b8d0fe3b118ced783f4b6e823d23"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\generated221.npz",
+      "sha256": "325b335f5f2e252081261f5f0b52f17096681f7687f796fb7c096e5f1bbef176"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\STATUS.json",
+      "sha256": "3e9e4ea0564960d662fc9127bd91d4d8e3db218d49765ed8f8a835fe69b8a33b"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\tap221.npz",
+      "sha256": "c6c6e6d8d07727731a749ecfa34b27c4e828e674062749539a4406c3fd789f3d"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-replay222-private\\SEGMENTS.json",
+      "sha256": "9a49528b30c01aca47ad00941a56077e4ef1b791dbc83fa758a47d046f818c2a"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-replay222-private\\segments222.npz",
+      "sha256": "cfa85e19d2a4a9840d5e7fb507662c5c07eb67e0e77ce5d193b9e77db262dac9"
+    }
+  ]
+}

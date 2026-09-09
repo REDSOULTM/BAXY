@@ -1,0 +1,25 @@
+{
+  "method": "Current192 LlmRuntime.compose_user_message on exactly the two new structured causes; empty user text as App enqueues. Normal composition guards/recovery stay enabled; capture actual HTTP requests/responses. Native composer only: not proof of App queue publication, UI, voice, reserve or full criterion.",
+  "cases": [
+    [
+      "wake",
+      "conversation",
+      "voice_wake_listening",
+      "success"
+    ],
+    [
+      "uncertain",
+      "clarification",
+      "voice_transcript_uncertain",
+      "pending"
+    ]
+  ],
+  "sourceFiles": {
+    "src/baxy_mind/llm.py": "79ea1c186830da43bd94cd459e11811f7f881992e2308fb048a7991b23fd8b17",
+    "src/baxy_mind/voice.py": "034e05dc7efcf984bd51248314715d51cc52acc9fea3ec401f369ede87a652ac",
+    "src/Baxy.App/MainWindowViewModel.cs": "16182b316a851feb3fc751bf0979b76eecbd4208a1c91d68bbbb6b45e698bff9",
+    "src/Baxy.App/TurnVisibleFacts.cs": "a5173eeba8db6884e37ddc33ed8934354fcf049951fe14faaf560bdd8be078e7"
+  },
+  "runtimeManifestSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "modelOverride": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf"
+}

@@ -1,0 +1,50 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_status_composition_preserves_that_the_transition_already_happened[cancelar-He cancelado la aclaraci\xf3n pendiente.] _
+
+user_text = 'cancelar', response = 'He cancelado la aclaraci�n pendiente.'
+
+    @pytest.mark.parametrize("user_text, response", [
+        ("cancelar", "He cancelado la aclaraci�n pendiente."),
+        ("cancel that", "The pending clarification is cancelled."),
+    ])
+    def test_status_composition_preserves_that_the_transition_already_happened(
+        user_text: str, response: str,
+    ) -> None:
+        client = Recorder([response])
+        assert client.compose_user_message(user_text, "status", {
+            "situation": json.dumps({
+                "kind": "status", "polarity": "success", "cause": "clarification_cancelled",
+            }),
+        }) == response
+        content = client.payloads[0]["messages"][-1]["content"]
+>       assert '"outcome": "completed"' in content
+E       assert '"outcome": "completed"' in 'Texto original de la persona: cancelar\nsituation: {"cause": "clarification cancelled"}\nIdioma obligatorio: espa�ol. Fuera de los literales del contrato, no introduzcas palabras inglesas.'
+
+tests\test_c03_request_preservation.py:37: AssertionError
+_ test_status_composition_preserves_that_the_transition_already_happened[cancel that-The pending clarification is cancelled.] _
+
+user_text = 'cancel that', response = 'The pending clarification is cancelled.'
+
+    @pytest.mark.parametrize("user_text, response", [
+        ("cancelar", "He cancelado la aclaraci�n pendiente."),
+        ("cancel that", "The pending clarification is cancelled."),
+    ])
+    def test_status_composition_preserves_that_the_transition_already_happened(
+        user_text: str, response: str,
+    ) -> None:
+        client = Recorder([response])
+        assert client.compose_user_message(user_text, "status", {
+            "situation": json.dumps({
+                "kind": "status", "polarity": "success", "cause": "clarification_cancelled",
+            }),
+        }) == response
+        content = client.payloads[0]["messages"][-1]["content"]
+>       assert '"outcome": "completed"' in content
+E       assert '"outcome": "completed"' in 'Texto original de la persona: cancel that\nsituation: {"cause": "clarification cancelled"}\nMandatory language: English. Outside literal contract items, do not introduce Spanish words such as �Listo� or �encontr�.\nEnglish only.'
+
+tests\test_c03_request_preservation.py:37: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_status_composition_preserves_that_the_transition_already_happened[cancelar-He cancelado la aclaraci\xf3n pendiente.]
+FAILED tests/test_c03_request_preservation.py::test_status_composition_preserves_that_the_transition_already_happened[cancel that-The pending clarification is cancelled.]
+2 failed, 33 deselected in 0.67s

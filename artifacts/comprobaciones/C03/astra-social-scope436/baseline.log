@@ -1,0 +1,40 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_ test_explicit_social_turn_does_not_compute_unused_semantic_candidates[Gracias-De nada.-es] _
+tests\test_turn_policy.py:4343: in test_explicit_social_turn_does_not_compute_unused_semantic_candidates
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6456: in _prepare_turn_result
+    reply_text, _ = llm.chat(
+tests\test_turn_policy.py:4337: in chat
+    assert kwargs["history"] == []
+E   AssertionError: assert [{'role': 'us...ate memory.'}] == []
+E     
+E     Left contains 2 more items, first extra item: {'role': 'user', 'content': 'My name is Jordan. Remember my name.'}
+E     Use -v to get more diff
+_ test_explicit_social_turn_does_not_compute_unused_semantic_candidates[Me llamo \xc1lvaro.-Encantado, \xc1lvaro.-es] _
+tests\test_turn_policy.py:4343: in test_explicit_social_turn_does_not_compute_unused_semantic_candidates
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6456: in _prepare_turn_result
+    reply_text, _ = llm.chat(
+tests\test_turn_policy.py:4337: in chat
+    assert kwargs["history"] == []
+E   AssertionError: assert [{'role': 'us...ate memory.'}] == []
+E     
+E     Left contains 2 more items, first extra item: {'role': 'user', 'content': 'My name is Jordan. Remember my name.'}
+E     Use -v to get more diff
+_ test_explicit_social_turn_does_not_compute_unused_semantic_candidates[My name is Nina.-Nice to meet you, Nina.-en] _
+tests\test_turn_policy.py:4343: in test_explicit_social_turn_does_not_compute_unused_semantic_candidates
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6456: in _prepare_turn_result
+    reply_text, _ = llm.chat(
+tests\test_turn_policy.py:4337: in chat
+    assert kwargs["history"] == []
+E   AssertionError: assert [{'role': 'us...ate memory.'}] == []
+E     
+E     Left contains 2 more items, first extra item: {'role': 'user', 'content': 'My name is Jordan. Remember my name.'}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_explicit_social_turn_does_not_compute_unused_semantic_candidates[Gracias-De nada.-es]
+FAILED tests/test_turn_policy.py::test_explicit_social_turn_does_not_compute_unused_semantic_candidates[Me llamo \xc1lvaro.-Encantado, \xc1lvaro.-es]
+FAILED tests/test_turn_policy.py::test_explicit_social_turn_does_not_compute_unused_semantic_candidates[My name is Nina.-Nice to meet you, Nina.-en]
+3 failed, 1002 deselected in 2.72s

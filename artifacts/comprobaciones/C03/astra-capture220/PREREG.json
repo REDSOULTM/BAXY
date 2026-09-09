@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-07T18:47:32.695791+00:00",
+  "scriptSha256": "3cd93206f30f1b9d6f15319d59854ee71da2833a4bd023a57db9ba37f259802f",
+  "sourceSha256": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+  "probeSha256": "95ec923fcfd15cb8a4dec8de7c2051e9ad77779dc83c3851e26cc311d21e0575",
+  "sounddevice": "0.5.5",
+  "portaudioSha256": "ec080194f01e4095c7fb43dbd7ed05af922c5b34295056a9ff56782741d65481",
+  "method": "Real unchanged WasapiCaptureStream, 250 consecutive frames at16k. Inspect actual borrowed IAudioClient effects through211 read-only helper after opening. Do not alter volume, synthesize speech or retain microphone PCM.",
+  "criterion": "No active adaptive AEC/NS effects; 250 finite mono512 frames, no overflow, native ADC positive and strictly increasing. Record actual timing deviations. This is capture integration only, not voice or echo acceptance."
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "phase": "direct-0",
+    "sampleRate": 22050,
+    "samples": 82862,
+    "seconds": 3.7579138321995464,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice154-private\\direct-0-generated.npy",
+    "sha256": "69e0067d24f518ccff4069fd34cf09589773cb9bf91c96a63c2995e4feaa5458"
+  },
+  {
+    "phase": "direct-1",
+    "sampleRate": 22050,
+    "samples": 35386,
+    "seconds": 1.6048072562358278,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice154-private\\direct-1-generated.npy",
+    "sha256": "b3c0ebede6b9064d17f2f507f0a6d0fc5c83725ba0cca02632618490358c848b"
+  },
+  {
+    "phase": "direct-2",
+    "sampleRate": 22050,
+    "samples": 35386,
+    "seconds": 1.6048072562358278,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice154-private\\direct-2-generated.npy",
+    "sha256": "652772cc8b383c21e242da0bcfc2fe84f1cb752f3b3961e4f2eb650a17dc4ec6"
+  },
+  {
+    "phase": "direct-3",
+    "sampleRate": 22050,
+    "samples": 95034,
+    "seconds": 4.309931972789116,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice154-private\\direct-3-generated.npy",
+    "sha256": "c9b5ef728f3189572ac223822e27673ca70aa926d9b7ce9bb6233b1cecb2705b"
+  },
+  {
+    "phase": "direct-4",
+    "sampleRate": 22050,
+    "samples": 36154,
+    "seconds": 1.6396371882086167,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice154-private\\direct-4-generated.npy",
+    "sha256": "913e18203cc11001daa96ed45fe44dd5f426dff2febc84014ef2a75aa27fbb63"
+  },
+  {
+    "phase": "direct-5",
+    "sampleRate": 22050,
+    "samples": 88378,
+    "seconds": 4.008072562358277,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice154-private\\direct-5-generated.npy",
+    "sha256": "c145428da1b57218ce5b174609601fca4a9eef1c54dcdd5f4bb1e1e9f71f07a8"
+  }
+]

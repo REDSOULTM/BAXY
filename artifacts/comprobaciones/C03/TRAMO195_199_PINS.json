@@ -1,0 +1,391 @@
+{
+  "public": [
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_HUMANOS195_199.md",
+      "sha256": "45a9d1310da61cd4760a7ecadb91ff62ee1bb6c233be0909bf5134e54f20fbd2",
+      "bytes": 6577
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\PREREG.json",
+      "sha256": "b29d4466df4f8f318594afcb4bc1f216491c0b49370c6fcd57222adcbcf6092d",
+      "bytes": 816
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\PREREG-TAR.json",
+      "sha256": "b2f82a5e89aea98e29fc4b1f9fa5a9f5278d1666a13ce40371a0879666ccc7c2",
+      "bytes": 1033
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\DATASET.json",
+      "sha256": "7f45447b30f6d2b7477b3cc4808f931823fa365c9193c34d4500c1c41a717595",
+      "bytes": 132
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\DOWNLOADS.json",
+      "sha256": "1d9608bdf9cac943914e7bd359cfb8273624357b6ffbdab1a9ef8381335a4e2d",
+      "bytes": 4403
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\COMPLETE.json",
+      "sha256": "1abfb89ecb22f50c3441e43992817de013ee4ec72783eba2b7c0689622152e99",
+      "bytes": 51
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\es_419-TRANSFER.json",
+      "sha256": "c5a78b014bbf1b259db7192c2bbecd2eccc2d1040710cc3738df5ab690e9e029",
+      "bytes": 102
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human195\\en_us-TRANSFER.json",
+      "sha256": "83eca974cc1da37ab05f856522a44d6c57e73a7b678af7069873cc9ab9f74d52",
+      "bytes": 101
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-find-audio196\\PREREG.json",
+      "sha256": "b880bcf2955624c1a6d78bb1cd53cccd778351c22b6bdd70f19b25a535702246",
+      "bytes": 1345
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-find-audio196\\RESULTS.json",
+      "sha256": "6e20c1e016d9677c331da1c6db0f7b28101e9189931c9f4b0165e23b0df2f217",
+      "bytes": 330
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human197\\PREREG.json",
+      "sha256": "fc3c2678aafadad28354f275e9c9568bffe4bcf20ae600182e86f44718e514e7",
+      "bytes": 5078
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human197\\RESULTS.json",
+      "sha256": "dc587f3e3283b06f2b2e1ef53a1a9e5d2c9f3cffe8d163e74f5201f62b35cdaa",
+      "bytes": 2233
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human197\\COMPLETE.json",
+      "sha256": "f799a0f401fc85df70092e47a0eeeced766518f3113d51ad75759d678954563b",
+      "bytes": 50
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human-aec198\\PREREG.json",
+      "sha256": "ccf92d1edc9b4b00d207d6c9ab0d33e798c1a791eada8031001b628240e306c9",
+      "bytes": 5725
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human-aec198\\RESULTS.json",
+      "sha256": "556ec72dc2fd81c1693e294af7c37505ad7e13d38c9fae07c924fd6e91b7bda5",
+      "bytes": 33778
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-human-aec198\\COMPLETE.json",
+      "sha256": "fa08b37791c3dea130c4cd329431b62cc55001c1a1fe62b4737e5e71980de598",
+      "bytes": 53
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe-human199\\PREREG.json",
+      "sha256": "cb3b510da5eb191df10ee502366a53e409469f865de4d55ac2d0d84d7da069ce",
+      "bytes": 36955
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe-human199\\RESULTS.json",
+      "sha256": "a2ea4575a0ab9fa197f30852663aaec19d59c74fbf7f8622d6c0468f01074276",
+      "bytes": 19506
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe-human199\\COMPLETE.json",
+      "sha256": "974895354e77422c208089e9569681260e43700ef0a10132c8a054b4c8275010",
+      "bytes": 51
+    },
+    {
+      "path": "scratchpad\\c03-fleurs195.py",
+      "sha256": "a48bf1e362d80d419f4ba951419ef464ab5932e9562f215760eeab56a211d3ad",
+      "bytes": 3983
+    },
+    {
+      "path": "scratchpad\\c03-fleurs195-tar.py",
+      "sha256": "3f1264353ea680cc263031763bf585b4a113527ec17cfeeb9d27ad248fafd17f",
+      "bytes": 4966
+    },
+    {
+      "path": "scratchpad\\c03-find-audio196.py",
+      "sha256": "330ce486344b6602a4cd8224ccb8d1b106e6d91df0b2c88739b6124b6bbf5bd2",
+      "bytes": 4745
+    },
+    {
+      "path": "scratchpad\\c03-human197.py",
+      "sha256": "f4776ef9ebbd977e80e906035f607be453c3e63dc344bcc822f4e4628fe2bf05",
+      "bytes": 3137
+    },
+    {
+      "path": "scratchpad\\c03-human-aec198.py",
+      "sha256": "9f8b7ba8f414d472127b1fc1ec64cafb7496a13557f3d9476f0841f3d01de540",
+      "bytes": 5822
+    },
+    {
+      "path": "scratchpad\\c03-observe-human199.py",
+      "sha256": "0ca173efc982ff72de65c5f8d64b9890e03cad2166fdd9c40e2eecc5eb69739a",
+      "bytes": 3908
+    },
+    {
+      "path": "scratchpad\\c03-finish199.py",
+      "sha256": "ef06287718e7acb55b3d5dbd166e79ba7f109f02ecd5c094ee2d37d94191c5b3",
+      "bytes": 15350
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-fleurs195.log",
+      "sha256": "81726f17e44bd72e87bdc84c8f7d0ad670f4ec274645e19d2be4631e8a989acc",
+      "bytes": 219
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-fleurs195-retry.log",
+      "sha256": "69bb72e7b246e8667c92a67bfd7e91bb7665cfc861b076b817cf27ddc524b865",
+      "bytes": 227
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-fleurs195-stdlib.log",
+      "sha256": "e065cbcb4226b464a816c2061e0ae5b2ef5b03a5b809c59c0d4da7aca88beab7",
+      "bytes": 1694
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-fleurs195-tar.log",
+      "sha256": "f934e8c2ee683b7ded1a879dd4bae75ee578f786984586cd04275f55738efee2",
+      "bytes": 529
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-find-audio196.log",
+      "sha256": "b4737c88b77628d8cb35e1ee24549ab8cc0dd4d894dd99e768cacce9b4d60d6d",
+      "bytes": 280
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-human197.log",
+      "sha256": "e5ad125b78b9c740bfd422c0bfeed856d0b58b7ae7538e6fd4de5e6f5a061d68",
+      "bytes": 1948
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-human-aec198.log",
+      "sha256": "b23ddad92ba0ba056609ab168eaf8a89fa9e32f94ff0dc6e4cc9d61a5e81b788",
+      "bytes": 2552
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-logs195_199\\c03-observe-human199.log",
+      "sha256": "73b57a4fe54f05c5f1e85d2075da2fe55533b98e946330baa88cc32dda3e622e",
+      "bytes": 16641
+    }
+  ],
+  "private": [
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1001146817223348054.wav",
+      "sha256": "861ceedc4d50fbe52fc89b6d0c0fa740b9cd6fa668388e754064847386af0faf",
+      "bytes": 821818
+    },
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1008205615316519958.wav",
+      "sha256": "0576e73da35ef17b6ce6396d31b32830b7ab19cea98f9f5db68de3756dc3d4fc",
+      "bytes": 622138
+    },
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-1003119935936341070.wav",
+      "sha256": "33aca50159ec2e3cbcc894eb26faa916d6badb1b49fb75994973561540a7f012",
+      "bytes": 675898
+    },
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-10052240106321793346.wav",
+      "sha256": "7603cae3294309ef70d234180cefccc3b13865ee525262228a636069b9b62841",
+      "bytes": 560698
+    },
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-test.tsv",
+      "sha256": "d107a93a4f54a18ac25cd470bb4cdadce14fb075b0c1d1542258e274d209ec09",
+      "bytes": 599882
+    },
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-test.tsv",
+      "sha256": "74c046239374deeb60fa63f258f907388093a32bcaa3140965f70ef05c79f7ca",
+      "bytes": 367864
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h0-near_only-raw.npz",
+      "sha256": "4e9162d427adffab50e2678b449c8038b3d403c6ed0ce40e155452b3ea773ea3",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h0-near_only-speex.npz",
+      "sha256": "db29740217baca174254b656772e2661d029e97c7471817f3b0adbfeec9a6681",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h0-near_only-dtln128.npz",
+      "sha256": "cb1379a7fd9a815cd9e16ba7a6f60ac59437a91d7fb164d52fff481b6ce02ba4",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h0-mixed-raw.npz",
+      "sha256": "7227388a9772d7150e4764b283b577e5e284d0b0fa6df56211e984932bae9a6a",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h0-mixed-speex.npz",
+      "sha256": "e3d62fca8bf4af6cca96ae767116226a3e0afffa614ec79f1645ecedd64ec9c1",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h0-mixed-dtln128.npz",
+      "sha256": "a9c7f7a8f3187b3d91485e366dd1d759022ab4d8baede12a1fa54e08bd629210",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h1-near_only-raw.npz",
+      "sha256": "87550c844021fad41f40e48ba77c421cc4a578bee2991108d08ebf2f23015301",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h1-near_only-speex.npz",
+      "sha256": "1e593830fd83f635c982b592af7a94ccabce9616312444985ed1492de49da495",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h1-near_only-dtln128.npz",
+      "sha256": "1152604d5e0f4c327c510cde3d2bbe754f41c836fb8d8259ff533c984ec6aaff",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h1-mixed-raw.npz",
+      "sha256": "9ee2aab534eb249c84219dcd8292c40a9ce967b21060acd3a870b6b97c2a8ab6",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h1-mixed-speex.npz",
+      "sha256": "5e7e8df99fc1786f6a3c426b2f4eb4363ad215cb11d3f7bbfe48a5756a01146d",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h1-mixed-dtln128.npz",
+      "sha256": "6b1ab6e46e9918d352b29d12d074832f1761e26043f41a99f0b4f71777b2f13e",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h2-near_only-raw.npz",
+      "sha256": "15717f3910fc2207af811645816865cf9ee507ae3775d1807c08a6c1657980f5",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h2-near_only-speex.npz",
+      "sha256": "13b8f9548d6ce4196bd7b23bdceba3e7a1be6c18bcaeb175c73285181adc5e44",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h2-near_only-dtln128.npz",
+      "sha256": "5bc2639e1a34da602c3944a9834eb850222eb97c9709fb159305b60e999009f7",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h2-mixed-raw.npz",
+      "sha256": "9eb4a98e33a3456f01e04ec076c72e286d522a21f0c60026a9f5b8f109c6c253",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h2-mixed-speex.npz",
+      "sha256": "ff7fc41aed664af21a91360526b1f1ad7ca4329e34ade4dff076112510c15055",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h2-mixed-dtln128.npz",
+      "sha256": "3e177e25b826e8a60bfbfd768949ef5d42451dd97bc9a223c647b8b374c9fe5b",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h3-near_only-raw.npz",
+      "sha256": "22bd0097fb795c5a08cb56800b4dfa0eae7707aec33b718f306f5696d480c684",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h3-near_only-speex.npz",
+      "sha256": "a6dbf71236fb9dd38b221870d9beb3490f3efe263a6b34af51c44c6ad2f368e5",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h3-near_only-dtln128.npz",
+      "sha256": "d1a18be5455cf9bcb8db4ee1385ec6328e8ce30c1002e4108831267f6cb60e48",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h3-mixed-raw.npz",
+      "sha256": "6de7284adca2d96ff30e831c205e1e9b68d79f47cc62dece2625ad901bec396a",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h3-mixed-speex.npz",
+      "sha256": "6c20db808f640846a5ef8dd26e7fdc21115db18de396daed7cebabb7efa5423f",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-human-aec198-private\\h3-mixed-dtln128.npz",
+      "sha256": "07292313fd321381f6520a045ae7fbe9da7501001eedbec89c4c3240d03ad6dc",
+      "bytes": 2618416
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-find-audio196-private\\files.jsonl",
+      "sha256": "90d42893c9e4272df8569fc83a7a7da5779049736b8a3068258f24232ddf03b6",
+      "bytes": 108743048
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-find-audio196-private\\FOLDERS.json",
+      "sha256": "ca5d40e69b8a7299d234f026127c2ec7a432290e30a13e54f7eeeb5cda03e726",
+      "bytes": 474673
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-find-audio196-private\\ERRORS.json",
+      "sha256": "21a874d38d282ed93ca7f50e29e1e39636be7d2b32ac978c59f5a8ffd1ae0d35",
+      "bytes": 797
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-find-audio196-private\\FRONTIER.json",
+      "sha256": "1c8b9c777dd7b5a00a19893aeb776469fb11b8c89877b5565f54545ad44755a5",
+      "bytes": 3755
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-find-audio196-private\\LIVE.json",
+      "sha256": "848bcfe6271991e27b1f45d7f224c0398ba3b8afa4a96ab74dfaa7521677ea72",
+      "bytes": 112
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\Grabación (2).m4a",
+      "sha256": "c40e200d2e301f608c7523e78f3568e2616e239417c02bf1f1faaec4dc1fa0af",
+      "bytes": 7454724
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\Grabación (2).wav",
+      "sha256": "9c73af221906972fc041c67fffa230cb77ef2ec2787d1a09f28e15990f1a2dcf",
+      "bytes": 9371044
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\testaudio_full.wav",
+      "sha256": "9c73af221906972fc041c67fffa230cb77ef2ec2787d1a09f28e15990f1a2dcf",
+      "bytes": 9371044
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\testaudio_groundtruth_report.md",
+      "sha256": "769bd2b039157960d1d2eef871b960f94a2edeecdebd0a8b69df7d4433d11fb0",
+      "bytes": 5848
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\testaudio_groundtruth_aligned.json",
+      "sha256": "bf392735aa4e1618e41e70dbaec61c24fdf199668e8a93183e9691d441ba83de",
+      "bytes": 4468
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\testaudio_groundtruth_full.json",
+      "sha256": "a5f78c0db6b79d023a67f8341ef4d5216d3cdd498be3561f28b3cced05ae6c4c",
+      "bytes": 29188
+    },
+    {
+      "privatePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\voice\\tests\\testaudio_v2_expected.json",
+      "sha256": "592d6f18855c0e7050c7350b8a787bcb2c11e10ed6a4ce78085545d12685be9a",
+      "bytes": 20010
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-find-audio196-private\\LEGACY_RECORDING_INDEX.json",
+      "sha256": "a215aeaa53a483afd322be12bf48a9f1936405e33c628b1f2527b0214a91dadc",
+      "bytes": 1774
+    }
+  ]
+}

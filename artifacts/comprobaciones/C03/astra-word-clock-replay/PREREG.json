@@ -1,0 +1,29 @@
+{
+  "kind": "compositor-replay-with-one-injected-draft-not-acceptance",
+  "cases": [
+    {
+      "id": "injected-contradiction",
+      "request": "Dime la hora, please, en spanglish",
+      "injected": "Son las tres y veintitres; it’s 13:23."
+    },
+    {
+      "id": "es",
+      "request": "¿Qué hora es?"
+    },
+    {
+      "id": "en",
+      "request": "What time is it?"
+    },
+    {
+      "id": "mixed",
+      "request": "Dime la hora, please, en spanglish"
+    }
+  ],
+  "facts": {
+    "situation": "{\"kind\": \"operation\", \"operation\": \"system.time\", \"polarity\": \"success\", \"verified\": true, \"observed\": {\"utc\": \"2026-09-06T16:23:50Z\", \"localUtcOffsetMinutes\": -180}}"
+  },
+  "scope": "Historical verified clock replay, no fresh PC observation. First case injects the exact bad prior draft, subsequent calls use the actual local model.",
+  "llmSha256": "b7921cb0d8bce4d4e261715881a4deb71d9277095c36769cc970df2e156ab1eb",
+  "model": "D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "adapter": "D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-training-cdbee75f/c03-pilot-lora-v2-f32.gguf"
+}

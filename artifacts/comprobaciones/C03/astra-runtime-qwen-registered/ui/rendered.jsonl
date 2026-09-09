@@ -1,0 +1,3 @@
+{"type":"meta","process":"Baxy.exe","pid":484,"entry":"py main.py --ui-probe"}
+{"type":"ui.turn","text":"Dime la hora y el estado del audio.","send":"sent","published":true,"rendered":[{"src":"BAXY","msg":"Dime si quer\u00E9s continuar o cancelar la recuperaci\u00F3n de la memoria.","ts":"16:03:26"},{"src":"YOU","msg":"Dime la hora y el estado del audio.","ts":"16:03:21"},{"src":"BAXY","msg":"\u00A1Hola! \u00BFC\u00F3mo est\u00E1s?","ts":"16:03:17"}]}
+{"type":"terminal","kind":"done"}

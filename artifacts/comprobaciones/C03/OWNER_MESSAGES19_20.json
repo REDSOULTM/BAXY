@@ -1,0 +1,27 @@
+{
+  "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
+  "turnId": "01a07f77-edf6-7671-a8d5-fc33e1298029",
+  "source": "read_thread userMessage",
+  "messages": [
+    {
+      "type": "userMessage",
+      "id": "01a081c9-15c4-7450-8188-ebacb82f783c",
+      "content": [
+        {
+          "type": "text",
+          "text": "Revisa si la version de llamacpp es la correcta o nuevas versiones arreglan pproblemas ya sea con gemma o todos los modelos probados, te recuerdo puedes descargar tdo lo que quieras, no te cierre s solo a los modelos locales descargados\n"
+        }
+      ]
+    },
+    {
+      "type": "userMessage",
+      "id": "01a081cc-9c95-7f83-b00a-66aa2a034c7d",
+      "content": [
+        {
+          "type": "text",
+          "text": "Siempre para los modelos piensa en papers/ documentacion / usuarios , la forma mas optimiza de usar x modelo , porque es injusto probar un modelo x con las configs por default cuando se le podria maximizar el rendimiento con la configuracion optimiza, haz esto siempre\n"
+        }
+      ]
+    }
+  ]
+}

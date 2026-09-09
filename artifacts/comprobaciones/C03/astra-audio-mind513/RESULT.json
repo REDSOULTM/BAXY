@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-08T23:15:07.772797+00:00",
+  "session": 37979,
+  "exit": 0,
+  "useful": 24,
+  "total": 24,
+  "bindings_correct": 11,
+  "bindings": 11,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1788.97265625,
+    "seconds": 53.812,
+    "manifest_unchanged": true
+  },
+  "source": "effect_intent503,__main__506,llm512",
+  "limits": "Actual mind protocol/current registeredT0 without private treatment. No C# shell, provider effect, physical UI/voice or acceptance. Next514 actual product conductor in an isolated profile."
+}

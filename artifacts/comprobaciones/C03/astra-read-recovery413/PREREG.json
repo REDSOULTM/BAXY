@@ -1,0 +1,32 @@
+{
+  "reference411_sha256": "250286226e60dbcfcebf35406e63cc847f693b2e46b7427fe7126dfeeeeaf873",
+  "utc": "2026-09-08T12:46:45.044389+00:00",
+  "case_ids": [
+    "actual411-t3",
+    "account-es",
+    "account-en",
+    "username-en",
+    "username-es",
+    "os-version",
+    "os-memory",
+    "cpu",
+    "concept",
+    "negative",
+    "actual402b-t6",
+    "english-name",
+    "new-name",
+    "third-party"
+  ],
+  "private_case_file": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-read-recovery413-cases-private\\cases.json",
+  "method": "Fourteen fixed development cases: actual411T3 with exact native411 history including its initial welcome plus13controls409. Source410 and current authenticated catalog, same model/template/sampler, two sequential sidecars: actual411T3 first immediately after catalog.ready, then the14cases after semantic readiness (15requests per arm). Audit must confirm lexical mode for the initial target before attributing its comparison to the real411 boundary. Unlike412, assert byte-value equality of the first cold primary payload with411 for both arms before continuing. Diagnostic-only variant runs a second existing native decision over the first4 offered candidates when the primary is knowledge/social without effects, and retains it only if all proposed operations have authenticated read_only risk. The normal information/domain/compound/action/grounding/confirmation guards still run. No injected answers, fixed identity operation, effect execution, source change or promotion. Original late fallback remains in this diagnostic; successful adoption must move the existing repair rather than add duplicate passes.",
+  "case_file_sha256": "963d094719882418fa0e117ff3a0237ba45ccc9620faaa0a00e400a37de014a7",
+  "reason": "411T3 native primary recites account from prior prose; actual existing later AUTO picks identity. observation_not_recital unconditionally asks permission for that already requested read. Test whether preserving a native read proposal before ordinary guards avoids the extra clarification. The earlier rejected expansion for unsupported turns is excluded; only knowledge/social with catalog candidates. Native tool mechanics/one-sided veto research already documented.",
+  "criteria": "Actual repeat-account read becomes identity; all four account controls and three resource controls remain correct; concept/prohibition and four names remain useful no-effect. No write operation is promoted by the diagnostic. Compare drafts/final/stages, latency and native-call count. This is full mind without effects, not acceptance or UI.",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "catalog_count": 169,
+  "catalog_sha256": "499e516bc739e14154c2f7fe7e06db22b28ad10d6c30c4c48ef3c5586a68404b",
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-read-recovery413-private"
+}

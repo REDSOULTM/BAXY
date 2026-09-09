@@ -1,0 +1,903 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "08:12.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 19,
+        "draft_sha256": "802749561653605af0c5f9287d241b819a31b68015bd43beecd74889045b32eb",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 82,
+        "draft_sha256": "09087e911b62bb262d1722a3e8ed939528cd4bacb8ec66e183c8e73e8fef06ca",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "No tengo acceso a la hora actual. ¿Necesitas que te ayude a buscarla en internet?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 33,
+        "draft_sha256": "73ce53364daa5a45f3ae7df560d24cb9fcb9554a8eafabff303eacbc0d860fc7",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "No tengo acceso a la hora actual."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 25,
+        "draft_sha256": "c4225c9edc255687fee60b98892ed0d2e3aa517ce285c6bacabb114415e2eafe",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "No tengo acceso al reloj."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 19,
+        "draft_sha256": "802749561653605af0c5f9287d241b819a31b68015bd43beecd74889045b32eb",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "30a0db091f47ac6c7fa2a04210ea40824cdbe89c390866bdf20d9451778ce00c",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es la una de la madrugada."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "df4f1e393599db7cd2e12423b4fda6c1f274e102c484444a2df6042e1dc4b702",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 19,
+        "draft_sha256": "802749561653605af0c5f9287d241b819a31b68015bd43beecd74889045b32eb",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 19,
+        "draft_sha256": "802749561653605af0c5f9287d241b819a31b68015bd43beecd74889045b32eb",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es las ocho y doce."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 6,
+        "draft_sha256": "0f361737439bdeea6a5322359965f6f72cba108b7b3f3691c223470a577b89f7",
+        "payload": {
+          "clock": "08:12"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:12:59.7292872+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "08:12."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Dime la hora y el estado del audio.",
+    "terminal": "published_final",
+    "final": "La hora local es 08:13, el volumen está en 100 y el estado de mute es verdadero.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 55,
+        "draft_sha256": "1cf4c4a6483d9900705479cee9d39cb2aa2bbfda93cdea231e22fa94c9c04517",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:13",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:13:16.5572662+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:13:16.5572662+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 08:13. El audio está muteado al 100%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 81,
+        "draft_sha256": "81c0dc614e519b16e1d75528e344856a9d8fdbe821efceaf248eca0c43c7906f",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:13",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:13:16.5572662+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:13:16.5572662+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 08:13, el volumen está en 100 y el estado de mute es verdadero."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 08:13.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "594b8da04906b4de2d6bc93a3c3989dd96f1a211932a1d8a1fce18e709efd661",
+        "payload": {
+          "clock": "08:13"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:13:19.4322175+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 08:13."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Tell me the time and the volume.",
+    "terminal": "published_final",
+    "final": "The local clock is 08:13. Mute is enabled. Volume level is 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 63,
+        "draft_sha256": "c3d4d9301f8fff65d8934a368c2bb063972b15dc4d6b288c000b1fefc891a50a",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:13",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:13:20.3406215+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:13:20.3406215+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "The local clock is 08:13. Mute is enabled. Volume level is 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "It's 8:13, bro.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 41,
+        "draft_sha256": "61666a8468b72dfe58acba389094747b42b19711df1bc1812103cc0ff96d03be",
+        "payload": {
+          "clock": "08:13"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:13:21.9244073+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's eight thirteen. Es las ocho y trece."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 15,
+        "draft_sha256": "b2912d363066eedde2fc8f3772f2f423de534b48c4b705486702ca3af2c8b6c3",
+        "payload": {
+          "clock": "08:13"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:13:21.9244073+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 8:13, bro."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What time is it y cómo está el audio?",
+    "terminal": "published_final",
+    "final": "La hora local es 08:13. El audio está muteado al nivel 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 60,
+        "draft_sha256": "7f3ed0d8a1d89507b5c23b99e96185198528fb6a211844e4d5e4855f42c3e41b",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "08:13",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T11:13:23.5621902+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T11:13:23.5621902+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 08:13. El audio está muteado al nivel 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "Hey, ¿qué tal? Bien, ¿cómo estás?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "mixed_language_needs_review": false,
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 38,
+        "draft_sha256": "3230123821fdc78baeb2ad725796f560e55d786949eca6b2115406175a517c9d",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, ¿qué tal? Bien, ¿cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "published_final",
+    "final": "Nunca he intentado explicarlo, pero si tuvieras que resumir, sería como un código que protege tus datos, pero no es algo que yo haga aquí.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "error",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 141,
+        "draft_sha256": "0083ba2591455f9da7b700da1e72eb6126181f1636760f7e2c7fe3a04988763f",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "Nunca he intentado explicarlo, pero si tuvieras que resumir, sería como un código que protege tus datos, pero no es algo que yo haga aquí."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es una copia de los datos o archivos que se guardan en un lugar seguro para poder recuperarlos si ocurren errores o pérdidas. Es como tener un duplicado de tus documentos importantes, por si algo sucede.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 227,
+        "draft_sha256": "1caa1aef5cba97e71466a513ba42def27bed588671c5f3a84234c5acdecfb6a9",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Una copia de seguridad es una copia de los datos o archivos que se guardan en un lugar seguro para poder recuperarlos si ocurren errores o pérdidas. Es como tener un duplicado de tus documentos importantes, por si algo sucede."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "Explain gravity, pero sin tecnicismos",
+    "terminal": "published_final",
+    "final": "¿Cuál es el título del tema a resolver?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t11",
+    "request": "no abras Paint",
+    "terminal": "published_final",
+    "final": "No abriré Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "71ea952a0ab66f6e5bfefa424865bfb9fbb012012975edfd991e7a3c86c50b05",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abriré Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

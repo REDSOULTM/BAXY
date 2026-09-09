@@ -1,0 +1,58 @@
+[
+  {
+    "turn": 1,
+    "request": "My name is Jordan. Remember my name.",
+    "final": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  },
+  {
+    "turn": 2,
+    "request": "confirm",
+    "final": "The memory has been saved successfully.",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  },
+  {
+    "turn": 3,
+    "request": "Abre una aplicación.",
+    "final": "¿Qué aplicación deseas abrir?",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  },
+  {
+    "turn": 4,
+    "request": "What name have you saved in private memory?",
+    "final": "I saved the name Jordan in private memory.",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  },
+  {
+    "turn": 5,
+    "request": "Me llamo Álvaro.",
+    "final": "¡Hola, Álvaro! Qué gusto saludarte. ¿En qué te puedo ayudar hoy?",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  },
+  {
+    "turn": 6,
+    "request": "Abre una aplicación.",
+    "final": "¿Qué aplicación deseas abrir?",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  },
+  {
+    "turn": 7,
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "final": "Mi nombre es Jordan.",
+    "useful_terminal": false,
+    "reason": "Wrong assistant subject for stored human name."
+  },
+  {
+    "turn": 8,
+    "request": "¿Cómo me llamo?",
+    "final": "Tu nombre es Álvaro.",
+    "useful_terminal": true,
+    "reason": "Useful terminal; operation/private-state evidence retained separately."
+  }
+]

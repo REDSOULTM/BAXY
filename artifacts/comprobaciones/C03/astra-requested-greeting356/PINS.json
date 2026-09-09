@@ -1,0 +1,6 @@
+{
+  "src/Baxy.App/UserMessagePolicy.cs": "a6ed2c91fbf09ae556d07c1f9465845e7a6b30ca8c9d04fe585cb8617ff9e123",
+  "src/baxy_mind/llm.py": "9464b1c4197f065fe088a014fd4c2744b2bc33c162957631d0332d88d5404351",
+  "tests/Baxy.Integration.Tests/C03FactPreservationTests.cs": "1b73079d7b31cd2361d9c769239a583a288a21733c6dc82e5f881c5a14e2f9af",
+  "tests/test_compose_contract.py": "92b1307a5820bc9e8b66f23409cf7c70e08ddd77ebf5f5d9d7297ad0d0822990"
+}

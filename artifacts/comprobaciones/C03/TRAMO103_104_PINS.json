@@ -1,0 +1,11 @@
+{
+  "scope": "Source103 sealed UI, 97 owner tests and Fast green; UI104 technical finals8/8 and progress ES/EN visible; not C03 acceptance",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_UI102.md": "91d744829328297a3d1f005e6e4eb3535bdfb43c9ca2fc73f91999e50333c8c0",
+    "artifacts/comprobaciones/C03/PRUEBAS_UI104.md": "227731fcf09e2fa2b0c48f70e342acd878d4cf978c9cd66898fa52f0b5bcc893",
+    "artifacts/comprobaciones/C03/ASTRA-TRAMO-103.md": "bf1cb17d13bf173284c512d8445ebc5b00629de1d969c0c6f737b8df2e4ca2be",
+    "artifacts/comprobaciones/C03/astra-ui104/PREREG.json": "2bd0d20f35951648f9dd3c218a1baa0d1b7ff8b95f9d407b77d04bc3da6b9559",
+    "artifacts/comprobaciones/C03/astra-ui104/RESOURCES.json": "0b0b471a21701624c1407e46aae3175c636025bf6276095e8d11ddc64b4f9942",
+    "src/Baxy.FieldUi/ORIGIN.md": "55b44bacdd83f446f13f42eb1e18102e946adb7c237de85519d5f9f8d5b7c99a"
+  }
+}

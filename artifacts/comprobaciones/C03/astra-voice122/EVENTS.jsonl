@@ -1,0 +1,5 @@
+{"utc": "2026-09-07T11:23:34.515367+00:00", "monotonic": 75071.0, "phase": "off-before", "event": "state", "mode": "off", "listening": false, "speaking": true}
+{"utc": "2026-09-07T11:23:39.672673+00:00", "monotonic": 75076.171, "phase": "off-before", "event": "state", "mode": "off", "listening": false, "speaking": false}
+{"utc": "2026-09-07T11:23:40.830888+00:00", "monotonic": 75077.328, "phase": "wake", "event": "error", "code": "wake_verifier_manifest_missing"}
+{"utc": "2026-09-07T11:23:40.830888+00:00", "monotonic": 75077.328, "phase": "wake", "event": "state", "mode": "off", "listening": false, "speaking": false}
+{"utc": "2026-09-07T11:23:40.877486+00:00", "monotonic": 75077.375, "phase": "wake", "event": "state", "mode": "off", "listening": false, "speaking": false}

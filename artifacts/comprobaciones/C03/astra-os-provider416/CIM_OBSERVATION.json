@@ -1,0 +1,32 @@
+{
+  "command": "$ErrorActionPreference = 'Stop'\n[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)\nGet-CimInstance -ClassName Win32_OperatingSystem -Property Caption,Version,ProductType |\n    Select-Object Caption,Version,ProductType | ConvertTo-Json -Compress\n",
+  "measurements": [
+    {
+      "utc": "2026-09-08T13:21:56.064268+00:00",
+      "seconds": 0.415,
+      "observed": {
+        "Caption": "Microsoft Windows 11 Home Single Language",
+        "Version": "10.0.26200",
+        "ProductType": 1
+      }
+    },
+    {
+      "utc": "2026-09-08T13:21:56.418174+00:00",
+      "seconds": 0.354,
+      "observed": {
+        "Caption": "Microsoft Windows 11 Home Single Language",
+        "Version": "10.0.26200",
+        "ProductType": 1
+      }
+    },
+    {
+      "utc": "2026-09-08T13:21:56.773474+00:00",
+      "seconds": 0.355,
+      "observed": {
+        "Caption": "Microsoft Windows 11 Home Single Language",
+        "Version": "10.0.26200",
+        "ProductType": 1
+      }
+    }
+  ]
+}

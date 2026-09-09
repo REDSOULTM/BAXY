@@ -1,0 +1,7 @@
+{
+  "hypothesis": "Native305 isolates the incorrect first-person account answer to the internal quotation framing of the user's request. Native-role sequence works, but removing the redundant quotation label preserves correct speaker binding with the existing two-message architecture.",
+  "change": "Use user_text directly in _compose_user_content instead of prefixing Texto original de la persona. Keep observations, language policy, validation, retry and omitted progress request unchanged. Do not strip any prefix the user actually supplied.",
+  "criteria": "Three first/retry transport controls and owner suites green; native source must reproduce account305 improvement with exact payload equality to tested literal variant. Cross-route306 has no observed semantic regressions, but preexisting confirmation word error and grammatical defect remain failures, not acceptance.",
+  "baseline": "Initial pytest collection error due to reserved request parameter corrected. Baseline then 3 fail,43 deselected,0.54s. Both logs preserved.",
+  "sources": ["https://qwen.readthedocs.io/en/stable/framework/function_call.html", "astra-account-frame305/RESULT.json", "astra-literal-request306/RESULT.json", "biblioteca/carter/legacy/Carter_v2/LLM_CONTEXT_MEMORY_REPORT.md"]
+}

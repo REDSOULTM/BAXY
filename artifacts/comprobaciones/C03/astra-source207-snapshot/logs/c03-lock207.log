@@ -1,0 +1,40 @@
+WARNING: pip lock is currently an experimental command. It may be removed/changed in a future release without prior warning.
+Looking in links: d:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\runtime_wheels
+Collecting numpy==1.26.4 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 5))
+  Using cached numpy-1.26.4-cp312-cp312-win_amd64.whl.metadata (61 kB)
+Collecting scipy==1.17.1 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 6))
+  Using cached scipy-1.17.1-cp312-cp312-win_amd64.whl.metadata (60 kB)
+Collecting sentence-transformers==5.6.0 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 7))
+  Using cached sentence_transformers-5.6.0-py3-none-any.whl.metadata (18 kB)
+Collecting huggingface-hub==1.24.0 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 8))
+  Using cached huggingface_hub-1.24.0-py3-none-any.whl.metadata (16 kB)
+Collecting torch==2.13.0 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 9))
+  Using cached torch-2.13.0-cp312-cp312-win_amd64.whl.metadata (39 kB)
+Collecting torchaudio==2.11.0 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 10))
+  Using cached torchaudio-2.11.0-cp312-cp312-win_amd64.whl.metadata (6.9 kB)
+Collecting onnxruntime==1.27.0 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 11))
+  Using cached onnxruntime-1.27.0-cp312-cp312-win_amd64.whl.metadata (5.6 kB)
+Collecting jellyfish==1.2.1 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 12))
+  Using cached jellyfish-1.2.1-cp312-cp312-win_amd64.whl.metadata (642 bytes)
+Collecting RapidFuzz==3.14.5 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 13))
+  Using cached rapidfuzz-3.14.5-cp312-cp312-win_amd64.whl.metadata (12 kB)
+Collecting psutil==7.2.2 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 14))
+  Using cached psutil-7.2.2-cp37-abi3-win_amd64.whl.metadata (22 kB)
+Collecting comtypes==1.4.16 (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\requirements-runtime-win-x64.in (line 15))
+  Using cached comtypes-1.4.16-py3-none-any.whl.metadata (7.8 kB)
+Processing .\runtime_wheels\sherpa_onnx-1.13.4+baxy.1-cp312-cp312-win_amd64.whl (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\requirements-voice.txt (line 3))
+Discarding file:///D:/Perfil/Escritorio/ETC/Programacion/BAXY%20DEFINITIVO/runtime_wheels/sherpa_onnx-1.13.4%2Bbaxy.1-cp312-cp312-win_amd64.whl: Requested sherpa-onnx==1.13.4+baxy.1 from file:///D:/Perfil/Escritorio/ETC/Programacion/BAXY%20DEFINITIVO/runtime_wheels/sherpa_onnx-1.13.4%2Bbaxy.1-cp312-cp312-win_amd64.whl (from -r D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\requirements-voice.txt (line 3)) has inconsistent version: expected '1.13.4+baxy.1', but metadata has '1.13.4'
+ERROR: Cannot install sherpa-onnx==1.13.4+baxy.1 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    The user requested sherpa-onnx==1.13.4+baxy.1
+    The user requested (constraint) sherpa-onnx==1.13.4+baxy.1
+
+Additionally, some packages in these conflicts have no matching distributions available for your environment:
+    sherpa-onnx
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip to attempt to solve the dependency conflict
+
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/topics/dependency-resolution/#dealing-with-dependency-conflicts

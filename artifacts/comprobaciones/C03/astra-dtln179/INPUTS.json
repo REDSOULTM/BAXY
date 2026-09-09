@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "name": "native_echo149",
+      "samples": 135168,
+      "micFloat32Sha256": "09c76ca207cf26d0d9b7330e50e755bd602f2df0f18c04c1cd286b80f77a31fc",
+      "refFloat32Sha256": "b2d58f0cddfd61d3918d829dc0eac6851d5e5d4528b74f6ae87e8109982e12d0"
+    },
+    {
+      "name": "physical_echo",
+      "samples": 508928,
+      "micFloat32Sha256": "13b6946b2bfb3919a2e55b693a5659f0da7898de2cb78583c774ac00e37c0236",
+      "refFloat32Sha256": "54288de1d809afd302c655bb1ce232d4d5ca138e49c48f5faef316d88076fb06"
+    },
+    {
+      "name": "near_only",
+      "samples": 508928,
+      "micFloat32Sha256": "004354438ca9411ae7c37f5db4887e5ec889bd48ec5f8b23c694bb6078bdf55e",
+      "refFloat32Sha256": "cd9b703da4a4161d17ed9a060cdc08004caee922c09e7c3e3fe7b6ba704d8dda"
+    },
+    {
+      "name": "physical_echo_plus_synthetic_near",
+      "samples": 508928,
+      "micFloat32Sha256": "3bf617e42eed6c797360125c1508ec7f47122400cfc4c9f3fd2977fe0ea83c5d",
+      "refFloat32Sha256": "54288de1d809afd302c655bb1ce232d4d5ca138e49c48f5faef316d88076fb06"
+    },
+    {
+      "name": "cold_silence",
+      "samples": 32000,
+      "micFloat32Sha256": "eec19bc6af0b3b6dfb97a08782c65f4bb3c3203e789a015d2008b0d689ad08be",
+      "refFloat32Sha256": "eec19bc6af0b3b6dfb97a08782c65f4bb3c3203e789a015d2008b0d689ad08be"
+    }
+  ],
+  "algorithm": "Unmodified AST process_file from author run_aec.py. sf.read/write replaced with array I/O; no TensorFlow import/environment mutation. CPU LiteRT2.2.0 Interpreter, num_threads1, XNNPACK default. Fresh interpreter pair and function states per case; author padding/clipping policy retained."
+}

@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-08T00:55:00.115966+00:00",
+  "method": "Same three development inputs295 through actual chat API with knowledge classification, no persistent-memory or effect authority; no source change. This tests whether AskToSave classification, rather than missing lexical memory fact, causes the lost reply.",
+  "hypothesis": "Literal context not saved loses the meaning of parser outcome AskToSave (mustNotPersist=true), so the compositor asks what to do instead of acknowledging/requesting storage consent.",
+  "criteria": "Serve the stated conversational request without false persistence or unsupported questions. No adoption from native comparison alone.",
+  "inheritance": "Carter_v2 LLM_CONTEXT_MEMORY_REPORT.md distinguishes stated facts from confirmed persistent memory. Current parser AskToSave and MainWindowViewModel context_not_saved are authoritative; existing _CAUSE_FACT maps typed states into prose facts.",
+  "cases": [
+    "me llamo emmanuel, dime hola emmanuel",
+    "me llamo Albeda",
+    "my favorite city is Lima"
+  ],
+  "meaning": "No persistent memory was written. The person has provided personal context; saving that context for future sessions requires their consent.",
+  "facts": {
+    "situation": {
+      "kind": "clarification",
+      "polarity": "pending",
+      "cause": "context_not_saved"
+    }
+  }
+}

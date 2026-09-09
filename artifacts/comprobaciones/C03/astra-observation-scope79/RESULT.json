@@ -1,0 +1,47 @@
+[
+  {
+    "request": "Dime la hora, el audio y el uso de CPU.",
+    "intent": null,
+    "resolver": {
+      "clauses": [
+        "dime la hora, el audio y el uso de cpu."
+      ],
+      "records": [],
+      "shared_domain_minimum": null,
+      "spoken_report_minimum": null,
+      "return_line": 13041
+    },
+    "unresolved": "None"
+  },
+  {
+    "request": "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "intent": null,
+    "resolver": {
+      "clauses": [
+        "dime la hora",
+        "revisa el estado del audio",
+        "dime el uso de cpu."
+      ],
+      "records": [],
+      "shared_domain_minimum": null,
+      "spoken_report_minimum": null,
+      "return_line": 13041
+    },
+    "unresolved": "CompoundEffectContract(minimum_effects=3, required_clause_sequences=(), clause_requirements=(('dime la hora', ()), ('revisa el estado del audio', ()), ('dime el uso de cpu.', ())))"
+  },
+  {
+    "request": "Dime la hora y el estado del audio.",
+    "intent": null,
+    "resolver": {
+      "clauses": [
+        "dime la hora",
+        "dime el estado del audio."
+      ],
+      "records": [],
+      "shared_domain_minimum": null,
+      "spoken_report_minimum": null,
+      "return_line": 13041
+    },
+    "unresolved": "CompoundEffectContract(minimum_effects=2, required_clause_sequences=(), clause_requirements=(('dime la hora', ()), ('dime el estado del audio.', ())))"
+  }
+]

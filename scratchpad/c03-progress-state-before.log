@@ -1,0 +1,15 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_progress_is_not_projected_as_a_completed_transition ___________
+
+    def test_progress_is_not_projected_as_a_completed_transition() -> None:
+        payload = llm._compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "acting",
+        }, "es", "haz eso")
+>       assert "outcome" not in payload
+E       AssertionError: assert 'outcome' not in {'outcome': 'completed'}
+
+tests\test_c03_request_preservation.py:44: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_progress_is_not_projected_as_a_completed_transition
+1 failed, 35 deselected in 1.01s

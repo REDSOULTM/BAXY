@@ -1,0 +1,18 @@
+{
+  "type": "turn.evidence.status.result",
+  "id": "evidence407-initial",
+  "state": "building",
+  "failure": "",
+  "count": 0,
+  "dimensions": 0,
+  "source_sha256": "",
+  "encoder_identity": "",
+  "abstention_policy": {
+    "state": "loaded",
+    "failure": "",
+    "calibration_fingerprint": "7fddf0c569340762cf1728a3e71dbe6790fdb8b98e0d78b51d28b96ed61cdcab",
+    "calibration_rows": 3460,
+    "authority": "conversation_signal_or_abstain_only",
+    "retrieval_enabled": true
+  }
+}

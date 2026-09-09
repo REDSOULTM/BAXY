@@ -1,0 +1,5 @@
+{"id": "t1", "request": "no me molesta, dime la hora", "injection": "none", "terminal": "published_final", "answer": "No pude interpretar correctamente la solicitud.", "visible": ["No pude interpretar correctamente la solicitud."]}
+{"id": "t2", "request": "I don't mind, tell me the time", "injection": "none", "terminal": "published_final", "answer": "I couldn't understand your request. Please rephrase it so I can assist you better.", "visible": ["I couldn't understand your request. Please rephrase it so I can assist you better."]}
+{"id": "t3", "request": "no abras Steam, dime la hora", "injection": "none", "terminal": "published_final", "answer": "No abro Steam, te digo que son las 14 horas.", "visible": ["No abro Steam, te digo que son las 14 horas."]}
+{"id": "t4", "request": "no me digas la hora", "injection": "none", "terminal": "published_final", "answer": "No te digo la hora. ¿Qué necesitas ahora?", "visible": ["No te digo la hora. ¿Qué necesitas ahora?"]}
+{"id": "t5", "request": "dime la hora", "injection": "none", "terminal": "published_final", "answer": "20:04", "visible": ["20:04"]}

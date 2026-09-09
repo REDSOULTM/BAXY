@@ -1,0 +1,38 @@
+{
+  "utc": "2026-09-07T23:49:41.753369+00:00",
+  "publicFiles": {
+    "scratchpad/c03-selector274.py": "0f50548b5f1f697b76ad4a03f80b0a37befd8a83335fc145ec4282c2db6fedbb",
+    "scratchpad/c03-order275.py": "cbc5848ee2eaf76e195851e919be5aa13316009c02f71ce6e99b0ae4c5a70a3f",
+    "scratchpad/c03-entity276.py": "5856d7d848f6fcc4c8f278aace7ec6c736232988606093202d1efab4d00d87c8",
+    "scratchpad/c03-native277.py": "fd8e9ec23c2183fd0f862ce144c31b1785cb62c3a6fc8aa16b260f7c7cd5ad8e",
+    "scratchpad/c03-priority278.py": "842ebacb18a15752314e6f44bd55d52ea6dd99df5ca95cdb86aa5a3a4ce1f088",
+    "scratchpad/c03-finish278.py": "c2950fcf539fb46b2c17c7e6fa4173e0152d29300561795e5d681e5f8f76bfee",
+    "artifacts/comprobaciones/C03/SELECCION274_278.md": "28bdbb5a2365579ab5568bb92e1e8f65be04f3372cc99b268a59a7fa33b37118",
+    "artifacts/comprobaciones/C03/astra-selector274/PREREG.json": "87a0c59cc77042dfef081fa14490d7e15936f6a17e19fb175ebadc26830ac950",
+    "artifacts/comprobaciones/C03/astra-selector274/RESULT.json": "d8a5e31e839da849e5aa75eff608d510e23d6bcc59da2db5c4ad4ead9edfdd03",
+    "artifacts/comprobaciones/C03/astra-order275/PREREG.json": "4e5dea5d5d3bb56bd62002ea43f8cf408578516a13089ce984e82a9da19eb98d",
+    "artifacts/comprobaciones/C03/astra-order275/RESULT.json": "ef9e0d3f880a86d5a2a47ec7c1d89cba37ced557c4480c3fd923ebde3a1754bd",
+    "artifacts/comprobaciones/C03/astra-entity276/PREREG.json": "dbdb1fa76783ef25c859834865a9d71ad7781811e18351e1a9b7b6bfd1ae2064",
+    "artifacts/comprobaciones/C03/astra-entity276/RESULT.json": "538610752bf864e477ae295a4165d44e4ac4bd193db0a75d508a8f049c0f439c",
+    "artifacts/comprobaciones/C03/astra-native277/PREREG.json": "7cb61a6ae5c35da59c9840ff900224c97f2001ee459e1b261c79a7de3db4fbbb",
+    "artifacts/comprobaciones/C03/astra-native277/RESULT.json": "8c481f5006953e833c8194e415e60edd704f6052c990d4329a5cec4a9333423d",
+    "artifacts/comprobaciones/C03/astra-priority278/PREREG.json": "478078760a1606c6465a844c391656eda822e2b8bdec29a779798c39b4ee5fb5",
+    "artifacts/comprobaciones/C03/astra-priority278/RESULT.json": "7c811c527219f5a5ffd8598a6cec250c12d5b87247935c9899778f7de60c3840"
+  },
+  "liveProcesses": {
+    "84328": {
+      "name": "Baxy.exe",
+      "createTime": 1788820609.3516054
+    },
+    "89232": {
+      "name": "llama-server.exe",
+      "createTime": 1788820621.7334836
+    },
+    "101140": {
+      "name": "python.exe",
+      "createTime": 1788823063.180732
+    }
+  },
+  "productSourceChanged": false,
+  "goalStatus": "active"
+}

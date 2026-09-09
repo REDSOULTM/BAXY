@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-08T22:40:39.128504+00:00",
+  "session": 90270,
+  "exit": 0,
+  "useful_per_profile_seed": "registered:5/7 seed0,6/7 seed17; Qwen-documented:5/7 seed0,6/7 seed17",
+  "actual_chat_profile_coverage": 28,
+  "http_responses": 84,
+  "finish_reason": "all stop",
+  "max_completion_tokens": 87,
+  "max_total_tokens": 2223,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1770.3984375,
+    "seconds": 74.313,
+    "manifest_unchanged": true
+  },
+  "decision": "No promotion or more sampler sweep: recommended settings do not resolve these two failures. Retain source506. Next isolate personal-fact provenance policy while preserving full history, proper profile and controls.",
+  "semantic_review": "v2: count valid output/listener and voice/chat senses without demanding exhaustive definitions; no profile advantage and recall-en still wrong in every arm. See ADJUDICATION-v1.json and RESULT-v1.* for original judgement."
+}

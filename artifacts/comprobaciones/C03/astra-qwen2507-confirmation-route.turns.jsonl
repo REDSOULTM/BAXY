@@ -1,0 +1,9 @@
+{"cmd": "turn", "text": "abre la calculadora"}
+{"cmd": "turn", "text": "cierra la calculadora"}
+{"cmd": "turn", "text": "cancelar"}
+{"cmd": "turn", "text": "¿Qué hora es?"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "close the calculator"}
+{"cmd": "turn", "text": "cancel"}
+{"cmd": "turn", "text": "Tell me the time and the volume."}
+{"cmd": "turn", "text": "no abras Paint"}

@@ -1,0 +1,10 @@
+{
+  "scriptSha256": "4ea80e3de6a7ba67492a00a83d20a25ec8e7947a8ac64beaee7514eee8c59a70",
+  "previousTurn": "progress: integrated242 and isolated physical243 failure in244245",
+  "method": "Frozen240/243 only; validate overlapping reference windows, reconstruct recent reference samples, compare to each actual generated Piper PCM resampled22050->16000. Locate the first0.5s high-energy template within each recording, then inspect consecutive0.25s sections at the same content offset. Search local +/-64sample deviations only for measurement, not compensation. No output regeneration, physical effects, source edits, ASR or parameter sweep.",
+  "limits": "Observation monotonic times are not saved native ADC times. Signal analysis can detect reference corruption/drift but does not directly measure the native clock origin. PCM resampling differs from Windows device conversion, so equality is not assumed.",
+  "stages": [
+    240,
+    243
+  ]
+}

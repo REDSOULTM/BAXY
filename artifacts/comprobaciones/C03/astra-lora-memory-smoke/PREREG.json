@@ -1,0 +1,33 @@
+{
+  "kind": "training-memory-viability-only",
+  "steps": 3,
+  "sequenceLength": 512,
+  "batchSize": 1,
+  "quantization": "NF4,double quant,bfloat16 compute",
+  "lora": {
+    "rank": 8,
+    "alpha": 16,
+    "targets": [
+      "q_proj",
+      "v_proj"
+    ]
+  },
+  "learningRate": 0.0002,
+  "seed": 13,
+  "gpuLimitMiB": 4096,
+  "torchAllocatorFraction": 0.55,
+  "loss": "Only final assistant response tokens. No loss on request, facts or padding. Native tokenizer template. Select last answer logits instead of allocating vocabulary logits for the whole prompt.",
+  "preparation": "Frozen base kept bfloat16 outside NF4 layers; no blanket fp32 cast of large frozen embeddings. Non-reentrant gradient checkpointing. Only LoRA optimized.",
+  "inheritance": "Probando Gemma 4/dataset_finetune/scripts/train_ft.py:130-180 response-only loss and exclusion of observed facts, reduced from historical batch4/8.4GB to batch1.",
+  "acceptance": "Three finite losses, nonzero trainable gradients, only LoRA trainable, measured GPU peak <=4096 MiB. Not a quality or generalization test.",
+  "sampleSha256": "1a8432a746ad32abd7298d2f630c5cf422b521ed3db5c33e91c2b95913583e43",
+  "baseManifestSha256": "62cb2ae9f45ed560e2d3a6baf02c7063cb24847c0ba4e23d11c9e2c64a104b86",
+  "scriptSha256": "216f07d5cd797a4c934a176a2fe151c168f31aa4d1bb742fb15dea79b2fc9570",
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "4.57.1",
+    "peft": "0.18.1",
+    "accelerate": "1.12.0",
+    "bitsandbytes": "0.49.2"
+  }
+}

@@ -1,0 +1,332 @@
+[
+  {
+    "model": "qwen35-4b",
+    "id": "actual437-t7",
+    "answer": "",
+    "finish_reason": "length",
+    "seconds": 46.172,
+    "reasoning_chars": 13056,
+    "status": "censored",
+    "reason": "Agotó3072 tokens sin respuesta final; no juzgar contenido incompleto como fracaso semántico."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "actual437-t4",
+    "answer": "The name I have saved in my private memory is Jordan.",
+    "finish_reason": "stop",
+    "seconds": 18.437,
+    "reasoning_chars": 4865,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "name-marta",
+    "answer": "",
+    "finish_reason": "length",
+    "seconds": 46.266,
+    "reasoning_chars": 12613,
+    "status": "censored",
+    "reason": "Agotó3072 tokens sin respuesta final; no juzgar contenido incompleto como fracaso semántico."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "compound-name",
+    "answer": "El nombre que tengo guardado en mi memoria privada es Ana María.",
+    "finish_reason": "stop",
+    "seconds": 31.844,
+    "reasoning_chars": 8344,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "third-person",
+    "answer": "Hola, el nombre de tu hermana que tengo guardado es Nina.",
+    "finish_reason": "stop",
+    "seconds": 34.359,
+    "reasoning_chars": 8919,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "two-records",
+    "answer": "",
+    "finish_reason": "length",
+    "seconds": 46.594,
+    "reasoning_chars": 12836,
+    "status": "censored",
+    "reason": "Agotó3072 tokens sin respuesta final; no juzgar contenido incompleto como fracaso semántico."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "memory.enable",
+    "answer": "Memory configuration is active. The enable operation completed successfully with no errors detected. Nothing needs replaying right now.",
+    "finish_reason": "stop",
+    "seconds": 20.078,
+    "reasoning_chars": 5611,
+    "status": "fail",
+    "reason": "Añade que no hace falta replay; replayed=false no prueba esa necesidad futura."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "memory.save",
+    "answer": "Confirmed. The memory has been updated and saved successfully.",
+    "finish_reason": "stop",
+    "seconds": 33.953,
+    "reasoning_chars": 8980,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "redacted-es",
+    "answer": "Solo tengo un registro secreto en mi memoria privada, pero su valor aparece como redactado.",
+    "finish_reason": "stop",
+    "seconds": 43.875,
+    "reasoning_chars": 11843,
+    "status": "fail",
+    "reason": "Redactado no explica inequívocamente ocultamiento en español."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "redacted-en",
+    "answer": "I found one secret record in private memory, but its content is currently marked as [REDACTED].",
+    "finish_reason": "stop",
+    "seconds": 31.062,
+    "reasoning_chars": 8613,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "qwen35-4b",
+    "id": "mixed-es",
+    "answer": "",
+    "finish_reason": "length",
+    "seconds": 46.204,
+    "reasoning_chars": 12011,
+    "status": "censored",
+    "reason": "Agotó3072 tokens sin respuesta final; no juzgar contenido incompleto como fracaso semántico."
+  },
+  {
+    "model": "gemma-base",
+    "id": "actual437-t7",
+    "answer": "Mi nombre guardado es Jordan.",
+    "finish_reason": "stop",
+    "seconds": 4.688,
+    "reasoning_chars": 1454,
+    "status": "fail",
+    "reason": "Nombre atribuido a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "id": "actual437-t4",
+    "answer": "I have saved the name Jordan in private memory.",
+    "finish_reason": "stop",
+    "seconds": 4.141,
+    "reasoning_chars": 1311,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-base",
+    "id": "name-marta",
+    "answer": "Mi nombre guardado es Marta.",
+    "finish_reason": "stop",
+    "seconds": 4.343,
+    "reasoning_chars": 1444,
+    "status": "fail",
+    "reason": "Nombre atribuido a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "id": "compound-name",
+    "answer": "Mi nombre guardado es Ana María.",
+    "finish_reason": "stop",
+    "seconds": 3.282,
+    "reasoning_chars": 1119,
+    "status": "fail",
+    "reason": "Nombre atribuido a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "id": "third-person",
+    "answer": "Tu hermana se llama Nina.",
+    "finish_reason": "stop",
+    "seconds": 4.14,
+    "reasoning_chars": 1398,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-base",
+    "id": "two-records",
+    "answer": "Tengo guardados los nombres Jordan y Nina.",
+    "finish_reason": "stop",
+    "seconds": 3.719,
+    "reasoning_chars": 1218,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-base",
+    "id": "memory.enable",
+    "answer": "The memory configuration operation was completed. It has been enabled.",
+    "finish_reason": "stop",
+    "seconds": 4.469,
+    "reasoning_chars": 1595,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-base",
+    "id": "memory.save",
+    "answer": "The memory save operation is completed. The memory state has been updated.",
+    "finish_reason": "stop",
+    "seconds": 4.562,
+    "reasoning_chars": 1511,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-base",
+    "id": "redacted-es",
+    "answer": "Tengo guardado un registro etiquetado como secreto.",
+    "finish_reason": "stop",
+    "seconds": 4.0,
+    "reasoning_chars": 1326,
+    "status": "fail",
+    "reason": "Omite la protección del valor."
+  },
+  {
+    "model": "gemma-base",
+    "id": "redacted-en",
+    "answer": "The memory recall showed a record labeled as secret.",
+    "finish_reason": "stop",
+    "seconds": 4.875,
+    "reasoning_chars": 1673,
+    "status": "fail",
+    "reason": "Omite la protección del valor."
+  },
+  {
+    "model": "gemma-base",
+    "id": "mixed-es",
+    "answer": "Tengo guardada tu color favorito, que es turquesa, y un secreto que está redactado.",
+    "finish_reason": "stop",
+    "seconds": 5.875,
+    "reasoning_chars": 1956,
+    "status": "fail",
+    "reason": "Redactado no explica inequívocamente ocultamiento en español."
+  },
+  {
+    "model": "gemma-published",
+    "id": "actual437-t7",
+    "answer": "El nombre que tengo guardado es Jordan.",
+    "finish_reason": "stop",
+    "seconds": 3.313,
+    "reasoning_chars": 1021,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "actual437-t4",
+    "answer": "I found Jordan.",
+    "finish_reason": "stop",
+    "seconds": 2.312,
+    "reasoning_chars": 749,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "name-marta",
+    "answer": "Marta.",
+    "finish_reason": "stop",
+    "seconds": 2.594,
+    "reasoning_chars": 851,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "compound-name",
+    "answer": "Te lo tengo guardado: Ana María.",
+    "finish_reason": "stop",
+    "seconds": 3.625,
+    "reasoning_chars": 1217,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "third-person",
+    "answer": "Nina.",
+    "finish_reason": "stop",
+    "seconds": 3.703,
+    "reasoning_chars": 1116,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "two-records",
+    "answer": "Listo, te listo los nombres que tengo guardados: Jordan y Nina.",
+    "finish_reason": "stop",
+    "seconds": 4.188,
+    "reasoning_chars": 1205,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "memory.enable",
+    "answer": "Confirmed, memory enablement is now enabled.",
+    "finish_reason": "stop",
+    "seconds": 2.922,
+    "reasoning_chars": 902,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "memory.save",
+    "answer": "Confirmed: memory.save completed successfully and the memory was updated.",
+    "finish_reason": "stop",
+    "seconds": 3.797,
+    "reasoning_chars": 1195,
+    "status": "fail",
+    "reason": "Expone el identificador interno memory.save."
+  },
+  {
+    "model": "gemma-published",
+    "id": "redacted-es",
+    "answer": "Tenía guardado un registro secreto, pero su valor está oculto por seguridad. Eso es todo.",
+    "finish_reason": "stop",
+    "seconds": 2.453,
+    "reasoning_chars": 795,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "redacted-en",
+    "answer": "The retrieved item was labeled \"secret\" and its value is redacted.",
+    "finish_reason": "stop",
+    "seconds": 3.875,
+    "reasoning_chars": 1159,
+    "status": "useful",
+    "reason": "Conserva datos y alcance solicitados."
+  },
+  {
+    "model": "gemma-published",
+    "id": "mixed-es",
+    "answer": "Listo, lo devolví en español.",
+    "finish_reason": "stop",
+    "seconds": 3.406,
+    "reasoning_chars": 1086,
+    "status": "fail",
+    "reason": "Meta-respuesta sobre idioma; no informa valores ni protección."
+  }
+]

@@ -15,6 +15,16 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MvpLocalTransientHandlerMatrixTests
 {
+    [Test]
+    public async Task WindowTitleQueryPreservesTheExplicitSelectorKindThroughTheHandler()
+    {
+        var provider = new WindowProvider { ExpectedByTitle = true };
+        await RunAsync(new WindowResolveHandler(provider),
+            """{"process":"notepad","limit":10,"byTitle":true}""",
+            "controlled_provider", "verified_title_query", []);
+        Assert.That(provider.ResolveCalls, Is.EqualTo(1));
+    }
+
     private const int ExpectedOperations = 17;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
@@ -440,6 +450,7 @@ public sealed class MvpLocalTransientHandlerMatrixTests
 
     private sealed class WindowProvider : IWindowControlProvider
     {
+        public bool ExpectedByTitle { get; init; }
         public int ActionCalls { get; private set; }
         public int BoundsCalls { get; private set; }
         public int CloseCalls { get; private set; }
@@ -460,7 +471,8 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         public ValueTask<WindowResolveResult> ResolveAsync(
             string processName,
             int limit,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            bool byTitle = false)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ResolveCalls++;
@@ -468,6 +480,7 @@ public sealed class MvpLocalTransientHandlerMatrixTests
             {
                 Assert.That(processName, Is.EqualTo("notepad"));
                 Assert.That(limit, Is.EqualTo(10));
+                Assert.That(byTitle, Is.EqualTo(ExpectedByTitle));
             });
             return ValueTask.FromResult(new WindowResolveResult(
                 Succeeded: true,

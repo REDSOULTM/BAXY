@@ -1,0 +1,99 @@
+{
+  "method": "Preserved physical185; registered Parakeet CPU6 beam8, no hints. All four intervals, microphone and loopback, raw and peak0.8 normalization. Mono mean then scipy resample_poly48000->16000 for loopback.",
+  "limitation": "185 speaking state has paired UTC recorded in the process. Map directly to capture streamReadyUtc with one second margin each side; neither API time is exact first audible sample. Recognition and normalization are diagnostic, not proof of human input or complete fidelity.",
+  "clockSamples": [],
+  "offsetSeconds": 0.0,
+  "inputs": [
+    {
+      "name": "microphone",
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\microphone.wav",
+      "sha256": "9be2a2e8490b54a69f085ca126f2e3acbcfb6b93618c7e566a6ff2419308884a",
+      "rate": 16000,
+      "channels": 1,
+      "resampledSamples": 1267712
+    },
+    {
+      "name": "loopback",
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\loopback.wav",
+      "sha256": "40e47cc093cd9413fe86284b55cd3f804e76b9859d8535e4bcd5ad81db8ffa5e",
+      "rate": 48000,
+      "channels": 2,
+      "resampledSamples": 1268736
+    }
+  ],
+  "windows": [
+    {
+      "output": 1,
+      "channel": "microphone",
+      "samples": [
+        585974,
+        694743
+      ],
+      "speakingSeconds": 4.798063039779663
+    },
+    {
+      "output": 1,
+      "channel": "loopback",
+      "samples": [
+        587103,
+        695872
+      ],
+      "speakingSeconds": 4.798063039779663
+    },
+    {
+      "output": 2,
+      "channel": "microphone",
+      "samples": [
+        771418,
+        855740
+      ],
+      "speakingSeconds": 3.2700819969177246
+    },
+    {
+      "output": 2,
+      "channel": "loopback",
+      "samples": [
+        772548,
+        856869
+      ],
+      "speakingSeconds": 3.2700819969177246
+    },
+    {
+      "output": 3,
+      "channel": "microphone",
+      "samples": [
+        926905,
+        1006281
+      ],
+      "speakingSeconds": 2.96097993850708
+    },
+    {
+      "output": 3,
+      "channel": "loopback",
+      "samples": [
+        928035,
+        1007410
+      ],
+      "speakingSeconds": 2.96097993850708
+    },
+    {
+      "output": 4,
+      "channel": "microphone",
+      "samples": [
+        1083915,
+        1163375
+      ],
+      "speakingSeconds": 2.966284990310669
+    },
+    {
+      "output": 4,
+      "channel": "loopback",
+      "samples": [
+        1085044,
+        1164505
+      ],
+      "speakingSeconds": 2.966284990310669
+    }
+  ],
+  "runtimeManifestSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

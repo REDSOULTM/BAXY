@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-08T16:21:19.429605+00:00",
+  "method": "Two existing candidate models, old/new backend sequentially. Read props, slots, and render one unchanged438 payload through apply-template; generate no answers. Capture exact profiles and logs to detect changed context/template/defaults before controlled inference. This is compatibility, not quality or fair model ranking. User20 requires documented model-specific profiles after backend isolation.",
+  "models": {
+    "qwen35-4b": {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4"
+    },
+    "gemma-published": {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf",
+      "sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7"
+    }
+  },
+  "servers": {
+    "b9980": {
+      "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+      "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+    },
+    "b10809": {
+      "path": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+      "sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f"
+    }
+  },
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-backend-compat449-private"
+}

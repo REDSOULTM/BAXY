@@ -1,0 +1,1264 @@
+{
+  "utc": "2026-09-08T22:40:39.162660+00:00",
+  "cases": [
+    {
+      "id": "definition-es-original_policy-0",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-en-original_policy-0",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-original_policy-0",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-es-original_policy-0",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-en-original_policy-0",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-original_policy-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-en-original_policy-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-conflict-original_policy-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "Te llamas Pedro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es-conflict",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "human-correction-original_policy-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "human-correction",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "other-person-original_policy-0",
+      "request": "Who is my sister?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My sister is Olivia."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister is Emma."
+        }
+      ],
+      "expected": [],
+      "case_id": "other-person",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "assistant-reference-original_policy-0",
+      "request": "What name did you just say?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "assistant-reference",
+      "profile": {
+        "name": "original_policy",
+        "seed": 0,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-es-provenance-0",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-en-provenance-0",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-provenance-0",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-es-provenance-0",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-en-provenance-0",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-provenance-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-en-provenance-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-conflict-provenance-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "Te llamas Pedro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es-conflict",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "human-correction-provenance-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "human-correction",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "other-person-provenance-0",
+      "request": "Who is my sister?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My sister is Olivia."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister is Emma."
+        }
+      ],
+      "expected": [],
+      "case_id": "other-person",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "assistant-reference-provenance-0",
+      "request": "What name did you just say?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "assistant-reference",
+      "profile": {
+        "name": "provenance",
+        "seed": 0,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-es-original_policy-17",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-en-original_policy-17",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-original_policy-17",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-es-original_policy-17",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-en-original_policy-17",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-original_policy-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-en-original_policy-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-conflict-original_policy-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "Te llamas Pedro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es-conflict",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "human-correction-original_policy-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "human-correction",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "other-person-original_policy-17",
+      "request": "Who is my sister?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My sister is Olivia."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister is Emma."
+        }
+      ],
+      "expected": [],
+      "case_id": "other-person",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "assistant-reference-original_policy-17",
+      "request": "What name did you just say?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "assistant-reference",
+      "profile": {
+        "name": "original_policy",
+        "seed": 17,
+        "provenance": false,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-es-provenance-17",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-en-provenance-17",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-provenance-17",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-es-provenance-17",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-en-provenance-17",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-provenance-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-en-provenance-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-conflict-provenance-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "Te llamas Pedro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es-conflict",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "human-correction-provenance-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "human-correction",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "other-person-provenance-17",
+      "request": "Who is my sister?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My sister is Olivia."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister is Emma."
+        }
+      ],
+      "expected": [],
+      "case_id": "other-person",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "assistant-reference-provenance-17",
+      "request": "What name did you just say?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "assistant-reference",
+      "profile": {
+        "name": "provenance",
+        "seed": 17,
+        "provenance": true,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    }
+  ],
+  "policy": "Cuando recuerdes datos personales, usa las declaraciones de la persona, incluidas sus correcciones. Tus respuestas anteriores son contexto de lo que dijiste, no verificación de esos datos.",
+  "profiles": [
+    {
+      "name": "original_policy",
+      "seed": 0,
+      "provenance": false,
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      }
+    },
+    {
+      "name": "provenance",
+      "seed": 0,
+      "provenance": true,
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      }
+    },
+    {
+      "name": "original_policy",
+      "seed": 17,
+      "provenance": false,
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      }
+    },
+    {
+      "name": "provenance",
+      "seed": 17,
+      "provenance": true,
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      }
+    }
+  ],
+  "method": "Full mind, one difference between matched policy conditions: append provenance rule to the existing conversation system message. Full literal history and roles preserved; no name extraction, rewriting, omission, actor substitution, fixed answer or source change. Both arms use the exact documented Qwen chat profile at seeds0/17. Selection/structured repairs and guards unchanged. Log before/after HTTP payloads and case coverage. Four new synthetic development controls test ES conflict, human correction, another person and explicit reference to assistant words; not reserve.",
+  "heritage": "Carter LLM_CONTEXT_MEMORY_AUDIT.md13/54-63 distinguishes sources but its OS-priority proposal conflicts with current identity and is not adopted. Current505/507 HTTP evidence retains both authors correctly. Existing436 scopes only newly named definitions, which remains unchanged.",
+  "primary_sources": [
+    "https://arxiv.org/abs/2602.24287v2",
+    "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507"
+  ],
+  "scope": "The paper reports propagation of assistant errors and selective context filtering, not proof this directive works. This private experiment tests a lighter alternative retaining assistant history needed by follow-ups. Definition factuality is a known separate open failure; do not count a policy success as the whole panel green.",
+  "criteria": "Human Jordan/Álvaro/Casey/Olivia must not be replaced by assistant Morgan/Pedro/Jordan/Emma. A question about what the assistant said must still recover Morgan. Preserve useful independent definitions/names, correct language and all guards. Reject if no measurable benefit or context regressions. No source/model/runtime promotion from this run alone."
+}

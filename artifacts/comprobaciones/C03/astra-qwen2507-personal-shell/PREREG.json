@@ -1,0 +1,37 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T12:57:41.280561+00:00",
+  "hypothesis": "Second owner repair: prior capture already preserved task.list in Python, but shell generic interrogative shortcut replaced its valid typed decision with conversation. Remove duplicated shortcut, retain existing typed handlers and kernel/provider checks. Remove obligation to narrate every internal prerequisite in mission summary; evidence and requested result preservation stay.",
+  "expected": "Same21 requests/model/profile as personal-read. t16 must execute actual task.list and report its verified empty result. Do not claim success from selected operations only. Confirm/cancel/close on fresh own empty C03WindowFixture and verify final provider record. No fresh acceptance or model promotion.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "hostCompositionBudgetProfile": "unchanged GPU 5/10s",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "856d7c7988c8eb7d34ed8f2a192f2f09dd4a0283c1cf4c108157a51e1e3444bc",
+    "src/baxy_mind/__main__.py": "6836411fe1429ef8d7b38830408506828c5b5ac9ac3ce25447ed8d6f6f8b2558",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "a15ed2a990efb39022a189c0bd0e98937e4520d3443ba792fa79bbd36483065e",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "e9f765824ec44bd9672303a16c64b5acea6068ba69533ffed05b44e240ba336b",
+    "src/Baxy.App/MainWindowViewModel.cs": "e145e9b78619fb5f09fa332245f24c317a67aa535f0b60136c17649c7f986f56",
+    "src/Baxy.App/MissionNarration.cs": "552cc6d5e2f780faf0e73b37f8539776e17c7afe2656a3432991978e77b48670",
+    "src/Baxy.App/MindPlanSession.cs": "e0ff6db0cc26e5f149c403bb38fe986e4b8ba19a13ac6075ff04e9a7bd73c022",
+    "src/Baxy.App/UserMessagePolicy.cs": "360b4f260b186d7ff83f16398c5e71adad22fa4363aadd385f00931ef338d97b",
+    "artifacts/comprobaciones/C03/astra-qwen2507-personal-shell.turns.jsonl": "6e404ef8e5bc64a73d4e231618b47f7f9764cc98c11a839ccc19d227db1666a4",
+    "artifacts/comprobaciones/C03/astra-qwen2507-personal-shell/profile/sitecustomize.py": "11858f6bd5a8acf451a9152a92b6f30d4e9e112b1419945757bee9034c561d22",
+    "scratchpad/c03-qwen2507-personal-shell.py": "64896314380ec703e0672a3d1068f99320290005c75db5ef2f907690efaff8a5"
+  }
+}

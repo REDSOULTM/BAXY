@@ -493,7 +493,8 @@ internal sealed class SystemStatusHandler : IOperationHandler
                     snapshot.OperatingSystem.MinorVersion,
                     snapshot.OperatingSystem.BuildNumber,
                     snapshot.OperatingSystem.Architecture,
-                    snapshot.OperatingSystem.IsWorkstation),
+                    snapshot.OperatingSystem.IsWorkstation,
+                    snapshot.OperatingSystem.Caption),
             snapshot.UptimeSeconds,
             failureResults);
         return true;
@@ -571,6 +572,7 @@ internal sealed class SystemStatusHandler : IOperationHandler
         status.MajorVersion > 0
         && status.MinorVersion >= 0
         && status.BuildNumber > 0
+        && IsValidRequiredText(status.Caption, 64)
         && IsValidRequiredText(status.Architecture, 64);
 
     private static bool IsValidOptionalText(string? value, int maximumLength) =>

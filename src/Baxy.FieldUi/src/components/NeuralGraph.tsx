@@ -116,6 +116,7 @@ const EDGES: EdgeT[] = ([
 const CORE_FEEDS = ['n17', 'n18', 'n19', 'n20'];
 
 const STATE_EDGES: Record<ConvState, EdgeT[]> = {
+  error: [],
   standby: [],
   idle: EDGES,
   listening: EDGES.filter((e) => e.tag === 'voice' || e.tag === 'core'),
@@ -124,6 +125,7 @@ const STATE_EDGES: Record<ConvState, EdgeT[]> = {
 };
 
 const STATE_SPAWN_RATE: Record<ConvState, number> = {
+  error: 0,
   standby: 0,
   idle: 0.8,
   listening: 5,
@@ -136,6 +138,7 @@ interface CorePalette {
   labelColor: string; pulseSpeed: number;
 }
 const CORE_COLORS: Record<ConvState, CorePalette> = {
+  error:     { halo: '#7A1E2B', mid: '#B83A4A', inner: '#E55366', hot: '#FFE9EC', labelColor: '#E55366', pulseSpeed: 0.8 },
   standby:   { halo: '#3F4860', mid: '#5B6580', inner: '#8B95A8', hot: '#D8DCE6', labelColor: '#5B6580', pulseSpeed: 0.8 },
   idle:      { halo: '#7A1E2B', mid: '#B83A4A', inner: '#E55366', hot: '#F5C6CC', labelColor: '#7A1E2B', pulseSpeed: 1.1 },
   listening: { halo: '#B83A4A', mid: '#E55366', inner: '#F5C6CC', hot: '#FFE9EC', labelColor: '#B83A4A', pulseSpeed: 2.4 },
@@ -206,6 +209,7 @@ function nodeTint(state: ConvState, id: string, isHub: boolean, isInner: boolean
 }
 
 const NEBULA_TINT: Record<ConvState, { a: string; b: string }> = {
+  error:     { a: '#7A1E2B', b: '#3F4860' },
   standby:   { a: '#3F4860', b: '#5B6580' },
   idle:      { a: '#1B2A5E', b: '#7A1E2B' },
   listening: { a: '#6B5A2F', b: '#1B2A5E' },
@@ -432,6 +436,7 @@ export function NeuralGraph({ state }: Props) {
   const orbit = useOrbitRing(ringInner, ringOuter);
 
   const litTags: Set<string> = {
+    error: new Set<string>(),
     standby: new Set<string>(),
     idle: new Set<string>(),
     listening: new Set<string>(['voice']),
@@ -471,7 +476,7 @@ export function NeuralGraph({ state }: Props) {
         height={h}
         style={{ display: 'block' }}
         role="img"
-        aria-label="agent state visualization"
+        aria-label={`agent state: ${state}`}
       >
         <defs>
           <linearGradient id="nebA" x1="0%" y1="0%" x2="100%" y2="0%">

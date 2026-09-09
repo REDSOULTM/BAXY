@@ -1,0 +1,535 @@
+{
+  "development": [
+    {
+      "id": "6cb550776b93b4cef257099d46dda820f576d6455d7cb5fd1c4dca28093fa69d",
+      "text_literal": "Dime qué dispositivo de audio está activo",
+      "source_references": [
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:22254",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:23318",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:24888",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:30681",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:30851",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:31500",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:31603",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:32319",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:32594",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:32789",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:33128",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:33308",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:34082",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:34338",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:34653",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:35805",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:36375",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:36743",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:38187",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:38299",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:38547",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39050",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39326",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39543",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39571",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39759",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:40187",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        }
+      ],
+      "expected": "Name actual default output device from observed facts.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "16485ae7910a5e59f87a8233ac50e941375f07e8f96330c4b42b90fe5e3f4618",
+      "text_literal": "mostrame el volumen",
+      "source_references": [
+        {
+          "message_id": "msg_c170379cbadbb08e6b98",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:1229",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:06:04-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_1288704b9643a4a1d4e1",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:1266",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:06:13-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_df8ea3b8196c5bc7e728",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:13191",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:57:49-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_79466a579827ab559899",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:13228",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:57:51-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_3bc24d4ad463eb1ca2f0",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:17865",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:22:40-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_bf87cd86f01aa8fc3659",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:17903",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:22:42-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_bf6d713c8957b2f65782",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:2414",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:14:37-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_63f5dec2a3ec5f499193",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:2451",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:14:39-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_d908e2aaeabfcca17109",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:3584",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:18:42-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_22ed81cfe7e5a2ccfad8",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:3621",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:18:44-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_1c22e0cf4c5383bad801",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:4754",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:23:37-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_cf264814dae8e19b76df",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:4792",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:23:39-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_89eb1eabaa03a75c157c",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:6008",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:29:51-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "message_id": "msg_f72552b9b7ac1caf8af3",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:6046",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:29:53-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.status"
+          ]
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:1229",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:06:04-0400",
+          "turn_id": "20260620_020604_b908cb97",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:1266",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:06:13-0400",
+          "turn_id": "20260620_020613_7c7b7e4d",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:2414",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:14:37-0400",
+          "turn_id": "20260620_021437_02c00ee9",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:2451",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:14:39-0400",
+          "turn_id": "20260620_021439_d54de319",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:3584",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:18:42-0400",
+          "turn_id": "20260620_021842_e63c0ade",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:3621",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:18:44-0400",
+          "turn_id": "20260620_021844_6314280b",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:4754",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:23:37-0400",
+          "turn_id": "20260620_022337_1dc16d1c",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:4792",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:23:39-0400",
+          "turn_id": "20260620_022339_bd5dcbbc",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:6008",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:29:51-0400",
+          "turn_id": "20260620_022951_47b8fcd5",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:6046",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:29:53-0400",
+          "turn_id": "20260620_022953_dff82017",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:13191",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:57:49-0400",
+          "turn_id": "20260620_025749_3b0b8474",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:13228",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:57:51-0400",
+          "turn_id": "20260620_025751_99ac983d",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:17865",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:22:40-0400",
+          "turn_id": "20260620_032240_2079a6f4",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:17903",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:22:42-0400",
+          "turn_id": "20260620_032242_5bf3d022",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Read volume35.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "acff43c4b843b390b60c3f56daf2f02a187cc4b0ccd383a5b8886ba133f2bbd1",
+      "text_literal": "está silenciado el audio",
+      "source_references": [
+        {
+          "message_id": "msg_f1d3c000837c58eae720",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:40270",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T23:24:42-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:40270",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T23:24:42-0400",
+          "turn_id": "20260624_232442_ca95755b",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Read actual mute state.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    }
+  ],
+  "cleanup": [],
+  "method": "Three previously consumed literal audio requests: identify output, read level, read mute. NativeAOT status now includes name from the same default endpoint. No mutations, UI or fresh acceptance claim."
+}

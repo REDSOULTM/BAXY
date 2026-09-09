@@ -1,0 +1,11 @@
+{
+  "counts": {
+    "total_candidates": 742,
+    "complete_length_evidence": 560,
+    "needs_literal_integrity_review": 182,
+    "selected_development_cases": 20,
+    "selected_without_complete_length_evidence": 6
+  },
+  "method": "Match literal SHA256 to live trace content.text or matching content.chars. Length agreement supports complete extraction, not human authorship or freshness. Raw pool unchanged; unresolved candidates are not ready for acceptance.",
+  "privateDetails": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real-user-pool-20260906\\literal_integrity.jsonl"
+}

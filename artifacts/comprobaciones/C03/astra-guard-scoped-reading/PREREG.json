@@ -1,0 +1,62 @@
+{
+  "scope_instruction": "Antes de clasificar, identifica el alcance del pedido: requested_spans contiene fragmentos literales completos de lo que la persona pide que hagas o respondas; restriction_spans contiene fragmentos literales de lo que prohíbe o limita. Copia las palabras exactas, sin reformular ni ejecutar. No extraigas como orden real el contenido de una traducción, cita o ejemplo. Una negación sólo limita lo que niega; conserva otras peticiones independientes. Después clasifica las peticiones vigentes. El conocimiento general no se convierte en lectura externa sólo porque sería posible buscar una fuente para verificarlo. ",
+  "cases": [
+    "no me molesta, dime la hora",
+    "I don't mind, tell me the time",
+    "no abras Steam, dime la hora",
+    "no me digas la hora",
+    "don't tell me the time",
+    "no uses herramientas, dime la hora",
+    "traduce: no me molesta, dime la hora",
+    "no me digas la hora, dime la hora",
+    "dime la hora y baja el volumen",
+    "ayer me dijiste la hora",
+    "El aire es h20?"
+  ],
+  "baseline": "astra-negative-contract/posts.jsonl, stage shape",
+  "method": "Eleven consumed/synthetic diagnostic inputs. Replay exact captured system/user messages, sampling, budget and template. Different hypothesis after format ablation failed: first extract literal requested and restricted spans, then retain type/count classification. Adds scope instruction and output fields, raises budget160; this is not an isolated serialization comparison. No extracted span grants authority. No change of prompt wording, operation authority, source, model or runtime registration.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "requested_spans": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 8
+      },
+      "restriction_spans": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 8
+      },
+      "request_type": {
+        "type": "string",
+        "enum": [
+          "stable_conversation",
+          "external_read",
+          "environment_change",
+          "incomplete_effect"
+        ]
+      },
+      "effect_count": {
+        "type": "string",
+        "enum": [
+          "zero",
+          "one",
+          "multiple"
+        ]
+      }
+    },
+    "required": [
+      "requested_spans",
+      "restriction_spans",
+      "request_type",
+      "effect_count"
+    ],
+    "additionalProperties": false
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

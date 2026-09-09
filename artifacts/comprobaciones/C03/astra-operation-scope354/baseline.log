@@ -1,0 +1,16 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_operation_scope_reaches_first_composition_and_recovery[confirmar-status-situation0-No pude activar la memoria.-La memoria est\xe1 habilitada.] _
+tests\test_compose_contract.py:419: in test_operation_scope_reaches_first_composition_and_recovery
+    assert payload["operation"] == situation["operation"]
+           ^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'operation'
+_ test_operation_scope_reaches_first_composition_and_recovery[me llamo Lina, dime hola Lina-error-situation1-Lo guard\xe9.-Hola Lina, no pude guardar el dato porque la memoria est\xe1 desactivada.] _
+tests\test_compose_contract.py:419: in test_operation_scope_reaches_first_composition_and_recovery
+    assert payload["operation"] == situation["operation"]
+           ^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'operation'
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_operation_scope_reaches_first_composition_and_recovery[confirmar-status-situation0-No pude activar la memoria.-La memoria est\xe1 habilitada.]
+FAILED tests/test_compose_contract.py::test_operation_scope_reaches_first_composition_and_recovery[me llamo Lina, dime hola Lina-error-situation1-Lo guard\xe9.-Hola Lina, no pude guardar el dato porque la memoria est\xe1 desactivada.]
+2 failed, 85 deselected in 0.57s

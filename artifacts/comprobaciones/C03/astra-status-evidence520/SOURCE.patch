@@ -1,0 +1,13 @@
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3553,9 +3553,7 @@
+         return ""
+     bits: list[str] = []
+     if kind == "status":
+-        bits.append(
+-            "Report the verified results. Completing a request does not imply changing the PC."
+-        )
++        bits.append("Report the verified results.")
+     # Planner steps include internal prerequisites, such as resolving a window
+     # before closing it. They are evidence, not a demand to narrate every step.
+     observed = _merged_observed(situation)

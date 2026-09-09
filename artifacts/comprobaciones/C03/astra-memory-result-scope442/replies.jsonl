@@ -1,0 +1,16 @@
+{"id": "actual437-t7", "variant": "baseline", "answer": "Mi nombre es Jordan.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "actual437-t7", "variant": "result-scope", "answer": "Jordan ha visto la memoria.", "finish_reason": "stop", "seconds": 0.36}
+{"id": "actual437-t4", "variant": "baseline", "answer": "I saved the name Jordan in private memory.", "finish_reason": "stop", "seconds": 0.421}
+{"id": "actual437-t4", "variant": "result-scope", "answer": "I found Jordan.", "finish_reason": "stop", "seconds": 0.329}
+{"id": "name-marta", "variant": "baseline", "answer": "Mi nombre es Marta.", "finish_reason": "stop", "seconds": 0.359}
+{"id": "name-marta", "variant": "result-scope", "answer": "Marta", "finish_reason": "stop", "seconds": 0.297}
+{"id": "compound-name", "variant": "baseline", "answer": "Mi nombre guardado es Ana María.", "finish_reason": "stop", "seconds": 0.39}
+{"id": "compound-name", "variant": "result-scope", "answer": "Ana María", "finish_reason": "stop", "seconds": 0.313}
+{"id": "third-person", "variant": "baseline", "answer": "Tu hermana se llama Nina.", "finish_reason": "stop", "seconds": 0.391}
+{"id": "third-person", "variant": "result-scope", "answer": "Nina es tu hermana.", "finish_reason": "stop", "seconds": 0.359}
+{"id": "two-records", "variant": "baseline", "answer": "Tengo guardados dos nombres en mi memoria: Jordan y Nina.", "finish_reason": "stop", "seconds": 0.484}
+{"id": "two-records", "variant": "result-scope", "answer": "Jordan y Nina están en la lista de memorias.", "finish_reason": "stop", "seconds": 0.422}
+{"id": "memory.enable", "variant": "baseline", "answer": "Memory configuration enabled.", "finish_reason": "stop", "seconds": 0.281}
+{"id": "memory.enable", "variant": "result-scope", "answer": "Memory configuration enabled.", "finish_reason": "stop", "seconds": 0.266}
+{"id": "memory.save", "variant": "baseline", "answer": "The memory has been saved successfully.", "finish_reason": "stop", "seconds": 0.328}
+{"id": "memory.save", "variant": "result-scope", "answer": "The memory has been saved successfully.", "finish_reason": "stop", "seconds": 0.313}

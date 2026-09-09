@@ -1,0 +1,11 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 171 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 171 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 171 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 171 ms).
+  1 de 5 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\SystemStatus\WindowsOperatingSystemProbeTests.cs(37,25): error CA1826: No utilice métodos Enumerable en colecciones indexables. Use la colección directamente. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826) [D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\Baxy.Providers.Windows.Tests.csproj]

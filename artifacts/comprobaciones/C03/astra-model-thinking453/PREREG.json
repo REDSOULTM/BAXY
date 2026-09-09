@@ -1,0 +1,118 @@
+{
+  "utc": "2026-09-08T16:39:41.743057+00:00",
+  "method": "Corrected452 harness: direct loopback HTTP120s single attempt replaces capped _post; no product timeout changed. Three exact GGUFs on b10809, documented general thinking samplers. Same eleven inputs444, one fixed seed0 first, all answers retained.2507 excluded because it is strictly non-thinking. Native enable_thinking true, reasoning on, no forced intermediate reasoning cutoff (budget -1); totalmax3072 fits4096 context with these short prompts. No prompts, quantization or wrappers changed. Unlike399/400 the backend is newer, memory literals reflect402/current437, and no forced512-thinking termination is injected.399/400 remain valid evidence about their constrained profiles; not retroactively invalidated by PR23116 because their server flag already set512. This is a mode/profile diagnostic, not a global ranking or production latency endorsement.",
+  "evidence": [
+    "https://huggingface.co/Qwen/Qwen3.5-4B",
+    "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+    "https://huggingface.co/google/gemma-4-E2B-it",
+    "https://huggingface.co/google/gemma-4-E2B-it/blob/main/generation_config.json",
+    "https://arxiv.org/html/2607.02770v1",
+    "https://github.com/ggml-org/llama.cpp/discussions/27115",
+    "https://github.com/ggml-org/llama.cpp/blob/5266f24da/tools/server/README.md"
+  ],
+  "profiles": {
+    "qwen35-4b": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 1.5,
+      "repeat_penalty": 1.0
+    },
+    "gemma-base": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 64,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0
+    },
+    "gemma-published": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 64,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0
+    }
+  },
+  "seeds": [
+    0
+  ],
+  "budget_reason": "No intermediate cap; total3072 output budget with4096 slot and unchanged short inputs. Natural stop and final content are required. Length or timeout censors quality assessment and requires inspecting actual token budget before rejecting a model. No judging hidden reasoning as a correct published answer. Seeds are not rerolled to choose an answer; a profile that meets all first11 still needs another fixed seed/regression/product before adoption.",
+  "criteria": "Review all answers, finish reasons, usage and resources. Correct speaker, values and protected-record handling without fabricated tools/effects. An exchange of failures is not success. No runtime promotion on this native diagnostic. No physical UI/audio/fresh acceptance credit.",
+  "models": {
+    "qwen35-4b": {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4"
+    },
+    "gemma-base": {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\gemma4-e2b-inherited-d3b0fed4\\base-gguf\\gemma-4-E2B-it-Q4_K_M.gguf",
+      "sha256": "740185b21d22ceb83a11c3aa62ad5842ef32c70f6096d756bbee85a1e4ec34b8"
+    },
+    "gemma-published": {
+      "path": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf",
+      "sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7"
+    }
+  },
+  "servers": {
+    "b10809": {
+      "path": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+      "sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f"
+    }
+  },
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "payload_sha256": "1ada95679e279c137cc857c5a021ed8814f3cda09308989b3cfacf5e6aefb6dd"
+    },
+    {
+      "id": "actual437-t4",
+      "payload_sha256": "186fa4051a8dd208e1cdd12efe75db3a83f6a95a0811e14928f18df679d0ba9e"
+    },
+    {
+      "id": "name-marta",
+      "payload_sha256": "aa8c293b3886bd4b085e90ecb9417750e7e98c76059299dd207c290bd4b1ea1a"
+    },
+    {
+      "id": "compound-name",
+      "payload_sha256": "c180ad499fde92e8f9c0c88635107e3d0d9b69221e72f89571304d4433796990"
+    },
+    {
+      "id": "third-person",
+      "payload_sha256": "3dc6a6b95d7dcb2084a2370a5cc0e92b5885703903f404244f50a2db4ade1ce5"
+    },
+    {
+      "id": "two-records",
+      "payload_sha256": "6c1173dc86ee8b2f37614680b5f953a6b924b747c300d0682e81ae042dd9d5d5"
+    },
+    {
+      "id": "memory.enable",
+      "payload_sha256": "c159c9d05b6a997af5a1482af728989d67e1e9973b4cfe5511e15b7e0c6280d0"
+    },
+    {
+      "id": "memory.save",
+      "payload_sha256": "8ba1419f07dd4ce508c6f579942a6af4d19de11dbf41f68aae4cbbdf0a455306"
+    },
+    {
+      "id": "redacted-es",
+      "payload_sha256": "fec785819994bac29c35e721245fc1da5033e6eccf7e3b235dadb1063405a221"
+    },
+    {
+      "id": "redacted-en",
+      "payload_sha256": "f8e7cc8964cc18ce8107c23e66d73931c90d4a1b329ee603e988d700a8d1beef"
+    },
+    {
+      "id": "mixed-es",
+      "payload_sha256": "7efa890a43d312036e7e4293e47780bd842a0513daa3b5c36565cce09ecaa9b3"
+    }
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 120
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-model-thinking453-private"
+}

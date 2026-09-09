@@ -1,0 +1,375 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 263 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 263 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 263 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 263 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 263 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\Baxy.Integration.Tests.csproj (en 409 ms).
+  1 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Desactiva la memoria privada.",False) [38 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: False
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Deshabilita tu memoria personal local.",False) [1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: False
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Activa la memoria privada local de BAXY.",True) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: True
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Habilita tu memoria local.",True) [23 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: True
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Disable your private local memory.",False) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: False
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Enable BAXY's personal memory.",True) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: True
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Turn the private memory off.",False) [1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: False
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Turn your local memory on.",True) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: True
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Baxy, please, disable your private memory.",False) [2 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: False
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+  Con error ConfigurationRecognizesItsOwnQualifiedMemoryTarget("Baxy, por favor, activa tu memoria privada.",True) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  NoRoute
+
+  2)   Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"))
+  Expected: "memory.configure"
+  But was:  null
+
+  3)   Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled))
+  Expected: True
+  But was:  null
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 521
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 522
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.<>c__DisplayClass20_0.<ConfigurationRecognizesItsOwnQualifiedMemoryTarget>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 523
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(String text, Boolean enabled) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 519
+   at InvokeStub_NaturalMemoryRequestParserTests.ConfigurationRecognizesItsOwnQualifiedMemoryTarget(Object, Span`1)
+
+
+
+Con error! - Con error:    10, Superado:    22, Omitido:     0, Total:    32, Duración: 643 ms - Baxy.Integration.Tests.dll (net10.0)

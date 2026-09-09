@@ -1,0 +1,10 @@
+{
+  "freshAcceptance": false,
+  "individualReview": true,
+  "sources": {
+    "artifacts\\comprobaciones\\C03\\astra-registered-integrated-qwen\\paired.json": "34a30515197b0d8f77dcd92d1fc7e575c65f7587abe4780f3752a2995389a747",
+    "artifacts\\comprobaciones\\C03\\astra-registered-development-recovery-qwen\\paired.json": "2b1605f6f9982faef854e55c2036129e87206d9075d3b9389088d125db58ea66",
+    "artifacts\\comprobaciones\\C03\\astra-registered-compose-choice-question\\replies.jsonl": "0400cf7aecfbf025f57b59460ffbfe495f7c8019cb94c661dfed79412873be99",
+    "artifacts\\comprobaciones\\C03\\PRUEBAS_RUNTIME_REGISTRADO_C03.md": "6a727f56864ab319403196ca1f1ac06e7665a878557d533151a5e306ac3c23ab"
+  }
+}

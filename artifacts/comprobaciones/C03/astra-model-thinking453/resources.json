@@ -1,0 +1,38 @@
+[
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "completed": 11,
+    "violations": [],
+    "effective_seeds_observed": [
+      0
+    ],
+    "gpu_peak_mib": 3174.5390625,
+    "ram_peak_mib": 1155.85546875,
+    "seconds": 405.36
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "completed": 11,
+    "violations": [],
+    "effective_seeds_observed": [
+      0
+    ],
+    "gpu_peak_mib": 1683.0078125,
+    "ram_peak_mib": 2499.02734375,
+    "seconds": 54.375
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "completed": 11,
+    "violations": [],
+    "effective_seeds_observed": [
+      0
+    ],
+    "gpu_peak_mib": 1695.7890625,
+    "ram_peak_mib": 2826.2109375,
+    "seconds": 42.609
+  }
+]

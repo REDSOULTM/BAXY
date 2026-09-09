@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-07T18:02:11.416514+00:00",
+  "scriptSha256": "f36aeaa3b1204e0a901a172d8375b003b879d02e5a8f64a1a0524a0045c30a38",
+  "inputs": [
+    {
+      "mode": "default",
+      "frames": 1020,
+      "sha256": "c53e7a3a79db7643d21ad9a8c728f4a42856595574dc4cea7f44af534ffb8efa"
+    },
+    {
+      "mode": "raw",
+      "frames": 1021,
+      "sha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a"
+    }
+  ],
+  "method": "Default/RAW simultaneous211 mic/reference, each unchanged or passed through current Speex. Fresh Silero per condition, unchanged .5VAD/.004energy/1.8noise/3consecutive/echo guard. No gain/filter/threshold sweeps.",
+  "speakingMask": "Fixed scheduled original playback intervals from output stream time plus output latency. Speex mask delayed512samples for its known output delay. Timestamp mask approximate near boundaries; report full and masked VAD counts.",
+  "limitation": "No live utterance reset or actual cancellation of playback; candidate events only. Pure physical echo, not human double-talk or final acceptance.",
+  "sources": {
+    "voice": "87f3e491d909515d592d190b82d5262e4fecd1d5d03e5a1b91c00d480a4450d1",
+    "speex_aec": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "voice_aec": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a"
+  }
+}

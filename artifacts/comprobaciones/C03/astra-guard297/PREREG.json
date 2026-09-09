@@ -1,0 +1,6 @@
+{
+  "utc": "2026-09-08T01:01:54.408852+00:00",
+  "hypothesis": "The request restatement guard counts the answered greeting in front of a distinct follow-up question.",
+  "method": "Replay exact responses296 through actual chat with predicate tracing; no new inference, effects, persistence or product mutation.",
+  "criteria": "Identify every true predicate and actual audit_reason before modifying source."
+}

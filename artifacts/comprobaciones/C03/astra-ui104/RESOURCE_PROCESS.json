@@ -1,0 +1,7 @@
+{
+  "monitor": 36892,
+  "app": 35420,
+  "appCreateTime": 1788772677.5251408,
+  "startedUtc": "2026-09-07T09:18:14.626269+00:00",
+  "scope": "App and child processes after main.py launch; startup build and pre-monitor interval excluded"
+}

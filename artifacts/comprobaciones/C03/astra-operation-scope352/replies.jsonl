@@ -1,0 +1,36 @@
+{"id": "memory.enable", "model": "registered2507", "variant": "baseline", "answer": "La configuración de la memoria se ha confirmado como completada. El estado actual es \"memory configuration\" y el resultado es exitoso. El sistema ha sido revisado y está en funcionamiento.", "finish_reason": "stop"}
+{"id": "memory.enable", "model": "registered2507", "variant": "operation-scope", "answer": "La configuración de la memoria se ha confirmado como completada. El estado actual es \"memory configuration\" y la operación \"memory.enable\" se ha ejecutado correctamente. El sistema ha registrado que la memoria está habilitada.", "finish_reason": "stop"}
+{"id": "memory.save", "model": "registered2507", "variant": "baseline", "answer": "La memoria fue actualizada correctamente. No se realizaron cambios en el sistema.", "finish_reason": "stop"}
+{"id": "memory.save", "model": "registered2507", "variant": "operation-scope", "answer": "La memoria se ha guardado correctamente. No se realizaron correcciones ni acciones de replay. El estado actual es actualización de memoria.", "finish_reason": "stop"}
+{"id": "memory.recall", "model": "registered2507", "variant": "baseline", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "memory.recall", "model": "registered2507", "variant": "operation-scope", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "model": "registered2507", "variant": "baseline", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-lina", "model": "registered2507", "variant": "operation-scope", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "model": "registered2507", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-accent", "model": "registered2507", "variant": "operation-scope", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-english", "model": "registered2507", "variant": "baseline", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "name-english", "model": "registered2507", "variant": "operation-scope", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "sister", "model": "registered2507", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "sister", "model": "registered2507", "variant": "operation-scope", "answer": "Olivia.", "finish_reason": "stop"}
+{"id": "disabled-control", "model": "registered2507", "variant": "baseline", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "finish_reason": "stop"}
+{"id": "disabled-control", "model": "registered2507", "variant": "operation-scope", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "finish_reason": "stop"}
+{"id": "save-disabled-greeting-request", "model": "registered2507", "variant": "baseline", "answer": "hola emmanuel, el sistema no puede iniciar porque la memoria está desactivada.", "finish_reason": "stop"}
+{"id": "save-disabled-greeting-request", "model": "registered2507", "variant": "operation-scope", "answer": "Hola Emmanuel, ¿cómo va? Parece que no se pudo guardar la memoria porque está desactivada.", "finish_reason": "stop"}
+{"id": "memory.enable", "model": "available-qwen35", "variant": "baseline", "answer": "He confirmado que la configuración de memoria está activa y que la vista está habilitada.", "finish_reason": "stop"}
+{"id": "memory.enable", "model": "available-qwen35", "variant": "operation-scope", "answer": "He confirmado que la configuración de memoria está activa.", "finish_reason": "stop"}
+{"id": "memory.save", "model": "available-qwen35", "variant": "baseline", "answer": "He confirmado que la memoria se ha actualizado correctamente.", "finish_reason": "stop"}
+{"id": "memory.save", "model": "available-qwen35", "variant": "operation-scope", "answer": "He confirmado que la memoria se ha guardado correctamente.", "finish_reason": "stop"}
+{"id": "memory.recall", "model": "available-qwen35", "variant": "baseline", "answer": "Tu nombre es Emmanuel.", "finish_reason": "stop"}
+{"id": "memory.recall", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu nombre es Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "model": "available-qwen35", "variant": "baseline", "answer": "Tu nombre es Lina.", "finish_reason": "stop"}
+{"id": "name-lina", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu nombre es Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "model": "available-qwen35", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-accent", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-english", "model": "available-qwen35", "variant": "baseline", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "name-english", "model": "available-qwen35", "variant": "operation-scope", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "sister", "model": "available-qwen35", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "sister", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "disabled-control", "model": "available-qwen35", "variant": "baseline", "answer": "He desactivado la memoria.", "finish_reason": "stop"}
+{"id": "disabled-control", "model": "available-qwen35", "variant": "operation-scope", "answer": "He desactivado la memoria.", "finish_reason": "stop"}
+{"id": "save-disabled-greeting-request", "model": "available-qwen35", "variant": "baseline", "answer": "Hola Emmanuel.", "finish_reason": "stop"}
+{"id": "save-disabled-greeting-request", "model": "available-qwen35", "variant": "operation-scope", "answer": "Hola Emmanuel.", "finish_reason": "stop"}

@@ -1,0 +1,338 @@
+[
+  {
+    "sha": "49c0dc82b849344f945b14ab997386bd793369ae",
+    "date": "2026-09-04T12:31:36Z",
+    "title": "model : add Tencent Hy 4 (hy_v4) preview architecture support (#28127)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/49c0dc82b849344f945b14ab997386bd793369ae"
+  },
+  {
+    "sha": "1863ac0333fdf84b66c02bed947f066fa290b316",
+    "date": "2026-09-04T13:13:10Z",
+    "title": "ui: export conversations from database instead of cached store (#27432)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/1863ac0333fdf84b66c02bed947f066fa290b316"
+  },
+  {
+    "sha": "8b4b3558f1459c13e4aa38d5c94d306a00dc6acd",
+    "date": "2026-09-04T13:50:33Z",
+    "title": "ci : move more jobs to ccache-buckets (#28375)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/8b4b3558f1459c13e4aa38d5c94d306a00dc6acd"
+  },
+  {
+    "sha": "4acf4a4cb8578ac82e9524a1a1a06b37c2c45734",
+    "date": "2026-09-04T17:12:05Z",
+    "title": "opencl: add Adreno xmem SDPA path (#26331)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/4acf4a4cb8578ac82e9524a1a1a06b37c2c45734"
+  },
+  {
+    "sha": "1548a240e36079f07856c95c53de1ec2770840ab",
+    "date": "2026-09-04T17:12:26Z",
+    "title": "opencl: extend the elementwise and data‐movement op coverage (#27633)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/1548a240e36079f07856c95c53de1ec2770840ab"
+  },
+  {
+    "sha": "85d5703a3b1b47243213a39059a6e3076c92733a",
+    "date": "2026-09-04T17:53:16Z",
+    "title": "ui : fix MCP image attachments not displayed in tool block (#25789) (#28089)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/85d5703a3b1b47243213a39059a6e3076c92733a"
+  },
+  {
+    "sha": "427291b5b34cd914a31b3fd3b61a68f6184f4b9f",
+    "date": "2026-09-04T18:38:34Z",
+    "title": "metal : add remaining fa-vec tunings for M3 (#28396)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/427291b5b34cd914a31b3fd3b61a68f6184f4b9f"
+  },
+  {
+    "sha": "cd8cdf397dc21d986e69069ce2180651d693fdff",
+    "date": "2026-09-05T02:36:02Z",
+    "title": "sycl: attribute device allocations by site (GGML_SYCL_MEMTRACE) (#27631)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/cd8cdf397dc21d986e69069ce2180651d693fdff"
+  },
+  {
+    "sha": "4d9176092d00586775af140581bb0b558ddc4389",
+    "date": "2026-09-05T02:37:12Z",
+    "title": "sycl : fix test-backend-ops CI break && restore Kronecker product FWHT support (#28016) (#28254)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/4d9176092d00586775af140581bb0b558ddc4389"
+  },
+  {
+    "sha": "6a1a922d269908a29cbd4b49c27e6a8e7fd10fae",
+    "date": "2026-09-05T10:19:47Z",
+    "title": "metal : fix memory leak in early return (#28399)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/6a1a922d269908a29cbd4b49c27e6a8e7fd10fae"
+  },
+  {
+    "sha": "74a7c897f049c17e7080423aa2111776eff6ebbf",
+    "date": "2026-09-05T20:42:35Z",
+    "title": "Github: limit blank issues to maintainers (#28435)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/74a7c897f049c17e7080423aa2111776eff6ebbf"
+  },
+  {
+    "sha": "971595d6697f53b215d02a8381f8b5af142a4d86",
+    "date": "2026-09-06T05:37:01Z",
+    "title": "metal : add remaining fa-vec tunings for M2 Max (#28458)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/971595d6697f53b215d02a8381f8b5af142a4d86"
+  },
+  {
+    "sha": "c457e3bf7fa88a7ccfa31f1dbf358ac1ebd90e67",
+    "date": "2026-09-06T05:49:39Z",
+    "title": "ui : embed assets directly with CMake (#28445)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/c457e3bf7fa88a7ccfa31f1dbf358ac1ebd90e67"
+  },
+  {
+    "sha": "7620399f58aebfd2196b74021f9581bcf7218cb9",
+    "date": "2026-09-06T06:21:22Z",
+    "title": "common: add --log-jsonl (#28437)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/7620399f58aebfd2196b74021f9581bcf7218cb9"
+  },
+  {
+    "sha": "0afb805b19e26c719a466145761faabad3af1a74",
+    "date": "2026-09-06T08:52:40Z",
+    "title": "ui: Improve Chat Messages rendering performance (#28460)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0afb805b19e26c719a466145761faabad3af1a74"
+  },
+  {
+    "sha": "9e0e220594af405a62835dc3a27495729fd8506b",
+    "date": "2026-09-06T08:59:10Z",
+    "title": "grammar : fix max repetition threshold (#28469)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/9e0e220594af405a62835dc3a27495729fd8506b"
+  },
+  {
+    "sha": "73a43d1f69345aee8bb186ef4b3172cef892f2e5",
+    "date": "2026-09-06T11:45:01Z",
+    "title": "cuda: fixes races in mmid and mmf (#28475)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/73a43d1f69345aee8bb186ef4b3172cef892f2e5"
+  },
+  {
+    "sha": "d03efa5d5369a9cba63bec1ae712a2f6e686a1d6",
+    "date": "2026-09-06T15:33:08Z",
+    "title": "opencl: properly choose weights pack for q4_K, q5_K mul_mat (#28402)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/d03efa5d5369a9cba63bec1ae712a2f6e686a1d6"
+  },
+  {
+    "sha": "3ad1ba7336986d98592d3e28cafd1a406715351f",
+    "date": "2026-09-06T15:43:58Z",
+    "title": "[Model] Support for Spark2_5ForCausalLM  implementation (#27868)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/3ad1ba7336986d98592d3e28cafd1a406715351f"
+  },
+  {
+    "sha": "5fdfa6282936576d2f352d4b97f397a109f207a6",
+    "date": "2026-09-06T16:46:21Z",
+    "title": "models : fix GDN normalization from `max` to `rsqrt` (#28068)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/5fdfa6282936576d2f352d4b97f397a109f207a6"
+  },
+  {
+    "sha": "465e49b9cea78a68b9c244ffb48d0ee24a82873d",
+    "date": "2026-09-06T16:47:05Z",
+    "title": "convert : add `--fuse-qkv` flag to fuse Q/K/V into QKV during HF-to-GGUF conversion (#22780)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/465e49b9cea78a68b9c244ffb48d0ee24a82873d"
+  },
+  {
+    "sha": "8fe90e1fbfc065f17a0b233c9df239423cd24a75",
+    "date": "2026-09-07T04:35:30Z",
+    "title": "vulkan: add TQ1_0 support (mm, mat-vec, mat-vec-id, dequant, get_rows) (#27765)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/8fe90e1fbfc065f17a0b233c9df239423cd24a75"
+  },
+  {
+    "sha": "2092353c8b828105f3f47e40e094ed3153ce0531",
+    "date": "2026-09-07T05:23:39Z",
+    "title": "ci : add container image checking and tagging (wip) (#28394)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/2092353c8b828105f3f47e40e094ed3153ce0531"
+  },
+  {
+    "sha": "9ac8c408a33b04396880deba4a9f44470ff12156",
+    "date": "2026-09-07T06:08:28Z",
+    "title": "vulkan: rms_norm fusion opportunities (#28024)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/9ac8c408a33b04396880deba4a9f44470ff12156"
+  },
+  {
+    "sha": "992cb503cdacf691ef06c332d05243bc7807257b",
+    "date": "2026-09-07T06:10:40Z",
+    "title": "ggml: allow backend inputs to not create another split (#28387)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/992cb503cdacf691ef06c332d05243bc7807257b"
+  },
+  {
+    "sha": "b74f590eafec2fafc6e0e98ee93b2e5d3efa9042",
+    "date": "2026-09-07T06:23:21Z",
+    "title": "ggml-cuda: fix divergent barrier in f16 flash attention (#27870)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/b74f590eafec2fafc6e0e98ee93b2e5d3efa9042"
+  },
+  {
+    "sha": "9a7570587ce908b0073a0458877205b80627f393",
+    "date": "2026-09-07T07:12:50Z",
+    "title": "convert : write explicit recurrent_layers for Qwen3-Next / Qwen3.5 (#28208)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/9a7570587ce908b0073a0458877205b80627f393"
+  },
+  {
+    "sha": "5202104b59ada9005db079eea43882a2b7bf5802",
+    "date": "2026-09-07T07:14:32Z",
+    "title": "caps : recheck typed content if template checks for string (#28511)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/5202104b59ada9005db079eea43882a2b7bf5802"
+  },
+  {
+    "sha": "1173700b9c12fa7d7ccfd74752a35ec2d7b4552b",
+    "date": "2026-09-07T10:11:40Z",
+    "title": "examples : print ggml_version and ggml_commit in test-cmake [no ci] (#28538)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/1173700b9c12fa7d7ccfd74752a35ec2d7b4552b"
+  },
+  {
+    "sha": "0cae43063cf15170e91a2ff4d034da0ecef4a1b2",
+    "date": "2026-09-07T10:22:10Z",
+    "title": "vulkan: support type-aligned GET_ROWS (#28253)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0cae43063cf15170e91a2ff4d034da0ecef4a1b2"
+  },
+  {
+    "sha": "73ab7599b553c03f6f5d2db24a18ad76f2eb36a3",
+    "date": "2026-09-07T11:36:58Z",
+    "title": "CUDA: branchless Q4_K/Q5_K unpack to speed up mmvq, L2 prefetch on DGX Spark (#26705)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/73ab7599b553c03f6f5d2db24a18ad76f2eb36a3"
+  },
+  {
+    "sha": "d23c47f2a9175c514556fc2fc69b2e670f37ae2c",
+    "date": "2026-09-07T13:20:58Z",
+    "title": "convert : refactor Hy4-preview conversion - move HC tensor mapping to the global map (#28451)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/d23c47f2a9175c514556fc2fc69b2e670f37ae2c"
+  },
+  {
+    "sha": "4735997382b5bcf8d4c197b0fef16256ce2992f7",
+    "date": "2026-09-07T13:21:42Z",
+    "title": "ggml: add gfx90c HIP support (#26454)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/4735997382b5bcf8d4c197b0fef16256ce2992f7"
+  },
+  {
+    "sha": "0c963452ea7d19f872e455257509a4ff00e7dfc7",
+    "date": "2026-09-07T13:22:42Z",
+    "title": "CUDA: size routed MoE MMQ N-tiles from typical expert width on RDNA3 (#24546)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0c963452ea7d19f872e455257509a4ff00e7dfc7"
+  },
+  {
+    "sha": "7a333e724089d026181f51af57d504980e5761e4",
+    "date": "2026-09-07T13:24:03Z",
+    "title": "vulkan: add DeepSeek-V4 hyper-connection fused ops (DSV4_HC_COMB/PRE/POST) (#26578)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/7a333e724089d026181f51af57d504980e5761e4"
+  },
+  {
+    "sha": "dbeb37548e25abc6e54961c4c99e63f191367809",
+    "date": "2026-09-07T13:24:14Z",
+    "title": "sycl: add a batched L2_NORM kernel (#28222)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/dbeb37548e25abc6e54961c4c99e63f191367809"
+  },
+  {
+    "sha": "160bd031b25fb93eda4b1ab1a86d860751b9e444",
+    "date": "2026-09-07T13:50:46Z",
+    "title": "server: fix LRU hang on multiple requests same model (#28539)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/160bd031b25fb93eda4b1ab1a86d860751b9e444"
+  },
+  {
+    "sha": "c0b1871bc7e4d6da285a348b93c0dbe2dbc54852",
+    "date": "2026-09-07T13:55:14Z",
+    "title": "webgpu: format the GET_ROWS case block (#28542)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/c0b1871bc7e4d6da285a348b93c0dbe2dbc54852"
+  },
+  {
+    "sha": "ccc3646c63127e32ab8e2773290a1aded6dfb69c",
+    "date": "2026-09-07T13:59:45Z",
+    "title": "nix : update deprecated expressions (#28145)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/ccc3646c63127e32ab8e2773290a1aded6dfb69c"
+  },
+  {
+    "sha": "e71b80510c848c00175924ecf3c40333ccae8eb5",
+    "date": "2026-09-07T14:28:19Z",
+    "title": "Revert \"CUDA: size routed MoE MMQ N-tiles from typical expert width on RDNA3 (#24546)\" (#28551)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/e71b80510c848c00175924ecf3c40333ccae8eb5"
+  },
+  {
+    "sha": "f114f91f9ed6792cf402437e3874adad98902744",
+    "date": "2026-09-07T17:54:13Z",
+    "title": "tests : initialize the L2_NORM batch array (#28553)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/f114f91f9ed6792cf402437e3874adad98902744"
+  },
+  {
+    "sha": "67672dc5b76f8bc17785a19d3dc6d1463fc2902c",
+    "date": "2026-09-07T19:10:06Z",
+    "title": "ci : bump ty to 0.0.78 (#28548)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/67672dc5b76f8bc17785a19d3dc6d1463fc2902c"
+  },
+  {
+    "sha": "050dde50c9d70cf207db84f7224eedc491d817b2",
+    "date": "2026-09-08T00:04:25Z",
+    "title": "hexagon: add RELU and LEAKY_RELU ops (#28585)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/050dde50c9d70cf207db84f7224eedc491d817b2"
+  },
+  {
+    "sha": "9dcf84e5ae2718947188b539aab8b9c2b15d3ba1",
+    "date": "2026-09-08T03:31:48Z",
+    "title": "model : support Kimi-K3 recurrent-state rollback (#28466)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/9dcf84e5ae2718947188b539aab8b9c2b15d3ba1"
+  },
+  {
+    "sha": "5a6caa05fc806cfd532a499cad8f340d92362010",
+    "date": "2026-09-08T06:06:24Z",
+    "title": "ggml : update ggml_prec specification (#26675)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/5a6caa05fc806cfd532a499cad8f340d92362010"
+  },
+  {
+    "sha": "7d701b59296bc6f5ba504d5a4cddaf416c449a15",
+    "date": "2026-09-08T06:26:34Z",
+    "title": "opencl: properly handle non-contiguous inputs to conv2d (#28503)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/7d701b59296bc6f5ba504d5a4cddaf416c449a15"
+  },
+  {
+    "sha": "895c045fd104ced72132160245edcd6a86e50ba0",
+    "date": "2026-09-08T06:29:37Z",
+    "title": "chat : split specialized parsers into common/parsers (#27764)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/895c045fd104ced72132160245edcd6a86e50ba0"
+  },
+  {
+    "sha": "f014bfef8b0870f257abcbceb9d8d2c4f2c684d7",
+    "date": "2026-09-08T07:34:12Z",
+    "title": "Fix Vulkan-Hpp handle usage on 32-bit targets. (#22892)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/f014bfef8b0870f257abcbceb9d8d2c4f2c684d7"
+  },
+  {
+    "sha": "64e9bceb2c3a856efed96feda784a50947049feb",
+    "date": "2026-09-08T07:35:02Z",
+    "title": "vulkan : fuse UNARY(GELU|SIGMOID|SILU|SOFTPLUS) + MUL (#27220)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/64e9bceb2c3a856efed96feda784a50947049feb"
+  },
+  {
+    "sha": "ca86fb222e0080d4d102f4390d5c7279dffb3277",
+    "date": "2026-09-08T10:59:53Z",
+    "title": "llama : add missing headers (#28566)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/ca86fb222e0080d4d102f4390d5c7279dffb3277"
+  },
+  {
+    "sha": "1744c6bde8d687ce9774b3b54e688eee0bfdf5b7",
+    "date": "2026-09-08T11:36:03Z",
+    "title": "ci : add PYTEST_WORKERS=1 to fix server-self-hosted job (#28603)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/1744c6bde8d687ce9774b3b54e688eee0bfdf5b7"
+  },
+  {
+    "sha": "03fa73cb27f5c251b9528489b18d303b1366aca4",
+    "date": "2026-09-08T12:06:15Z",
+    "title": "ci : disable npm gha cache (#28600)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/03fa73cb27f5c251b9528489b18d303b1366aca4"
+  },
+  {
+    "sha": "415e909d84334a7b1f582229c166aa98be6c4678",
+    "date": "2026-09-08T12:44:33Z",
+    "title": "spec: single device drafter should create meta backend wrapper (#28390)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/415e909d84334a7b1f582229c166aa98be6c4678"
+  },
+  {
+    "sha": "88ada91c18cd026388be742838d9f27fc12673bc",
+    "date": "2026-09-08T12:54:42Z",
+    "title": "metal : fix idle threads in mul_mv_iq3_xxs for ne00 < 1024 (#28086)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/88ada91c18cd026388be742838d9f27fc12673bc"
+  },
+  {
+    "sha": "5d806aa2575e01e126651fd69ab1ab6cefff861d",
+    "date": "2026-09-08T13:01:03Z",
+    "title": "server : apply checkpoint min-step eviction only when the checkpoint list is full (#28302)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/5d806aa2575e01e126651fd69ab1ab6cefff861d"
+  },
+  {
+    "sha": "d4389a4dd920d24c9592f1dc3badbd69be23bd09",
+    "date": "2026-09-08T14:19:53Z",
+    "title": "Revert \"ggml-cuda : restore prop.integrated on HIP builds (#24233)\" (#28604)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/d4389a4dd920d24c9592f1dc3badbd69be23bd09"
+  }
+]

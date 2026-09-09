@@ -1,0 +1,52 @@
+.....FF..............                                                    [100%]
+================================== FAILURES ===================================
+_ test_naming_does_not_override_english_or_an_explicit_language[I see white llamas.-en] _
+
+text = 'I see white llamas.', expected = 'en'
+
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("My name is Lina.", "en"),
+            ("Call me Lina.", "en"),
+            ("I see white llamas.", "en"),
+            ("These llamas are white.", "en"),
+            ("Me llamo Lina, reply in English.", "en"),
+            ("Me llamo Lina, and I'm ready.", "mixed"),
+        ],
+    )
+    def test_naming_does_not_override_english_or_an_explicit_language(text: str, expected: str) -> None:
+>       assert read_request(text).language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:71: AssertionError
+_ test_naming_does_not_override_english_or_an_explicit_language[These llamas are white.-en] _
+
+text = 'These llamas are white.', expected = 'en'
+
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("My name is Lina.", "en"),
+            ("Call me Lina.", "en"),
+            ("I see white llamas.", "en"),
+            ("These llamas are white.", "en"),
+            ("Me llamo Lina, reply in English.", "en"),
+            ("Me llamo Lina, and I'm ready.", "mixed"),
+        ],
+    )
+    def test_naming_does_not_override_english_or_an_explicit_language(text: str, expected: str) -> None:
+>       assert read_request(text).language == expected
+E       AssertionError: assert 'mixed' == 'en'
+E         
+E         - en
+E         + mixed
+
+tests\test_request_reading.py:71: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_naming_does_not_override_english_or_an_explicit_language[I see white llamas.-en]
+FAILED tests/test_request_reading.py::test_naming_does_not_override_english_or_an_explicit_language[These llamas are white.-en]
+2 failed, 19 passed, 226 deselected in 0.54s

@@ -1,0 +1,31 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T08:19:52.408822+00:00",
+  "hypothesis": "The best inherited composition model may also improve complete-question routing and mixed prose in the real product.",
+  "expected": "Six useful faithful replies; no unnecessary clarification, invented words, or loss of requested mixed language.",
+  "profile": {
+    "model": "D:\\BAXY\\experimental_assets_20260801\\Qwen3-8B-Q4_K_M.gguf",
+    "sha256": "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785",
+    "ngl": 20,
+    "kv": "q8_0",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "d7f270a385c35f6ad61c0c4cef743359ffc02ad556328f615ecf16f386656efe",
+    "src/baxy_mind/__main__.py": "811e6385450a5004e4f86a5a4231045986ff683bef443624c1a146c5295af533",
+    "src/baxy_mind/request_reading.py": "d33c96657ba27182531f9f5c3120386d90434ee2619cb490e1a2f0024b9462e5",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "a3e3f36c3e01f82db6d7b6bb8bfd7e1afa6fde15c7278f36f78738d5ff6c42f5",
+    "artifacts/comprobaciones/C03/astra-qwen8-product.turns.jsonl": "3aeb4bfb01febfe7a5e37154836b4c333faedf1cdadba6b04026b293269b89e9",
+    "artifacts/comprobaciones/C03/astra-qwen8-product/profile/sitecustomize.py": "cabbfc7c99985b881f0c4cf190b688e1ee425776246fe2f1178e1a23a82aa32a",
+    "scratchpad/c03-qwen8-product.py": "909b9e3a45716fbb9de3b01d041074c4954e12047c6d5c8160c5942357a318fe"
+  }
+}

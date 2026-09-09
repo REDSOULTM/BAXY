@@ -1,0 +1,11 @@
+{"case": "echo221", "backend": "aec3-linear", "segments": 0, "cancellations": 0, "windowText": null}
+{"case": "echo232", "backend": "aec3-linear", "segments": 0, "cancellations": 0, "windowText": null}
+{"case": "h0-near", "backend": "aec3-linear", "segments": 1, "cancellations": 0, "windowText": "Se recomienda enf\u00e1ticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el \u00e1rea que visitan, dado que ello pueda afectar sus planes de viaje."}
+{"case": "h0-raw", "backend": "aec3-linear", "segments": 1, "cancellations": 7, "windowText": "Se recomienda enf\u00e1ticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el \u00e1rea que visitan, dado que ello pueda afectar sus planes de viaje."}
+{"case": "h1-near", "backend": "aec3-linear", "segments": 1, "cancellations": 0, "windowText": "Fue tanta la cantidad de gente que se concentr\u00f3 que no todos pudier al funeral en la plaza de San Pedro."}
+{"case": "h1-raw", "backend": "aec3-linear", "segments": 1, "cancellations": 8, "windowText": "Fue tanta la cantidad de gente que se concentr\u00f3 que no todos pudieron acceder al funeral en la plaza de San Pedro."}
+{"case": "h2-near", "backend": "aec3-linear", "segments": 1, "cancellations": 0, "windowText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years."}
+{"case": "h2-raw", "backend": "aec3-linear", "segments": 2, "cancellations": 4, "windowText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years."}
+{"case": "h3-near", "backend": "aec3-linear", "segments": 1, "cancellations": 0, "windowText": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence"}
+{"case": "h3-raw", "backend": "aec3-linear", "segments": 1, "cancellations": 8, "windowText": "All nouns on one side of the world say for you. Always begin with a capital letter, even in the middle of a sentence."}
+{"case": "echo243", "backend": "aec3-linear", "segments": 0, "cancellations": 0, "windowText": null}

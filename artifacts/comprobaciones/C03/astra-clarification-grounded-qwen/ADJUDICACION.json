@@ -1,0 +1,50 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t8": {
+    "verdict": "FALLO DE CONTINUIDAD",
+    "reason": "La decisión pasó por plan; esa ruta aún perdía la aclaración al rechazar su redacción. Se unificó después el manejo de decisión/plan/argumentos."
+  },
+  "t9": {
+    "verdict": "FALLO",
+    "reason": "No hubo respuesta final publicada."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  }
+}

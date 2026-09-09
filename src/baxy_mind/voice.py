@@ -2,9 +2,8 @@ r"""Pila de voz local de BAXY para Windows.
 
 Recorrido efectivo:
 
-    micrófono -> KWS acústico dedicado -> Silero VAD -> ASR parcial/final
-                                  \-> pre-roll -> AEC/ducking -> Parakeet
-                                                                  -> SAPI TTS
+    micrófono + loopback -> AEC -> KWS/VAD -> pre-roll -> ASR parcial/final
+                                      \-> barge-in        -> Piper/SAPI TTS
 
 Hay dos modos explícitos. ``direct`` conserva el botón de micrófono y acepta
 cada locución; ``wake`` escucha de forma continua mediante un clasificador
@@ -17,7 +16,7 @@ explícita; no se presenta como KWS.
 
 La captura, decodificación y salida tienen propietarios separados y acotados.
 Todos los efectos degradan de forma honesta: sin loopback se informa AEC=false;
-sin SAPI sigue funcionando STT; un error de voz nunca tumba el sidecar.
+sin salida TTS sigue funcionando STT; un error de voz nunca tumba el sidecar.
 """
 
 from __future__ import annotations
@@ -41,11 +40,13 @@ import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
 from .time_budget import remaining_seconds
-from .voice_aec import AudioDucker, EchoCanceller, LoopbackReference
+from .voice_aec import AudioDucker, LoopbackReference
+from .voice_capture import WasapiCaptureStream
+from .webrtc_aec import EchoCanceller, REFERENCE_SAMPLES, echo_canceller_available
 from .voice_output import (
     NeuralSpeechOutput,
     create_speech_output,
-    neural_tts_identity,
+    resolve_piper_executable,
     resolve_neural_tts_model,
 )
 from .wakeword import (
@@ -370,7 +371,7 @@ class _DecodeRequest:
     """Audio ready for ASR with the authority that opened the turn."""
 
     audio: np.ndarray
-    reference: np.ndarray
+    aec_applied: bool
     origin: str
     session_epoch: int | None = None
     wake_confidence: float | None = None
@@ -420,16 +421,21 @@ def _looks_like_echo(microphone: np.ndarray, reference: np.ndarray) -> bool:
     mic_norm = np.linalg.norm(mic)
     if mic_norm < 1e-6:
         return False
-    best = 0.0
     maximum_delay = min(int(0.25 * SAMPLE_RATE), ref.size - mic.size)
-    for delay in range(0, maximum_delay + 1, 128):
-        end = ref.size - delay
-        candidate = ref[end - mic.size : end].astype(np.float64)
-        candidate -= candidate.mean()
-        denominator = mic_norm * np.linalg.norm(candidate)
-        if denominator > 1e-6:
-            best = max(best, abs(float(np.dot(mic, candidate))) / denominator)
-    return best >= 0.55
+    ref = ref[-(mic.size + maximum_delay) :]
+    # Device delays are not multiples of eight milliseconds. Evaluate every
+    # sample lag in the same bounded window, with a centered norm per window.
+    products = np.correlate(ref, mic, mode="valid")
+    totals = np.concatenate(([0.0], np.cumsum(ref)))
+    squares = np.concatenate(([0.0], np.cumsum(ref * ref)))
+    sums = totals[mic.size :] - totals[: -mic.size]
+    energy = squares[mic.size :] - squares[: -mic.size] - sums * sums / mic.size
+    denominator = mic_norm * np.sqrt(np.maximum(energy, 0.0))
+    scores = np.divide(
+        np.abs(products), denominator,
+        out=np.zeros_like(products), where=denominator > 1e-6,
+    )
+    return bool(np.max(scores) >= 0.55)
 
 
 def _transcript_is_doubtful(text: str) -> bool:
@@ -454,8 +460,15 @@ def _decode_offline_text(
         if hotwords
         else recognizer.create_stream()
     )
+    method = "modified_beam_search" if hotwords else "greedy_search"
+    if not hotwords:
+        stream.set_option("decoding_method", method)
     stream.accept_waveform(SAMPLE_RATE, np.asarray(audio, dtype=np.float32))
     recognizer.decode_stream(stream)
+    if stream.get_option("applied_decoding_method") != method:
+        # Upstream 1.13.4 accepts stream options but ignores this one. Never
+        # silently use its faulty beam decoder for the primary transcript.
+        raise RuntimeError("final_stt_decoder_not_applied")
     return (stream.result.text or "").strip()
 
 
@@ -622,6 +635,8 @@ class VoiceEngine:
         self._mode = "off"
         self._armed_until = 0.0
         self._loopback = LoopbackReference()
+        self._aec_active = False
+        self._aec_sha256: str | None = None
         self._ducker = AudioDucker()
         self._output = create_speech_output(self._on_tts_state)
         self._pcm_inbox: queue.Queue[np.ndarray] | None = None
@@ -705,10 +720,13 @@ class VoiceEngine:
             "stt": not missing and dependencies.get("sherpa_onnx", False),
             "vad": dependencies.get("silero_vad", False),
             "tts": (
-                bool(dependencies.get("sherpa_onnx") and resolve_neural_tts_model())
+                bool(resolve_piper_executable() and resolve_neural_tts_model())
                 or dependencies.get("win32com.client", False)
             ),
-            "aec": _module_available("pyaudiowpatch"),
+            "aec": bool(
+                _module_available("pyaudiowpatch")
+                and echo_canceller_available()
+            ),
             "ducking": _module_available("pycaw"),
             "missing": missing,
             "sttModel": _stt_model_name(stt_dir) if not missing else None,
@@ -761,7 +779,7 @@ class VoiceEngine:
         stt_dir = resolve_stt_directory()
         for required in _missing_stt_files(stt_dir):
             raise FileNotFoundError(f"Falta {required} en {stt_dir}")
-        self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
+        recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
             encoder=str(stt_dir / "encoder.int8.onnx"),
             decoder=str(stt_dir / "decoder.int8.onnx"),
             joiner=str(stt_dir / "joiner.int8.onnx"),
@@ -772,6 +790,10 @@ class VoiceEngine:
             max_active_paths=8,
             hotwords_score=_CONTEXTUAL_HOTWORD_SCORE,
         )
+        _decode_offline_text(
+            recognizer, np.zeros(SAMPLE_RATE // 2, dtype=np.float32)
+        )
+        self._recognizer = recognizer
         self._stt_directory = stt_dir
         self._contextual_hotwords = _compile_contextual_hotwords(
             stt_dir / "tokens.txt",
@@ -793,11 +815,6 @@ class VoiceEngine:
             )
         except Exception:  # noqa: BLE001 - mejora opcional
             self._corrector = None
-        stream = self._recognizer.create_stream()
-        stream.accept_waveform(
-            SAMPLE_RATE, np.zeros(SAMPLE_RATE // 2, dtype=np.float32)
-        )
-        self._recognizer.decode_stream(stream)
         self._load_acoustic_wake_detector()
         self._load_streaming_recognizer(sherpa_onnx, stt_dir)
         self._output.start()
@@ -1596,14 +1613,28 @@ class VoiceEngine:
         recognizer = self._recognizer
         if recognizer is None:
             raise RuntimeError("final_stt_unavailable")
-        text = _decode_offline_text(
-            recognizer,
-            np.asarray(audio, dtype=np.float32),
-            hotwords=self._contextual_hotwords or self._wake_hotwords,
-        )
-        if self._corrector is not None:
-            text = self._corrector.correct(text)
-        return text.strip()
+        clean = np.asarray(audio, dtype=np.float32)
+        text = _decode_offline_text(recognizer, clean)
+        return self._correct_transcript(text, clean)
+
+    def _correct_transcript(self, text: str, audio: np.ndarray) -> str:
+        if self._corrector is None:
+            return text.strip()
+        alternatives: tuple[str, ...] = ()
+        if self._contextual_hotwords and self._corrector.needs_contextual_support(
+            text
+        ):
+            try:
+                contextual = _decode_offline_text(
+                    self._recognizer, audio, hotwords=self._contextual_hotwords
+                )
+                if contextual and contextual != text:
+                    alternatives = (contextual,)
+            except Exception as error:  # noqa: BLE001 - primary decode remains authoritative
+                logger.debug(
+                    "Contextual ASR pass unavailable: %s", type(error).__name__
+                )
+        return self._corrector.correct(text, alternatives=alternatives).strip()
 
     def detect_wake_pcm(self, audio: np.ndarray) -> WakeWordDetection | None:
         """Score the shipped acoustic detector on one clip."""
@@ -1682,8 +1713,10 @@ class VoiceEngine:
                 "ttsReady": self._output.available,
                 "ttsVoice": getattr(self._output, "voice_name", "sapi"),
                 "ttsNeural": isinstance(self._output, NeuralSpeechOutput),
-                "ttsSha256": (neural_tts_identity() or (None, None))[1],
+                "ttsSha256": getattr(self._output, "voice_sha256", None),
                 "loopbackActive": self._loopback.active,
+                "aec": self._aec_active,
+                "aecSha256": self._aec_sha256,
                 "inputDevice": self._input_device_name,
                 "sttModel": _stt_model_name(self._stt_directory)
                 or health.get("sttModel"),
@@ -2082,7 +2115,7 @@ class VoiceEngine:
                     observe_partial(self._streaming_accept(active_stream, audio))
             elif kind == "finish" and len(item) == 2 and item[1] == active_id:
                 # Avoid a final blocking flush. Parakeet owns final text and
-                # applies AEC; this stream is intentionally one-way preview.
+                # receives the same cleaned audio; this stream is one-way preview.
                 active_id = None
                 active_stream = None
 
@@ -2103,9 +2136,11 @@ class VoiceEngine:
         hit_owner = wake_hits or self._acoustic_wake_hits
         ready_event = capture_ready_event or self._capture_ready_event
         vad = self._vad
+        confirmation_vad: SileroVad | None = None
         utterance: list[np.ndarray] = []
-        references: list[np.ndarray] = []
-        vad_pre_roll: deque[tuple[np.ndarray, np.ndarray]] = deque(
+        canceller: EchoCanceller | None = None
+        reference_cursor: int | None = None
+        vad_pre_roll: deque[np.ndarray] = deque(
             maxlen=_wake_frame_count(PRE_ROLL_S)
         )
         acoustic_pre_roll_seconds = (
@@ -2113,7 +2148,7 @@ class VoiceEngine:
             if self._wake_verifier is not None
             else _ACOUSTIC_WAKE_PRE_ROLL_S
         )
-        acoustic_pre_roll: deque[tuple[np.ndarray, np.ndarray]] = deque(
+        acoustic_pre_roll: deque[np.ndarray] = deque(
             maxlen=_wake_frame_count(acoustic_pre_roll_seconds)
         )
         acoustic_activity: deque[float] = deque(maxlen=acoustic_pre_roll.maxlen)
@@ -2121,6 +2156,7 @@ class VoiceEngine:
         speech_started = False
         speech_started_at = 0.0
         barge_frames = 0
+        barge_pending = False
         noise_floor = 0.002
         live_stream_id: int | None = None
         active_origin = "direct"
@@ -2138,23 +2174,39 @@ class VoiceEngine:
                     self._armed_until = 0.0
                 return self._mode, self._armed_until >= now, self._wake_backend
 
+        def admit_utterance(cached_audio: tuple[np.ndarray, ...]) -> None:
+            nonlocal live_stream_id
+            self._ducker.duck()
+            self._streaming_session += 1
+            candidate_stream_id = self._streaming_session
+            if self._enqueue_streaming(
+                ("start", candidate_stream_id, cached_audio, speech_started_at),
+                streaming_queue=streaming_owner,
+                session_epoch=session_epoch,
+                stop_event=event,
+            ):
+                live_stream_id = candidate_stream_id
+            else:
+                live_stream_id = None
+
         def begin_utterance(
             origin: str,
-            cached: tuple[tuple[np.ndarray, np.ndarray], ...],
+            cached: tuple[np.ndarray, ...],
             wake_detection: WakeWordDetection | None = None,
             wake_verification_start_sample: int = 0,
             *,
             authorized: bool = True,
+            barge_candidate: bool = False,
             retain_acoustic_history: bool = False,
         ) -> None:
             nonlocal speech_started, speech_started_at, silence_frames
             nonlocal live_stream_id, active_origin, active_wake_confidence
             nonlocal active_wake_verification_start_sample
             nonlocal active_wake_detection
+            nonlocal barge_pending
             if speech_started:
                 return
-            if authorized:
-                self._ducker.duck()
+            barge_pending = barge_candidate
             speech_started = True
             active_origin = origin
             active_wake_confidence = (
@@ -2163,25 +2215,13 @@ class VoiceEngine:
             active_wake_verification_start_sample = wake_verification_start_sample
             silence_frames = 0
             speech_started_at = time.monotonic()
-            cached_audio = tuple(item[0] for item in cached)
+            cached_audio = cached
             active_wake_detection = wake_detection
             if authorized:
-                self._streaming_session += 1
-                candidate_stream_id = self._streaming_session
-                if self._enqueue_streaming(
-                    ("start", candidate_stream_id, cached_audio, speech_started_at),
-                    streaming_queue=streaming_owner,
-                    session_epoch=session_epoch,
-                    stop_event=event,
-                ):
-                    live_stream_id = candidate_stream_id
-                else:
-                    live_stream_id = None
+                admit_utterance(cached_audio)
             else:
                 live_stream_id = None
-            for cached_audio, cached_reference in cached:
-                utterance.append(cached_audio)
-                references.append(cached_reference)
+            utterance.extend(cached)
             vad_pre_roll.clear()
             if not retain_acoustic_history:
                 acoustic_pre_roll.clear()
@@ -2196,52 +2236,36 @@ class VoiceEngine:
             nonlocal active_wake_detection
             if not speech_started or active_origin != "endpoint_wake_candidate":
                 return False
-            self._ducker.duck()
             active_origin = "acoustic_wake"
             active_wake_confidence = wake_detection.confidence
             active_wake_verification_start_sample = wake_verification_start_sample
             active_wake_detection = wake_detection
-            self._streaming_session += 1
-            candidate_stream_id = self._streaming_session
-            if self._enqueue_streaming(
-                (
-                    "start",
-                    candidate_stream_id,
-                    tuple(utterance),
-                    speech_started_at,
-                ),
-                streaming_queue=streaming_owner,
-                session_epoch=session_epoch,
-                stop_event=event,
-            ):
-                live_stream_id = candidate_stream_id
-            else:
-                live_stream_id = None
+            admit_utterance(tuple(utterance))
             acoustic_pre_roll.clear()
             acoustic_activity.clear()
             return True
 
         def finish_utterance() -> None:
-            nonlocal utterance, references, silence_frames, speech_started
+            nonlocal utterance, silence_frames, speech_started
             nonlocal speech_started_at, barge_frames, live_stream_id, active_origin
             nonlocal active_wake_confidence
             nonlocal active_wake_verification_start_sample
             nonlocal active_wake_detection
+            nonlocal barge_pending
             audio = np.concatenate(utterance) if utterance else np.empty(0, np.float32)
-            reference = (
-                np.concatenate(references) if references else np.empty(0, np.int16)
-            )
+            unconfirmed_barge = barge_pending
             origin = active_origin
             wake_confidence = active_wake_confidence
             wake_verification_start_sample = active_wake_verification_start_sample
             wake_detection = active_wake_detection
-            utterance, references = [], []
+            utterance = []
             vad_pre_roll.clear()
             acoustic_pre_roll.clear()
             silence_frames = 0
             speech_started = False
             speech_started_at = 0.0
             barge_frames = 0
+            barge_pending = False
             active_origin = "direct"
             active_wake_confidence = None
             active_wake_verification_start_sample = 0
@@ -2255,9 +2279,11 @@ class VoiceEngine:
                 )
             live_stream_id = None
             vad.reset()
+            if confirmation_vad is not None:
+                confirmation_vad.reset()
             if origin in {"acoustic_wake", "endpoint_wake_candidate"}:
                 self._reset_acoustic_wake(session_epoch=session_epoch)
-            if audio.size < MIN_UTTERANCE_S * SAMPLE_RATE:
+            if unconfirmed_barge or audio.size < MIN_UTTERANCE_S * SAMPLE_RATE:
                 self._ducker.restore()
                 return
             try:
@@ -2267,7 +2293,7 @@ class VoiceEngine:
                 decode_owner.put_nowait(
                     _DecodeRequest(
                         audio,
-                        reference,
+                        canceller is not None,
                         origin,
                         session_epoch,
                         wake_confidence,
@@ -2295,15 +2321,17 @@ class VoiceEngine:
             if vad is None:
                 raise RuntimeError("voice_vad_unavailable")
             inbox = self._pcm_inbox
+            if inbox is None and self._loopback.active:
+                canceller = EchoCanceller()
+                # Recurrent VAD state must never alternate between two signals.
+                confirmation_vad = SileroVad()
+                if self._session_is_current(session_epoch):
+                    self._aec_active = True
+                    self._aec_sha256 = canceller.sha256
             stream_context = (
                 _PcmCaptureStream(inbox, event)
                 if inbox is not None
-                else sd.InputStream(
-                    samplerate=SAMPLE_RATE,
-                    channels=1,
-                    dtype="float32",
-                    blocksize=VAD_WINDOW_SAMPLES,
-                )
+                else WasapiCaptureStream(event)
             )
             with stream_context as stream:
                 try:
@@ -2335,31 +2363,62 @@ class VoiceEngine:
                 ready_event.set()
                 while not event.is_set() and self._session_is_current(session_epoch):
                     frame, overflowed = stream.read(VAD_WINDOW_SAMPLES)
+                    if event.is_set():
+                        break
                     if overflowed:
-                        self._emit("warning", code="input_overflow")
+                        raise RuntimeError("input_overflow")
                     mono = frame.reshape(-1).astype(np.float32)
-                    reference = self._loopback.latest(VAD_WINDOW_SAMPLES)
+                    if canceller is not None:
+                        if reference_cursor is None:
+                            reference_cursor = self._loopback.sample_index(
+                                stream.adc_time, event
+                            )
+                        reference_cursor += VAD_WINDOW_SAMPLES
+                        history = self._loopback.window_at(
+                            reference_cursor, REFERENCE_SAMPLES, event
+                        )
+                        mono, confirmation, echo_microphone, echo_reference = canceller.process(
+                            mono, history
+                        )
+                    else:
+                        history = (
+                            self._loopback.latest(REFERENCE_SAMPLES)
+                            if inbox is None else np.zeros(REFERENCE_SAMPLES, np.int16)
+                        )
+                        echo_microphone, echo_reference = mono * 32768.0, history
+                        confirmation = mono
                     probability = vad.process(mono)
-                    energy = _rms(mono)
-                    if probability < SPEECH_THRESHOLD:
+                    confirmation_probability = (
+                        confirmation_vad.process(confirmation)
+                        if confirmation_vad is not None else probability
+                    )
+                    energy = _rms(confirmation)
+                    if confirmation_probability < SPEECH_THRESHOLD:
                         noise_floor = 0.98 * noise_floor + 0.02 * energy
 
-                    speech = probability >= SPEECH_THRESHOLD
+                    confirmed = confirmation_probability >= SPEECH_THRESHOLD
+                    speech = probability >= SPEECH_THRESHOLD or confirmed
                     if speech and self.speaking:
-                        history = self._loopback.latest(
-                            VAD_WINDOW_SAMPLES + int(0.25 * SAMPLE_RATE)
-                        )
-                        echo = _looks_like_echo(mono * 32768.0, history)
+                        echo = _looks_like_echo(echo_microphone, echo_reference)
                         if echo:
                             speech = False
+                            confirmed = False
                             barge_frames = 0
-                        elif energy >= max(0.004, noise_floor * 1.8):
+                        elif confirmed and energy >= max(0.004, noise_floor * 1.8):
                             barge_frames += 1
-                            if barge_frames >= 3:
+                            if barge_frames == 3:
                                 self.cancel_speech()
                                 self._emit("barge_in")
                         else:
                             barge_frames = 0
+                    else:
+                        barge_frames = 0
+
+                    # Finishing TTS alone does not authorize a pending echo.
+                    admitted = barge_frames >= 3 if self.speaking else confirmed
+                    if barge_pending and speech and admitted:
+                        barge_pending = False
+                        admit_utterance(tuple(utterance))
 
                     mode, armed, backend = wake_state()
                     acoustic_monitoring = (
@@ -2381,7 +2440,7 @@ class VoiceEngine:
                             acoustic_activity.clear()
                             self._reset_acoustic_wake(session_epoch=session_epoch)
                         else:
-                            acoustic_pre_roll.append((mono, reference))
+                            acoustic_pre_roll.append(mono)
                             acoustic_activity.append(probability)
                             self._enqueue_acoustic_wake(
                                 mono,
@@ -2440,7 +2499,7 @@ class VoiceEngine:
                                     confidence=round(hit.confidence, 3),
                                 )
                     elif not speech_started and not speech:
-                        vad_pre_roll.append((mono, reference))
+                        vad_pre_roll.append(mono)
 
                     can_segment = (
                         mode == "direct"
@@ -2475,11 +2534,16 @@ class VoiceEngine:
                                 )
                                 frame_already_captured = bool(cached)
                             else:
-                                begin_utterance(origin, tuple(vad_pre_roll))
+                                # Keep the full onset in the existing utterance
+                                # buffer; publish only after interruption is valid.
+                                pending = not admitted
+                                begin_utterance(
+                                    origin, tuple(vad_pre_roll),
+                                    authorized=not pending, barge_candidate=pending,
+                                )
                         silence_frames = 0
                         if not frame_already_captured:
                             utterance.append(mono)
-                            references.append(reference)
                             if (
                                 live_stream_id is not None
                                 and not self._enqueue_streaming(
@@ -2493,7 +2557,6 @@ class VoiceEngine:
                     elif speech_started:
                         if not frame_already_captured:
                             utterance.append(mono)
-                            references.append(reference)
                             if (
                                 live_stream_id is not None
                                 and not self._enqueue_streaming(
@@ -2510,7 +2573,8 @@ class VoiceEngine:
                     if len(utterance) >= max_frames:
                         finish_utterance()
         except Exception as error:  # noqa: BLE001 - voz nunca tumba la mente
-            if self._session_is_current(session_epoch):
+            cancelled = isinstance(error, InterruptedError) and event.is_set()
+            if not cancelled and self._session_is_current(session_epoch):
                 error_code = f"capture_failed:{type(error).__name__}"
                 self._fail_capture_session(
                     error_code,
@@ -2518,11 +2582,17 @@ class VoiceEngine:
                 )
                 logger.error("captura de voz interrumpida: %s", type(error).__name__)
         finally:
-            if speech_started:
-                finish_utterance()
-            if self._session_is_current(session_epoch):
-                self._ducker.restore()
-            ready_event.set()
+            try:
+                if canceller is not None:
+                    canceller.close()
+            finally:
+                if self._session_is_current(session_epoch):
+                    self._aec_active = False
+                if speech_started:
+                    finish_utterance()
+                if self._session_is_current(session_epoch):
+                    self._ducker.restore()
+                ready_event.set()
 
     def _decode_loop(
         self,
@@ -2545,16 +2615,12 @@ class VoiceEngine:
                 return
             if isinstance(item, _DecodeRequest):
                 request = item
-            elif isinstance(item, tuple) and len(item) == 2:
-                # Compatibility seam for old diagnostic callers. Runtime
-                # capture always carries an explicit origin now.
-                request = _DecodeRequest(item[0], item[1], "direct")
             else:
                 continue
             try:
                 self._decode_utterance(
                     request.audio,
-                    request.reference,
+                    request.aec_applied,
                     request.origin,
                     request.session_epoch
                     if request.session_epoch is not None
@@ -2575,7 +2641,7 @@ class VoiceEngine:
     def _decode_utterance(
         self,
         audio: np.ndarray,
-        reference: np.ndarray,
+        aec_applied: bool,
         origin: str = "direct",
         session_epoch: int | None = None,
         wake_confidence: float | None = None,
@@ -2590,10 +2656,6 @@ class VoiceEngine:
         if recognizer is None:
             return
         clean = np.asarray(audio, dtype=np.float32)
-        aec_applied = False
-        if reference.size >= clean.size and _rms(reference) >= 80.0:
-            clean = EchoCanceller().process(clean * 32768.0, reference[-clean.size :])
-            aec_applied = True
         started = time.perf_counter()
         endpoint_candidate = origin == "endpoint_wake_candidate"
         raw = "" if endpoint_candidate else _decode_offline_text(recognizer, clean)
@@ -2887,35 +2949,16 @@ class VoiceEngine:
                 ),
                 armedSeconds=WAKE_COMMAND_WINDOW_S,
             )
-            self.speak("Sí.")
+            # Presentation owns the wording of the wake acknowledgement.
+            # The event retains the listening fact without a fixed reply.
             return
 
-        if self._corrector is not None:
-            alternatives: tuple[str, ...] = ()
-            if self._contextual_hotwords and self._corrector.needs_contextual_support(
-                text
-            ):
-                try:
-                    contextual_stream = recognizer.create_stream(
-                        hotwords=self._contextual_hotwords
-                    )
-                    contextual_stream.accept_waveform(SAMPLE_RATE, clean)
-                    recognizer.decode_stream(contextual_stream)
-                    contextual = (contextual_stream.result.text or "").strip()
-                    if contextual and contextual != text:
-                        alternatives = (contextual,)
-                except Exception as error:  # noqa: BLE001 - primary decode remains authoritative
-                    logger.debug(
-                        "Contextual ASR pass unavailable: %s",
-                        type(error).__name__,
-                    )
-            text = self._corrector.correct(text, alternatives=alternatives)
-        text = text.strip()
+        text = self._correct_transcript(text, clean)
         if not text:
             return
         if _transcript_is_doubtful(text):
             self._emit("ignored", reason="transcript_doubtful")
-            self.speak("¿Puedes repetirlo?")
+            # Let the shared model composer ask for a repeat from this fact.
             return
         with self._lock:
             if session_epoch is not None and self._session_epoch != session_epoch:

@@ -62,6 +62,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     {
         ValidateLimit(limit);
         string normalized = NormalizeText(query, 512, allowEmpty: false);
+        if (Path.IsPathFullyQualified(normalized)) throw Error("absolute_path_search_unsupported");
         lock (_gate)
         {
             var options = new EnumerationOptions

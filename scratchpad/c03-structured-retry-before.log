@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_truncated_structured_chat_retry_cannot_be_published_as_prose ______
+
+    def test_truncated_structured_chat_retry_cannot_be_published_as_prose() -> None:
+        request = "Explain caching, pero sencillo"
+        client = Recorder([
+            request,
+            '{"answer":"La caché guarda datos temporales so you can access them quickly',
+        ])
+>       with pytest.raises(llm.ConversationReplyContractError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConversationReplyContractError
+
+tests\test_c03_request_preservation.py:29: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_truncated_structured_chat_retry_cannot_be_published_as_prose
+1 failed, 62 deselected in 1.04s

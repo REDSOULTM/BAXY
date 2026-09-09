@@ -1,0 +1,34 @@
+[
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\dtln_aec_512_1.tflite",
+    "bytes": 17358136,
+    "sha256": "569f7c3cfac96b1e093229c3ca10b5d892f5b1906105b644e457f8245b4f7383",
+    "gitBlob": "1b51acc723669b7eb079d97a19de2f585f58993e",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_512_1.tflite"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\dtln_aec_512_2.tflite",
+    "bytes": 24163668,
+    "sha256": "fb423d867ab25d5f4716bd369c7126b6c84926175c019b832e71bf21de0e9907",
+    "gitBlob": "e594a37ddf5f7ada1328741836185000a6f52427",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_512_2.tflite"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\run_aec.py",
+    "bytes": 8687,
+    "sha256": "99e4c179b8a2838bb0f257308e24a28a8565d1f93f40546bbdf585f4305dc317",
+    "copiedFrom": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\run_aec.py"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\LICENSE",
+    "bytes": 1075,
+    "sha256": "aa95acd8c8a7341bfcdb2823694dcbb27a2a4143e860bb52db1ff0f29c85e5a1",
+    "copiedFrom": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\LICENSE"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\README.md",
+    "bytes": 2446,
+    "sha256": "54ccc6bc7761f47a8b2ca68bc846f44b0009593715fdde90501147c2ebeaef37",
+    "copiedFrom": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\README.md"
+  }
+]

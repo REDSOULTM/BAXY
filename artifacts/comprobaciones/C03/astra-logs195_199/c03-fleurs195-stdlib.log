@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-fleurs195.py", line 41, in <module>
+    payload = json.loads(fetch('https://datasets-server.huggingface.co/rows?' + query))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-fleurs195.py", line 21, in fetch
+    with urllib.request.urlopen(url, timeout=45) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\urllib\request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 500: Internal Server Error

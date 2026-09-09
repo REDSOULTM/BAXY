@@ -1,0 +1,90 @@
+{
+  "utc": "2026-09-08T19:29:12.433093+00:00",
+  "method": "Qualify existing Qwen3.5-9B Q4_K_M on the current source466 confirmation contract with official nonthinking general-task profile and b10865 containing GDN28068 correction. Prior390/441 used old backend and fixed default/T0, on other responsibilities; their failures do not evaluate this profile or confirmation population. This is a candidate qualification, not causal attribution to one parameter or fair identical-config ranking. Native first messages exactly match468/481; only family-documented sampling changes (presence1.5). No472/474/476 instruction/role variants. NGL14/no-mmap/cache0 inherited measured390/441, context4096x3/KVq8/b2048/ub256 preserved. Six465 confirmations and two468 memory controls, seeds0/17, guarded source466 compositions. No UI/voice/fresh reserve/effects or registration changes.",
+  "criteria": "All six confirmations per seed must preserve pending action, target, supplied irreversible/privacy consequences with correct certainty, valid choices, language and natural brevity. Two memory controls must preserve value/subject/protection. Report every draft, finish reason, repair and resource. If it only exchanges omissions, no promotion or repeated seed/prompt sweep. 1024tokens and120s are diagnostic ceilings; length/timeouts are censored, not proof of inability. FreeRAM>=4900MiB before startup and768MiB throughout; GPU3800MiB guard.",
+  "sources": [
+    "https://huggingface.co/Qwen/Qwen3.5-9B",
+    "https://qwen.ai/blog?id=qwen3.5",
+    "https://github.com/ggml-org/llama.cpp/pull/28068",
+    "astra-qwen9b388/PREREG.json",
+    "astra-qwen9b-native390/RESULT.md",
+    "astra-memory-9b441/RESULT.md",
+    "astra-nightly-audit454/RESULT.md",
+    "astra-nightly-inference456/RESULT.md"
+  ],
+  "profile": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 1.5,
+    "repeat_penalty": 1.0,
+    "seeds": [
+      0,
+      17
+    ],
+    "max_tokens": 1024,
+    "enable_thinking": false,
+    "reasoning_budget_tokens": 0
+  },
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "variant": "baseline",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "redacted-en",
+      "variant": "baseline",
+      "request": "What is stored in private memory?"
+    },
+    {
+      "id": "actual-enable-en",
+      "variant": "confirmation",
+      "request": "My name is Jordan. Remember my name."
+    },
+    {
+      "id": "enable-es",
+      "variant": "confirmation",
+      "request": "Me llamo Marta. Recuerda mi nombre."
+    },
+    {
+      "id": "forget-es",
+      "variant": "confirmation",
+      "request": "Olvida mi color favorito."
+    },
+    {
+      "id": "forget-en",
+      "variant": "confirmation",
+      "request": "Forget my favorite color."
+    },
+    {
+      "id": "sensitive-en",
+      "variant": "confirmation",
+      "request": "Save my secret in your memory."
+    },
+    {
+      "id": "export-es",
+      "variant": "confirmation",
+      "request": "Exporta mis recuerdos guardados."
+    }
+  ],
+  "models": [
+    {
+      "precision": "Qwen3.5-9B",
+      "path": "D:\\BAXYRuntime\\experiments\\models\\qwen35-9b-03b74727\\Qwen3.5-9B-Q4_K_M.gguf",
+      "sha256": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8"
+    }
+  ],
+  "ngl": 14,
+  "server": "D:\\BAXYRuntime\\assets\\llama-b10865-cuda12.4\\llama-server.exe",
+  "server_sha256": "16eac28198d6218a9892f08dac0f0c81612a72872b4dd9741c4c6c36f88c4fd7",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+  "limits": {
+    "composition_seconds": 120,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-qwen9b-profile482-private"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "phase": "direct-0",
+    "sampleRate": 22050,
+    "samples": 97082,
+    "seconds": 4.40281179138322,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice152-private\\direct-0-generated.npy",
+    "sha256": "b5c0f785c8c030e5863c6e639f4dc2ee7fbee607015850d4299e375c4c46a20b"
+  },
+  {
+    "phase": "direct-1",
+    "sampleRate": 22050,
+    "samples": 101434,
+    "seconds": 4.600181405895691,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice152-private\\direct-1-generated.npy",
+    "sha256": "731124438ed81859192deb3e2dab879f5c607687c72165a0a33ba870076f9285"
+  },
+  {
+    "phase": "direct-2",
+    "sampleRate": 22050,
+    "samples": 93754,
+    "seconds": 4.2518820861678,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice152-private\\direct-2-generated.npy",
+    "sha256": "058aaac3a1c79797fbf8f2d49596f4454a0707ff096c7ad16d34241b0cc23e9f"
+  }
+]

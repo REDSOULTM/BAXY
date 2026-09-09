@@ -1,0 +1,49 @@
+F..                                                                      [100%]
+================================== FAILURES ===================================
+__ test_output_energy_rejection_also_controls_transcription[True-0.001-0-0] ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018B0A992B70>
+speaking = True, amplitude = 0.001, expected_segments = 0
+expected_cancellations = 0
+
+    @pytest.mark.parametrize(
+        ("speaking", "amplitude", "expected_segments", "expected_cancellations"),
+        [(True, 0.001, 0, 0), (True, 0.02, 1, 1), (False, 0.001, 1, 0)],
+    )
+    def test_output_energy_rejection_also_controls_transcription(
+        monkeypatch, speaking, amplitude, expected_segments, expected_cancellations,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        probabilities = [0.0] * 8 + [0.9] * 6 + [0.0] * 32
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+    
+        class Stream(_FiniteInputStream):
+            def read(self, samples):
+                frame, overflow = super().read(samples)
+                frame.fill(amplitude if 9 <= self.reads <= 14 else 0.0)
+                return frame, overflow
+    
+        stream = Stream(stop, len(probabilities))
+        requests = queue.Queue()
+        cancelled_at = []
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: speaking))
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+        monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+            )
+>           assert requests.qsize() == expected_segments
+E           assert 1 == 0
+E            +  where 1 = qsize()
+E            +    where qsize = <queue.Queue object at 0x0000018B0A9918B0>.qsize
+
+tests\test_mind_voice_runtime.py:2055: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_output_energy_rejection_also_controls_transcription[True-0.001-0-0]
+1 failed, 2 passed, 91 deselected in 0.90s

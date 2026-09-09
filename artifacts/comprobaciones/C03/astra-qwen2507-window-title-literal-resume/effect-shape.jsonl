@@ -1,0 +1,1 @@
+{"requestId": "29", "user": "Mensaje actual:\nWhat is on my to do list?", "response": {"role": "assistant", "content": "{\"request_type\":\"external_read\",\"effect_count\":\"one\"}"}}

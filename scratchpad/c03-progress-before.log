@@ -1,0 +1,41 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_progress_composition_keeps_the_request_it_is_reporting[cu\xe1nto es doce por ocho-Sigo calculando el resultado.] _
+
+user_text = 'cu�nto es doce por ocho', reply = 'Sigo calculando el resultado.'
+
+    @pytest.mark.parametrize("user_text, reply", [
+        ("cu�nto es doce por ocho", "Sigo calculando el resultado."),
+        ("Explain encryption, pero en simple", "Sigo preparando la explicaci�n, keeping it simple."),
+    ])
+    def test_progress_composition_keeps_the_request_it_is_reporting(user_text: str, reply: str) -> None:
+        client = Recorder([reply])
+        assert client.compose_user_message(user_text, "status", {
+            "situation": json.dumps({"kind": "status", "cause": "acting", "polarity": "success"}),
+        }) == reply
+>       assert user_text in client.payloads[0]["messages"][-1]["content"]
+E       assert 'cu�nto es doce por ocho' in '{"kind": "status", "state": "in progress"}\nIdioma obligatorio: espa�ol. Fuera de los literales del contrato, no introduzcas palabras inglesas.'
+
+tests\test_c03_request_preservation.py:118: AssertionError
+_ test_progress_composition_keeps_the_request_it_is_reporting[Explain encryption, pero en simple-Sigo preparando la explicaci\xf3n, keeping it simple.] _
+
+user_text = 'Explain encryption, pero en simple'
+reply = 'Sigo preparando la explicaci�n, keeping it simple.'
+
+    @pytest.mark.parametrize("user_text, reply", [
+        ("cu�nto es doce por ocho", "Sigo calculando el resultado."),
+        ("Explain encryption, pero en simple", "Sigo preparando la explicaci�n, keeping it simple."),
+    ])
+    def test_progress_composition_keeps_the_request_it_is_reporting(user_text: str, reply: str) -> None:
+        client = Recorder([reply])
+        assert client.compose_user_message(user_text, "status", {
+            "situation": json.dumps({"kind": "status", "cause": "acting", "polarity": "success"}),
+        }) == reply
+>       assert user_text in client.payloads[0]["messages"][-1]["content"]
+E       assert 'Explain encryption, pero en simple' in '{"kind": "status", "state": "in progress"}\nIdioma obligatorio: spanglish natural, combinando frases en espa�ol e ingl�s sin repetir una traducci�n completa. No lo conviertas por completo a un solo idioma.'
+
+tests\test_c03_request_preservation.py:118: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_progress_composition_keeps_the_request_it_is_reporting[cu\xe1nto es doce por ocho-Sigo calculando el resultado.]
+FAILED tests/test_c03_request_preservation.py::test_progress_composition_keeps_the_request_it_is_reporting[Explain encryption, pero en simple-Sigo preparando la explicaci\xf3n, keeping it simple.]
+2 failed, 58 deselected in 1.43s

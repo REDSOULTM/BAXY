@@ -1,0 +1,112 @@
+FFFF..F.                                                                 [100%]
+================================== FAILURES ===================================
+_ test_chat_validates_the_native_name_draft_without_another_decode[Eres \xc1lvaro.] _
+
+draft = 'Eres �lvaro.'
+
+    @pytest.mark.parametrize("draft", ["Eres �lvaro.", "Te llamas �lvaro."])
+    def test_chat_validates_the_native_name_draft_without_another_decode(draft: str) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._post = lambda _payload: pytest.fail("the native draft already answered")
+>       answer, calls = runtime.chat(
+            "�C�mo me llamo?",
+            history=[{"role": "user", "content": "Me llamo �lvaro."}],
+            temperature=0.0, conversation_kind="knowledge", response_language="es",
+            initial_reply=draft,
+        )
+E       TypeError: LlmRuntime.chat() got an unexpected keyword argument 'initial_reply'
+
+tests\test_turn_policy.py:420: TypeError
+_ test_chat_validates_the_native_name_draft_without_another_decode[Te llamas \xc1lvaro.] _
+
+draft = 'Te llamas �lvaro.'
+
+    @pytest.mark.parametrize("draft", ["Eres �lvaro.", "Te llamas �lvaro."])
+    def test_chat_validates_the_native_name_draft_without_another_decode(draft: str) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._post = lambda _payload: pytest.fail("the native draft already answered")
+>       answer, calls = runtime.chat(
+            "�C�mo me llamo?",
+            history=[{"role": "user", "content": "Me llamo �lvaro."}],
+            temperature=0.0, conversation_kind="knowledge", response_language="es",
+            initial_reply=draft,
+        )
+E       TypeError: LlmRuntime.chat() got an unexpected keyword argument 'initial_reply'
+
+tests\test_turn_policy.py:420: TypeError
+_ test_native_chat_draft_still_crosses_observation_and_language_guards[Your screen is dark.] _
+
+draft = 'Your screen is dark.'
+
+    @pytest.mark.parametrize("draft", ["Your screen is dark.", "Te llamas Jordan."])
+    def test_native_chat_draft_still_crosses_observation_and_language_guards(draft: str) -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads = []
+        def post(payload):
+            payloads.append(payload)
+            return {"choices": [{"message": {"content": '{"answer":"Your name is Jordan."}'}}]}
+        runtime._post = post
+>       answer, calls = runtime.chat(
+            "What is my name?",
+            history=[{"role": "user", "content": "My name is Jordan."}],
+            temperature=0.0, conversation_kind="knowledge", response_language="en",
+            initial_reply=draft,
+        )
+E       TypeError: LlmRuntime.chat() got an unexpected keyword argument 'initial_reply'
+
+tests\test_turn_policy.py:438: TypeError
+_ test_native_chat_draft_still_crosses_observation_and_language_guards[Te llamas Jordan.] _
+
+draft = 'Te llamas Jordan.'
+
+    @pytest.mark.parametrize("draft", ["Your screen is dark.", "Te llamas Jordan."])
+    def test_native_chat_draft_still_crosses_observation_and_language_guards(draft: str) -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads = []
+        def post(payload):
+            payloads.append(payload)
+            return {"choices": [{"message": {"content": '{"answer":"Your name is Jordan."}'}}]}
+        runtime._post = post
+>       answer, calls = runtime.chat(
+            "What is my name?",
+            history=[{"role": "user", "content": "My name is Jordan."}],
+            temperature=0.0, conversation_kind="knowledge", response_language="en",
+            initial_reply=draft,
+        )
+E       TypeError: LlmRuntime.chat() got an unexpected keyword argument 'initial_reply'
+
+tests\test_turn_policy.py:438: TypeError
+______ test_primary_native_draft_is_separate_from_effect_authority[None] ______
+
+operation = None
+
+    @pytest.mark.parametrize("operation", [None, "web.search"])
+    def test_primary_native_draft_is_separate_from_effect_authority(operation: str | None) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._native_tool_policy_enabled = True
+        runtime._post_native_tool_selection = lambda *_args: {
+            "mode": "action" if operation else "conversation", "question": "",
+            "conversation_kind": "" if operation else "knowledge",
+            "effect_operations": [operation] if operation else [], "response_language": "en",
+            "conversation_reply": "Your name is Jordan.",
+        }
+        result = runtime.decide_turn(
+            "What is my name?",
+            [turn_candidate("web.search", "Search the web.", required=("query",))],
+        )
+        if operation:
+            assert "conversation_reply" not in result
+            assert result["effect_operations"] == [operation]
+        else:
+>           assert result["conversation_reply"] == "Your name is Jordan."
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'conversation_reply'
+
+tests\test_turn_policy.py:10616: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_chat_validates_the_native_name_draft_without_another_decode[Eres \xc1lvaro.]
+FAILED tests/test_turn_policy.py::test_chat_validates_the_native_name_draft_without_another_decode[Te llamas \xc1lvaro.]
+FAILED tests/test_turn_policy.py::test_native_chat_draft_still_crosses_observation_and_language_guards[Your screen is dark.]
+FAILED tests/test_turn_policy.py::test_native_chat_draft_still_crosses_observation_and_language_guards[Te llamas Jordan.]
+FAILED tests/test_turn_policy.py::test_primary_native_draft_is_separate_from_effect_authority[None]
+5 failed, 3 passed, 958 deselected in 2.07s

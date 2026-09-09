@@ -1,0 +1,42 @@
+{
+  "kind": "consumed and synthetic technical regression",
+  "texts": [
+    "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "Dime la hora y el estado del audio.",
+    "Tell me the time and the volume.",
+    "What time is it y cómo está el audio?",
+    "Dime la hora y no silencies el audio.",
+    "Dime la hora y revisa la CPU",
+    "¿Cómo está el audio?"
+  ],
+  "expectedOperations": [
+    [
+      "system.time",
+      "audio.status",
+      "system.status"
+    ],
+    [
+      "system.time",
+      "audio.status"
+    ],
+    [
+      "system.time",
+      "audio.status"
+    ],
+    [
+      "system.time",
+      "audio.status"
+    ],
+    [
+      "system.time"
+    ],
+    [
+      "system.time",
+      "system.status"
+    ],
+    [
+      "audio.status"
+    ]
+  ],
+  "scope": "Read-only PC observations; no effects, no acceptance reserve, no UI/voice claim."
+}

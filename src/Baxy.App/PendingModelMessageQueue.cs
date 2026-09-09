@@ -17,7 +17,7 @@ internal sealed class PendingModelMessageQueue
     private readonly object _lock = new();
     private readonly Queue<PendingModelMessage> _pending = new();
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
-    private readonly Func<string, string?, string?, Task> _publishAsync;
+    private readonly Func<string, string?, PendingModelMessage, Task> _publishAsync;
     private readonly Func<string?, Task> _reportFailureAsync;
     private readonly Func<PendingModelMessage, string, Task> _onExhaustedAsync;
     private readonly Action _onQueued;
@@ -31,7 +31,7 @@ internal sealed class PendingModelMessageQueue
 
     internal PendingModelMessageQueue(
         Func<CancellationToken, Task<MindSidecarClient?>> waitForMind,
-        Func<string, string?, string?, Task> publishAsync,
+        Func<string, string?, PendingModelMessage, Task> publishAsync,
         Func<string?, Task> reportFailureAsync,
         Action onQueued,
         Func<Task> onSettledAsync,
@@ -157,6 +157,14 @@ internal sealed class PendingModelMessageQueue
 
             ModelMessageCompositionOutcome outcome =
                 await _composeAsync(pending, mind, cancellationToken).ConfigureAwait(false);
+            // The greeting may have lost its turn while waiting for the model.
+            // Neither its prose nor its failure belongs to the new request.
+            if (_isStale(pending))
+            {
+                RemoveHead(pending);
+                await _onSettledAsync().ConfigureAwait(false);
+                continue;
+            }
             if (outcome.Text is null)
             {
                 pending.Attempts++;
@@ -180,7 +188,7 @@ internal sealed class PendingModelMessageQueue
             await _publishAsync(
                     outcome.Text,
                     outcome.Failure,
-                    PublicResponseRoute.FromDraft(pending.Draft))
+                    pending)
                 .ConfigureAwait(false);
         }
     }

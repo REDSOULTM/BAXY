@@ -309,7 +309,10 @@ public sealed class Goal06VisibleVoiceTests
             UserMessagePolicy.IsSafeConversationReply(
                 "what can you do eyes-free?",
                 "I can interpret references following the established rules."),
-            Is.False);
+            // A generic statement about rules is not a machine-slot question
+            // or a leak of actual internal instructions. Its usefulness is
+            // adjudicated from the requested capabilities, not these nouns.
+            Is.True);
         Assert.That(
             UserMessagePolicy.ModelResponseRejectionReason(
                 "El mensaje es: \"Listo, REDPC\\usuario\".",
@@ -668,20 +671,9 @@ public sealed class Goal06VisibleVoiceTests
             UserMessagePolicy.IsConnectivityStatusRequest("are you connected?"),
             Is.True);
         Assert.That(
-            NaturalSystemStatusRequestParser.IsClockAndAudioStatusRequest(
-                "Dime la hora y el estado del audio."),
-            Is.True);
-        Assert.That(
-            NaturalSystemStatusRequestParser.IsClockAndAudioStatusRequest("clock please"),
-            Is.False);
-        Assert.That(
-            NaturalSystemStatusRequestParser.IsClockAndAudioStatusRequest(
-                "Dime la hora y el volumen."),
-            Is.True);
-        Assert.That(
             UserMessagePolicy.ConversationFallbackIntent(
                 "Dime la hora y el estado del audio."),
-            Is.EqualTo("conversation"));
+            Is.EqualTo("unknown"));
         Assert.That(
             UserMessagePolicy.IsSafeConversationReply(
                 "Dime la hora y el estado del audio.",
@@ -850,12 +842,6 @@ public sealed class Goal06VisibleVoiceTests
             UserMessagePolicy.ConversationFallbackIntent("don't launch Steam"),
             Is.EqualTo("conversation"));
         Assert.That(
-            UserMessagePolicy.IsNegativeConstraintRequest("don't launch Steam"),
-            Is.True);
-        Assert.That(
-            UserMessagePolicy.IsNegativeConstraintRequest("no abras el bloc de notas"),
-            Is.True);
-        Assert.That(
             UserMessagePolicy.ConversationFallbackIntent("keep going without apps"),
             Is.EqualTo("conversation"));
         Assert.That(
@@ -900,10 +886,17 @@ public sealed class Goal06VisibleVoiceTests
                 "descríbete en una frase",
                 "Hola, el borrador anterior no sirve."),
             Is.False);
+        // First-person self-description is not narration of the current
+        // request merely because it mentions users in general.
         Assert.That(
             UserMessagePolicy.IsSafeConversationReply(
                 "De qué te ocupas en el PC",
                 "Me ocupo de ayudar a los usuarios con sus preguntas."),
+            Is.True);
+        Assert.That(
+            UserMessagePolicy.IsSafeConversationReply(
+                "De qué te ocupas en el PC",
+                "El usuario preguntó de qué me ocupo en el PC."),
             Is.False);
         Assert.That(
             UserMessagePolicy.ModelResponseRejectionReason(

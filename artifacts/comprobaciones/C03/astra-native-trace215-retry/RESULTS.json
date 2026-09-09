@@ -1,0 +1,215 @@
+[
+  {
+    "index": 0,
+    "human": 0,
+    "condition": "raw_speex",
+    "text": "",
+    "expected": "",
+    "seconds": 0.7660000000032596,
+    "applied": "greedy_search",
+    "features": {
+      "shape": [
+        1,
+        1484,
+        128
+      ],
+      "nonfinite": 0,
+      "min": -48.351287841796875,
+      "max": 24348.1640625,
+      "mean": 0.0008401013429662887,
+      "std": 77.86443201566084,
+      "sha256": "287deaa6c5debfeee8af30ce8eb1937e7cb5c899969f687ed1f7635a19e9325f"
+    },
+    "encoder": {
+      "shape": [
+        1,
+        186,
+        1024
+      ],
+      "nonfinite": 0,
+      "min": -0.05031974986195564,
+      "max": 0.058031488209962845,
+      "mean": -0.00021166501640209362,
+      "std": 0.007914567348610782,
+      "sha256": "848a6c4cb47d2027f3bf4ade00e3e9579fc45640ff1cc4ca3209f2ff69e41020"
+    },
+    "joiner": {
+      "decisions": 47,
+      "nonfiniteValues": 0,
+      "blankDecisions": 47,
+      "tokenIds": [
+        8192
+      ],
+      "sha256": "771484a6e559f331ebd4360b91db0ddebffccd123c0beadb866411f8ac278179"
+    }
+  },
+  {
+    "index": 1,
+    "human": 1,
+    "condition": "near_speex",
+    "text": "",
+    "expected": "",
+    "seconds": 0.5310000000026776,
+    "applied": "greedy_search",
+    "features": {
+      "shape": [
+        1,
+        1172,
+        128
+      ],
+      "nonfinite": 0,
+      "min": -1.811981201171875,
+      "max": 2391.7197265625,
+      "mean": 0.0017999327401075702,
+      "std": 6.256935978198081,
+      "sha256": "40455c0fed8948c2c7d7ac9670f97f4e3507e66e37fd26bb164a27a0c10947f9"
+    },
+    "encoder": {
+      "shape": [
+        1,
+        147,
+        1024
+      ],
+      "nonfinite": 0,
+      "min": -0.06735754013061523,
+      "max": 0.08561614155769348,
+      "mean": -0.00014588672790655422,
+      "std": 0.009200749481834296,
+      "sha256": "591fd9f7df285ea9422e87d161161c79a544efd75be117af0ccce5996cde0ff8"
+    },
+    "joiner": {
+      "decisions": 38,
+      "nonfiniteValues": 0,
+      "blankDecisions": 38,
+      "tokenIds": [
+        8192
+      ],
+      "sha256": "00826bc64816f06e3f9d8ac6db91967c421f3522b8f98f6248879951765c06de"
+    }
+  },
+  {
+    "index": 2,
+    "human": 1,
+    "condition": "raw_speex",
+    "text": "",
+    "expected": "",
+    "seconds": 0.6089999999967404,
+    "applied": "greedy_search",
+    "features": {
+      "shape": [
+        1,
+        1172,
+        128
+      ],
+      "nonfinite": 0,
+      "min": -61.22589111328125,
+      "max": 24335.2890625,
+      "mean": 0.0010407942418900512,
+      "std": 87.58097670340011,
+      "sha256": "43d9e9d292cf07616e7a9497d84135155b9533fa0ef1d24dee74e87c81dc0c03"
+    },
+    "encoder": {
+      "shape": [
+        1,
+        147,
+        1024
+      ],
+      "nonfinite": 0,
+      "min": -0.05504303425550461,
+      "max": 0.07237955182790756,
+      "mean": -0.0003382208603795293,
+      "std": 0.010330589531406375,
+      "sha256": "50d21afd88167bd354f2c25114103a204fda15a9f6767820d042547de09a4233"
+    },
+    "joiner": {
+      "decisions": 37,
+      "nonfiniteValues": 0,
+      "blankDecisions": 37,
+      "tokenIds": [
+        8192
+      ],
+      "sha256": "7c4a9efc5be8849dae255bcd0da6a1526ecd0a79c951d8db5eb07cf33ed63c2f"
+    }
+  },
+  {
+    "index": 3,
+    "human": 1,
+    "condition": "near_none",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "seconds": 0.75,
+    "applied": "greedy_search",
+    "features": {
+      "shape": [
+        1,
+        1172,
+        128
+      ],
+      "nonfinite": 0,
+      "min": -0.8624206185340881,
+      "max": 15.085737228393555,
+      "mean": 5.741231201394725e-07,
+      "std": 1.0000619388678869,
+      "sha256": "a3527a22a6db4d1638e6dc9c1999785950e124ea9928be571eda184f56e31663"
+    },
+    "encoder": {
+      "shape": [
+        1,
+        147,
+        1024
+      ],
+      "nonfinite": 0,
+      "min": -0.18145929276943207,
+      "max": 0.1767916977405548,
+      "mean": -0.00029806862171313125,
+      "std": 0.025952692728224088,
+      "sha256": "a40110b44f71afba8fb0afbbaeca5b25d535cc8757e3738234ec81de7d371c7b"
+    },
+    "joiner": {
+      "decisions": 53,
+      "nonfiniteValues": 0,
+      "blankDecisions": 13,
+      "tokenIds": [
+        277,
+        278,
+        289,
+        295,
+        298,
+        317,
+        318,
+        319,
+        320,
+        326,
+        327,
+        347,
+        364,
+        373,
+        376,
+        393,
+        413,
+        443,
+        471,
+        493,
+        515,
+        584,
+        628,
+        777,
+        1700,
+        1803,
+        1865,
+        2103,
+        2824,
+        3046,
+        3240,
+        3360,
+        3800,
+        3899,
+        5767,
+        7874,
+        7883,
+        8192
+      ],
+      "sha256": "1272a945c650d0509f47b7e84c95aae8ce7420d1b065292d2170c8ec63019064"
+    }
+  }
+]

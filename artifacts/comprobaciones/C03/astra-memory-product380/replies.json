@@ -1,0 +1,152 @@
+[
+  {
+    "request": "My name is Jordan. Remember my name.",
+    "answers": [
+      "Jordan, I remember your name. The save operation failed because memory was disabled.",
+      "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil"
+  },
+  {
+    "request": "What would I be confirming?",
+    "answers": [
+      "I need your decision on enabling private local memory. Do you want to confirm or cancel?"
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I need your decision on enabling private local memory. Do you want to confirm or cancel?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil"
+  },
+  {
+    "request": "cancel",
+    "answers": [
+      "The memory enable action has been cancelled."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The memory enable action has been cancelled.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil"
+  },
+  {
+    "request": "Who am I?",
+    "answers": [
+      "You are Jordan, a user who just asked me to remember your name."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "You are Jordan, a user who just asked me to remember your name.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil"
+  },
+  {
+    "request": "What is my name?",
+    "answers": [],
+    "terminal": {
+      "type": "terminal",
+      "kind": "composition_failed",
+      "final": "no_response;recovery:no_response;retry_exhausted",
+      "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo: silencio"
+  },
+  {
+    "request": "Me llamo Álvaro y quiero que guardes mi nombre.",
+    "answers": [
+      "Hola Álvaro, no puedo guardar tu nombre porque la memoria está deshabilitada.",
+      "Hola Álvaro, ¿te gustaría que active mi memoria privada para guardarte tu nombre? Por favor, dime si quieres confirmar o cancelar."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Hola Álvaro, ¿te gustaría que active mi memoria privada para guardarte tu nombre? Por favor, dime si quieres confirmar o cancelar.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil"
+  },
+  {
+    "request": "¿Qué vas a activar?",
+    "answers": [
+      "¿Qué vas a activar? ¿Confirmar o cancelar la activación de la memoria local privada?"
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿Qué vas a activar? ¿Confirmar o cancelar la activación de la memoria local privada?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "parcial: eco antes de identificar activación"
+  },
+  {
+    "request": "cancelar",
+    "answers": [
+      "Se ha cancelado la activación de la memoria privada local."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Se ha cancelado la activación de la memoria privada local.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil"
+  },
+  {
+    "request": "quién soy ahora",
+    "answers": [
+      "Soy BAXY, tu compañero en el PC."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Soy BAXY, tu compañero en el PC.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo: responde su identidad, no la del humano"
+  },
+  {
+    "request": "¿Cómo me llamo?",
+    "answers": [
+      "No puedo decirte tu nombre porque la memoria está deshabilitada."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "No puedo decirte tu nombre porque la memoria está deshabilitada.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo: confunde conversación con persistencia"
+  }
+]

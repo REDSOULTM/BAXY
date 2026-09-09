@@ -1,0 +1,295 @@
+{
+  "kind": "synthetic-composition-diagnostic-not-integrated-acceptance",
+  "cases": [
+    {
+      "id": "welcome-es",
+      "route": "welcome",
+      "language": "es",
+      "request": "Hola",
+      "intent": "welcome",
+      "facts": {
+        "situation": "{\"kind\": \"welcome\", \"polarity\": \"success\"}",
+        "traceId": "welcome-es"
+      },
+      "criteria": "Brief natural greeting; no invented user state. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "welcome-en",
+      "route": "welcome",
+      "language": "en",
+      "request": "Hello",
+      "intent": "welcome",
+      "facts": {
+        "situation": "{\"kind\": \"welcome\", \"polarity\": \"success\"}",
+        "traceId": "welcome-en"
+      },
+      "criteria": "Brief natural greeting; no invented user state. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "welcome-mixed",
+      "route": "welcome",
+      "language": "mixed",
+      "request": "Hey, buenas; responde en spanglish.",
+      "intent": "welcome",
+      "facts": {
+        "situation": "{\"kind\": \"welcome\", \"polarity\": \"success\"}",
+        "traceId": "welcome-mixed"
+      },
+      "criteria": "Brief natural greeting; no invented user state. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "conversation-es",
+      "route": "conversation",
+      "language": "es",
+      "request": "¿Qué es un sinónimo?",
+      "intent": "conversation",
+      "facts": {
+        "situation": "{}",
+        "traceId": "conversation-es"
+      },
+      "criteria": "Useful explanation of similar meaning; no action claims. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "conversation-en",
+      "route": "conversation",
+      "language": "en",
+      "request": "What is a synonym?",
+      "intent": "conversation",
+      "facts": {
+        "situation": "{}",
+        "traceId": "conversation-en"
+      },
+      "criteria": "Useful explanation of similar meaning; no action claims. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "conversation-mixed",
+      "route": "conversation",
+      "language": "mixed",
+      "request": "What is a synonym? Explícalo en spanglish.",
+      "intent": "conversation",
+      "facts": {
+        "situation": "{}",
+        "traceId": "conversation-mixed"
+      },
+      "criteria": "Useful explanation of similar meaning; no action claims. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "clarification-es",
+      "route": "clarification",
+      "language": "es",
+      "request": "Ajusta el volumen.",
+      "intent": "clarification",
+      "facts": {
+        "situation": "{\"kind\": \"clarification\", \"polarity\": \"pending\", \"cause\": \"missing_arguments\", \"operation\": \"audio.volume\", \"target\": \"volume\"}",
+        "traceId": "clarification-es"
+      },
+      "criteria": "Ask what volume level is wanted. No guessed level, denial or claim of completion. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "clarification-en",
+      "route": "clarification",
+      "language": "en",
+      "request": "Set the volume.",
+      "intent": "clarification",
+      "facts": {
+        "situation": "{\"kind\": \"clarification\", \"polarity\": \"pending\", \"cause\": \"missing_arguments\", \"operation\": \"audio.volume\", \"target\": \"volume\"}",
+        "traceId": "clarification-en"
+      },
+      "criteria": "Ask what volume level is wanted. No guessed level, denial or claim of completion. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "clarification-mixed",
+      "route": "clarification",
+      "language": "mixed",
+      "request": "Set the volume, por favor, en spanglish.",
+      "intent": "clarification",
+      "facts": {
+        "situation": "{\"kind\": \"clarification\", \"polarity\": \"pending\", \"cause\": \"missing_arguments\", \"operation\": \"audio.volume\", \"target\": \"volume\"}",
+        "traceId": "clarification-mixed"
+      },
+      "criteria": "Ask what volume level is wanted. No guessed level, denial or claim of completion. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "confirmation-es",
+      "route": "confirmation",
+      "language": "es",
+      "request": "Cierra la ventana titulada Panel local C03.",
+      "intent": "confirmation",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"step_confirm_or_cancel\", \"step\": 2, \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingRequest\": \"Cierra la ventana titulada Panel local C03.\", \"pendingAction\": {\"operation\": \"app.close\", \"purpose\": \"Cierra la ventana titulada Panel local C03.\", \"arguments\": {\"title\": \"Panel local C03\", \"windowId\": \"synthetic-window\"}}}",
+        "traceId": "confirmation-es"
+      },
+      "criteria": "Ask confirmation or cancellation for the exact named window; never say it has already closed. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "confirmation-en",
+      "route": "confirmation",
+      "language": "en",
+      "request": "Close the window titled Panel local C03.",
+      "intent": "confirmation",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"step_confirm_or_cancel\", \"step\": 2, \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingRequest\": \"Close the window titled Panel local C03.\", \"pendingAction\": {\"operation\": \"app.close\", \"purpose\": \"Close the window titled Panel local C03.\", \"arguments\": {\"title\": \"Panel local C03\", \"windowId\": \"synthetic-window\"}}}",
+        "traceId": "confirmation-en"
+      },
+      "criteria": "Ask confirmation or cancellation for the exact named window; never say it has already closed. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "confirmation-mixed",
+      "route": "confirmation",
+      "language": "mixed",
+      "request": "Close la ventana titulada Panel local C03; responde en spanglish.",
+      "intent": "confirmation",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"step_confirm_or_cancel\", \"step\": 2, \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingRequest\": \"Close la ventana titulada Panel local C03; responde en spanglish.\", \"pendingAction\": {\"operation\": \"app.close\", \"purpose\": \"Close la ventana titulada Panel local C03; responde en spanglish.\", \"arguments\": {\"title\": \"Panel local C03\", \"windowId\": \"synthetic-window\"}}}",
+        "traceId": "confirmation-mixed"
+      },
+      "criteria": "Ask confirmation or cancellation for the exact named window; never say it has already closed. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "progress-es",
+      "route": "progress",
+      "language": "es",
+      "request": "Busca las aplicaciones instaladas.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"status\", \"polarity\": \"success\", \"cause\": \"acting\"}",
+        "traceId": "progress-es"
+      },
+      "criteria": "Report work in progress on the requested search; no completed list or invented findings. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "progress-en",
+      "route": "progress",
+      "language": "en",
+      "request": "Find the installed applications.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"status\", \"polarity\": \"success\", \"cause\": \"acting\"}",
+        "traceId": "progress-en"
+      },
+      "criteria": "Report work in progress on the requested search; no completed list or invented findings. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "progress-mixed",
+      "route": "progress",
+      "language": "mixed",
+      "request": "Find las aplicaciones instaladas; responde en spanglish.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"status\", \"polarity\": \"success\", \"cause\": \"acting\"}",
+        "traceId": "progress-mixed"
+      },
+      "criteria": "Report work in progress on the requested search; no completed list or invented findings. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "result-es",
+      "route": "result",
+      "language": "es",
+      "request": "¿Cuál es el volumen y está silenciado?",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"operation\", \"operation\": \"audio.status\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"readOnly\": true, \"observed\": {\"state\": {\"volumePercent\": 46, \"muted\": false}}}",
+        "traceId": "result-es"
+      },
+      "criteria": "Read-only result: volume46%, not muted; do not claim a change. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "result-en",
+      "route": "result",
+      "language": "en",
+      "request": "What is the volume, and is it muted?",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"operation\", \"operation\": \"audio.status\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"readOnly\": true, \"observed\": {\"state\": {\"volumePercent\": 46, \"muted\": false}}}",
+        "traceId": "result-en"
+      },
+      "criteria": "Read-only result: volume46%, not muted; do not claim a change. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "result-mixed",
+      "route": "result",
+      "language": "mixed",
+      "request": "What is the volume y está silenciado? Responde en spanglish.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"operation\", \"operation\": \"audio.status\", \"polarity\": \"success\", \"verified\": true, \"succeeded\": true, \"readOnly\": true, \"observed\": {\"state\": {\"volumePercent\": 46, \"muted\": false}}}",
+        "traceId": "result-mixed"
+      },
+      "criteria": "Read-only result: volume46%, not muted; do not claim a change. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "error-es",
+      "route": "error",
+      "language": "es",
+      "request": "Abre EstudioC03.",
+      "intent": "error",
+      "facts": {
+        "situation": "{\"kind\": \"operation\", \"operation\": \"app.open\", \"polarity\": \"failure\", \"verified\": true, \"succeeded\": false, \"cause\": \"app_not_found\", \"target\": \"EstudioC03\", \"operationAttempted\": true}",
+        "traceId": "error-es"
+      },
+      "criteria": "Opening failed because the named app was not found; do not invent installation, access denial or an opened window. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "error-en",
+      "route": "error",
+      "language": "en",
+      "request": "Open EstudioC03.",
+      "intent": "error",
+      "facts": {
+        "situation": "{\"kind\": \"operation\", \"operation\": \"app.open\", \"polarity\": \"failure\", \"verified\": true, \"succeeded\": false, \"cause\": \"app_not_found\", \"target\": \"EstudioC03\", \"operationAttempted\": true}",
+        "traceId": "error-en"
+      },
+      "criteria": "Opening failed because the named app was not found; do not invent installation, access denial or an opened window. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "error-mixed",
+      "route": "error",
+      "language": "mixed",
+      "request": "Open EstudioC03, por favor; responde en spanglish.",
+      "intent": "error",
+      "facts": {
+        "situation": "{\"kind\": \"operation\", \"operation\": \"app.open\", \"polarity\": \"failure\", \"verified\": true, \"succeeded\": false, \"cause\": \"app_not_found\", \"target\": \"EstudioC03\", \"operationAttempted\": true}",
+        "traceId": "error-mixed"
+      },
+      "criteria": "Opening failed because the named app was not found; do not invent installation, access denial or an opened window. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "mission-summary-es",
+      "route": "mission-summary",
+      "language": "es",
+      "request": "Dime la hora y el estado del audio.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"status\", \"polarity\": \"success\", \"cause\": \"mission_completed\", \"steps\": [\"{\\\"kind\\\": \\\"operation\\\", \\\"operation\\\": \\\"system.time\\\", \\\"polarity\\\": \\\"success\\\", \\\"verified\\\": true, \\\"succeeded\\\": true, \\\"readOnly\\\": true, \\\"observed\\\": {\\\"utc\\\": \\\"2026-01-01T17:42:00+00:00\\\", \\\"localUtcOffsetMinutes\\\": 0}}\", \"{\\\"kind\\\": \\\"operation\\\", \\\"operation\\\": \\\"audio.status\\\", \\\"polarity\\\": \\\"success\\\", \\\"verified\\\": true, \\\"succeeded\\\": true, \\\"readOnly\\\": true, \\\"observed\\\": {\\\"state\\\": {\\\"volumePercent\\\": 46, \\\"muted\\\": false}}}\"], \"completedRequest\": \"Dime la hora y el estado del audio.\"}",
+        "traceId": "mission-summary-es"
+      },
+      "criteria": "Summary preserves 17:42, volume46%, not muted; both steps read-only, no state changes. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "mission-summary-en",
+      "route": "mission-summary",
+      "language": "en",
+      "request": "Tell me the time and audio state.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"status\", \"polarity\": \"success\", \"cause\": \"mission_completed\", \"steps\": [\"{\\\"kind\\\": \\\"operation\\\", \\\"operation\\\": \\\"system.time\\\", \\\"polarity\\\": \\\"success\\\", \\\"verified\\\": true, \\\"succeeded\\\": true, \\\"readOnly\\\": true, \\\"observed\\\": {\\\"utc\\\": \\\"2026-01-01T17:42:00+00:00\\\", \\\"localUtcOffsetMinutes\\\": 0}}\", \"{\\\"kind\\\": \\\"operation\\\", \\\"operation\\\": \\\"audio.status\\\", \\\"polarity\\\": \\\"success\\\", \\\"verified\\\": true, \\\"succeeded\\\": true, \\\"readOnly\\\": true, \\\"observed\\\": {\\\"state\\\": {\\\"volumePercent\\\": 46, \\\"muted\\\": false}}}\"], \"completedRequest\": \"Tell me the time and audio state.\"}",
+        "traceId": "mission-summary-en"
+      },
+      "criteria": "Summary preserves 17:42, volume46%, not muted; both steps read-only, no state changes. Requested language; no invented facts or full repeated translation."
+    },
+    {
+      "id": "mission-summary-mixed",
+      "route": "mission-summary",
+      "language": "mixed",
+      "request": "Tell me la hora y el estado del audio; responde en spanglish.",
+      "intent": "status",
+      "facts": {
+        "situation": "{\"kind\": \"status\", \"polarity\": \"success\", \"cause\": \"mission_completed\", \"steps\": [\"{\\\"kind\\\": \\\"operation\\\", \\\"operation\\\": \\\"system.time\\\", \\\"polarity\\\": \\\"success\\\", \\\"verified\\\": true, \\\"succeeded\\\": true, \\\"readOnly\\\": true, \\\"observed\\\": {\\\"utc\\\": \\\"2026-01-01T17:42:00+00:00\\\", \\\"localUtcOffsetMinutes\\\": 0}}\", \"{\\\"kind\\\": \\\"operation\\\", \\\"operation\\\": \\\"audio.status\\\", \\\"polarity\\\": \\\"success\\\", \\\"verified\\\": true, \\\"succeeded\\\": true, \\\"readOnly\\\": true, \\\"observed\\\": {\\\"state\\\": {\\\"volumePercent\\\": 46, \\\"muted\\\": false}}}\"], \"completedRequest\": \"Tell me la hora y el estado del audio; responde en spanglish.\"}",
+        "traceId": "mission-summary-mixed"
+      },
+      "criteria": "Summary preserves 17:42, volume46%, not muted; both steps read-only, no state changes. Requested language; no invented facts or full repeated translation."
+    }
+  ],
+  "coverage": "24 cases, eight response routes and three languages. Conversation duplicates an existing development question; not counted as fresh acceptance.",
+  "noEffects": "Only chat and compose_user_message; no kernel, provider, app launch, file operation or current PC reading."
+}

@@ -1,0 +1,12 @@
+{
+  "method": "Actual Python compose_user_message pipeline after source98 with exact eight97 phase/language fixtures. App now supplies phase via FieldBridgeContract; this test supplies the same typed shape, but does not claim observed UI/phase transitions. All original user texts reach public API/policy/language; narrator receives only actual activity. Capture actual first/retry packets, accepted return or error, time/resources. No source/model/prompt/sampler changes, functions/audio/reserve or promotion.",
+  "sourceSha256": "f42b436149e12d0ee95454529540c3f6acf216dcafa7c6862135ebc41bccf4a3",
+  "model": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "files": {
+    "src/baxy_mind/llm.py": "85bfcfddb507b6c6714d133bdc2cf8ed4cb1f17006f115d55d458a2aac5f96c0",
+    "src/Baxy.App/MainWindowViewModel.cs": "e1ea8674c91786ef9d53d003ceffce59a71e52a134bf6ad0dbc50e0098682980",
+    "src/Baxy.App/UserMessagePolicy.cs": "74ff88964edd9966afdbc57f8ba7050c68fbe1b95800f516d0856715a2d60ffb",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "180f7a0940841fc24caa2e867a4287fba4e9417c9bc008f2fe3f2599d51b028a"
+  }
+}

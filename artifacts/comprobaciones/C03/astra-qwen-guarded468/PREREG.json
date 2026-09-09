@@ -1,0 +1,78 @@
+{
+  "utc": "2026-09-08T17:48:48.826873+00:00",
+  "method": "Model-specific guarded evaluation: registered Qwen3-4B-Instruct2507 exactGGUF with documented .7/.8/k20/min0/neutral penalties/no-thinking and fixedseeds0/17, stableb10809. Native451was8/11+11/11 but did not apply actual compose guards/current466 export facts. Reconstruct12 memory compositions460 (elevenbaseline and one bounded mixed public value variant) and six confirmation fixtures465 at eachseed:36compositions. Source466 passes1404owners/0skips+Fast. This is candidate profile verification, not attribution to a single parameter or best-of-seed. No prompt alterations, no new fixes, no physical effects. Offline firstmemorypayload equals444 (except explicit current402 multiple-list contract already documented459/460).",
+  "criteria": "Judge all36 compositions with same460/465 rubrics: values/subject/protection/no falseeffects; confirmation pendingaction, bothchoices, irreversible deletion and export destination/syncrisk. No profile promotion on native/guarded alone, actual product/allroles required. RAM/VRAM measured with guard3800MiB/freeRAM768MiB. All fixed seeds counted.",
+  "profile": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seeds": [
+      0,
+      17
+    ],
+    "max_tokens": 1024,
+    "enable_thinking": false,
+    "reasoning_budget_tokens": 0
+  },
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "actual437-t4",
+      "request": "What name have you saved in private memory?"
+    },
+    {
+      "id": "name-marta",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "compound-name",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "third-person",
+      "request": "¿Qué nombre de mi hermana tienes guardado?"
+    },
+    {
+      "id": "two-records",
+      "request": "¿Qué nombres tienes guardados en tu memoria privada?"
+    },
+    {
+      "id": "memory.enable",
+      "request": "confirm"
+    },
+    {
+      "id": "memory.save",
+      "request": "confirm"
+    },
+    {
+      "id": "redacted-es",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    },
+    {
+      "id": "redacted-en",
+      "request": "What is stored in private memory?"
+    },
+    {
+      "id": "mixed-es",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    }
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "server": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+  "limits": {
+    "composition_seconds": 55,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-qwen-guarded468-private"
+}

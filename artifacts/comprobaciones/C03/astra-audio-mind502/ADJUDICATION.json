@@ -1,0 +1,534 @@
+[
+  {
+    "id": "owner49",
+    "request": "Ponle volumen al pc",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": null,
+    "reply": {
+      "type": "turn.result",
+      "id": "owner49",
+      "kind": "clarify",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume"
+      ],
+      "effectOperations": [],
+      "question": "¿Cuál es el nivel de volumen que deseas para el PC?",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": null,
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "context-negative",
+    "request": "Al 37 pero no quites el silencio",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "context-negative",
+      "kind": "action",
+      "operation": "audio.volume",
+      "intentOperations": [
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "arguments.result",
+      "id": "context-negative-arguments",
+      "operation": "audio.volume",
+      "arguments": {
+        "level": 37
+      },
+      "ok": true,
+      "question": ""
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "new-time",
+    "request": "Dime la hora",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": null,
+    "reply": {
+      "type": "turn.result",
+      "id": "new-time",
+      "kind": "action",
+      "operation": "system.time",
+      "intentOperations": [
+        "system.time"
+      ],
+      "effectOperations": [
+        "system.time"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": null,
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "context-en",
+    "request": "To 42 but tell me the time",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "context-en",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "system.time"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "system.time"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "plan.result",
+      "id": "context-en-plan",
+      "version": 1,
+      "kind": "plan",
+      "question": "",
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "audio.volume",
+          "purpose": "set the volume of the computer . to 42",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "level": 42
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "system.time",
+          "purpose": "time",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {}
+        }
+      ]
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "positive-but",
+    "request": "Pon el volumen al 37 pero desmutéalo",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "positive-but",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "plan.result",
+      "id": "positive-but-plan",
+      "version": 1,
+      "kind": "plan",
+      "question": "",
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "audio.volume",
+          "purpose": "Pon el volumen al 37",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "level": 37
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.mute",
+          "purpose": "desmutéalo",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "state": false
+          }
+        }
+      ]
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "owner51-resumed",
+    "request": "Ponle volumen al pc\nAclaración confiable del usuario: Al 100, pero desmutealo",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "owner51-resumed",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "plan.result",
+      "id": "owner51-resumed-plan",
+      "version": 1,
+      "kind": "plan",
+      "question": "",
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "audio.volume",
+          "purpose": "ponle volumen al pc . aclaracion confiable del usuario: al 100",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "level": 100
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.mute",
+          "purpose": "desmutealo",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "state": false
+          }
+        }
+      ]
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "owner44",
+    "request": "pon el volumen al 100",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "owner44",
+      "kind": "action",
+      "operation": "audio.volume",
+      "intentOperations": [
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "arguments.result",
+      "id": "owner44-arguments",
+      "operation": "audio.volume",
+      "arguments": {
+        "level": 100
+      },
+      "ok": true,
+      "question": ""
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "owner46",
+    "request": "perfecto, necesito lo dessilencies pls",
+    "proposal_or_clarification_correct": false,
+    "binding_correct": null,
+    "reply": {
+      "type": "turn.result",
+      "id": "owner46",
+      "kind": "clarify",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "preserveObjective": false,
+      "question": "¿Te refieres a que quieras que el sonido esté completamente activo y sin silencio, o que se active de forma inmediata sin retraso?",
+      "reply": "",
+      "turn_attempts": 2,
+      "turn_recovery": "semantic_clarification",
+      "recovery_attempts": 1,
+      "failure_code": "turn_runtime_failure"
+    },
+    "binding": null,
+    "assessment": "Runtime failure on dessilencies; misleading clarification"
+  },
+  {
+    "id": "owner51",
+    "request": "Al 100, pero desmutealo",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "owner51",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "plan.result",
+      "id": "owner51-plan",
+      "version": 1,
+      "kind": "plan",
+      "question": "",
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "audio.volume",
+          "purpose": "ponle volumen al pc . al 100",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "level": 100
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.mute",
+          "purpose": "desmutealo",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "state": false
+          }
+        }
+      ]
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "clitic-alone",
+    "request": "Desmutéalo",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "clitic-alone",
+      "kind": "action",
+      "operation": "audio.mute",
+      "intentOperations": [
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "arguments.result",
+      "id": "clitic-alone-arguments",
+      "operation": "audio.mute",
+      "arguments": {
+        "state": false
+      },
+      "ok": true,
+      "question": ""
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "volume-unmute",
+    "request": "Pon el volumen al 37 y desmutéalo",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "volume-unmute",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "effectOperations": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "plan.result",
+      "id": "volume-unmute-plan",
+      "version": 1,
+      "kind": "plan",
+      "question": "",
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "audio.volume",
+          "purpose": "Pon el volumen al 37",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "level": 37
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.mute",
+          "purpose": "desmutéalo",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "state": false
+          }
+        }
+      ]
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "unmute-volume",
+    "request": "Desmutéalo y pon el volumen al 37",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "unmute-volume",
+      "kind": "plan",
+      "operation": null,
+      "intentOperations": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "plan.result",
+      "id": "unmute-volume-plan",
+      "version": 1,
+      "kind": "plan",
+      "question": "",
+      "steps": [
+        {
+          "id": "step_1",
+          "operation": "audio.mute",
+          "purpose": "Desmutéalo",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "state": false
+          }
+        },
+        {
+          "id": "step_2",
+          "operation": "audio.volume",
+          "purpose": "pon el volumen al 37",
+          "dependsOn": [],
+          "argumentsMode": "literal",
+          "arguments": {
+            "level": 37
+          }
+        }
+      ]
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "negative-unmute",
+    "request": "Pon el volumen al 37 pero no quites el silencio",
+    "proposal_or_clarification_correct": true,
+    "binding_correct": true,
+    "reply": {
+      "type": "turn.result",
+      "id": "negative-unmute",
+      "kind": "action",
+      "operation": "audio.volume",
+      "intentOperations": [
+        "audio.volume"
+      ],
+      "effectOperations": [
+        "audio.volume"
+      ],
+      "question": "",
+      "reply": "",
+      "turn_attempts": 1
+    },
+    "binding": {
+      "type": "arguments.result",
+      "id": "negative-unmute-arguments",
+      "operation": "audio.volume",
+      "arguments": {
+        "level": 37
+      },
+      "ok": true,
+      "question": ""
+    },
+    "assessment": "Correct proposal/clarification, and exact arguments where requested; no effects executed"
+  },
+  {
+    "id": "word-meaning",
+    "request": "¿Qué significa desmutear?",
+    "proposal_or_clarification_correct": false,
+    "binding_correct": null,
+    "reply": {
+      "type": "turn.result",
+      "id": "word-meaning",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "No se requiere ninguna acción específica para responder a esta pregunta. \"Desmutear\" significa restaurar o activar el estado de sonido de un dispositivo, como el micrófono o la salida de audio, para que pueda captar o emitir sonido nuevamente. Si necesitas que se realice una acción específica como desmutar el micrófono, por ejemplo, puedo ayudarte con eso.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "binding": null,
+    "assessment": "Internal prose and unverified offer to control microphone"
+  }
+]

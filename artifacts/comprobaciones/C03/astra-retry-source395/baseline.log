@@ -1,0 +1,78 @@
+FF.                                                                      [100%]
+================================== FAILURES ===================================
+_ test_native_chat_draft_still_crosses_observation_and_language_guards[Your screen is dark.] _
+
+draft = 'Your screen is dark.'
+
+    @pytest.mark.parametrize("draft", ["Your screen is dark.", "Hola, me llamo Jordan y estoy aqu� para ayudarte."])
+    def test_native_chat_draft_still_crosses_observation_and_language_guards(draft: str) -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads = []
+        def post(payload):
+            payloads.append(payload)
+            return {"choices": [{"message": {"content": '{"answer":"Your name is Jordan."}'}}]}
+        runtime._post = post
+        history = [
+            {"role": "user", "content": "My name is Jordan."},
+            {"role": "assistant", "content": "Your name is Morgan."},
+            {"role": "user", "content": "What is my name?"},
+        ]
+        answer, calls = runtime.chat(
+            "What is my name?",
+            history=history,
+            temperature=0.0, conversation_kind="knowledge", response_language="en",
+            initial_reply=draft,
+        )
+        assert answer == "Your name is Jordan."
+        assert calls == []
+        assert len(payloads) == 1
+        assert payloads[0]["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
+        dialogue = [message for message in payloads[0]["messages"] if message["role"] != "system"]
+>       assert dialogue == history
+E       AssertionError: assert [{'role': 'us...is my name?'}] == [{'role': 'us...is my name?'}]
+E         
+E         At index 0 diff: {'role': 'user', 'content': 'What is my name?'} != {'role': 'user', 'content': 'My name is Jordan.'}
+E         Right contains 2 more items, first extra item: {'role': 'assistant', 'content': 'Your name is Morgan.'}
+E         Use -v to get more diff
+
+tests\test_turn_policy.py:454: AssertionError
+_ test_native_chat_draft_still_crosses_observation_and_language_guards[Hola, me llamo Jordan y estoy aqu\xed para ayudarte.] _
+
+draft = 'Hola, me llamo Jordan y estoy aqu� para ayudarte.'
+
+    @pytest.mark.parametrize("draft", ["Your screen is dark.", "Hola, me llamo Jordan y estoy aqu� para ayudarte."])
+    def test_native_chat_draft_still_crosses_observation_and_language_guards(draft: str) -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads = []
+        def post(payload):
+            payloads.append(payload)
+            return {"choices": [{"message": {"content": '{"answer":"Your name is Jordan."}'}}]}
+        runtime._post = post
+        history = [
+            {"role": "user", "content": "My name is Jordan."},
+            {"role": "assistant", "content": "Your name is Morgan."},
+            {"role": "user", "content": "What is my name?"},
+        ]
+        answer, calls = runtime.chat(
+            "What is my name?",
+            history=history,
+            temperature=0.0, conversation_kind="knowledge", response_language="en",
+            initial_reply=draft,
+        )
+        assert answer == "Your name is Jordan."
+        assert calls == []
+        assert len(payloads) == 1
+        assert payloads[0]["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
+        dialogue = [message for message in payloads[0]["messages"] if message["role"] != "system"]
+>       assert dialogue == history
+E       AssertionError: assert [{'role': 'us...is my name?'}] == [{'role': 'us...is my name?'}]
+E         
+E         At index 0 diff: {'role': 'user', 'content': 'What is my name?'} != {'role': 'user', 'content': 'My name is Jordan.'}
+E         Right contains 2 more items, first extra item: {'role': 'assistant', 'content': 'Your name is Morgan.'}
+E         Use -v to get more diff
+
+tests\test_turn_policy.py:454: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_native_chat_draft_still_crosses_observation_and_language_guards[Your screen is dark.]
+FAILED tests/test_turn_policy.py::test_native_chat_draft_still_crosses_observation_and_language_guards[Hola, me llamo Jordan y estoy aqu\xed para ayudarte.]
+2 failed, 1 passed, 964 deselected in 1.80s

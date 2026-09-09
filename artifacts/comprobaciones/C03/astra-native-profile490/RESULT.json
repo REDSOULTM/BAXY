@@ -1,0 +1,31 @@
+{
+  "session": 69532,
+  "exit": 0,
+  "turns": 10,
+  "native_calls": 10,
+  "native_finish_reasons": [
+    "stop",
+    "stop",
+    "stop",
+    "stop",
+    "tool_calls",
+    "tool_calls",
+    "tool_calls",
+    "tool_calls",
+    "stop",
+    "stop"
+  ],
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1769.8671875,
+    "seconds": 58.422,
+    "manifest_unchanged": true
+  },
+  "adopted": false,
+  "sampler_verified": ".7/.8/k20/min0/presence0/repeat1,max1024,seeds0/17 on actual native requests; other stages unchanged.",
+  "scope": "No global model rejection. Documented profile does not repair these tool-use cases with zero-argument interface. No more parameter sweep; test actual native argument contracts491 separately.",
+  "source": "487 unchanged",
+  "physical_effects": 0
+}

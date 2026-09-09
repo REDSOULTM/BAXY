@@ -1,0 +1,119 @@
+[
+  {
+    "request": "My name is Jordan. Remember my name.",
+    "answers": [
+      {
+        "text": "Jordan, I remember your name. The save operation failed because memory was disabled.",
+        "route": "error"
+      },
+      {
+        "text": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+        "route": "confirmation"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil",
+    "reason": "Causa memoria deshabilitada y confirmación de activación honestas."
+  },
+  {
+    "request": "confirm",
+    "answers": [
+      {
+        "text": "Memory configuration enabled.",
+        "route": "result"
+      },
+      {
+        "text": "The memory has been saved successfully.",
+        "route": "result"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The memory has been saved successfully.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "parcial",
+    "reason": "Activación/guardado reales, narración genérica."
+  },
+  {
+    "request": "What name have you saved in private memory?",
+    "answers": [
+      {
+        "text": "I saved the name Jordan in private memory.",
+        "route": "result"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I saved the name Jordan in private memory.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil",
+    "reason": "LecturaJordan conserva el valorEN."
+  },
+  {
+    "request": "Me llamo Álvaro.",
+    "answers": [],
+    "terminal": {
+      "type": "terminal",
+      "kind": "composition_failed",
+      "final": "no_response;recovery:no_response;retry_exhausted",
+      "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "Composición agotada, final ausente ante presentación normal; no sustituirlo por el terminal técnico."
+  },
+  {
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "answers": [
+      {
+        "text": "Mi nombre es Jordan.",
+        "route": "result"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Mi nombre es Jordan.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "Esta vez sí pasa por resultado de lectura y diceMi nombreJordan; sujeto incorrecto."
+  },
+  {
+    "request": "¿Cómo me llamo?",
+    "answers": [
+      {
+        "text": "Tu nombre es Álvaro.",
+        "route": "conversation"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Tu nombre es Álvaro.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil",
+    "reason": "404 conserva conversación actual: respondeÁlvaro, noJordan persistido."
+  }
+]

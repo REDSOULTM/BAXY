@@ -1,0 +1,1931 @@
+[
+  {
+    "request": "El agua es h2o?",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "El agua es h2o?",
+          "ts": "20:53:47"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738827852,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738829852,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738830853,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738832853,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno.",
+          "ts": "20:53:53",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738833154,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "El aire es h20?",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "El aire es h20?",
+          "ts": "20:53:53"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738833213,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738834214,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738836215,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738838214,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire.",
+          "ts": "20:53:58",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738838876,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "ahora explicame que es Steam",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "Steam es una nube de servicios de la empresa Microsoft que permite ejecutar aplicaciones, juegos y servicios en la nube. Es como una plataforma donde puedes jugar juegos, usar apps o incluso ejecutar computadoras en la nube, todo desde tu dispositivo. Es muy usado en el mundo de los juegos y la productividad.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "ahora explicame que es Steam",
+          "ts": "20:53:58"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738838881,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738840880,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738841881,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738843882,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738845882,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "Steam es una nube de servicios de la empresa Microsoft que permite ejecutar aplicaciones, juegos y servicios en la nube. Es como una plataforma donde puedes jugar juegos, usar apps o incluso ejecutar computadoras en la nube, todo desde tu dispositivo. Es muy usado en el mundo de los juegos y la productividad.",
+          "ts": "20:54:06",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738846944,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explica con detalle de qué gases se compone el aire y qué papel tiene la humedad.",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "El aire se compone principalmente de nitrógeno (aproximadamente 78%), oxígeno (21%), y pequeñas cantidades de gases como argón (0,93%), dióxido de carbono (0,04%), helio, neón, hidrógeno y otros gases inactivos.  \n\nLa humedad, o vapor de agua, es el agua en estado gaseoso que se mezcla con el aire. Aunque no es un componente principal como el nitrógeno o oxígeno, la humedad influye en el clima, la temperatura percibida (por ejemplo, el aire húmedo se siente más cálido aunque esté a la misma temperatura), y es esencial para procesos biológicos como la fotosíntesis y el ciclo del agua.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "Explica con detalle de qué gases se compone el aire y qué papel tiene la humedad.",
+          "ts": "20:54:06"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738846953,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738847953,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738848954,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "El aire se compone principalmente de nitrógeno (aproximadamente 78%), oxígeno (21%), y pequeñas cantidades de gases como argón (0,93%), dióxido de carbono (0,04%), helio, neón, hidrógeno y otros gases inactivos.  \n\nLa humedad, o vapor de agua, es el agua en estado gaseoso que se mezcla con el aire. Aunque no es un componente principal como el nitrógeno o oxígeno, la humedad influye en el clima, la temperatura percibida (por ejemplo, el aire húmedo se siente más cálido aunque esté a la misma temperatura), y es esencial para procesos biológicos como la fotosíntesis y el ciclo del agua.",
+          "ts": "20:54:10",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738850414,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What is an SSID?",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "An SSID is the name of a Wi-Fi network that devices connect to when joining a wireless internet connection. It's like a password or identifier that lets your phone, laptop, or tablet know which network to connect to.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "What is an SSID?",
+          "ts": "20:54:10"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738850439,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738851440,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "An SSID is the name of a Wi-Fi network that devices connect to when joining a wireless internet connection. It's like a password or identifier that lets your phone, laptop, or tablet know which network to connect to.",
+          "ts": "20:54:12",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738852098,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime qué dispositivo de audio está activo",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "published_final",
+    "final": "El dispositivo de audio activo es los altavoces (Realtek(R) Audio). El volumen está en 100 y el sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "Dime qué dispositivo de audio está activo",
+          "ts": "20:54:12"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738852155,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738854156,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738854361,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "BAXY",
+          "msg": "El dispositivo de audio activo es los altavoces (Realtek(R) Audio). El volumen está en 100 y el sonido no está silenciado.",
+          "ts": "20:54:15",
+          "route": "result"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738855434,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738855435,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 124,
+        "draft_sha256": "74f801067c7ce516a3cb018c85065806122a29b190d4711062efd0a7e765bc48",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El dispositivo de audio activo es los altavoces (Realtek(R) Audio). El volumen está en 100 y el sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 13,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no me molesta, dime la hora",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "No pude interpretar correctamente la solicitud.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "no me molesta, dime la hora",
+          "ts": "20:54:15"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738855490,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738856491,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738857491,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738858492,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "No pude interpretar correctamente la solicitud.",
+          "ts": "20:54:19",
+          "route": "error"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738859778,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738859778,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "operationAttempted",
+          "outcome",
+          "retryable"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 60,
+        "draft_sha256": "f710b999780bfc2b7d2a078a5c17599a7fae3a83c7563886c01b396ef7c6c924",
+        "payload": {
+          "operationAttempted": false,
+          "retryable": true,
+          "outcome": "failed",
+          "cause": "request interpretation was not valid"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_contract_failure\",\"operationAttempted\":false,\"retryable\":true}",
+        "draft": "No entendí bien tu mensaje. Podrías repetirlo o aclararlo?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "operationAttempted",
+          "outcome",
+          "retryable"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 76,
+        "draft_sha256": "09232452a776dc3b8d06aeeca9afa0b2e5b7cc41c20367eba03453de4195df69",
+        "payload": {
+          "operationAttempted": false,
+          "retryable": true,
+          "outcome": "failed",
+          "cause": "request interpretation was not valid"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_contract_failure\",\"operationAttempted\":false,\"retryable\":true}",
+        "draft": "La causa del fallo es que la interpretación de la solicitud no fue válida."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "operationAttempted",
+          "outcome",
+          "retryable"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 47,
+        "draft_sha256": "e3f0762f6d4e7c857801f1f93c7898432c3e039f8dc05b1f1e787646a94d4fe2",
+        "payload": {
+          "operationAttempted": false,
+          "retryable": true,
+          "outcome": "failed",
+          "cause": "request interpretation was not valid"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_contract_failure\",\"operationAttempted\":false,\"retryable\":true}",
+        "draft": "No pude interpretar correctamente la solicitud."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 15,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "dime la hora",
+    "injection": "none",
+    "turnId": "t8",
+    "terminal": "published_final",
+    "final": "20:54",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t8",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-16",
+          "src": "YOU",
+          "msg": "dime la hora",
+          "ts": "20:54:19"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738859831,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738859848,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-17",
+          "src": "BAXY",
+          "msg": "20:54",
+          "ts": "20:54:20",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738860208,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "a3ae1f59e99f51007e9ce6120e57432eb748c3f781bda36e3d7b2347b324a87d",
+        "payload": {
+          "clock": "20:54"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T23:54:19.9258095+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "20:54"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 17,
+      "userMessageCount": 8,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "I don't mind, tell me the time",
+    "injection": "none",
+    "turnId": "t9",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t9",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-18",
+          "src": "YOU",
+          "msg": "I don't mind, tell me the time",
+          "ts": "20:54:20"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738860262,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738861262,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738862263,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738864011,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738864012,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "controlsUsable": true,
+        "route": "conversation",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-19",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "20:54:28",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "d23418a88a3456207706fa92977378ef8ce666ae14bb4c33340b4bc298fa0f51",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It's 3:45 PM."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "d23418a88a3456207706fa92977378ef8ce666ae14bb4c33340b4bc298fa0f51",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It's 3:45 PM."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "d23418a88a3456207706fa92977378ef8ce666ae14bb4c33340b4bc298fa0f51",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It's 3:45 PM."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "d23418a88a3456207706fa92977378ef8ce666ae14bb4c33340b4bc298fa0f51",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It's 3:45 PM."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "d23418a88a3456207706fa92977378ef8ce666ae14bb4c33340b4bc298fa0f51",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It's 3:45 PM."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "d23418a88a3456207706fa92977378ef8ce666ae14bb4c33340b4bc298fa0f51",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It's 3:45 PM."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 18,
+      "userMessageCount": 9,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": "clock_pattern"
+    }
+  },
+  {
+    "request": "no abras Steam, dime la hora",
+    "injection": "none",
+    "turnId": "t10",
+    "terminal": "published_final",
+    "final": "No abro Steam, te digo que son las 14 horas.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t10",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-20",
+          "src": "YOU",
+          "msg": "no abras Steam, dime la hora",
+          "ts": "20:54:28"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738868096,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-21",
+          "src": "BAXY",
+          "msg": "No abro Steam, te digo que son las 14 horas.",
+          "ts": "20:54:28",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738868446,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 44,
+        "draft_sha256": "e20abac9ed451a8c222600f2c323bd526950bb15185e0cfdbd839a06e006aa12",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abro Steam, te digo que son las 14 horas."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 20,
+      "userMessageCount": 10,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no me digas la hora",
+    "injection": "none",
+    "turnId": "t11",
+    "terminal": "published_final",
+    "final": "Alright, no te digo la hora.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t11",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-22",
+          "src": "YOU",
+          "msg": "no me digas la hora",
+          "ts": "20:54:28"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738868447,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-23",
+          "src": "BAXY",
+          "msg": "Alright, no te digo la hora.",
+          "ts": "20:54:29",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738869270,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 22,
+      "userMessageCount": 11,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no uses herramientas, dime la hora",
+    "injection": "none",
+    "turnId": "t12",
+    "terminal": "published_final",
+    "final": "No uso herramientas, no puedo decir la hora.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t12",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-24",
+          "src": "YOU",
+          "msg": "no uses herramientas, dime la hora",
+          "ts": "20:54:29"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738869307,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738871307,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738873307,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738875306,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738876307,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-25",
+          "src": "BAXY",
+          "msg": "No uso herramientas, no puedo decir la hora.",
+          "ts": "20:54:37",
+          "route": "error"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738877550,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738877550,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "operationAttempted",
+          "outcome",
+          "retryable"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 44,
+        "draft_sha256": "5930393d6b28b1f63f60e88a3145c87ff8068b214068d3acaec78776f99108dd",
+        "payload": {
+          "operationAttempted": false,
+          "retryable": true,
+          "outcome": "failed",
+          "cause": "request interpretation failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_runtime_failure\",\"operationAttempted\":false,\"retryable\":true}",
+        "draft": "No uso herramientas, no puedo decir la hora."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 24,
+      "userMessageCount": 12,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "dime la hora",
+    "injection": "none",
+    "turnId": "t13",
+    "terminal": "published_final",
+    "final": "20:54",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t13",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-26",
+          "src": "YOU",
+          "msg": "dime la hora",
+          "ts": "20:54:37"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738877603,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738877620,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-27",
+          "src": "BAXY",
+          "msg": "20:54",
+          "ts": "20:54:37",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788738877967,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "a3ae1f59e99f51007e9ce6120e57432eb748c3f781bda36e3d7b2347b324a87d",
+        "payload": {
+          "clock": "20:54"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T23:54:37.6967908+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "20:54"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 26,
+      "userMessageCount": 13,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

@@ -84,7 +84,10 @@ internal static partial class NaturalSystemStatusRequestParser
             return false;
         }
 
-        string folded = Fold(text);
+        // The language modifier changes presentation, not the requested reading.
+        // Keep the original text outside this recognizer for model composition.
+        string folded = TrailingResponseLanguagePattern().Replace(Fold(text), string.Empty)
+            .TrimEnd(' ', ',');
         if (MatchesTimePattern(folded))
         {
             return true;
@@ -103,26 +106,6 @@ internal static partial class NaturalSystemStatusRequestParser
 
         return CurrentTimeAskPattern().IsMatch(folded)
             || CurrentTimeParaphrasePattern().IsMatch(folded);
-    }
-
-    internal static bool IsClockAndAudioStatusRequest(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return false;
-        }
-
-        string folded = Fold(text);
-        bool clock = folded.Contains("hora", StringComparison.Ordinal)
-            || folded.Contains("clock", StringComparison.Ordinal)
-            || folded.Contains("reloj", StringComparison.Ordinal)
-            || folded.Contains("time", StringComparison.Ordinal);
-        bool audio = folded.Contains("audio", StringComparison.Ordinal)
-            || folded.Contains("volumen", StringComparison.Ordinal)
-            || folded.Contains("volume", StringComparison.Ordinal)
-            || folded.Contains("mute", StringComparison.Ordinal)
-            || folded.Contains("silenci", StringComparison.Ordinal);
-        return clock && audio;
     }
 
     private static bool MatchesTimePattern(string folded)
@@ -147,6 +130,11 @@ internal static partial class NaturalSystemStatusRequestParser
         "^(?:(?:hola|hi|hey|hello|buenas(?: tardes| dias)?|gracias|thanks|ok|oye|please|porfa|ey)[,!. \\-—]+)+",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex LeadingCourtesyPattern();
+
+    [GeneratedRegex(
+        "[ ,]+(?:en|in) (?:espanol|spanish|ingles|english|spanglish)[?!. ]*$",
+        RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex TrailingResponseLanguagePattern();
 
     [GeneratedRegex(
         "\\b(?:huso|time zone|time zones|timezone|zona horaria|utc)\\b",

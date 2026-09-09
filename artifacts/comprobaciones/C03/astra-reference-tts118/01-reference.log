@@ -1,0 +1,21 @@
+D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\artifacts\comprobaciones\C03\astra-reference-tts118\01-reference.wav
+
+[2026-09-07 07:46:04.344] [piper] [debug] Loading voice from D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx (config=D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx.json)
+[2026-09-07 07:46:04.344] [piper] [debug] Parsing voice config at D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx.json
+[2026-09-07 07:46:04.345] [piper] [debug] Voice contains 1 speaker(s)
+[2026-09-07 07:46:04.345] [piper] [debug] Loading onnx model from D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx
+[2026-09-07 07:46:04.941] [piper] [debug] Loaded onnx model in 0.5961952 second(s)
+[2026-09-07 07:46:04.941] [piper] [info] Loaded voice in 0.5967311 second(s)
+[2026-09-07 07:46:04.941] [piper] [debug] Voice uses eSpeak phonemes (en)
+[2026-09-07 07:46:04.941] [piper] [debug] Initializing eSpeak
+[2026-09-07 07:46:04.975] [piper] [debug] Initialized eSpeak
+[2026-09-07 07:46:04.975] [piper] [info] Initialized piper
+[2026-09-07 07:46:04.975] [piper] [debug] Phonemizing text: The file read failed because the content is invalid UTF-8.
+[2026-09-07 07:46:04.999] [piper] [debug] Converting 71 phoneme(s) to ids: ðə fˈaɪl ɹˈiːd fˈeɪld bɪkˈɒz ðə kˈɒntɛnt ɪz ɪnvˈalɪd jˌuːtˌiːˈɛf  ˈeɪt.
+[2026-09-07 07:46:04.999] [piper] [debug] Converted 71 phoneme(s) to 145 phoneme id(s): 1, 0, 41, 0, 59, 0, 3, 0, 19, 0, 120, 0, 14, 0, 74, 0, 24, 0, 3, 0, 88, 0, 120, 0, 21, 0, 122, 0, 17, 0, 3, 0, 19, 0, 120, 0, 18, 0, 74, 0, 24, 0, 17, 0, 3, 0, 15, 0, 74, 0, 23, 0, 120, 0, 52, 0, 38, 0, 3, 0, 41, 0, 59, 0, 3, 0, 23, 0, 120, 0, 52, 0, 26, 0, 32, 0, 61, 0, 26, 0, 32, 0, 3, 0, 74, 0, 38, 0, 3, 0, 74, 0, 26, 0, 34, 0, 120, 0, 14, 0, 24, 0, 74, 0, 17, 0, 3, 0, 22, 0, 121, 0, 33, 0, 122, 0, 32, 0, 121, 0, 21, 0, 122, 0, 120, 0, 61, 0, 19, 0, 3, 0, 3, 0, 120, 0, 18, 0, 74, 0, 32, 0, 10, 0, 2, 
+[2026-09-07 07:46:04.999] [piper] [debug] Synthesizing audio for 145 phoneme id(s)
+[2026-09-07 07:46:05.318] [piper] [debug] Synthesized 4.167981859410431 second(s) of audio in 0.3192959 second(s)
+[2026-09-07 07:46:05.319] [piper] [info] Real-time factor: 0.07660683533904944 (infer=0.3192959 sec, audio=4.167981859410431 sec)
+[2026-09-07 07:46:05.319] [piper] [debug] Terminating eSpeak
+[2026-09-07 07:46:05.319] [piper] [debug] Terminated eSpeak
+[2026-09-07 07:46:05.319] [piper] [info] Terminated piper

@@ -1,0 +1,16 @@
+{
+  "scope": "Adopted local source repair81; model unpromoted; C03 remains open",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_ENUMERACION81.md": "35bd9d4dabf656ae5d787a5a15a71c9cfdf17cef182afb727538323cad830cc3",
+    "artifacts/comprobaciones/C03/astra-files81-nominal/PREREG.json": "1a888dae444a429638d2fee0cc3ca54cf35c14fb8744ce74ff098b2d01c40bd7",
+    "artifacts/comprobaciones/C03/astra-files81-nominal/RESULT.json": "2e7817d05f9a2f72447dd12011b27138d75a6d8e87c58b849af5d658a9408337",
+    "artifacts/comprobaciones/C03/astra-files81-nominal/paired.json": "a973031337db6c3c8e862aca37824f8b58e579ea4be88505a99b0f465e45eb1d",
+    "artifacts/comprobaciones/C03/astra-files81-nominal/wire-35600.jsonl": "a4ff41199a6bdd99e4c84050d4d39c1dec2bc53833ea4aed976caba67a06fe1b",
+    "src/baxy_mind/effect_intent.py": "0f12d86e856b8840fd57015e7b79fd0f2fd4656fdfd2db1894e866da2e91366c",
+    "src/baxy_mind/llm.py": "5e68e5f41caa9970d44cf062d4c2c171bb37d75f8533efc813b987158f466816",
+    "src/Baxy.App/UserMessagePolicy.cs": "43f9c2861a6056b2e565d4646c1311e9be1a02319303947c30d1050bcd5cb7d1",
+    "src/Baxy.App/MainWindowViewModel.cs": "39e440997bbc2cfad97dc342143a0c5953cd9dae8c58a7e9ee33113db2dd0da4",
+    "artifacts/comprobaciones/C03/astra-files81-nominal/c03-nominal81-pytest.log": "24fdaac0bfbd9f6391d2c167a75811190aaa7ebab9251b76556f91c18c9a200f",
+    "artifacts/comprobaciones/C03/astra-files81-nominal/c03-nominal81-fast.log": "f27cce851db3b746e6646eee73d0261dddb72a5c8aded360a3e827300e1560ba"
+  }
+}

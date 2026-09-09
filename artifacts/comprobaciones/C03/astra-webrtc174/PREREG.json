@@ -1,0 +1,8 @@
+{
+  "createdUtc": "2026-09-07T14:31:53.790017+00:00",
+  "purpose": "Offline comparison of AEC3 against current Speex on previously consumed native capture arrays. No playback, human acceptance, source or registered runtime changes.",
+  "candidate": "pywebrtc-audio==0.2.0, CPython312 Windows x64; isolated extraction, no dependency installation",
+  "configuration": "AEC only; 16kHz mono; stream_delay_ms=0 internal estimator; no NS/AGC; automatic HPF intrinsic to AEC. Same raw signals; persistent 10ms blocks, no per512 zero padding.",
+  "controls": "Echo recording149 with exact native input/reference, cold silence and synthetic near voice alone/mixed from existing131. Evaluate residual VAD/interruption, preservation and CPU processing time; synthetic near speech does not certify human input.",
+  "prohibitedConclusions": "Do not infer repair of173 from149 alone; no changed thresholds or playback timing; no runtime promotion."
+}

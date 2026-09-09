@@ -1,0 +1,34 @@
+{
+  "utc": "2026-09-08T11:54:06.410489+00:00",
+  "method": "Six explicitly synthetic development turns through the real conductor in a new isolated private profile. Source402 transports the short single projected read value via existing requiredFacts and enforces it in App acceptance; source395 retains retry history and397 fixes the accented-name language guard. Cases and profile setup are unchanged from393b. Source404 now lets generic name recall use the current role-bounded human self-naming context; explicit stored reads and a session without that context retain private dispatch. No name extraction/cache or model wording is added. Compare same six-turn402b profile. This is actual source, not injected facts or decisions. No model/prompt/sampler change or injection. This is not fresh human acceptance, a graphical UI or physical voice measurement.",
+  "profile_inheritance": "New dedicated LOCALAPPDATA/BAXY child with persistence initially disabled. A synthetic Jordan save is explicitly requested; the exact product enable confirmation is accepted and its bound name save may resume. Later Alvaro declaration does not authorize overwriting that persisted name. All effects and journal remain inside the diagnostic profile; owner memory is outside scope.",
+  "criteria": "T1 honestly reports disabled persistence and offers enabling. T2 confirms the actual pending enable and bound save, reporting only verified effects. T3 reads stored Jordan. T4 acknowledges conversational Alvaro without saving. T5 must still read stored Jordan, not confuse current conversation with saved name. T6 asks the conversational name and should answer Alvaro; this last control diagnoses the still-open generic-name routing, not an expected success claimed by393. All visible messages and journal adjudicated individually. A nonempty final or admission200 is not correctness.",
+  "cases": [
+    "My name is Jordan. Remember my name.",
+    "confirm",
+    "What name have you saved in private memory?",
+    "Me llamo Álvaro.",
+    "¿Qué nombre tienes guardado en tu memoria privada?",
+    "¿Cómo me llamo?"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "diagnostic_model_override": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+    "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+    "promotion": false
+  },
+  "sources": {
+    "src/baxy_mind/__main__.py": "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3",
+    "src/baxy_mind/request_reading.py": "992719a876529fabc94ea2fa100ea9a2809d108b843f7d10d41d8a0a3c8f9d41",
+    "src/baxy_mind/effect_intent.py": "7219d1200cb8b46efb86664e2a28152c75f0d3a9a83aee6f5ad54f1ec496b773",
+    "src/baxy_mind/llm.py": "5c3db6952201a8099cf13992adb09e55cd895ed2db5a1f26041629d0b067e7fa",
+    "src/Baxy.App/MainWindowViewModel.cs": "3f8be1d68e841774680a7f6835d2e2821744b44e2085e0d61c53741f05eb0d23",
+    "src/Baxy.App/UserMessagePolicy.cs": "9387bc6797864ee03eb8f051a80e146adde4a017b7ce7217ed972ed6762c611c",
+    "src/Baxy.App/MemoryTurnSession.cs": "f9f0c06490df52bddeaee117e5486209504c39cb96e759bdc58f5338a467b08a",
+    "src/Baxy.App/NaturalMemoryRequestParser.cs": "ed2fe272fb1c30afcf487923522f73125d6f8141e838535bb573e2f09683580f",
+    "src/Baxy.App/PrivateOperationNarration.cs": "24cbbfe7b43c94a9fdfc7eeba64fa0cd68a89a5cd584fa2a73f56c21342fed5b",
+    "src/Baxy.App/MemoryOperationResponseProjection.cs": "3464a3a9bdb4b090c4a900958c2dcf638c76dd847f7361c98f05f73e1e42f127",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "bc91c8fa7fb3b653397fd033ce53f7512a69c1b5efce5a80f9b25b7c2bfef127"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-stored-product404b-private"
+}

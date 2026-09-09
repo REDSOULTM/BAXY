@@ -1,0 +1,40 @@
+Could not find platform independent libraries <prefix>
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 185 ms).
+  1 de 6Â proyectos estÃ¡n actualizados para la restauraciÃ³n.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+
+CompilaciÃ³n correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:02.36
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 237 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 237 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 237 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 237 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 237 ms).
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\win-x64\baxy-core.dll
+  Generating native code
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\
+datos (aislados): C:\Users\usuario\AppData\Local\BAXY\dev-mente-v2
+core actualizado junto a la app
+BAXY comprobarÇ­ la mente local en la app (configuraciÇün local)
+Runtime registrado pendiente de verificaciÇün SHA-256: C:\Users\usuario\AppData\Local\BAXYRuntime\mind-runtime-v1.json
+BAXY lanzada.
+Cambió el código .NET; compilando automáticamente...
+Compilación actualizada.

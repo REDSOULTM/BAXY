@@ -115,6 +115,21 @@ public sealed class RequestReadingConformanceTests
         });
     }
 
+    [TestCase("Good afternoon", "Hi! How can I help you today?")]
+    [TestCase("Good evening", "Good evening! What can I help you with?")]
+    [TestCase("Buenos días", "¡Buenos días! ¿En qué te ayudo?")]
+    public void NaturalSocialGreetingsSurviveThePublicPolicy(string request, string reply)
+    {
+        var draft = new UserMessageDraft(
+            "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+            "welcome",
+            "c03_greeting_regression");
+        Assert.That(
+            UserMessagePolicy.AcceptModelAuthoredResponse(reply, draft, request),
+            Is.EqualTo(reply));
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(request, reply), Is.Null);
+    }
+
     [Test]
     public void AWorldErrandIsOutOfCatalogWhereverItGoes()
     {

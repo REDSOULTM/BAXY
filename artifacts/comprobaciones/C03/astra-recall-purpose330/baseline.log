@@ -1,0 +1,67 @@
+FFFFFF....F..                                                            [100%]
+================================== FAILURES ===================================
+_ test_future_recall_purpose_does_not_schedule_the_memory_write[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte] _
+tests\test_effect_intent.py:2401: in test_future_recall_purpose_does_not_schedule_the_memory_write
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert not True
+E    +  where True = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte' = <function _fold at 0x0000014C6492DB20>('Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+_ test_future_recall_purpose_does_not_schedule_the_memory_write[Recuerda mi nombre para cuando te lo pregunte.] _
+tests\test_effect_intent.py:2401: in test_future_recall_purpose_does_not_schedule_the_memory_write
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert not True
+E    +  where True = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('recuerda mi nombre para cuando te lo pregunte.')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'recuerda mi nombre para cuando te lo pregunte.' = <function _fold at 0x0000014C6492DB20>('Recuerda mi nombre para cuando te lo pregunte.')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+_ test_future_recall_purpose_does_not_schedule_the_memory_write[Quiero que recuerdes mi color favorito cuando te pregunte de nuevo.] _
+tests\test_effect_intent.py:2401: in test_future_recall_purpose_does_not_schedule_the_memory_write
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert not True
+E    +  where True = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('quiero que recuerdes mi color favorito cuando te pregunte de nuevo.')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'quiero que recuerdes mi color favorito cuando te pregunte de nuevo.' = <function _fold at 0x0000014C6492DB20>('Quiero que recuerdes mi color favorito cuando te pregunte de nuevo.')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+_ test_future_recall_purpose_does_not_schedule_the_memory_write[Remember my name for when I ask you.] _
+tests\test_effect_intent.py:2401: in test_future_recall_purpose_does_not_schedule_the_memory_write
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert not True
+E    +  where True = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('remember my name for when i ask you.')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'remember my name for when i ask you.' = <function _fold at 0x0000014C6492DB20>('Remember my name for when I ask you.')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+_ test_future_recall_purpose_does_not_schedule_the_memory_write[Remember my favorite color so you can tell me when I ask again.] _
+tests\test_effect_intent.py:2401: in test_future_recall_purpose_does_not_schedule_the_memory_write
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert not True
+E    +  where True = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('remember my favorite color so you can tell me when i ask again.')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'remember my favorite color so you can tell me when i ask again.' = <function _fold at 0x0000014C6492DB20>('Remember my favorite color so you can tell me when I ask again.')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+_ test_future_recall_purpose_does_not_schedule_the_memory_write[Recuerda my favorite color para cuando te lo pregunte.] _
+tests\test_effect_intent.py:2401: in test_future_recall_purpose_does_not_schedule_the_memory_write
+    assert not effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert not True
+E    +  where True = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('recuerda my favorite color para cuando te lo pregunte.')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'recuerda my favorite color para cuando te lo pregunte.' = <function _fold at 0x0000014C6492DB20>('Recuerda my favorite color para cuando te lo pregunte.')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+_ test_recall_purpose_does_not_remove_an_actual_deferred_action[Recu\xe9rdame llamar a Carlos cuando cierre Steam.] _
+tests\test_effect_intent.py:2416: in test_recall_purpose_does_not_remove_an_actual_deferred_action
+    assert effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert False
+E    +  where False = <function _has_unsupported_deferred_effect at 0x0000014C64964360>('recuerdame llamar a carlos cuando cierre steam.')
+E    +    where <function _has_unsupported_deferred_effect at 0x0000014C64964360> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'recuerdame llamar a carlos cuando cierre steam.' = <function _fold at 0x0000014C6492DB20>('Recu�rdame llamar a Carlos cuando cierre Steam.')
+E    +      where <function _fold at 0x0000014C6492DB20> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_future_recall_purpose_does_not_schedule_the_memory_write[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte]
+FAILED tests/test_effect_intent.py::test_future_recall_purpose_does_not_schedule_the_memory_write[Recuerda mi nombre para cuando te lo pregunte.]
+FAILED tests/test_effect_intent.py::test_future_recall_purpose_does_not_schedule_the_memory_write[Quiero que recuerdes mi color favorito cuando te pregunte de nuevo.]
+FAILED tests/test_effect_intent.py::test_future_recall_purpose_does_not_schedule_the_memory_write[Remember my name for when I ask you.]
+FAILED tests/test_effect_intent.py::test_future_recall_purpose_does_not_schedule_the_memory_write[Remember my favorite color so you can tell me when I ask again.]
+FAILED tests/test_effect_intent.py::test_future_recall_purpose_does_not_schedule_the_memory_write[Recuerda my favorite color para cuando te lo pregunte.]
+FAILED tests/test_effect_intent.py::test_recall_purpose_does_not_remove_an_actual_deferred_action[Recu\xe9rdame llamar a Carlos cuando cierre Steam.]
+7 failed, 6 passed, 1665 deselected in 1.43s

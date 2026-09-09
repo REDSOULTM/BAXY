@@ -1,0 +1,5 @@
+{
+  "src/Baxy.App/NaturalMemoryRequestParser.cs": "6dc31e3e3a4a806a572920f5ea0d9ee088a9de66aabe02a5778238c4de20f67e",
+  "tests/Baxy.Integration.Tests/NaturalMemoryRequestParserTests.cs": "3189e997548bbbf97291b4d4254085b65c40fbc19312d9d652039d3caab51858",
+  "tests/Baxy.Integration.Tests/MemoryTurnSessionTests.cs": "b20e589bbfc68e5f9de702e2b01a0b4c6e05623cfb712f20af62cb7d678004f5"
+}

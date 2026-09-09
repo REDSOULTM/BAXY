@@ -1,0 +1,9 @@
+{"id": "clock-es", "request": "¿Qué hora es?", "answer": "Son las 16 horas y 9 minutos.", "error": null}
+{"id": "clock-mixed", "request": "Dime la hora, please, en spanglish", "answer": "Ahora son las 16:09.", "error": null}
+{"id": "clock-en", "request": "What time is it?", "answer": "It's 16:09.", "error": null}
+{"id": "memory-es", "request": "Continúa con la recuperación de memoria.", "answer": "¿Quieres continuar con la recuperación de memoria o cancelar? Elige entre continuar o cancelar.", "error": null}
+{"id": "memory-en", "request": "Continue the memory recovery.", "answer": "Do you want to continue the memory recovery or cancel it?", "error": null}
+{"id": "memory-mixed", "request": "Continúa con la memory recovery, please.", "answer": "¿Quieres continuar con la recuperación de la memoria o cancelarla? Elige entre continuar o cancelar.", "error": null}
+{"id": "audio-es", "request": "Continúa con el ajuste de volumen.", "answer": "¿Quieres continuar con el ajuste de volumen o retry?", "error": null}
+{"id": "audio-en", "request": "Continue the volume adjustment.", "answer": "Do you want to continue the volume adjustment or retry?", "error": null}
+{"id": "audio-mixed", "request": "Continúa el volume adjustment, please.", "answer": "¿Quieres continuar o retry con el ajuste del volumen?", "error": null}

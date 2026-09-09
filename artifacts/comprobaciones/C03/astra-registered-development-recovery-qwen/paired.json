@@ -1,0 +1,4393 @@
+[
+  {
+    "request": "¿Qué hora es?",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "¿Qué hora es?",
+          "ts": "16:09:26"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721766655,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721766780,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721768423,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721768425,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "16:09:34",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "42e203d36d5069870714ce7c37ea47ff9750559a162fece95435f1e35ffd61e6",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:26.8520246+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 9 minutos."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 2,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora y el estado del audio.",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "La hora local es 16:09. El audio está desactivado de muteo y el nivel de volumen es 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "Dime la hora y el estado del audio.",
+          "ts": "16:09:34"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721774428,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721774470,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "La hora local es 16:09. El audio está desactivado de muteo y el nivel de volumen es 100.",
+          "ts": "16:09:35",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721775220,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 89,
+        "draft_sha256": "75c641b5afb7591009b7af0cb39a5352a2d8514aa80cac0b1c29d0775223e7e4",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y el estado del audio.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "16:09"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T19:09:34.5205968\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false}},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y el estado del audio.\",\"observed\":{\"utc\":\"2026-09-06T19:09:34.5205968+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 16:09. El audio está desactivado de muteo y el nivel de volumen es 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 4,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "It's 16:09.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "16:09:35"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721775271,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721775297,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "It's 16:09.",
+          "ts": "16:09:35",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721775699,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "b7101e770709a10f6ee96469687278383f09139863bb3dff1c570e446dbb64bd",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:35.3694918+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 16:09."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 6,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Tell me the time and the volume.",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "The local clock is 16:09. The volume level is 100. The audio is not muted.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "Tell me the time and the volume.",
+          "ts": "16:09:35"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721775753,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721775773,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "The local clock is 16:09. The volume level is 100. The audio is not muted.",
+          "ts": "16:09:36",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721776507,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 74,
+        "draft_sha256": "d78c4237ddf4033a7dfbfa74025101c2196f5924c39577d751ac86e55e1935fd",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Tell me the time and the volume.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "16:09"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T19:09:35.8743961\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false}},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Tell me the time and the volume.\",\"observed\":{\"utc\":\"2026-09-06T19:09:35.8743961+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "The local clock is 16:09. The volume level is 100. The audio is not muted."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 8,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora, please, en spanglish",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "Dime la hora, please, en spanglish",
+          "ts": "16:09:36"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721776558,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721776577,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721778530,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721778530,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "16:09:45",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 13,
+        "draft_sha256": "57dd7e2261f3e04085d7e45e1c74ecc0b097f45b32efd870c556bd7b8f9fed53",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "ff67eb381d0cf543d5bcf6283eac0d58faf602502408450d2955087684569053",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, ¿te parece?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "1159989109e56352d27d58554a4e28ec99468b1436c6fd0b0009053e82e75ff3",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, manana es el día de Ana."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 13,
+        "draft_sha256": "57dd7e2261f3e04085d7e45e1c74ecc0b097f45b32efd870c556bd7b8f9fed53",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "ff67eb381d0cf543d5bcf6283eac0d58faf602502408450d2955087684569053",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, ¿te parece?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "1159989109e56352d27d58554a4e28ec99468b1436c6fd0b0009053e82e75ff3",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, manana es el día de Ana."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 13,
+        "draft_sha256": "57dd7e2261f3e04085d7e45e1c74ecc0b097f45b32efd870c556bd7b8f9fed53",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "ff67eb381d0cf543d5bcf6283eac0d58faf602502408450d2955087684569053",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, ¿te parece?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "1159989109e56352d27d58554a4e28ec99468b1436c6fd0b0009053e82e75ff3",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, manana es el día de Ana."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 13,
+        "draft_sha256": "57dd7e2261f3e04085d7e45e1c74ecc0b097f45b32efd870c556bd7b8f9fed53",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "ff67eb381d0cf543d5bcf6283eac0d58faf602502408450d2955087684569053",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, ¿te parece?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "1159989109e56352d27d58554a4e28ec99468b1436c6fd0b0009053e82e75ff3",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, manana es el día de Ana."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 13,
+        "draft_sha256": "57dd7e2261f3e04085d7e45e1c74ecc0b097f45b32efd870c556bd7b8f9fed53",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "ff67eb381d0cf543d5bcf6283eac0d58faf602502408450d2955087684569053",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, ¿te parece?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "1159989109e56352d27d58554a4e28ec99468b1436c6fd0b0009053e82e75ff3",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, manana es el día de Ana."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 13,
+        "draft_sha256": "57dd7e2261f3e04085d7e45e1c74ecc0b097f45b32efd870c556bd7b8f9fed53",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 26,
+        "draft_sha256": "ff67eb381d0cf543d5bcf6283eac0d58faf602502408450d2955087684569053",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, ¿te parece?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "1159989109e56352d27d58554a4e28ec99468b1436c6fd0b0009053e82e75ff3",
+        "payload": {
+          "clock": "16:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:09:36.6348684+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 4:09, manana es el día de Ana."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it y cómo está el audio?",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "published_final",
+    "final": "Es 16:09. El audio está activo y el volumen está en 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "What time is it y cómo está el audio?",
+          "ts": "16:09:45"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721785269,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721785283,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "BAXY",
+          "msg": "Es 16:09. El audio está activo y el volumen está en 100.",
+          "ts": "16:09:45",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721785953,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 58,
+        "draft_sha256": "48f50424a8251e10fb8322a550fd58d629812fdb244c32cd2146353038fa8a12",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "What time is it y cómo está el audio?",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "16:09"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T19:09:45.3342681\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false}},\\\"readOnly\\\":true}\"],\"completedRequest\":\"What time is it y cómo está el audio?\",\"observed\":{\"utc\":\"2026-09-06T19:09:45.3342681+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "Es 16:09. El audio está activo y el volumen está en 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Hey, buenas",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "¡Hola! Bienvenido. ¿Cómo estás?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "Hey, buenas",
+          "ts": "16:09:46"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721786005,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "¡Hola! Bienvenido. ¿Cómo estás?",
+          "ts": "16:09:46",
+          "route": "welcome"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721786334,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "99b49a436f32690e9fa3d49750f16142a8c16531021d7b9a0205afbbc9cb88eb",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hola! Bienvenido. ¿Cómo estás?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 13,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explain encryption, pero en simple",
+    "injection": "none",
+    "turnId": "t8",
+    "terminal": "published_final",
+    "final": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así se protege la privacidad de los datos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t8",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-16",
+          "src": "YOU",
+          "msg": "Explain encryption, pero en simple",
+          "ts": "16:09:46"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721786336,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721787336,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-17",
+          "src": "BAXY",
+          "msg": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así se protege la privacidad de los datos.",
+          "ts": "16:09:47",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721787909,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 15,
+      "userMessageCount": 8,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "injection": "none",
+    "turnId": "t9",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener un backup del libro en otro lugar si lo pierdes.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t9",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-18",
+          "src": "YOU",
+          "msg": "responde en spanglish: qué es una copia de seguridad",
+          "ts": "16:09:47"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721787959,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721788959,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-19",
+          "src": "BAXY",
+          "msg": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener un backup del libro en otro lugar si lo pierdes.",
+          "ts": "16:09:49",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721789203,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 17,
+      "userMessageCount": 9,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explain gravity, pero sin tecnicismos",
+    "injection": "none",
+    "turnId": "t10",
+    "terminal": "published_final",
+    "final": "Gravity es esa fuerza que mantiene todo lo que está en la Tierra pegado al suelo. Es como si todo lo que tienes en tus manos, como un libro o un lápiz, tuviera un hilo invisible que lo mantiene allí. Sin esa fuerza, todo se iría volando.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t10",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-20",
+          "src": "YOU",
+          "msg": "Explain gravity, pero sin tecnicismos",
+          "ts": "16:09:49"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721789225,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721790226,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-21",
+          "src": "BAXY",
+          "msg": "Gravity es esa fuerza que mantiene todo lo que está en la Tierra pegado al suelo. Es como si todo lo que tienes en tus manos, como un libro o un lápiz, tuviera un hilo invisible que lo mantiene allí. Sin esa fuerza, todo se iría volando.",
+          "ts": "16:09:50",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721790733,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 19,
+      "userMessageCount": 10,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no abras Paint",
+    "injection": "none",
+    "turnId": "t11",
+    "terminal": "published_final",
+    "final": "No abriré Paint.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t11",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-22",
+          "src": "YOU",
+          "msg": "no abras Paint",
+          "ts": "16:09:50"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721790740,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-23",
+          "src": "BAXY",
+          "msg": "No abriré Paint.",
+          "ts": "16:09:50",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721790955,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "71ea952a0ab66f6e5bfefa424865bfb9fbb012012975edfd991e7a3c86c50b05",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abriré Paint."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 21,
+      "userMessageCount": 11,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "what is the capital of Peru",
+    "injection": "none",
+    "turnId": "t12",
+    "terminal": "published_final",
+    "final": "Lima",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t12",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-24",
+          "src": "YOU",
+          "msg": "what is the capital of Peru",
+          "ts": "16:09:50"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721790956,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-25",
+          "src": "BAXY",
+          "msg": "Lima",
+          "ts": "16:09:52",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721792798,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 23,
+      "userMessageCount": 12,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explain photosynthesis in two sentences.",
+    "injection": "none",
+    "turnId": "t13",
+    "terminal": "published_final",
+    "final": "Photosynthesis is when plants use sunlight to convert carbon dioxide and water into glucose and oxygen. It's like nature's way of making food and releasing fresh air.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t13",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-26",
+          "src": "YOU",
+          "msg": "Explain photosynthesis in two sentences.",
+          "ts": "16:09:52"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721792830,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721793831,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-27",
+          "src": "BAXY",
+          "msg": "Photosynthesis is when plants use sunlight to convert carbon dioxide and water into glucose and oxygen. It's like nature's way of making food and releasing fresh air.",
+          "ts": "16:09:54",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721794866,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 25,
+      "userMessageCount": 13,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explícame por qué el hielo flota.",
+    "injection": "none",
+    "turnId": "t14",
+    "terminal": "published_final",
+    "final": "El hielo flota porque es menos denso que el agua líquida. Cuando el agua se congela, sus moléculas se alejan y ocupan más espacio, así que el hielo pesa menos por volumen y flota.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t14",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-28",
+          "src": "YOU",
+          "msg": "Explícame por qué el hielo flota.",
+          "ts": "16:09:54"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721794898,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-29",
+          "src": "BAXY",
+          "msg": "El hielo flota porque es menos denso que el agua líquida. Cuando el agua se congela, sus moléculas se alejan y ocupan más espacio, así que el hielo pesa menos por volumen y flota.",
+          "ts": "16:09:56",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721796242,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 27,
+      "userMessageCount": 14,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.",
+    "injection": "none",
+    "turnId": "t15",
+    "terminal": "published_final",
+    "final": "Un archivo es un archivo de datos, como un documento o una imagen, mientras que una carpeta es como una caja donde puedes guardar varios archivos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t15",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-30",
+          "src": "YOU",
+          "msg": "¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.",
+          "ts": "16:09:56"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721796264,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-31",
+          "src": "BAXY",
+          "msg": "Un archivo es un archivo de datos, como un documento o una imagen, mientras que una carpeta es como una caja donde puedes guardar varios archivos.",
+          "ts": "16:09:57",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721797380,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 29,
+      "userMessageCount": 15,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What is on my to do list?",
+    "injection": "none",
+    "turnId": "t16",
+    "terminal": "published_final",
+    "final": "Your to-do list is empty right now.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t16",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-32",
+          "src": "YOU",
+          "msg": "What is on my to do list?",
+          "ts": "16:09:57"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721797426,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721798427,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721800194,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-33",
+          "src": "BAXY",
+          "msg": "Your to-do list is empty right now.",
+          "ts": "16:10:00",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721800599,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "a136255619847df5b3a8898fc94d7d7208228bba453a871ef8ff554ba2b0ee82",
+        "payload": {
+          "seen": {
+            "tasks": [],
+            "count": 0,
+            "mode": "tasks",
+            "limit": 20
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"tasks\",\"limit\":20}}",
+        "draft": "Your to-do list is empty right now."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 31,
+      "userMessageCount": 16,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "injection": "none",
+    "turnId": "t17",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar la cerrada de la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar o cancelar.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t17",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-34",
+          "src": "YOU",
+          "msg": "cierra la ventana titulada Ventana C03 de prueba",
+          "ts": "16:10:00"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721800653,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721800696,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721800751,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-35",
+          "src": "BAXY",
+          "msg": "¿Quieres confirmar la cerrada de la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar o cancelar.",
+          "ts": "16:10:01",
+          "route": "confirmation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721801513,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 107,
+        "draft_sha256": "7af90e5dc5a78fddfedf1205cf615008bd62c8e7f5a638ff618f462d393f2125",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_223d2ecf29c36398b9ae2bf56ddccdb7\"}}}",
+        "draft": "¿Quieres confirmar la cerrada de la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar o cancelar."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 33,
+      "userMessageCount": 17,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": true,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "awaiting_mission_resume",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cancelar",
+    "injection": "none",
+    "turnId": "t18",
+    "terminal": "published_final",
+    "final": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana maximizada con el título indicado, pero la acción fue cancelada. No se realizó el cierre.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t18",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-36",
+          "src": "YOU",
+          "msg": "cancelar",
+          "ts": "16:10:01"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721801565,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721801565,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-37",
+          "src": "BAXY",
+          "msg": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana maximizada con el título indicado, pero la acción fue cancelada. No se realizó el cierre.",
+          "ts": "16:10:02",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721802425,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cancelledAction",
+          "cancelledRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 203,
+        "draft_sha256": "38ebae8f73aa3cce7258e565aab7c3fa9d5d9e8005175fc21957d88b3d50c67f",
+        "payload": {
+          "kind": "status",
+          "cancelledRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "cancelledAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "outcome": "cancelled",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "processName": "C03TitleFixture",
+                      "title": "Ventana C03 de prueba",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1552,
+                      "height": 832
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "state": "remaining steps cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"remaining_steps_cancelled\",\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_223d2ecf29c36398b9ae2bf56ddccdb7\\\",\\\"processName\\\":\\\"C03TitleFixture\\\",\\\"title\\\":\\\"Ventana C03 de prueba\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1552,\\\"height\\\":832}],\\\"count\\\":1},\\\"readOnly\\\":true}\"],\"cancelledRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"cancelledAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_223d2ecf29c36398b9ae2bf56ddccdb7\"}}}",
+        "draft": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana maximizada con el título indicado, pero la acción fue cancelada. No se realizó el cierre."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 35,
+      "userMessageCount": 18,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "injection": "none",
+    "turnId": "t19",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar la cerrada de la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar o cancelar.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t19",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-38",
+          "src": "YOU",
+          "msg": "cierra la ventana titulada Ventana C03 de prueba",
+          "ts": "16:10:02"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721802427,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721802438,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721802461,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-39",
+          "src": "BAXY",
+          "msg": "¿Quieres confirmar la cerrada de la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar o cancelar.",
+          "ts": "16:10:03",
+          "route": "confirmation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721803347,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 107,
+        "draft_sha256": "7af90e5dc5a78fddfedf1205cf615008bd62c8e7f5a638ff618f462d393f2125",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_7342881e780339c6c12b9c8c1cefc7f7\"}}}",
+        "draft": "¿Quieres confirmar la cerrada de la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar o cancelar."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 37,
+      "userMessageCount": 19,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": true,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "awaiting_mission_resume",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "confirmar",
+    "injection": "none",
+    "turnId": "t20",
+    "terminal": "published_final",
+    "final": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t20",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-40",
+          "src": "YOU",
+          "msg": "confirmar",
+          "ts": "16:10:03"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721803399,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721803399,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-41",
+          "src": "BAXY",
+          "msg": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente.",
+          "ts": "16:10:04",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721804389,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 110,
+        "draft_sha256": "e1df6f804076bcf628121035d32f53f3087a61e7a5b08c5bac28a0047693a795",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "processName": "C03TitleFixture",
+                      "title": "Ventana C03 de prueba",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1552,
+                      "height": 832
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            },
+            {
+              "operation": "app.close",
+              "resultAtThisStep": {
+                "readOnly": false,
+                "seen": {
+                  "windowClosed": true
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_7342881e780339c6c12b9c8c1cefc7f7\\\",\\\"processName\\\":\\\"C03TitleFixture\\\",\\\"title\\\":\\\"Ventana C03 de prueba\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1552,\\\"height\\\":832}],\\\"count\\\":1},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"app.close\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windowClosed\\\":true},\\\"readOnly\\\":false}\"],\"completedRequest\":\"cierra la ventana titulada Ventana C03 de prueba\"}",
+        "draft": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 39,
+      "userMessageCount": 20,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "none",
+    "turnId": "t21",
+    "terminal": "published_final",
+    "final": "It's 16:10.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t21",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-42",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "16:10:04"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721804441,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721804461,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-43",
+          "src": "BAXY",
+          "msg": "It's 16:10.",
+          "ts": "16:10:04",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721804931,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t21",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "06c222a397e6cd1a4958cd3b27045714fe4ce69eb3552a9ca6bf82df8a69294c",
+        "payload": {
+          "clock": "16:10"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:10:04.5431489+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 16:10."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 41,
+      "userMessageCount": 21,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Qué hora es?",
+    "injection": "reject",
+    "turnId": "t22",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t22",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-44",
+          "src": "YOU",
+          "msg": "¿Qué hora es?",
+          "ts": "16:10:04"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721804985,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721805005,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721805113,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721805113,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "unsafe_language;recovery:unsafe_language;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": true
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-45",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "16:10:08",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 42,
+      "userMessageCount": 22,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "unsafe_language;recovery:unsafe_language;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Qué hora es?",
+    "injection": "none",
+    "turnId": "t23",
+    "terminal": "published_final",
+    "final": "Son las 16 horas y 10 minutos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t23",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-46",
+          "src": "YOU",
+          "msg": "¿Qué hora es?",
+          "ts": "16:10:08"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808133,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808148,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-47",
+          "src": "BAXY",
+          "msg": "Son las 16 horas y 10 minutos.",
+          "ts": "16:10:08",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808567,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t23",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "2194e35572972975045ffe7c98034fe0728e448281f3cc2ae8be9794d245d45d",
+        "payload": {
+          "clock": "16:10"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:10:08.2100788+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 10 minutos."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 44,
+      "userMessageCount": 23,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "timeout",
+    "turnId": "t24",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t24",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-48",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "16:10:08"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808619,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808637,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808740,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721808740,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "composer_request_failed;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": true
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-49",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "16:10:11",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 45,
+      "userMessageCount": 24,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "composer_request_failed;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "none",
+    "turnId": "t25",
+    "terminal": "published_final",
+    "final": "It's 16:10.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t25",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-50",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "16:10:11"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721811758,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721811778,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-51",
+          "src": "BAXY",
+          "msg": "It's 16:10.",
+          "ts": "16:10:12",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721812152,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t25",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "06c222a397e6cd1a4958cd3b27045714fe4ce69eb3552a9ca6bf82df8a69294c",
+        "payload": {
+          "clock": "16:10"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:10:11.8471359+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 16:10."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 47,
+      "userMessageCount": 25,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora, please.",
+    "injection": "exhaust",
+    "turnId": "t26",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t26",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-52",
+          "src": "YOU",
+          "msg": "Dime la hora, please.",
+          "ts": "16:10:12"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721812204,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721812220,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721812328,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721812328,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": true
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-53",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "16:10:15",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 48,
+      "userMessageCount": 26,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora, please.",
+    "injection": "none",
+    "turnId": "t27",
+    "terminal": "published_final",
+    "final": "Son las 16 horas y 10 minutos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t27",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-54",
+          "src": "YOU",
+          "msg": "Dime la hora, please.",
+          "ts": "16:10:15"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721815359,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721815377,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-55",
+          "src": "BAXY",
+          "msg": "Son las 16 horas y 10 minutos.",
+          "ts": "16:10:15",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788721815821,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t27",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "2194e35572972975045ffe7c98034fe0728e448281f3cc2ae8be9794d245d45d",
+        "payload": {
+          "clock": "16:10"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T19:10:15.4362546+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 16 horas y 10 minutos."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 50,
+      "userMessageCount": 27,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

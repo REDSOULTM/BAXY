@@ -1,0 +1,18 @@
+{
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\RESULT.md": "69728dc1ec002319755adffc482678d50c2cf536d4faf6a2e45cc11e897173fb",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\provider.log": "e2402aeb4a0801f353cb152a9661ae6c69cfb5d935ba4b5de4c19d07a72522af",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\integration.log": "6d458b8656d7a91cabff05c1155c3c080e6e897c4fb0f1ddd8cd754d147c9650",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\compile-failure.log": "fbc9cf2adf107f5aafbe209a31b5efc1f316e9313befae40705415188dda6bab",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\fast-eol-failure.log": "58e301f79e9e11f7fd5b9ee796bbc409a747e17bc522f0b05567ac2059abb366",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\fast.log": "38bfeabefc96b00995381a835c683f13b6c19657483680d83b8b474d5506262c",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-os-provider416\\CIM_OBSERVATION.json": "323b6766f7311a973268383ae58551c7f6023e5c1c7913b16820ce3615be9f45",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\SystemStatus\\WindowsSystemStatusProbe.cs": "2152faee191f56154f7fc42536e875a4acac5b195376ff6d2af4b50351b8b53e",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\SystemStatus\\WindowsSystemStatusProvider.cs": "f1b264ce9e2c1a64ad66d82c2e5a01071d7d327cb93ac11aef7a2be9213b510d",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\SystemStatus\\SystemStatusContracts.cs": "7839230f207e519d40b31603bb2587fd63896044730e76ec6ffc4b93f9ce052c",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\Operations\\CoreOperationModels.cs": "5f0a38534be1fad160490caaca1a9737e0487bd5f480aaa4cf10fe6081d76e3d",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\Operations\\SystemStatusHandler.cs": "7729bdb6468b7d47c8334e98ab3cb46ad297f6031b338a6e4a104af10d01094a",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\Baxy.Providers.Windows.Tests\\SystemStatus\\WindowsOperatingSystemProbeTests.cs": "36f92f24508915ff61ade5629b0fba38e42eded87cb2606efa959e689666785b",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\Baxy.Providers.Windows.Tests\\SystemStatus\\WindowsSystemStatusProviderTests.cs": "9a76bc2c0992e4d0e065d6b8ab0aef0644afe3f775b2a1ad0d7dcf9d4c267bb8",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\Baxy.Integration.Tests\\SystemStatusHandlerTests.cs": "d3f909b0b8de1a911e6adf4a6c61cb539b6a5babc591352a4c4459840eec4efc",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\Baxy.Integration.Tests\\GpuSystemStatusHandlerTests.cs": "a7b913850ccfdf34a23bd52c5cf99288b77c3f49304a0bcfdc25ca496004ee13"
+}

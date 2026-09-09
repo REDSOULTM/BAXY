@@ -1,0 +1,9 @@
+{
+  "useful": 9,
+  "total": 11,
+  "all_stopped_naturally": true,
+  "official_template_render_exact": true,
+  "source_unchanged": true,
+  "promoted": false,
+  "decision": "Phi officialgreedy500 solves basic names/controls and mixed case; two all-protected readings fail.458 one representation diagnostic permitted by this new candidate-specific evidence, preserving443/446 failures. No argument-routing/product acceptance from this native task."
+}

@@ -1,0 +1,15 @@
+{
+  "viewModelHash": "5C984350754A5C30C83681F95D27513E231E92B7BF2EC970D41567F82EFBB59D",
+  "clientHash": "C29BD71512F17F02A326854F18197C09E8AD9622BA0EBDB7E88C591946E9AAFA",
+  "expected": [
+    "Ask for missing action",
+    "Acknowledge cancellation; no pending clarification",
+    "Lima",
+    "Ask for missing target",
+    "Acknowledge cancellation; no pending clarification",
+    "84"
+  ],
+  "llmHash": "C3259EEC8A93179A7E305F3A05CA542F294D5F0FF49D23C3240A8BAE6ECE20BC",
+  "appHash": "451925D391077E965F067C30254014928F0C889ACD95308BD1B17BDB438C52A3",
+  "purpose": "Development regression: cancel a pending clarification without another decision or effect, ES/EN, then a normal answer in the same session."
+}

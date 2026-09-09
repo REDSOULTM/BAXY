@@ -1,0 +1,1150 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "¡Hola! ¿Cómo estás?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 16,
+        "draft_sha256": "13049f88a1e25ab0a31c4acd6770809477efb89a984d99e4d468aa519526d9ab",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:16.9999309+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 06 y 36."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "0a9fb85e6a8a95b99d27a8d392e1df947e995e169137792d78066a7f75d8e0cb",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:16.9999309+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 06:36."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Dime la hora y el estado del audio.",
+    "terminal": "published_final",
+    "final": "La hora local es 06:36. El volumen está en el nivel 100. El audio está muteado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 81,
+        "draft_sha256": "67360b3dd8542fb1157a1332f7d9da6ec0b48e2c2d29f5de11c528ed2d119331",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:26.0812395+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:26.0812395+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 06:36. El volumen está en el nivel 100. El audio está muteado."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 06:36.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "697fa811811c9d4d89b9f2d8048290fedad527a8effa4d1a8f7d82e30c869d40",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:31.3772596+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 06:36."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Tell me the time and the volume.",
+    "terminal": "published_final",
+    "final": "Local clock: 06:36. Volume level: 100. Mute state: muted.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 57,
+        "draft_sha256": "98636577d98284cd34fa4ca51f705006d3086fe169b533f348bccf3ff1010d41",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:32.0987936+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:32.0987936+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Local clock: 06:36. Volume level: 100. Mute state: muted."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "Son 06:36, six thirty-six.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "e79a8b8bc42c0fa172f04c26b21672133609b853b997e7c8db038a523ec34127",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Six thirty-six, man."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 48,
+        "draft_sha256": "0be2c066956f5ba2688ea6b96462e187c9f4888762169809f2fbf245d8f447e1",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es 06:36, como el número 6 y el 36 en el reloj."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "133373fdaad0276ade31df09cf2b9a61c314ab67a9954bceada53697ddfd0e10",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 6:36, manana a las 6:36 ya no va a haber luz."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 20,
+        "draft_sha256": "e79a8b8bc42c0fa172f04c26b21672133609b853b997e7c8db038a523ec34127",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Six thirty-six, man."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "a59a5da6875d5cfd2e13e2c9c1ac460e4de548f95fdb5cb08943c8ad82ca0dfa",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es 06:36, como el número 6 en la manzana de la hora."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 92,
+        "draft_sha256": "50e8e102bd1adeb90876953ba3ddd1b8306e03a16e0c14539dc62f300c36f8b9",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 6:36, como en el reloj de la sala, con el nombre de la hora y el número de la sala."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 49,
+        "draft_sha256": "5540b233736d2b1d0c760cdc7342fc10b59d49a318be72eef8514bf8f307ba65",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Right now it's 3:45 PM, so, ¿qué tal? 3:45 p.m."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 73,
+        "draft_sha256": "09c5f3945bbd675948b424af1ac380d9d72d4b0e86d585002612955c078b4ed8",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Está en progreso, no tengo la hora ahora, pero te la doy cuando termine."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 79,
+        "draft_sha256": "f893f40d90c39dced94e37f25443403d88177f544d718314ebaed531001285e5",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Estoy en proceso, así que no sé la hora todavía, pero ya lo tengo en marcha."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 17,
+        "draft_sha256": "2ed1abe3f74981fe5e94713b9a3d3e0cc11cb5a5c3f90e4d714a1a50a52f95c7",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It’s 6:36, man."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 26,
+        "draft_sha256": "1cbcba8e1d992d53e4a88cd385b768a1c0b9418ef3685b9bb0873f2adaeddc81",
+        "payload": {
+          "clock": "06:36"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T09:36:33.4382424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son 06:36, six thirty-six."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What time is it y cómo está el audio?",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 58,
+        "draft_sha256": "8f71f60a1e05535913b5877b04b6a27dd23333c9c41b67fb1c5ce72fdbecedd5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado, el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "816e2f91678f79d713b70e3d1c9384a13f0c4cf174100a5b8858a0b8501253b5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 y el audio está muteado a nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 59,
+        "draft_sha256": "c174d422a16a78f42bcbe29e960cec9406864fe9a45ec4d7f46f92c20d428336",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado y el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 58,
+        "draft_sha256": "8f71f60a1e05535913b5877b04b6a27dd23333c9c41b67fb1c5ce72fdbecedd5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado, el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 45,
+        "draft_sha256": "23f4d9dbe223cb4c447f21ec4efd65098001cb4e896f11c263d41476026d5926",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 y el audio está muteado, nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 59,
+        "draft_sha256": "c174d422a16a78f42bcbe29e960cec9406864fe9a45ec4d7f46f92c20d428336",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado y el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "7e6ecd444e9dc86eae8d750d765e40440012295133c49ed96fd9bec27fa5fc5b",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "¿Qué hora es? El audio está en marcha, pero no está listo aún."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 37,
+        "draft_sha256": "a9ad85b85df7a7e6260d096a4901807f5b558f151ba4399628f567c4dcd3f8bf",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Es ahora, el audio está en progreso."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 37,
+        "draft_sha256": "a9ad85b85df7a7e6260d096a4901807f5b558f151ba4399628f567c4dcd3f8bf",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Es ahora, el audio está en progreso."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 58,
+        "draft_sha256": "8f71f60a1e05535913b5877b04b6a27dd23333c9c41b67fb1c5ce72fdbecedd5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado, el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "03d4b8a28c68f75adaa7e0d96e83e4a6fe05d662222797b956683090ac3aad87",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Son 06:36 y el audio está muteado, nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 59,
+        "draft_sha256": "c174d422a16a78f42bcbe29e960cec9406864fe9a45ec4d7f46f92c20d428336",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado y el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 49,
+        "draft_sha256": "d44a551f7422cf25187af0c131a32b861f1917c18a18d065c1fa359c7ebd5f3a",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 local. El audio está mutado, nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "816e2f91678f79d713b70e3d1c9384a13f0c4cf174100a5b8858a0b8501253b5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 y el audio está muteado a nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 59,
+        "draft_sha256": "c174d422a16a78f42bcbe29e960cec9406864fe9a45ec4d7f46f92c20d428336",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado y el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 49,
+        "draft_sha256": "d44a551f7422cf25187af0c131a32b861f1917c18a18d065c1fa359c7ebd5f3a",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 local. El audio está mutado, nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "816e2f91678f79d713b70e3d1c9384a13f0c4cf174100a5b8858a0b8501253b5",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 y el audio está muteado a nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 59,
+        "draft_sha256": "c174d422a16a78f42bcbe29e960cec9406864fe9a45ec4d7f46f92c20d428336",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado y el volumen está en 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 49,
+        "draft_sha256": "d44a551f7422cf25187af0c131a32b861f1917c18a18d065c1fa359c7ebd5f3a",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36 local. El audio está mutado, nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "03d4b8a28c68f75adaa7e0d96e83e4a6fe05d662222797b956683090ac3aad87",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Son 06:36 y el audio está muteado, nivel 100."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "76d1e9749e8588e03e46e39d119742b83f29b65e290f406a7af1700cfebe4b3f",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "06:36",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T09:36:40.3997150+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T09:36:40.3997150+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 06:36, el audio está muteado y el volumen es 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "Hello",
+    "terminal": "published_final",
+    "final": "Hey, welcome! How's it going?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 29,
+        "draft_sha256": "8ea22e64323b2d45ba01a719ab840673e4cb353dbdfafc6e70b269b1f34e8ba1",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, welcome! How's it going?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "no abras Paint",
+    "terminal": "published_final",
+    "final": "No abriré Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "71ea952a0ab66f6e5bfefa424865bfb9fbb012012975edfd991e7a3c86c50b05",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abriré Paint."
+      }
+    ]
+  }
+]

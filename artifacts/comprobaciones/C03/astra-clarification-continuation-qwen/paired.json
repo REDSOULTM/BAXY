@@ -1,0 +1,999 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Cómo está el audio?",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 48,
+        "draft_sha256": "83903c6e89f5326c715c1ca7ddfcbef9f039dfd858faef22e944e895c2eb696e",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false}}}",
+        "draft": "El audio está activo y el volumen está en 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Ajusta el volumen.",
+    "terminal": "published_final",
+    "final": "¿Cuánto deseas ajustar el volumen y en qué dirección (subir o bajar)?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "Déjalo al 80%.",
+    "terminal": "published_final",
+    "final": "Lo dejé en el 80%.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 19,
+        "draft_sha256": "e22056d0106194ca4da85d50ccc4e80fc8c5b00c7749208cbc465e01745822c2",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":100,\"muted\":false},\"final\":{\"volumePercent\":80,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "Lo dejé en el 80%."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "¿A qué volumen está?",
+    "terminal": "published_final",
+    "final": "Está en volumen 80, no está mutado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 37,
+        "draft_sha256": "5a351a59403135473c7653e28b684c0fd6418cf7c7595887222bb96bee7427b4",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 80
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":80,\"muted\":false}}}",
+        "draft": "Está en volumen 80, no está mutado."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Set the volume.",
+    "terminal": "published_final",
+    "final": "How much and in which direction should the volume be adjusted?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t6",
+    "request": "Set it to 60%.",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "8d421a66e2b87eed0f347d8923850404b27fd2cebd70d7db26da73aa73973c83",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 80,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":80,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "I set the volume to 60%."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "What is the volume?",
+    "terminal": "published_final",
+    "final": "The volume is 60. Mute is off.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "cef76902bef3fd5b1df3cc7b828e8bc9f06b8fcfbc894ab31ef88c468a211b05",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 60
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":60,\"muted\":false}}}",
+        "draft": "The volume is 60. Mute is off."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "Set the volume, por favor.",
+    "terminal": "published_final",
+    "final": "¿A qué volumen te refieres?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 29,
+        "draft_sha256": "cf8cff40c5f80e789ee65a8dc8ade8d7f9b47e26f24a293de2113342cbc8261b",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "¿A qué volumen te refieres?"
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "Al 40%, please.",
+    "terminal": "published_final",
+    "final": "La petición mezcla español e inglés y está fuera de lo que hago en este PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "error",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 38,
+        "draft_sha256": "fb3d67ae76d38aa936f8fe4e5f6ec29cc7259836a7d950f34a636cd0a5bf01db",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "El 40% no está dentro de lo que hago."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "error",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 79,
+        "draft_sha256": "9ed46c2d5acce71552fb1fabc1e3d28ca99de185144ba823490da0913ca9b12e",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "La petición mezcla español e inglés y está fuera de lo que hago en este PC."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "¿Cómo está el audio?",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 60.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 47,
+        "draft_sha256": "641e961f909d6d4df918dc87450b06cb35dc61fb75234ce92a8d9ffa7ac5b746",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 60
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":60,\"muted\":false}}}",
+        "draft": "El audio está activo y el volumen está en 60."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "Pon el volumen al 100%.",
+    "terminal": "published_final",
+    "final": "Puse el volumen al 100%.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 24,
+        "draft_sha256": "ad75371c2911e946fed7378cc3b1011a818daa870295f727af40d3b1a55d40b9",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":60,\"muted\":false},\"final\":{\"volumePercent\":100,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "Puse el volumen al 100%."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "¿Cómo está el audio?",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 48,
+        "draft_sha256": "83903c6e89f5326c715c1ca7ddfcbef9f039dfd858faef22e944e895c2eb696e",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false}}}",
+        "draft": "El audio está activo y el volumen está en 100."
+      }
+    ]
+  }
+]

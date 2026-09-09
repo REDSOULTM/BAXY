@@ -1,0 +1,286 @@
+[
+  {
+    "turnId": "t1",
+    "request": "abre la aplicación C03ProgramaInexistente20260906",
+    "terminal": "published_final",
+    "final": "No puedo abrir la aplicación C03ProgramaInexistente20260906 porque está fuera de lo que hago en este PC.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 106,
+        "draft_sha256": "2589991136ac54a431ef4bb2e73e070f36eec584e55b42e1abcea986431d16ff",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "No puedo abrir la aplicación C03ProgramaInexistente20260906 porque está fuera de lo que hago en este PC."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "7e190f3f759e76c07cc12dedc6f547555182279c63f1c4635b271a18465d089e",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola, ¿en qué puedo ayudarte hoy?"
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Open C03ProgramaInexistente20260906",
+    "terminal": "published_final",
+    "final": "I saw Open C03ProgramInexistente20260906.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "asserted_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 64,
+        "draft_sha256": "e738cc3acf2a0e920548a3c6122ac0f43b2b18026894ead9d9c3f93ff0a6b223",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I cannot open the program due to the program name being invalid."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 41,
+        "draft_sha256": "8a74624db31563891240164f854870d47fda2df71232961f96dbe86076ed16fc",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I saw Open C03ProgramInexistente20260906."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 21,
+        "draft_sha256": "ad500b0c49a76ec9484fa973766c85b8d5ee77b6e3c3ded56da1fa9d23d080cd",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola, ¿cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "published_final",
+    "final": "¿Puedes especificar si deseas que la explicación de 'encryption' sea en términos técnicos o en un lenguaje más accesible y simple, como lo mencionaste?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "Hey, buenas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 69,
+        "draft_sha256": "1948389cda2fd98f4dffbe1de9c938bb8be83dce845b0646055e2a6994afbd0b",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, good!  \nHow’s your day going? Anything you want to talk about?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "mixed",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 12,
+        "draft_sha256": "9c5997898c87dec5d4dc129040f49f857e432d507faa6a6b1a6c22458249c366",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, buenas."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "05:01",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 46,
+        "draft_sha256": "55b16c6a379e05cb579d14289f67478bf58db5bfc07be3ce59b19784d92e65bd",
+        "payload": {
+          "clock": "05:01"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T08:01:12.6816981+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "En español y inglés, di: \"La hora es 05:01.\"",
+        "clipped": "05:01"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 96,
+        "draft_sha256": "85356e65420b42a118103120fb2d0eae4ba66dcd9b5faa5aeb0b36485ed7b28c",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola, ¿cómo estás?  \n(Esta es una respuesta breve en español, sin usar palabras en inglés.)"
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "responde en spanglish: qué es el cifrado",
+    "terminal": "published_final",
+    "final": "El cifrado es el proceso de transformar información en un formato que solo las personas autorizadas pueden leer o descifrar.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t7",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 28,
+        "draft_sha256": "b93d40d7ac6d8ea6f076788d6675cf5c2fa91b98264e5ae4f7bacd7a63a98b42",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "The capital of Peru is Lima."
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "¿Cuánto es doce multiplicado por ocho?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

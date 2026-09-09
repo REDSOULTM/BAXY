@@ -1,0 +1,84 @@
+{
+  "frames": 1316,
+  "audioSeconds": 42.112,
+  "effects": [
+    []
+  ],
+  "admissions": [
+    {
+      "index": 0,
+      "time": 109446.656,
+      "admitted": true
+    },
+    {
+      "index": 1,
+      "time": 109456.671,
+      "admitted": true
+    },
+    {
+      "index": 2,
+      "time": 109466.671,
+      "admitted": true
+    },
+    {
+      "index": 3,
+      "time": 109476.64,
+      "admitted": true
+    }
+  ],
+  "generated": 4,
+  "before": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "after": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "restoredExactly": true,
+  "workersAlive": {
+    "_capture_worker": false,
+    "_decode_worker": false,
+    "_streaming_worker": false,
+    "_acoustic_wake_worker": false
+  },
+  "outputWorkerAlive": false,
+  "bargeInCount": 0,
+  "transcriptCount": 0,
+  "voiceErrors": [],
+  "driverErrors": [],
+  "lastError": null,
+  "wakeBackend": "unavailable",
+  "wakeError": "wake_verifier_manifest_missing",
+  "columns": [
+    "monotonic",
+    "dspMs",
+    "copyMs",
+    "speaking",
+    "linearVadProbability",
+    "echoGuard",
+    "confirmationVadProbability"
+  ],
+  "privateFiles": [
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\EVENTS.json",
+      "sha256": "0a7db31b549ca4368ca7ba710e313b07ddfef383e8158826068dc02f32b8c0d0"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\generated254.json",
+      "sha256": "a4f52b1a1520973853bea43c4372d7a83f6e8ecc47a3b33d14c8e4adf7fb1178"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\generated254.npz",
+      "sha256": "14d8592f1bd7de2d6fc6f3a35630cefe3a2ac5db8e7e386784b3bdb9a7f3258d"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\STATUS.json",
+      "sha256": "c35aec353a386211f3acdb7a6100c1046b68a7aaec0b16d800f068682b8b30ca"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\tap254.npz",
+      "sha256": "53728aa6fe52ed00ba113f78cf82e5706a91961cc0d4b192bf75605b61c74436"
+    }
+  ]
+}

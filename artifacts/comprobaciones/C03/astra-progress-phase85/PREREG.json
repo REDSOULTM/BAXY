@@ -1,0 +1,6 @@
+{
+  "method": "Prototype only: exact six first-compose packets82, no source/prompt/model/sampler change. Compare captured in-progress data with an additional phase=understanding field. This phase exists in the App while classifying/answering but is currently discarded by milestone facts. The test assumes that known phase for all six fixtures; do not claim observed publication or that file operations executed. A why question must not become a new read. No functions/UI/audio/human reserve or source promotion.",
+  "sourceSha256": "353f467616747e5cf4c031052aa6ff376cb78f71b6f02101a896e7418bad5fb4",
+  "model": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

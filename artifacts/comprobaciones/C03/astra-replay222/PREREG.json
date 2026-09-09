@@ -1,0 +1,8 @@
+{
+  "method": "All1316 exact221 cleaned frames through real product capture segmentation and fresh SileroVad. Recorded speaking state; echo guard receives the recorded delayed raw microphone/reference pair, as in Speex. Inert device/output/ducker only, no physical effects. Decode actual queued segments with installed baxy.2. Compare actual VAD and guard to221; keep mismatches honest.",
+  "hypothesis": "VAD-positive echo below the existing barge energy threshold is still accepted by segmentation because speech remains true in that branch. Establish exact first segment and speech/energy evidence before editing.",
+  "sourceSha256": "87f3e491d909515d592d190b82d5262e4fecd1d5d03e5a1b91c00d480a4450d1",
+  "scriptSha256": "4b34269de324e9ea1d52cd66ad1dadc2b1303c2805475671e77c51aeb50aaf90",
+  "inputSha256": "c6c6e6d8d07727731a749ecfa34b27c4e828e674062749539a4406c3fd789f3d",
+  "thresholdsChanged": false
+}

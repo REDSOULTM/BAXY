@@ -1,0 +1,44 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 421 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 421 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 421 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 421 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 421 ms).
+  2 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun("La ventana \"Ventana C03 de prueba\" se cerró.") [84 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "confirmar"), Is.Null)
+  Expected: null
+  But was:  "internal_code"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun(String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun(String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+
+
+  Con error AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun("The document 'Document draft' is open.") [1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ModelResponseRejectionReason(reply, draft, "confirmar"), Is.Null)
+  Expected: null
+  But was:  "internal_code"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun(String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+   at InvokeStub_C03FactPreservationTests.AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun(String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+   at InvokeStub_C03FactPreservationTests.AQuotedTargetIsNotAStutterAtTheBoundaryWithItsObjectNoun(Object, Span`1)
+
+
+
+Con error! - Con error:     2, Superado:     1, Omitido:     0, Total:     3, Duración: 239 ms - Baxy.Integration.Tests.dll (net10.0)

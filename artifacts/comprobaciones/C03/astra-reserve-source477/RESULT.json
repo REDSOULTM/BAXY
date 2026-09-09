@@ -1,0 +1,61 @@
+{
+  "utc": "2026-09-08T18:49:19.522193+00:00",
+  "method": "Verify original file SHA and exact user-event literal/completeness, without BAXY inference. Previous request events are context candidates only: adjacency does not prove one session. Do not execute or use reserve texts for development.",
+  "reviewed": 204,
+  "resolved_unique_sources": 9,
+  "original_sources_hash_verified": 2,
+  "missing_original_sources": 7,
+  "complete_literal_verified_in_current_original": 176,
+  "malformed_original_lines": 1,
+  "malformed_target_lines": 0,
+  "unverified_ordinals": [
+    3,
+    11,
+    22,
+    25,
+    28,
+    52,
+    54,
+    57,
+    70,
+    76,
+    77,
+    89,
+    94,
+    95,
+    110,
+    112,
+    116,
+    129,
+    133,
+    143,
+    144,
+    163,
+    172,
+    179,
+    184,
+    190,
+    194,
+    202
+  ],
+  "source_metadata_sha256": "898f57c9b08af1aab149537615aa3279f24c180cf2b39f5486215f8bedd4e4fd",
+  "private_review_sha256": "ccdf5114bc8ddd5965c96b9785636b91264760f9f9dc65113b90c427b7040582",
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-reserve-source477-private",
+  "certified_fresh": 0,
+  "frozen": false,
+  "executed": 0,
+  "log_truncation_evidence": {
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_core.py",
+    "lines": [
+      5332,
+      6178
+    ],
+    "mechanism": "NUEVA TAREA logs user_input[:100]"
+  },
+  "limits": [
+    "Seven .gemma4 session originals absent at current registered root and D:/Perfil/.gemma4; source_manifest retains hashes, not the original dialogue.",
+    "A complete historical literal and owner authorship do not by themselves establish training/campaign freshness.",
+    "Language review, history continuity, duplicate groups, split and exposure audit still constrain selection.",
+    "Do not infer truncated requests from assistant answers. No original files or questionnaire modified."
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "utc": "2026-09-08T02:42:02.745428+00:00",
+  "method": "Replay exact chat payload322 for the final identity correction, merging leading systems as production does. Before is actual empty-history chat; after restores only the actual published dialogue available before that request. Same prompt/sampling/output limit; no contextual resolver or new grammar. This tests the history lost by App while a clarification was pending, without changing selection or authorization. Same registered model/backend/KV profile, standalone hidden server, no desktop UI or effects. Native replies319 remain baseline.",
+  "criteria": "Recognize Emmanuel from the supplied user turn, distinguish BAXY and person, keep the new topic free of name/memory contamination. Preserve pending failures and no unverified memory claim. Existing resolver can be considered only after contextual and new-topic regression; no adoption on one phrase.",
+  "modelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "args": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "57485",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cont-batching"
+  ],
+  "cases": [
+    {
+      "request": "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo",
+      "variant": "before",
+      "payload": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste."
+          },
+          {
+            "role": "system",
+            "content": "Política interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla."
+          },
+          {
+            "role": "system",
+            "content": "Política interna de idioma: responde exclusivamente en español."
+          },
+          {
+            "role": "user",
+            "content": "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 256,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "seed": 0
+      }
+    },
+    {
+      "request": "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo",
+      "variant": "retained_dialogue",
+      "payload": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste."
+          },
+          {
+            "role": "system",
+            "content": "Política interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla."
+          },
+          {
+            "role": "system",
+            "content": "Política interna de idioma: responde exclusivamente en español."
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! ¿Cómo estás?"
+          },
+          {
+            "role": "user",
+            "content": "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte"
+          },
+          {
+            "role": "user",
+            "content": "mhhhhhh amigo deberias poder"
+          },
+          {
+            "role": "assistant",
+            "content": "Mmm, sí, pero no pude entender bien la solicitud. Vamos a intentarlo de nuevo."
+          },
+          {
+            "role": "user",
+            "content": "me llamo emmanuel, dime hola emmanuel"
+          },
+          {
+            "role": "assistant",
+            "content": "Hola Emmanuel! 😎"
+          },
+          {
+            "role": "user",
+            "content": "Yo soy el"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! ¿Y tú cómo te llamas? 😎"
+          },
+          {
+            "role": "user",
+            "content": "quien soy"
+          },
+          {
+            "role": "user",
+            "content": "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 256,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "seed": 0
+      }
+    }
+  ]
+}

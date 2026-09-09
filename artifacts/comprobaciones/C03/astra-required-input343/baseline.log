@@ -1,0 +1,24 @@
+FF.....F                                                                 [100%]
+================================== FAILURES ===================================
+_ test_required_private_input_can_be_asked_after_a_capability_question[What is your name?] _
+tests\test_compose_contract.py:348: in test_required_private_input_can_be_asked_after_a_capability_question
+    assert client.compose_user_message(
+E   AssertionError: assert '' == 'What is your name?'
+E     
+E     - What is your name?
+_ test_required_private_input_can_be_asked_after_a_capability_question[Which name would you like me to remember?] _
+tests\test_compose_contract.py:348: in test_required_private_input_can_be_asked_after_a_capability_question
+    assert client.compose_user_message(
+E   AssertionError: assert '' == 'Which name w... to remember?'
+E     
+E     - Which name would you like me to remember?
+______ test_required_input_does_not_allow_asserting_the_save_is_complete ______
+tests\test_compose_contract.py:366: in test_required_input_does_not_allow_asserting_the_save_is_complete
+    assert compose_visible_defect(
+E   assert ''
+E    +  where '' = compose_visible_defect('I saved your name.', 'clarification', 'What can you do? Remember my name.', {'situation': {'kind': 'clarification', 'polarity': 'pending', 'cause': 'memory_save_needs_content', 'missingValue': "the person's name", ...}})
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_required_private_input_can_be_asked_after_a_capability_question[What is your name?]
+FAILED tests/test_compose_contract.py::test_required_private_input_can_be_asked_after_a_capability_question[Which name would you like me to remember?]
+FAILED tests/test_compose_contract.py::test_required_input_does_not_allow_asserting_the_save_is_complete
+3 failed, 5 passed, 75 deselected in 0.59s

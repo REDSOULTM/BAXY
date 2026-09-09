@@ -1,0 +1,7 @@
+{
+  "command": "Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber",
+  "caption": "Microsoft Windows 11 Home Single Language",
+  "version": "10.0.26200",
+  "buildNumber": "26200",
+  "observedUtc": "2026-09-08T12:40:38.583612+00:00"
+}

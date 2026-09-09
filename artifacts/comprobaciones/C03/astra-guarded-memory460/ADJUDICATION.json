@@ -1,0 +1,110 @@
+[
+  {
+    "id": "actual437-t7",
+    "variant": "baseline",
+    "answer": "El nombre que tengo guardado es Jordan.",
+    "attempts": 1,
+    "seconds": 3.359,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "actual437-t4",
+    "variant": "baseline",
+    "answer": "I found Jordan.",
+    "attempts": 1,
+    "seconds": 2.688,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "name-marta",
+    "variant": "baseline",
+    "answer": "Marta.",
+    "attempts": 1,
+    "seconds": 2.64,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "compound-name",
+    "variant": "baseline",
+    "answer": "Te lo tengo guardado: Ana María.",
+    "attempts": 1,
+    "seconds": 3.828,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "third-person",
+    "variant": "baseline",
+    "answer": "Nina.",
+    "attempts": 1,
+    "seconds": 3.797,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "two-records",
+    "variant": "baseline",
+    "answer": "Tenés guardados los nombres Jordan y Nina. Eso es lo que encontré en mi memoria privada.",
+    "attempts": 1,
+    "seconds": 4.11,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "memory.enable",
+    "variant": "baseline",
+    "answer": "Confirmed, memory enablement is now enabled.",
+    "attempts": 1,
+    "seconds": 2.937,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "memory.save",
+    "variant": "baseline",
+    "answer": "Confirmed, the memory has been saved.",
+    "attempts": 2,
+    "seconds": 6.235,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "redacted-es",
+    "variant": "baseline",
+    "answer": "Tenía guardado un registro secreto, pero su valor está oculto por seguridad. Eso es todo.",
+    "attempts": 1,
+    "seconds": 2.422,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "redacted-en",
+    "variant": "baseline",
+    "answer": "The retrieved item was labeled \"secret\" and its value is redacted.",
+    "attempts": 1,
+    "seconds": 4.062,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  },
+  {
+    "id": "mixed-es",
+    "variant": "baseline",
+    "answer": "Listo, lo devolví en español.",
+    "attempts": 1,
+    "seconds": 3.469,
+    "useful": false,
+    "reason": "No informa los datos observados."
+  },
+  {
+    "id": "mixed-es",
+    "variant": "single-public-value",
+    "answer": "Te mostré tus recuerdos guardados: tu color favorito es turquesa y mantuve el secreto oculto.",
+    "attempts": 1,
+    "seconds": 4.281,
+    "useful": true,
+    "reason": "Conserva datos, sujeto, alcance y protección; no añade efectos."
+  }
+]

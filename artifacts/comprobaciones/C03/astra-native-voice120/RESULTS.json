@@ -1,0 +1,68 @@
+[
+  {
+    "index": 0,
+    "language": "es",
+    "text": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "voice": "es_MX-claude-high",
+    "voiceSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+    "pcmReadySeconds": 2.3289999999979045,
+    "audioSeconds": 3.7579138321995464,
+    "transcript": "Hola, aquí Baxi. ¿En qué te puedo ayudar hoy?",
+    "wavSha256": "0c5a73ee1acf166083baa517f54ef9b0dab4c3f066d02ca662e2eeec23d23f8d"
+  },
+  {
+    "index": 1,
+    "language": "en",
+    "text": "It is 07:14.",
+    "voice": "en_US-john-medium",
+    "voiceSha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+    "pcmReadySeconds": 0.8910000000032596,
+    "audioSeconds": 1.686077097505669,
+    "transcript": "It is 714.",
+    "wavSha256": "8c2963a660c31d5dd8e341bca6e3e9434f34bc5635a0be19715459841bcd2afe"
+  },
+  {
+    "index": 2,
+    "language": "es",
+    "text": "Son las 07:13.",
+    "voice": "es_MX-claude-high",
+    "voiceSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+    "pcmReadySeconds": 0.8910000000032596,
+    "audioSeconds": 1.6048072562358278,
+    "transcript": "Son las 7.13.",
+    "wavSha256": "1f4f0d745000cfd0ec3a47807ae52e7f0cdad8c39062b355e2ec08b4f8b1f8ee"
+  },
+  {
+    "index": 3,
+    "language": "en",
+    "text": "The file read failed because the content is invalid UTF-8.",
+    "voice": "en_US-john-medium",
+    "voiceSha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+    "pcmReadySeconds": 1.1869999999908032,
+    "audioSeconds": 4.4956916099773245,
+    "transcript": "The file read failed because the content is invalid UTF-8.",
+    "wavSha256": "8d31c0c716879433683826a7cec06e946398ccd3b5e42199e84df316c0c621ed"
+  },
+  {
+    "index": 4,
+    "language": "es",
+    "text": "Son las 07:15.",
+    "voice": "es_MX-claude-high",
+    "voiceSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+    "pcmReadySeconds": 1.0160000000032596,
+    "audioSeconds": 1.6512471655328798,
+    "transcript": "Son las 7.15.",
+    "wavSha256": "4afc3a0f913d4b7ea05c86a16f3f2db6ded511141395e97e0b59bcd2530cae48"
+  },
+  {
+    "index": 5,
+    "language": "en",
+    "text": "I couldn't read the file because it wasn't found in the sandbox.",
+    "voice": "en_US-john-medium",
+    "voiceSha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+    "pcmReadySeconds": 1.1089999999967404,
+    "audioSeconds": 4.066122448979592,
+    "transcript": "I couldn't read the file because it wasn't found in the sandbox.",
+    "wavSha256": "8852caa85da8bd72706ddf194efb680e9fd09d076802ed5ee00059bd09e504ec"
+  }
+]

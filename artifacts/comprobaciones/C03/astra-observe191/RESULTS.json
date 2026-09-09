@@ -1,0 +1,114 @@
+[
+  {
+    "output": 1,
+    "condition": "original",
+    "normalized": false,
+    "text": "Tolah, Aki Baxir, ¿en qué te puedo ayudar hoy",
+    "seconds": 1.1975463000126183
+  },
+  {
+    "output": 1,
+    "condition": "original",
+    "normalized": true,
+    "text": "Tollah, aki Vaxi, ¿en qué te puedo ayudar hoy",
+    "seconds": 1.1805791000078898
+  },
+  {
+    "output": 1,
+    "condition": "loopback",
+    "normalized": false,
+    "text": "Tolah, aquí Baxir, ¿en qué te puedo ayudar hoy",
+    "seconds": 1.7401723000075435
+  },
+  {
+    "output": 1,
+    "condition": "loopback",
+    "normalized": true,
+    "text": "Tolah, aquí Vaksi, ¿en qué te puedo ayudar hoy",
+    "seconds": 1.768130199998268
+  },
+  {
+    "output": 2,
+    "condition": "original",
+    "normalized": false,
+    "text": "Son las 105",
+    "seconds": 0.8910143000102835
+  },
+  {
+    "output": 2,
+    "condition": "original",
+    "normalized": true,
+    "text": "Son las 105",
+    "seconds": 0.9674700000032317
+  },
+  {
+    "output": 2,
+    "condition": "loopback",
+    "normalized": false,
+    "text": "Son las 105",
+    "seconds": 1.090792800008785
+  },
+  {
+    "output": 2,
+    "condition": "loopback",
+    "normalized": true,
+    "text": "Son las 105",
+    "seconds": 1.2145506000088062
+  },
+  {
+    "output": 3,
+    "condition": "original",
+    "normalized": false,
+    "text": "It is ten fity six",
+    "seconds": 0.809722399993916
+  },
+  {
+    "output": 3,
+    "condition": "original",
+    "normalized": true,
+    "text": "It is ten fics",
+    "seconds": 0.8386540000064997
+  },
+  {
+    "output": 3,
+    "condition": "loopback",
+    "normalized": false,
+    "text": "It is ten fifty six",
+    "seconds": 1.0516919000074267
+  },
+  {
+    "output": 3,
+    "condition": "loopback",
+    "normalized": true,
+    "text": "It is ten fifty six",
+    "seconds": 1.1047602000035113
+  },
+  {
+    "output": 4,
+    "condition": "original",
+    "normalized": false,
+    "text": "Son las 1056",
+    "seconds": 1.0059634000062943
+  },
+  {
+    "output": 4,
+    "condition": "original",
+    "normalized": true,
+    "text": "Son las 1056",
+    "seconds": 0.8948847999999998
+  },
+  {
+    "output": 4,
+    "condition": "loopback",
+    "normalized": false,
+    "text": "Son las 1056",
+    "seconds": 1.2225915000017267
+  },
+  {
+    "output": 4,
+    "condition": "loopback",
+    "normalized": true,
+    "text": "Son las 1056",
+    "seconds": 0.9264321000082418
+  }
+]

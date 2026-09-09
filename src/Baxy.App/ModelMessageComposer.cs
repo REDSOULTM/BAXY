@@ -138,6 +138,12 @@ internal static class ModelMessageComposer
         ArgumentNullException.ThrowIfNull(facts);
         ArgumentNullException.ThrowIfNull(compose);
 
+        // These words came from the person, not from the product internals.
+        // Use them only for vocabulary; the current request still owns intent.
+        string? priorUserText = facts["priorRequests"] is JsonArray prior
+            ? string.Join(" ", prior.Select(static item => (string?)item))
+            : null;
+
         MindComposedMessage? composed = await compose(
             userText,
             draft.Intent,
@@ -147,7 +153,8 @@ internal static class ModelMessageComposer
         string? accepted = AcceptPublishedConversation(
             composed?.Text,
             draft,
-            userText);
+            userText,
+            priorUserText);
         if (accepted is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -159,7 +166,8 @@ internal static class ModelMessageComposer
         string originalFailure = UserMessagePolicy.ModelResponseRejectionReason(
             composed?.Text,
             draft,
-            userText) ?? "model_response_rejected";
+            userText,
+            priorUserText) ?? "model_response_rejected";
         if (!allowRecovery)
         {
             return new ModelMessageCompositionOutcome(
@@ -179,7 +187,8 @@ internal static class ModelMessageComposer
         string? acceptedRecovery = AcceptPublishedConversation(
             recovered?.Text,
             draft,
-            userText);
+            userText,
+            priorUserText);
         if (acceptedRecovery is not null)
         {
             return new ModelMessageCompositionOutcome(
@@ -191,7 +200,8 @@ internal static class ModelMessageComposer
         string recoveryFailure = UserMessagePolicy.ModelResponseRejectionReason(
             recovered?.Text,
             draft,
-            userText) ?? "model_response_rejected";
+            userText,
+            priorUserText) ?? "model_response_rejected";
         return new ModelMessageCompositionOutcome(
             null,
             $"{originalFailure};recovery:{recoveryFailure}",
@@ -201,12 +211,14 @@ internal static class ModelMessageComposer
     private static string? AcceptPublishedConversation(
         string? modelText,
         UserMessageDraft draft,
-        string userText)
+        string userText,
+        string? priorUserText)
     {
         string? accepted = UserMessagePolicy.AcceptModelAuthoredResponse(
             modelText,
             draft,
-            userText);
+            userText,
+            priorUserText);
         if (accepted is null)
         {
             return null;
@@ -214,7 +226,9 @@ internal static class ModelMessageComposer
 
         if ((draft.Intent is "welcome" or "clarification" or "conversation"
                 || UserMessagePolicy.ConversationFallbackIntent(userText) == "out_of_catalog")
-            && !UserMessagePolicy.IsSafeConversationReply(userText, accepted))
+            && !UserMessagePolicy.IsSafeConversationReply(
+                userText, accepted, priorUserText: priorUserText,
+                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft)))
         {
             return null;
         }

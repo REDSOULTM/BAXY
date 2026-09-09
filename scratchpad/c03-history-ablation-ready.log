@@ -1,0 +1,13 @@
+{"turnId": "t8", "variant": "full", "seconds": 1.297}
+{"turnId": "t8", "variant": "user_only", "seconds": 1.563}
+{"turnId": "t9", "variant": "user_only", "seconds": 1.593}
+{"turnId": "t9", "variant": "full", "seconds": 0.907}
+{"turnId": "t10", "variant": "full", "seconds": 0.906}
+{"turnId": "t10", "variant": "user_only", "seconds": 1.297}
+{"turnId": "t13", "variant": "user_only", "seconds": 0.687}
+{"turnId": "t13", "variant": "full", "seconds": 0.719}
+{"turnId": "t14", "variant": "full", "seconds": 1.078}
+{"turnId": "t14", "variant": "user_only", "seconds": 0.813}
+{"turnId": "t15", "variant": "user_only", "seconds": 0.703}
+{"turnId": "t15", "variant": "full", "seconds": 0.875}
+{"elapsedSeconds": 15.47, "gpuPeakMiB": 3497.55859375, "ramPeakMiB": 2969.8515625}

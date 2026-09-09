@@ -1,0 +1,9 @@
+{
+  "method": "Same175 independent Nemotron CPU6/greedy/auto,0.66s final silence; same fixed131 crop and raw/peak0.8 variants. Existing179/180 near-only and mixture, no resynthesis/new processing/hints; preserve all results.",
+  "windowSamples": [
+    383581,
+    488646
+  ],
+  "recognizer": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11",
+  "scope": "Synthetic component evidence; not human or physical acceptance."
+}

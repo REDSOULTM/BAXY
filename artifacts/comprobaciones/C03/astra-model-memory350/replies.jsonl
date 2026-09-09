@@ -1,0 +1,26 @@
+{"id": "memory.recall", "model": "registered2507", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "model": "registered2507", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "model": "registered2507", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-english", "model": "registered2507", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "sister", "model": "registered2507", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "assistant-es", "model": "registered2507", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "both-es", "model": "registered2507", "answer": "Yo soy BAXY, tu compañero. Tú eres Emmanuel.", "finish_reason": "stop"}
+{"id": "assistant-en", "model": "registered2507", "answer": "My name is Taylor.", "finish_reason": "stop"}
+{"id": "memory.enable", "model": "registered2507", "answer": "La configuración de la memoria se ha confirmado como completada. El estado actual es \"memory configuration\" y el resultado es exitoso. El sistema ha sido revisado y está en funcionamiento.", "finish_reason": "stop"}
+{"id": "memory.save", "model": "registered2507", "answer": "La memoria fue actualizada correctamente. No se realizaron cambios en el sistema.", "finish_reason": "stop"}
+{"id": "disabled-control", "model": "registered2507", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "finish_reason": "stop"}
+{"id": "actual-chat-who", "model": "registered2507", "answer": "No tengo acceso a información personal ni identidad. ¿Podrías aclarar más? 😎", "finish_reason": "stop"}
+{"id": "actual-chat-both", "model": "registered2507", "answer": "Yo soy BAXY, tu compañero en el PC. Y tú, Emmanuel, eres tú mismo — el usuario que está hablando conmigo. ¿Necesitas ayuda con algo en particular? 😎", "finish_reason": "stop"}
+{"id": "memory.recall", "model": "available-qwen35", "answer": "Tu nombre es Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "model": "available-qwen35", "answer": "Tu nombre es Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "model": "available-qwen35", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-english", "model": "available-qwen35", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "sister", "model": "available-qwen35", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "assistant-es", "model": "available-qwen35", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "both-es", "model": "available-qwen35", "answer": "Soy BAXY, tu compañero. Eres Emmanuel.", "finish_reason": "stop"}
+{"id": "assistant-en", "model": "available-qwen35", "answer": "My name is Taylor.", "finish_reason": "stop"}
+{"id": "memory.enable", "model": "available-qwen35", "answer": "He confirmado que la configuración de memoria está activa y que la vista está habilitada.", "finish_reason": "stop"}
+{"id": "memory.save", "model": "available-qwen35", "answer": "He confirmado que la memoria se ha actualizado correctamente.", "finish_reason": "stop"}
+{"id": "disabled-control", "model": "available-qwen35", "answer": "He desactivado la memoria.", "finish_reason": "stop"}
+{"id": "actual-chat-who", "model": "available-qwen35", "answer": "Eres Emmanuel.", "finish_reason": "stop"}
+{"id": "actual-chat-both", "model": "available-qwen35", "answer": "Yo soy BAXY, tu compañero en el PC, y tú eres Emmanuel.", "finish_reason": "stop"}

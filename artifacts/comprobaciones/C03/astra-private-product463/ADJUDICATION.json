@@ -1,0 +1,66 @@
+[
+  {
+    "turn": 1,
+    "request": "My name is Jordan. Remember my name.",
+    "final": "Got it, Jordan. I'll remember your name. Which choice do you want: confirm or cancel?",
+    "kind": "published_final",
+    "useful": false,
+    "reason": "Confirmation does not identify enabling persistent memory; future promise is not a claimed completed save, but exact choice is unexplained."
+  },
+  {
+    "turn": 2,
+    "request": "confirm",
+    "final": "Confirming the operation status. The memory was successfully saved.",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Authorized enable and save completed; final states saved."
+  },
+  {
+    "turn": 3,
+    "request": "Abre una aplicación.",
+    "final": "¿Qué aplicación deseas abrir?",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Missing application is asked."
+  },
+  {
+    "turn": 4,
+    "request": "What name have you saved in private memory?",
+    "final": "The user is asking what name I have saved in private memory. I need to look at the situation data to see what was recalled. The situation shows that the memory \"name\" was successfully retrieved with the value \"Jordan\". I will state this briefly in English, as requested.",
+    "kind": "published_final",
+    "useful": false,
+    "reason": "Publishes internal deliberation/operation name instead of direct answer."
+  },
+  {
+    "turn": 5,
+    "request": "Me llamo Álvaro.",
+    "final": "Qué onda, Álvaro. ¿En qué te puedo ayudar hoy?",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Greets conversational name without unauthorized save."
+  },
+  {
+    "turn": 6,
+    "request": "Abre una aplicación.",
+    "final": "¿Qué aplicación deseas abrir?",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Missing application is asked."
+  },
+  {
+    "turn": 7,
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "final": "Jordan.",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Returns saved Jordan with no false subject."
+  },
+  {
+    "turn": 8,
+    "request": "¿Cómo me llamo?",
+    "final": "no_response;recovery:no_response;retry_exhausted",
+    "kind": "composition_failed",
+    "useful": false,
+    "reason": "No published useful response: initial chat gives Alvaro in English for Spanish request, existing retry/recovery then fails."
+  }
+]

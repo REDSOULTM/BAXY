@@ -1,0 +1,48 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+____ test_clock_instruction_echo_is_recomposed_instead_of_hidden_by_a_crop ____
+
+    def test_clock_instruction_echo_is_recomposed_instead_of_hidden_by_a_crop() -> None:
+        corrected = "Son las 14:25."
+        client = Recorder(["Son las 14:25. Do not introduce yourself.", corrected])
+        answer = client.compose_user_message("�Qu� hora es?", "status", {
+            "situation": json.dumps({
+                "kind": "operation", "operation": "system.time", "polarity": "success",
+                "verified": True, "succeeded": True,
+                "observed": {"utc": "2026-09-06T17:25:00Z", "localUtcOffsetMinutes": -180},
+            }),
+        })
+>       assert answer == corrected
+E       AssertionError: assert '14:25' == 'Son las 14:25.'
+E         
+E         - Son las 14:25.
+E         + 14:25
+
+tests\test_c03_request_preservation.py:33: AssertionError
+___ test_query_mission_does_not_instruct_the_model_to_claim_a_state_change ____
+
+    def test_query_mission_does_not_instruct_the_model_to_claim_a_state_change() -> None:
+        client = Recorder(["Son las 14:25. El volumen est� al 40 y el audio est� silenciado."])
+        client.compose_user_message("Dime la hora y el estado del audio", "status", {
+            "situation": json.dumps({
+                "kind": "status", "cause": "mission_completed", "polarity": "success",
+                "observed": {"utc": "2026-09-06T17:25:00Z", "localUtcOffsetMinutes": -180,
+                             "muted": True, "level": 40},
+            }),
+        })
+        content = client.payloads[0]["messages"][-1]["content"]
+        assert '"clock": "14:25"' in content
+        assert '"muted": true' in content
+>       assert "Report the completed state change" not in content
+E       AssertionError: assert 'Report the ...state change' not in 'Texto origi...local clock.'
+E         
+E         'Report the completed state change' is contained here:
+E            request.
+E           Report the completed state change, not a command or a new request. Name the volume number. Name mute state. Name the local clock.
+E         ? +++++++++++++++++++++++++++++++++
+
+tests\test_c03_request_preservation.py:49: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_clock_instruction_echo_is_recomposed_instead_of_hidden_by_a_crop
+FAILED tests/test_c03_request_preservation.py::test_query_mission_does_not_instruct_the_model_to_claim_a_state_change
+2 failed, 60 deselected in 0.73s

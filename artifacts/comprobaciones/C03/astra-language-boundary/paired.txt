@@ -1,0 +1,10 @@
+n=8 published=7 other=1
+
+001	t1	published_final	abre la aplicación C03ProgramaInexistente20260906	No puedo abrir la aplicación C03ProgramaInexistente20260906 porque está fuera de lo que hago en este PC.
+002	t2	published_final	Open C03ProgramaInexistente20260906	The program with the identifier C03ProgramaInexistente20260906 does not exist or is incomplete.
+003	t3	published_final	Explain encryption, pero en simple	Encryption locks data so only the right people can read it, like putting a note in a sealed box that only the intended person has the key to open.
+004	t4	published_final	Hey, buenas	Hey, buen día
+005	t5	published_final	Dime la hora, please, en spanglish	La hora, please, en español inglés.
+006	t6	composition_failed	responde en spanglish: qué es el cifrado	composition_failed
+007	t7	published_final	what is the capital of Peru	The capital of Peru is Lima.
+008	t8	published_final	cuánto es doce por ocho	Doce por ocho es 96.

@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-08T00:51:13.538525+00:00",
+  "method": "Actual owner264 index103/t54 plus2 existing parser controls. Compare original context_not_saved fallback with projection of actual AskToSave semantics. Same current source284 compositor, registered2507 backend, exact request/facts, unchanged prompts/settings. No effects or storage. Only _CAUSE_FACT entry differs in this diagnostic process.",
+  "hypothesis": "Literal context not saved loses the meaning of parser outcome AskToSave (mustNotPersist=true), so the compositor asks what to do instead of acknowledging/requesting storage consent.",
+  "criteria": "Owner greeting requested should be served without false storage claim; normal personal fact should produce relevant acknowledgment/consent request rather than unrelated clarification. No fixed visible text. Native success alone does not fix parser consuming mixed requests.",
+  "inheritance": "Carter_v2 LLM_CONTEXT_MEMORY_REPORT.md distinguishes stated facts from confirmed persistent memory. Current parser AskToSave and MainWindowViewModel context_not_saved are authoritative; existing _CAUSE_FACT maps typed states into prose facts.",
+  "cases": [
+    "me llamo emmanuel, dime hola emmanuel",
+    "me llamo Albeda",
+    "my favorite city is Lima"
+  ],
+  "meaning": "No persistent memory was written. The person has provided personal context; saving that context for future sessions requires their consent.",
+  "facts": {
+    "situation": {
+      "kind": "clarification",
+      "polarity": "pending",
+      "cause": "context_not_saved"
+    }
+  }
+}

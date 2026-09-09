@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-07T12:22:25.956664+00:00",
+  "sources": {
+    "src/baxy_mind/voice.py": "c4fd72b78e23f152d973a13a4b4ce494cd1fc33bcb0dac17b0a865ac6f03f6e9",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e",
+    "src/baxy_mind/voice_aec.py": "73a1f6638c6463c711639cb91e3544c6d3034f4cd7f359b09402d1db99ebd822",
+    "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "assets.manifest.json": "d1f9891f670928f8cb30dcd8ad747c80d364dad06f320fc10e40e7d4efd599ba"
+  },
+  "phases": [
+    "direct"
+  ],
+  "text": "The file read failed because the content is invalid UTF-8.",
+  "method": "Unmodified integrated source136 VoiceEngine/Piper, actual speaker/microphone/loopback, same consumed phrase and direct mode134. No wrappers, PCM injection, shadow VAD, App/LLM/Core or transcript routing. Captures private; volume restore in finally.",
+  "criteria": "Actual complete audio with no own barge-in, native AEC active/hash reported during ready and inactive after shutdown. Compare to134 without conflating with UI or human near-voice acceptance."
+}

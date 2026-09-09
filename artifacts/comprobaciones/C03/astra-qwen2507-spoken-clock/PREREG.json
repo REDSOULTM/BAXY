@@ -1,0 +1,37 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T13:16:27.817587+00:00",
+  "hypothesis": "Previous real t1 produced Son las 10 y 10 for observed10:10, rejected repeatedly by numeric clock validator. Extend shared Python/shell equivalence to clock-framed Spanish hour y minute with AM/PM; preserve rejection of wrong times, contradictory second clocks, and unrelated item counts. Keep cancelled action facts.",
+  "expected": "Same21 development requests/profile and model as personal-shell and first21 cancel-action. Exact previous draft separately replayed through compose in regression; real replies must preserve clock facts, cancellation, personal reads and confirmation. No repeated fault injection, reserved acceptance or promotion.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "hostCompositionBudgetProfile": "unchanged GPU 5/10s",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "37c9a961547c57bf5343bbcfb5a89a65d6af6a5d423ade6219d7ac8829617e16",
+    "src/baxy_mind/__main__.py": "6836411fe1429ef8d7b38830408506828c5b5ac9ac3ce25447ed8d6f6f8b2558",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "a15ed2a990efb39022a189c0bd0e98937e4520d3443ba792fa79bbd36483065e",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "e9f765824ec44bd9672303a16c64b5acea6068ba69533ffed05b44e240ba336b",
+    "src/Baxy.App/MainWindowViewModel.cs": "e145e9b78619fb5f09fa332245f24c317a67aa535f0b60136c17649c7f986f56",
+    "src/Baxy.App/MissionNarration.cs": "e90a29c4ca43265a5216da849a84bc3d006339602d86e2c498dafa8da5085a11",
+    "src/Baxy.App/MindPlanSession.cs": "0a543a866934789e4b3798c8a079aa100d118786c8f936589179982bd1744656",
+    "src/Baxy.App/UserMessagePolicy.cs": "c230d2bdf897a833204584d0269332ac0e0adfdf0e9874e8b185b8b92aac6d52",
+    "artifacts/comprobaciones/C03/astra-qwen2507-spoken-clock.turns.jsonl": "6e404ef8e5bc64a73d4e231618b47f7f9764cc98c11a839ccc19d227db1666a4",
+    "artifacts/comprobaciones/C03/astra-qwen2507-spoken-clock/profile/sitecustomize.py": "11858f6bd5a8acf451a9152a92b6f30d4e9e112b1419945757bee9034c561d22",
+    "scratchpad/c03-qwen2507-spoken-clock.py": "21355a513161350c5d07ae1ae8c7d6cab5809596813bea0944c4335c6da7b8a7"
+  }
+}

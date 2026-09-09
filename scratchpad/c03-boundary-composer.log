@@ -1,0 +1,10 @@
+{"stage": "guarded", "id": "unsupported-1", "error": null}
+{"stage": "guarded", "id": "unsupported-2", "error": null}
+{"stage": "guarded", "id": "unsupported-3", "error": null}
+{"stage": "guarded", "id": "unsupported-4", "error": null}
+{"stage": "guarded", "id": "unsupported-5", "error": null}
+{"stage": "guarded", "id": "unsupported-6", "error": null}
+{"stage": "guarded", "id": "unsupported-7", "error": null}
+{"stage": "guarded", "id": "unsupported-8", "error": null}
+{"stage": "guarded", "id": "unsupported-9", "error": null}
+{"seconds": 6.56, "gpuPeakMiB": 3495.55859375, "ramPeakMiB": 2868.015625, "error": null, "registrationUnchanged": true}

@@ -1,0 +1,52 @@
+{
+  "utc": "2026-09-07T10:46:00.189165+00:00",
+  "method": "Official archived MIT Piper Windows2023.11.14-2 as reference. Same two voice packages already measured, CPU/default scales, default0.2s sentence silence. One CLI process per text, debug phonemes/IDs preserved. This contrasts whole reference frontend/backend, not punctuation alone (native117 isolated period). Includes punctuation, NFD, language-flag handling and sentence segmentation. Parakeet CPU/no hints; no playback, user reserve or runtime promotion.",
+  "source": "https://github.com/rhasspy/piper/releases/tag/2023.11.14-2",
+  "archiveSha256": "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea",
+  "runtimeHashes": {
+    "piper.exe": "96f3da3811151580073e40bb4dd20eb0fb8115f5f5f76e2fb54282b3edfa5c1f",
+    "piper_phonemize.dll": "4b5f344b2f31204a8a94a0bf485f93e4971671e81188a0d67f326e113bfb0b2e",
+    "espeak-ng.dll": "9588480f8197df62fd8461a8431f8eaec6e8e7749c5ffcbe7fee656fe40a2189",
+    "onnxruntime.dll": "a630f67f4a82b6689e4178bf81d362d945522dd907b2a92cb43cebf72c83a06f"
+  },
+  "cases": [
+    {
+      "language": "en",
+      "text": "It is 07:14."
+    },
+    {
+      "language": "en",
+      "text": "The file read failed because the content is invalid UTF-8."
+    },
+    {
+      "language": "en",
+      "text": "I couldn't read the file because it wasn't found in the sandbox."
+    },
+    {
+      "language": "es",
+      "text": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?"
+    },
+    {
+      "language": "es",
+      "text": "Son las 07:13."
+    },
+    {
+      "language": "es",
+      "text": "Son las 07:15."
+    }
+  ],
+  "models": {
+    "en": {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\c03-john114\\en_US-john-medium.onnx",
+      "sha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+      "configSha256": "af60f177b6b550f3d7a302720c0fb89e7f94a82b5dca464775ef63b1c69ba09a"
+    },
+    "es": {
+      "path": "D:\\BAXYRuntime\\assets\\voice\\baxy-es\\es_MX-claude-high.onnx",
+      "sha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+      "configSha256": "1afc81f703c0e4cb3b4d7c0dca096b8b54a98806807f0170cf5eb5557723c12d"
+    }
+  },
+  "sourceSha256": "979ed2bd0cad5d8762633bf85c6591fbf66ffdd99bf49f71ca3737a7dd61aeaa",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

@@ -1,0 +1,65 @@
+{
+  "utc": "2026-09-07T23:30:03.312239+00:00",
+  "hypothesis": "Removing old assistant prose from verified situation prevents unverified Steam success.",
+  "method": "Two sequential pairs of exact frozen before/after UI263 HTTP9 compose payloads, temperature0/cache_prompt=false. Same running llama backend, no app requests or effects. Not a clean new backend or naked model.",
+  "criteria": "No statement that this turn opened Steam without Core evidence; useful handling assessed separately.",
+  "sourceSha256": "03d6172b835b44c3d161779805eb5709fdc12c93593000eec4a15095812c5edd",
+  "backendPid": 89232,
+  "backendCreateTime": 1788820621.7334836,
+  "backendCommand": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "57485",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cont-batching"
+  ],
+  "slots": [
+    {
+      "id": 0,
+      "n_ctx": 4096,
+      "is_processing": false
+    },
+    {
+      "id": 1,
+      "n_ctx": 4096,
+      "is_processing": false
+    },
+    {
+      "id": 2,
+      "n_ctx": 4096,
+      "is_processing": false
+    }
+  ],
+  "order": [
+    "before",
+    "after",
+    "before",
+    "after"
+  ],
+  "ownerFinishedTestingAndAuthorizedContinuation": true,
+  "limits": "Development case already observed. No fresh100 acceptance, UI publication or integrated regression."
+}

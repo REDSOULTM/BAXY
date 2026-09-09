@@ -1,0 +1,12 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "D123946278B2E70D897216E6A44BA24C5F0B505D138732E7CB31E0898D9F4AFA",
+    "Path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\voice_output.py"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "27FB1D29E4E3AC788557C4C52790E7AA22382BC5A119CC064BC6AF65C9067D16",
+    "Path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\test_neural_speech_output.py"
+  }
+]

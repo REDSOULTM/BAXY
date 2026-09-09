@@ -1,0 +1,192 @@
+....FF....................................................F............. [ 49%]
+........................................................................ [ 98%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+_ test_useful_captured_drafts_survive_presentation_without_retries[Find the installed applications.-status-situation4-Still working on finding the installed applications.] _
+
+user_text = 'Find the installed applications.', intent = 'status'
+situation = {'kind': 'status', 'polarity': 'success', 'cause': 'acting'}
+reply = 'Still working on finding the installed applications.'
+
+    @pytest.mark.parametrize(
+        "user_text,intent,situation,reply",
+        [
+            (
+                "Hey, buenas; responde en spanglish.",
+                "welcome",
+                {"kind": "welcome", "polarity": "success"},
+                "�Hey! Buenas, �c�mo est�s?",
+            ),
+            (
+                "Close the window titled Panel local C03.",
+                "confirmation",
+                {"kind": "confirmation", "polarity": "pending", "choices": ["confirm", "cancel"]},
+                "Would you like to confirm closing the window titled Panel local C03? Or cancel the action?",
+            ),
+            (
+                "Close the window titled Panel local C03.",
+                "confirmation",
+                {"kind": "confirmation", "polarity": "pending", "choices": ["confirm", "cancel"]},
+                "Please confirm or cancel: Close the window titled Panel local C03.",
+            ),
+            (
+                "Find the installed applications.",
+                "status",
+                {"kind": "status", "polarity": "success", "cause": "acting"},
+                "I'm looking into the installed applications right now.",
+            ),
+            (
+                "Find the installed applications.",
+                "status",
+                {"kind": "status", "polarity": "success", "cause": "acting"},
+                "Still working on finding the installed applications.",
+            ),
+            (
+                "Revisa las aplicaciones instaladas.",
+                "status",
+                {"kind": "status", "polarity": "success", "cause": "acting"},
+                "Estoy revisando las aplicaciones instaladas.",
+            ),
+        ],
+    )
+    def test_useful_captured_drafts_survive_presentation_without_retries(
+        user_text: str, intent: str, situation: dict, reply: str
+    ) -> None:
+        client = Recorder([reply])
+>       assert client.compose_user_message(
+            user_text, intent, {"situation": json.dumps(situation)}
+        ) == reply
+
+tests\test_c03_request_preservation.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9541: in compose_user_message
+    retry = self._post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000019623D8BAD0>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero. Eres un �l. Tuteas. Responde de forma breve y na....\nsituation: {"kind": "status", "state": "in progress"}'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+        return {
+            "choices": [
+>               {"message": {"content": next(self.replies)}, "finish_reason": "stop"}
+                                        ^^^^^^^^^^^^^^^^^^
+            ]
+        }
+E       StopIteration
+
+tests\test_c03_request_preservation.py:21: StopIteration
+_ test_useful_captured_drafts_survive_presentation_without_retries[Revisa las aplicaciones instaladas.-status-situation5-Estoy revisando las aplicaciones instaladas.] _
+
+user_text = 'Revisa las aplicaciones instaladas.', intent = 'status'
+situation = {'kind': 'status', 'polarity': 'success', 'cause': 'acting'}
+reply = 'Estoy revisando las aplicaciones instaladas.'
+
+    @pytest.mark.parametrize(
+        "user_text,intent,situation,reply",
+        [
+            (
+                "Hey, buenas; responde en spanglish.",
+                "welcome",
+                {"kind": "welcome", "polarity": "success"},
+                "�Hey! Buenas, �c�mo est�s?",
+            ),
+            (
+                "Close the window titled Panel local C03.",
+                "confirmation",
+                {"kind": "confirmation", "polarity": "pending", "choices": ["confirm", "cancel"]},
+                "Would you like to confirm closing the window titled Panel local C03? Or cancel the action?",
+            ),
+            (
+                "Close the window titled Panel local C03.",
+                "confirmation",
+                {"kind": "confirmation", "polarity": "pending", "choices": ["confirm", "cancel"]},
+                "Please confirm or cancel: Close the window titled Panel local C03.",
+            ),
+            (
+                "Find the installed applications.",
+                "status",
+                {"kind": "status", "polarity": "success", "cause": "acting"},
+                "I'm looking into the installed applications right now.",
+            ),
+            (
+                "Find the installed applications.",
+                "status",
+                {"kind": "status", "polarity": "success", "cause": "acting"},
+                "Still working on finding the installed applications.",
+            ),
+            (
+                "Revisa las aplicaciones instaladas.",
+                "status",
+                {"kind": "status", "polarity": "success", "cause": "acting"},
+                "Estoy revisando las aplicaciones instaladas.",
+            ),
+        ],
+    )
+    def test_useful_captured_drafts_survive_presentation_without_retries(
+        user_text: str, intent: str, situation: dict, reply: str
+    ) -> None:
+        client = Recorder([reply])
+>       assert client.compose_user_message(
+            user_text, intent, {"situation": json.dumps(situation)}
+        ) == reply
+
+tests\test_c03_request_preservation.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9541: in compose_user_message
+    retry = self._post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000019623D90110>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero. Eres un �l. Tuteas. Responde de forma breve y na....\nsituation: {"kind": "status", "state": "in progress"}'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+        return {
+            "choices": [
+>               {"message": {"content": next(self.replies)}, "finish_reason": "stop"}
+                                        ^^^^^^^^^^^^^^^^^^
+            ]
+        }
+E       StopIteration
+
+tests\test_c03_request_preservation.py:21: StopIteration
+_ test_greeting_does_not_exempt_language_claims_or_the_actual_question[Good afternoon, what is DNS?-Good afternoon! How can I help you?] _
+
+user_text = 'Good afternoon, what is DNS?'
+reply = 'Good afternoon! How can I help you?'
+
+    @pytest.mark.parametrize(
+        "user_text, reply",
+        [
+            ("", "Hello! What can I help you with?"),
+            ("Good afternoon", "Hola, �en qu� te ayudo?"),
+            ("Good afternoon, what is DNS?", "Good afternoon! How can I help you?"),
+            ("Good afternoon", "Hi! Paint is open."),
+        ],
+    )
+    def test_greeting_does_not_exempt_language_claims_or_the_actual_question(
+        user_text: str,
+        reply: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(
+            reply,
+            "welcome",
+            user_text,
+            {
+                "situation": '{"kind":"welcome","polarity":"success"}',
+            },
+        )
+E       assert ''
+E        +  where '' = <function compose_visible_defect at 0x000001962402DE40>('Good afternoon! How can I help you?', 'welcome', 'Good afternoon, what is DNS?', {'situation': '{"kind":"welcome","polarity":"success"}'})
+E        +    where <function compose_visible_defect at 0x000001962402DE40> = llm.compose_visible_defect
+
+tests\test_c03_request_preservation.py:654: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_useful_captured_drafts_survive_presentation_without_retries[Find the installed applications.-status-situation4-Still working on finding the installed applications.]
+FAILED tests/test_c03_request_preservation.py::test_useful_captured_drafts_survive_presentation_without_retries[Revisa las aplicaciones instaladas.-status-situation5-Estoy revisando las aplicaciones instaladas.]
+FAILED tests/test_c03_request_preservation.py::test_greeting_does_not_exempt_language_claims_or_the_actual_question[Good afternoon, what is DNS?-Good afternoon! How can I help you?]
+3 failed, 143 passed in 2.85s

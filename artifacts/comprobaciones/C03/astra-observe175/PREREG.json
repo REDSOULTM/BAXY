@@ -1,0 +1,9 @@
+{
+  "method": "Same six near/mix raw/Speex/WebRTC174 outputs, same fixed131 crop. Parakeet raw already174; now normalized peak0.8 with Parakeet; independent Nemotron raw and normalized plus0.66s final silence per116. No hints/resynthesis/AEC changes. Retain every result; do not substitute normalized success for raw product success.",
+  "windowSamples": [
+    383581,
+    488646
+  ],
+  "streamingModel": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11",
+  "inputsIndexSha256": "7a7076240255ff90fd269a13114f70615ffd38a4f99fd324e7e87619e05d113b"
+}

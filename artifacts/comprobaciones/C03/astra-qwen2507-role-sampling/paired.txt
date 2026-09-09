@@ -1,0 +1,14 @@
+n=12 published=9 other=3
+
+001	t1	published_final	¿Qué hora es?	Son las 07:17.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 07:18. El volumen está en el nivel 100 y el audio está muteado.
+003	t3	published_final	What time is it?	It's 07:18.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 07:18. The volume level is 100. The mute state is muted.
+005	t5	published_final	Dime la hora, please, en spanglish	Es 7:18, man.
+006	t6	composition_failed	What time is it y cómo está el audio?	composition_failed
+007	t7	published_final	Hey, buenas	¡Hey! Buenas, ¿cómo estás? ¿Listo para meterse en el día?
+008	t8	published_final	Explain encryption, pero en simple	¿Qué es lo que se protege cuando usas una contraseña o clave para encriptar algo?
+009	t9	composition_failed	responde en spanglish: qué es una copia de seguridad	composition_failed
+010	t10	composition_failed	Explain gravity, pero sin tecnicismos	composition_failed
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima.

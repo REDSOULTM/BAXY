@@ -1,0 +1,9 @@
+{
+  "baseline_useful": 9,
+  "baseline_total": 11,
+  "protected_baseline_useful": 1,
+  "protected_variant_useful": 2,
+  "protected_total": 3,
+  "normal_controls_unchanged": 8,
+  "decision": "Typed redaction improves one Phi English case but Spanish still falsely denies information. No source adoption or additional redaction phrasing variants. Overall projected10/11 is not complete. Continue actual guarded composition on the measuredGemma profile and bounded existing fact contract."
+}

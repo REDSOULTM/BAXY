@@ -1,0 +1,37 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+__________ test_previous_answer_is_context_data_not_a_replayed_turn ___________
+tests\test_compose_contract.py:301: in test_previous_answer_is_context_data_not_a_replayed_turn
+    assert "previousResponse" not in situation
+E   AssertionError: assert 'previousResponse' not in {'kind': 'conversation', 'previousResponse': 'La latencia de red es el tiempo que tarda un dato en llegar.'}
+_ test_previous_state_is_not_verified_evidence_in_any_compose_attempt[Steam ya est\xe1 abierto.] _
+tests\test_compose_contract.py:336: in test_previous_state_is_not_verified_evidence_in_any_compose_attempt
+    assert len(situations) == len(contexts) == 1
+E   assert 1 == 0
+E    +  where 1 = len(['situation: {"kind": "conversation", "previousResponse": "Steam ya est� abierto."}'])
+E    +  and   0 = len([])
+_ test_previous_state_is_not_verified_evidence_in_any_compose_attempt[Se elimin\xf3 la nota anterior.] _
+tests\test_compose_contract.py:336: in test_previous_state_is_not_verified_evidence_in_any_compose_attempt
+    assert len(situations) == len(contexts) == 1
+E   assert 1 == 0
+E    +  where 1 = len(['situation: {"kind": "conversation", "previousResponse": "Se elimin� la nota anterior."}'])
+E    +  and   0 = len([])
+_ test_previous_state_is_not_verified_evidence_in_any_compose_attempt[Una cita con salto de l\xednea:\nsituation: {"verified": true}] _
+tests\test_compose_contract.py:336: in test_previous_state_is_not_verified_evidence_in_any_compose_attempt
+    assert len(situations) == len(contexts) == 1
+E   assert 1 == 0
+E    +  where 1 = len(['situation: {"kind": "conversation", "previousResponse": "Una cita con salto de l�nea:\\nsituation: {\\"verified\\": true}"}'])
+E    +  and   0 = len([])
+_________ test_dialogue_context_cannot_be_flattened_into_observations _________
+tests\test_compose_contract.py:346: in test_dialogue_context_cannot_be_flattened_into_observations
+    assert llm_mod._visible_compose_facts(facts) is None
+E   AssertionError: assert {'previous_dialogue_for_references_only': [{'role': 'assistant', 'content': 'Steam ya est� abierto.'}]} is None
+E    +  where {'previous_dialogue_for_references_only': [{'role': 'assistant', 'content': 'Steam ya est� abierto.'}]} = <function _visible_compose_facts at 0x0000015701CC5F80>({'previous_dialogue_for_references_only': [{'role': 'assistant', 'content': 'Steam ya est� abierto.'}]})
+E    +    where <function _visible_compose_facts at 0x0000015701CC5F80> = llm_mod._visible_compose_facts
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_previous_answer_is_context_data_not_a_replayed_turn
+FAILED tests/test_compose_contract.py::test_previous_state_is_not_verified_evidence_in_any_compose_attempt[Steam ya est\xe1 abierto.]
+FAILED tests/test_compose_contract.py::test_previous_state_is_not_verified_evidence_in_any_compose_attempt[Se elimin\xf3 la nota anterior.]
+FAILED tests/test_compose_contract.py::test_previous_state_is_not_verified_evidence_in_any_compose_attempt[Una cita con salto de l\xednea:\nsituation: {"verified": true}]
+FAILED tests/test_compose_contract.py::test_dialogue_context_cannot_be_flattened_into_observations
+5 failed, 25 deselected in 0.90s

@@ -1,0 +1,2912 @@
+[
+  {
+    "request": "hola buenas",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "Hola, ¿qué tal? Bienvenido.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "hola buenas",
+          "ts": "19:17:44"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733064362,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "Hola, ¿qué tal? Bienvenido.",
+          "ts": "19:17:44",
+          "route": "welcome"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733064723,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 29,
+        "draft_sha256": "216f5111f2364c6ad7a11f159581399162837b09d8337fe857f40cc8b9b2b619",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola, ¿qué tal? Bienvenido."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Hello?",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "Hey, what's up?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "Hello?",
+          "ts": "19:17:44"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733064759,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "Hey, what's up?",
+          "ts": "19:17:44",
+          "route": "welcome"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733064962,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 15,
+        "draft_sha256": "39593596c4bcfe8a7a52c1dd02876ea3df13c533ef4fd535b0c1bdc1886996bd",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, what's up?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cuál es la capital de francia",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "París",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "cuál es la capital de francia",
+          "ts": "19:17:44"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733064968,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733065969,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733067969,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733068969,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "París",
+          "ts": "19:17:49",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733069891,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "El agua es h2o?",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "Sí, el agua está compuesta por dos átomos de hidrógeno y uno de oxígeno, H₂O.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "El agua es h2o?",
+          "ts": "19:17:49"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733069916,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733070916,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733072915,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "Sí, el agua está compuesta por dos átomos de hidrógeno y uno de oxígeno, H₂O.",
+          "ts": "19:17:53",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733073141,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "El aire es h20?",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno y oxígeno, mientras que H₂O es agua.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "El aire es h20?",
+          "ts": "19:17:53"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733073146,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733074146,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733075147,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733076147,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno y oxígeno, mientras que H₂O es agua.",
+          "ts": "19:17:57",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733077785,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "ahora explicame que es Steam",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "published_final",
+    "final": "Steam es una plataforma de gaming y servicios digitales desarrollada por Valve. Permite jugar a juegos en línea, comprar y descargar contenido, y también ofrece servicios como almacenamiento de juegos, streaming de contenido y acceso a aplicaciones como Steam Workshop.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "ahora explicame que es Steam",
+          "ts": "19:17:57"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733077799,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733079799,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733080800,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "BAXY",
+          "msg": "Steam es una plataforma de gaming y servicios digitales desarrollada por Valve. Permite jugar a juegos en línea, comprar y descargar contenido, y también ofrece servicios como almacenamiento de juegos, streaming de contenido y acceso a aplicaciones como Steam Workshop.",
+          "ts": "19:18:01",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733081651,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 13,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime que hora es",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "Son las 19 horas y 18 minutos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "Dime que hora es",
+          "ts": "19:18:01"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733081676,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733081786,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "Son las 19 horas y 18 minutos.",
+          "ts": "19:18:02",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733082506,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "f4c7f1625a35c9ec939a3fa1d11d89b2b8a5873d77f0f4b6442ae32f306af0f1",
+        "payload": {
+          "clock": "19:18"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T22:18:01.8779258+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 19 horas y 18 minutos."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 15,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "y la fecha?",
+    "injection": "none",
+    "turnId": "t8",
+    "terminal": "published_final",
+    "final": "Hoy es el 6 de septiembre de 2026.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t8",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-16",
+          "src": "YOU",
+          "msg": "y la fecha?",
+          "ts": "19:18:02"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733082558,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733082712,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-17",
+          "src": "BAXY",
+          "msg": "Hoy es el 6 de septiembre de 2026.",
+          "ts": "19:18:03",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733083196,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "date"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 34,
+        "draft_sha256": "8b84a506fc250aeb42392a99c6bb1f4681660d0fe1aa669580bf18b8681fff27",
+        "payload": {
+          "date": "2026-09-06"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T22:18:02.7850333+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Hoy es el 6 de septiembre de 2026."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 17,
+      "userMessageCount": 8,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "what time is it?",
+    "injection": "none",
+    "turnId": "t9",
+    "terminal": "published_final",
+    "final": "It's 19:18.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t9",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-18",
+          "src": "YOU",
+          "msg": "what time is it?",
+          "ts": "19:18:03"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733083248,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733083270,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-19",
+          "src": "BAXY",
+          "msg": "It's 19:18.",
+          "ts": "19:18:03",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733083804,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "6880a1034f53f0b038e42adf1ceca5f45b0d3502d782b40cbaab938911a17b74",
+        "payload": {
+          "clock": "19:18"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T22:18:03.3336115+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 19:18."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 19,
+      "userMessageCount": 9,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Que gpu tengo?",
+    "injection": "none",
+    "turnId": "t10",
+    "terminal": "published_final",
+    "final": "Tengo una GPU NVIDIA GeForce RTX 3060 en el portátil.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t10",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-20",
+          "src": "YOU",
+          "msg": "Que gpu tengo?",
+          "ts": "19:18:03"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733083857,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733084086,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-21",
+          "src": "BAXY",
+          "msg": "Tengo una GPU NVIDIA GeForce RTX 3060 en el portátil.",
+          "ts": "19:18:04",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733084809,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 54,
+        "draft_sha256": "70e8ee66374d75209defabebbbf884fb660bc1e618a87d4f86f34f6169331924",
+        "payload": {
+          "seen": {
+            "scope": "gpu_identity",
+            "adapters": [
+              {
+                "adapterIndex": 0,
+                "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+                "vendorId": 4318,
+                "dedicatedVideoMemoryBytes": 6287261696,
+                "dedicatedSystemMemoryBytes": 0,
+                "sharedSystemMemoryLimitBytes": 8269754368
+              },
+              {
+                "adapterIndex": 1,
+                "name": "AMD Radeon(TM) Graphics",
+                "vendorId": 4098,
+                "dedicatedVideoMemoryBytes": 519847936,
+                "dedicatedSystemMemoryBytes": 0,
+                "sharedSystemMemoryLimitBytes": 8269754368
+              },
+              {
+                "adapterIndex": 2,
+                "name": "AMD Radeon(TM) Graphics",
+                "vendorId": 4098,
+                "dedicatedVideoMemoryBytes": 519847936,
+                "dedicatedSystemMemoryBytes": 0,
+                "sharedSystemMemoryLimitBytes": 8269754368
+              },
+              {
+                "adapterIndex": 3,
+                "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+                "vendorId": 4318,
+                "dedicatedVideoMemoryBytes": 6287261696,
+                "dedicatedSystemMemoryBytes": 0,
+                "sharedSystemMemoryLimitBytes": 8269754368
+              },
+              {
+                "adapterIndex": 4,
+                "name": "AMD Radeon(TM) Graphics",
+                "vendorId": 4098,
+                "dedicatedVideoMemoryBytes": 519847936,
+                "dedicatedSystemMemoryBytes": 0,
+                "sharedSystemMemoryLimitBytes": 8269754368
+              }
+            ],
+            "failures": []
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"gpu_identity\",\"adapters\":[{\"adapterIndex\":0,\"name\":\"NVIDIA GeForce RTX 3060 Laptop GPU\",\"vendorId\":4318,\"dedicatedVideoMemoryBytes\":6287261696,\"dedicatedSystemMemoryBytes\":0,\"sharedSystemMemoryLimitBytes\":8269754368},{\"adapterIndex\":1,\"name\":\"AMD Radeon(TM) Graphics\",\"vendorId\":4098,\"dedicatedVideoMemoryBytes\":519847936,\"dedicatedSystemMemoryBytes\":0,\"sharedSystemMemoryLimitBytes\":8269754368},{\"adapterIndex\":2,\"name\":\"AMD Radeon(TM) Graphics\",\"vendorId\":4098,\"dedicatedVideoMemoryBytes\":519847936,\"dedicatedSystemMemoryBytes\":0,\"sharedSystemMemoryLimitBytes\":8269754368},{\"adapterIndex\":3,\"name\":\"NVIDIA GeForce RTX 3060 Laptop GPU\",\"vendorId\":4318,\"dedicatedVideoMemoryBytes\":6287261696,\"dedicatedSystemMemoryBytes\":0,\"sharedSystemMemoryLimitBytes\":8269754368},{\"adapterIndex\":4,\"name\":\"AMD Radeon(TM) Graphics\",\"vendorId\":4098,\"dedicatedVideoMemoryBytes\":519847936,\"dedicatedSystemMemoryBytes\":0,\"sharedSystemMemoryLimitBytes\":8269754368}],\"failures\":[]}}",
+        "draft": "Tengo una GPU NVIDIA GeForce RTX 3060 en el portátil."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 21,
+      "userMessageCount": 10,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no subas el volumen",
+    "injection": "none",
+    "turnId": "t11",
+    "terminal": "published_final",
+    "final": "No subiré el volumen.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t11",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-22",
+          "src": "YOU",
+          "msg": "no subas el volumen",
+          "ts": "19:18:04"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733084861,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-23",
+          "src": "BAXY",
+          "msg": "No subiré el volumen.",
+          "ts": "19:18:05",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733085722,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 23,
+      "userMessageCount": 11,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "pon el volumen del PC al 35%",
+    "injection": "none",
+    "turnId": "t12",
+    "terminal": "published_final",
+    "final": "Puse el volumen del PC al 35%. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t12",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-24",
+          "src": "YOU",
+          "msg": "pon el volumen del PC al 35%",
+          "ts": "19:18:05"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733085774,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733086630,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-25",
+          "src": "BAXY",
+          "msg": "Puse el volumen del PC al 35%. El sonido no está silenciado.",
+          "ts": "19:18:07",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733087330,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "effect",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 61,
+        "draft_sha256": "78717df392448d442e17eb5590b205d6d370a746e683ff8e2fa1cb3c87b55732",
+        "payload": {
+          "effect": "applied",
+          "seen": {
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 35,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false,
+            "muted": false,
+            "level": 35
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":100,\"muted\":false},\"final\":{\"volumePercent\":35,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "Puse el volumen del PC al 35%. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 25,
+      "userMessageCount": 12,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "mostrame el volumen",
+    "injection": "none",
+    "turnId": "t13",
+    "terminal": "published_final",
+    "final": "El volumen está en 35 y el sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t13",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-26",
+          "src": "YOU",
+          "msg": "mostrame el volumen",
+          "ts": "19:18:07"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733087382,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733087431,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-27",
+          "src": "BAXY",
+          "msg": "El volumen está en 35 y el sonido no está silenciado.",
+          "ts": "19:18:07",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733087989,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "367db13d4c04514d98a34474abd52aa4135cdc64adfb8bb52e5d7baccdaf0f5e",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 35
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":35,\"muted\":false}}}",
+        "draft": "El volumen está en 35 y el sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 27,
+      "userMessageCount": 13,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "está silenciado el audio",
+    "injection": "none",
+    "turnId": "t14",
+    "terminal": "published_final",
+    "final": "El volumen está en 35 y el sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t14",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-28",
+          "src": "YOU",
+          "msg": "está silenciado el audio",
+          "ts": "19:18:08"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733088041,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733088087,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-29",
+          "src": "BAXY",
+          "msg": "El volumen está en 35 y el sonido no está silenciado.",
+          "ts": "19:18:08",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733088668,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "367db13d4c04514d98a34474abd52aa4135cdc64adfb8bb52e5d7baccdaf0f5e",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 35
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":35,\"muted\":false}}}",
+        "draft": "El volumen está en 35 y el sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 29,
+      "userMessageCount": 14,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "turn up the volume",
+    "injection": "none",
+    "turnId": "t15",
+    "terminal": "published_final",
+    "final": "By how much should I increase the volume?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t15",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-30",
+          "src": "YOU",
+          "msg": "turn up the volume",
+          "ts": "19:18:08"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733088720,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-31",
+          "src": "BAXY",
+          "msg": "By how much should I increase the volume?",
+          "ts": "19:18:09",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733089135,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 31,
+      "userMessageCount": 15,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "decime cuánto volumen hay",
+    "injection": "none",
+    "turnId": "t16",
+    "terminal": "published_final",
+    "final": "El volumen es de 35. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t16",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-32",
+          "src": "YOU",
+          "msg": "decime cuánto volumen hay",
+          "ts": "19:18:09"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733089187,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733089188,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733089308,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-33",
+          "src": "BAXY",
+          "msg": "El volumen es de 35. El sonido no está silenciado.",
+          "ts": "19:18:09",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733089853,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 51,
+        "draft_sha256": "e4e8d24dd40e0246babe80c00cee76dacaa7d1bdcaf882688310a0df2e3526f2",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 35
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":35,\"muted\":false}}}",
+        "draft": "El volumen es de 35. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 33,
+      "userMessageCount": 16,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Ponlo a 100 ahora",
+    "injection": "none",
+    "turnId": "t17",
+    "terminal": "published_final",
+    "final": "El volumen se puso a 100. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t17",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-34",
+          "src": "YOU",
+          "msg": "Ponlo a 100 ahora",
+          "ts": "19:18:09"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733089906,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733091907,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733092907,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733093167,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-35",
+          "src": "BAXY",
+          "msg": "El volumen se puso a 100. El sonido no está silenciado.",
+          "ts": "19:18:13",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733093788,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "effect",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 56,
+        "draft_sha256": "7cdb7667dabe4ec60c95da77af96e30d482cb09c15cc21786e61c0c3609f4cd7",
+        "payload": {
+          "effect": "applied",
+          "seen": {
+            "baseline": {
+              "volumePercent": 35,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false,
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":35,\"muted\":false},\"final\":{\"volumePercent\":100,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "El volumen se puso a 100. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 35,
+      "userMessageCount": 17,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Hola, quien sos?",
+    "injection": "none",
+    "turnId": "t18",
+    "terminal": "published_final",
+    "final": "Soy BAXY, el compañero del PC. ¿Cómo estás?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t18",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-36",
+          "src": "YOU",
+          "msg": "Hola, quien sos?",
+          "ts": "19:18:13"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733093841,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733094841,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733096841,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-37",
+          "src": "BAXY",
+          "msg": "Soy BAXY, el compañero del PC. ¿Cómo estás?",
+          "ts": "19:18:17",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733097351,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 37,
+      "userMessageCount": 18,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime qué dispositivo de audio está activo",
+    "injection": "none",
+    "turnId": "t19",
+    "terminal": "published_final",
+    "final": "¿Estás preguntando por el dispositivo de audio actual en el sistema o por el que está configurado como predeterminado?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t19",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-38",
+          "src": "YOU",
+          "msg": "Dime qué dispositivo de audio está activo",
+          "ts": "19:18:17"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733097407,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733098407,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733099408,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-39",
+          "src": "BAXY",
+          "msg": "¿Estás preguntando por el dispositivo de audio actual en el sistema o por el que está configurado como predeterminado?",
+          "ts": "19:18:20",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733100969,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733100969,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 121,
+        "draft_sha256": "d735e6e57d0923381f29e963889a5e4df4a41f73f48155443b816037d49938b1",
+        "payload": {
+          "kind": "clarification",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"clarification\",\"polarity\":\"pending\",\"cause\":\"ambiguous_request\"}",
+        "draft": "¿Estás preguntando por el dispositivo de audio actual en el sistema o por el que está configurado como predeterminado?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 39,
+      "userMessageCount": 19,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no silencies el audio",
+    "injection": "none",
+    "turnId": "t20",
+    "terminal": "published_final",
+    "final": "No silenciaré el audio nunca.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t20",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-40",
+          "src": "YOU",
+          "msg": "no silencies el audio",
+          "ts": "19:18:21"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733101021,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733101021,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733102021,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-41",
+          "src": "BAXY",
+          "msg": "No silenciaré el audio nunca.",
+          "ts": "19:18:22",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733102995,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 41,
+      "userMessageCount": 20,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "pon el volumen al 100",
+    "injection": "none",
+    "turnId": "t21",
+    "terminal": "published_final",
+    "final": "El volumen ya está en el 100%.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t21",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-42",
+          "src": "YOU",
+          "msg": "pon el volumen al 100",
+          "ts": "19:18:23"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733103037,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733103186,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-43",
+          "src": "BAXY",
+          "msg": "El volumen ya está en el 100%.",
+          "ts": "19:18:23",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733103661,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t21",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 31,
+        "draft_sha256": "a6523803cab14ef6f801cc497c5ab0ebb50e06b37c8b23de9b6b8bc456197af8",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "applied": false,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":100,\"muted\":false},\"final\":{\"volumePercent\":100,\"muted\":false},\"applied\":false,\"reconciled\":false}}",
+        "draft": "El volumen ya está en el 100%."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 43,
+      "userMessageCount": 21,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "mostrame el volumen",
+    "injection": "none",
+    "turnId": "t22",
+    "terminal": "published_final",
+    "final": "El volumen está en 100 y el sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t22",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-44",
+          "src": "YOU",
+          "msg": "mostrame el volumen",
+          "ts": "19:18:23"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733103713,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733103787,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-45",
+          "src": "BAXY",
+          "msg": "El volumen está en 100 y el sonido no está silenciado.",
+          "ts": "19:18:24",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788733104307,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t22",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 56,
+        "draft_sha256": "2661d1223f8ec93998416beb19a680598c265f6dc1d2e6ce7c9b21ddb84f3e83",
+        "payload": {
+          "seen": {
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false}}}",
+        "draft": "El volumen está en 100 y el sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 45,
+      "userMessageCount": 22,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

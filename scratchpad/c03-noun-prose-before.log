@@ -1,0 +1,51 @@
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error ExplanatoryNounsAreNotRequestsForMachineParameters("Explain encryption, pero en simple","Encryption es como un código que transforma información en algo que solo se puede leer con una clave especial. Es como un mensaje que solo el destinatario puede entender.") [48 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(request, reply), Is.Null)
+  Expected: null
+  But was:  "machine_slot_ask"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(String request, String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(String request, String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+
+
+  Con error ExplanatoryNounsAreNotRequestsForMachineParameters("What is an SSID?","An SSID is the network name that identifies a wireless network.") [14 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(request, reply), Is.Null)
+  Expected: null
+  But was:  "machine_slot_ask"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(String request, String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+   at InvokeStub_C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(String request, String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+   at InvokeStub_C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(Object, Span`1)
+
+
+  Con error ExplanatoryNounsAreNotRequestsForMachineParameters("Qué es una carpeta","La carpeta agrupa archivos para mantenerlos organizados.") [1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(request, reply), Is.Null)
+  Expected: null
+  But was:  "machine_slot_ask"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(String request, String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+   at InvokeStub_C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(String request, String reply) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 16
+   at InvokeStub_C03FactPreservationTests.ExplanatoryNounsAreNotRequestsForMachineParameters(Object, Span`1)
+
+
+
+Con error! - Con error:     3, Superado:     8, Omitido:     0, Total:    11, Duración: 437 ms - Baxy.Integration.Tests.dll (net10.0)

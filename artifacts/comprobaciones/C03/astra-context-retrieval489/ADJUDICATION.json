@@ -1,0 +1,42 @@
+[
+  {
+    "id": "owner44",
+    "status": "selection_correct",
+    "reason": "audio.volume conservado. turn.decide no acredita argumentos ni efecto físico."
+  },
+  {
+    "id": "owner46",
+    "status": "failed",
+    "reason": "La consulta con pedido previo sube audio.mute de27 a19; sigue presente. Nativo inventa éxito sin herramienta; guarda factual correcta. Recuperación final sigue inválida."
+  },
+  {
+    "id": "owner51",
+    "status": "failed",
+    "reason": "La consulta con el pedido previo recupera audio.volume en puesto1 (antes ausente). Nativo selecciona sólo audio.volume, omite audio.mute; verificador de compatibilidad sin historia rechaza volume. La respuesta final sigue equivocada."
+  },
+  {
+    "id": "clitic-alone",
+    "status": "selection_correct",
+    "reason": "audio.mute conservado; falta vincular y verificar muted=false en etapa de argumentos."
+  },
+  {
+    "id": "volume-unmute",
+    "status": "selection_correct",
+    "reason": "Se conservan audio.volume y audio.mute en orden; sólo propuesta."
+  },
+  {
+    "id": "unmute-volume",
+    "status": "selection_correct",
+    "reason": "Se conservan audio.mute y audio.volume en orden; sólo propuesta."
+  },
+  {
+    "id": "negative-unmute",
+    "status": "selection_correct",
+    "reason": "Fuente487 conserva audio.volume y omite audio.mute como se pide; un intento, sin veto. No efectos ni verificación de argumentos."
+  },
+  {
+    "id": "word-meaning",
+    "status": "meaning_correct_voice_failed",
+    "reason": "Definición correcta y sin efectos, pero antecedida por prosa interna sobre no requerir acción."
+  }
+]

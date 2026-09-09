@@ -1,0 +1,6 @@
+{
+  "sha256AfterRun": "8D4114109469EDFD28BEB9A611E1A89A0A6DB1CCBA42FFD6D6D98E30A010BAE8",
+  "matchedOriginal": true,
+  "existedAfterRun": true,
+  "cleanup": "Agent removes only its unchanged synthetic fixture after the run, not a BAXY effect"
+}

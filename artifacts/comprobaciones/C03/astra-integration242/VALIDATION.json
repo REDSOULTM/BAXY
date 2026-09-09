@@ -1,0 +1,25 @@
+{
+  "ownerSuites": "tests/test_dtln_aec.py tests/test_mind_voice_runtime.py tests/test_voice_capture_clock.py tests/test_asset_resolution.py tests/test_python_runtime_lock.py tests/test_python_runtime_scripts.py tests/test_voice_system_gate_contract.py",
+  "pytest": {
+    "passed": 163,
+    "skips": 0,
+    "seconds": 22.5
+  },
+  "fast": "passed; Release 5.50 seconds; 0 warnings, 0 errors",
+  "initialFailure": "Runtime graph test expected59; updated to62 and explicit new dependency pins after verifying existing59 unchanged. Final163 pass.",
+  "parity": {
+    "cases": 10,
+    "frames": 10800,
+    "cleanExact": true,
+    "guardExact": true
+  },
+  "aecSmoke": {
+    "erleDb": 7.21,
+    "existingThresholdDb": 6.0,
+    "passed": true
+  },
+  "fullRun": false,
+  "physicalRun": "243 terminal:1317frames42.144s,1falsebarge/1Hola,0errors,volume restored,workers closed. Quality failed.",
+  "scope": "AEC integrated candidate. No new ASR claim; all239 word errors remain open.",
+  "diagnosis": "244 native/full pair equality to frozen adapter182 and physical243;245 actual segmentation/ASR exact. This integration does not introduce the failure."
+}

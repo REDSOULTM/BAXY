@@ -1,0 +1,11 @@
+{
+  "purpose": "Regression: actual knowledge questions retain requested calculation, entity and definition. Development only.",
+  "llmHash": "C3259EEC8A93179A7E305F3A05CA542F294D5F0FF49D23C3240A8BAE6ECE20BC",
+  "mainHash": "F71B2C934088618FF2CB98B14B09B561FBBF0400B809C1C7AC7E5B66B2F38FBA",
+  "expected": [
+    "84",
+    "DNS maps domain names to IP addresses",
+    "96",
+    "Lima"
+  ]
+}

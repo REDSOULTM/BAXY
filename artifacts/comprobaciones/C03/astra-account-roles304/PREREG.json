@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-08T01:29:06.475493+00:00",
+  "hypothesis": "Preserve literal user query as a user turn and supplied account observation as tool output, rather than a quoted request and facts in one user message. This tests speaker binding with the native chat template.",
+  "method": "First-completion-only transport comparison against exact baseline303 payloads; same system prompt/facts/language contract/sampling/limits. Previously supplied observation represented by assistant tool call and tool result; zero execution and no newly available functions. Technical fixtures are replay data, not live observations or acceptance. No production source edit.",
+  "criteria": "Correct speaker/account attribution for four same ES/EN/name controls. Record all finish reasons, tool outputs and literal replies; native evidence only, no claim of integrated repair.",
+  "sources": [
+    "https://qwen.readthedocs.io/en/stable/framework/function_call.html",
+    "artifacts/comprobaciones/C03/INVESTIGACION_MODELO_C03.md"
+  ],
+  "preceding": "Subject annotation303 did not repair Spanish quien soy; no adoption. Change representation instead of another annotation or phrase blacklist."
+}

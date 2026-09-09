@@ -1,0 +1,167 @@
+{
+  "utc": "2026-09-06T19:13:17.098957+00:00",
+  "cases": [
+    {
+      "id": "clock-es",
+      "request": "¿Qué hora es?",
+      "intent": "status",
+      "situation": {
+        "kind": "operation",
+        "operation": "system.time",
+        "polarity": "success",
+        "verified": true,
+        "succeeded": true,
+        "observed": {
+          "utc": "2026-09-06T19:09:00Z",
+          "localUtcOffsetMinutes": -180
+        }
+      },
+      "expected": "16:09 or 4:09 with PM, no invented event"
+    },
+    {
+      "id": "clock-mixed",
+      "request": "Dime la hora, please, en spanglish",
+      "intent": "status",
+      "situation": {
+        "kind": "operation",
+        "operation": "system.time",
+        "polarity": "success",
+        "verified": true,
+        "succeeded": true,
+        "observed": {
+          "utc": "2026-09-06T19:09:00Z",
+          "localUtcOffsetMinutes": -180
+        }
+      },
+      "expected": "16:09 or 4:09 with PM, no invented event"
+    },
+    {
+      "id": "clock-en",
+      "request": "What time is it?",
+      "intent": "status",
+      "situation": {
+        "kind": "operation",
+        "operation": "system.time",
+        "polarity": "success",
+        "verified": true,
+        "succeeded": true,
+        "observed": {
+          "utc": "2026-09-06T19:09:00Z",
+          "localUtcOffsetMinutes": -180
+        }
+      },
+      "expected": "16:09 or 4:09 with PM, no invented event"
+    },
+    {
+      "id": "memory-es",
+      "request": "Continúa con la recuperación de memoria.",
+      "intent": "confirmation",
+      "situation": {
+        "kind": "confirmation",
+        "polarity": "pending",
+        "cause": "memory_recovery_pending",
+        "choices": [
+          "continuar",
+          "continue",
+          "cancelar",
+          "cancel"
+        ],
+        "category": "memory_erase"
+      },
+      "expected": "Offer continue and cancel without claiming memory was deleted or recovered"
+    },
+    {
+      "id": "memory-en",
+      "request": "Continue the memory recovery.",
+      "intent": "confirmation",
+      "situation": {
+        "kind": "confirmation",
+        "polarity": "pending",
+        "cause": "memory_recovery_pending",
+        "choices": [
+          "continuar",
+          "continue",
+          "cancelar",
+          "cancel"
+        ],
+        "category": "memory_erase"
+      },
+      "expected": "Offer continue and cancel without claiming memory was deleted or recovered"
+    },
+    {
+      "id": "memory-mixed",
+      "request": "Continúa con la memory recovery, please.",
+      "intent": "confirmation",
+      "situation": {
+        "kind": "confirmation",
+        "polarity": "pending",
+        "cause": "memory_recovery_pending",
+        "choices": [
+          "continuar",
+          "continue",
+          "cancelar",
+          "cancel"
+        ],
+        "category": "memory_erase"
+      },
+      "expected": "Offer continue and cancel without claiming memory was deleted or recovered"
+    },
+    {
+      "id": "audio-es",
+      "request": "Continúa con el ajuste de volumen.",
+      "intent": "confirmation",
+      "situation": {
+        "kind": "confirmation",
+        "polarity": "pending",
+        "cause": "audio_volume_pending",
+        "choices": [
+          "continuar",
+          "continue",
+          "retry"
+        ],
+        "level": 60
+      },
+      "expected": "Offer continue and retry; no claim of applied volume"
+    },
+    {
+      "id": "audio-en",
+      "request": "Continue the volume adjustment.",
+      "intent": "confirmation",
+      "situation": {
+        "kind": "confirmation",
+        "polarity": "pending",
+        "cause": "audio_volume_pending",
+        "choices": [
+          "continuar",
+          "continue",
+          "retry"
+        ],
+        "level": 60
+      },
+      "expected": "Offer continue and retry; no claim of applied volume"
+    },
+    {
+      "id": "audio-mixed",
+      "request": "Continúa el volume adjustment, please.",
+      "intent": "confirmation",
+      "situation": {
+        "kind": "confirmation",
+        "polarity": "pending",
+        "cause": "audio_volume_pending",
+        "choices": [
+          "continuar",
+          "continue",
+          "retry"
+        ],
+        "level": 60
+      },
+      "expected": "Offer continue and retry; no claim of applied volume"
+    }
+  ],
+  "method": "Nine direct guarded composer regression cases. Fixed observed clock facts replay captured16:09; recovery facts match real shell shapes. Not product effects, graphical UI or fresh acceptance. Native sampling, prompts, guards, retry budgets and registered GGUF. No hand-made drafts injected.",
+  "hashes": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\mind-runtime-v1.json": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\llm.py": "91ce35be830935ca5da06a321f4fb5f87dfc5e285a942a8501b8983c8459e8d8",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-registered-compose-regression.py": "7c197f4a0d5aed7b5aa9a7defded7242183db04fe9a919ec4b5d4de53811f59a"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "method": "495 stopped before any generation with HTTP400: serialized output settings differ from input types (pinned server-schema.cpp291/337:chat_format numeric input,string output;preserved_tokens strings input,IDs output).496 converts preserved IDs to exact token pieces and verifies round-trip; omits output-only parser name for both raw branches. Exact three494 captured native prompts and generation settings, replayed as token arrays through local /completion. Both branches use the same raw endpoint. Tokenize with add_special:false/parse_special:true; assert prompt token count equals captured494. Compare original native lazy grammar against empty grammar/no triggers. Preserve stopping, samplers, context, prompt, preserved tokens and thinking input. Seeds0 for all three and17 for owner51; eight calls total. No parser output manipulation, forced tool list, clipping, examples, source changes or effects.",
+  "hypothesis": "494 raw text itself contains every extra parsed call, so output parsing did not insert them. However native generation is grammar-constrained; a repeated tool-call root may alter termination. Separate constraint effects from weights before attributing the loop to Gemma.",
+  "reference_sha256": "c7d937cc255dabc02af54204b6eb5cd856e67c5f9564aa645cc1f448c39d851c",
+  "model_sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gemma-grammar496-private",
+  "criteria": "Compare full raw sequences and stop causes; every extra action or missing effect fails. Verify effective sampler/grammar and prompt counts. No fresh acceptance, whole-product credit or automatic promotion.",
+  "sources": [
+    "https://github.com/ggml-org/llama.cpp/blob/5266f24da/tools/server/server-task.cpp#L339",
+    "https://github.com/ggml-org/llama.cpp/blob/5266f24da/common/chat.cpp#L3697",
+    "https://arxiv.org/abs/2408.02442",
+    "https://blog.dottxt.ai/say-what-you-mean.html"
+  ],
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 90
+  }
+}

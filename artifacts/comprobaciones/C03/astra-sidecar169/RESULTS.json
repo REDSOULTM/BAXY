@@ -1,0 +1,138 @@
+[
+  {
+    "stage": "hello",
+    "elapsed": 2.1570000000065193
+  },
+  {
+    "stage": "catalog.configure",
+    "seconds": 4.967999999993481,
+    "reply": {
+      "type": "catalog.ready",
+      "id": "catalog",
+      "count": 169
+    }
+  },
+  {
+    "stage": "voice.status",
+    "seconds": 4.672000000005937,
+    "reply": {
+      "type": "voice.status.result",
+      "id": "status",
+      "status": {
+        "available": true,
+        "input": true,
+        "stt": true,
+        "vad": true,
+        "tts": true,
+        "aec": false,
+        "ducking": true,
+        "missing": [],
+        "sttModel": "parakeet-tdt-0.6b-v3-int8",
+        "streamingStt": false,
+        "streamingSttModel": null,
+        "wakeWord": false,
+        "wakeBackend": "unavailable",
+        "wakeWordModel": null,
+        "wakeWordPhrase": null,
+        "wakeWordError": null,
+        "wakeCascadeError": "wake_cascade_manifest_invalid",
+        "wakeVerifier": false,
+        "wakeVerifierError": null,
+        "wakeEndpoint": false,
+        "lexicalWakeFallback": false,
+        "mode": "off",
+        "listening": false,
+        "speaking": false,
+        "ttsReady": false,
+        "ttsVoice": "es_MX-claude-high",
+        "ttsNeural": true,
+        "ttsSha256": null,
+        "loopbackActive": false,
+        "aecSha256": null,
+        "inputDevice": "",
+        "streamingSttError": null,
+        "lastError": null
+      }
+    }
+  },
+  {
+    "stage": "voice.speak",
+    "seconds": 0.125,
+    "reply": {
+      "type": "voice.speak.result",
+      "id": "speak",
+      "accepted": true
+    }
+  },
+  {
+    "stage": "voice.start",
+    "seconds": 4.0939999999973224,
+    "reply": {
+      "type": "voice.started",
+      "id": "start",
+      "mode": "wake",
+      "status": {
+        "available": true,
+        "input": true,
+        "stt": true,
+        "vad": true,
+        "tts": true,
+        "aec": true,
+        "ducking": true,
+        "missing": [],
+        "sttModel": "parakeet-tdt-0.6b-v3-int8",
+        "streamingStt": false,
+        "streamingSttModel": null,
+        "wakeWord": true,
+        "wakeBackend": "acoustic",
+        "wakeWordModel": "baxy",
+        "wakeWordPhrase": "Baxy",
+        "wakeWordError": null,
+        "wakeCascadeError": "wake_cascade_manifest_invalid",
+        "wakeVerifier": false,
+        "wakeVerifierError": "wake_verifier_manifest_missing",
+        "wakeEndpoint": false,
+        "lexicalWakeFallback": false,
+        "mode": "wake",
+        "listening": true,
+        "speaking": true,
+        "ttsReady": true,
+        "ttsVoice": "es_MX-claude-high",
+        "ttsNeural": true,
+        "ttsSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+        "loopbackActive": true,
+        "aecSha256": "bb683ab3c50f66f777f0d2eb570b57c0ef5c71cb7e45535f9625a3f2ab56d9f1",
+        "inputDevice": "Varios micr\u00f3fonos (Realtek(R) Audio)",
+        "streamingSttError": "streaming_stt_disabled",
+        "lastError": null
+      }
+    }
+  },
+  {
+    "stage": "voice.speak",
+    "seconds": 0.0,
+    "reply": {
+      "type": "voice.speak.result",
+      "id": "speak1",
+      "accepted": true
+    }
+  },
+  {
+    "stage": "voice.speak",
+    "seconds": 0.0,
+    "reply": {
+      "type": "voice.speak.result",
+      "id": "speak2",
+      "accepted": true
+    }
+  },
+  {
+    "stage": "voice.speak",
+    "seconds": 0.0,
+    "reply": {
+      "type": "voice.speak.result",
+      "id": "speak3",
+      "accepted": true
+    }
+  }
+]

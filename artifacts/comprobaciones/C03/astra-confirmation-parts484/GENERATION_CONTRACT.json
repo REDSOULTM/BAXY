@@ -1,0 +1,23 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "pending_action_and_target": {
+        "type": "string"
+      },
+      "supplied_consequences": {
+        "type": "string"
+      },
+      "decision_question": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "pending_action_and_target",
+      "supplied_consequences",
+      "decision_question"
+    ],
+    "additionalProperties": false
+  },
+  "instruction": "\nOutput representation: return JSON with three string fields: pending_action_and_target, supplied_consequences, decision_question. Write each value as a short natural part of the message addressed to the person. The supplied_consequences value is empty when no consequence is supplied; otherwise preserve the supplied consequences and their certainty. The three values are joined in that order and shown verbatim. Only the values are visible; keep keys and program details out of them."
+}

@@ -1,0 +1,38 @@
+{
+  "packageTests": {
+    "pass": 6,
+    "skip": 0,
+    "seconds": 0.3
+  },
+  "upstreamAecTests": {
+    "pass": 14,
+    "skip": 0,
+    "seconds": 0.24
+  },
+  "fast": {
+    "pass": true,
+    "releaseBuildSeconds": 3.25,
+    "buildWarnings": 0,
+    "buildErrors": 0
+  },
+  "nativeBuildWarnings": {
+    "C4005": 310,
+    "C4244": 14,
+    "C4715": 1
+  },
+  "signalParity": {
+    "recordings": 12,
+    "blocks": 13433,
+    "bothSignalsExact": true,
+    "observedPhysicalGuards": 60
+  },
+  "terminalHandles": {
+    "53486": 0,
+    "74943": 0
+  },
+  "activeOwnProcesses": [],
+  "fullRun": false,
+  "productionSource": 242,
+  "lockPackages": 62,
+  "next": "257 integrate the prepared native package; no product/lock replacement yet"
+}

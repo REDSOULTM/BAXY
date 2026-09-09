@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-07T16:16:46.630946+00:00",
+  "dataset": "google/fleurs",
+  "split": "test",
+  "configs": [
+    "es_419",
+    "en_us"
+  ],
+  "selection": "First two rows per locale in row order among first10 with num_samples <=320000 (20s); no recognizer output used to select.",
+  "purpose": "Four human recordings with supplied transcripts for local AEC near-speech controls. Not Carter-to-BAXY requests, fresh reserve, physical near speaker or accepted voice.",
+  "source": "https://huggingface.co/datasets/google/fleurs",
+  "apiDocumentation": "https://huggingface.co/docs/dataset-viewer/en/rows",
+  "license": "CC-BY-4.0; Google FLEURS, Conneau et al. 2022, https://arxiv.org/abs/2205.12446",
+  "privacy": "Only public dataset/config/split names requested; no local text or audio uploaded."
+}

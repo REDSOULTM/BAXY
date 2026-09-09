@@ -1,0 +1,17 @@
+{
+  "scope": "Role repair78 and read-only scope diagnostic79/80;81 pending",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_ROLES78_Y_ENUMERACION79_80.md": "47bc96ee6425b341032fa9028ae6c000a06240ab7923ba2a64e5f0560e6e5962",
+    "artifacts/comprobaciones/C03/astra-files78-roles/PREREG.json": "abf351eb30e110ffb3b88d7d7f9f7b5040ed3c35920956d1fb4eb1fe634233e4",
+    "artifacts/comprobaciones/C03/astra-files78-roles/RESULT.json": "929aa54a3697ae85635e7cb838141b7a3186054ed48ea63e2d42b9b14eee4612",
+    "artifacts/comprobaciones/C03/astra-files78-roles/paired.json": "fd2811d9accb0ce99bc11b047fa5880f5110ddc8c245bebef79b54812fbffdf5",
+    "artifacts/comprobaciones/C03/astra-files78-roles/c03-roles78-pytest.log": "572206fa664b6628c41257c3ac1ea86a3272c48df901d67aa9b0aa560907b4be",
+    "artifacts/comprobaciones/C03/astra-files78-roles/c03-roles78-dotnet.log": "131918efcf69da685dcb3ae6b70badedebf234f7c071ccaca03a4e6ff37e936e",
+    "artifacts/comprobaciones/C03/astra-files78-roles/c03-roles78-fast.log": "f5fddc6720c78b5825c102c7ab352030d43f5443123c2804f0c396abb9e31d23",
+    "artifacts/comprobaciones/C03/astra-files78-roles/c03-roles78-red.log": "ef4c3e323810c31d7e8c2a767a58532492e3371e8ca5447b38370c2ca9bde850",
+    "artifacts/comprobaciones/C03/astra-observation-scope79/PREREG.json": "7a00359499887e6f5fd6d79af6ef07c83dd82d8c9c1944d2d47c31e28236ab3c",
+    "artifacts/comprobaciones/C03/astra-observation-scope79/RESULT.json": "f48a77b6358a461b64d0c9f803e96643f169f4bf43a1ac232b8fd575114d2e80",
+    "artifacts/comprobaciones/C03/astra-observation-scope80/PREREG.json": "a878aad873c72d654ba819a9e210a455c4b7bc8e57833eababf13943375726d7",
+    "artifacts/comprobaciones/C03/astra-observation-scope80/RESULT.json": "a161c4e5fae1d776161a087b6687754d8477b4b6518d62253f251260065b360b"
+  }
+}

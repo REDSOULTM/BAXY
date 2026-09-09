@@ -1,0 +1,48 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T16:23:11.308997+00:00",
+  "hypothesis": "Pilot2 improved direct compound facts and some mixed replies. Measure its effect across the existing integrated development requests and all LLM roles, including exact confirmation, cancellation and own fixture close. Add only the diagnostic LoRA; source, registry and validators unchanged. Correct the observer to read the actual SkillRegistry encoder.",
+  "expected": "Same prior knowledge, Spanish/English/mixed, clock, audio and personal-task cases, with the close request now addressed by explicit title (own empty C03TitleFixture). Confirm/cancel/reconfirm remains exact. Assess every reply, including summary naturalness; not acceptance or promotion.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "adapter": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-training-cdbee75f\\c03-pilot-lora-v2-f32.gguf",
+    "adapterSha256": "46694e8ac89bb9b0c9948fceaa65a51085c40cbbf0ac3d06d55cd935eeea0784",
+    "ngl": 99,
+    "kv": "q8_0",
+    "hostCompositionBudgetProfile": "unchanged GPU 5/10s",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "tests/data/turn_evidence_runtime.v1.jsonl": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "src/baxy_mind/data/turn_evidence_abstention_policy.v1.json": "7768fe1a5d13349f590d7a6f24d4fe0b4769e56cd76967807d0fb2239aec06c2",
+    "src/baxy_mind/planner.py": "1291081aa86021972c74195cff7dc492e44b5084a7a723d13e48b899d1df79bb",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "93eab6c7278cdb90ff14b5f8e62050e42177a5f83f508e948fba2a989fb75040",
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "4c6380372f565a39c9e14a2d74d3450ef3d46e9a253a5354c41e3473dfb0dc99",
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "9ebeab789bfa601f040a92e7126e9fa6d5458f0caacc81c20ebc75457e6ccc9c",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "9ea578c16c4d9a85f689d19a3f596e972d68e1b891a229ae83a9c001c5e16867",
+    "src/Baxy.Core/bin/Release/net10.0-windows10.0.19041.0/win-x64/publish/baxy-core.exe": "56e730c645c6eb634792f2d7eb179c8f626055a2dd22adeac4abc1fc5bbf0f4f",
+    "src/baxy_mind/llm.py": "43e71491379ec3b0b87c015c5a5ac9f5174538161f72a7a7b494bf893019544c",
+    "src/baxy_mind/__main__.py": "ddd1979996aef3c49ed233c20011dc3bbbc1aa796f430ae42b662fb7ea72bf14",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "a8c7239fe179beefcca75fe15bd8402f97535e719c8707c7b6fed9125e39d021",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "e9f765824ec44bd9672303a16c64b5acea6068ba69533ffed05b44e240ba336b",
+    "src/Baxy.App/MainWindowViewModel.cs": "e145e9b78619fb5f09fa332245f24c317a67aa535f0b60136c17649c7f986f56",
+    "src/Baxy.App/MissionNarration.cs": "9049517ea737be382dec6e2d4eac1e007c131030a774ffffddad45e6a80e49c6",
+    "src/Baxy.App/MindPlanSession.cs": "f6c77be7b508b3f86d032d53028019aea9d488572d612a3ca56cb9c159289b51",
+    "src/Baxy.App/UserMessagePolicy.cs": "3e1d7e89fe69f9d7f46ba72c6e8b325e7bb5c980040e2880d21a75bf1385f31e",
+    "artifacts/comprobaciones/C03/astra-lora-pilot2-product.turns.jsonl": "cee9704bcd225fe6937e33b6e0e349baa49287be21ccc08569e836514dd57434",
+    "artifacts/comprobaciones/C03/astra-lora-pilot2-product/profile/sitecustomize.py": "1d1041797100a11c8afdc22eb2ea6306cd2c0c6e62b2a15dc3dcc39d96eddfdc",
+    "scratchpad/c03-lora-pilot2-product.py": "7e9503a79ea3a5d6c5ede6dab0e7c876866484ba167bf40be9c3b9c8f23ffa43"
+  },
+  "preparation": "Hold the documented stdin command stream open until both semantic catalog and skill registry constructors finish, or 150 seconds. Warm diagnostic, not cold-start latency or acceptance. Product source unchanged."
+}

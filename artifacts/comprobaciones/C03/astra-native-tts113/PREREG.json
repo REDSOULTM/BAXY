@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-07T10:26:15.598997+00:00",
+  "method": "Source112 with correct PAD, same registered es_MX-claude-high ONNX voice, CPU/default inference scales. Three consumed English responses from audio110/UI104. Compare configured es-419 phonemizer against en-us only; no new model, source language classifier or playback. Transcribe PCM with same registered Parakeet CPU without expected-text prompt/hotwords. Native evidence cannot certify physical audio.",
+  "cases": [
+    "It is 07:14.",
+    "The file read failed because the content is invalid UTF-8.",
+    "I couldn't read the file because it wasn't found in the sandbox."
+  ],
+  "voices": [
+    "es-419",
+    "en-us"
+  ],
+  "model": "D:\\BAXYRuntime\\assets\\voice\\baxy-es\\es_MX-claude-high.onnx",
+  "modelSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+  "configSha256": "1afc81f703c0e4cb3b4d7c0dca096b8b54a98806807f0170cf5eb5557723c12d",
+  "sourceSha256": "979ed2bd0cad5d8762633bf85c6591fbf66ffdd99bf49f71ca3737a7dd61aeaa",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

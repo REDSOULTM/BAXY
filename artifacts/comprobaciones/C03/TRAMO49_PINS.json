@@ -1,0 +1,29 @@
+{
+  "state": "clock reader adopted; C03 ongoing",
+  "files": {
+    "src/baxy_mind/effect_intent.py": "48a37645cc2d75744f5aedb456654e9feb4b390d0138956cbcb6f1e1c2cc37bc",
+    "tests/test_effect_intent.py": "934b23d8f4b5b904756177f45e5888755aa9215950557a3c5d11cebbf75c7fae",
+    "src/Baxy.App/MainWindowViewModel.cs": "92984b4b28c50f75c5c5e4fe1f8c13a7eb935646d3124b03942ad955154c5f1e",
+    "src/Baxy.App/UserMessagePolicy.cs": "b013e8b43130d18d6ab4158988074fe280fd0eb9450954b4d23c97a8dd795d11",
+    "src/baxy_mind/llm.py": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+    "src/baxy_mind/request_reading.py": "5a6c3868f16e2af6aa1a6c1ce5e6861bc7d516a7526225cbadcc6f3a59b31d45",
+    "src/baxy_mind/voice_output.py": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+    "artifacts/comprobaciones/C03/astra-clock49/PREREG.json": "4ecb5f298540ab9174736e520169504139c8dbd33dd0ece8b554054c07e72cec",
+    "artifacts/comprobaciones/C03/astra-clock49/RESULT.json": "6f3d5a61c6622993c991e1b47307cd08eef40cff986a9c38dbfb567a40109d4a",
+    "artifacts/comprobaciones/C03/astra-clock49/paired.json": "a89fe59d81b403ea01daf5f94be7696b2eeeb8b0dbe921e17738d0280a8175d5"
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "validation": {
+    "pytest": {
+      "passed": 2957,
+      "subtests": 115,
+      "skips": 0,
+      "seconds": 45.09
+    },
+    "sourceQuality": "Fast passed",
+    "releaseBuildSeconds": 16.93,
+    "warnings": 0,
+    "errors": 0,
+    "Full": "not run during repair"
+  }
+}

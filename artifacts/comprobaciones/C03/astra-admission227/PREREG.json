@@ -1,0 +1,37 @@
+{
+  "method": "Same four RAW+human213 full cleaned signals and fixed speaking mask226, actual source225 capture loop/Silero/guard. Inert ducker observes only scalar locals from its caller capture loop at actual begin_utterance. No ASR/model needed: queued PCM must match226 hashes/ranges exactly. No thresholds/source changed.",
+  "hypothesis": "The pre-human echo segment opens with fewer than the three consecutive eligible frames already required for interruption.",
+  "scriptSha256": "19419f1c3157d8768a377246ac4a69edfff2ba946a595c5ad5dbfb93a544c1fe",
+  "sourceSha256": "f7b8e662f7f965390ecac32cd82021b918cba628682457b7c8ed4c8c3c4fb6ad",
+  "inputs": [
+    {
+      "human": 0,
+      "condition": "raw_speex",
+      "onset": 59109,
+      "gain": 0.10988562847131873,
+      "sha256": "b5dc49152ae3c977145d6247dbff072e4734b47d3a9d9f90300bac3df3d75ad1"
+    },
+    {
+      "human": 1,
+      "condition": "raw_speex",
+      "onset": 59109,
+      "gain": 0.1233880664696456,
+      "sha256": "0567ffba87a2ddc07791163a582ed142d447d932e4f5be94bc35e23aee4bd35d"
+    },
+    {
+      "human": 2,
+      "condition": "raw_speex",
+      "onset": 59109,
+      "gain": 2.685755280268361,
+      "sha256": "1b10c18bb9d3c21a778cba5b2b18697e2edd470d6790142e106ec72de07c3076"
+    },
+    {
+      "human": 3,
+      "condition": "raw_speex",
+      "onset": 59109,
+      "gain": 0.11946231772179287,
+      "sha256": "9b6de654d62e20b440a55c9ba61359da85b62deef350a76a9b861878cc2c4037"
+    }
+  ],
+  "limitation": "Offline diagnostic with fixed approximate playback mask, not physical counterfactual cancellation or final human acceptance."
+}

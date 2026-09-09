@@ -1,0 +1,92 @@
+FFFFFF                                                                   [100%]
+================================== FAILURES ===================================
+__________ test_progress_is_not_projected_as_a_completed_transition ___________
+
+    def test_progress_is_not_projected_as_a_completed_transition() -> None:
+        payload = llm._compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "acting",
+        }, "es", "haz eso")
+        assert "outcome" not in payload
+>       assert payload["kind"] == "status"
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'kind'
+
+tests\test_c03_request_preservation.py:105: KeyError
+__ test_message_purpose_survives_projection_without_observed_facts[welcome] ___
+
+kind = 'welcome'
+
+    @pytest.mark.parametrize("kind", ["welcome", "conversation", "clarification", "confirmation", "error"])
+    def test_message_purpose_survives_projection_without_observed_facts(kind: str) -> None:
+        # Empty observations do not mean the message has no purpose. Losing this
+        # discriminator made welcome acknowledge the language instruction instead.
+        payload = llm._compose_situation_payload({"kind": kind}, "es", "")
+>       assert payload["kind"] == kind
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'kind'
+
+tests\test_c03_request_preservation.py:114: KeyError
+_ test_message_purpose_survives_projection_without_observed_facts[conversation] _
+
+kind = 'conversation'
+
+    @pytest.mark.parametrize("kind", ["welcome", "conversation", "clarification", "confirmation", "error"])
+    def test_message_purpose_survives_projection_without_observed_facts(kind: str) -> None:
+        # Empty observations do not mean the message has no purpose. Losing this
+        # discriminator made welcome acknowledge the language instruction instead.
+        payload = llm._compose_situation_payload({"kind": kind}, "es", "")
+>       assert payload["kind"] == kind
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'kind'
+
+tests\test_c03_request_preservation.py:114: KeyError
+_ test_message_purpose_survives_projection_without_observed_facts[clarification] _
+
+kind = 'clarification'
+
+    @pytest.mark.parametrize("kind", ["welcome", "conversation", "clarification", "confirmation", "error"])
+    def test_message_purpose_survives_projection_without_observed_facts(kind: str) -> None:
+        # Empty observations do not mean the message has no purpose. Losing this
+        # discriminator made welcome acknowledge the language instruction instead.
+        payload = llm._compose_situation_payload({"kind": kind}, "es", "")
+>       assert payload["kind"] == kind
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'kind'
+
+tests\test_c03_request_preservation.py:114: KeyError
+_ test_message_purpose_survives_projection_without_observed_facts[confirmation] _
+
+kind = 'confirmation'
+
+    @pytest.mark.parametrize("kind", ["welcome", "conversation", "clarification", "confirmation", "error"])
+    def test_message_purpose_survives_projection_without_observed_facts(kind: str) -> None:
+        # Empty observations do not mean the message has no purpose. Losing this
+        # discriminator made welcome acknowledge the language instruction instead.
+        payload = llm._compose_situation_payload({"kind": kind}, "es", "")
+>       assert payload["kind"] == kind
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'kind'
+
+tests\test_c03_request_preservation.py:114: KeyError
+___ test_message_purpose_survives_projection_without_observed_facts[error] ____
+
+kind = 'error'
+
+    @pytest.mark.parametrize("kind", ["welcome", "conversation", "clarification", "confirmation", "error"])
+    def test_message_purpose_survives_projection_without_observed_facts(kind: str) -> None:
+        # Empty observations do not mean the message has no purpose. Losing this
+        # discriminator made welcome acknowledge the language instruction instead.
+        payload = llm._compose_situation_payload({"kind": kind}, "es", "")
+>       assert payload["kind"] == kind
+               ^^^^^^^^^^^^^^^
+E       KeyError: 'kind'
+
+tests\test_c03_request_preservation.py:114: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_progress_is_not_projected_as_a_completed_transition
+FAILED tests/test_c03_request_preservation.py::test_message_purpose_survives_projection_without_observed_facts[welcome]
+FAILED tests/test_c03_request_preservation.py::test_message_purpose_survives_projection_without_observed_facts[conversation]
+FAILED tests/test_c03_request_preservation.py::test_message_purpose_survives_projection_without_observed_facts[clarification]
+FAILED tests/test_c03_request_preservation.py::test_message_purpose_survives_projection_without_observed_facts[confirmation]
+FAILED tests/test_c03_request_preservation.py::test_message_purpose_survives_projection_without_observed_facts[error]
+6 failed, 44 deselected in 0.75s

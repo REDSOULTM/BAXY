@@ -1,0 +1,10 @@
+{
+  "scope": "UI100 terminal replies; source101 validated, UI102 still pending",
+  "files": {
+    "artifacts/comprobaciones/C03/ASTRA-TRAMO-101.md": "d6b4cd540f65808c20f93797adeeaf10334dc124b4df29f535ad1acdd51d2d0c",
+    "artifacts/comprobaciones/C03/PRUEBAS_UI100.md": "6e7314ec5c1d0f66c6e02502a4af554f2aa1be57108f886210dd31139c4fee7b",
+    "artifacts/comprobaciones/C03/astra-ui102/PREREG.json": "5785e0f6c5ec8a9f27838be08e70cce6a08af1ba0650fb7b64d3ac034ac15988",
+    "artifacts/comprobaciones/C03/astra-ui100/PREREG.json": "aac3de500c6d21e7956c37fb9e4bc569286e21bef7046900cae45a03f6c16fab",
+    "artifacts/comprobaciones/C03/astra-ui100/RESOURCES.json": "2ae3d6a72a93992df72beee103bd9455e87296a903df56297af11a2f3210b4b2"
+  }
+}

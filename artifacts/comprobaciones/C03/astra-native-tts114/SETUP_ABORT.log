@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-native-tts114.py", line 45, in <module>
+    assert tts._voice == 'en-us'
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError

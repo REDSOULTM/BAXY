@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scripts\build_webrtc_runtime.py", line 214, in <module>
+    main()
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scripts\build_webrtc_runtime.py", line 210, in main
+    build(args.work_dir.resolve(), args.cmake.resolve())
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scripts\build_webrtc_runtime.py", line 113, in build
+    raise RuntimeError("webrtc_patched_source_mismatch")
+RuntimeError: webrtc_patched_source_mismatch

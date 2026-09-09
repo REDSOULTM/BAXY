@@ -1,0 +1,7 @@
+{
+  "scriptSha256": "2f00f7131ed6d10188f7461040b399b8d49a86126adf0b5e2270e904d146d90a",
+  "purpose": "Distinguish linear path coloration from missing/changed reference in frozen240243. Diagnose only, not an AEC candidate or semantic acceptance.",
+  "method": "One512tap/32ms offline FIR centered on measured246 content lag. Fit alternate4000sample blocks and predict held-out4000sample blocks; remove128edge samples. Fixed ridge1e-6*mean Gram diagonal. Use all uninterrupted clips1,2,3 separately at both stages. No filter/lag/regularization search. Generator->loopback and loopback->microphone measured separately.",
+  "limitations": "Noncausal local fitting uses future signal and pure echo controls; cannot establish a deployable filter or double-talk preservation. Measured template offsets include pitch ambiguity. First clipped243 greeting excluded from fitting because too little held-out audio is available.",
+  "source246Sha256": "0cde7fa5e16fd158eabacc3284696fd4eeb04786de58cf6c5003d90b89ec1115"
+}

@@ -1,0 +1,106 @@
+{
+  "utc": "2026-09-07T22:53:21.626242+00:00",
+  "rows": [
+    {
+      "input": "abre steam",
+      "before": {
+        "folded": "abre steam",
+        "intent": {
+          "operations": [
+            "app.open"
+          ],
+          "evidence": [
+            "steam"
+          ]
+        },
+        "app": "Steam",
+        "compound": null
+      },
+      "after": {
+        "folded": "abre steam",
+        "intent": {
+          "operations": [
+            "app.open"
+          ],
+          "evidence": [
+            "steam"
+          ]
+        },
+        "app": "Steam",
+        "compound": null
+      }
+    },
+    {
+      "input": "Tengo en mente que abras steam",
+      "before": {
+        "folded": "tengo en mente que abras steam",
+        "intent": null,
+        "app": null,
+        "compound": null
+      },
+      "after": {
+        "folded": "tengo en mente que abras steam",
+        "intent": null,
+        "app": null,
+        "compound": null
+      }
+    },
+    {
+      "input": "Si, abre steam",
+      "before": {
+        "folded": "si, abre steam",
+        "intent": null,
+        "app": null,
+        "compound": {
+          "minimum_effects": 2,
+          "required_clause_sequences": [
+            [
+              "app.open"
+            ]
+          ],
+          "clause_requirements": [
+            [
+              "si",
+              []
+            ],
+            [
+              "abre steam",
+              [
+                "app.open"
+              ]
+            ]
+          ]
+        }
+      },
+      "after": {
+        "folded": "abre steam",
+        "intent": {
+          "operations": [
+            "app.open"
+          ],
+          "evidence": [
+            "steam"
+          ]
+        },
+        "app": "Steam",
+        "compound": null
+      }
+    }
+  ],
+  "domainGuard": {
+    "mode": "action",
+    "operation": "app.open",
+    "effect_operations": [
+      "app.open"
+    ],
+    "effect_count": "one",
+    "effect_verification": "one",
+    "question": "",
+    "conversation_kind": ""
+  },
+  "limitations": "Helpers only; no native inference, Core effect, public UI, or audio acceptance. Owner264 remains untouched.",
+  "sourceAfter": {
+    "src/baxy_mind/effect_intent.py": "9e41d80b74d6bccd7f8c3e1b3425a0a9efca283533bf2cdb14b04dcf247144a7",
+    "tests/test_effect_intent.py": "cfc92b9d9862ee6ed7f81a5ee6c06c5c92b2719ca88d8e85a26f94f1f1daf992"
+  }
+}

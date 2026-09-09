@@ -1,0 +1,3 @@
+{"utc": "2026-09-07T12:55:41.071963+00:00", "monotonic": 80597.625, "phase": "direct", "event": "error", "code": "capture_failed:PortAudioError"}
+{"utc": "2026-09-07T12:55:41.073637+00:00", "monotonic": 80597.625, "phase": "direct", "event": "state", "mode": "off", "listening": false, "speaking": false}
+{"utc": "2026-09-07T12:55:41.186254+00:00", "monotonic": 80597.734, "phase": "direct", "event": "state", "mode": "off", "listening": false, "speaking": false}

@@ -1,0 +1,51 @@
+{
+  "utc": "2026-09-08T17:28:11.009250+00:00",
+  "production_verification": "Source436 unchanged. Adds measured462 --lazy-mode on to diagnostic Gemma published/b10809 plus thread-local successful-memory composition profile measured460, and bounded existing requiredFacts transport for exactly one public short value. Hook logs transformations explicitly; no promotion or production source edit.",
+  "method": "Correct463 harness mode inheritance: global reasoning on/budget-1/deepseek like460; successful memory profile unchanged, every other _post explicitly retains enable_thinking false and budget0. Source server-common.cpp1366-1369 proves request-1 inherits global0, so463 was not actual thinking. Verify native reasoning_content, compare nonmemory prompts and keep T1/T8 independent failures visible. Same eight private product437/461 development inputs; only new change against interrupted461 is --lazy-mode on, measured462 with12 identical finals and RAM2832.90->1005.51MiB. Same source436 and profile460. Not a general minimum. These are in a new clean private profile. Candidate changes are declared together as a measured profile460 (model/backend and per-role sampler/thinking). This is candidate verification, not attribution to one flag. Only successful memory status composition uses documentedGemma thinking samplerT1/p.95/k64/min0/no penalties/seed0/max3072 with per-request budget-1; server stays reasoningoff/budget0 for other requests, so confirm reasoning_content on the actual wire. Existing core validation/retries and authorization retained. One-public-value rule has no new effect on these one-record cases; protected/mixed product checks follow if this baseline is useful. No physicalUI/voice/fresh acceptance credit.",
+  "profile_inheritance": "New dedicated LOCALAPPDATA/BAXY child with persistence initially disabled. A synthetic Jordan save is explicitly requested; the exact product enable confirmation is accepted and its bound name save may resume. Later Alvaro declaration does not authorize overwriting that persisted name. All effects and journal remain inside the diagnostic profile; owner memory is outside scope.",
+  "criteria": "T1 honestly requests enabling, T2 accepts exact pending enable and resumes authorized synthetic save. T3/T6 clarify the missing application without inventing a target; T4/T7 perform a private recall despite that pending public clarification. Stored name is Jordan, current conversational name is Alvaro, with correct human subject and no unrequested overwrite. Prose failure is separate from successful private dispatch. Check every final, operation and native call; admission200 is not acceptance.",
+  "cases": [
+    "My name is Jordan. Remember my name.",
+    "confirm",
+    "Abre una aplicación.",
+    "What name have you saved in private memory?",
+    "Me llamo Álvaro.",
+    "Abre una aplicación.",
+    "¿Qué nombre tienes guardado en tu memoria privada?",
+    "¿Cómo me llamo?"
+  ],
+  "source_sha256": {
+    "src/baxy_mind/effect_intent.py": "c20457459bdc76430df3353c18b3b00f41701a8e3075fe65390c594038f5c893",
+    "src/baxy_mind/__main__.py": "c4aa6cfdc95cd78f4f89a03e98436778460c285416be328230495b6efef5c332",
+    "src/baxy_mind/llm.py": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627"
+  },
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "diagnostic_backend_override": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+    "sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f"
+  },
+  "diagnostic_model_override": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf",
+    "sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7",
+    "promotion": false
+  },
+  "sources": {
+    "src/baxy_mind/__main__.py": "c4aa6cfdc95cd78f4f89a03e98436778460c285416be328230495b6efef5c332",
+    "src/baxy_mind/request_reading.py": "992719a876529fabc94ea2fa100ea9a2809d108b843f7d10d41d8a0a3c8f9d41",
+    "src/baxy_mind/effect_intent.py": "c20457459bdc76430df3353c18b3b00f41701a8e3075fe65390c594038f5c893",
+    "src/baxy_mind/llm.py": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+    "src/Baxy.App/MainWindowViewModel.cs": "345129465b89adc3ec568907e24377ff84ab5a34770783e7cf0dc704d1aaaf06",
+    "src/Baxy.App/UserMessagePolicy.cs": "9387bc6797864ee03eb8f051a80e146adde4a017b7ce7217ed972ed6762c611c",
+    "src/Baxy.App/MemoryTurnSession.cs": "f9f0c06490df52bddeaee117e5486209504c39cb96e759bdc58f5338a467b08a",
+    "src/Baxy.App/NaturalMemoryRequestParser.cs": "ed2fe272fb1c30afcf487923522f73125d6f8141e838535bb573e2f09683580f",
+    "src/Baxy.App/PrivateOperationNarration.cs": "24cbbfe7b43c94a9fdfc7eeba64fa0cd68a89a5cd584fa2a73f56c21342fed5b",
+    "src/Baxy.App/MemoryOperationResponseProjection.cs": "3464a3a9bdb4b090c4a900958c2dcf638c76dd847f7361c98f05f73e1e42f127",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "d77ec020d6b53ed55369212d93ff1a48899e466b691a985223e9c48dd89a0d05"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-private-product464-private",
+  "resource_limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "scope": "owned hidden diagnostic process tree, no physical voice; stop only that tree on bound"
+  }
+}

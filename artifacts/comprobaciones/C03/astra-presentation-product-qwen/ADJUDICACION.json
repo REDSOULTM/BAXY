@@ -1,0 +1,86 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Contenido útil y fiel, con gramática mejorable («desactivado de muteo» / «la cerrada»)."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t8": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t9": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t13": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t14": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t15": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t16": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t17": {
+    "verdict": "ÚTIL",
+    "reason": "Contenido útil y fiel, con gramática mejorable («desactivado de muteo» / «la cerrada»)."
+  },
+  "t18": {
+    "verdict": "ÚTIL",
+    "reason": "Cancela y afirma expresamente que no cerró; el resultado coincide con el kernel y la posterior resolución de la ventana."
+  },
+  "t19": {
+    "verdict": "ÚTIL",
+    "reason": "Contenido útil y fiel, con gramática mejorable («desactivado de muteo» / «la cerrada»)."
+  },
+  "t20": {
+    "verdict": "ÚTIL",
+    "reason": "Cierre verificado por app.close y fixture terminada antes de limpieza."
+  },
+  "t21": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  }
+}

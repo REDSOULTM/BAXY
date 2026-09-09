@@ -1,0 +1,9 @@
+[
+  {
+    "variant": "standard_base",
+    "elapsedSeconds": 4.23,
+    "gpuPeakMiB": 1649.56640625,
+    "ramPeakMiB": 1918.71484375,
+    "error": "TypeError: LlmRuntime.begin_request() got an unexpected keyword argument 'timeout_seconds'"
+  }
+]

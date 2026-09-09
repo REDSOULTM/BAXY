@@ -12,6 +12,95 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class PlannerAppBoundaryTests
 {
+    [TestCase("filesystem.search", true, "find", 0, 0, true)]
+    [TestCase("filesystem.list", true, "find", 0, 0, true)]
+    [TestCase("filesystem.known.search", true, "find", 0, 0, false)]
+    [TestCase("filesystem.search", false, "find", 0, 0, false)]
+    [TestCase("filesystem.search", true, "other", 0, 0, false)]
+    [TestCase("filesystem.search", true, "find", 1, 0, false)]
+    [TestCase("filesystem.search", true, "find", 0, 1, false)]
+    [TestCase("filesystem.search", true, "find", null, 0, false)]
+    public void EmptyFileSearchIsDistinguishedFromMissingOrUnverifiedData(
+        string producer, bool verified, string stepId, int? count, int entriesCount, bool expected)
+    {
+        var step = new MindPlanStep("read", "filesystem.read.text", "Lee el archivo.",
+            ["find"], "after_dependencies", null);
+        var entries = new JsonArray();
+        for (int index = 0; index < entriesCount; index++)
+        {
+            entries.Add(new JsonObject { ["resourceId"] = $"fs_{index:x32}" });
+        }
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = stepId,
+            ["operation"] = producer,
+            ["verified"] = verified,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = new JsonObject { ["entries"] = entries, ["count"] = count },
+        });
+        Assert.That(PlanObservationProjector.IsVerifiedEmptyFileSearch(step, observations), Is.EqualTo(expected));
+        Assert.That(PlanObservationProjector.IsVerifiedEmptyFileSearch(
+            step with { Operation = "note.read" }, observations), Is.False);
+    }
+
+    [TestCase("filesystem.search", true, 1, true)]
+    [TestCase("filesystem.list", true, 1, true)]
+    [TestCase("filesystem.known.search", true, 1, false)]
+    [TestCase("filesystem.search", false, 1, false)]
+    [TestCase("filesystem.search", true, 0, false)]
+    [TestCase("filesystem.search", true, 2, false)]
+    public void FileReadUsesOnlyAUniqueVerifiedSandboxIdentity(string producer, bool verified, int count, bool expected)
+    {
+        var step = new MindPlanStep("read", "filesystem.read.text", "Lee el archivo del sandbox.",
+            ["find"], "after_dependencies", null);
+        var entries = new JsonArray();
+        for (int index = 0; index < count; index++)
+        {
+            entries.Add(new JsonObject { ["resourceId"] = $"fs_{index:x32}" });
+        }
+        var observations = new JsonArray(new JsonObject
+        {
+            ["stepId"] = "find",
+            ["operation"] = producer,
+            ["verified"] = verified,
+            ["status"] = OperationStatuses.Completed,
+            ["result"] = new JsonObject { ["entries"] = entries },
+        });
+        Assert.That(PlanObservationProjector.TryGroundIdentityArguments(step, observations, out JsonObject? arguments),
+            Is.EqualTo(expected));
+        if (expected)
+        {
+            Assert.That((string?)arguments!["resourceId"], Is.EqualTo("fs_" + new string('0', 32)));
+        }
+    }
+
+    [TestCase("filesystem.search")]
+    [TestCase("filesystem.list")]
+    public void FileReadPlanRetainsItsVerifiedProducerAcrossTheAppBoundary(string producer)
+    {
+        var plan = new MindPlanResult(
+            "plan", string.Empty,
+            [
+                new MindPlanStep("find", producer, "Localiza el archivo solicitado.",
+                    [], "literal", new JsonObject()),
+                new MindPlanStep("read", "filesystem.read.text", "Lee el archivo solicitado.",
+                    ["find"], "after_dependencies", null),
+            ]);
+        var unrelated = plan with
+        {
+            Steps = [plan.Steps[0] with { Operation = "filesystem.known.search" }, plan.Steps[1]],
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(plan,
+                ["filesystem.read.text"]), Is.SameAs(plan));
+            Assert.That(MindSidecarClient.ValidateExpectedPlanResult(unrelated,
+                ["filesystem.read.text"]), Is.Null);
+            Assert.That(MissionPlanValidator.DependencyAuthorityFields("filesystem.read.text"),
+                Is.EqualTo(new[] { "resourceId" }));
+        });
+    }
+
     [Test]
     public void EmptyClosedSchemasDoNotRequireModelArgumentExtraction()
     {
@@ -263,7 +352,11 @@ public sealed class PlannerAppBoundaryTests
             Assert.That(
                 MindSidecarClient.SelectMessageCompositionProtocolBudget(
                     TimeSpan.FromSeconds(55)),
-                Is.EqualTo(55d));
+                Is.EqualTo(54d));
+            Assert.That(
+                MindSidecarClient.SelectMessageCompositionProtocolBudget(
+                    TimeSpan.FromSeconds(5)),
+                Is.EqualTo(4d));
             Assert.That(
                 MindSidecarClient.SelectMessageCompositionProtocolBudget(
                     TimeSpan.FromSeconds(60)),
@@ -330,6 +423,59 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    [TestCase("Son las 07 horas y 58 minutos.", true)]
+    [TestCase("It is 07 hours and 58 minutes.", true)]
+    [TestCase("Son las 07 horas y 59 minutos.", false)]
+    [TestCase("It is 07 hours and 58 minutes PM.", false)]
+    [TestCase("Son las 07:58, o las 08 horas y 58 minutos.", false)]
+    public void ObservedClockAcceptsNamedUnitsWithoutChangingTheTime(string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-06T10:58:00Z","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
+    [TestCase("Son las 17 horas y 4 minutos.", true)]
+    [TestCase("It is 17 hours and 4 minutes.", true)]
+    [TestCase("Son las 17:04.", true)]
+    [TestCase("Son las 17 horas y 5 minutos.", false)]
+    [TestCase("Son las 17 horas y 40 minutos.", false)]
+    [TestCase("Son las 17:04, o las 18 horas y 4 minutos.", false)]
+    public void SingleDigitMinutesRetainTheExactCapturedClock(string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-06T20:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
+    [TestCase("Hoy es 2026-09-06.", true)]
+    [TestCase("Hoy es 6 de septiembre de 2026.", true)]
+    [TestCase("Es 6 de septiembre.", true)]
+    [TestCase("It is September 6, 2026.", true)]
+    [TestCase("It is 6 September 2026.", true)]
+    [TestCase("Hoy es 7 de septiembre de 2026.", false)]
+    [TestCase("Es 6 de octubre de 2026.", false)]
+    [TestCase("It is September 6, 2025.", false)]
+    [TestCase("Hoy es 2026-09-06, o 2026-09-07.", false)]
+    [TestCase("Son las 22:04.", false)]
+    [TestCase("Hoy es 2026-09-06 y son las 23:04.", false)]
+    public void ObservedDateUsesTheLocalDayAndAllowsNaturalWording(string answer, bool valid)
+    {
+        const string source = """
+            {"kind":"operation","operation":"system.time","polarity":"success","verified":true,"succeeded":true,"observed":{"utc":"2026-09-07T01:04:11.4543673+00:00","localUtcOffsetMinutes":-180}}
+            """;
+        UserMessageDraft draft = UserMessagePolicy.Create(source, UserMessageEvent.Status);
+        string userText = answer.StartsWith("It is", StringComparison.Ordinal) ? "and the date?" : "y la fecha?";
+        string? defect = UserMessagePolicy.ModelResponseRejectionReason(answer, draft, userText);
+        Assert.That(defect, valid ? Is.Null : Is.Not.Null);
+    }
+
     [Test]
     public void LongMissionCompletionCarriesEveryVerifiedOutcomeToTheComposer()
     {
@@ -369,6 +515,44 @@ public sealed class PlannerAppBoundaryTests
                     "Listo, completé la misión.",
                     draft),
                 Is.EqualTo("missing_literal_fact"));
+        });
+    }
+
+    [Test]
+    public void MissionFailureKeepsTheStructuredReasonForTheComposer()
+    {
+        string reason = TurnVisibleFacts.Failure(
+            "handler_unavailable",
+            new JsonObject { ["operation"] = "app.close" });
+        JsonNode source = JsonNode.Parse(
+            MissionNarration.CreateFailureMessage([], reason))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(source["reason"], Is.InstanceOf<JsonObject>());
+            Assert.That(source["polarity"]!.GetValue<string>(), Is.EqualTo("failure"));
+        });
+        Assert.That(source["reason"]!["cause"]!.GetValue<string>(),
+            Is.EqualTo("handler_unavailable"));
+        Assert.That(source["reason"]!["operation"]!.GetValue<string>(),
+            Is.EqualTo("app.close"));
+        Assert.DoesNotThrow(() => UserMessagePolicy.Create(source.ToJsonString(),
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted)));
+    }
+
+    [TestCase("invalid_utf8")]
+    [TestCase("step_data_missing")]
+    public void StructuredMissionFailureRetainsNestedUserLiteralsWithoutTreatingTheObjectAsText(string cause)
+    {
+        string reason = TurnVisibleFacts.Failure(cause, new JsonObject { ["title"] = "Resumen" });
+        string source = MissionNarration.CreateFailureMessage([], reason);
+        UserMessageDraft draft = UserMessagePolicy.Create(source,
+            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        Assert.Multiple(() =>
+        {
+            Assert.That(draft.Source, Is.EqualTo(source));
+            Assert.That(UserMessagePolicy.RequiredLiteralFacts(source), Does.Contain("Resumen"));
+            Assert.That(JsonNode.Parse(draft.Source)!["reason"]!["cause"]!.GetValue<string>(), Is.EqualTo(cause));
         });
     }
 
@@ -469,6 +653,45 @@ public sealed class PlannerAppBoundaryTests
                 UserMessagePolicy.IsSafe("¿Quieres confirmar o cancelar?", draft),
                 Is.False);
             Assert.That(draft.Source, Does.Contain("\"kind\":\"confirmation\""));
+        });
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task WelcomeThatBecomesStaleDuringCompositionCannotPublishOrFailTheNewTurn(bool failed)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Welcome(), UserMessageEvent.Welcome);
+        var pending = new PendingModelMessage(
+            draft, string.Empty, ModelMessageComposer.CreateFacts(draft), "t0");
+        bool stale = false;
+        var published = new List<string>();
+        var failures = new List<string?>();
+        var settled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (text, _, _) => { published.Add(text); settled.TrySetResult(true); return Task.CompletedTask; },
+            failure => { failures.Add(failure); return Task.CompletedTask; },
+            () => { },
+            () => { settled.TrySetResult(true); return Task.CompletedTask; },
+            (_, _, _) =>
+            {
+                // The person begins t1 while the boot greeting is being decoded.
+                stale = true;
+                return Task.FromResult(new ModelMessageCompositionOutcome(
+                    failed ? null : "Hello, welcome!", failed ? "no_response" : null, UsedRecovery: false));
+            },
+            (_, _) => Task.CompletedTask,
+            isStale: _ => stale);
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await queue.CloseAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(published, Is.Empty);
+            Assert.That(failures, Is.Empty);
+            Assert.That(queue.Count, Is.Zero);
         });
     }
 
@@ -873,6 +1096,44 @@ public sealed class PlannerAppBoundaryTests
         Assert.That(
             UserMessagePolicy.IsSafeConversationReply("crea el usuario admin", reply),
             Is.EqualTo(expected));
+    }
+
+    [TestCase("quien soy", "Tú eres el usuario que está hablando conmigo.")]
+    [TestCase("who am I", "You are the user speaking with me.")]
+    [TestCase("explica las cuentas invitadas", "El usuario invitado tiene permisos limitados.")]
+    [TestCase("explain guest accounts", "The user account has limited permissions.")]
+    [TestCase("explica las cuentas", "Los usuarios pueden tener permisos diferentes.")]
+    [TestCase("explain this setting", "This setting controls the user account permissions.")]
+    public async Task ConversationCompositionPreservesUserNounsWithoutNarratingTheRequest(
+        string userText,
+        string reply)
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            "{\"kind\":\"conversation\"}", UserMessageEvent.Conversation);
+        int attempts = 0;
+        ModelMessageCompositionOutcome result = await ModelMessageComposer.ComposeAsync(
+            draft, userText, ModelMessageComposer.CreateFacts(draft),
+            (_, _, _, _, _) =>
+            {
+                attempts++;
+                return Task.FromResult<MindComposedMessage?>(new MindComposedMessage(reply));
+            }, cpuFallback: false, allowRecovery: true, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Text, Is.EqualTo(reply));
+            Assert.That(result.Failure, Is.Null);
+            Assert.That(attempts, Is.EqualTo(1));
+        });
+    }
+
+    [TestCase("I do not know what the user is referring to with this machine.")]
+    [TestCase("Creo que el usuario quiere ayuda.")]
+    [TestCase("I think the user wants help.")]
+    public void ConversationReplyRejectsEmbeddedNarrationOfThePersonsRequest(string reply)
+    {
+        Assert.That(UserMessagePolicy.ConversationReplyRejectionReason("una frase", reply),
+            Is.Not.Null);
     }
 
     [Test]

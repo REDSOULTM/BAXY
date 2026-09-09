@@ -1,0 +1,42 @@
+{
+  "public": {
+    "artifacts/comprobaciones/C03/astra-webrtc248/COMPLETE.json": "ea11bfc7ad4e076a90d6342d8890dbd2f3cc1ba3036e246e19debd628fe8b2b4",
+    "artifacts/comprobaciones/C03/astra-webrtc248/DRIVER.log": "265cf0e3df5596f7b634b82bf230614fee2e247efbcfcd3852991937bcd9d3d9",
+    "artifacts/comprobaciones/C03/astra-webrtc248/DSP_PREREG.json": "6d7e4fa6446f4b8f9f302d29cd320b4dbd805205e9ab21c48e818d6bee73d7e1",
+    "artifacts/comprobaciones/C03/astra-webrtc248/PREREG.json": "14d6de71444f3b13b61ed9ec40e9ae209e3760fd02b147d5be39822a2440c8a6",
+    "artifacts/comprobaciones/C03/astra-webrtc248/RESULTS.json": "1553c170d77baa156b307e31ab664a5c1bd8c0ff2ced621ae4a5aefebbf5a930",
+    "artifacts/comprobaciones/C03/astra-webrtc248/TIMING.json": "023885edae6beb3cd4d0d30065e6cda9620b73c100d64b4f06cd69e0a52a62d5",
+    "artifacts/comprobaciones/C03/astra-product249/COMPLETE.json": "01c612ec57ef6fb9782fdde85494b4a3bd42b172c0ee8029caaa562911990be2",
+    "artifacts/comprobaciones/C03/astra-product249/DRIVER.log": "003d96012c1870fe83bb21d694a1d62b3127940a28f35a22cfd9d9ce49256436",
+    "artifacts/comprobaciones/C03/astra-product249/PREREG.json": "f91784a550716655f2aeb26067e9191c9a0cb3ad8542649a9846016048159510",
+    "artifacts/comprobaciones/C03/astra-product249/RESULTS.json": "41ad2e84184f058a75171c7c3a9f35f9bc861b14391409cd508c865edd076c77",
+    "scratchpad/webrtc_stream248.py": "4a6a31efa6479f79ed595295455f1d183df3c423045e73762e12cc80dfaf1676",
+    "scratchpad/c03-dsp248.py": "769f880f25f373d37616e3ad721947193b37bf66a62cf980138a3cc8d141f45e",
+    "scratchpad/c03-product249.py": "6ea3a6f3d83dd3f820e59ffba0fcb0b229656e1a324cc21a603ad0797eae1bc4",
+    "artifacts/comprobaciones/C03/COMPARACION_LITERAL248_249.md": "9b308768ed57e868903fd13982fe141b20861cbfce433034da876981b24e5124"
+  },
+  "private": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo221-aec3.npz": "ad3bfc26c878958c446555e10499bcdd39f3f0639736e0de1c41cf64ff33ad99",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo232-aec3.npz": "7e19a07d155120b11469d5b0edcf62d7381d0020ee77265abf9fb8a582aa1386",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo243-aec3.npz": "049688f41486cb4d24120f392cdd3139565cde559b6c6a92df27ef8beb41e3fd",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h0-near-aec3.npz": "2880369122595756f41c2ec198ac6d26b0f8919c88c1e1ff03378c9e634370b3",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h0-raw-aec3.npz": "6ce7b5ebf4f9d0c95967828be14a99a11f1e2aebe35da687f58de610b6b4df1a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h1-near-aec3.npz": "8ca9947fa67ddaaa17311b315e0e14035b3c6d2c6e2ceebae54027785a758c59",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h1-raw-aec3.npz": "5caffb3a32f0a47db6f06f35ebb8c2f5fa1b2fae2abcf7d621ab0dc5ca44ea4c",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h2-near-aec3.npz": "bfe903b9d81d2a7972be47989198ba846fb10183b2ca26f7a59bb6f4c0e0393e",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h2-raw-aec3.npz": "cbfa3f5d55f3e806496d89b9b95b9fe1d6902a16cd45568b66086a70e93254ad",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h3-near-aec3.npz": "1699acec0e2a69b8eacf37ef58f89c728ffe25dcf54e1463a1a71a7a57ce50d9",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h3-raw-aec3.npz": "84aa0a507c902af9a38d845e6306c5e9d47a0f35b30e00de5ea0a07889df9ab8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\echo221-aec3.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\echo232-aec3.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\echo243-aec3.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h0-near-aec3.npz": "e8b97e47101ba26fb2cca2dad4a853344fd801dbf4f6d1aec68da2e1db66c3fd",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h0-raw-aec3.npz": "9750d454da3ef036811653bfff691b077ccce01feb632f4391d88c9e84ef7e51",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h1-near-aec3.npz": "3ac1d1846b2eed8572a86a097f6c5cfe4f2776672c21b0a3d9500fa8902f6e5f",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h1-raw-aec3.npz": "09320ad37825db0a0c0ef1a81dc61a9074bb41b236f921a612c82f66934966d8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h2-near-aec3.npz": "cfddc1d6c15863d394c23d2f630a8057f0cf2d82375edb55ee8561099c574334",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h2-raw-aec3.npz": "1dfab551c8c8c3898c865c18969ea60dabd4c46d1f46b43f41d2137c68ac38f5",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h3-near-aec3.npz": "458aa11e74004eeda3b07995bdc4d952d26ba95019e796b765f8ae05288507f6",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product249-private\\h3-raw-aec3.npz": "f61445162e3af8a2eb7cbc96c0e9fb6996d1fc4905a4911ff6a4905cc9347a6e"
+  }
+}

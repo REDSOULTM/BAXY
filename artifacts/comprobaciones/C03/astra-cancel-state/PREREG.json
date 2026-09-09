@@ -1,0 +1,13 @@
+{
+  "kind": "known-development-regression",
+  "utc": "2026-09-06T07:40:17.827662+00:00",
+  "hypothesis": "Status is a resulting state, not a causal explanation; acting is not completed.",
+  "expected": "Six useful faithful replies; cancellation clears pending clarification in ES/EN without a new decision.",
+  "files": {
+    "src/baxy_mind/llm.py": "dc4cf5b1a1685d3f100a84228a713e89ddb30bc20aecec5fff58c44d6b93829f",
+    "src/baxy_mind/__main__.py": "f71b2c934088618ff2cb98b14b09b561fbbf0400b809c1c7ac7e5b66b2f38fba",
+    "src/Baxy.App/MemoryOperationProtection.cs": "82edb9c67d47d7de1a581eabd34dc007476c78f3aec0e08594fea1e144880f8e",
+    "src/Baxy.App/MainWindowViewModel.cs": "5c984350754a5c30c83681f95d27513e231e92b7bf2ec970d41567f82efbb59d",
+    "artifacts/comprobaciones/C03/astra-clarification-cancel.turns.jsonl": "021e7d9bfae8b37bc075b48411cc19f601d0d94a2dd07291284bbf4b2201d3d7"
+  }
+}

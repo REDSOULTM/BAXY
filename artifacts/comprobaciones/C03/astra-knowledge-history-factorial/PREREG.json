@@ -1,0 +1,103 @@
+{
+  "cases": [
+    {
+      "text": "ahora explicame que es Steam",
+      "history": [
+        {
+          "role": "user",
+          "content": "El agua es h2o?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno."
+        },
+        {
+          "role": "user",
+          "content": "El aire es h20?"
+        },
+        {
+          "role": "assistant",
+          "content": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire."
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "text": "Explica con detalle de qué gases se compone el aire y qué papel tiene la humedad.",
+      "history": [
+        {
+          "role": "user",
+          "content": "El agua es h2o?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno."
+        },
+        {
+          "role": "user",
+          "content": "El aire es h20?"
+        },
+        {
+          "role": "assistant",
+          "content": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire."
+        },
+        {
+          "role": "user",
+          "content": "ahora explicame que es Steam"
+        },
+        {
+          "role": "assistant",
+          "content": "Steam es una nube de servicios de la empresa Microsoft que permite ejecutar aplicaciones, juegos y servicios en la nube. Es como una plataforma donde puedes jugar juegos, usar apps o incluso ejecutar computadoras en la nube, todo desde tu dispositivo. Es muy usado en el mundo de los juegos y la productividad."
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "text": "What is an SSID?",
+      "history": [
+        {
+          "role": "user",
+          "content": "El agua es h2o?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sí. El agua es H₂O, es decir, dos átomos de hidrógeno unidos a uno de oxígeno."
+        },
+        {
+          "role": "user",
+          "content": "El aire es h20?"
+        },
+        {
+          "role": "assistant",
+          "content": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno (N₂), oxígeno (O₂), y un poco de dióxido de carbono (CO₂), entre otros. H₂O es agua, no aire."
+        },
+        {
+          "role": "user",
+          "content": "ahora explicame que es Steam"
+        },
+        {
+          "role": "assistant",
+          "content": "Steam es una nube de servicios de la empresa Microsoft que permite ejecutar aplicaciones, juegos y servicios en la nube. Es como una plataforma donde puedes jugar juegos, usar apps o incluso ejecutar computadoras en la nube, todo desde tu dispositivo. Es muy usado en el mundo de los juegos y la productividad."
+        },
+        {
+          "role": "user",
+          "content": "Explica con detalle de qué gases se compone el aire y qué papel tiene la humedad."
+        },
+        {
+          "role": "assistant",
+          "content": "El aire se compone principalmente de nitrógeno (aproximadamente 78%), oxígeno (21%), y pequeñas cantidades de gases como argón (0,93%), dióxido de carbono (0,04%), helio, neón, hidrógeno y otros gases inactivos.  \n\nLa humedad, o vapor de agua, es el agua en estado gaseoso que se mezcla con el aire. Aunque no es un componente principal como el nitrógeno o oxígeno, la humedad influye en el clima, la temperatura percibida (por ejemplo, el aire húmedo se siente más cálido aunque esté a la misma temperatura), y es esencial para procesos biológicos como la fotosíntesis y el ciclo del agua."
+        }
+      ],
+      "language": "en"
+    }
+  ],
+  "stages": [
+    "product_history",
+    "product_no_history",
+    "bare_history",
+    "bare_no_history"
+  ],
+  "method": "Twelve calls on three consumed controls. Two factors: current system policies present/absent, captured preceding published conversation present/absent. Literal input and history, same registered model/backend, temperature0 seed0 max_tokens256 and template. Capture the first model completion directly; do not let a retry or validation hide it. No execution, no product promotion, no reserved acceptance. Reuses documented-profile33 and dialogue-system-layers instruments; new evidence isolates actual preceding history after native integration.",
+  "sourceSha256": "589862d8c9ce7edb8b1311a407a6df0f71c27c075dc4e47dc074ccdf89f6c965",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

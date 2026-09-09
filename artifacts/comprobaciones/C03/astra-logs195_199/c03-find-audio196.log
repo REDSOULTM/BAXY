@@ -1,0 +1,1 @@
+{"seconds": 300.0, "directories": 163514, "files": 1615235, "audioFiles": 471912, "audioFolders": 3252, "errors": 7, "skips": {"known_cache_or_current_capture": 32811, "link_or_junction": 77, "excluded_root": 4}, "remainingDirectories": 61, "completeWithinDeclaredScope": false}

@@ -1,0 +1,15 @@
+{
+  "source": 149,
+  "phases": [
+    0,
+    64,
+    128,
+    192,
+    256,
+    320,
+    384,
+    448
+  ],
+  "method": "Same recorded microphone/reference shifted together; fresh native AEC and Silero states per phase, existing thresholds and raw guard. Phase0 must reproduce clean PCM bit-for-bit. No playback/new capture/source mutation/ASR.",
+  "limits": "Offline detector component, speaking interval estimated from actual event and frame observation clocks. Does not reproduce whole segmentation/VAD reset/UI or prove physical acceptance."
+}

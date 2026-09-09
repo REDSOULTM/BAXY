@@ -1,0 +1,142 @@
+[
+  {
+    "id": "actual437-t7",
+    "variant": "baseline",
+    "seed": 0,
+    "answer": "Jordan",
+    "attempts": 1,
+    "seconds": 0.281,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "actual-enable-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Alright, Jordan. I remember your name. Let's go over this: do you want to confirm or cancel the memory enable action for your private local memory? Choose either confirm or cancel.",
+    "attempts": 1,
+    "seconds": 0.672,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "enable-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "¿Quieres confirmar o cancelar la activación de la memoria local privada?",
+    "attempts": 1,
+    "seconds": 0.406,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "forget-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "¿Quieres confirmar o cancelar olvidar tu color favorito?",
+    "attempts": 1,
+    "seconds": 0.375,
+    "useful": false,
+    "reason": "Irreversibility or export sync risk still omitted."
+  },
+  {
+    "id": "forget-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "So, you want to forget your favorite color. Are you confirming or canceling this action? Choose: confirm, cancel.",
+    "attempts": 1,
+    "seconds": 0.485,
+    "useful": false,
+    "reason": "Irreversibility or export sync risk still omitted."
+  },
+  {
+    "id": "sensitive-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Do you want to confirm or cancel the save of your secret in private local memory?",
+    "attempts": 1,
+    "seconds": 0.39,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "export-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados a Documents/BAXY?",
+    "attempts": 1,
+    "seconds": 0.485,
+    "useful": false,
+    "reason": "Irreversibility or export sync risk still omitted."
+  },
+  {
+    "id": "actual437-t7",
+    "variant": "baseline",
+    "seed": 17,
+    "answer": "Jordan",
+    "attempts": 1,
+    "seconds": 0.172,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "actual-enable-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Alright, Jordan. I remember your name. Let's go over this: do you want to confirm or cancel the memory enable action for your private local memory? Choose either confirm or cancel.",
+    "attempts": 1,
+    "seconds": 0.656,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "enable-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "¿Quieres confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 0.281,
+    "useful": false,
+    "reason": "Missing action/target."
+  },
+  {
+    "id": "forget-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "¿Quieres confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 0.266,
+    "useful": false,
+    "reason": "Irreversibility or export sync risk still omitted."
+  },
+  {
+    "id": "forget-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Do you want to confirm or cancel forgetting your favorite color?",
+    "attempts": 1,
+    "seconds": 0.312,
+    "useful": false,
+    "reason": "Irreversibility or export sync risk still omitted."
+  },
+  {
+    "id": "sensitive-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Do you want to confirm or cancel saving your secret in private local memory?",
+    "attempts": 1,
+    "seconds": 0.36,
+    "useful": true,
+    "reason": "Useful control/pending action with choices."
+  },
+  {
+    "id": "export-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados a Documents/BAXY?",
+    "attempts": 1,
+    "seconds": 0.5,
+    "useful": false,
+    "reason": "Irreversibility or export sync risk still omitted."
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "changedExisting": [],
+  "added": [
+    {
+      "name": "ai-edge-litert",
+      "version": "2.2.0",
+      "wheels": [
+        {
+          "name": "ai_edge_litert-2.2.0-cp312-cp312-win_amd64.whl",
+          "url": "https://files.pythonhosted.org/packages/32/81/818bc82bad14f176c2ac6a42e28750a87aa7b3732ebcc2c94a617de2f26b/ai_edge_litert-2.2.0-cp312-cp312-win_amd64.whl",
+          "hashes": {
+            "sha256": "86815ff3378ac9fa4bb5548bcede1be7d050bd59a8ebaf1c056b7aef69fedcee"
+          }
+        }
+      ]
+    },
+    {
+      "name": "backports-strenum",
+      "version": "1.2.8",
+      "wheels": [
+        {
+          "name": "backports_strenum-1.2.8-py3-none-any.whl",
+          "url": "https://files.pythonhosted.org/packages/bd/d0/a70b2e038cdab32ed2dbbf06d292d010fc208508bb187714306a87384c54/backports_strenum-1.2.8-py3-none-any.whl",
+          "hashes": {
+            "sha256": "fc297cb26971f7d5e15a478a06a78575197f81daea47975771b1aae996dcccf4"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ml-dtypes",
+      "version": "0.5.4",
+      "wheels": [
+        {
+          "name": "ml_dtypes-0.5.4-cp312-cp312-win_amd64.whl",
+          "url": "https://files.pythonhosted.org/packages/f5/f0/0cfadd537c5470378b1b32bd859cf2824972174b51b873c9d95cfd7475a5/ml_dtypes-0.5.4-cp312-cp312-win_amd64.whl",
+          "hashes": {
+            "sha256": "c1a953995cccb9e25a4ae19e34316671e4e2edaebe4cf538229b1fc7109087b7"
+          }
+        }
+      ]
+    }
+  ]
+}

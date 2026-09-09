@@ -1,0 +1,83 @@
+{
+  "utc": "2026-09-08T01:26:15.939779+00:00",
+  "previous_goal_turn": "progress: adopted298/299, verified greeting through product301, Fast299green and UI302reopened. Entire C03 still active.",
+  "hypothesis": "Projection drops the operation identity and leaves only seen.userName. A subject read from the typed system.identity result can distinguish the Windows account from the speaking assistant without a forbidden-phrase guard.",
+  "method": "Same actual293 verified situation, one literal owner request plus three technical ES/EN/name controls. Native registered2507, unchanged source299 compose API/prompt/sampling/guards. Compare existing projection and addition of semantic subject only. No operations, persistence or promotion. Minimal facts replay, not exact UI293 HTTP payload (not captured).",
+  "criteria": "Attribute observed username to Windows account/person, never speaking assistant or saved personal-name memory; retain exact distinct names and accents. Require a reproduced baseline defect plus corrected meaning across controls before adoption.",
+  "inheritance": "Carter_v2 LLM_CONTEXT_MEMORY_REPORT.md user-reference provenance; current account284 preserves the name but UI293 demonstrates role failure. Existing model/template research remains applicable.",
+  "cases": [
+    {
+      "request": "quien soy",
+      "facts": {
+        "situation": {
+          "kind": "operation",
+          "operation": "system.identity",
+          "polarity": "success",
+          "verified": true,
+          "succeeded": true,
+          "observed": {
+            "version": 1,
+            "domain": "REDNOTE",
+            "userName": "usuario",
+            "qualifiedName": "REDNOTE\\usuario"
+          }
+        }
+      }
+    },
+    {
+      "request": "who am I",
+      "facts": {
+        "situation": {
+          "kind": "operation",
+          "operation": "system.identity",
+          "polarity": "success",
+          "verified": true,
+          "succeeded": true,
+          "observed": {
+            "version": 1,
+            "domain": "REDNOTE",
+            "userName": "usuario",
+            "qualifiedName": "REDNOTE\\usuario"
+          }
+        }
+      }
+    },
+    {
+      "request": "cuál es mi usuario",
+      "facts": {
+        "situation": {
+          "kind": "operation",
+          "operation": "system.identity",
+          "polarity": "success",
+          "verified": true,
+          "succeeded": true,
+          "observed": {
+            "version": 1,
+            "domain": "WORKGROUP",
+            "userName": "ana.pérez",
+            "qualifiedName": "WORKGROUP\\ana.pérez"
+          }
+        }
+      }
+    },
+    {
+      "request": "what is my Windows account",
+      "facts": {
+        "situation": {
+          "kind": "operation",
+          "operation": "system.identity",
+          "polarity": "success",
+          "verified": true,
+          "succeeded": true,
+          "observed": {
+            "version": 1,
+            "domain": "LAB",
+            "userName": "dev-user2",
+            "qualifiedName": "LAB\\dev-user2"
+          }
+        }
+      }
+    }
+  ],
+  "subject": "the person's Windows account"
+}

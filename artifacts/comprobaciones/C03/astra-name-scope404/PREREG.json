@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-08T11:41:34.664512+00:00",
+  "hypothesis": "403 proves actual402bT6 and three name controls are answered correctly by existing full mind. Stop intercepting a generic name recall as a persistent read when bounded current human dialogue contains a self-naming clause. No mutable name cache, extraction of a claimed identity, new prompt, or direct answer. Existing DeclaredNameInputPattern only determines relevant conversation scope; existing name recall pattern marks generic ES/EN alternatives. Explicit stored reads and no-current-name context keep the private route.",
+  "owners": [
+    "src/Baxy.App/NaturalMemoryRequestParser.cs",
+    "src/Baxy.App/MainWindowViewModel.cs",
+    "tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs"
+  ],
+  "validation": "Contract-mind App tests before source: current human declaration uses dialogue/no journal read, explicit stored request/third party/assistant-only names retain memory dispatch. Existing new-session persistence and input privacy suites, Fast. Then actual product sequence. Do not claim model answer quality from injected contract fixtures;403 separately measured real mind. No Full yet.",
+  "pending": "403 account controls system.status wrongly chosen;402b pending clarification supersedes explicit private read; private compositionES/redaction and declaration still open. No relaxation or closure."
+}

@@ -1,0 +1,82 @@
+{
+  "utc": "2026-09-08T22:21:26.199905+00:00",
+  "source": "503",
+  "cases": [
+    {
+      "id": "definition-es",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "definition-en",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "ram-new-topic",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "name-es",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "name-en",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "id": "recall-es",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "id": "recall-en",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": []
+    }
+  ],
+  "method": "Two fresh mind sidecars, identical panel/catalogue/model/profile. Private instrumentation logs initial_reply; treatment only drops that keyword before original LlmRuntime.chat. No source changes. Check actual posted conversation role and every memory control, not just visible word-meaning. Reject treatment if it only hides failure, hallucinates effects or regresses names. Development, not fresh human acceptance or model ranking.",
+  "heritage": [
+    "tests/test_turn_policy.py:418-481",
+    "biblioteca/gemma4-agent/documentacion/02_router/research/1_toolcalling.md:5,113-161",
+    "astra-audio-mind502 private HTTP20/21/22"
+  ],
+  "primary_checked": [
+    "https://qwen.readthedocs.io/en/stable/framework/function_call.html",
+    "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507"
+  ],
+  "mechanism": "Official Qwen documents tool selection as a protocol with supplied function instructions. It does not establish that internal selector content is a final BAXY conversation. Local initial_reply skips the correct role payload; inspect that difference causally."
+}

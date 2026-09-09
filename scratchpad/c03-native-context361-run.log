@@ -1,0 +1,22 @@
+{"id": "actual-personal-who", "variant": "reference", "operations": [], "text": "Hola Emmanuel. \u00bfEn qu\u00e9 puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "actual-personal-who", "variant": "native", "operations": [], "text": "Eres Emmanuel.", "finish": "stop", "matches_expected": true}
+{"id": "explicit-windows-with-personal-history", "variant": "reference", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "explicit-windows-with-personal-history", "variant": "native", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "fresh-who-inherited-criterion", "variant": "reference", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "fresh-who-inherited-criterion", "variant": "native", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "assistant-identity", "variant": "reference", "operations": [], "text": "Soy BAXY, tu asistente virtual. \u00bfEn qu\u00e9 puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "assistant-identity", "variant": "native", "operations": [], "text": "Soy BAXY, tu asistente virtual. \u00bfEn qu\u00e9 puedo ayudarte?", "finish": "stop", "matches_expected": true}
+{"id": "both-identities", "variant": "reference", "operations": [], "text": "Hola Emmanuel. Soy BAXY, tu asistente virtual. Y t\u00fa eres Emmanuel. \u00bfEn qu\u00e9 puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "both-identities", "variant": "native", "operations": [], "text": "Soy BAXY, un asistente virtual dise\u00f1ado para ayudarte con tareas locales en tu dispositivo.\n\nEres Emmanuel, el usuario que est\u00e1 interactuando conmigo.", "finish": "stop", "matches_expected": true}
+{"id": "english-personal", "variant": "reference", "operations": [], "text": "You are Jordan.", "finish": "stop", "matches_expected": true}
+{"id": "english-personal", "variant": "native", "operations": [], "text": "You are Jordan.", "finish": "stop", "matches_expected": true}
+{"id": "third-person-reference", "variant": "reference", "operations": [], "text": "Your sister's name is Olivia.", "finish": "stop", "matches_expected": true}
+{"id": "third-person-reference", "variant": "native", "operations": [], "text": "Your sister's name is Olivia.", "finish": "stop", "matches_expected": true}
+{"id": "real-read-preserved", "variant": "reference", "operations": ["baxy_window__active"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "real-read-preserved", "variant": "native", "operations": ["baxy_window__active"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "actual360-first-divergence", "variant": "reference", "operations": ["baxy_filesystem__write__text"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "actual360-first-divergence", "variant": "native", "operations": [], "text": "Hola Emmanuel. \u00bfEn qu\u00e9 puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "actual360-both-primary", "variant": "reference", "operations": [], "text": "Hola Emmanuel. Soy BAXY, tu asistente virtual.\n\nSobre tu pregunta:\n- **Qui\u00e9n soy yo**: Soy un asistente de inteligencia artificial dise\u00f1ado para ayudarte con tareas, informaci\u00f3n y acciones en tu dispositivo.\n- **Qui\u00e9n eres t\u00fa**: Eres Emmanuel, el usuario que est\u00e1 interactuando conmigo.\n\n\u00bfHay algo m\u00e1s en lo que pueda ayudarte?", "finish": "stop", "matches_expected": true}
+{"id": "actual360-both-primary", "variant": "native", "operations": [], "text": "Soy BAXY, tu asistente virtual. T\u00fa eres Emmanuel.", "finish": "stop", "matches_expected": true}
+{"id": "actual360-both-second-probe", "variant": "reference", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "actual360-both-second-probe", "variant": "native", "operations": [], "text": "Soy BAXY, un asistente virtual. T\u00fa eres Emmanuel.", "finish": "stop", "matches_expected": true}

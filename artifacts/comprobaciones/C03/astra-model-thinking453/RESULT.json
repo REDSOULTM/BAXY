@@ -1,0 +1,26 @@
+{
+  "summary": [
+    {
+      "model": "qwen35-4b",
+      "useful": 5,
+      "semantic_or_presentation_failures": 2,
+      "censored": 4,
+      "total": 11
+    },
+    {
+      "model": "gemma-base",
+      "useful": 5,
+      "semantic_or_presentation_failures": 6,
+      "censored": 0,
+      "total": 11
+    },
+    {
+      "model": "gemma-published",
+      "useful": 9,
+      "semantic_or_presentation_failures": 2,
+      "censored": 0,
+      "total": 11
+    }
+  ],
+  "decision": "No promotion. Full thinking on b10809 does not meet useful-complete delivery or latency for these memory queries. Qwen4 censored, not global model rejection; Gemma all complete but trades failures. Source436 unchanged.455 download overlapped so durations are diagnostic, not isolated benchmarks."
+}

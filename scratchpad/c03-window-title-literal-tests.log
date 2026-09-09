@@ -1,0 +1,85 @@
+...................................F........................................................................... [  6%]
+.............................................................. [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 28%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+..........                                                               [100%]
+================================== FAILURES ===================================
+_ PlannerCatalogTests.test_window_title_literals_cross_the_same_schema_gate_without_a_model _
+
+self = <test_planner.PlannerCatalogTests testMethod=test_window_title_literals_cross_the_same_schema_gate_without_a_model>
+
+    def test_window_title_literals_cross_the_same_schema_gate_without_a_model(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "process": {"type": "string", "maxLength": 260},
+                "byTitle": {"type": "boolean"},
+            },
+            "required": ["process"],
+            "additionalProperties": False,
+        }
+        for request, title in (
+            (
+                "cierra la ventana titulada Ventana C03 de prueba",
+                "Ventana C03 de prueba",
+            ),
+            (
+                'Close the window titled "Budget & Forecast � R�vision!".',
+                "Budget & Forecast � R�vision!",
+            ),
+            ("Cierra la window called �Proyecto �mbar�", "Proyecto �mbar"),
+            (
+                "Cierra la ventana con el t�tulo Archivo (versi�n 2)",
+                "Archivo (versi�n 2)",
+            ),
+        ):
+            with self.subTest(request=request):
+                self.assertEqual(
+                    _ground_explicit_arguments("window.resolve", request, schema),
+                    {"process": title, "byTitle": True},
+                )
+        for request in (
+            "Cierra la ventana de la cocina",
+            "Cierra el proceso testhost",
+            "Cierra la ventana titulada",
+            'Close the window titled "unfinished',
+            'Close the window titled "One" and close the window titled "Two"',
+            'Close the window titled "One" and mute the audio',
+            'Close the window titled ""',
+        ):
+            with self.subTest(request=request):
+                self.assertIsNone(
+                    _ground_explicit_arguments("window.resolve", request, schema)
+                )
+        old_schema = {**schema, "properties": {"process": {"type": "string"}}}
+>       self.assertIsNone(
+            _ground_explicit_arguments(
+                "window.resolve", 'Close the window titled "Draft"', old_schema
+            )
+        )
+E       AssertionError: {'process': 'Draft'} is not None
+
+tests\test_planner.py:234: AssertionError
+---------------------------- Captured stdout call -----------------------------
+uuuuuuuuuuu
+=========================== short test summary info ===========================
+FAILED tests/test_planner.py::PlannerCatalogTests::test_window_title_literals_cross_the_same_schema_gate_without_a_model
+1 failed, 1622 passed, 115 subtests passed in 80.27s (0:01:20)

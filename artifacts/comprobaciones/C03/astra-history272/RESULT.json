@@ -1,0 +1,36 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "No puedo abrir Steam directamente, pero puedo ayudarte a verificar si ya está instalado o a iniciar una aplicación específica si lo necesitas. ¿Te gustaría que verifique si Steam está instalado en tu sistema?"
+      }
+    }
+  ],
+  "created": 1788824106,
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "system_fingerprint": "b9980-8014d2cf9",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 40,
+    "prompt_tokens": 2211,
+    "total_tokens": 2251,
+    "prompt_tokens_details": {
+      "cached_tokens": 2192
+    }
+  },
+  "id": "chatcmpl-QxdNUPTtacN3XMUilMqJXNq1oUBnjgGL",
+  "timings": {
+    "cache_n": 2192,
+    "prompt_n": 19,
+    "prompt_ms": 165.189,
+    "prompt_per_token_ms": 8.694157894736842,
+    "prompt_per_second": 115.01976523860547,
+    "predicted_n": 40,
+    "predicted_ms": 1141.509,
+    "predicted_per_token_ms": 28.537725000000002,
+    "predicted_per_second": 35.04133563554908
+  }
+}

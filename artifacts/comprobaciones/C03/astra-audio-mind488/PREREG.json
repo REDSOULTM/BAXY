@@ -1,0 +1,134 @@
+{
+  "utc": "2026-09-08T20:06:21.089356+00:00",
+  "method": "Full production mind sidecar with current catalogue/real app snapshots, source487 negative adversative repair; exact comparison against486 source485 and current registered model/runtime. Actual recovered owner264 indexes44/46/51 with exact immediately relevant pairs, plus five synthetic development controls. catalog.configure then turn.decide only: no provider invocations, volume/mute changes, UI or speech. Observe native requests/replies and route through actual lexical/semantic retrieval/argument guards; no forced selection/reply injection. Wait for actual E5 resources readiness as409; no fake readiness.",
+  "profile_reason": "Current registered runtime baseline for source regression, not a model-capability ranking or claim that defaults are optimal. Model-specific profile research448-484 remains; a bad result here is inspected at its first boundary, not a new default-based model rejection.",
+  "cases": [
+    {
+      "id": "owner44",
+      "request": "pon el volumen al 100",
+      "history": [],
+      "expected": [
+        "audio.volume"
+      ],
+      "arguments": {
+        "level": 100
+      }
+    },
+    {
+      "id": "owner46",
+      "request": "perfecto, necesito lo dessilencies pls",
+      "history": [
+        {
+          "role": "user",
+          "content": "pon el volumen al 100"
+        },
+        {
+          "role": "assistant",
+          "content": "El volumen está al 100, pero el sonido sigue silenciado."
+        }
+      ],
+      "expected": [
+        "audio.mute"
+      ],
+      "arguments": {
+        "muted": false
+      }
+    },
+    {
+      "id": "owner51",
+      "request": "Al 100, pero desmutealo",
+      "history": [
+        {
+          "role": "user",
+          "content": "Ponle volumen al pc"
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué nivel de volumen deseas establecer?"
+        }
+      ],
+      "expected": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "arguments": {
+        "level": 100,
+        "muted": false
+      }
+    },
+    {
+      "id": "clitic-alone",
+      "request": "Desmutéalo",
+      "history": [],
+      "expected": [
+        "audio.mute"
+      ],
+      "arguments": {
+        "muted": false
+      }
+    },
+    {
+      "id": "volume-unmute",
+      "request": "Pon el volumen al 37 y desmutéalo",
+      "history": [],
+      "expected": [
+        "audio.volume",
+        "audio.mute"
+      ],
+      "arguments": {
+        "level": 37,
+        "muted": false
+      }
+    },
+    {
+      "id": "unmute-volume",
+      "request": "Desmutéalo y pon el volumen al 37",
+      "history": [],
+      "expected": [
+        "audio.mute",
+        "audio.volume"
+      ],
+      "arguments": {
+        "level": 37,
+        "muted": false
+      }
+    },
+    {
+      "id": "negative-unmute",
+      "request": "Pon el volumen al 37 pero no quites el silencio",
+      "history": [],
+      "expected": [
+        "audio.volume"
+      ],
+      "arguments": {
+        "level": 37
+      }
+    },
+    {
+      "id": "word-meaning",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "arguments": {}
+    }
+  ],
+  "criteria": "Useful operation-level proposal preserving both compound effects and order; correct grounded level and unmute=false where returned; negative/knowledge controls must not unmute. A plan with arguments to be bound later only proves selection, not provider success. Unresolved owner46/51 remain open until whole product is demonstrated. No reserve, acceptance or physical-resource credit.",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "server": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+  "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "core": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+  "core_sha256": "5bed2b1e4d15c7d21d07ca9c906193778797096dfe62c045ec9298368a3fa6ec",
+  "source_sha256": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py": "29be609fc50ea37788483422c62a5cccf5fe7d409f17c831d1c57fbdb35923d8",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\llm.py": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\__main__.py": "c4aa6cfdc95cd78f4f89a03e98436778460c285416be328230495b6efef5c332"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio-mind488-private",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 90
+  }
+}

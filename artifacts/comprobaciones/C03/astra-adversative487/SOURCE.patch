@@ -1,0 +1,11 @@
+--- before487/effect_intent.py
++++ after487/effect_intent.py
+@@ -11155,7 +11155,7 @@
+             rf"(?:[,;]\s*)?\b(?:(?:y|and)\s+)?(?:finalmente|finally)\b"
+             rf"\s*[,;:]?\s*"
+             rf"{next_effect_head}|"
+-            r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:no|nunca|jamas|never|"
++            r"\b(?:y|and|pero|but)\b\s*(?=[¿?¡!\s]*(?:no|nunca|jamas|never|"
+             r"don'?t|do\s+not)\b)|"
+             r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:gracias|thanks|thank you|"
+             r"por favor|please|que tengas (?:un )?buen dia)\b)|"

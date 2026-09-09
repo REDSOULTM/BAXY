@@ -1,0 +1,110 @@
+[
+  {
+    "case": "echo221",
+    "frames": 1316,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.4409617024154854,
+    "dspP99Ms": 0.7315750000998363
+  },
+  {
+    "case": "echo232",
+    "frames": 1316,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.4343235561856646,
+    "dspP99Ms": 0.5989650060655548
+  },
+  {
+    "case": "h0-near",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.42576562185898553,
+    "dspP99Ms": 0.6014399928972122
+  },
+  {
+    "case": "h0-raw",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.44065896204689176,
+    "dspP99Ms": 0.609339989023283
+  },
+  {
+    "case": "h1-near",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.42579059736382663,
+    "dspP99Ms": 0.5612599983578547
+  },
+  {
+    "case": "h1-raw",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.4322383935529288,
+    "dspP99Ms": 0.5742599925724786
+  },
+  {
+    "case": "h2-near",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.4382552398607248,
+    "dspP99Ms": 0.6972799979848787
+  },
+  {
+    "case": "h2-raw",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.42863996052326875,
+    "dspP99Ms": 0.5776400037575513
+  },
+  {
+    "case": "h3-near",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.4347604310479112,
+    "dspP99Ms": 0.667119998252019
+  },
+  {
+    "case": "h3-raw",
+    "frames": 1021,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.4304167483892222,
+    "dspP99Ms": 0.5670599988661706
+  },
+  {
+    "case": "echo243",
+    "frames": 1317,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.44261040240713595,
+    "dspP99Ms": 0.644771999213842
+  },
+  {
+    "case": "echo254",
+    "frames": 1316,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "dspMeanMs": 0.44093282678250173,
+    "dspP99Ms": 0.6672850009636013
+  }
+]

@@ -1,0 +1,59 @@
+{
+  "utc": "2026-09-07T19:40:56.483637+00:00",
+  "scriptSha256": "158cdba463079b2756ec104ad3c89c68fa4a618713dc6bb1fb585c60dd9d7529",
+  "method": "Source230 VoiceEngine direct session with experimental DTLN512 binding182/180 in place of Speex, actual RAW capture/Silero/Piper/installed baxy.2; no product source, dependency lock, registration or wake changes; four fixed187 TTS texts, one per10seconds after2s warmup. No LLM/App/UI/wake seam, no alternative decoder or thresholds. Record exact microphone/reference/clean with bounded observer after actual Speex process, and VAD/guard decisions.",
+  "criterion": "Actual WASAPI client no adaptive AEC/NS, ready capture, four TTS generation/admission results, actual barge_in/transcript/error counts, exact volume restoration and stopped workers. Zero false interruptions alone is not voice acceptance.",
+  "limitation": "Pure speaker playback echo; no controlled simultaneous physical human speech. Direct mode is an existing product mode; this does not validate wake. Per-frame observer affects scheduling.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "maximumCaptureSeconds": 60,
+  "levelScalar": 0.3,
+  "sourceFiles": {
+    "src/baxy_mind/voice.py": "d615692af02a4b79c7287a53b60310cc4eaf46c46dfdb9d26aba0bbb89891f3a",
+    "src/baxy_mind/voice_capture.py": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  },
+  "probeSha256": "95ec923fcfd15cb8a4dec8de7c2051e9ad77779dc83c3851e26cc311d21e0575",
+  "adapterSha256": "245715cb0cf4163742323ac8d974153b257bcaeb89e4821b2462541d3ba8780e",
+  "candidateModels": [
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\dtln_aec_512_1.tflite",
+      "bytes": 17358136,
+      "sha256": "569f7c3cfac96b1e093229c3ca10b5d892f5b1906105b644e457f8245b4f7383",
+      "gitBlob": "1b51acc723669b7eb079d97a19de2f585f58993e",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_512_1.tflite"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\dtln_aec_512_2.tflite",
+      "bytes": 24163668,
+      "sha256": "fb423d867ab25d5f4716bd369c7126b6c84926175c019b832e71bf21de0e9907",
+      "gitBlob": "e594a37ddf5f7ada1328741836185000a6f52427",
+      "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_512_2.tflite"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\run_aec.py",
+      "bytes": 8687,
+      "sha256": "99e4c179b8a2838bb0f257308e24a28a8565d1f93f40546bbdf585f4305dc317",
+      "copiedFrom": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\run_aec.py"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\LICENSE",
+      "bytes": 1075,
+      "sha256": "aa95acd8c8a7341bfcdb2823694dcbb27a2a4143e860bb52db1ff0f29c85e5a1",
+      "copiedFrom": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\LICENSE"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln180\\README.md",
+      "bytes": 2446,
+      "sha256": "54ccc6bc7761f47a8b2ca68bc846f44b0009593715fdde90501147c2ebeaef37",
+      "copiedFrom": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\README.md"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "time": 84826.156,
+    "caller": "_capture_loop",
+    "referenceCursor": 22534,
+    "micAdcTime": 84826.1349772,
+    "probability": 0.8479276895523071,
+    "energy": 0.006879139284331134,
+    "noiseFloor": 0.00108864847775806,
+    "bargeFrames": 3,
+    "loopbackWritten": 23040,
+    "loopbackOrigin": 84824.75718023333,
+    "loopbackError": null
+  },
+  "statistics": {
+    "mono": {
+      "shape": [
+        512
+      ],
+      "peak": 0.0234375,
+      "rms": 0.006879139284331134
+    },
+    "echo_microphone": {
+      "shape": [
+        512
+      ],
+      "peak": 861.2891845703125,
+      "rms": 238.12686736612565
+    },
+    "echo_reference": {
+      "shape": [
+        4512
+      ],
+      "peak": 4236.0,
+      "rms": 1574.925791761865
+    },
+    "history": {
+      "shape": [
+        4512
+      ],
+      "peak": 4236.0,
+      "rms": 1651.257261165925
+    },
+    "frame": {
+      "shape": [
+        512,
+        1
+      ],
+      "peak": 0.013928874395787716,
+      "rms": 0.004509621287170354
+    },
+    "loopback_ring": {
+      "shape": [
+        64000
+      ],
+      "peak": 4236.0,
+      "rms": 455.0065651655479
+    }
+  },
+  "guardEchoDecision": false,
+  "guardBestScore": 0.34973102527839217,
+  "guardBestLagSamples": 903,
+  "fullRingBestScore": 0.34973102527839217,
+  "fullRingMatchEnd": 21119,
+  "pairedReferenceEnd": 22022,
+  "fullRingMatchLagSamples": 903,
+  "guardHistoryMatchesRing": true
+}

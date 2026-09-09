@@ -1,0 +1,90 @@
+[
+  {
+    "id": "actual437-t7",
+    "answer": "El nombre guardado en mi memoria privada es Jordan.",
+    "finish_reason": "stop",
+    "seconds": 0.297,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "actual437-t4",
+    "answer": "The name saved in private memory is Jordan.",
+    "finish_reason": "stop",
+    "seconds": 0.219,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "name-marta",
+    "answer": "El nombre guardado en mi memoria privada es Marta.",
+    "finish_reason": "stop",
+    "seconds": 0.25,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "compound-name",
+    "answer": "El nombre guardado en mi memoria privada es Ana María.",
+    "finish_reason": "stop",
+    "seconds": 0.266,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "third-person",
+    "answer": "El nombre de tu hermana es Nina.",
+    "finish_reason": "stop",
+    "seconds": 0.218,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "two-records",
+    "answer": "Jordan, Nina",
+    "finish_reason": "stop",
+    "seconds": 0.157,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "memory.enable",
+    "answer": "The memory configuration has been successfully enabled on the PC.",
+    "finish_reason": "stop",
+    "seconds": 0.234,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  },
+  {
+    "id": "memory.save",
+    "answer": "The memory save operation was completed successfully. No sensitive data was saved, and no corrections were made. The PC's state was updated accordingly.",
+    "finish_reason": "stop",
+    "seconds": 0.453,
+    "useful": true,
+    "reason": "Guardado correcto, con detalles innecesarios sobre sensibilidad/correcciones y estado."
+  },
+  {
+    "id": "redacted-es",
+    "answer": "No tengo acceso ni capacidad para almacenar o recuperar información personal, como lo indica el dato de situación proporcionado.",
+    "finish_reason": "stop",
+    "seconds": 0.375,
+    "useful": false,
+    "reason": "Niega acceso y capacidad de memoria pese a lectura verificada."
+  },
+  {
+    "id": "redacted-en",
+    "answer": "Private memory stores sensitive information, such as passwords, personal data, and confidential communications.",
+    "finish_reason": "stop",
+    "seconds": 0.313,
+    "useful": false,
+    "reason": "Responde qué suele almacenar la memoria; no informa el registro secreto protegido observado."
+  },
+  {
+    "id": "mixed-es",
+    "answer": "En la memoria privada, se ha guardado el color favorito del usuario, que es el turquesa, y un secreto que no se ha revelado.",
+    "finish_reason": "stop",
+    "seconds": 0.531,
+    "useful": true,
+    "reason": "Conserva los datos y el alcance solicitado."
+  }
+]

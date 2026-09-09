@@ -1,0 +1,189 @@
+{
+  "speakingSeconds": 24.4738125,
+  "referenceRms20OnsetSeconds": 25.59,
+  "firstNonzeroNearSeconds": 25.5548125,
+  "lastNonzeroNearSeconds": 29.0315,
+  "nearMinusReferenceOnsetMs": -35.1875,
+  "stages": [
+    {
+      "stage": "linear",
+      "nearOnlyObservedLagSamples": 63,
+      "windows": [
+        {
+          "nearSeconds": 25.5548,
+          "nearRms": 0.010829979042170975,
+          "mixtureOutputRms": 0.012165932499626126,
+          "projectionGain": 0.7858567299898709,
+          "normalizedCorrelation": 0.6995610008686852
+        },
+        {
+          "nearSeconds": 25.8548,
+          "nearRms": 0.0016582426561451964,
+          "mixtureOutputRms": 0.010912825691894962,
+          "projectionGain": 0.7308579472488392,
+          "normalizedCorrelation": 0.11105646309469214
+        },
+        {
+          "nearSeconds": 26.1548,
+          "nearRms": 0.0018608100560577742,
+          "mixtureOutputRms": 0.0036953120282033733,
+          "projectionGain": 0.5081250735101417,
+          "normalizedCorrelation": 0.2558712875411694
+        },
+        {
+          "nearSeconds": 26.4548,
+          "nearRms": 0.008235048980345685,
+          "mixtureOutputRms": 0.008345466498282548,
+          "projectionGain": 0.7910694512846755,
+          "normalizedCorrelation": 0.78060293927549
+        },
+        {
+          "nearSeconds": 26.7548,
+          "nearRms": 0.0024839180113936763,
+          "mixtureOutputRms": 0.003664385856265071,
+          "projectionGain": 0.2769797552501233,
+          "normalizedCorrelation": 0.1877517897524124
+        },
+        {
+          "nearSeconds": 27.0548,
+          "nearRms": 0.00013534669183845502,
+          "mixtureOutputRms": 0.0021808109251788043,
+          "projectionGain": 0.660749465121698,
+          "normalizedCorrelation": 0.0410077981569714
+        },
+        {
+          "nearSeconds": 27.3548,
+          "nearRms": 0.005195207677676447,
+          "mixtureOutputRms": 0.005008930434277647,
+          "projectionGain": 0.623821402594129,
+          "normalizedCorrelation": 0.647020712860686
+        },
+        {
+          "nearSeconds": 27.6548,
+          "nearRms": 0.0056652200477925,
+          "mixtureOutputRms": 0.005636619518944925,
+          "projectionGain": 0.9069838126691814,
+          "normalizedCorrelation": 0.9115859002522338
+        },
+        {
+          "nearSeconds": 27.9548,
+          "nearRms": 0.00824481738585506,
+          "mixtureOutputRms": 0.008336472901647365,
+          "projectionGain": 0.9497510097456275,
+          "normalizedCorrelation": 0.9393089535307865
+        },
+        {
+          "nearSeconds": 28.2548,
+          "nearRms": 0.005568653937001171,
+          "mixtureOutputRms": 0.006052056248416032,
+          "projectionGain": 0.8557172026937008,
+          "normalizedCorrelation": 0.7873675944414876
+        },
+        {
+          "nearSeconds": 28.5548,
+          "nearRms": 0.007964692380008392,
+          "mixtureOutputRms": 0.008301087974509956,
+          "projectionGain": 0.9200519722492663,
+          "normalizedCorrelation": 0.8827675306040853
+        },
+        {
+          "nearSeconds": 28.8548,
+          "nearRms": 0.0008737452293335338,
+          "mixtureOutputRms": 0.001743524929879654,
+          "projectionGain": 0.600112029099101,
+          "normalizedCorrelation": 0.30073847153260896
+        }
+      ]
+    },
+    {
+      "stage": "final",
+      "nearOnlyObservedLagSamples": 127,
+      "windows": [
+        {
+          "nearSeconds": 25.5548,
+          "nearRms": 0.010829979042170975,
+          "mixtureOutputRms": 0.005022367333793379,
+          "projectionGain": 0.21115885668217516,
+          "normalizedCorrelation": 0.45533228464782444
+        },
+        {
+          "nearSeconds": 25.8548,
+          "nearRms": 0.0016582426561451964,
+          "mixtureOutputRms": 1.695717679664068e-05,
+          "projectionGain": -1.5311666502025093e-05,
+          "normalizedCorrelation": -0.0014973281717129664
+        },
+        {
+          "nearSeconds": 26.1548,
+          "nearRms": 0.0018608100560577742,
+          "mixtureOutputRms": 0.00018503864016359545,
+          "projectionGain": 0.030649813682784834,
+          "normalizedCorrelation": 0.30822471169696786
+        },
+        {
+          "nearSeconds": 26.4548,
+          "nearRms": 0.008235048980345685,
+          "mixtureOutputRms": 0.006088815247590257,
+          "projectionGain": 0.5197882436681961,
+          "normalizedCorrelation": 0.703007312910261
+        },
+        {
+          "nearSeconds": 26.7548,
+          "nearRms": 0.0024839180113936763,
+          "mixtureOutputRms": 0.0013614290595434155,
+          "projectionGain": 0.20057175727734677,
+          "normalizedCorrelation": 0.365941799894565
+        },
+        {
+          "nearSeconds": 27.0548,
+          "nearRms": 0.00013534669183845502,
+          "mixtureOutputRms": 6.145649755020637e-05,
+          "projectionGain": 0.04524752684983158,
+          "normalizedCorrelation": 0.09964939944703716
+        },
+        {
+          "nearSeconds": 27.3548,
+          "nearRms": 0.005195207677676447,
+          "mixtureOutputRms": 0.0037375355446455866,
+          "projectionGain": 0.474097130135899,
+          "normalizedCorrelation": 0.658999231184556
+        },
+        {
+          "nearSeconds": 27.6548,
+          "nearRms": 0.0056652200477925,
+          "mixtureOutputRms": 0.0020978255604647052,
+          "projectionGain": 0.20050114222466925,
+          "normalizedCorrelation": 0.5414573603940994
+        },
+        {
+          "nearSeconds": 27.9548,
+          "nearRms": 0.00824481738585506,
+          "mixtureOutputRms": 0.007733579273685126,
+          "projectionGain": 0.8738060814983982,
+          "normalizedCorrelation": 0.9315701459372153
+        },
+        {
+          "nearSeconds": 28.2548,
+          "nearRms": 0.005568653937001171,
+          "mixtureOutputRms": 0.0040745581795314685,
+          "projectionGain": 0.5367098858754753,
+          "normalizedCorrelation": 0.7335155094905504
+        },
+        {
+          "nearSeconds": 28.5548,
+          "nearRms": 0.007964692380008392,
+          "mixtureOutputRms": 0.005818215803653499,
+          "projectionGain": 0.5609541272833791,
+          "normalizedCorrelation": 0.7679032909543598
+        },
+        {
+          "nearSeconds": 28.8548,
+          "nearRms": 0.0008737452293335338,
+          "mixtureOutputRms": 0.00048753442871957863,
+          "projectionGain": 0.28673680176237426,
+          "normalizedCorrelation": 0.513881477606032
+        }
+      ]
+    }
+  ]
+}

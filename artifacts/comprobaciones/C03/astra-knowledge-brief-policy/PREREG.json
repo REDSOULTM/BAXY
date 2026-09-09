@@ -1,0 +1,147 @@
+{
+  "cases": [
+    {
+      "id": "c1462d73e8235964a0ee3211585afbc4e44375a76b0810aa350140d450cd8b29",
+      "text": "El agua es h2o?",
+      "source_references": [
+        {
+          "message_id": "msg_cbdeecee1bd9c34246e1",
+          "source": "gemma4_local/sessions/b9ed21dbb103.json",
+          "source_location": "turns/10",
+          "source_sha256": "a1fde529f658d0eb934cee67a48a102d03483efc9d77a2b7a39cee8cdda2d4f6",
+          "timestamp": "2026-05-14T21:06:44",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "id": "c773877cafeef7aa4dc25eb6e61efc90a6eccc7c5426490eccf970b92f80cd5d",
+      "text": "El aire es h20?",
+      "source_references": [
+        {
+          "message_id": "msg_02076eda3d1494e0afc1",
+          "source": "gemma4_local/sessions/b9ed21dbb103.json",
+          "source_location": "turns/12",
+          "source_sha256": "a1fde529f658d0eb934cee67a48a102d03483efc9d77a2b7a39cee8cdda2d4f6",
+          "timestamp": "2026-05-14T21:06:55",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "id": "93617357913a0ea6d4e872cd678164debc36fcef08da79daedb3e5d75c0cfee1",
+      "text": "ahora explicame que es Steam",
+      "source_references": [
+        {
+          "message_id": "msg_f31110d3c897880a0146",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34124",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:40:03-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "message_id": "msg_30caa4f67327daa63903",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34238",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:41:29-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "message_id": "msg_42983dd24e52fe478223",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34314",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:43:23-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "message_id": "msg_f4e1589ca027c14c32a9",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34423",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:45:08-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34124",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:40:03-0400",
+          "turn_id": "20260624_034002_823449f7",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34238",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:41:29-0400",
+          "turn_id": "20260624_034128_68bb0e4f",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34314",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:43:23-0400",
+          "turn_id": "20260624_034323_732fc26e",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34423",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:45:08-0400",
+          "turn_id": "20260624_034508_246cbf8c",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "id": "synthetic-en-definition",
+      "text": "What is an SSID?",
+      "language": "en",
+      "source_references": []
+    },
+    {
+      "id": "synthetic-detail-control",
+      "text": "Explica con detalle de qué gases se compone el aire y qué papel tiene la humedad.",
+      "language": "es",
+      "source_references": []
+    }
+  ],
+  "stages": [
+    "current",
+    "brief_by_request"
+  ],
+  "prompt": {
+    "change": {
+      "old": "un máximo de cuatro frases, salvo que la persona pida un formato concreto.",
+      "new": "la extensión que necesite el pedido. Para una pregunta factual sencilla suele bastar una o dos frases; amplía cuando la persona pida detalle y respeta su formato."
+    },
+    "method": "Only the knowledge-turn policy changes; all system identity, language, context, budgets, sampling and validation remain identical."
+  },
+  "method": "Ten BAXY chat calls: three consumed literal corpus inputs plus two labeled synthetic regression controls. No-history knowledge, temperature0 matching the product caller. Compare current maximum-four-sentences policy with brief-by-request guidance; no effect tools, no source or registered runtime change.",
+  "sourceSha256": "0abd502508a97c5e4022b7d1260909359389f5d303c95aa0a5a60a62777213d3",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

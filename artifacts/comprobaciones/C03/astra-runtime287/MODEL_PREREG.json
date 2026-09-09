@@ -1,0 +1,41 @@
+{
+  "utc": "2026-09-08T00:21:36.087125+00:00",
+  "method": "Only model changes from Qwen3.5 override to existing registered Qwen3-2507. Identical serialized payloads286, same llama binary/ctx/batch/KV/slots. No model promotion, no UI or effects. Compare raw replies for refusal/factuality and finish_reason; one case does not certify C03.",
+  "hashes": {
+    "model": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "server": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "manifest": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+  },
+  "args": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "57485",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cont-batching"
+  ],
+  "criteria": "Production baseline must answer stable visiting request with real named places and no unsupported limitation, invented landmarks, current access guarantees or truncation. Diagnostic deletions cannot substitute for production baseline."
+}

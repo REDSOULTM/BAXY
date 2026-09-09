@@ -1,0 +1,10 @@
+{
+  "completed": false,
+  "violations": [
+    "gpu_bound"
+  ],
+  "gpu_peak_mib": 3800.53515625,
+  "ram_peak_mib": 2176.44140625,
+  "seconds": 5.5,
+  "manifest_unchanged": true
+}

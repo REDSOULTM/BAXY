@@ -1,0 +1,6 @@
+{
+  "command": "scripts/test_source_quality.ps1 -Mode Fast -QualityPython <registered runtime python>",
+  "exit": 1,
+  "cause": "Wrong interpreter chosen for quality checks: runtime Python lacks ruff. Required ruff0.15.22 is in the existing BAXYQuality/source-quality-v1 environment resolved by the script default. No source checks ran; no dependency change or relaxed version.",
+  "next": "Run scripts/test_source_quality.ps1 -Mode Fast with its existing default quality interpreter."
+}

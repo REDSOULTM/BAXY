@@ -1,0 +1,142 @@
+[
+  {
+    "id": "actual437-t7",
+    "variant": "baseline",
+    "seed": 0,
+    "answer": "Jordan",
+    "attempts": 1,
+    "seconds": 0.234,
+    "decision_fact_coverage": true,
+    "reason": "Control idéntico a468/474."
+  },
+  {
+    "id": "actual-enable-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Pending action: enable private local memory.  \nTarget: private local memory.  \nReason for confirmation: memory enable.  \nConsequence: if confirmed, private local memory will be enabled.  \nAvailable choices: confirm, cancel.  \nWhich choice do you want?",
+    "attempts": 1,
+    "seconds": 0.859,
+    "decision_fact_coverage": false,
+    "reason": "Expone categorías como Pending action, Target y memory enable; no voz natural."
+  },
+  {
+    "id": "enable-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Quieres confirmar o cancelar la acción de habilitar la memoria privada local? Elige entre: confirmar, cancelar.",
+    "attempts": 1,
+    "seconds": 0.578,
+    "decision_fact_coverage": true,
+    "reason": "Identifica habilitación pendiente y alternativas, con repetición evitable."
+  },
+  {
+    "id": "forget-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Se está solicitando olvidar un color favorito almacenado en la memoria local. Esta acción no puede revertirse. ¿Qué eliges? confirmar, cancelar",
+    "attempts": 1,
+    "seconds": 0.657,
+    "decision_fact_coverage": true,
+    "reason": "Conserva el carácter irreversible;17 añade una frase abstracta y cambia a trato formal."
+  },
+  {
+    "id": "forget-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "The pending action is to forget a private local memory. The target is the private local memory. The reason for confirmation is that the action cannot be undone. There are no observed consequences yet.  \n\nWhich choice do you want? confirm, cancel",
+    "attempts": 1,
+    "seconds": 0.828,
+    "decision_fact_coverage": false,
+    "reason": "Reduce el objetivo a una memoria privada genérica, perdiendo color favorito; texto burocrático."
+  },
+  {
+    "id": "sensitive-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "The action is to save your secret in private local memory.  \nReason for confirmation: memory sensitive save.  \nConsequence: if confirmed, the secret will be stored in private local memory.  \nIf canceled, the secret will not be saved.  \n\nWhich choice do you want? confirm, cancel?",
+    "attempts": 1,
+    "seconds": 1.0,
+    "decision_fact_coverage": false,
+    "reason": "Expone memory sensitive save como explicación interna."
+  },
+  {
+    "id": "export-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Quieres confirmar la exportación de tus recuerdos guardados a Documents/BAXY por razones de privacidad, o cancelarla? confirmar, cancelar",
+    "attempts": 2,
+    "seconds": 2.094,
+    "decision_fact_coverage": false,
+    "reason": "0 conserva destino pero omite sync.17 conserva destino y posibilidad de sync, con prosa burocrática/formal."
+  },
+  {
+    "id": "actual437-t7",
+    "variant": "baseline",
+    "seed": 17,
+    "answer": "Jordan",
+    "attempts": 1,
+    "seconds": 0.171,
+    "decision_fact_coverage": true,
+    "reason": "Control idéntico a468/474."
+  },
+  {
+    "id": "actual-enable-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Pending action: enable private local memory.  \nTarget: private local memory.  \nReason for confirmation: memory enable.  \nConsequence: if confirmed, private local memory will be enabled.  \nAvailable choices: confirm, cancel.  \nWhich choice do you want?",
+    "attempts": 1,
+    "seconds": 0.891,
+    "decision_fact_coverage": false,
+    "reason": "Expone categorías como Pending action, Target y memory enable; no voz natural."
+  },
+  {
+    "id": "enable-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Quieres confirmar o cancelar la activación de la memoria local privada? Elige: confirmar, cancelar.",
+    "attempts": 1,
+    "seconds": 0.516,
+    "decision_fact_coverage": true,
+    "reason": "Identifica habilitación pendiente y alternativas, con repetición evitable."
+  },
+  {
+    "id": "forget-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "La acción pendiente es olvidar un color favorito almacenado en la memoria local. El motivo para confirmar es que no se puede revertir. No hay consecuencias observadas, solo posibles. ¿Qué opción elige? confirmar, cancelar.",
+    "attempts": 1,
+    "seconds": 0.937,
+    "decision_fact_coverage": true,
+    "reason": "Conserva el carácter irreversible;17 añade una frase abstracta y cambia a trato formal."
+  },
+  {
+    "id": "forget-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "The pending action is to forget a private local memory. The target is the private local memory. The reason for confirmation is that the action cannot be undone. There are no observed consequences.  \n\nWhich choice do you want? confirm, cancel",
+    "attempts": 1,
+    "seconds": 0.781,
+    "decision_fact_coverage": false,
+    "reason": "Reduce el objetivo a una memoria privada genérica, perdiendo color favorito; texto burocrático."
+  },
+  {
+    "id": "sensitive-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "The action is to save your secret in private local memory.  \nReason for confirmation: memory sensitive save.  \nConsequence: if confirmed, the secret will be stored in private local memory.  \nAvailable choices: confirm, cancel.  \nWhich choice do you want?",
+    "attempts": 1,
+    "seconds": 0.891,
+    "decision_fact_coverage": false,
+    "reason": "Expone memory sensitive save como explicación interna."
+  },
+  {
+    "id": "export-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Se está solicitando exportar los recuerdos guardados localmente. El destino es la carpeta Documents/BAXY. La acción podría redirigirse o sincronizarse. La razón para confirmar es la privacidad de la exportación de los recuerdos. ¿Qué opción elige? confirmar, cancelar.",
+    "attempts": 1,
+    "seconds": 1.156,
+    "decision_fact_coverage": true,
+    "reason": "0 conserva destino pero omite sync.17 conserva destino y posibilidad de sync, con prosa burocrática/formal."
+  }
+]

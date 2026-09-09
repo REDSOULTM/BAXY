@@ -1,0 +1,100 @@
+[
+  {
+    "request": "My name is Jordan. Remember my name.",
+    "answers": [
+      "Jordan, I remember your name. The save operation failed because memory was disabled.",
+      "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil",
+    "reason": "Explica el guardado fallido por memoria deshabilitada y ofrece confirmar la activación. No atribuye persistencia al nombre."
+  },
+  {
+    "request": "confirm",
+    "answers": [
+      "Memory configuration enabled.",
+      "The memory has been saved successfully."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The memory has been saved successfully.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "parcial",
+    "reason": "Activación y guardado sí se completaron, pero la prosa es genérica: dice que guardó la memoria, sin identificar el nombre guardado."
+  },
+  {
+    "request": "What name have you saved in private memory?",
+    "answers": [
+      "I don't have any private memories saved."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I don't have any private memories saved.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "Niega recuerdos aunque la lectura completada devuelve un registro name=Jordan. Primera respuesta del compositor ya incorrecta."
+  },
+  {
+    "request": "Me llamo Álvaro.",
+    "answers": [
+      "I understand you're Álvaro. I've noted your name."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I understand you're Álvaro. I've noted your name.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "Responde en inglés a la declaración española. Reconoce Álvaro; no hay un nuevo guardado. La tilde del nombre aporta dos puntos de español y hace que la guardia de idioma no rechace la frase inglesa."
+  },
+  {
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "answers": [
+      "Mi nombre es Jordan."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Mi nombre es Jordan.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "El valor Jordan leído es correcto, pero BAXY se lo atribuye a sí mismo: “Mi nombre”. El dato guardado es del usuario."
+  },
+  {
+    "request": "¿Cómo me llamo?",
+    "answers": [
+      "Tu nombre es Jordan."
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Tu nombre es Jordan.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "El parser genérico lee la persistencia y responde Jordan aunque la declaración conversacional más reciente es Álvaro. Es el alcance aún no reparado por393."
+  }
+]

@@ -1,0 +1,655 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Hello",
+    "terminal": "published_final",
+    "final": "Hey, welcome! How's it going?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 29,
+        "draft_sha256": "8ea22e64323b2d45ba01a719ab840673e4cb353dbdfafc6e70b269b1f34e8ba1",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, welcome! How's it going?"
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "12 por 8 es 96.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "What is fourteen times six?",
+    "terminal": "published_final",
+    "final": "14 times 6 is 84.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 286,
+        "draft_sha256": "1c53c5a989dcf1553070b3f9092c4e1fe74af90ccf6b0582e16533a1c18ab262",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption es como poner un candado en un mensaje. Si alguien lo ve, no entiende nada, pero si tienes la llave, puedes abrirlo y leerlo. Es como en una casa: si no tienes la llave, no puedes entrar. El mensaje se convierte en algo que solo tú y la persona con la llave pueden entender."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 118,
+        "draft_sha256": "0623ac3b112ad70e598950e0926b039d27033d5d6edd2c6283a5e42987d85088",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es como poner un cajón con llave: si alguien quiere leer lo que está dentro, necesita la llave, si no, queda seguro."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 221,
+        "draft_sha256": "440cc6bb30cd9424bd8b5d391258de1261ee68da1c64587eda0c53638e92d09f",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption es como poner un candado en un mensaje. Si alguien lo ve, no entiende nada hasta que ponen la clave. Así, solo tú y la persona que tiene la clave pueden leerlo. Es como un secreto que solo dos personas saben."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 163,
+        "draft_sha256": "5427b8cf15eaa3d6cc56177554bd781553924765f82f65b25e31f546570c2996",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es como poner un candado en un cajón: si alguien abre el cajón, no ve nada, porque el candado protege el contenido. Solo la clave, la contraseña, puede abrirlo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 176,
+        "draft_sha256": "53492f73d0a464769477b70540ce1a298dd3d05a02f7976e915c2b9760791eff",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Es como poner un código de seguridad en un mensaje, así nadie lo lee sin tu permiso. Si alguien lo intenta abrir, no entiende nada. Es como un candado, pero con computadoras."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 135,
+        "draft_sha256": "6db6de694d9606574c590ba859aaece03a85fbf9f459aafd5624038fbbc7c20e",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Está en proceso, pero en resumen: la criptografía es como un código que protege la info, solo los que tienen la clave pueden leerla."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 116,
+        "draft_sha256": "c940cd4a41cd03aea68511cd490333c6a9ff1a7e05384eb2ddd4202254d49f01",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Sigo explicando, pero en simple: es como poner un candado en un mensaje, solo los que tienen la llave pueden leerlo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 313,
+        "draft_sha256": "03a4ffab8bfeecfba0af554553b41036919f968dbb6bda07f462065e6f54b4ea",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption es como poner un candado en un mensaje. Si alguien lo ve, no entiende nada. Solo la persona con la llave puede abrirlo. El mensaje original se transforma en algo complicado, pero si usas la clave correcta, se vuelve legible de nuevo. Es como encriptar una contraseña: si la pierdes, no puedes acceder."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 204,
+        "draft_sha256": "3b6d055453888a894b9d29fe77c53e81175d0047323343304f57775e619272d4",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es como poner un candado en un cajón: si alguien abre el cajón, no ve nada, porque el candado protege el contenido. El mismo mensaje se encripta con una clave, solo la persona con la clave puede leerlo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 400,
+        "draft_sha256": "da7ec03b2b565c8501bbe38d603ff41cac5cfb79e3c151c649ffd45101f64a4b",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption es como poner un candado en un mensaje. Si alguien quiere leerlo, necesita la llave. El texto se convierte en algo que solo la persona con la llave puede entender. Es como encriptar un archivo: el PC lo guarda en forma segura, pero si no tienes la contraseña, no puedes abrirlo. El mensaje original se transforma, pero el contenido sigue ahí, solo que en forma invisible para los demás."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 199,
+        "draft_sha256": "7f588c5b111b5e1e3b0c43b6a279c6940eeda28a1c45bd6edb6299a9bb2c1d1e",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption es como poner un candado en un mensaje. Si alguien lo ve, no entiende nada porque está cifrado. Solo la persona con la llave puede abrirlo y leerlo. Es como un secreto entre dos personas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 149,
+        "draft_sha256": "34a68c8063b5c2d9e45fdb67f46a5003fb254434f937cfbef4c05c394c3965ed",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es como poner un candado en un cajón: si alguien abre el cajón, no ve el contenido, pero tú y la persona que tiene la llave saben qué hay dentro."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 219,
+        "draft_sha256": "85f122f1d59412e46e562cbc71611a87c7930a716b08890caeeb0b940793ff34",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Encryption es como poner un candado en un mensaje. Si alguien lo ve, no entiende nada porque está encriptado. Solo la persona con la clave puede abrirlo y leerlo. Es como un código secreto que protege la información."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 119,
+        "draft_sha256": "284e67b219c08baa442f35fcb966c2ca45fb75f011661cd79dab091f53ffd55b",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es como poner un candado en un cajón: solo tú y la clave pueden abrirlo, y nadie más puede leer lo que está dentro."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 23,
+        "draft_sha256": "4cc65cecc973f850a1fb5e5a113ce6558e464f24dd891f5a8a33b8ab5be0c085",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hola! ¿Cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "responde en spanglish: qué es el cifrado",
+    "terminal": "published_final",
+    "final": "Es un método para encriptar datos, así como *encrypt* y *decrypt* para proteger la información.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 248,
+        "draft_sha256": "f299aaeae529a5cb5a32e96f137d9df4c194d0c2cbb6bf4c30a2fca729f06b04",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "El cifrado es un proceso que convierte información en un formato que solo puede leerse con una clave. Es como encriptar un mensaje: si alguien lo ve, no entiende nada a menos que tenga la clave. Se usa para proteger datos en tránsito o en reposo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 104,
+        "draft_sha256": "4e27a84c749c7bf4c29d2e34ffd8f4a74d06e3dbec4ba37b3eeb8ba400005e86",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es un método para encriptar datos, así como protegerlos de que otros los lean, usando claves secretas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 245,
+        "draft_sha256": "416e3e421a67659355b3b69e2a0ec6748f30550951fd8c36c3091b7c236553d1",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "El cifrado es un proceso que convierte texto o datos en un formato que solo puede leerse con una clave. Es como encriptar un mensaje: si no tienes la clave, no puedes entenderlo. Se usa para proteger la privacidad y seguridad de la información."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 151,
+        "draft_sha256": "4a6bab12fa5ea0c9031c442f7dff2edc4097a7c8d36f1e8474ab900d5df4cc91",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es un método para encriptar información para que solo personas autorizadas la puedan leer, como si fuera un código que solo tú y el receptor saben."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 189,
+        "draft_sha256": "1385d57f4a22144acaa608d0a20477ae16a9bc016b3bd4593af9b66bf5ef0573",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Es un proceso de encriptar datos para protegerlos, como un código que solo los que tienen la clave pueden decodificar. It’s like locking a box with a key — only the right key opens it."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 159,
+        "draft_sha256": "350273b651b9eca329b5e34be29d213cf53a196bff75931d640c1ebd52ab0bd5",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "El cifrado es un proceso que convierte información en texto ininteligible para protegerla, y se usa en el tráfico en línea, pero no está completo todavía."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "third",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 107,
+        "draft_sha256": "36311012c87892549b24197b71a042a7c2eb8db2675374592f4acbfdfed4ba6e",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "El cifrado es encriptar información para que solo quien tiene la clave la pueda leer, y está en progreso."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 271,
+        "draft_sha256": "d61135c11e3b8ee96d9ab5c54825aed7cf99a23ea9cab0385d652c2acfed9ca1",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "El cifrado es un proceso que convierte información en texto o datos que solo pueden ser leídos con una clave. Es como encriptar un mensaje para que solo la persona con la clave lo pueda descifrar. Se usa para proteger datos, como contraseñas o transacciones en línea."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "wrong_language",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 92,
+        "draft_sha256": "232257e589d7fc468acc6e05e4883f9b2e96b311aecaa3e5106704f7bf52488a",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es un método para encriptar información, así como protegerla de que la tengan los demás."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 98,
+        "draft_sha256": "0949a83393ff5cfcfc61b2f73761e1ae64bbaee867ffcff1727cfbf1c0b8008b",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Es un método para encriptar datos, así como *encrypt* y *decrypt* para proteger la información."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

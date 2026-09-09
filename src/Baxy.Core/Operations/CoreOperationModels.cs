@@ -53,7 +53,10 @@ internal sealed record AudioStatusResult(
     string Operation,
     string TargetId,
     string EndpointIdHash,
-    AudioEndpointStateResult State);
+    AudioEndpointStateResult State)
+{
+    public string? EndpointName { get; init; }
+}
 
 internal sealed record NoteResult(
     string NoteId,
@@ -139,7 +142,8 @@ internal sealed record SystemStatusOperatingSystemResult(
     int MinorVersion,
     int BuildNumber,
     string Architecture,
-    bool IsWorkstation);
+    bool IsWorkstation,
+    string Caption);
 
 internal sealed record SystemStatusFailureResult(
     string Scope,

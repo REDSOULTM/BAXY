@@ -1,0 +1,13 @@
+{
+  "kind": "small-synthetic-development-pilot-not-acceptance",
+  "trainCount": 48,
+  "holdoutCount": 12,
+  "origin": "Assistant-authored synthetic examples, basic public concepts and invented device states. Never actual PC observations.",
+  "separation": "The 12 holdout rows have no training answers and disjoint requests/topics or numeric audio states. Existing development probes remain separately evaluated. None is one of the 100 final acceptance turns.",
+  "limits": "Pilot targets language and faithful narration only. Does not certify all eight routes or absence of regression in tool roles.",
+  "llmSha256": "43e71491379ec3b0b87c015c5a5ac9f5174538161f72a7a7b494bf893019544c",
+  "files": {
+    "TRAIN.jsonl": "5675fae305364fe7d944f5f263d6dd6ee8328ff5738a14050c689d67a0cfbe3b",
+    "HOLDOUT.jsonl": "62436f17ff9599bc4c31fc0a89ab853a69ada137e9a0b319ac57606e981abc6b"
+  }
+}

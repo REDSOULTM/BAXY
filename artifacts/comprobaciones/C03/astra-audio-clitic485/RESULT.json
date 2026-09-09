@@ -1,0 +1,40 @@
+{
+  "utc": "2026-09-08T19:50:42.009953+00:00",
+  "source_changed": true,
+  "source_sha256": "7ca3290785ea23a0452ceb36aa6d1b40ff8ca80eb4c413fd7a43e385ea1611c3",
+  "tests_sha256": "9900ebee3d823dbd1cee5b2833d220d4e0e25185e95b0a5c9b5d9b1b1a21bdf4",
+  "baseline": {
+    "failed": 4,
+    "passed": 8,
+    "deselected": 1723,
+    "seconds": 1.4
+  },
+  "focal": {
+    "passed": 12,
+    "skipped": 0,
+    "deselected": 1723,
+    "seconds": 0.65
+  },
+  "owners": {
+    "passed": 3139,
+    "skipped": 0,
+    "seconds": 47.6,
+    "files": [
+      "tests/test_effect_intent.py",
+      "tests/test_turn_policy.py",
+      "tests/test_request_reading.py",
+      "tests/test_compose_contract.py",
+      "tests/test_llm_transport.py"
+    ]
+  },
+  "fast": "source_quality_gate_passed: mode=Fast",
+  "build_seconds": 4.06,
+  "build_warnings": 0,
+  "build_errors": 0,
+  "session": 73834,
+  "session_exit": 0,
+  "full_run": false,
+  "physical_audio_effects": 0,
+  "model_promoted": false,
+  "remaining": "Full mind/context/argument propagation for actual human unmute requests; dessilencies typo not patched or claimed resolved."
+}

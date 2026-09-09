@@ -1,0 +1,3 @@
+{"phase": "download", "size": 3106738272, "sha256": "740185b21d22ceb83a11c3aa62ad5842ef32c70f6096d756bbee85a1e4ec34b8"}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{"phase": "verified", "path": "D:\\BAXYRuntime\\experiments\\models\\gemma4-e2b-inherited-d3b0fed4\\base-gguf\\gemma-4-E2B-it-Q4_K_M.gguf", "sha256": "740185b21d22ceb83a11c3aa62ad5842ef32c70f6096d756bbee85a1e4ec34b8", "elapsedSeconds": 86.61}

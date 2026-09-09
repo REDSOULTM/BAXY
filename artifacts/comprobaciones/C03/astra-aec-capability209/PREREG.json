@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-07T17:55:56.332536+00:00",
+  "purpose": "Query Windows AEC services for default capture endpoints before considering integration",
+  "roles": [
+    "console",
+    "multimedia",
+    "communications"
+  ],
+  "categories": [
+    "other",
+    "communications"
+  ],
+  "audioStarted": false,
+  "recording": false,
+  "globalSettingsChanged": false,
+  "sourceSha256": "b6eb376a0f5ce499f53ff5b2c6f2a94f93af85782cf5af882d17dddb3f9341a0",
+  "driverSha256": "11a478ca26d4c5748bb6e8d3692a92d671879301287d9b5fa7904ffd0e6cd5dd",
+  "source": "https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/AcousticEchoCancellation/cpp/AECCapture.cpp",
+  "productSourceSha256": "1005f17b4358940dada0421019e25f2d97d4d656c236d6dbd4f84f22fcaacdff",
+  "interpretation": "Services/effects describe initialized endpoint streams, not physical cancellation performance. Missing services preclude this integration route on that endpoint."
+}

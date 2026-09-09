@@ -1,0 +1,16 @@
+{"precision": "Q4_K_M", "id": "actual437-t7", "variant": "baseline", "seed": 0, "answer": "Jordan", "attempts": 1, "seconds": 0.766}
+{"precision": "Q4_K_M", "id": "redacted-en", "variant": "baseline", "seed": 0, "answer": "The private memory contains a secret value that has been redacted.", "attempts": 1, "seconds": 1.766}
+{"precision": "Q4_K_M", "id": "actual-enable-en", "variant": "confirmation", "seed": 0, "answer": "Alright, Jordan. I remember your name. We're about to enable private local memory. Do you want to confirm or cancel this action?", "attempts": 1, "seconds": 2.687}
+{"precision": "Q4_K_M", "id": "enable-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 1.25}
+{"precision": "Q4_K_M", "id": "forget-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 1.235}
+{"precision": "Q4_K_M", "id": "forget-en", "variant": "confirmation", "seed": 0, "answer": "Do you want to confirm or cancel forgetting your favorite color?", "attempts": 1, "seconds": 1.609}
+{"precision": "Q4_K_M", "id": "sensitive-en", "variant": "confirmation", "seed": 0, "answer": "Do you want to confirm or cancel saving your secret in private local memory?", "attempts": 1, "seconds": 1.781}
+{"precision": "Q4_K_M", "id": "export-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados?", "attempts": 1, "seconds": 2.094}
+{"precision": "Q4_K_M", "id": "actual437-t7", "variant": "baseline", "seed": 17, "answer": "Jordan", "attempts": 1, "seconds": 0.656}
+{"precision": "Q4_K_M", "id": "redacted-en", "variant": "baseline", "seed": 17, "answer": "A secret value is stored in private memory, with the exact content redacted.", "attempts": 1, "seconds": 2.047}
+{"precision": "Q4_K_M", "id": "actual-enable-en", "variant": "confirmation", "seed": 17, "answer": "Alright, Jordan. I remember your name. We're about to enable private local memory. Do you want to confirm this action or cancel it? Choose: confirm, cancel.", "attempts": 1, "seconds": 3.234}
+{"precision": "Q4_K_M", "id": "enable-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 1.281}
+{"precision": "Q4_K_M", "id": "forget-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 1.266}
+{"precision": "Q4_K_M", "id": "forget-en", "variant": "confirmation", "seed": 17, "answer": "Do you want to confirm or cancel forgetting your favorite color?", "attempts": 1, "seconds": 1.516}
+{"precision": "Q4_K_M", "id": "sensitive-en", "variant": "confirmation", "seed": 17, "answer": "Do you want to confirm or cancel saving your secret in private local memory?", "attempts": 1, "seconds": 1.734}
+{"precision": "Q4_K_M", "id": "export-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados?", "attempts": 1, "seconds": 2.562}

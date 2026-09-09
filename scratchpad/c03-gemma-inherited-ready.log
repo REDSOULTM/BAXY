@@ -1,0 +1,23 @@
+Preregistered 9 cases x 2 variants
+{"variant": "standard_base", "readySeconds": 3.41}
+{"variant": "standard_base", "turnId": "t8", "seconds": 1.297}
+{"variant": "standard_base", "turnId": "t9", "seconds": 0.891}
+{"variant": "standard_base", "turnId": "t10", "seconds": 0.953}
+{"variant": "standard_base", "turnId": "t13", "seconds": 0.672}
+{"variant": "standard_base", "turnId": "t14", "seconds": 0.859}
+{"variant": "standard_base", "turnId": "t15", "seconds": 1.0}
+{"variant": "standard_base", "turnId": "t2", "seconds": 0.453}
+{"variant": "standard_base", "turnId": "t4", "seconds": 0.407}
+{"variant": "standard_base", "turnId": "t6", "seconds": 0.468}
+{"variant": "standard_base", "elapsedSeconds": 10.56, "gpuPeakMiB": 1679.56640625, "ramPeakMiB": 2263.32421875, "error": null}
+{"variant": "inherited_lora", "readySeconds": 3.5}
+{"variant": "inherited_lora", "turnId": "t8", "seconds": 1.203}
+{"variant": "inherited_lora", "turnId": "t9", "seconds": 1.0}
+{"variant": "inherited_lora", "turnId": "t10", "seconds": 0.968}
+{"variant": "inherited_lora", "turnId": "t13", "seconds": 0.922}
+{"variant": "inherited_lora", "turnId": "t14", "seconds": 0.907}
+{"variant": "inherited_lora", "turnId": "t15", "seconds": 1.062}
+{"variant": "inherited_lora", "turnId": "t2", "seconds": 0.5}
+{"variant": "inherited_lora", "turnId": "t4", "seconds": 0.469}
+{"variant": "inherited_lora", "turnId": "t6", "seconds": 0.469}
+{"variant": "inherited_lora", "elapsedSeconds": 11.16, "gpuPeakMiB": 1783.56640625, "ramPeakMiB": 2268.05078125, "error": null}

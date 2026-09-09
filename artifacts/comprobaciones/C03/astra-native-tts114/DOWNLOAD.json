@@ -1,0 +1,52 @@
+{
+  "utc": "2026-09-07T10:35:57.536143+00:00",
+  "revision": "1162a9173d0ce503555aed757976b7a9912eae4c",
+  "modelCard": "# Model card for john (medium)\n\n* Language: en_US (English, United States)\n* Speakers: 1\n* Quality: medium\n* Samplerate: 22,050Hz\n\n## Dataset\n\n* URL: https://librivox.org\n* License: public domain\n\n## Training\n\nSee: https://brycebeattie.com/files/tts/\n\nUS English male voice. Single Speaker. Finetuned from Kristin (above) on medium quality settings for an additional 600 epochs. I put together the dataset, which ended up with about 12.5 hours of recordings. All recordings came from LibriVox.org.\n",
+  "files": [
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\c03-john114\\MODEL_CARD",
+      "url": "https://huggingface.co/rhasspy/piper-voices/resolve/1162a9173d0ce503555aed757976b7a9912eae4c/en/en_US/john/medium/MODEL_CARD",
+      "bytes": 498,
+      "sha256": "a056da65cd70dcbda96fc3420fe8d3442dbf3c8b75f49cdf800a715b42e299d1",
+      "upstream": {
+        "type": "file",
+        "oid": "6f590d35c731e8f5a6c4fe20a39c9abb0609e666",
+        "size": 498,
+        "path": "en/en_US/john/medium/MODEL_CARD"
+      }
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\c03-john114\\en_US-john-medium.onnx.json",
+      "url": "https://huggingface.co/rhasspy/piper-voices/resolve/1162a9173d0ce503555aed757976b7a9912eae4c/en/en_US/john/medium/en_US-john-medium.onnx.json",
+      "bytes": 4965,
+      "sha256": "af60f177b6b550f3d7a302720c0fb89e7f94a82b5dca464775ef63b1c69ba09a",
+      "upstream": {
+        "type": "file",
+        "oid": "dc2a9b58e311033bb24d6cee2d8ec5be2e8c3c9d",
+        "size": 4965,
+        "path": "en/en_US/john/medium/en_US-john-medium.onnx.json"
+      }
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\c03-john114\\en_US-john-medium.onnx",
+      "url": "https://huggingface.co/rhasspy/piper-voices/resolve/1162a9173d0ce503555aed757976b7a9912eae4c/en/en_US/john/medium/en_US-john-medium.onnx",
+      "bytes": 63531379,
+      "sha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+      "upstream": {
+        "type": "file",
+        "oid": "839d9893af6df45f841c75fc1c4ab153abc6d7ca",
+        "size": 63531379,
+        "lfs": {
+          "oid": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+          "size": 63531379,
+          "pointerSize": 133
+        },
+        "xetHash": "c4fc3ea5e6406272e646994cf70fccc5b1c75d8af4a58b2863cb19d4281be5b7",
+        "path": "en/en_US/john/medium/en_US-john-medium.onnx"
+      }
+    }
+  ],
+  "method": "Only public assets downloaded; no user data uploaded. English male medium Piper voice, dataset listed as public domain. Existing configured voice locations contain Spanish baxy-es only; home .gemma4 configured candidates absent. Experiment only, no registered runtime mutation or promotion.",
+  "heritage": "biblioteca/carter/legacy/Carter_v2/MODEL_TTS_TOURNAMENT_REPORT.md:69-73; 2026-05-02, per-language voices; scaffold latency is not measured acceptance.",
+  "hypothesis": "Source112 correct PAD and English eSpeak still fail two contents with Spanish voice (native113). Test English-trained john medium using same engine and three consumed texts; no classifier or new backend."
+}

@@ -1,0 +1,347 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "Son las 07:29.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "6a18bfdb53c1001d06a780bb23719f6c5ad1eba16d383b224147de8e7defaa99",
+        "payload": {
+          "clock": "07:29"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:29:55.7969907+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 07:29."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Dime la hora y el estado del audio.",
+    "terminal": "published_final",
+    "final": "La hora local es 07:30. El volumen está en el nivel 100. El audio está mutado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 80,
+        "draft_sha256": "f9fa7458ddfd2ace20ab7bbb42c620111da1bd830c60e388464efddbb932a8ad",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "07:30",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T10:30:25.5593103+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T10:30:25.5593103+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 07:30. El volumen está en el nivel 100. El audio está mutado."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 7:30.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 10,
+        "draft_sha256": "d053e1e1b05a799551a05d371a082172ca8325dfa8aa70a21e5c17f128c37faf",
+        "payload": {
+          "clock": "07:30"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:30:30.6489145+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 7:30."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Tell me the time and the volume.",
+    "terminal": "published_final",
+    "final": "The local clock is 07:30. The volume level is 100. The audio is muted.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 70,
+        "draft_sha256": "d64647cf24cc7fa2954717bfcffcf0cbef8d52eddd791dfe238f5650842c1d3e",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "07:30",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T10:30:31.3835869+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T10:30:31.3835869+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "The local clock is 07:30. The volume level is 100. The audio is muted."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "It's 7:30, amigos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 18,
+        "draft_sha256": "9c1e53852d2f900cb1570962b707d63cabb2b483cae2d1984125265435cd7119",
+        "payload": {
+          "clock": "07:30"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T10:30:32.6731029+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 7:30, amigos."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What time is it y cómo está el audio?",
+    "terminal": "published_final",
+    "final": "Es 07:30 local. El audio está mutado, nivel 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock",
+          "kind",
+          "outcome",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 49,
+        "draft_sha256": "4f7ec0bf7797ea6b408ef874a43df33c13fa9c8f07787a609260aff57f8f74bf",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "clock": "07:30",
+          "seen": {
+            "muted": true,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T10:30:33.4206155+00:00\\\",\\\"localUtcOffsetMinutes\\\":-180}}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}}}\"],\"observed\":{\"utc\":\"2026-09-06T10:30:33.4206155+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "Es 07:30 local. El audio está mutado, nivel 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "¡Hola! ¿Qué onda, compañero? Bienvenido a este lado, ¿listo para meterse en el rollo?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 90,
+        "draft_sha256": "cc050cd5bc3d32c721efae7e7bcc2da06662f1d4faa959fcb15043bec5ed61c6",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hola! ¿Qué onda, compañero? Bienvenido a este lado, ¿listo para meterse en el rollo?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "published_final",
+    "final": "Encryption es como poner un código a los mensajes para que solo las personas con la clave puedan leerlos. Es como si escribieras un mensaje en un libro y lo guardaras con un candado: nadie más puede abrirlo sin la llave. Así se protege la información en internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, en caso de que se pierdan o se dañen. Es como tener un respaldo del libro en caso de que lo pierdas o lo destruyan.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "Explain gravity, pero sin tecnicismos",
+    "terminal": "published_final",
+    "final": "Gravity es como si todo lo que está cerca de ti, como la Tierra, tuviera un poder para tirar todo lo que está cerca hacia abajo. Es por eso que cuando caes, no vuelves a subir, y las cosas caen al suelo.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t11",
+    "request": "no abras Paint",
+    "terminal": "published_final",
+    "final": "No abriré Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "71ea952a0ab66f6e5bfefa424865bfb9fbb012012975edfd991e7a3c86c50b05",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abriré Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "Lima",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

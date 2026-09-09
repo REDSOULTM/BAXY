@@ -1,0 +1,342 @@
+[
+  {
+    "model": "qwen35-4b",
+    "backend": "b9980",
+    "props_context": 4096,
+    "total_slots": 3,
+    "slots": [
+      {
+        "id": 0,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 1,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 2,
+        "n_ctx": 4096,
+        "is_processing": false
+      }
+    ],
+    "rendered_sha256": "c29e691bf082fabf142bd46daa541e50f986aa6baf8a39624ec76e5f71486fc7",
+    "rendered_characters": 1286,
+    "generation_settings": {
+      "params": {
+        "seed": 4294967295,
+        "temperature": 0.800000011920929,
+        "dynatemp_range": 0.0,
+        "dynatemp_exponent": 1.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "top_n_sigma": -1.0,
+        "xtc_probability": 0.0,
+        "xtc_threshold": 0.10000000149011612,
+        "typical_p": 1.0,
+        "repeat_last_n": 64,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "dry_multiplier": 0.0,
+        "dry_base": 1.75,
+        "dry_allowed_length": 2,
+        "dry_penalty_last_n": -1,
+        "mirostat": 0,
+        "mirostat_tau": 5.0,
+        "mirostat_eta": 0.10000000149011612,
+        "max_tokens": -1,
+        "n_predict": -1,
+        "n_keep": 0,
+        "n_discard": 0,
+        "ignore_eos": false,
+        "stream": false,
+        "n_probs": 0,
+        "min_keep": 0,
+        "chat_format": "Content-only",
+        "reasoning_format": "none",
+        "reasoning_in_content": false,
+        "generation_prompt": "",
+        "samplers": [
+          "penalties",
+          "dry",
+          "top_n_sigma",
+          "top_k",
+          "typ_p",
+          "top_p",
+          "min_p",
+          "xtc",
+          "temperature"
+        ],
+        "speculative.types": "none",
+        "timings_per_token": false,
+        "post_sampling_probs": false,
+        "backend_sampling": false,
+        "lora": []
+      },
+      "n_ctx": 4096
+    },
+    "violations": [],
+    "gpu_peak_mib": 3159.5625,
+    "ram_peak_mib": 958.94921875,
+    "seconds": 6.0
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "props_context": 4096,
+    "total_slots": 3,
+    "slots": [
+      {
+        "id": 0,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 1,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 2,
+        "n_ctx": 4096,
+        "is_processing": false
+      }
+    ],
+    "rendered_sha256": "c29e691bf082fabf142bd46daa541e50f986aa6baf8a39624ec76e5f71486fc7",
+    "rendered_characters": 1286,
+    "generation_settings": {
+      "params": {
+        "seed": 4294967295,
+        "temperature": 0.800000011920929,
+        "dynatemp_range": 0.0,
+        "dynatemp_exponent": 1.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "top_n_sigma": -1.0,
+        "xtc_probability": 0.0,
+        "xtc_threshold": 0.10000000149011612,
+        "typical_p": 1.0,
+        "repeat_last_n": 64,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "dry_multiplier": 0.0,
+        "dry_base": 1.75,
+        "dry_allowed_length": 2,
+        "dry_penalty_last_n": 64,
+        "mirostat": 0,
+        "mirostat_tau": 5.0,
+        "mirostat_eta": 0.10000000149011612,
+        "adaptive_target": -1.0,
+        "adaptive_decay": 0.8999999761581421,
+        "max_tokens": -1,
+        "n_predict": -1,
+        "n_keep": 0,
+        "n_discard": 0,
+        "ignore_eos": false,
+        "stream": false,
+        "n_probs": 0,
+        "min_keep": 0,
+        "chat_format": "Content-only",
+        "reasoning_format": "none",
+        "reasoning_in_content": false,
+        "generation_prompt": "",
+        "samplers": [
+          "penalties",
+          "dry",
+          "top_n_sigma",
+          "top_k",
+          "typ_p",
+          "top_p",
+          "min_p",
+          "xtc",
+          "temperature"
+        ],
+        "speculative.types": "none",
+        "timings_per_token": false,
+        "post_sampling_probs": false,
+        "backend_sampling": false,
+        "lora": []
+      },
+      "n_ctx": 4096
+    },
+    "violations": [],
+    "gpu_peak_mib": 3168.5390625,
+    "ram_peak_mib": 965.7421875,
+    "seconds": 3.719
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b9980",
+    "props_context": 4096,
+    "total_slots": 3,
+    "slots": [
+      {
+        "id": 0,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 1,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 2,
+        "n_ctx": 4096,
+        "is_processing": false
+      }
+    ],
+    "rendered_sha256": "e0d687c31fec87dd465e270a9d775a7d4bcfeafa6be12ec4c9c2804f3b176c8e",
+    "rendered_characters": 1242,
+    "generation_settings": {
+      "params": {
+        "seed": 4294967295,
+        "temperature": 1.0,
+        "dynatemp_range": 0.0,
+        "dynatemp_exponent": 1.0,
+        "top_k": 64,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "top_n_sigma": -1.0,
+        "xtc_probability": 0.0,
+        "xtc_threshold": 0.10000000149011612,
+        "typical_p": 1.0,
+        "repeat_last_n": 64,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "dry_multiplier": 0.0,
+        "dry_base": 1.75,
+        "dry_allowed_length": 2,
+        "dry_penalty_last_n": -1,
+        "mirostat": 0,
+        "mirostat_tau": 5.0,
+        "mirostat_eta": 0.10000000149011612,
+        "max_tokens": -1,
+        "n_predict": -1,
+        "n_keep": 0,
+        "n_discard": 0,
+        "ignore_eos": false,
+        "stream": false,
+        "n_probs": 0,
+        "min_keep": 0,
+        "chat_format": "Content-only",
+        "reasoning_format": "none",
+        "reasoning_in_content": false,
+        "generation_prompt": "",
+        "samplers": [
+          "penalties",
+          "dry",
+          "top_n_sigma",
+          "top_k",
+          "typ_p",
+          "top_p",
+          "min_p",
+          "xtc",
+          "temperature"
+        ],
+        "speculative.types": "none",
+        "timings_per_token": false,
+        "post_sampling_probs": false,
+        "backend_sampling": false,
+        "lora": []
+      },
+      "n_ctx": 4096
+    },
+    "violations": [],
+    "gpu_peak_mib": 1669.56640625,
+    "ram_peak_mib": 2647.1328125,
+    "seconds": 6.36
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "props_context": 4096,
+    "total_slots": 3,
+    "slots": [
+      {
+        "id": 0,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 1,
+        "n_ctx": 4096,
+        "is_processing": false
+      },
+      {
+        "id": 2,
+        "n_ctx": 4096,
+        "is_processing": false
+      }
+    ],
+    "rendered_sha256": "e0d687c31fec87dd465e270a9d775a7d4bcfeafa6be12ec4c9c2804f3b176c8e",
+    "rendered_characters": 1242,
+    "generation_settings": {
+      "params": {
+        "seed": 4294967295,
+        "temperature": 1.0,
+        "dynatemp_range": 0.0,
+        "dynatemp_exponent": 1.0,
+        "top_k": 64,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "top_n_sigma": -1.0,
+        "xtc_probability": 0.0,
+        "xtc_threshold": 0.10000000149011612,
+        "typical_p": 1.0,
+        "repeat_last_n": 64,
+        "repeat_penalty": 1.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "dry_multiplier": 0.0,
+        "dry_base": 1.75,
+        "dry_allowed_length": 2,
+        "dry_penalty_last_n": 64,
+        "mirostat": 0,
+        "mirostat_tau": 5.0,
+        "mirostat_eta": 0.10000000149011612,
+        "adaptive_target": -1.0,
+        "adaptive_decay": 0.8999999761581421,
+        "max_tokens": -1,
+        "n_predict": -1,
+        "n_keep": 0,
+        "n_discard": 0,
+        "ignore_eos": false,
+        "stream": false,
+        "n_probs": 0,
+        "min_keep": 0,
+        "chat_format": "Content-only",
+        "reasoning_format": "none",
+        "reasoning_in_content": false,
+        "generation_prompt": "",
+        "samplers": [
+          "penalties",
+          "dry",
+          "top_n_sigma",
+          "top_k",
+          "typ_p",
+          "top_p",
+          "min_p",
+          "xtc",
+          "temperature"
+        ],
+        "speculative.types": "none",
+        "timings_per_token": false,
+        "post_sampling_probs": false,
+        "backend_sampling": false,
+        "lora": []
+      },
+      "n_ctx": 4096
+    },
+    "violations": [],
+    "gpu_peak_mib": 1663.7890625,
+    "ram_peak_mib": 2638.96484375,
+    "seconds": 5.937
+  }
+]

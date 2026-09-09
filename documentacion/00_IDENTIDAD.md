@@ -64,6 +64,14 @@ justifica con «es lo que yo pido»**. Se justifica midiendo lo que pide cualqui
 La universalidad se mide contra **acentos latinos e inglés** — no contra las 13
 lenguas del Baxy anterior, pero tampoco contra una sola voz.
 
+**Aclaración del dueño, 2026-09-06:** soportar spanglish significa comprender a
+quien mezcla español e inglés, incluidos nombres como Steam o PlayStation.
+Puede responder naturalmente en español; no se exige alternar idiomas ni una
+proporción de palabras inglesas. Se respeta un idioma solicitado expresamente.
+Una bienvenida con palabras en ambos idiomas es válida. Las explicaciones
+simples no necesitan ser exhaustivas: la persona puede pedir profundizar.
+Esto no permite contradicciones, hechos inventados ni éxitos sin verificar.
+
 ## Accesibilidad — central en el motor, modo en la interfaz
 
 Se perdió por el camino en el BAXY actual y **vuelve**. La forma exacta la fijó

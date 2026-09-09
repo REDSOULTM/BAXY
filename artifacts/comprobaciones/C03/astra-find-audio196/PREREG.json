@@ -1,0 +1,44 @@
+{
+  "utc": "2026-09-07T16:20:09.571193+00:00",
+  "authorization": "Owner explicitly permits searching previous projects or whole PC for voice recordings.",
+  "roots": [
+    "C:/",
+    "D:/"
+  ],
+  "priorityProjects": [
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\FunctionGemma"
+  ],
+  "excluded": [
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO",
+    "C:\\Windows",
+    "C:\\$Recycle.Bin",
+    "D:\\$Recycle.Bin",
+    "C:\\System Volume Information",
+    "D:\\System Volume Information"
+  ],
+  "prunedNames": [
+    ".git",
+    "WinSxS",
+    "__pycache__",
+    "node_modules"
+  ],
+  "extensions": [
+    ".aac",
+    ".aif",
+    ".aiff",
+    ".flac",
+    ".m4a",
+    ".mp3",
+    ".ogg",
+    ".opus",
+    ".pcm",
+    ".wav",
+    ".webm",
+    ".wma"
+  ],
+  "method": "Names and stat metadata only; no content reads or external transmission. Skip junctions/reparse points and this current evidence tree. Current private C03 captures omitted as already known. 300s bounded pass, preserve frontier if incomplete.",
+  "privacy": "Detailed paths remain in LOCALAPPDATA/BAXY/C03-find-audio196-private."
+}

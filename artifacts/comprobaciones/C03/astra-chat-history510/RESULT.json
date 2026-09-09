@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-08T22:53:38.278395+00:00",
+  "session": 61160,
+  "exit": 0,
+  "useful_out_of11": {
+    "message_history-0": 10,
+    "quoted_history-0": 10,
+    "message_history-17": 10,
+    "quoted_history-17": 11
+  },
+  "target_recall_en": "0/2 message history;2/2 quoted history",
+  "coverage": 44,
+  "history_literal_roundtrip": true,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1772.76171875,
+    "seconds": 94.344,
+    "manifest_unchanged": true
+  },
+  "decision": "History representation corrects the target without deleting any authors/content and preserves assistant-reference. One treatment answer leaks an internal self-correction. Do not adopt as fully green yet; test T0 with every other documented sampler field and the new representation fixed. This revisits sampling only because the model input mechanism changed, not a blind sweep."
+}

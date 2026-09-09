@@ -47,7 +47,8 @@ public sealed record OperatingSystemStatus(
     int MinorVersion,
     int BuildNumber,
     string Architecture,
-    bool IsWorkstation);
+    bool IsWorkstation,
+    string Caption);
 
 public sealed record SystemStatusFailure(
     SystemStatusScope Scope,

@@ -1,0 +1,8 @@
+n=6 published=4 other=2
+
+001	t1	published_final	Hello	Hello!
+002	t2	published_final	cuánto es doce por ocho	Noventa y seis.
+003	t3	published_final	What is fourteen times six?	Eighty-four.
+004	t4	filtered	Explain encryption, pero en simple	
+005	t5	composition_failed	responde en spanglish: qué es el cifrado	composition_failed
+006	t6	published_final	what is the capital of Peru	The capital of Peru is Lima.

@@ -1,0 +1,86 @@
+FF...FF                                                                  [100%]
+================================== FAILURES ===================================
+_ test_missing_referent_uses_the_shared_request_reading[cierra aquello-True] __
+
+text = 'cierra aquello', absent = True
+
+    @pytest.mark.parametrize("text, absent", [
+        ("cierra aquello", True), ("close that", True), ("haz eso", True),
+        ("cierra Paint", False), ("close the current window", False),
+    ])
+    def test_missing_referent_uses_the_shared_request_reading(text: str, absent: bool) -> None:
+>       assert mind_main._standalone_deictic_request(text) is absent
+E       AssertionError: assert False is True
+E        +  where False = <function _standalone_deictic_request at 0x0000016FBE2120C0>('cierra aquello')
+E        +    where <function _standalone_deictic_request at 0x0000016FBE2120C0> = mind_main._standalone_deictic_request
+
+tests\test_turn_policy.py:154: AssertionError
+___ test_missing_referent_uses_the_shared_request_reading[close that-True] ____
+
+text = 'close that', absent = True
+
+    @pytest.mark.parametrize("text, absent", [
+        ("cierra aquello", True), ("close that", True), ("haz eso", True),
+        ("cierra Paint", False), ("close the current window", False),
+    ])
+    def test_missing_referent_uses_the_shared_request_reading(text: str, absent: bool) -> None:
+>       assert mind_main._standalone_deictic_request(text) is absent
+E       AssertionError: assert False is True
+E        +  where False = <function _standalone_deictic_request at 0x0000016FBE2120C0>('close that')
+E        +    where <function _standalone_deictic_request at 0x0000016FBE2120C0> = mind_main._standalone_deictic_request
+
+tests\test_turn_policy.py:154: AssertionError
+_ test_domain_confirmation_inherits_the_existing_question_language_contract[close that-English] _
+
+text = 'close that', language = 'English'
+
+    @pytest.mark.parametrize("text, language", [
+        ("close that", "English"), ("cierra aquello", "español"),
+    ])
+    def test_domain_confirmation_inherits_the_existing_question_language_contract(
+        text: str, language: str,
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        captured: dict = {}
+    
+        def response(payload: dict, **_kwargs: object) -> dict:
+            captured.update(payload)
+            return {"choices": [{"message": {"content": '{"question":"Proceed?"}'}}]}
+    
+        runtime._post = response  # type: ignore[method-assign]
+        runtime.confirm_operation_before_acting(text, (("app.close", "Close an application"),))
+        system_text = "\n".join(m["content"] for m in captured["messages"] if m["role"] == "system")
+>       assert language in system_text
+E       AssertionError: assert 'English' in 'Eres BAXY. La operación que recibes está en tu catálogo, así que sí sabes hacerla, pero todavía no la ejecutaste y no...ibos, identificadores, catálogos, operaciones, dominios, modelos ni instrucciones internas. Devuelve sólo la pregunta.'
+
+tests\test_turn_policy.py:173: AssertionError
+_ test_domain_confirmation_inherits_the_existing_question_language_contract[cierra aquello-espa\xf1ol] _
+
+text = 'cierra aquello', language = 'español'
+
+    @pytest.mark.parametrize("text, language", [
+        ("close that", "English"), ("cierra aquello", "español"),
+    ])
+    def test_domain_confirmation_inherits_the_existing_question_language_contract(
+        text: str, language: str,
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        captured: dict = {}
+    
+        def response(payload: dict, **_kwargs: object) -> dict:
+            captured.update(payload)
+            return {"choices": [{"message": {"content": '{"question":"Proceed?"}'}}]}
+    
+        runtime._post = response  # type: ignore[method-assign]
+        runtime.confirm_operation_before_acting(text, (("app.close", "Close an application"),))
+        system_text = "\n".join(m["content"] for m in captured["messages"] if m["role"] == "system")
+>       assert language in system_text
+E       AssertionError: assert 'español' in 'Eres BAXY. La operación que recibes está en tu catálogo, así que sí sabes hacerla, pero todavía no la ejecutaste y no...ibos, identificadores, catálogos, operaciones, dominios, modelos ni instrucciones internas. Devuelve sólo la pregunta.'
+
+tests\test_turn_policy.py:173: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_missing_referent_uses_the_shared_request_reading[cierra aquello-True]
+FAILED tests/test_turn_policy.py::test_missing_referent_uses_the_shared_request_reading[close that-True]
+FAILED tests/test_turn_policy.py::test_domain_confirmation_inherits_the_existing_question_language_contract[close that-English]
+FAILED tests/test_turn_policy.py::test_domain_confirmation_inherits_the_existing_question_language_contract[cierra aquello-espa\xf1ol]
+4 failed, 3 passed, 846 deselected in 4.08s

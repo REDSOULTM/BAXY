@@ -1,0 +1,16 @@
+{
+  "sources": [
+    {
+      "path": "artifacts/comprobaciones/C03/astra-history-ablation-ready/replies.jsonl",
+      "sha256": "81d75917ce6793da8335aebe5a55d080091a47d6e4111269b6f7500ecb13b484",
+      "responses": 12
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-history-isolated/replies.jsonl",
+      "sha256": "7253e63d8ad99fda4be6854591b3bb1bb6125e733e8f7ba244e1beffd27c7ea1",
+      "responses": 6
+    }
+  ],
+  "responses": 18,
+  "reportSha256": "50e83576682d23a367e6b4ce97578a3477b17973a4f43bbc29fc8072e629951f"
+}

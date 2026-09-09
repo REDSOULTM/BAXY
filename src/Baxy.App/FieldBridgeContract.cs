@@ -263,8 +263,8 @@ internal static class FieldBridgeContract
 
     /// <summary>
     /// Construye el payload de socket de una indicación. Un lector histórico
-    /// que ya conoce <c>boot_stage</c> lo muestra como estado; uno que no lo
-    /// conoce lo ignora sin cambiar su estado.
+    /// que conoce <c>boot_stage</c> consume su estado. FieldCenter presenta
+    /// la etiqueta fuera del input para no ocultarla tras el texto del turno.
     /// </summary>
     internal static bool ShouldPulseProgress(
         DateTimeOffset? lastPublishedUtc,

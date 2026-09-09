@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-08T17:39:17.619773+00:00",
+  "stage": "source edited; before tests and new model inference",
+  "problem": "PrivateOperationNarration sends destination and mayRedirectOrSync, Python compose projection drops both before LLM.465 export failures cannot fairly be attributed to sampler/model alone.",
+  "change": "Preserve nonempty destination string and bool mayRedirectOrSync only in confirmation. No inferred destination, no fixed visible answer, unknown/wrong types omitted. Seven regressions include both languages, false and true, missing/malformed fields and misleading user text.",
+  "validation": "Owner pytest test_compose_contract then integrated owner suites and Fast; no Full while repairing. Reproduce465 export with corrected payload and unchanged profile plus nonexport controls before claiming prose fixed.",
+  "paths": [
+    "src/baxy_mind/llm.py",
+    "tests/test_compose_contract.py"
+  ]
+}

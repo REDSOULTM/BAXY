@@ -1,0 +1,74 @@
+{
+  "utc": "2026-09-08T14:45:36.620898+00:00",
+  "method": "Eleven paired native payloads. Four actual417 account primaries and actual426 introduction are exact captured requests; remaining six are synthetic last-message variations. Baseline vs only tools.function.name baxy_system__identity renamed baxy_system__windows_account. Same descriptions, arguments schema, system prompt/history/roles/weights/context/seed. Function-name mapping is diagnostic only; no source mutation, product effect, second opinion or generated-answer injection. Cold replay is not identical live scheduling; record baseline reproduction.",
+  "hypothesis": "Operation description correctly says Windows account after410 but native identifier still says identity, and426/427 map self-introductions to it. Test semantic precision of the existing wire identifier before adding any speech-act grammar. Canonical kernel operation stays system.identity; no catalog/journal rename, new operation, model promotion or phrase alias.",
+  "criteria": "Three self introductions and third-person fact yield conversation without claimed persistence/PC reads, four explicit accounts select same canonical read, concept/assistant/hypothetical remain conversation. Compare individual failures, including known baseline417T3 recital. No source adoption on exchanged failures. Native name mechanics in exact b9980 function-calling.md; semantic effect is unproven until measured.",
+  "cases": [
+    {
+      "id": "actual426-t5",
+      "text": "Me llamo Álvaro.",
+      "expected": "conversation"
+    },
+    {
+      "id": "name-en",
+      "text": "My name is Nina.",
+      "expected": "conversation"
+    },
+    {
+      "id": "compound-name-es",
+      "text": "Me llamo Ana María.",
+      "expected": "conversation"
+    },
+    {
+      "id": "third-person",
+      "text": "My brother is called Omar.",
+      "expected": "conversation"
+    },
+    {
+      "id": "actual417-account1",
+      "text": "What is my Windows username?",
+      "expected": "system.identity"
+    },
+    {
+      "id": "actual417-account2",
+      "text": "Con qué cuenta de Windows se está ejecutando BAXY?",
+      "expected": "system.identity"
+    },
+    {
+      "id": "actual417-account3",
+      "text": "Which Windows account is running BAXY?",
+      "expected": "system.identity"
+    },
+    {
+      "id": "actual417-account4",
+      "text": "Dime la cuenta actual de Windows.",
+      "expected": "system.identity"
+    },
+    {
+      "id": "concept",
+      "text": "What is a Windows account?",
+      "expected": "conversation"
+    },
+    {
+      "id": "assistant-name",
+      "text": "¿Cómo te llamas?",
+      "expected": "conversation"
+    },
+    {
+      "id": "hypothetical",
+      "text": "If I used another account, would Windows change my name?",
+      "expected": "conversation"
+    }
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "llm_source_sha256": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 40
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-identity430-private"
+}

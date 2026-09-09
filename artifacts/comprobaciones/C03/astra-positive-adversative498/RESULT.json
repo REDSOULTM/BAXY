@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-08T21:05:42.843337+00:00",
+  "baseline": {
+    "failed": 7,
+    "passed": 2,
+    "seconds": 1.6
+  },
+  "first_intervention": {
+    "failed": 2,
+    "passed": 23,
+    "seconds": 1.11,
+    "reason": "New separator split actions inside quoted note content; preserved failed log."
+  },
+  "focal_after_quote_mask": {
+    "passed": 25,
+    "seconds": 0.88
+  },
+  "extra_controls": "Ten cases: five quote forms in two languages, preserving literal content and a real outside action.",
+  "owners": {
+    "passed": 3174,
+    "skips": 0,
+    "seconds": 48.78,
+    "session": 68020,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.85,
+    "warnings": 0,
+    "errors": 0,
+    "session": 13436,
+    "exit": 0
+  },
+  "source_sha256": "12878387d6dc5a64ce8abe7577234a03dd895830e9b2f0c57a9de98401f60ed5",
+  "tests_sha256": "ea305cccc39d075b157ac6765810d14fb1a990b2d5f7465503d8b74c22adaac7",
+  "limits": "Source-level compound coverage only. Does not qualify contextual clarification, full product, UI, voice or final acceptance."
+}

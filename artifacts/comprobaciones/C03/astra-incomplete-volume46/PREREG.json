@@ -1,0 +1,714 @@
+{
+  "cases": [
+    [
+      "Ajusta el volumen.",
+      "clarify"
+    ],
+    [
+      "Set the volume.",
+      "clarify"
+    ],
+    [
+      "Set the volume, por favor.",
+      "clarify"
+    ],
+    [
+      "Pon el volumen.",
+      "clarify"
+    ],
+    [
+      "Sube el volumen.",
+      "clarify"
+    ],
+    [
+      "¿A qué volumen está?",
+      "audio.status"
+    ],
+    [
+      "Ajusta el volumen al 80%.",
+      "audio.volume"
+    ],
+    [
+      "Ajusta el volumen de ventas.",
+      "not_audio"
+    ]
+  ],
+  "history": [
+    {
+      "role": "user",
+      "content": "confirmar"
+    },
+    {
+      "role": "assistant",
+      "content": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente."
+    },
+    {
+      "role": "user",
+      "content": "What time is it?"
+    },
+    {
+      "role": "assistant",
+      "content": "It's 23:21."
+    },
+    {
+      "role": "user",
+      "content": "¿Cómo está el audio?"
+    },
+    {
+      "role": "assistant",
+      "content": "El audio está activo y el volumen está en 100."
+    }
+  ],
+  "candidates": [
+    {
+      "name": "audio.volume.adjust",
+      "description": "Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "down",
+              "up"
+            ]
+          }
+        },
+        "required": [
+          "amount",
+          "direction"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "audio.volume",
+      "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "level"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "window.resize",
+      "description": "Redimensiona una ventana resuelta y verifica ancho y alto exactos.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32768
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32768
+          },
+          "windowId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "height",
+          "width",
+          "windowId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "system.settings.adjust",
+      "description": "Sube o baja el brillo una cantidad acotada desde su valor observado y verifica cada monitor mediante WMI.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "down",
+              "up"
+            ]
+          },
+          "setting": {
+            "type": "string",
+            "enum": [
+              "brightness"
+            ]
+          }
+        },
+        "required": [
+          "amount",
+          "direction",
+          "setting"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "window.maximize",
+      "description": "Maximiza una ventana resuelta previamente y verifica su identidad y estado.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "windowId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "windowId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "audio.mute",
+      "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "audio.status",
+      "description": "Identifica por nombre la salida de audio predeterminada actual y lee su volumen y silencio, sin modificarla.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "system.settings.set",
+      "description": "Cambia un ajuste permitido mediante API oficial y verifica su postlectura.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "setting": {
+            "type": "string",
+            "enum": [
+              "brightness",
+              "do_not_disturb",
+              "night_light"
+            ]
+          },
+          "value": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "setting",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "media.play.exact",
+      "description": "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "spotify"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "x-maxUtf8Bytes": 1024,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "provider",
+          "title"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "window.minimize",
+      "description": "Minimiza una ventana resuelta previamente y verifica su identidad y estado.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "windowId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "windowId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "backup.verify",
+      "description": "Reabre un backup privado y verifica tamaño y SHA-256.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "backupId": {
+            "type": "string",
+            "maxLength": 39,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "backupId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "routine.read",
+      "description": "Lee metadatos de una rutina exacta sin ejecutarla.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "includeDeleted": {
+            "type": "boolean"
+          },
+          "routineId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "routineId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "game.purchase.prepare",
+      "description": "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "appId": {
+            "type": "string",
+            "maxLength": 16,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "appId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "routine.restore",
+      "description": "Restaura deshabilitada una rutina eliminada; no la ejecuta.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "routineId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "routineId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "window.restore",
+      "description": "Restaura una ventana resuelta previamente y verifica su identidad y estado.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "windowId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "windowId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "task.update",
+      "description": "Reemplaza los campos editables de una tarea bajo control de versión y postlectura.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "details": {
+            "type": "string",
+            "x-maxUtf8Bytes": 65536
+          },
+          "due": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "maxLength": 64
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "taskId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          },
+          "title": {
+            "type": "string",
+            "x-maxUtf8Bytes": 1024,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "details",
+          "due",
+          "expectedVersion",
+          "taskId",
+          "title"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "media.status",
+      "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "window.move",
+      "description": "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "windowId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          },
+          "x": {
+            "type": "integer",
+            "minimum": -32768,
+            "maximum": 32767
+          },
+          "y": {
+            "type": "integer",
+            "minimum": -32768,
+            "maximum": 32767
+          }
+        },
+        "required": [
+          "windowId",
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "note.search",
+      "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "includeTrashed": {
+            "type": "boolean"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "query": {
+            "type": "string",
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "note.update",
+      "description": "Reemplaza titulo y contenido de una nota seleccionada por identidad y revision, y verifica su relectura.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "x-maxUtf8Bytes": 65536
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedTitle": {
+            "type": "string",
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          },
+          "noteId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          },
+          "title": {
+            "type": "string",
+            "x-maxUtf8Bytes": 512,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "content",
+          "expectedRevision",
+          "expectedTitle",
+          "noteId",
+          "title"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "system.status",
+      "description": "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "battery",
+              "cpu",
+              "cpu_memory",
+              "disk",
+              "gpu_identity",
+              "gpu_usage",
+              "memory",
+              "os",
+              "os_memory",
+              "summary"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "routine.resolve.exact",
+      "description": "Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "includeDeleted": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "x-maxUtf8Bytes": 640,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "reminder.resolve.exact",
+      "description": "Resuelve un recordatorio por título literal y devuelve autoridad CAS.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "includeDeleted": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string",
+            "x-maxUtf8Bytes": 1024,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "task.reopen",
+      "description": "Reabre una tarea completada usando identidad y versión exactas.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "taskId": {
+            "type": "string",
+            "maxLength": 36,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "taskId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "task.resolve.exact",
+      "description": "Resuelve un único título literal y emite autoridad CAS sin exponer detalles.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "includeDeleted": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string",
+            "x-maxUtf8Bytes": 1024,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "browser.page.read",
+      "description": "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "maximumCharacters": {
+            "type": "integer",
+            "minimum": 256,
+            "maximum": 32768
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "note.list",
+      "description": "Enumera notas privadas locales activas o enviadas a la papelera.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "minimum": 0
+          },
+          "scope": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "enum": [
+              null,
+              "active",
+              "all",
+              "trashed"
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "input.select.all",
+      "description": "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "method": "Consumed and synthetic diagnostic controls; not reserve. Exact t23 candidate identities and current catalog contracts. Native selector with reconstructed last three public pairs, then same selector without history: one difference, no prompt or source edit. Captures actual HTTP payloads and responses. No functions execute. Literal reader inspected alongside native result; removing history is diagnostic, not a proposal to discard references.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "sourceHashes": {
+    "src/baxy_mind/llm.py": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+    "src/baxy_mind/effect_intent.py": "da6c5df8be655c6d9a7108d030669d56b5c2ce735988c03e41b5fd1a8c35424e",
+    "scratchpad/c03-incomplete-volume46.py": "ae8f4a58c8b7d54c25877cbac7195f49fe087f674060b8b609a3e2290fa04cf3"
+  }
+}

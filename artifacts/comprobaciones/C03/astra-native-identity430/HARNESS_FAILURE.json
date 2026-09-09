@@ -1,0 +1,14 @@
+{
+  "exit_code": 1,
+  "error": "AssertionError: identity function absent in first417 account payload",
+  "completed_pairs": 4,
+  "planned_pairs": 11,
+  "unexecuted_pairs": 7,
+  "first_unexecuted_case": "actual417-account1",
+  "offered_function_names": [
+    "baxy_system__status",
+    "baxy_filesystem__folder__open",
+    "baxy_network__dns__status",
+    "baxy_media__status"
+  ]
+}

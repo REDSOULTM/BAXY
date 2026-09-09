@@ -1,0 +1,51 @@
+{
+  "kind": "development-only",
+  "currentSourceCaveat": "Captured before the last first-clause progress refinement; originals unchanged.",
+  "turns": [
+    {
+      "id": "welcome-es",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "welcome-en",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "welcome-mixed",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "confirmation-es",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "confirmation-en",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "confirmation-mixed",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "progress-es",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "progress-en",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    },
+    {
+      "id": "progress-mixed",
+      "verdict": "ÚTIL",
+      "reason": "Responde a la ruta y conserva el estado pendiente o en curso; puntuación y gramática menores no bloquean."
+    }
+  ]
+}

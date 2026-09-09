@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-09T00:24:25.961504+00:00",
+  "source_sha256": "c79d818f05ff1f4c843a9a039d933cb04caa4e605d1c06ab5294c5b0d5fba783",
+  "change": "Only remove the broad second sentence about PC changes from the successful-status shape instruction. Verified-results instruction, all evidence, validators, model and profile remain. No additional layer/generation or fixed visible reply.",
+  "owners": {
+    "passed": 3406,
+    "subtests_passed": 121,
+    "skips": 0,
+    "seconds": 52.67,
+    "session": 89617,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 2.9,
+    "warnings": 0,
+    "errors": 0,
+    "session": 75292,
+    "exit": 0
+  },
+  "causal_baseline": "519 paired product8/11→9/11 with only hint removal; T2 andT11 remain failures.",
+  "limits": "No Full during repair; actual registered product521 still pending. No physicalUI/voice/acceptance credit."
+}

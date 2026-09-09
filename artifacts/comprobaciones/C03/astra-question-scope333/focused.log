@@ -1,0 +1,16 @@
+.........F..F                                                            [100%]
+================================== FAILURES ===================================
+_ test_complete_turn_retains_answer_before_final_question[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel \U0001f60e \xbfC\xf3mo est\xe1s?-False] _
+tests\test_turn_policy.py:11235: in test_complete_turn_retains_answer_before_final_question
+    assert result["text"] == reply
+           ^^^^^^^^^^^^^^
+E   KeyError: 'text'
+_ test_complete_turn_retains_answer_before_final_question[Expl\xedcame los eclipses-Un cuerpo oculta a otro, \xbfquieres un ejemplo?-False] _
+tests\test_turn_policy.py:11235: in test_complete_turn_retains_answer_before_final_question
+    assert result["text"] == reply
+           ^^^^^^^^^^^^^^
+E   KeyError: 'text'
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_complete_turn_retains_answer_before_final_question[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel \U0001f60e \xbfC\xf3mo est\xe1s?-False]
+FAILED tests/test_turn_policy.py::test_complete_turn_retains_answer_before_final_question[Expl\xedcame los eclipses-Un cuerpo oculta a otro, \xbfquieres un ejemplo?-False]
+2 failed, 11 passed, 935 deselected in 1.61s

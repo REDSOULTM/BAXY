@@ -1,0 +1,67 @@
+{
+  "utc": "2026-09-07T18:12:52.713232+00:00",
+  "scriptSha256": "7e9651ea4341f190641fe6cf4dcbcd5fff8f38c467bfcd10619a212fd2d33b08",
+  "method": "Observation-only external native build based on207 patch. Dump feature/encoder float tensors and TDT joiner choices to per-stream prefix. Four exact214 windows; assert previous native texts unchanged. Do not install. Restore exact external source after build, no tuning/inference changes.",
+  "before": {
+    "sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h": "74369caf9afe59bd8e09c4eaee3cbb70722a1aa167aecf0e3a200901181daa7e",
+    "sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc": "510359cd31d9563c5d5c0b6d036b5e81b54ef8eb7626957910fcd06ccb9aaa36"
+  },
+  "instrumented": {
+    "sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h": "0d7e2b13d0c1faad366d3d16dc7db5dccb43f77fe46fe59cf8c7918152d4a228",
+    "sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc": "a6061c2d72d6a568e846cb42bbd19239f76fad9852a6904a0cd6b7c483bdcd5a"
+  },
+  "inputs": [
+    {
+      "human": 0,
+      "id": "2001",
+      "condition": "raw_speex",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "text": "",
+      "referenceText": "Se recomienda enf\u00e1ticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el \u00e1rea que visitan, dado que ello puede afectar sus planes de viaje.",
+      "seconds": 0.7810000000026776,
+      "sha256": "b5dc49152ae3c977145d6247dbff072e4734b47d3a9d9f90300bac3df3d75ad1",
+      "waveCorrelation": 0.9387932141062333,
+      "waveProjectionGain": 0.8929347688959169
+    },
+    {
+      "human": 1,
+      "id": "1764",
+      "condition": "near_speex",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "text": "",
+      "referenceText": "Fue tanta la cantidad de gente que se concentr\u00f3, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "seconds": 0.5779999999940628,
+      "sha256": "47e58ef0b14f9e7785dc7f687b5bf28b57f81050361a3b130e8f739429869cf2",
+      "waveCorrelation": 0.9541936522297815,
+      "waveProjectionGain": 0.927180119892806
+    },
+    {
+      "human": 1,
+      "id": "1764",
+      "condition": "raw_speex",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "text": "",
+      "referenceText": "Fue tanta la cantidad de gente que se concentr\u00f3, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "seconds": 0.8439999999973224,
+      "sha256": "0567ffba87a2ddc07791163a582ed142d447d932e4f5be94bc35e23aee4bd35d",
+      "waveCorrelation": 0.9411733925792687,
+      "waveProjectionGain": 0.8972906835554653
+    },
+    {
+      "human": 1,
+      "id": "1764",
+      "condition": "near_none",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "text": "Fue tanta la cantidad de gente que se concentr\u00f3 que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+      "referenceText": "Fue tanta la cantidad de gente que se concentr\u00f3, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "seconds": 0.6089999999967404,
+      "sha256": "7c910271c86eca5252cf245aabb95a44722094f66a589997de6e22cc4805d562",
+      "waveCorrelation": 1.0,
+      "waveProjectionGain": 1.0000000038083938
+    }
+  ]
+}

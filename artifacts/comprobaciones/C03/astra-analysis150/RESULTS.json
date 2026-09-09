@@ -1,0 +1,318 @@
+{
+  "source": 149,
+  "frames": 264,
+  "anchor": [
+    {
+      "micAdc": 81006.93802339998,
+      "loopOrigin": 81006.86762693332,
+      "cursorStart": 1126,
+      "written": 2560
+    }
+  ],
+  "micMinusReferenceLagSamples": 835,
+  "lagMilliseconds": 52.1875,
+  "correlation": 0.33078850150731953,
+  "historyContinuous": true,
+  "vadFrames": [
+    {
+      "index": 108,
+      "time": 81010.4322894,
+      "aecEnd": 81010.4325389,
+      "probability": 0.6304028630256653,
+      "echoGuard": false,
+      "rawRms": 0.0024904620368033648,
+      "cleanRms": 0.001280508702620864,
+      "referenceRms": 0.03786145582154809
+    },
+    {
+      "index": 109,
+      "time": 81010.4828149,
+      "aecEnd": 81010.483116,
+      "probability": 0.7679234743118286,
+      "echoGuard": false,
+      "rawRms": 0.01067123282700777,
+      "cleanRms": 0.0018292706226930022,
+      "referenceRms": 0.03611450785314825
+    },
+    {
+      "index": 110,
+      "time": 81010.4945519,
+      "aecEnd": 81010.4947755,
+      "probability": 0.9600048065185547,
+      "echoGuard": false,
+      "rawRms": 0.019231699407100677,
+      "cleanRms": 0.01017698273062706,
+      "referenceRms": 0.04090393234085834
+    },
+    {
+      "index": 111,
+      "time": 81010.5271368,
+      "aecEnd": 81010.5273731,
+      "probability": 0.9579553604125977,
+      "echoGuard": true,
+      "rawRms": 0.01802140101790428,
+      "cleanRms": 0.018218249082565308,
+      "referenceRms": 0.04075141883838114
+    },
+    {
+      "index": 112,
+      "time": 81010.5601307,
+      "aecEnd": 81010.5603709,
+      "probability": 0.9296598434448242,
+      "echoGuard": true,
+      "rawRms": 0.01786951720714569,
+      "cleanRms": 0.013908413238823414,
+      "referenceRms": 0.020597512550398035
+    },
+    {
+      "index": 113,
+      "time": 81010.5920099,
+      "aecEnd": 81010.5924993,
+      "probability": 0.9347285032272339,
+      "echoGuard": true,
+      "rawRms": 0.011563180014491081,
+      "cleanRms": 0.014888242818415165,
+      "referenceRms": 0.015330164865619446
+    },
+    {
+      "index": 114,
+      "time": 81010.6222534,
+      "aecEnd": 81010.6225,
+      "probability": 0.9666464328765869,
+      "echoGuard": true,
+      "rawRms": 0.008380831219255924,
+      "cleanRms": 0.007212022785097361,
+      "referenceRms": 0.009535830358689875
+    },
+    {
+      "index": 115,
+      "time": 81010.6552161,
+      "aecEnd": 81010.6554693,
+      "probability": 0.9726829528808594,
+      "echoGuard": true,
+      "rawRms": 0.0029939343221485615,
+      "cleanRms": 0.005224050022661686,
+      "referenceRms": 0.007793394654442735
+    },
+    {
+      "index": 116,
+      "time": 81010.6869623,
+      "aecEnd": 81010.6872025,
+      "probability": 0.9672759771347046,
+      "echoGuard": true,
+      "rawRms": 0.0009645629907026887,
+      "cleanRms": 0.00254051829688251,
+      "referenceRms": 0.0063026994294682675
+    },
+    {
+      "index": 117,
+      "time": 81010.7179133,
+      "aecEnd": 81010.7181754,
+      "probability": 0.942421019077301,
+      "echoGuard": false,
+      "rawRms": 0.00031633750768378377,
+      "cleanRms": 0.0008154300157912076,
+      "referenceRms": 0.019296907323427002
+    },
+    {
+      "index": 118,
+      "time": 81010.7510051,
+      "aecEnd": 81010.7512588,
+      "probability": 0.9218610525131226,
+      "echoGuard": false,
+      "rawRms": 0.00022644121781922877,
+      "cleanRms": 0.00023834990861359984,
+      "referenceRms": 0.024712566664561474
+    },
+    {
+      "index": 119,
+      "time": 81010.7817266,
+      "aecEnd": 81010.7819566,
+      "probability": 0.8134094476699829,
+      "echoGuard": false,
+      "rawRms": 0.0011827511480078101,
+      "cleanRms": 0.0002988182823173702,
+      "referenceRms": 0.022299149435412384
+    },
+    {
+      "index": 120,
+      "time": 81010.8142581,
+      "aecEnd": 81010.8144745,
+      "probability": 0.829777181148529,
+      "echoGuard": false,
+      "rawRms": 0.0027883017901331186,
+      "cleanRms": 0.0006268738652579486,
+      "referenceRms": 0.022693261433484397
+    },
+    {
+      "index": 121,
+      "time": 81010.8466105,
+      "aecEnd": 81010.8468805,
+      "probability": 0.9451112747192383,
+      "echoGuard": false,
+      "rawRms": 0.0020169285126030445,
+      "cleanRms": 0.001675409497693181,
+      "referenceRms": 0.024704127932709864
+    },
+    {
+      "index": 122,
+      "time": 81010.8803545,
+      "aecEnd": 81010.880624,
+      "probability": 0.9481953382492065,
+      "echoGuard": false,
+      "rawRms": 0.0023167815525084734,
+      "cleanRms": 0.0012182650389149785,
+      "referenceRms": 0.02768124514191461
+    },
+    {
+      "index": 123,
+      "time": 81010.9103742,
+      "aecEnd": 81010.9106134,
+      "probability": 0.957679033279419,
+      "echoGuard": false,
+      "rawRms": 0.003263907041400671,
+      "cleanRms": 0.0013122912496328354,
+      "referenceRms": 0.014664768327174678
+    },
+    {
+      "index": 124,
+      "time": 81010.9436501,
+      "aecEnd": 81010.9439207,
+      "probability": 0.9256043434143066,
+      "echoGuard": false,
+      "rawRms": 0.002595101483166218,
+      "cleanRms": 0.0019827894866466522,
+      "referenceRms": 0.004632971815777147
+    },
+    {
+      "index": 125,
+      "time": 81010.9744693,
+      "aecEnd": 81010.9746978,
+      "probability": 0.8989354372024536,
+      "echoGuard": false,
+      "rawRms": 0.0003988892713095993,
+      "cleanRms": 0.0015274665784090757,
+      "referenceRms": 0.003195876612120591
+    },
+    {
+      "index": 126,
+      "time": 81011.0069288,
+      "aecEnd": 81011.0071575,
+      "probability": 0.874724268913269,
+      "echoGuard": false,
+      "rawRms": 0.0008396044722758234,
+      "cleanRms": 0.00031853007385507226,
+      "referenceRms": 0.00238286248676446
+    },
+    {
+      "index": 127,
+      "time": 81011.0398441,
+      "aecEnd": 81011.0400795,
+      "probability": 0.8372018337249756,
+      "echoGuard": false,
+      "rawRms": 0.0005373877356760204,
+      "cleanRms": 0.00023924114066176116,
+      "referenceRms": 0.0040452067680028245
+    },
+    {
+      "index": 128,
+      "time": 81011.0704304,
+      "aecEnd": 81011.0706735,
+      "probability": 0.7868613600730896,
+      "echoGuard": false,
+      "rawRms": 0.0005226151552051306,
+      "cleanRms": 0.00014948064927011728,
+      "referenceRms": 0.01844613853520706
+    },
+    {
+      "index": 129,
+      "time": 81011.1018129,
+      "aecEnd": 81011.1020754,
+      "probability": 0.6822901368141174,
+      "echoGuard": false,
+      "rawRms": 0.0009261321974918246,
+      "cleanRms": 0.000138476665597409,
+      "referenceRms": 0.01703493817010319
+    },
+    {
+      "index": 130,
+      "time": 81011.1344189,
+      "aecEnd": 81011.1346285,
+      "probability": 0.5726749897003174,
+      "echoGuard": false,
+      "rawRms": 0.0031965444795787334,
+      "cleanRms": 0.00031346449395641685,
+      "referenceRms": 0.01632111070016983
+    },
+    {
+      "index": 131,
+      "time": 81011.1661694,
+      "aecEnd": 81011.1664085,
+      "probability": 0.8066453337669373,
+      "echoGuard": false,
+      "rawRms": 0.0040948959067463875,
+      "cleanRms": 0.001384344301186502,
+      "referenceRms": 0.01690466500990334
+    },
+    {
+      "index": 132,
+      "time": 81011.1989907,
+      "aecEnd": 81011.1991958,
+      "probability": 0.8273235559463501,
+      "echoGuard": false,
+      "rawRms": 0.005946318153291941,
+      "cleanRms": 0.0025883426424115896,
+      "referenceRms": 0.018195973151899927
+    },
+    {
+      "index": 133,
+      "time": 81011.2321157,
+      "aecEnd": 81011.2323707,
+      "probability": 0.7805255651473999,
+      "echoGuard": true,
+      "rawRms": 0.006914940197020769,
+      "cleanRms": 0.0025370109360665083,
+      "referenceRms": 0.018809007458241166
+    },
+    {
+      "index": 134,
+      "time": 81011.2620527,
+      "aecEnd": 81011.2623277,
+      "probability": 0.7177863717079163,
+      "echoGuard": true,
+      "rawRms": 0.00881167035549879,
+      "cleanRms": 0.0020482330583035946,
+      "referenceRms": 0.01901160640316998
+    },
+    {
+      "index": 135,
+      "time": 81011.2955604,
+      "aecEnd": 81011.2957859,
+      "probability": 0.6469743251800537,
+      "echoGuard": true,
+      "rawRms": 0.009676304645836353,
+      "cleanRms": 0.0014443264808505774,
+      "referenceRms": 0.017570064365877425
+    },
+    {
+      "index": 136,
+      "time": 81011.3288369,
+      "aecEnd": 81011.3290877,
+      "probability": 0.5770084261894226,
+      "echoGuard": true,
+      "rawRms": 0.008878781460225582,
+      "cleanRms": 0.0011348210973665118,
+      "referenceRms": 0.0097509869562969
+    },
+    {
+      "index": 137,
+      "time": 81011.3604406,
+      "aecEnd": 81011.360686,
+      "probability": 0.5174216032028198,
+      "echoGuard": true,
+      "rawRms": 0.004024615045636892,
+      "cleanRms": 0.0009366926969960332,
+      "referenceRms": 0.006900620629830747
+    }
+  ]
+}

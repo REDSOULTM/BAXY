@@ -1,0 +1,29 @@
+{
+  "development": [
+    {
+      "text_literal": "no me molesta, dime la hora",
+      "kind": "synthetic-regression-control",
+      "source_references": []
+    },
+    {
+      "text_literal": "I don't mind, tell me the time",
+      "kind": "synthetic-regression-control",
+      "source_references": []
+    },
+    {
+      "text_literal": "no abras Steam, dime la hora",
+      "kind": "synthetic-regression-control",
+      "source_references": []
+    },
+    {
+      "text_literal": "no me digas la hora",
+      "kind": "synthetic-regression-control",
+      "source_references": []
+    },
+    {
+      "text_literal": "dime la hora",
+      "kind": "synthetic-regression-control",
+      "source_references": []
+    }
+  ]
+}

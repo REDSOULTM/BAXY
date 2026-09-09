@@ -1,0 +1,11 @@
+{
+  "exitCode": 0,
+  "fixtureClosedBeforeCleanup": true,
+  "fixtureCleanupNeeded": false,
+  "stopReason": null,
+  "elapsedSeconds": 58.11,
+  "gpuPeakMiB": 3519.55859375,
+  "gpuAttributionAvailable": true,
+  "ramPeakMiB": 5294.20703125,
+  "registrationUnchanged": true
+}

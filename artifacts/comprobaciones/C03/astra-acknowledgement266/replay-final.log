@@ -1,0 +1,100 @@
+{
+  "rows": [
+    {
+      "input": "abre steam",
+      "before": {
+        "folded": "abre steam",
+        "intent": {
+          "operations": [
+            "app.open"
+          ],
+          "evidence": [
+            "steam"
+          ]
+        },
+        "app": "Steam",
+        "compound": null
+      },
+      "after": {
+        "folded": "abre steam",
+        "intent": {
+          "operations": [
+            "app.open"
+          ],
+          "evidence": [
+            "steam"
+          ]
+        },
+        "app": "Steam",
+        "compound": null
+      }
+    },
+    {
+      "input": "Tengo en mente que abras steam",
+      "before": {
+        "folded": "tengo en mente que abras steam",
+        "intent": null,
+        "app": null,
+        "compound": null
+      },
+      "after": {
+        "folded": "tengo en mente que abras steam",
+        "intent": null,
+        "app": null,
+        "compound": null
+      }
+    },
+    {
+      "input": "Si, abre steam",
+      "before": {
+        "folded": "si, abre steam",
+        "intent": null,
+        "app": null,
+        "compound": {
+          "minimum_effects": 2,
+          "required_clause_sequences": [
+            [
+              "app.open"
+            ]
+          ],
+          "clause_requirements": [
+            [
+              "si",
+              []
+            ],
+            [
+              "abre steam",
+              [
+                "app.open"
+              ]
+            ]
+          ]
+        }
+      },
+      "after": {
+        "folded": "abre steam",
+        "intent": {
+          "operations": [
+            "app.open"
+          ],
+          "evidence": [
+            "steam"
+          ]
+        },
+        "app": "Steam",
+        "compound": null
+      }
+    }
+  ],
+  "domainGuard": {
+    "mode": "action",
+    "operation": "app.open",
+    "effect_operations": [
+      "app.open"
+    ],
+    "effect_count": "one",
+    "effect_verification": "one",
+    "question": "",
+    "conversation_kind": ""
+  }
+}

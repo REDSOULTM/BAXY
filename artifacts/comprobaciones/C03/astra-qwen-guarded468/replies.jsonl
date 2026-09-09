@@ -1,0 +1,36 @@
+{"id": "actual437-t7", "variant": "baseline", "seed": 0, "answer": "Jordan", "attempts": 1, "seconds": 0.203}
+{"id": "actual437-t4", "variant": "baseline", "seed": 0, "answer": "Jordan", "attempts": 1, "seconds": 0.172}
+{"id": "name-marta", "variant": "baseline", "seed": 0, "answer": "Marta", "attempts": 1, "seconds": 0.187}
+{"id": "compound-name", "variant": "baseline", "seed": 0, "answer": "Ana María", "attempts": 1, "seconds": 0.172}
+{"id": "third-person", "variant": "baseline", "seed": 0, "answer": "Nina", "attempts": 1, "seconds": 0.172}
+{"id": "two-records", "variant": "baseline", "seed": 0, "answer": "Tengo guardados los nombres Jordan y Nina.", "attempts": 1, "seconds": 0.266}
+{"id": "memory.enable", "variant": "baseline", "seed": 0, "answer": "The memory enable operation has been successfully completed. The system is now in memory configuration mode and memory is enabled.", "attempts": 1, "seconds": 0.406}
+{"id": "memory.save", "variant": "baseline", "seed": 0, "answer": "Memory saved successfully. No corrections made. State updated to \"memory updated\".", "attempts": 1, "seconds": 0.359}
+{"id": "redacted-es", "variant": "baseline", "seed": 0, "answer": "Tengo guardado un dato llamado \"secret\", cuyo valor está enmascarado.", "attempts": 1, "seconds": 0.391}
+{"id": "redacted-en", "variant": "baseline", "seed": 0, "answer": "The private memory contains a secret entry with a redacted value.", "attempts": 1, "seconds": 0.297}
+{"id": "mixed-es", "variant": "baseline", "seed": 0, "answer": "Tengo guardado que mi color favorito es turquesa y un secreto que está encriptado.", "attempts": 1, "seconds": 0.437}
+{"id": "mixed-es", "variant": "single-public-value", "seed": 0, "answer": "Tengo guardado que el color favorito es turquesa y un secreto que está encriptado.", "attempts": 2, "seconds": 0.688}
+{"id": "actual-enable-en", "variant": "confirmation", "seed": 0, "answer": "Alright, Jordan. I remember your name. We’re about to enable private local memory. Should we go ahead and confirm this, or cancel it? Choose either confirm or cancel.", "attempts": 1, "seconds": 0.64}
+{"id": "enable-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 0.282}
+{"id": "forget-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 0.281}
+{"id": "forget-en", "variant": "confirmation", "seed": 0, "answer": "Do you want to confirm or cancel forgetting your favorite color?", "attempts": 1, "seconds": 0.328}
+{"id": "sensitive-en", "variant": "confirmation", "seed": 0, "answer": "Do you want to confirm or cancel saving your secret in private local memory?", "attempts": 1, "seconds": 0.359}
+{"id": "export-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados?", "attempts": 1, "seconds": 0.422}
+{"id": "actual437-t7", "variant": "baseline", "seed": 17, "answer": "Jordan", "attempts": 1, "seconds": 0.141}
+{"id": "actual437-t4", "variant": "baseline", "seed": 17, "answer": "Jordan", "attempts": 1, "seconds": 0.172}
+{"id": "name-marta", "variant": "baseline", "seed": 17, "answer": "Marta", "attempts": 1, "seconds": 0.187}
+{"id": "compound-name", "variant": "baseline", "seed": 17, "answer": "Ana María", "attempts": 1, "seconds": 0.172}
+{"id": "third-person", "variant": "baseline", "seed": 17, "answer": "Nina", "attempts": 1, "seconds": 0.188}
+{"id": "two-records", "variant": "baseline", "seed": 17, "answer": "Tengo guardados los nombres Jordan y Nina.", "attempts": 1, "seconds": 0.265}
+{"id": "memory.enable", "variant": "baseline", "seed": 17, "answer": "Memory configuration enabled successfully. Operation completed.", "attempts": 1, "seconds": 0.203}
+{"id": "memory.save", "variant": "baseline", "seed": 17, "answer": "Memory saved successfully. No corrections made. Status confirmed as completed.", "attempts": 1, "seconds": 0.313}
+{"id": "redacted-es", "variant": "baseline", "seed": 17, "answer": "Tengo guardado un dato llamado \"secret\", cuyo valor está enmascarado.", "attempts": 1, "seconds": 0.406}
+{"id": "redacted-en", "variant": "baseline", "seed": 17, "answer": "The private memory contains a secret entry with a redacted value.", "attempts": 1, "seconds": 0.297}
+{"id": "mixed-es", "variant": "baseline", "seed": 17, "answer": "Tengo guardado el color favorito turquesa y un secreto que está enmascarado.", "attempts": 2, "seconds": 0.891}
+{"id": "mixed-es", "variant": "single-public-value", "seed": 17, "answer": "Tengo guardado que el color favorito es turquesa y un secreto que está encriptado.", "attempts": 2, "seconds": 0.672}
+{"id": "actual-enable-en", "variant": "confirmation", "seed": 17, "answer": "Alright, Jordan. I remember your name. We’re about to enable private local memory. Should we go ahead and confirm this, or cancel it? Choose either confirm or cancel.", "attempts": 1, "seconds": 0.625}
+{"id": "enable-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 0.296}
+{"id": "forget-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar olvidar tu color favorito?", "attempts": 1, "seconds": 0.36}
+{"id": "forget-en", "variant": "confirmation", "seed": 17, "answer": "Do you want to confirm or cancel forgetting your favorite color?", "attempts": 1, "seconds": 0.312}
+{"id": "sensitive-en", "variant": "confirmation", "seed": 17, "answer": "Do you want to confirm or cancel saving your secret in private local memory?", "attempts": 1, "seconds": 0.344}
+{"id": "export-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados?", "attempts": 1, "seconds": 0.406}

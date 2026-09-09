@@ -1,0 +1,272 @@
+warning: in the working copy of 'sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h', LF will be replaced by CRLF the next time Git touches it
+-- CMake version: 3.31.6-msvc6
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- No CMAKE_BUILD_TYPE given, default to Release
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_INSTALL_PREFIX: C:/Program Files/sherpa-onnx
+-- BUILD_SHARED_LIBS ON
+-- SHERPA_ONNX_ENABLE_PYTHON ON
+-- SHERPA_ONNX_ENABLE_TESTS ON
+-- SHERPA_ONNX_ENABLE_CHECK OFF
+-- SHERPA_ONNX_ENABLE_PORTAUDIO OFF
+-- SHERPA_ONNX_ENABLE_JNI OFF
+-- SHERPA_ONNX_ENABLE_C_API OFF
+-- SHERPA_ONNX_ENABLE_WEBSOCKET OFF
+-- SHERPA_ONNX_ENABLE_GPU OFF
+-- SHERPA_ONNX_ENABLE_WASM OFF
+-- SHERPA_ONNX_ENABLE_WASM_SPEAKER_DIARIZATION OFF
+-- SHERPA_ONNX_ENABLE_WASM_TTS OFF
+-- SHERPA_ONNX_ENABLE_WASM_ASR OFF
+-- SHERPA_ONNX_ENABLE_WASM_KWS OFF
+-- SHERPA_ONNX_ENABLE_WASM_VAD OFF
+-- SHERPA_ONNX_ENABLE_WASM_VAD_ASR OFF
+-- SHERPA_ONNX_ENABLE_WASM_NODEJS OFF
+-- SHERPA_ONNX_ENABLE_WASM_SPEECH_ENHANCEMENT OFF
+-- SHERPA_ONNX_ENABLE_BINARY OFF
+-- SHERPA_ONNX_ENABLE_TTS ON
+-- SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION ON
+-- SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY ON
+-- SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE OFF
+-- SHERPA_ONNX_ENABLE_SANITIZER: OFF
+-- SHERPA_ONNX_BUILD_C_API_EXAMPLES: OFF
+-- SHERPA_ONNX_ENABLE_RKNN: OFF
+-- SHERPA_ONNX_ENABLE_AXERA: OFF
+-- SHERPA_ONNX_ENABLE_AXCL: OFF
+-- SHERPA_ONNX_ENABLE_ASCEND_NPU: OFF
+-- SHERPA_ONNX_ENABLE_QNN: OFF
+-- SHERPA_ONNX_ENABLE_SPACEMIT: OFF
+-- SHERPA_ONNX_LINK_D3D: OFF
+-- SHERPA_ONNX_USE_STATIC_CRT: ON
+-- CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>
+-- IPO is enabled
+-- TTS is enabled
+-- speaker diarization is enabled
+-- DirectML is disabled
+-- C++ Standard version: 17
+-- Disabled warnings: /wd4244;/wd4267;/wd4305;/wd4334;/wd4800;/wd4996
+-- CMAKE_SOURCE_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/source
+-- CMAKE_BINARY_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build
+-- PROJECT_SOURCE_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/source
+-- PROJECT_BINARY_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build
+-- CMake version: 3.31.6-msvc6
+-- CMAKE_SYSTEM: Windows-10.0.26200
+-- CMAKE_SYSTEM_NAME: Windows
+-- CMAKE_SYSTEM_VERSION: 10.0.26200
+-- CMAKE_SYSTEM_PROCESSOR: AMD64
+-- sherpa-onnx git sha1: 142807252687d81b40d6315f23470a1512a00de3
+-- sherpa-onnx git date: Tue Jul 7 07:21:34 2026
+-- OS used to build sherpa-onnx: Microsoft Windows 11 Home Single Language 10.0.26200
+-- C++ compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+-- C++ compiler ID: MSVC
+-- C++ compiler version: 19.44.35228.0
+-- C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+-- C compiler ID: MSVC
+-- C compiler version: 19.44.35228.0
+-- Downloading pybind11 from https://github.com/pybind/pybind11/archive/refs/tags/v3.0.0.tar.gz
+-- pybind11 is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/pybind11-src
+-- pybind11 v3.0.0 
+-- Downloading kaldi-native-fbank from https://github.com/csukuangfj/kaldi-native-fbank/archive/refs/tags/v1.22.3.tar.gz
+-- kaldi-native-fbank is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_native_fbank-src
+-- kaldi-native-fbank's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_native_fbank-build
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_EXPORT_COMPILE_COMMANDS: ON
+-- BUILD_SHARED_LIBS: OFF
+-- KALDI_NATIVE_FBANK_BUILD_TESTS: OFF
+-- KALDI_NATIVE_FBANK_BUILD_PYTHON: OFF
+-- KALDI_NATIVE_FBANK_ENABLE_CHECK: OFF
+-- KALDI_NATIVE_FBANK_ENABLE_CHECK: OFF
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996 
+-- CMAKE_INSTALL_PREFIX: C:/Program Files/sherpa-onnx
+-- Disabled warnings: /wd4244;/wd4267;/wd4624
+-- Downloading kissfft from https://github.com/mborgerding/kissfft/archive/febd4caeed32e33ad8b2e0bb5ea77542c40f18ec.zip
+-- kissfft is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kissfft-src
+-- kissfft's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kissfft-build
+-- Building KissFFT with datatype: float
+-- Building static library
+-- PKGINCLUDEDIR is include/kissfft
+-- Disable building Python
+-- Downloading kaldi-decoder from https://github.com/k2-fsa/kaldi-decoder/archive/refs/tags/v0.3.0.tar.gz
+-- kaldi-decoder is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_decoder-src
+-- kaldi-decoder's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_decoder-build
+-- CMAKE_BUILD_TYPE: Release
+-- Downloading kaldifst from https://github.com/k2-fsa/kaldifst/archive/refs/tags/v1.8.0.tar.gz
+-- kaldifst is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldifst-src
+-- kaldifst's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldifst-build
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_INSTALL_PREFIX: C:/Program Files/sherpa-onnx
+-- C++ Standard version: 17
+-- Disabled warnings: /wd4018;/wd4244;/wd4267;/wd4291;/wd4305;/wd4996
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996  /wd4018  /wd4244  /wd4267  /wd4291  /wd4305  /wd4996 
+-- Downloading openfst from https://github.com/csukuangfj/openfst/archive/refs/tags/v1.8.5-2026-04-11.tar.gz
+-- openfst is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/openfst-src
+-- BUILD_SHARED_LIBS: OFF
+-- BUILD_TESTING: OFF
+-- HAVE_BIN: OFF
+-- HAVE_SCRIPT: OFF
+-- HAVE_COMPACT: OFF
+-- HAVE_COMPRESS: OFF
+-- HAVE_CONST: OFF
+-- HAVE_FAR: ON
+-- HAVE_FSTS: OFF
+-- HAVE_GRM: OFF
+-- HAVE_LINEAR: OFF
+-- HAVE_LOOKAHEAD: OFF
+-- HAVE_MPDT: OFF
+-- HAVE_NGRAM: OFF
+-- HAVE_PDT: OFF
+-- HAVE_SPECIAL: OFF
+-- OPENFST_USE_ABSL: OFF
+-- Downloading eigen from https://gitlab.com/libeigen/eigen/-/archive/5.0.1/eigen-5.0.1.tar.gz
+-- eigen is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/eigen-src
+-- eigen's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/eigen-build
+-- 
+-- Configured Eigen 5.0.1-dev+14280725
+-- 
+-- Downloading pre-compiled onnxruntime
+-- CMAKE_SYSTEM_NAME: Windows
+-- CMAKE_SYSTEM_PROCESSOR: AMD64
+-- CMAKE_VS_PLATFORM_NAME: x64
+-- Use dynamic onnxruntime libraries
+-- CMAKE_SYSTEM_NAME: Windows
+-- CMAKE_SYSTEM_PROCESSOR: AMD64
+-- CMAKE_VS_PLATFORM_NAME: x64
+-- Use MSVC CRT: MT
+-- Downloading onnxruntime from https://github.com/csukuangfj/onnxruntime-libs/releases/download/v1.27.0/onnxruntime-win-x64-MT-Release-1.27.0.tar.bz2
+-- onnxruntime is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src
+-- location_onnxruntime: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src/lib/onnxruntime.lib
+-- onnxruntime lib files: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src/lib/onnxruntime.dll;D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src/lib/onnxruntime_providers_shared.dll
+-- Downloading simple-sentencepiece https://github.com/pkufool/simple-sentencepiece/archive/refs/tags/v0.7.tar.gz
+-- simple-sentencepiece is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/simple-sentencepiece-src
+-- C++ Standard version: 17
+-- Disabled warnings: /wd4244;/wd4267
+-- ONNXRUNTIME_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src
+-- Downloading googletest from https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
+-- googletest is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/googletest-src
+-- googletest's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/googletest-build
+-- Found Python: C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe (found version "3.12.10") found components: Interpreter
+-- Downloading json from https://github.com/nlohmann/json/archive/refs/tags/v3.12.0.tar.gz
+-- json is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/json-src
+-- json's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/json-build
+-- Using the multi-header code from D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/json-src/include/
+-- Downloading espeak-ng from https://github.com/csukuangfj/espeak-ng/archive/ed530aa113046142eb5115cf2fc9157854d0ffe1.zip
+-- espeak-ng is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/espeak_ng-src
+-- espeak-ng binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/espeak_ng-build
+-- Configuration:
+--   shared: OFF
+--   mbrola: OFF (MBROLA_BIN-NOTFOUND)
+--   libsonic: OFF (SONIC_LIB-NOTFOUND SONIC_INC-NOTFOUND)
+--   libpcaudio: OFF (PCAUDIO_LIB-NOTFOUND PCAUDIO_INC-NOTFOUND)
+--   klatt: OFF
+--   speech-player: OFF
+--   async: OFF
+-- ESPEAK_NG_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/espeak_ng-src
+-- Downloading piper-phonemize from https://github.com/csukuangfj/piper-phonemize/archive/f3ff95afc03640bc1399e113e83361192a2fafb4.zip
+-- piper-phonemize is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/piper_phonemize-src
+-- piper-phonemize binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/piper_phonemize-build
+-- hclust_cpp is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/hclust_cpp-src
+-- hclust_cpp's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/hclust_cpp-build
+-- PYTHON_EXECUTABLE: 
+-- PYTHON_VERSION: 
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996 
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996 
+-- Configuring done (19.2s)
+-- Generating done (2.2s)
+-- Build files have been written to: D:/BAXYRuntime/experiments/voice/sherpa205/build
+Versión de MSBuild 17.14.51+25f168cee para .NET Framework
+
+  1>Checking Build System
+  fst.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fst.lib
+  ucd.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ucd.lib
+  kissfft.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kissfft-float.lib
+  espeak-ng.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\espeak-ng.lib
+  kaldi-native-fbank-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-native-fbank-core.lib
+  piper_phonemize.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\piper_phonemize.lib
+  kaldifst_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-kaldifst-core.lib
+  fstfar.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fstfar.lib
+  ssentencepiece_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ssentencepiece_core.lib
+  kaldi-decoder-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-decoder-core.lib
+  math.cc
+  offline-recognizer-impl.cc
+  offline-transducer-greedy-search-nemo-decoder.cc
+  sherpa-onnx-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-core.lib
+     Creando biblioteca D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/_sherpa_onnx.lib y objeto D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/_sherpa_onnx.exp
+  Generando código
+  Not all modules are compiled with -Gy (function comdat), build without incremental LTCG.
+  Generación de código finalizada
+  _sherpa_onnx.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\_sherpa_onnx.cp312-win_amd64.pyd
+Versión de MSBuild 17.14.51+25f168cee para .NET Framework
+
+  fst.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fst.lib
+  kissfft.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kissfft-float.lib
+  ucd.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ucd.lib
+  Building Custom Rule D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/googletest-src/googletest/CMakeLists.txt
+  espeak-ng.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\espeak-ng.lib
+  kaldi-native-fbank-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-native-fbank-core.lib
+  fstfar.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fstfar.lib
+  ssentencepiece_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ssentencepiece_core.lib
+  kaldifst_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-kaldifst-core.lib
+  piper_phonemize.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\piper_phonemize.lib
+  gtest-all.cc
+  kaldi-decoder-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-decoder-core.lib
+  sherpa-onnx-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-core.lib
+     Creando biblioteca D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/gtest.lib y objeto D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/gtest.exp
+  Generando código
+  Previous IPDB not found, fall back to full compilation.
+  All 4053 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Generación de código finalizada
+  gtest.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\bin\Release\gtest.dll
+  Building Custom Rule D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/googletest-src/googletest/CMakeLists.txt
+  gtest_main.cc
+     Creando biblioteca D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/gtest_main.lib y objeto D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/gtest_main.exp
+  Generando código
+  Previous IPDB not found, fall back to full compilation.
+  All 827 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Generación de código finalizada
+  gtest_main.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\bin\Release\gtest_main.dll
+  Building Custom Rule D:/BAXYRuntime/experiments/voice/sherpa205/source/sherpa-onnx/csrc/CMakeLists.txt
+  math-test.cc
+  Generando código
+  Previous IPDB not found, fall back to full compilation.
+  All 1685 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Generación de código finalizada
+  math-test.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\bin\Release\math-test.exe
+[==========] Running 8 tests from 5 test suites.
+[----------] Global test environment set-up.
+[----------] 2 tests from Transpose
+[ RUN      ] Transpose.Case1
+[       OK ] Transpose.Case1 (0 ms)
+[ RUN      ] Transpose.Case2
+[       OK ] Transpose.Case2 (0 ms)
+[----------] 2 tests from Transpose (0 ms total)
+
+[----------] 1 test from ScaleAdd
+[ RUN      ] ScaleAdd.Case1
+[       OK ] ScaleAdd.Case1 (0 ms)
+[----------] 1 test from ScaleAdd (0 ms total)
+
+[----------] 2 tests from Scale
+[ RUN      ] Scale.Case1
+[       OK ] Scale.Case1 (0 ms)
+[ RUN      ] Scale.Case2InPlace
+[       OK ] Scale.Case2InPlace (0 ms)
+[----------] 2 tests from Scale (0 ms total)
+
+[----------] 1 test from ComputeMeanAndInvStd
+[ RUN      ] ComputeMeanAndInvStd.Case1
+[       OK ] ComputeMeanAndInvStd.Case1 (0 ms)
+[----------] 1 test from ComputeMeanAndInvStd (0 ms total)
+
+[----------] 2 tests from NemoNormalizePerFeature
+[ RUN      ] NemoNormalizePerFeature.NearConstantFeatureStaysBounded
+[       OK ] NemoNormalizePerFeature.NearConstantFeatureStaysBounded (0 ms)
+[ RUN      ] NemoNormalizePerFeature.ConstantFeatureNormalizesToZero
+[       OK ] NemoNormalizePerFeature.ConstantFeatureNormalizesToZero (0 ms)
+[----------] 2 tests from NemoNormalizePerFeature (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 8 tests from 5 test suites ran. (0 ms total)
+[  PASSED  ] 8 tests.
+Running main() from D:\BAXYRuntime\experiments\voice\sherpa205\build\_deps\googletest-src\googletest\src\gtest_main.cc
+{"wheel": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\runtime_wheels\\sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl", "sha256": "abb55ee911483d7e9be5b874d168ee50273f59dec8f862dfb4c6cce0cabd665b", "upstreamCommit": "142807252687d81b40d6315f23470a1512a00de3", "upstreamWheelSha256": "b8436ffe2763b3fd522fbac8fe53f47d611721c84819c241acfb65d122403d7d", "patchSha256": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163", "extensionSha256": "675d563506dc24466f09951ec07ba980053d385afca4caf5e26ca80281a0b4c0", "normalizationPatchSha256": "79cb34698cf0fb6083d8f66ab194970e5fddef9e26422f469183822412e87c48", "normalizationUpstreamCommit": "0967a08db705d8eec9cf5cef962c8ec57c16e4a8", "change": "NeMo per-stream greedy decoder shares the model; upstream3857 fixes float32 feature normalization for both decoders.", "profile": "Windows x64, CPython3.12, VS2022 Release, ONNX Runtime1.27.0 CPU"}

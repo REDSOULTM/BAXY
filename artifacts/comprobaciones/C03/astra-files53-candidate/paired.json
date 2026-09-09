@@ -1,0 +1,1684 @@
+[
+  {
+    "request": "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/ausente47.txt\".",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "No pude leer el archivo porque el plan está incompleto.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/ausente47.txt\".",
+          "ts": "01:11:13"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754273139,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754274140,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754274692,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "No pude leer el archivo porque el plan está incompleto.",
+          "ts": "01:11:15",
+          "route": "error"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754275894,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754275895,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 56,
+        "draft_sha256": "95884ba240097323b1e882833e9c0c3ff295e08ccf588c67bcd9e221b1cea3a5",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No pude leer el archivo porque el plan está incompleto."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Lee el contenido del archivo \"c03-lectura.txt\" del sandbox.",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "Lee el contenido del archivo \"c03-lectura.txt\" del sandbox.",
+          "ts": "01:11:15"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754275952,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754276953,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754277201,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754279530,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754279533,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "error",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "01:11:25",
+          "route": "error"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 74,
+        "draft_sha256": "67eab564ad4acea5e693313bb9c9cb758487e761b89c3bf8df748ac673b954dd",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No se pudo leer el contenido del archivo porque el plan estaba incompleto."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "052cd91554a94c8f6fbc76f785c7973bf8c7e10a154b2ccc10876c07664f71bb",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "La causa del fallo es que el plan no está completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "258e8b1f6a2409b43b761c97f9511921af3cf65c3cde383f696f113fd274c643",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "El plan no estaba completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 74,
+        "draft_sha256": "67eab564ad4acea5e693313bb9c9cb758487e761b89c3bf8df748ac673b954dd",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No se pudo leer el contenido del archivo porque el plan estaba incompleto."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "052cd91554a94c8f6fbc76f785c7973bf8c7e10a154b2ccc10876c07664f71bb",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "La causa del fallo es que el plan no está completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "258e8b1f6a2409b43b761c97f9511921af3cf65c3cde383f696f113fd274c643",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "El plan no estaba completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 107,
+        "draft_sha256": "94f255ec2622b8f784cdb18822e8bb0d8903f3689533a54e852cf14f0e86e1ff",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Estoy leyendo el contenido del archivo \"c03-lectura.txt\" del sandbox. Aún no tengo los resultados finales."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "9b7128188781342488ae840d8f1b3cf317876a47145413ece57ffb449168b385",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Estoy leyendo el contenido del archivo c03-lectura.txt del sandbox."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "9b7128188781342488ae840d8f1b3cf317876a47145413ece57ffb449168b385",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Estoy leyendo el contenido del archivo c03-lectura.txt del sandbox."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 74,
+        "draft_sha256": "67eab564ad4acea5e693313bb9c9cb758487e761b89c3bf8df748ac673b954dd",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No se pudo leer el contenido del archivo porque el plan estaba incompleto."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "052cd91554a94c8f6fbc76f785c7973bf8c7e10a154b2ccc10876c07664f71bb",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "La causa del fallo es que el plan no está completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "258e8b1f6a2409b43b761c97f9511921af3cf65c3cde383f696f113fd274c643",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "El plan no estaba completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 74,
+        "draft_sha256": "67eab564ad4acea5e693313bb9c9cb758487e761b89c3bf8df748ac673b954dd",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No se pudo leer el contenido del archivo porque el plan estaba incompleto."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "052cd91554a94c8f6fbc76f785c7973bf8c7e10a154b2ccc10876c07664f71bb",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "La causa del fallo es que el plan no está completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "258e8b1f6a2409b43b761c97f9511921af3cf65c3cde383f696f113fd274c643",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "El plan no estaba completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 74,
+        "draft_sha256": "67eab564ad4acea5e693313bb9c9cb758487e761b89c3bf8df748ac673b954dd",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No se pudo leer el contenido del archivo porque el plan estaba incompleto."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "052cd91554a94c8f6fbc76f785c7973bf8c7e10a154b2ccc10876c07664f71bb",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "La causa del fallo es que el plan no está completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "258e8b1f6a2409b43b761c97f9511921af3cf65c3cde383f696f113fd274c643",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "El plan no estaba completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 74,
+        "draft_sha256": "67eab564ad4acea5e693313bb9c9cb758487e761b89c3bf8df748ac673b954dd",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No se pudo leer el contenido del archivo porque el plan estaba incompleto."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "052cd91554a94c8f6fbc76f785c7973bf8c7e10a154b2ccc10876c07664f71bb",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "La causa del fallo es que el plan no está completo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "258e8b1f6a2409b43b761c97f9511921af3cf65c3cde383f696f113fd274c643",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "El plan no estaba completo."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 4,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Read the file \"c03-invalid-utf8.txt\" in the sandbox.",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "Read the file \"c03-invalid-utf8.txt\" in the sandbox.",
+          "ts": "01:11:25"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754285636,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754286828,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754288796,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754288796,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "error",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "01:11:34",
+          "route": "error"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 44,
+        "draft_sha256": "fca7481db6f15fa67742b21cfb375d12ddb75328dd03bab7328dede56ebab3f6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "I didn't complete the plan to read the file."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 44,
+        "draft_sha256": "fca7481db6f15fa67742b21cfb375d12ddb75328dd03bab7328dede56ebab3f6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "I didn't complete the plan to read the file."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 211,
+        "draft_sha256": "9e4a7583c5d25285438e82ad759ab0a4fd50cdcf419e4134256d17830cc6394c",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "I'm currently reading the file \"c03-invalid-utf8.txt\" in the sandbox. The file contains invalid UTF-8 sequences, which are preventing proper parsing. I'm still processing it and haven't reached a conclusion yet."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 44,
+        "draft_sha256": "fca7481db6f15fa67742b21cfb375d12ddb75328dd03bab7328dede56ebab3f6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "I didn't complete the plan to read the file."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 44,
+        "draft_sha256": "fca7481db6f15fa67742b21cfb375d12ddb75328dd03bab7328dede56ebab3f6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "I didn't complete the plan to read the file."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 44,
+        "draft_sha256": "fca7481db6f15fa67742b21cfb375d12ddb75328dd03bab7328dede56ebab3f6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "I didn't complete the plan to read the file."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "32be10aadce1597c759966ed0037ea4f6b8b4be515176d93e3ad90bcfd222aed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "The plan was incomplete."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 44,
+        "draft_sha256": "fca7481db6f15fa67742b21cfb375d12ddb75328dd03bab7328dede56ebab3f6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "I didn't complete the plan to read the file."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/files53-outside/c03-sombra.txt\".",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "No pude leer el archivo porque el plan está incompleto.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/files53-outside/c03-sombra.txt\".",
+          "ts": "01:11:34"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754294146,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754295148,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754295440,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "No pude leer el archivo porque el plan está incompleto.",
+          "ts": "01:11:36",
+          "route": "error"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754296641,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754296641,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 56,
+        "draft_sha256": "95884ba240097323b1e882833e9c0c3ff295e08ccf588c67bcd9e221b1cea3a5",
+        "payload": {
+          "outcome": "failed",
+          "cause": "plan incomplete"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"plan_incomplete\"}",
+        "draft": "No pude leer el archivo porque el plan está incompleto."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora.",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "01:11",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "Dime la hora.",
+          "ts": "01:11:36"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754296696,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754296787,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "01:11",
+          "ts": "01:11:37",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788754297149,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "c7d3201722a798ad5fe92131c7ba3414e986bc26a1759c9a6f4acf63f9d89386",
+        "payload": {
+          "clock": "01:11"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T04:11:36.9222594+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "01:11"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

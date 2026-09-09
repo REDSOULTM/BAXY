@@ -1,0 +1,9 @@
+{
+  "completed": true,
+  "violations": [],
+  "gpu_peak_mib": 3171.5625,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 3623.171875,
+  "seconds": 8.641,
+  "manifest_unchanged": true
+}

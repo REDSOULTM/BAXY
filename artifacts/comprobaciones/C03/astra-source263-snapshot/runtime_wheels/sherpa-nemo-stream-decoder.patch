@@ -1,0 +1,69 @@
+diff --git a/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h b/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h
+index b400c48..deef345 100644
+--- a/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h
++++ b/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h
+@@ -10,6 +10,7 @@
+ #include <memory>
+ #include <regex>  // NOLINT
+ #include <sstream>
++#include <stdexcept>
+ #include <string>
+ #include <utility>
+ #include <vector>
+@@ -158,6 +159,31 @@ class OfflineRecognizerTransducerNeMoImpl : public OfflineRecognizerImpl {
+   }
+ 
+   void DecodeStreams(OfflineStream **ss, int32_t n) const override {
++    // Select a decoder per utterance without reloading the shared NeMo model.
++    // A contextual stream must retain beam search; greedy cannot use its graph.
++    const auto effective_method = [this](OfflineStream *stream) {
++      const auto &requested = stream->GetOption("decoding_method");
++      return requested.empty() ? config_.decoding_method : requested;
++    };
++    const std::string method = effective_method(ss[0]);
++    bool mixed_methods = false;
++    for (int32_t i = 0; i != n; ++i) {
++      const std::string current = effective_method(ss[i]);
++      if (current != config_.decoding_method && current != "greedy_search") {
++        throw std::invalid_argument("Unsupported per-stream NeMo decoder");
++      }
++      if (current == "greedy_search" && ss[i]->GetContextGraph() != nullptr) {
++        throw std::invalid_argument("Greedy NeMo decoder cannot use hotwords");
++      }
++      mixed_methods = mixed_methods || current != method;
++    }
++    if (mixed_methods) {
++      // Keep each decoder's established batch behavior for homogeneous batches.
++      for (int32_t i = 0; i != n; ++i) {
++        DecodeStreams(ss + i, 1);
++      }
++      return;
++    }
+     auto memory_info =
+         Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+ 
+@@ -202,8 +228,14 @@ class OfflineRecognizerTransducerNeMoImpl : public OfflineRecognizerImpl {
+ 
+     Ort::Value encoder_out = Transpose12(model_->Allocator(), &t[0]);
+ 
+-    auto results =
+-        decoder_->Decode(std::move(encoder_out), std::move(t[1]), ss, n);
++    std::vector<OfflineTransducerDecoderResult> results;
++    if (method == "greedy_search" && method != config_.decoding_method) {
++      OfflineTransducerGreedySearchNeMoDecoder greedy(
++          model_.get(), config_.blank_penalty, model_->IsTDT());
++      results = greedy.Decode(std::move(encoder_out), std::move(t[1]), ss, n);
++    } else {
++      results = decoder_->Decode(std::move(encoder_out), std::move(t[1]), ss, n);
++    }
+ 
+     int32_t frame_shift_ms = 10;
+     for (int32_t i = 0; i != n; ++i) {
+@@ -219,6 +251,7 @@ class OfflineRecognizerTransducerNeMoImpl : public OfflineRecognizerImpl {
+       r.text = ApplyHomophoneReplacer(std::move(r.text));
+ 
+       ss[i]->SetResult(r);
++      ss[i]->SetOption("applied_decoding_method", method);
+     }
+   }
+ 

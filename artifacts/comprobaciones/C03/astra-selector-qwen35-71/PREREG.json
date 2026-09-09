@@ -1,0 +1,53 @@
+{
+  "method": "Same four exact file selector packets64 and six full-dialogue technical reference packets68. Only model changes to inherited Qwen3.5-4B-Q4_K_M, served by same b9980CUDA backend with native template, q8 KV,3x4096 and ngl99. Preserve complete prompts, dialogue, tools, temperature0, seed0,256 tokens and enable_thinking=false. No preliminary classifier69/70, no wrapper decisions/retries, actual tools, UI/audio or human reserve. Compare registered-model results already captured64/68; not acceptance. Prior Qwen35 conversational probes used different sampling/task and showed factual weaknesses; this new selector failure is the reason to measure this inherited model on a different role, not to erase them.",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "modelSha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "modelBytes": 2740937888,
+  "sourcesConsulted20260907": [
+    "https://huggingface.co/Qwen/Qwen3.5-4B"
+  ],
+  "samplingDifferenceFromCard": "General non-thinking card recommends0.7/top_p0.8/top_k20/min_p0/presence1.5. This is an isolated deterministic selection comparison with the existing role settings, not an optimized global profile.",
+  "cases": [
+    {
+      "id": "file1",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "file2",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "file3",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "file4",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "reft1",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "reft2",
+      "expectedOperation": "filesystem.search"
+    },
+    {
+      "id": "reft3",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "reft4",
+      "expectedOperation": "filesystem.read.text"
+    },
+    {
+      "id": "reft5",
+      "expectedOperation": "filesystem.search"
+    },
+    {
+      "id": "reft6",
+      "expectedOperation": null
+    }
+  ],
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

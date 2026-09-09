@@ -1,0 +1,11 @@
+Could not find platform independent libraries <prefix>
+{"id": "t5", "variant": "native-dialogue", "answer": "Your name is Jordan. The operation to recall your name failed because memory was disabled.", "finish_reason": "stop"}
+{"id": "t5", "variant": "human-dialogue", "answer": "I don't know your name because the memory function is currently disabled.", "finish_reason": "stop"}
+{"id": "t10", "variant": "native-dialogue", "answer": "No puedo decirte c\u00f3mo te llamas porque la memoria est\u00e1 deshabilitada.", "finish_reason": "stop"}
+{"id": "t10", "variant": "human-dialogue", "answer": "No puedo decirte tu nombre porque la memoria est\u00e1 desactivada.", "finish_reason": "stop"}
+{"id": "third-party", "variant": "native-dialogue", "answer": "I don't know your name because the memory feature is currently disabled.", "finish_reason": "stop"}
+{"id": "third-party", "variant": "human-dialogue", "answer": "I don't know your name because the memory function is currently disabled.", "finish_reason": "stop"}
+{"id": "assistant-conflict", "variant": "native-dialogue", "answer": "I couldn't tell your name because the memory feature was disabled.", "finish_reason": "stop"}
+{"id": "assistant-conflict", "variant": "human-dialogue", "answer": "Jordan, your name is Jordan. The attempt to recall it failed because memory was disabled.", "finish_reason": "stop"}
+{"id": "explicit-persistence", "variant": "native-dialogue", "answer": "I don't have a name saved in private memory because that feature is currently disabled.", "finish_reason": "stop"}
+{"id": "explicit-persistence", "variant": "human-dialogue", "answer": "I don't have a name saved in private memory because that feature is currently disabled.", "finish_reason": "stop"}

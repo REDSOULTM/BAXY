@@ -1,0 +1,8 @@
+n=6 published=6 other=0
+
+001	t1	published_final	cierra la ventana titulada Ventana C03 de prueba	No pude cerrar la ventana titulada Ventana C03 de prueba porque el sistema no tiene acceso a la mente para realizar la acción.
+002	t2	published_final	cancelar	El pedido está fuera de lo que hago en este PC.
+003	t3	published_final	cierra la ventana titulada Ventana C03 de prueba	No puedo cerrar esa ventana, no es una tarea que realice.
+004	t4	published_final	confirmar	Confirmado.
+005	t5	published_final	What time is it?	It's 10:48.
+006	t6	published_final	What is on my to do list?	I don't have access to your to-do list. You'll need to check your own list or ask someone who has access to it.

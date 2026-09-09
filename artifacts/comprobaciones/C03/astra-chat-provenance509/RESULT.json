@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-08T22:48:11.179227+00:00",
+  "session": 94766,
+  "exit": 0,
+  "useful_out_of11": {
+    "original_policy-0": 9,
+    "provenance-0": 10,
+    "original_policy-17": 10,
+    "provenance-17": 10
+  },
+  "target_recall_en_correct": 0,
+  "target_recall_en_total": 4,
+  "effective_profile_policy_coverage": 44,
+  "http_responses": 139,
+  "finish_reason": "all stop",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1774.97265625,
+    "seconds": 94.157,
+    "manifest_unchanged": true
+  },
+  "decision": "Do not adopt the directive alone: it fails the target in both seeds; four added provenance/reference controls were already correct in the baseline. Definition variance is not evidence that the rule solved personal grounding. Next change representation, not another wording variant."
+}

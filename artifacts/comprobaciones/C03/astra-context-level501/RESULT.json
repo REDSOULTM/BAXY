@@ -1,0 +1,41 @@
+{
+  "utc": "2026-09-08T21:36:21.893106+00:00",
+  "source_sha256": {
+    "src/baxy_mind/effect_intent.py": "488941506d8bfe62e4ca723e16d05c3b7d3f17b5aa535f13b6e860bad937f28c",
+    "src/baxy_mind/__main__.py": "a884ba797eae6117cd556d660fe2f1a6f68967e0dab1360af29fd246dd6a4923"
+  },
+  "baseline": {
+    "failed": 6,
+    "passed": 20,
+    "seconds": 1.61
+  },
+  "resolver_focal": {
+    "passed": 26,
+    "seconds": 0.75
+  },
+  "turn_binding_focal": {
+    "passed": 11,
+    "seconds": 1.66
+  },
+  "preserved_failures": [
+    "turn-first-intervention.log: level argument absent across context boundary",
+    "turn-second-intervention.log: unmute clitic argument absent"
+  ],
+  "owners": {
+    "passed": 3377,
+    "subtests_passed": 121,
+    "skips": 0,
+    "seconds": 48.89,
+    "session": 98547,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.31,
+    "warnings": 0,
+    "errors": 0,
+    "session": 51448,
+    "exit": 0
+  },
+  "limits": "Source validation only. Actual turn/plan/arguments protocol502 follows; no audio execution, UI or C03 acceptance."
+}

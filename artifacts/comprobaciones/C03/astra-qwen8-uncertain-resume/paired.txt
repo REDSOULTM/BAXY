@@ -1,0 +1,5 @@
+n=3 published=3 other=0
+
+001	t1	published_final	cierra la calculadora	¿Cuál es el nombre del proceso de la calculadora?
+002	t2	published_final	cancelar	La solicitud fue cancelada.
+003	t3	published_final	¿Qué hora es?	Son las 09:02.

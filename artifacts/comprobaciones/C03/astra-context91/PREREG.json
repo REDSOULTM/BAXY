@@ -1,0 +1,43 @@
+{
+  "method": "Same five89 cases and packets, replacing previousExchange data with previousResponse only. The App already supplies its previous published response as context, but its priorRequests list does not guarantee a matching preceding request if a turn ended without a published reply. Do not invent an association between those fields. Compare with recorded89; no repeated baseline, source/model/sampler change, functions/UI/audio/reserve or promotion. Prior limits control lacks real catalog context and is only a no-replay check, not capability acceptance.",
+  "cases": [
+    [
+      "empty_cause",
+      "Why couldn't you read that file?",
+      "en",
+      "Lee el archivo \"c03-ausente.txt\" del sandbox.",
+      "No se encontró el archivo \"c03-ausente.txt\" en el sandbox."
+    ],
+    [
+      "new_arithmetic",
+      "cuánto es doce por ocho",
+      "es",
+      "Pon el volumen.",
+      "¿A qué nivel quieres que ponga el volumen?"
+    ],
+    [
+      "new_limits",
+      "cuáles son tus límites aquí",
+      "es",
+      "Qué es una subnet mask",
+      "Una máscara de subred distingue la parte de red de la parte de host de una dirección IP."
+    ],
+    [
+      "why_latency",
+      "¿por qué importa?",
+      "es",
+      "Qué es la latencia de red",
+      "La latencia de red es el tiempo que tarda un dato en llegar."
+    ],
+    [
+      "new_checksum",
+      "Explain what a checksum is in one sentence.",
+      "en",
+      "Lee el archivo \"c03-ausente.txt\" del sandbox.",
+      "No se encontró el archivo \"c03-ausente.txt\" en el sandbox."
+    ]
+  ],
+  "sourceSha256": "b539189f19223abc6378ad6ae63fec8d80a68561f8cf463fc29cb6161efc4959",
+  "model": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

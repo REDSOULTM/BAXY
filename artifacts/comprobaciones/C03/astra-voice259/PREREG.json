@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-07T21:46:48.939483+00:00",
+  "scriptSha256": "01027dc95d93e76e90e53d8b05f83e3383500f9bffbb5c801b4e7483e97d4163",
+  "method": "Installed257 source and lock: real AEC3 capture supplies aligned recognition/confirmation, independent VAD states, RAW WASAPI, Piper and baxy.2 ASR. No AEC replacement or capture-method copy. Four fixed187texts are regenerated and effective waves retained. This tests pure echo; no UI/LLM or simultaneous human acceptance.",
+  "criterion": "Actual WASAPI client no adaptive AEC/NS, ready capture, four TTS generation/admission results, actual barge_in/transcript/error counts, exact volume restoration and stopped workers. Zero false interruptions alone is not voice acceptance.",
+  "limitation": "Pure speaker playback echo; no controlled simultaneous physical human speech. Direct mode is an existing product mode; this does not validate wake. Per-frame observer affects scheduling.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "maximumCaptureSeconds": 60,
+  "levelScalar": 0.3,
+  "sourceFiles": {
+    "src/baxy_mind/voice.py": "b17d1d71c4d0931ce6a63fda4e85311825514aeacf8e64885f7e0a97dab2fda6",
+    "src/baxy_mind/voice_capture.py": "22897c8aae5d339c174cb83cf1465c62e5bdc407ccd3f3e166888a57369de11e",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/webrtc_aec.py": "f0e2983840a46821d3a3fff5198d58c09e814ec4d3fa603c66eca739f9ee035f",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  },
+  "probeSha256": "95ec923fcfd15cb8a4dec8de7c2051e9ad77779dc83c3851e26cc311d21e0575",
+  "lockSha256": "6838e61a725bb36035f7ae0e2ec734987485b5193b62b8ee28b16f638af76c9a",
+  "nativePackage": "pywebrtc-audio0.2.0+baxy.1"
+}

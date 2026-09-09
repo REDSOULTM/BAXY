@@ -78,12 +78,9 @@ export function FieldCenter({
   const anyUploading = attachments.some((a) => a.uploading);
   const armed = ready && draft.trim().length > 0 && !anyUploading;
 
-  // placeholder doubles as a status indicator while booting. When a real
-  // boot_stage is available it wins over the generic agent.built/healthy
-  // fallback — the stage label is more specific (e.g. "offloaded 30/43
-  // layers to GPU"). Once the agent is ready we always show the normal
-  // chat prompt.
-  const bootMsg = (() => {
+  // Native boot_stage events also carry turn progress. Render their label
+  // outside the input: its draft remains populated until /turn completes.
+  const stageMessage = (() => {
     if (!bootStage || bootStage.stage === 'ready') return null;
     if (!bootStage.label) return null;
     if (bootStage.progress !== null) {
@@ -91,8 +88,7 @@ export function FieldCenter({
     }
     return bootStage.label;
   })();
-  const placeholder = bootMsg
-    ?? (ready || (agent.built && agent.healthy)
+  const placeholder = (ready || (agent.built && agent.healthy)
       ? 'ask, instruct, or paste'
       : !agent.built
       ? 'starting agent · loading tools…'
@@ -203,6 +199,12 @@ export function FieldCenter({
       <NeuralGraph state={convState} />
 
       <div className="chat">
+        <div className="turn-progress" role="status" aria-atomic="true">
+          {stageMessage}
+        </div>
+        <div className="turn-error" role="alert" aria-atomic="true">
+          {convState === 'error' ? 'Response error' : null}
+        </div>
         <form className={`line${ready ? '' : ' booting'}`} onSubmit={handleSubmit}>
           <span className="chev">›</span>
           <input

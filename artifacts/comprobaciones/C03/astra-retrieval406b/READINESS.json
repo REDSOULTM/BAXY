@@ -1,0 +1,16 @@
+{
+  "ready_seconds": 20.23399999999674,
+  "build_seconds": 3.5469999999913853,
+  "encoder": {
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+    "manifest_algorithm": "sha256(UTF-8/LF/final-LF lines: model, revision, then every file sorted by relative POSIX path UTF-8 bytes as path<TAB>size<TAB>sha256)",
+    "manifest_sha256": "e1ab2f71784b5129f89096ef377e9f573fa06d0f11c64f897560486524fd4940",
+    "file_count": 10,
+    "weights": {
+      "path": "model.safetensors",
+      "sha256": "1a55775f53449dac10a2bcbc312469fac40b96d53198c407081a831f81c98477"
+    }
+  },
+  "device": "cpu (source default, not a GPU measurement)"
+}

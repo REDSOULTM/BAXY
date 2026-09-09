@@ -1,0 +1,26 @@
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error ExportCreatesInspectableSecretFreeJsonAndReplaysTheSameFile [85 ms]
+  Mensaje de error:
+     Assert.That(projection!.Message, Does.Contain("Documentos/BAXY"))
+  Expected: String containing "Documentos/BAXY"
+  But was:  "{"kind":"status","polarity":"success","cause":"memory_exported","operation":"memory.export","verified":true,"succeeded":true,"observed":{"destination":"Documents/BAXY","recordCount":2,"integrityVerified":true,"integrityAlgorithm":"SHA-256","mayRedirectOrSync":true,"replayed":false}}"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryHandlersTests.ExportCreatesInspectableSecretFreeJsonAndReplaysTheSameFile() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryHandlersTests.cs:line 327
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.GetResult()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MemoryHandlersTests.<>c__DisplayClass10_0.<ExportCreatesInspectableSecretFreeJsonAndReplaysTheSameFile>b__1() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryHandlersTests.cs:line 342
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MemoryHandlersTests.ExportCreatesInspectableSecretFreeJsonAndReplaysTheSameFile() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryHandlersTests.cs:line 327
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at Baxy.Integration.Tests.MemoryHandlersTests.ExportCreatesInspectableSecretFreeJsonAndReplaysTheSameFile()
+
+
+
+Con error! - Con error:     1, Superado:  1961, Omitido:     0, Total:  1962, Duración: 4 m 1 s - Baxy.Integration.Tests.dll (net10.0)

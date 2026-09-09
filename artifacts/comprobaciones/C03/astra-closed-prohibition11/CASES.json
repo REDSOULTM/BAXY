@@ -1,0 +1,61 @@
+{
+  "development": [
+    {
+      "text_literal": "decime cuánto volumen hay",
+      "origin": "consumed integrated-real22",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "Ponlo a 100 ahora",
+      "origin": "consumed integrated-real22",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "Hola, quien sos?",
+      "origin": "consumed integrated-real22",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "Dime qué dispositivo de audio está activo",
+      "origin": "consumed integrated-real22",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "no silencies el audio",
+      "origin": "consumed integrated-real22",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "Don't mute the audio",
+      "origin": "synthetic or consumed scope control",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "no subas el volumen",
+      "origin": "consumed integrated-real22",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "¿No está silenciado el audio?",
+      "origin": "synthetic or consumed scope control",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "dime la hora, no abras Steam",
+      "origin": "synthetic or consumed scope control",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "dime la hora y no abras Steam",
+      "origin": "synthetic or consumed scope control",
+      "note": "diagnostic only; no fresh acceptance"
+    },
+    {
+      "text_literal": "dime la hora",
+      "origin": "synthetic or consumed scope control",
+      "note": "diagnostic only; no fresh acceptance"
+    }
+  ],
+  "source": "astra-integrated-real22/CASES.json for inherited corpus provenance",
+  "method": "Five literal corpus inputs in their former local order, then negative-question and clause-order controls. Only intended mutation is setting audio100, followed by verified state reads. No app launching or external messaging."
+}

@@ -1,0 +1,60 @@
+{
+  "micLatency": 0.064,
+  "loopLatency": 0.064,
+  "micStreamClock": 79245.3743462,
+  "loopStreamClock": 79245.3743519,
+  "micDevice": "Varios micr\u00f3fonos (Realtek(R) Audio)",
+  "loopDevice": "Altavoces (Realtek(R) Audio) [Loopback]",
+  "micRate": 16000,
+  "loopRate": 48000,
+  "columns": [
+    "perfCounter",
+    "inputBufferAdcTime",
+    "currentTime",
+    "frames",
+    "anyStatus"
+  ],
+  "method": "WASAPI input on same default physical Realtek; shared auto_convert enabled; clocks only, no PCM retained/playback/volume change.",
+  "clocks": {
+    "microphone": {
+      "callbacks": 109,
+      "adcNonzero": 109,
+      "adcStepQuantiles": [
+        0.028860699996585026,
+        0.03202610000153072,
+        0.03415790000872221
+      ],
+      "currentMinusAdcQuantiles": [
+        0.012062499998137355,
+        0.016062499998952262,
+        0.02006249999976717
+      ],
+      "perfMinusCurrentQuantiles": [
+        3.360000846441835e-05,
+        5.0700007705017924e-05,
+        0.00013329999637790024
+      ],
+      "statusCount": 0
+    },
+    "loopback": {
+      "callbacks": 112,
+      "adcNonzero": 112,
+      "adcStepQuantiles": [
+        0.029938299994682893,
+        0.032049200002802536,
+        0.034882699997979216
+      ],
+      "currentMinusAdcQuantiles": [
+        0.010666666668839753,
+        0.010666666668839753,
+        0.010666666668839753
+      ],
+      "perfMinusCurrentQuantiles": [
+        2.9800008633174002e-05,
+        4.755000554723665e-05,
+        0.0001545999984955415
+      ],
+      "statusCount": 0
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{"cmd":"turn","text":"Hello"}
+{"cmd":"turn","text":"cuánto es doce por ocho"}
+{"cmd":"turn","text":"What is fourteen times six?"}
+{"cmd":"turn","text":"Explain encryption, pero en simple"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"responde en spanglish: qué es el cifrado"}
+{"cmd":"turn","text":"what is the capital of Peru"}

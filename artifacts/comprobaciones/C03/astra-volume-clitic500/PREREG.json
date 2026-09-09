@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-08T21:18:33.839160+00:00",
+  "source_before_sha256": "12878387d6dc5a64ce8abe7577234a03dd895830e9b2f0c57a9de98401f60ed5",
+  "cause": "Actual resumed owner51 string fails with Ponle, while the same literal with Pon resolves volume and mute. _SET_VOLUME_VERB lacks the valid dative clitic. The no-level clarification grammar also lacks explicit local PC/computer target modifiers.",
+  "intervention": "Extend shared volume-setting head to ponle and preserve missing level for explicit local PC/computer targets. No general history concatenation, compatibility bypass, prompt or runtime changes.",
+  "tests": "Record baseline for new clitic actions, actual resumed string, missing-level local devices, other-device/negative/quoted controls and absent catalog. Then owner suites and Fast after focal green.",
+  "limits": "Does not fix C# pre-resumption failure or contextual typo by itself. No reserve, physical audio, UI or final acceptance."
+}

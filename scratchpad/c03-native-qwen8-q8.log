@@ -1,0 +1,24 @@
+{"id": 1, "arm": "current", "response": "Doce por ocho son noventa y seis.", "error": null, "seconds": 6.407}
+{"id": 1, "arm": "direct", "response": "No te digo la respuesta, pero s\u00e9 que no es 96.", "error": null, "seconds": 5.437}
+{"id": 2, "arm": "current", "response": "Diecisiete m\u00e1s veintis\u00e9is son cuarenta y tres.", "error": null, "seconds": 7.625}
+{"id": 2, "arm": "direct", "response": "Cuarenta y tres.", "error": null, "seconds": 3.547}
+{"id": 3, "arm": "current", "response": "Fourteen times six is the product of multiplying fourteen by six.", "error": null, "seconds": 7.531}
+{"id": 3, "arm": "direct", "response": "Eighty-four.", "error": null, "seconds": 2.282}
+{"id": 4, "arm": "current", "response": "DNS caching is the process of temporarily storing DNS records in a device's memory to speed up future lookups.", "error": null, "seconds": 9.703}
+{"id": 4, "arm": "direct", "response": "DNS caching is the process of storing recently resolved domain names and their corresponding IP addresses to speed up future lookups.", "error": null, "seconds": 7.75}
+{"id": 5, "arm": "current", "response": "Why does DNS caching matter? It helps speed up internet browsing by storing recently used domain name information.", "error": null, "seconds": 9.968}
+{"id": 5, "arm": "direct", "response": "Because cached DNS entries reduce lookup time and network traffic, improving efficiency and performance.", "error": null, "seconds": 5.641}
+{"id": 6, "arm": "current", "response": "Un router es un dispositivo que dirige el tr\u00e1fico de datos entre diferentes redes.", "error": null, "seconds": 8.094}
+{"id": 6, "arm": "direct", "response": "Un router es un dispositivo que conecta m\u00faltiples redes y dirige el tr\u00e1fico de datos entre ellas.", "error": null, "seconds": 8.312}
+{"id": 7, "arm": "current", "response": "El router sirve para conectar dispositivos a internet y gestionar la red dentro de la casa.", "error": null, "seconds": 10.016}
+{"id": 7, "arm": "direct", "response": "El router permite conectar dispositivos a internet y gestionar la red local.", "error": null, "seconds": 5.953}
+{"id": 8, "arm": "current", "response": "La latencia de red importa porque retrasa la comunicaci\u00f3n entre dispositivos, afectando la velocidad y la eficiencia de las conexiones.", "error": null, "seconds": 13.766}
+{"id": 8, "arm": "direct", "response": "Porque afecta el rendimiento y la experiencia en actividades como juegos, videoconferencias o acceso a servicios en l\u00ednea.", "error": null, "seconds": 9.515}
+{"id": 9, "arm": "current", "response": "El proxy se usa para intermediar entre el usuario y el servidor, permitiendo ocultar la direcci\u00f3n IP real y mejorar la seguridad o el acceso a ciertos recursos.", "error": null, "seconds": 14.422}
+{"id": 9, "arm": "direct", "response": "El proxy se usa para intermediar entre el usuario y el servidor, permitiendo ocultar la direcci\u00f3n IP real, mejorar la seguridad, acceder a contenido bloqueado o gestionar el tr\u00e1fico de red.", "error": null, "seconds": 13.75}
+{"id": 10, "arm": "current", "response": "Un checksum es una secuencia de n\u00fameros y letras que sirve para verificar que un archivo o dato no se haya da\u00f1ado durante su transferencia o almacenamiento.", "error": null, "seconds": 14.375}
+{"id": 10, "arm": "direct", "response": "Un checksum es un valor num\u00e9rico que se usa para verificar la integridad de los datos.", "error": null, "seconds": 7.563}
+{"id": 11, "arm": "current", "response": "Explicar en simple: la encriptaci\u00f3n es como un c\u00f3digo que protege tus datos, solo que en lugar de letras, usa n\u00fameros y s\u00edmbolos para que solo quien tiene la clave pueda leerlo.", "error": null, "seconds": 16.25}
+{"id": 11, "arm": "direct", "response": "La encripci\u00f3n es como un c\u00f3digo que transforma informaci\u00f3n en algo que solo se puede leer si tienes la clave. Es como si escribieras un mensaje en un idioma que solo t\u00fa y otra persona entienden.", "error": null, "seconds": 14.531}
+{"id": 12, "arm": "current", "response": "Una copia de seguridad es una copia de los datos que se guarda en otro lugar para poder recuperarlos si se pierden o da\u00f1an.", "error": null, "seconds": 12.687}
+{"id": 12, "arm": "direct", "response": "Una copia de seguridad es una copia de tus archivos o datos que guardas en otro lugar, para poder recuperarlos si se pierden o da\u00f1an.", "error": null, "seconds": 11.094}

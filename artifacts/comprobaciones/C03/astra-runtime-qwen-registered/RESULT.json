@@ -1,0 +1,10 @@
+{
+  "registered": true,
+  "changedFields": [
+    "gguf",
+    "gguf_sha256"
+  ],
+  "manifestSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "wakePreserved": true,
+  "utc": "2026-09-06T19:00:24.5457086Z"
+}

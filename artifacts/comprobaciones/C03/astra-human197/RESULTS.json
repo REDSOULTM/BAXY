@@ -1,0 +1,66 @@
+[
+  {
+    "input": 0,
+    "config": "es_419",
+    "id": "2001",
+    "recognizer": "parakeet",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "seconds": 1.2039999999979045
+  },
+  {
+    "input": 1,
+    "config": "es_419",
+    "id": "1764",
+    "recognizer": "parakeet",
+    "text": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "seconds": 0.8589999999967404
+  },
+  {
+    "input": 2,
+    "config": "en_us",
+    "id": "1904",
+    "recognizer": "parakeet",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "seconds": 0.9839999999967404
+  },
+  {
+    "input": 3,
+    "config": "en_us",
+    "id": "1675",
+    "recognizer": "parakeet",
+    "text": "All nouns alongside the world say for you always begin with a capital letter even in the middle of a sentence.",
+    "seconds": 0.7660000000032596
+  },
+  {
+    "input": 0,
+    "config": "es_419",
+    "id": "2001",
+    "recognizer": "nemotron",
+    "text": "Se recomie enfáticamente a los viajeros que informen sobre cualquier riesgo del clima extremo en el área que visitan dado que ello puede afectar sus planes de viaje.",
+    "seconds": 3.0939999999973224
+  },
+  {
+    "input": 1,
+    "config": "es_419",
+    "id": "1764",
+    "recognizer": "nemotron",
+    "text": "Fue tanta la cantidad de gente queró que no todos pudieron acceder al funeral en laza de San Pedro",
+    "seconds": 2.5780000000086147
+  },
+  {
+    "input": 2,
+    "config": "en_us",
+    "id": "1904",
+    "recognizer": "nemotron",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years",
+    "seconds": 2.8439999999973224
+  },
+  {
+    "input": 3,
+    "config": "en_us",
+    "id": "1675",
+    "recognizer": "nemotron",
+    "text": "All nouns alongside the world say for you always begin with a capital letter even in the middle of a sentence",
+    "seconds": 2.562000000005355
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "diagnosticStoppedToReuseVerifiedCache": [
+    22780,
+    12572,
+    28608,
+    6032,
+    12384
+  ],
+  "oldKey": "5dd998d3e61866dc136c257d",
+  "newKey": "45bbe54a0653f85877b05cdb",
+  "sourceSha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+  "records": 25156,
+  "encoderIdentity": "intfloat/multilingual-e5-small|query-prefix|normalize=true|dimensions=384"
+}

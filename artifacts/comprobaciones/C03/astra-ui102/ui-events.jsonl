@@ -1,0 +1,7 @@
+{"utc":"2026-09-07T08:57:12.132Z","case":1,"event":"submit_requested","text":"Dime la hora."}
+{"utc":"2026-09-07T08:57:46.619Z","case":2,"event":"submit_requested","text":"Lee el archivo \"c03-ui100-ausente.txt\" del sandbox."}
+{"utc":"2026-09-07T08:58:51.006Z","case":3,"event":"submit_requested","text":"Why couldn't you read that file?"}
+{"utc":"2026-09-07T08:59:35.298Z","case":4,"event":"submit_requested","text":"Lee el contenido del archivo \"c03-ui100-lectura.txt\" del sandbox."}
+{"utc":"2026-09-07T09:00:30.011Z","case":5,"event":"submit_requested","text":"Read the file \"c03-ui100-invalid-utf8.txt\" in the sandbox."}
+{"utc":"2026-09-07T09:01:56.552Z","case":6,"event":"submit_requested","text":"Why couldn't you read that file?"}
+{"utc":"2026-09-07T09:03:04.204Z","case":7,"event":"submit_requested","text":"Dime la hora, el audio y el uso de CPU."}

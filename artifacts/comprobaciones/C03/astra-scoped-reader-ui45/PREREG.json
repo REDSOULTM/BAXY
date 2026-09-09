@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-07T01:47:01.803068+00:00",
+  "command": [
+    "py",
+    "main.py"
+  ],
+  "sourcePins": {
+    "utc": "2026-09-07T01:40:39.793585+00:00",
+    "files": {
+      "src/baxy_mind/effect_intent.py": "da6c5df8be655c6d9a7108d030669d56b5c2ce735988c03e41b5fd1a8c35424e",
+      "src/baxy_mind/__main__.py": "aa290163fbf9ff44bc5e3a1de5bfa32e155168fc4ff21e9e524d9b222958ad56",
+      "src/baxy_mind/llm.py": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+      "tests/test_effect_intent.py": "3ccf5506cfe9f9e1ecd306d6ed2c925755bec7c90e7a1fe66c636790e9a6e5a4",
+      "tests/test_turn_policy.py": "239ab0d82fcb6755bfe72e56bb8bf631896591a292d850f6e083107059801752",
+      "runtime": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+    }
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "method": "Normal real-window launch, registered model/KV/voice/Python defaults. Manual Windows skill input and inspection. Observe current real UI with the source validated in tranche44. Request the consumed negative-state question, both clock/independent-prohibition controls and conversation. If an old recovery appears, inspect it; do not assume prior pending state. No data deletion or external messaging. Development only, not fresh acceptance. Existing audit sinks only; resource sampler attaches exclusively to the newly launched exact Baxy.exe."
+}

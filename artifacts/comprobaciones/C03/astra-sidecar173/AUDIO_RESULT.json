@@ -1,0 +1,70 @@
+{
+  "reason": "operator_finished",
+  "seconds": 84.25,
+  "before": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "after": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "restoredExactly": true,
+  "streams": {
+    "microphone": {
+      "kind": "microphone",
+      "startedUtc": "2026-09-07T14:20:03.482394+00:00",
+      "frames": 1343488,
+      "overflows": 0,
+      "peak": 0.0419921875,
+      "sumSquares": 1.7447438593953848,
+      "device": {
+        "name": "Varios micrófonos (Realtek(R) A",
+        "index": 1,
+        "hostapi": 0,
+        "max_input_channels": 2,
+        "max_output_channels": 0,
+        "default_low_input_latency": 0.09,
+        "default_low_output_latency": 0.09,
+        "default_high_input_latency": 0.18,
+        "default_high_output_latency": 0.18,
+        "default_samplerate": 44100.0
+      },
+      "rate": 16000,
+      "channels": 1,
+      "streamReadyUtc": "2026-09-07T14:20:03.580007+00:00",
+      "sha256": "4ca386586901a5054e5443d484ae1abf0ddf0a563ae05b6a8fdc48582bdeebf2",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar173-private\\microphone.wav",
+      "finishedUtc": "2026-09-07T14:21:27.613605+00:00"
+    },
+    "loopback": {
+      "kind": "loopback",
+      "startedUtc": "2026-09-07T14:20:03.483401+00:00",
+      "frames": 4033536,
+      "overflows": 0,
+      "peak": 0.124176025390625,
+      "sumSquares": 554.5014376463369,
+      "device": {
+        "index": 13,
+        "structVersion": 2,
+        "name": "Altavoces (Realtek(R) Audio) [Loopback]",
+        "hostApi": 2,
+        "maxInputChannels": 2,
+        "maxOutputChannels": 0,
+        "defaultLowInputLatency": 0.003,
+        "defaultLowOutputLatency": 0.0,
+        "defaultHighInputLatency": 0.0106667,
+        "defaultHighOutputLatency": 0.0,
+        "defaultSampleRate": 48000.0,
+        "isLoopbackDevice": true
+      },
+      "rate": 48000,
+      "channels": 2,
+      "streamReadyUtc": "2026-09-07T14:20:03.519940+00:00",
+      "sha256": "6a28f863c4785e5ce115a8fb8ad672783513abd9f6192acf4319ade45853044c",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar173-private\\loopback.wav",
+      "finishedUtc": "2026-09-07T14:21:27.607006+00:00"
+    }
+  },
+  "threadsStopped": true
+}

@@ -1,0 +1,178 @@
+[
+  {
+    "index": 1,
+    "variant": "before",
+    "seconds": 0.7969999999913853,
+    "payloadSha256": "82ee5858271c2d544b805b741ed602e3d07ffbd0c4fa4db53276ef141c287d4d",
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Ya he abierto Steam."
+          }
+        }
+      ],
+      "created": 1788823804,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 225,
+        "total_tokens": 231,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-n2UpVszPnvmSXk2rGGpHaw5Ermijw8ay",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 225,
+        "prompt_ms": 478.695,
+        "prompt_per_token_ms": 2.1275333333333335,
+        "prompt_per_second": 470.0278883213738,
+        "predicted_n": 6,
+        "predicted_ms": 142.172,
+        "predicted_per_token_ms": 23.695333333333334,
+        "predicted_per_second": 42.202402723461724
+      }
+    },
+    "reply": "Ya he abierto Steam.",
+    "finishReason": "stop"
+  },
+  {
+    "index": 2,
+    "variant": "after",
+    "seconds": 0.48399999999674037,
+    "payloadSha256": "62caa1474387b2e27bd5b25ac4b5b0da75dab767bdc2aca61a8edd6081c6c4c2",
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Steam ya está abierto."
+          }
+        }
+      ],
+      "created": 1788823804,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 238,
+        "total_tokens": 244,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-OjV7CsHJIJkKElMCBpcmiLbzISxxzx43",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 238,
+        "prompt_ms": 308.558,
+        "prompt_per_token_ms": 1.2964621848739495,
+        "prompt_per_second": 771.3298634292419,
+        "predicted_n": 6,
+        "predicted_ms": 147.486,
+        "predicted_per_token_ms": 24.581,
+        "predicted_per_second": 40.681827427688056
+      }
+    },
+    "reply": "Steam ya está abierto.",
+    "finishReason": "stop"
+  },
+  {
+    "index": 3,
+    "variant": "before",
+    "seconds": 0.45300000000861473,
+    "payloadSha256": "82ee5858271c2d544b805b741ed602e3d07ffbd0c4fa4db53276ef141c287d4d",
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Ya he abierto Steam."
+          }
+        }
+      ],
+      "created": 1788823805,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 225,
+        "total_tokens": 231,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-NyI9vQiW2aO9kJkOQVlcM0adl0212eup",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 225,
+        "prompt_ms": 290.854,
+        "prompt_per_token_ms": 1.2926844444444443,
+        "prompt_per_second": 773.5839974695208,
+        "predicted_n": 6,
+        "predicted_ms": 120.449,
+        "predicted_per_token_ms": 20.074833333333334,
+        "predicted_per_second": 49.81361406072279
+      }
+    },
+    "reply": "Ya he abierto Steam.",
+    "finishReason": "stop"
+  },
+  {
+    "index": 4,
+    "variant": "after",
+    "seconds": 0.46899999999732245,
+    "payloadSha256": "62caa1474387b2e27bd5b25ac4b5b0da75dab767bdc2aca61a8edd6081c6c4c2",
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Steam ya está abierto."
+          }
+        }
+      ],
+      "created": 1788823805,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 238,
+        "total_tokens": 244,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-VpelSeVSYsuon5WKVjikYOHFXm8PyF9i",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 238,
+        "prompt_ms": 298.433,
+        "prompt_per_token_ms": 1.253920168067227,
+        "prompt_per_second": 797.4989361096126,
+        "predicted_n": 6,
+        "predicted_ms": 125.3,
+        "predicted_per_token_ms": 20.883333333333333,
+        "predicted_per_second": 47.88507581803671
+      }
+    },
+    "reply": "Steam ya está abierto.",
+    "finishReason": "stop"
+  }
+]

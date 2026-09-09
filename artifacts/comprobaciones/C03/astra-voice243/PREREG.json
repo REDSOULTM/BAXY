@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-07T20:14:05.231200+00:00",
+  "scriptSha256": "dd104f50bf7eb4f2fdd8d4020c81a050ff90a7aaeddd6e79d2591ee27db5f194",
+  "method": "Source242 VoiceEngine with integrated DTLN512 from declared assets and installed locked LiteRT2.2.0, actual RAW capture/Silero/Piper/baxy.2. Four fixed187 texts at the same schedule as240. No replacement AEC factory, no experimental imports, no LLM/App/UI/wake seam, no decoder or threshold changes. Bounded observers record actual processed audio and decisions.",
+  "criterion": "Actual WASAPI client no adaptive AEC/NS, ready capture, four TTS generation/admission results, actual barge_in/transcript/error counts, exact volume restoration and stopped workers. Zero false interruptions alone is not voice acceptance.",
+  "limitation": "Pure speaker playback echo; no controlled simultaneous physical human speech. Direct mode is an existing product mode; this does not validate wake. Per-frame observer affects scheduling.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "maximumCaptureSeconds": 60,
+  "levelScalar": 0.3,
+  "sourceFiles": {
+    "src/baxy_mind/voice.py": "982c5b126d320c8a5a95e1ce19b827627f32d76fbbd841871f984cee127963ea",
+    "src/baxy_mind/voice_capture.py": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/dtln_aec.py": "c99e4fa0d83d2961560ed030153b49fd230d26334b20e56ee4d37e9714ba8c11",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  },
+  "probeSha256": "95ec923fcfd15cb8a4dec8de7c2051e9ad77779dc83c3851e26cc311d21e0575",
+  "lockSha256": "8aaaed6427c0c4710e574aefab5689cba2b41c0051f09d5b17d0ec141056c1c9",
+  "aecDirectory": "D:\\BAXYRuntime\\assets\\aec\\dtln-512-v1"
+}

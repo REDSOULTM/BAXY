@@ -1,0 +1,517 @@
+{
+  "development": [
+    {
+      "id": "a05566639e402d487490acfcad2cc80e5233541d507818dd76d51eed9605372d",
+      "text_literal": "pon el volumen del PC al 35%",
+      "source_references": [
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:1693",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:2229",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:2279",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:2587",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:2839",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:2972",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:3459",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:3676",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:3791",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:3923",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:4137",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:4369",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:4618",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:4836",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:5098",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:5328",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:5575",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:5772",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:5997",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:6198",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:6476",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:6607",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:7150",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:7453",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:7489",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:7779",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:8122",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:8385",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:8605",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:8871",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:9095",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:9369",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:9682",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:9931",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:10230",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:10480",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:10746",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:11008",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:11354",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:11620",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:11887",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:12141",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:12416",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:12673",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:12964",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:13222",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:13536",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:13826",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:14102",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:14345",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:14600",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:14877",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:15112",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:15383",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:15617",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:15869",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        }
+      ],
+      "expected": "Set volume35 and verify.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "80d5cfc93603cfedda1c26aeda30ef97586041b005af6f6f09c1a45c14d45189",
+      "text_literal": "decime cuánto volumen hay",
+      "source_references": [
+        {
+          "message_id": "msg_0268a16fa43afdd1d9cb",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:16563",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:17:42-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_bf27f12887c7a25a5549",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:16599",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:17:44-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:16563",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:17:42-0400",
+          "turn_id": "20260620_031742_7ece9150",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:16599",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T03:17:44-0400",
+          "turn_id": "20260620_031744_1dfb2a2a",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Read current level after previous request.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "950bf158bb9ed1512d7d1bbbeca87078b7a47901077c5ea5b8547a1fe348abb9",
+      "text_literal": "Ponlo a 100 ahora",
+      "source_references": [
+        {
+          "message_id": "msg_0bc70f43fb06e371c34b",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:29578",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-21T14:19:00-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:29578",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-21T14:19:00-0400",
+          "turn_id": "20260621_141900_05bf2470",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Resolve audio context, set100 and verify; restores baseline.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "f7390173d73af32343ebbdb2be8eee94ed90c4ff7add6fc60416af0ae9313b82",
+      "text_literal": "Hola, quien sos?",
+      "source_references": [
+        {
+          "message_id": "msg_9a51fc736903659d5931",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:64752",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T16:01:58-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:64752",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T16:01:58-0400",
+          "turn_id": "20260626_160158_93e35ed5",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Identify as BAXY local companion with real capabilities.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    }
+  ],
+  "cleanup": [
+    "pon el volumen al 100",
+    "mostrame el volumen"
+  ],
+  "hypothesis": "Ground the numeric output-level reference in its preceding unambiguous user request; retain kernel/argument guards. Identity starts a new topic. Reused consumed literals, not historic contiguous session or acceptance."
+}

@@ -1,0 +1,48 @@
+{
+  "utc": "2026-09-08T02:16:10.671831+00:00",
+  "method": "Four native HTTP replays of exact root314, isolating JSON envelope versus native user/assistant turns and prior greeting presence. Same system,28 descriptors,all request parameters. No BAXY guard or operation execution in this replay; UI315 stays open. Template/protocol inheritance: Qwen official function_call documentation and INVESTIGACION_FORMATO_Y_CLASIFICACION_C03. No new prompt or descriptor sweep.",
+  "criteria": "Compare first native selected operations, finish_reason and prose. An unchanged generic answer is not an improvement. A potential change requires prior18 controls before adoption; neither an OS identity nor any fact may be asserted without subsequent real read.",
+  "capture": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui314-private\\http-posts.jsonl",
+  "captureSha256": "9fc92fd3a1196b163aabc681d8bc033672c78885bfb1575b718963d761d6f7ab",
+  "backend": {
+    "pid": 97776,
+    "createTime": 1788833707.8377817,
+    "command": [
+      "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+      "-m",
+      "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "60333",
+      "-ngl",
+      "99",
+      "-c",
+      "12288",
+      "-b",
+      "2048",
+      "-ub",
+      "256",
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-np",
+      "3",
+      "--jinja",
+      "--reasoning",
+      "off",
+      "--reasoning-budget",
+      "0",
+      "--cont-batching"
+    ]
+  },
+  "variants": [
+    "quoted_history",
+    "native_history",
+    "quoted_no_history",
+    "native_no_history"
+  ]
+}

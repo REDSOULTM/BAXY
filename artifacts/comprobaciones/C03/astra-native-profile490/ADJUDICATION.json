@@ -1,0 +1,52 @@
+[
+  {
+    "id": "owner44-seed0",
+    "status": "selection_correct",
+    "reason": "Expected selection/order preserved; no arguments or physical effects proved."
+  },
+  {
+    "id": "owner46-seed0",
+    "status": "failed",
+    "reason": "Both seeds produce tool-free invented activation; factual guard rejects. Recovery remains artificial ambiguity."
+  },
+  {
+    "id": "owner46-seed17",
+    "status": "failed",
+    "reason": "Both seeds produce tool-free invented activation; factual guard rejects. Recovery remains artificial ambiguity."
+  },
+  {
+    "id": "owner51-seed0",
+    "status": "failed",
+    "reason": "Both seeds select audio.volume only, omitting audio.mute. Contextless compatibility rejects volume; final clarification reverses unmute intent."
+  },
+  {
+    "id": "owner51-seed17",
+    "status": "failed",
+    "reason": "Both seeds select audio.volume only, omitting audio.mute. Contextless compatibility rejects volume; final clarification reverses unmute intent."
+  },
+  {
+    "id": "clitic-alone-seed0",
+    "status": "selection_correct",
+    "reason": "Expected selection/order preserved; no arguments or physical effects proved."
+  },
+  {
+    "id": "volume-unmute-seed0",
+    "status": "selection_correct",
+    "reason": "Expected selection/order preserved; no arguments or physical effects proved."
+  },
+  {
+    "id": "unmute-volume-seed0",
+    "status": "selection_correct",
+    "reason": "Expected selection/order preserved; no arguments or physical effects proved."
+  },
+  {
+    "id": "negative-unmute-seed0",
+    "status": "selection_correct",
+    "reason": "Expected selection/order preserved; no arguments or physical effects proved."
+  },
+  {
+    "id": "word-meaning-seed0",
+    "status": "incomplete_scope_voice_failed",
+    "reason": "Defines unmuting only as enabling microphone, without output-audio meaning; internal action-stage prose remains."
+  }
+]

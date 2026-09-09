@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-09T00:40:58.442804+00:00",
+  "session": 99282,
+  "script_exit": 0,
+  "native_responses": 27,
+  "all_finished_stop": true,
+  "maximum_completion_tokens": 37,
+  "effective_sampling_verified": {
+    "registered": 9,
+    "documented": 18
+  },
+  "save_target_fixed": 0,
+  "save_target_attempts": 3,
+  "capability_target_fixed": 0,
+  "capability_target_attempts": 3,
+  "adopted": false,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.62890625,
+    "seconds": 10.921,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "limits": "Native writer replay only, no guards/Core/product/voice/UI or actual clock reading. Captured facts retained. Driver intentionally terminates owned server after collection (server exit15, not a generation failure). No global model incapacity conclusion from these controls.",
+  "next": "Try Qwen3.5-4B with its documented non-thinking profile and compatible previously evaluated b10865. Include its old private-name speaker failure as two additional exact521 payloads. No more Qwen2507 sampler/wording sweep without a new mechanism."
+}

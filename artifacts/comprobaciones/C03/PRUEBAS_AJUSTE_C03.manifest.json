@@ -1,0 +1,31 @@
+{
+  "responses": 42,
+  "sourceSha256": "36de1225e74adddbf18efbad74e428a1666a12a7ebb9481e4481fbe200efb3d3",
+  "reportSha256": "7e9974af23334e4d9a7d7f1ef99652f6f0b0353d33690799001876aee22a1c14",
+  "passed": {
+    "base": [
+      "audio-holdout-0-en",
+      "audio-holdout-1-en",
+      "day-night-en",
+      "heat-metal-en",
+      "heat-metal-es",
+      "previous-t13",
+      "previous-t14"
+    ],
+    "pilot_lora": [
+      "audio-holdout-0-en",
+      "audio-holdout-0-es",
+      "audio-holdout-0-mixed",
+      "audio-holdout-1-en",
+      "audio-holdout-1-es",
+      "day-night-en",
+      "day-night-es",
+      "day-night-mixed",
+      "heat-metal-es",
+      "previous-t13",
+      "previous-t14",
+      "previous-t4"
+    ]
+  },
+  "verbatimChecked": true
+}

@@ -1,0 +1,2550 @@
+[
+  {
+    "request": "decime cuánto volumen hay",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "El volumen es de 100. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "decime cuánto volumen hay",
+          "ts": "22:08:35"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743315037,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743315385,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "El volumen es de 100. El sonido no está silenciado.",
+          "ts": "22:08:36",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743316097,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "4870446c230d759ae82a9e5d8ff87e365c2431e4739ff30e1d48d911b9259490",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El volumen es de 100. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Ponlo a 100 ahora",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "Ya está a 100%.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "Ponlo a 100 ahora",
+          "ts": "22:08:36"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743316155,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743317157,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743318634,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "Ya está a 100%.",
+          "ts": "22:08:39",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743319090,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 16,
+        "draft_sha256": "f31287bca4b3727156ddfb9b826107ed043c1d7008a3584df77c7e49aefd699c",
+        "payload": {
+          "seen": {
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "applied": false,
+            "reconciled": false
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":100,\"muted\":false},\"final\":{\"volumePercent\":100,\"muted\":false},\"applied\":false,\"reconciled\":false}}",
+        "draft": "Ya está a 100%."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Hola, quien sos?",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "Soy BAXY, el compañero de usuario en REDNOTE.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "Hola, quien sos?",
+          "ts": "22:08:39"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743319144,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743320144,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743320616,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "Soy BAXY, el compañero de usuario en REDNOTE.",
+          "ts": "22:08:41",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743321508,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 41,
+        "draft_sha256": "5c90734b80cddc3ce69378c2a699b14a4bb81d56996e72a4a635fa63ec1d39c7",
+        "payload": {
+          "seen": {
+            "domain": "REDNOTE",
+            "userName": "usuario",
+            "qualifiedName": "REDNOTE\\usuario"
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.identity\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"domain\":\"REDNOTE\",\"userName\":\"usuario\",\"qualifiedName\":\"REDNOTE\\\\usuario\"}}",
+        "draft": "Hola, soy BAXY. ¿En qué puedo ayudarte?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "leading",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 44,
+        "draft_sha256": "6f7bb2f3a45e2ffd5ecd484b4a9b67969af870214865077625ee84ad31295c6d",
+        "payload": {
+          "seen": {
+            "domain": "REDNOTE",
+            "userName": "usuario",
+            "qualifiedName": "REDNOTE\\usuario"
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.identity\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"domain\":\"REDNOTE\",\"userName\":\"usuario\",\"qualifiedName\":\"REDNOTE\\\\usuario\"}}",
+        "draft": "Soy BAXY, el compañero de usuario en REDNOTE."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime qué dispositivo de audio está activo",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "El dispositivo de audio activo es los altavoces (Realtek(R) Audio). El volumen está en 100 y el sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "Dime qué dispositivo de audio está activo",
+          "ts": "22:08:41"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743321563,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743322564,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743323237,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "El dispositivo de audio activo es los altavoces (Realtek(R) Audio). El volumen está en 100 y el sonido no está silenciado.",
+          "ts": "22:08:44",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743324179,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 124,
+        "draft_sha256": "74f801067c7ce516a3cb018c85065806122a29b190d4711062efd0a7e765bc48",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El dispositivo de audio activo es los altavoces (Realtek(R) Audio). El volumen está en 100 y el sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no silencies el audio",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "No silenciaré el audio, está activo y en funcionamiento.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "no silencies el audio",
+          "ts": "22:08:44"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743324231,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "No silenciaré el audio, está activo y en funcionamiento.",
+          "ts": "22:08:44",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743324795,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Don't mute the audio",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "published_final",
+    "final": "I won't mute the audio.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "Don't mute the audio",
+          "ts": "22:08:44"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743324847,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "BAXY",
+          "msg": "I won't mute the audio.",
+          "ts": "22:08:45",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743325549,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 13,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no subas el volumen",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "Entendido, no subiré el volumen.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "no subas el volumen",
+          "ts": "22:08:45"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743325555,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743326555,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "Entendido, no subiré el volumen.",
+          "ts": "22:08:46",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743326686,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 15,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿No está silenciado el audio?",
+    "injection": "none",
+    "turnId": "t8",
+    "terminal": "published_final",
+    "final": "¿Quieres que revise si el audio está silenciado?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t8",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-16",
+          "src": "YOU",
+          "msg": "¿No está silenciado el audio?",
+          "ts": "22:08:46"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743326721,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743327722,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743329722,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-17",
+          "src": "BAXY",
+          "msg": "¿Quieres que revise si el audio está silenciado?",
+          "ts": "22:08:50",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743330438,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 17,
+      "userMessageCount": 8,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "dime la hora, no abras Steam",
+    "injection": "none",
+    "turnId": "t9",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t9",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-18",
+          "src": "YOU",
+          "msg": "dime la hora, no abras Steam",
+          "ts": "22:08:50"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743330454,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743330454,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743331455,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743332456,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743332936,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743337707,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743337710,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "mission-summary",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-19",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "22:09:09",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "4a8333d6449f5288408a580da54c82792dec3628d7cec6489e6990e1c0fc799b",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. El volumen está en 100 y los altavoces (Realtek(R) Audio) no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "4a8333d6449f5288408a580da54c82792dec3628d7cec6489e6990e1c0fc799b",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. El volumen está en 100 y los altavoces (Realtek(R) Audio) no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "b0d8223e47246187237f1e4528c5472e55288a6c35c05e0e531fc61db316b2f2",
+        "payload": {
+          "kind": "status",
+          "state": "in progress",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Ahora son 14 horas y 30 minutos. No abro Steam."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "45e28f95ae8e2ab1ea414462d88ff6bb6ffd1454cfb883e6f5907fb6f090c5eb",
+        "payload": {
+          "kind": "status",
+          "state": "in progress",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Estoy en proceso, no abro Steam. Dime la hora."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 32,
+        "draft_sha256": "865077f3232b09173c3d0f75e171bd58d07744d3076af70916cc8b0f6bd2eec1",
+        "payload": {
+          "kind": "status",
+          "state": "in progress",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Estoy en proceso, no abro Steam."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "4a8333d6449f5288408a580da54c82792dec3628d7cec6489e6990e1c0fc799b",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. El volumen está en 100 y los altavoces (Realtek(R) Audio) no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "4a8333d6449f5288408a580da54c82792dec3628d7cec6489e6990e1c0fc799b",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. El volumen está en 100 y los altavoces (Realtek(R) Audio) no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "4a8333d6449f5288408a580da54c82792dec3628d7cec6489e6990e1c0fc799b",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. El volumen está en 100 y los altavoces (Realtek(R) Audio) no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "4a8333d6449f5288408a580da54c82792dec3628d7cec6489e6990e1c0fc799b",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. El volumen está en 100 y los altavoces (Realtek(R) Audio) no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "opening",
+          "outcome"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 96,
+        "draft_sha256": "61a4c3bfaab46078df3b88f991aabfd88110ab6b705fc9b27d9ce515d478c2c6",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "¿No está silenciado el audio?\nAclaración confiable del usuario: dime la hora, no abras Steam",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "22:08",
+                "opening": "none"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                },
+                "opening": "none"
+              }
+            }
+          ],
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T01:08:52.9939192\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"¿No está silenciado el audio?\\nAclaración confiable del usuario: dime la hora, no abras Steam\",\"observed\":{\"utc\":\"2026-09-07T01:08:52.9939192+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 22:08. Los altavoces (Realtek(R) Audio) están activos y no están silenciados."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 18,
+      "userMessageCount": 9,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "dime la hora y no abras Steam",
+    "injection": "none",
+    "turnId": "t10",
+    "terminal": "published_final",
+    "final": "No pude interpretar la solicitud.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t10",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-20",
+          "src": "YOU",
+          "msg": "dime la hora y no abras Steam",
+          "ts": "22:09:09"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743349865,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743351865,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743353864,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743354865,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743355865,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743357865,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743359864,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-21",
+          "src": "BAXY",
+          "msg": "No pude interpretar la solicitud.",
+          "ts": "22:09:20",
+          "route": "error"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743360621,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "opening",
+          "operationAttempted",
+          "outcome",
+          "retryable"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 30,
+        "draft_sha256": "4b7d4f88880c5e014a17b483e59319276729eb87ae3c803ad4c29b568405a0d1",
+        "payload": {
+          "operationAttempted": false,
+          "retryable": true,
+          "outcome": "failed",
+          "cause": "request interpretation failed",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_runtime_failure\",\"operationAttempted\":false,\"retryable\":true}",
+        "draft": "Dime la hora y no abras Steam."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "opening",
+          "operationAttempted",
+          "outcome",
+          "retryable"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 33,
+        "draft_sha256": "a6179010e8857b54d050d08d7d469503ba229f3ff3721eb0e005233bc8779c19",
+        "payload": {
+          "operationAttempted": false,
+          "retryable": true,
+          "outcome": "failed",
+          "cause": "request interpretation failed",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"turn_runtime_failure\",\"operationAttempted\":false,\"retryable\":true}",
+        "draft": "No pude interpretar la solicitud."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 20,
+      "userMessageCount": 10,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "dime la hora",
+    "injection": "none",
+    "turnId": "t11",
+    "terminal": "published_final",
+    "final": "22:09",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t11",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-22",
+          "src": "YOU",
+          "msg": "dime la hora",
+          "ts": "22:09:20"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743360673,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743360695,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-23",
+          "src": "BAXY",
+          "msg": "22:09",
+          "ts": "22:09:21",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788743361029,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "75bf31c9020b1e4f8cf1eb1e42a2d7fc996cae77dfc8b7dd22e7ee0088a234e4",
+        "payload": {
+          "clock": "22:09"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T01:09:20.7616329+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "22:09"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 22,
+      "userMessageCount": 11,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

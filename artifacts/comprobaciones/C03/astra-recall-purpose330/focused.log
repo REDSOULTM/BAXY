@@ -1,0 +1,13 @@
+..........F..                                                            [100%]
+================================== FAILURES ===================================
+_ test_recall_purpose_does_not_remove_an_actual_deferred_action[Recu\xe9rdame llamar a Carlos cuando cierre Steam.] _
+tests\test_effect_intent.py:2416: in test_recall_purpose_does_not_remove_an_actual_deferred_action
+    assert effect_intent._has_unsupported_deferred_effect(effect_intent._fold(text))
+E   AssertionError: assert False
+E    +  where False = <function _has_unsupported_deferred_effect at 0x000002D3CF597740>('recuerdame llamar a carlos cuando cierre steam.')
+E    +    where <function _has_unsupported_deferred_effect at 0x000002D3CF597740> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._has_unsupported_deferred_effect
+E    +    and   'recuerdame llamar a carlos cuando cierre steam.' = <function _fold at 0x000002D3CF594F40>('Recu�rdame llamar a Carlos cuando cierre Steam.')
+E    +      where <function _fold at 0x000002D3CF594F40> = <module 'baxy_mind.effect_intent' from 'D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py'>._fold
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_recall_purpose_does_not_remove_an_actual_deferred_action[Recu\xe9rdame llamar a Carlos cuando cierre Steam.]
+1 failed, 12 passed, 1665 deselected in 0.75s

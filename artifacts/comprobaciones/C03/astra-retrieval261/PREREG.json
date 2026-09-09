@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-07T22:10:16.470891+00:00",
+  "method": "Three literal owner text inputs observed in UI260; development, not reserve. Current authenticated Core hello only, no operations invoked. Exact production E5 CPU and PlannerCatalog, no LLM, no UI. Check app identity and shortlist before changing code. New Core discovery is a current snapshot, not the original UI260 hello.",
+  "inputs": [
+    "Tengo en mente que abras steam",
+    "abre steam",
+    "Si, abre steam"
+  ],
+  "encoder": "intfloat/multilingual-e5-small",
+  "encoderRevision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+  "source": {
+    "src/baxy_mind/planner.py": "e3a73e70d8542c4c31df22ed97705dec0746d2a8cd7bdc157967d613bb91e28f",
+    "src/baxy_mind/router.py": "5e7a66ff87e494bc63b495deee871d463daad70c57d2a0164c6423e1e49ac105",
+    "src/baxy_mind/effect_intent.py": "0f12d86e856b8840fd57015e7b79fd0f2fd4656fdfd2db1894e866da2e91366c",
+    "src/baxy_mind/__main__.py": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "de9ddae019538e05d1e96d842f5425adddcad67f16cd261cf890c9936acbcd07",
+    "scratchpad/c03-retrieval261.py": "8eb2a0f032ab50a4ad25a62dfeb280663686581093c6e60c95745a655ffe222b"
+  },
+  "coreSha256": "20ae5714a70f59e59ab065ef261436fb2a2da648b199879ad6b2758e22ed047f"
+}

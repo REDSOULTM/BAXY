@@ -1,0 +1,35 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T10:57:26.027232+00:00",
+  "hypothesis": "Reproduce the app.close step failure with original runtime prompts and preserved response.Message plus structured mission reason. No seeded calculator window and no confirmation acceptance: this is a failure-reporting diagnostic.",
+  "expected": "The actual failure cause reaches the composer, no invented successful close, and the session can answer a later clock read. A cancellation acknowledgement alone cannot prove confirmation.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "7c7aa2fc972fdf61e305c6ab42cd4ce20513a80f00220fca17b3704c783e692f",
+    "src/baxy_mind/__main__.py": "92df02b84fbda9aac8047b38a0ceca3caec0b8052eae1ab0e0fd8fa16ac4cbf9",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "b689bb910cfd7db689ce43d06432beb871ad76495d4d552c62c46c4fff14b9e1",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "9a93d81926d4f817218d6340814021b2b4a0084078cba3b0f62dea8f13619f66",
+    "src/Baxy.App/MissionNarration.cs": "2df840ad6352a382ffbdcb3f530d807c3f9487cedd623a7f2de7efba3b87ba8e",
+    "src/Baxy.App/MindPlanSession.cs": "d3823cb6f1d5910dc66d4ad873a492eece2b6343d78721d91245fddf1a3b3008",
+    "artifacts/comprobaciones/C03/astra-qwen2507-step-failure-reason.turns.jsonl": "d5192bad15289bf9b760b691d0872377d443b0e606ae0ff8ad7a3749bd5a1c48",
+    "artifacts/comprobaciones/C03/astra-qwen2507-step-failure-reason/profile/sitecustomize.py": "d79a623fc840df945d46f2f02a893bed9705f2b245f33be66462a7d7d50ab934",
+    "scratchpad/c03-qwen2507-step-failure-reason.py": "f30f8cfc717125954917f5ff7d29dc1a1fd0c4e0b735f8b7d1ff609bdfb74130"
+  }
+}

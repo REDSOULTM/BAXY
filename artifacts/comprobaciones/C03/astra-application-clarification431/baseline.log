@@ -1,0 +1,88 @@
+FFFFFFFFFFFF....................FFF                                      [100%]
+================================== FAILURES ===================================
+_ test_generic_application_request_clarifies_target_without_launching[Abre una aplicaci\xf3n.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Open an application.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Launch an app.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Inicia un programa] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Open a program] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Abre la app] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[\xbfPuedes abrir una aplicaci\xf3n?] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Could you open an app?] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Hola Baxy, abre una aplicaci\xf3n, por favor.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Please open an application.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Open una aplicaci\xf3n, por favor.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Lanza una app.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Abre una aplicaci\xf3n.-app.open-application-\xbfQu\xe9 aplicaci\xf3n quieres abrir?] _
+tests\test_turn_policy.py:4212: in test_explicit_incomplete_effect_uses_only_model_authored_question
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6421: in _prepare_turn_result
+    reply_text = llm.compose_user_message(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Runtime' object has no attribute 'compose_user_message'
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Open an application.-app.open-application-Which application should I open?] _
+tests\test_turn_policy.py:4212: in test_explicit_incomplete_effect_uses_only_model_authored_question
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6421: in _prepare_turn_result
+    reply_text = llm.compose_user_message(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Runtime' object has no attribute 'compose_user_message'
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Open una aplicaci\xf3n, por favor.-app.open-application-\xbfCu\xe1l aplicaci\xf3n abro?] _
+tests\test_turn_policy.py:4212: in test_explicit_incomplete_effect_uses_only_model_authored_question
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6421: in _prepare_turn_result
+    reply_text = llm.compose_user_message(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Runtime' object has no attribute 'compose_user_message'
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Abre una aplicaci\xf3n.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Open an application.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Launch an app.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Inicia un programa]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Open a program]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Abre la app]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[\xbfPuedes abrir una aplicaci\xf3n?]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Could you open an app?]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Hola Baxy, abre una aplicaci\xf3n, por favor.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Please open an application.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Open una aplicaci\xf3n, por favor.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Lanza una app.]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Abre una aplicaci\xf3n.-app.open-application-\xbfQu\xe9 aplicaci\xf3n quieres abrir?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Open an application.-app.open-application-Which application should I open?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Open una aplicaci\xf3n, por favor.-app.open-application-\xbfCu\xe1l aplicaci\xf3n abro?]
+15 failed, 20 passed, 2658 deselected in 4.76s

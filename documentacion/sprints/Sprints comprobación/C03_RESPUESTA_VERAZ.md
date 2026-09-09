@@ -1,6 +1,6 @@
 # C03 — La respuesta final conserva la verdad y tiene voz propia
 
-**Ejecutable: Grok 4.6 High; un goal, tramos A–D reanudables. Revisión 2026-09-04.**
+**Un goal, tramos A–D reanudables. Encargo actual: C03_ASTRA_AUTORIDAD.md, 2026-09-06.**
 Predecesor: C02 cumplido. Incorpora [contrato](01_CONTRATO_DE_CAMPANA.md) y
 [protocolo vigente](../00_PROTOCOLO_EJECUCION.md). Este prompt sustituye las
 instrucciones C03 copiadas en relevos antiguos; éstos conservan valor de evidencia.
@@ -10,8 +10,10 @@ instrucciones C03 copiadas en relevos antiguos; éstos conservan valor de eviden
 Cada turno debe terminar con una respuesta pública útil, natural y fiel a sus
 hechos, incluidas las rutas de error. Repara la frontera entre resultado,
 composición y publicación que hizo fallar «¿Qué hora es?» pese al éxito del Core.
-Granite 4.2 3B es el candidato pedido por el dueño. Conserva las reparaciones
-demostradas de C03 y verifica el runtime efectivo; no reinicies C01/C02.
+El candidato se decide con la autoridad y mediciones de `C03_ASTRA_AUTORIDAD.md`.
+Desde el 2026-09-06 se registra Qwen3-4B-Instruct-2507 Q4_K_M con KV q8; el registro
+no equivale a aceptación de C03. Conserva las reparaciones demostradas y verifica
+el runtime efectivo; no reinicies C01/C02.
 
 ## Lecturas y owners
 
@@ -26,12 +28,15 @@ de atribuir el defecto a un modelo o añadir validadores.
 conclusiones de la [revisión](../REVISION_SPRINTS_2026-09-04.md); abre sólo la
 evidencia necesaria para verificar diferencias posteriores. Registra GGUF/hash,
 llama-server, template efectivo, thinking, contexto, sampler por rol, límites de
-salida y finish_reason. Inspecciona también decisión, chat y reintentos: adaptar
-compose no configura automáticamente las otras llamadas de Granite.
+salida y finish_reason. Contrasta ficha, documentación y paper del modelo exacto
+con el runtime, siguiendo C03_ASTRA_AUTORIDAD.md. Inspecciona también decisión,
+chat y reintentos: adaptar compose no configura automáticamente las otras llamadas.
 
 Toma 8–20 casos discriminantes del desarrollo ya disponible y contrasta:
 petición → decisión → hechos → borrador bruto → rechazo concreto → composición
-de recuperación → publicación → siguiente turno. Guarda sólo datos sintéticos.
+de recuperación → publicación → siguiente turno. Usa entradas literales del corpus
+real conforme a la aclaración del dueño en C03_ASTRA_AUTORIDAD.md; conserva su
+procedencia y privacidad. No presentes pruebas sintéticas como uso humano real.
 Separa defecto de interpretación, pérdida de hechos, modelo, veto falso,
 agotamiento y publicación. No lances otro cien hasta tener una hipótesis causal.
 Revisa `G03.08/G03C.09/G04.01/G04.02/G06.02/G06.03`: una casilla histórica no
@@ -71,6 +76,12 @@ correcta expresada de otra manera. Conserva los fallos de gramática y naturalid
 sin convertir cada expresión del evaluador en una prohibición del producto.
 Brevedad no significa que toda pregunta de conocimiento sea un mensaje de estado.
 
+Aclaración del dueño,2026-09-06: entradas mixtas admiten respuesta natural en
+español; no exigir alternancia ni proporciones de idiomas. Las explicaciones
+simples no tienen que ser exhaustivas. Se mantienen como fallos contradicciones,
+invenciones y efectos sin verificar. Ver C03_ASTRA_AUTORIDAD.md y la adjudicación
+expresa del dueño en artifacts/comprobaciones/C03/ACLARACION_DUENO_2026-09-06.md.
+
 **C. Respuesta integrada y estado utilizable.** Con la reparación validada,
 recorre todas las rutas, progreso incluido, por C01. Demuestra error inyectado
 → recurso restaurado → petición normal correcta en la misma sesión. Comprueba
@@ -93,7 +104,7 @@ Las inyecciones R07 forman un conjunto separado; pueden aprobar recuperación,
 pero no sumar a esos cien. Publica resultados por ruta, idioma y causa, todos
 los intentos y falsos rechazos. No elijas sólo la corrida favorable.
 
-Después: Full verde, manifiesto reproducible de Granite si cumple, arranque sin
+Después: Full verde, manifiesto reproducible del candidato que cumpla, arranque sin
 override con el modelo registrado y panel público de humo que conserve respuesta
 y estado. Una migración del GGUF también exige las regresiones dueñas de sus
 otros roles; deja a C06 la certificación extensa. No afirmes promoción si sólo

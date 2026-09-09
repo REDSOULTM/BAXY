@@ -1,0 +1,19 @@
+--- 176/CMakeLists.txt
++++ 178/CMakeLists.txt
+@@ -5,7 +5,15 @@
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ 
+-add_subdirectory(vendor/webrtc_audio)
++add_library(webrtc_audio_static STATIC IMPORTED)
++target_include_directories(webrtc_audio_static INTERFACE
++    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/webrtc_audio
++    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/webrtc_audio/audio_processing
++    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/webrtc_audio/audio_processing/logging
++    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/webrtc_audio/abseil)
++target_compile_definitions(webrtc_audio_static INTERFACE WEBRTC_WIN NOMINMAX)
++target_link_libraries(webrtc_audio_static INTERFACE winmm)
++set_target_properties(webrtc_audio_static PROPERTIES IMPORTED_LOCATION "D:/BAXYRuntime/experiments/voice/webrtc176/build/vendor/webrtc_audio/Release/webrtc_audio_static.lib")
+ 
+ find_package(pybind11 CONFIG REQUIRED)
+ pybind11_add_module(_webrtc_audio bindings/webrtc_audio_bindings.cpp)

@@ -1,0 +1,45 @@
+--- source498/effect_intent.py
++++ source500/effect_intent.py
+@@ -3034,7 +3034,8 @@
+         "audio.volume" in available
+         and re.fullmatch(
+             rf"{_SET_VOLUME_VERB}\s+(?:(?:el|the)\s+)?(?:volumen|volume)"
+-            r"(?:\s+(?:del\s+(?:sistema|equipo)|of\s+the\s+system))?"
++            r"(?:\s+(?:(?:al?|del?)\s+(?:sistema|equipo|pc|computador(?:a)?|ordenador)|"
++            r"(?:of|on)\s+(?:the|my)\s+(?:system|computer|pc)))?"
+             r"(?:\s*,?\s*(?:please|por favor))?[.!?]*",
+             folded,
+         ) is not None
+@@ -4890,7 +4891,7 @@
+ 
+ 
+ _SET_VOLUME_VERB = (
+-    r"(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
++    r"(?:pon(?:me|le)?|poner|fija|ajusta|adjust|establece|set|"
+     r"cambia|change|deja|dejame|leave)"
+ )
+ 
+@@ -4979,7 +4980,7 @@
+         text,
+         (
+             rf"\b(?:audio|sonido|sound|musica|music|volumen|volume)\s+"
+-            rf"(?:de|del|of)\s+(?:la\s+|el\s+|the\s+|mi\s+|my\s+)?"
++            rf"(?:a|al|de|del|of|to)\s+(?:la\s+|el\s+|the\s+|mi\s+|my\s+)?"
+             rf"{_AUDIO_APPLICATION_SCOPE}\b|"
+             rf"\b(?:en|on)\s+(?:spotify|chrome|opera|edge|firefox|discord|"
+             rf"zoom|teams|youtube|netflix)\b|"
+@@ -6327,10 +6328,10 @@
+ # resolved, the whole deterministic path abstains instead of executing a
+ # recognized prefix and silently dropping the rest of the request.
+ _COVERAGE_ACTION_HEAD = (
+-    rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|"
+-    r"haz|toma|captura|take|capture|pon|deja|dejar|put|leave|"
+-    r"fija|ajusta|adjust|establece|set|sube|baja|bajalo|subelo|aumenta|"
+-    r"pone|ponme|arranca|cambia|cambiar|change|get rid|"
++    rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
++    r"haz|toma|captura|take|capture|dejar|put|"
++    r"sube|baja|bajalo|subelo|aumenta|"
++    r"pone|arranca|cambiar|get rid|"
+     rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
+     r"quita|quitar|saca|sacar|maximiza|minimiza|"
+     r"sacale|"

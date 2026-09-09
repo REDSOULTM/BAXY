@@ -1,0 +1,110 @@
+[
+  {
+    "turnId": "t1",
+    "request": "cierra la calculadora",
+    "terminal": "published_final",
+    "final": "¿Cuál es el nombre del proceso de la calculadora?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "La solicitud fue cancelada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 27,
+        "draft_sha256": "72c7d77d143c915e9a79edc6d7afa7012ca1a5da0d4eef3f371b5a0986045885",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "state": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "La solicitud fue cancelada."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "Son las 09:02.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 19,
+        "draft_sha256": "24951f4054cefd1badca5223bce192dc3672da270a1fbbd17e813ebe41df6ca8",
+        "payload": {
+          "clock": "09:02"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:02:02.5107268+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Es las nueve y dos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "1f61024e73c006b1f29d5bf14b6f7d4203d619108a9863057948c31d615a1d81",
+        "payload": {
+          "clock": "09:02"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:02:02.5107268+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 09:02."
+      }
+    ]
+  }
+]

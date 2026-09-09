@@ -1,0 +1,60 @@
+{
+  "micLatency": 0.032,
+  "loopLatency": 0.064,
+  "micStreamClock": 79167.3358957,
+  "loopStreamClock": 79167.33590209999,
+  "micDevice": "Varios micr\u00f3fonos (Realtek(R) A",
+  "loopDevice": "Altavoces (Realtek(R) Audio) [Loopback]",
+  "micRate": 16000,
+  "loopRate": 48000,
+  "columns": [
+    "perfCounter",
+    "inputBufferAdcTime",
+    "currentTime",
+    "frames",
+    "anyStatus"
+  ],
+  "method": "Diagnostic native callbacks; clocks only, no PCM retained/playback/volume change.",
+  "clocks": {
+    "microphone": {
+      "callbacks": 109,
+      "adcNonzero": 0,
+      "adcStepQuantiles": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "currentMinusAdcQuantiles": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "perfMinusCurrentQuantiles": [
+        79163.8771725,
+        79165.6072812,
+        79167.3273366
+      ],
+      "statusCount": 0
+    },
+    "loopback": {
+      "callbacks": 114,
+      "adcNonzero": 114,
+      "adcStepQuantiles": [
+        0.029521000004024245,
+        0.032013899995945394,
+        0.03494519999367185
+      ],
+      "currentMinusAdcQuantiles": [
+        0.010666666668839753,
+        0.010666666668839753,
+        0.010666666668839753
+      ],
+      "perfMinusCurrentQuantiles": [
+        3.260001540184021e-05,
+        5.1700000767596066e-05,
+        0.00035000000207219273
+      ],
+      "statusCount": 0
+    }
+  }
+}

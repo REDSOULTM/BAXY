@@ -1,0 +1,43 @@
+{
+  "method": "Six explicitly synthetic reference controls. Reuse the exact declared tool shortlist and native selector prompt/parameters captured for files64 t2. Change only the technical test dialogue/current request, then compare full prior dialogue, only previous user text and no prior dialogue. Expected operations are selection-only; no handler runs, authorization, UI, audio or human reserve claim. Measure whether removing previous assistant prose loses necessary effect references before any source change.",
+  "cases": [
+    [
+      "Sí, hazlo.",
+      "¿Qué podemos hacer con el informe?",
+      "Puedo leer el contenido de informe.txt. ¿Quieres que lo lea?",
+      "filesystem.read.text"
+    ],
+    [
+      "Yes, do that.",
+      "Can you help me with my report?",
+      "I can search for a file named report.txt. Shall I search for it?",
+      "filesystem.search"
+    ],
+    [
+      "Ahora léelo.",
+      "Busca informe.txt.",
+      "Encontré informe.txt.",
+      "filesystem.read.text"
+    ],
+    [
+      "Read the second one.",
+      "Search for the reports.",
+      "I found report-a.txt and report-b.txt.",
+      "filesystem.read.text"
+    ],
+    [
+      "No, solo búscalo.",
+      "Lee informe.txt.",
+      "Estoy preparando la lectura de informe.txt.",
+      "filesystem.search"
+    ],
+    [
+      "¿Por qué no pudiste?",
+      "Lee informe.txt.",
+      "No pude leer el archivo porque la búsqueda no admite rutas absolutas.",
+      null
+    ]
+  ],
+  "wireSha256": "baf5a5537560425caf27636e83565bd321a94b1292ed9234a920f87435d634ba",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

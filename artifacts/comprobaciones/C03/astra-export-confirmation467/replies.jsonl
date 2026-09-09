@@ -1,0 +1,6 @@
+{"id": "actual-enable-en", "profile": "current-greedy", "answer": "Got it, Jordan. I'll remember your name. Which choice do you want: confirm or cancel?", "attempts": 1, "seconds": 0.797}
+{"id": "export-es", "profile": "current-greedy", "answer": "¿Querés confirmar la exportación de tus recuerdos a la carpeta Documents/BAXY, o cancelar esta acción?", "attempts": 1, "seconds": 0.407}
+{"id": "export-es", "profile": "documented-thinking-False-seed-0", "answer": "", "attempts": 3, "seconds": 1.687}
+{"id": "export-es", "profile": "documented-thinking-False-seed-17", "answer": "¿Querés confirmar la exportación de tus recuerdos a la carpeta Documents/BAXY, o cancelar esta acción?", "attempts": 1, "seconds": 0.406}
+{"id": "export-es", "profile": "documented-thinking-True-seed-0", "answer": "¿Querés confirmar la exportación de tus recuerdos a la carpeta Documents/BAXY, o cancelar la acción?", "attempts": 1, "seconds": 4.844}
+{"id": "export-es", "profile": "documented-thinking-True-seed-17", "answer": "Quiero exportar tus recuerdos. ¿Querés confirmar la exportación a Documentos/BAXY o cancelar esta acción? Decime qué opción eliges.", "attempts": 1, "seconds": 4.172}

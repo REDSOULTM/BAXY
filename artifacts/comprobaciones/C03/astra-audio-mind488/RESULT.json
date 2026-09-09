@@ -1,0 +1,18 @@
+{
+  "session": 23131,
+  "exit": 0,
+  "comparison": "Exact8cases486, source487, same registered model/sampler; no other intended intervention.",
+  "correct_operation_selections": 5,
+  "failed_action_requests": 2,
+  "knowledge_meaning_correct_voice_failed": 1,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1770.40234375,
+    "seconds": 49.313,
+    "manifest_unchanged": true
+  },
+  "adopt": "Source487 confirmed in full mind. No model promotion.",
+  "open": "owner46 tool-free false success; owner51 candidate audio.volume missing; word-meaning internal prose. No arguments/providers/UI/voice acceptance."
+}

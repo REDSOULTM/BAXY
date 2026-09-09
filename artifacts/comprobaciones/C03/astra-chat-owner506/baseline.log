@@ -1,0 +1,70 @@
+.....F.F.                                                                [100%]
+================================== FAILURES ===================================
+_ test_native_tool_selection_accepts_no_call_as_zero_authority_conversation[stop] _
+
+finish_reason = 'stop'
+
+    @pytest.mark.parametrize("finish_reason", ["stop", None])
+    def test_native_tool_selection_accepts_no_call_as_zero_authority_conversation(finish_reason: str | None) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._post = (  # type: ignore[method-assign]
+            lambda _payload: {
+                "choices": [
+                    {
+                        "message": {
+                            "content": "El cielo es azul por dispersion.",
+                        },
+                        "finish_reason": finish_reason,
+                    }
+                ]
+            }
+        )
+    
+        result = runtime._post_native_tool_selection(
+            "Why is the sky blue?",
+            ["web.search"],
+            {"web.search": {"description": "Search the web."}},
+            [],
+        )
+    
+>       assert result == {
+            "mode": "conversation",
+            "question": "",
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "response_language": "es",
+        }
+E       AssertionError: assert {'mode': 'con...ons': [], ...} == {'mode': 'con...ons': [], ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'conversation_reply': 'El cielo es azul por dispersion.'}
+E         Use -v to get more diff
+
+tests\test_turn_policy.py:10568: AssertionError
+__________ test_primary_native_draft_is_not_a_public_response[None] ___________
+
+operation = None
+
+    @pytest.mark.parametrize("operation", [None, "web.search"])
+    def test_primary_native_draft_is_not_a_public_response(operation: str | None) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._native_tool_policy_enabled = True
+        runtime._post_native_tool_selection = lambda *_args: {
+            "mode": "action" if operation else "conversation", "question": "",
+            "conversation_kind": "" if operation else "knowledge",
+            "effect_operations": [operation] if operation else [], "response_language": "en",
+            "conversation_reply": "Your name is Jordan.",
+        }
+        result = runtime.decide_turn(
+            "What is my name?",
+            [turn_candidate("web.search", "Search the web.", required=("query",))],
+        )
+>       assert "conversation_reply" not in result
+E       AssertionError: assert 'conversation_reply' not in {'mode': 'conversation', 'operation': None, 'question': '', 'conversation_kind': 'knowledge', ...}
+
+tests\test_turn_policy.py:10712: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_native_tool_selection_accepts_no_call_as_zero_authority_conversation[stop]
+FAILED tests/test_turn_policy.py::test_primary_native_draft_is_not_a_public_response[None]
+2 failed, 7 passed, 1009 deselected in 1.95s

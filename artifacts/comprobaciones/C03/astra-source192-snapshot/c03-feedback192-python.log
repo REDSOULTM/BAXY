@@ -1,0 +1,11 @@
+
+=================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_compose_contract.py _______________
+tests\test_compose_contract.py:191: in <module>
+    @pytest.mark.parametrize(
+     ^^^^^^
+E   NameError: name 'pytest' is not defined
+=========================== short test summary info ===========================
+ERROR tests/test_compose_contract.py - NameError: name 'pytest' is not defined
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.27s

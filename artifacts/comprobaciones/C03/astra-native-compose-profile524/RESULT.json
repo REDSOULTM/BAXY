@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-09T00:50:42.160532+00:00",
+  "session": 78100,
+  "script_exit": 0,
+  "responses": 33,
+  "finish_stop": 33,
+  "native_useful_by_profile": {
+    "documented-seed0": 8,
+    "production-greedy-seed0": 9,
+    "documented-seed17": 8
+  },
+  "denominator_per_profile": 11,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3174.5390625,
+    "ram_peak_mib": 1124.44921875,
+    "seconds": 16.469,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "adopted": false,
+  "findings": "Qwen3.5 produces useful save/progress with all profiles. Stored-name ES and disabled-memory capability fail with all three. Documented seed0 falsely completes enable before consent; seed17 invents private playback in disable. Greedy is best observed here (9/11), after testing a proper documented profile rather than assuming defaults are optimal.",
+  "limits": "Native only, no full guard/product path, physical UI/voice, acceptance or global optimum. Captured clock from521 is static test evidence. Existing memory ES subject issue437 explicitly rechecked, not hidden.",
+  "next": "525 tests omission of the already resolved raw question for only completed memory read results, preserving exact returned records/status and language/output contracts. No schema additions, prompt wording sweep, output edits or source adoption yet."
+}

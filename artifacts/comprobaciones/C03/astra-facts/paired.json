@@ -1,0 +1,423 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Good afternoon",
+    "terminal": "published_final",
+    "final": "Good afternoon. How can I help you today?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 41,
+        "draft_sha256": "d4582c3856750a4980421c28657965e9b701fb278ff1ca657427a186f5237676",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good afternoon. How can I help you today?"
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "published_final",
+    "final": "DNS stands for Domain Name System, a system that translates domain names into IP addresses.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 91,
+        "draft_sha256": "fd027c9f5d66babe9bb05117c80f7b1b6e5677a69578878352ddd78fd13bbd0a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS stands for Domain Name System, a system that translates domain names into IP addresses."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Hi again",
+    "terminal": "published_final",
+    "final": "Hi again! How can I help you today?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "6bed584f4a5bf271da41bc7260dcdaa236a885d7c81f01a934a8ac3a73feb9f7",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hi again! How can I help you today?"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Good evening",
+    "terminal": "published_final",
+    "final": "Good evening! How can I help you tonight?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 41,
+        "draft_sha256": "1971ee556062dba9e512f447a0eed06b94de23c8489f2cbd1881a8a7a8641490",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good evening! How can I help you tonight?"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda la señal en viajar de un punto a otro en la red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 91,
+        "draft_sha256": "4c8c1489d192aa1fc03cfbd880c040b552978f69e403924251eba6f397e5c5f0",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red es el tiempo que tarda la señal en viajar de un punto a otro en la red."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia de red importa porque afecta el tiempo de respuesta y la calidad de la experiencia en aplicaciones que requieren comunicación rápida.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": true,
+        "draft_bytes": 147,
+        "draft_sha256": "4d6e4ba427adacca7eee3b10a81f8b681c3f9f209fe96ca4dcc708351459bc10",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta el tiempo de respuesta y la calidad de la experiencia en aplicaciones que requieren comunicación rápida."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "DNS caching matters because it affects how quickly users can access domain name information, which in turn impacts the speed and reliability of online services.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "DNS caching",
+        "published": true,
+        "draft_bytes": 160,
+        "draft_sha256": "c76e1eba0015c6fa5513dad5acaa117199bce8c9ce8ea8867595aed2493f6031",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS caching matters because it affects how quickly users can access domain name information, which in turn impacts the speed and reliability of online services."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote server, allowing you to browse the internet privately and securely from any location.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "I don't know why it matters based on the information provided.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "answered_with_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "afd00e2ae1e0c61728dd148ee9ae07c6cbc2c47b0572e7079167da0f2861b8c7",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Why does the VPN matter?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": true,
+        "draft_bytes": 62,
+        "draft_sha256": "2c8f5e5b4d052f6d0e605524c31caebe94635f75f1327b333fc4ec512120395a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don't know why it matters based on the information provided."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy es un intermediario que enruta tu tráfico a través de un servidor, permitiendo el acceso a contenido o servicios que podrían estar bloqueados o ser más seguros en tu ubicación actual.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t12",
+    "request": "¿y por qué se usa?",
+    "terminal": "published_final",
+    "final": "Por qué se usa el proxy es para enrutarse la comunicación entre diferentes sistemas o usuarios, sin exponer directamente los recursos internos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 118,
+        "draft_sha256": "284efc5a3d0d9f113f4bdd43c254ec3fa195a54d40ef75edf53e376389763708",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Porque permite que el proxy actúe en nombre del usuario, gestionando acciones y decisiones sin intervención directa."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 145,
+        "draft_sha256": "52934c246070295b768d74b7392fd721924695e0962d090813e115759418dbc9",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Por qué se usa el proxy es para enrutarse la comunicación entre diferentes sistemas o usuarios, sin exponer directamente los recursos internos."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router enruta la información entre tu dispositivo y Internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 65,
+        "draft_sha256": "456ba6ab31ba9b033d3099099db5f6f8bb53564239b90681624cf3f5103309b8",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router enruta la información entre tu dispositivo y Internet."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Router sirve para enrutar el tráfico entre nodos en una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "router",
+        "published": true,
+        "draft_bytes": 61,
+        "draft_sha256": "5dbcdf2630ea22f5554588afff524434e2f117d0662a942fef7f1fd68710118c",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Router sirve para enrutar el tráfico entre nodos en una red."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "¿Cuánto es doce multiplicado por ocho?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t16",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

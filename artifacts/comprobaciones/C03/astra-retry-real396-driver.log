@@ -1,0 +1,5 @@
+{"id": "t5", "variant": "source395", "answer": "Your name is Jordan.", "calls": [], "injected_draft": "Hola, soy un asistente virtual y estoy aqu\u00ed para ayudarte con tus preguntas.", "retries": 1, "seconds": 0.86}
+{"id": "t10", "variant": "source395", "answer": "Te llamas \u00c1lvaro.", "calls": [], "injected_draft": "Hello, I am a virtual assistant and I am here to help you with your questions.", "retries": 1, "seconds": 0.86}
+{"id": "third-party", "variant": "source395", "answer": "I don't know your name. Could you tell me what it is?", "calls": [], "injected_draft": "Hola, soy un asistente virtual y estoy aqu\u00ed para ayudarte con tus preguntas.", "retries": 1, "seconds": 1.171}
+{"id": "corrected-self-name", "variant": "source395", "answer": "Your name is Casey.", "calls": [], "injected_draft": "Hola, soy un asistente virtual y estoy aqu\u00ed para ayudarte con tus preguntas.", "retries": 1, "seconds": 0.797}
+{"id": "capital-france", "variant": "source395", "answer": "La capital de Francia es Par\u00eds.", "calls": [], "injected_draft": "Hello, I am a virtual assistant and I am here to help you with your questions.", "retries": 1, "seconds": 0.797}

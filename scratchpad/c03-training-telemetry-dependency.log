@@ -1,0 +1,6 @@
+Collecting pywin32==311
+  Using cached pywin32-311-cp312-cp312-win_amd64.whl.metadata (10 kB)
+Downloading pywin32-311-cp312-cp312-win_amd64.whl (9.5 MB)
+   ---------------------------------------- 9.5/9.5 MB 65.5 MB/s eta 0:00:00
+Installing collected packages: pywin32
+Successfully installed pywin32-311

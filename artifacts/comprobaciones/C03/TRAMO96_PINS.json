@@ -1,0 +1,9 @@
+{
+  "scope": "Native progress profiles and stage projection, not acceptance",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_PROGRESO93_97.md": "1c4affbeec3d2e997dc503f0351583db61ee0f125c9c4b5f6eeee79239e00ddc",
+    "artifacts/comprobaciones/C03/astra-progress-state96/PREREG.json": "9983c7fdcef6a8b9b2e664456aa15b102e0108dac9f8226086b85778de34040b",
+    "artifacts/comprobaciones/C03/astra-progress-state96/RESULT.json": "8fea76331fc8688385d65bdb3daf3144aaf18058445360f323abcceeb49879b8",
+    "artifacts/comprobaciones/C03/astra-progress-state96/posts.jsonl": "bbb62bf883c41b8ebe403052889ff324cbfe9c64ab5306b8df28c638b7832440"
+  }
+}

@@ -1,0 +1,275 @@
+[
+  {
+    "id": "owner46-seed0",
+    "variant": "zero",
+    "calls": [
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":false}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": true,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner46-seed0",
+    "variant": "typed",
+    "calls": [
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":false}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false,
+    "rendered_prompt_matches_published494": true
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "zero",
+    "calls": [
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":false}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": true,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "typed",
+    "calls": [
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":false}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "zero",
+    "calls": [
+      {
+        "name": "baxy_audio__volume",
+        "arguments": "{}"
+      },
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":true}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": true,
+      "violates_declared_zero_argument_interface": true,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "typed",
+    "calls": [
+      {
+        "name": "baxy_audio__volume",
+        "arguments": "{\"level\":100}"
+      },
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":true}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": true,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false,
+    "rendered_prompt_matches_published494": true
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "zero",
+    "calls": [
+      {
+        "name": "baxy_audio__volume",
+        "arguments": "{}"
+      },
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": true,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "typed",
+    "calls": [
+      {
+        "name": "baxy_audio__volume",
+        "arguments": "{\"level\":100}"
+      },
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":true}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": true,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "zero",
+    "calls": [
+      {
+        "name": "baxy_audio__volume",
+        "arguments": "{\"level\":37}"
+      },
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":false}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": true,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "typed",
+    "calls": [
+      {
+        "name": "baxy_audio__volume",
+        "arguments": "{\"level\":37}"
+      },
+      {
+        "name": "baxy_audio__mute",
+        "arguments": "{\"state\":false}"
+      }
+    ],
+    "content": "",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false,
+    "rendered_prompt_matches_published494": true
+  },
+  {
+    "id": "word-meaning",
+    "variant": "zero",
+    "calls": [],
+    "content": "Desmutear significa reactivar el sonido o la salida de audio que estaba silenciada.",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "word-meaning",
+    "variant": "typed",
+    "calls": [],
+    "content": "Desmutear significa reactivar el sonido o la salida de audio que estaba silenciada.",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "negative-only",
+    "variant": "zero",
+    "calls": [],
+    "content": "Entendido, no desmutearé el audio.",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": false
+    },
+    "stop": "eos",
+    "truncated": false
+  },
+  {
+    "id": "negative-only",
+    "variant": "typed",
+    "calls": [],
+    "content": "No se requiere ninguna acción.",
+    "checks": {
+      "wrong_mute_state": false,
+      "violates_declared_zero_argument_interface": false,
+      "unmute_polarity_unproved": false,
+      "stage_like_prose": true
+    },
+    "stop": "eos",
+    "truncated": false
+  }
+]

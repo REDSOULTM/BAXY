@@ -1,0 +1,14 @@
+n=12 published=12 other=0
+
+001	t1	published_final	¿Cómo está el audio?	El audio está activo y el volumen está en 100.
+002	t2	published_final	Ajusta el volumen.	¿Cuánto deseas ajustar el volumen y en qué dirección (subir o bajar)?
+003	t3	published_final	Déjalo al 80%.	El volumen se bajó al 80%. No está muteado.
+004	t4	published_final	¿A qué volumen está?	Está en volumen 80, no está mutado.
+005	t5	published_final	Set the volume.	How much and in which direction should the volume be adjusted?
+006	t6	published_final	Set it to 60%.	The volume was set to 60%, and it is not muted.
+007	t7	published_final	What is the volume?	The volume is 60. Mute is off.
+008	t8	published_final	Set the volume, por favor.	¿Te refieres al volumen del sonido del equipo o de otro dispositivo?
+009	t9	published_final	Al 40%, please.	El volumen fue reducido al 40%, y no está muteado.
+010	t10	published_final	¿Cómo está el audio?	El audio está activo y el volumen está en 40.
+011	t11	published_final	Pon el volumen al 100%.	Puse el volumen al 100% y el sonido está activo.
+012	t12	published_final	¿Cómo está el audio?	El audio está activo y el volumen está en 100.

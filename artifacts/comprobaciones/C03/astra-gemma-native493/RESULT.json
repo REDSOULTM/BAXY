@@ -1,0 +1,22 @@
+{
+  "session": 19392,
+  "exit": 0,
+  "native_calls": 14,
+  "action_proposals_with_extras": 10,
+  "minimum_parsed_call_count_on_actions": 6,
+  "maximum_parsed_call_count_on_actions": 40,
+  "native_correct_noeffect_responses": 3,
+  "unsupported_state_prose": 1,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 1694.18359375,
+    "ram_peak_mib": 1091.80078125,
+    "seconds": 63.188,
+    "manifest_unchanged": true
+  },
+  "adopted": false,
+  "profile_verified": "Google T1/.95/k64/min0/presence0/repeat1,seeds0/17,max3072; reasoning_content present. Effective command on/global-1/lazy-on,ctx12288/3slots/KVq8.",
+  "token_limits": "All completion counts below3072; largest974; totals<=3290 in4096slot. No cuts/overflow.",
+  "next": "494 reads raw __verbose metadata from exact3cases to identify origin of duplicate calls; no pure-parser flag or generation change."
+}

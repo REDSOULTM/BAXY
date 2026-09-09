@@ -1,0 +1,16 @@
+{"id": "actual-personal-who", "variant": "last-six", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "actual-personal-who", "variant": "bounded-history", "operations": [], "text": "Hola Emmanuel. ¿En qué puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "explicit-windows-with-personal-history", "variant": "last-six", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "explicit-windows-with-personal-history", "variant": "bounded-history", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "fresh-who-inherited-criterion", "variant": "last-six", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "fresh-who-inherited-criterion", "variant": "bounded-history", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "assistant-identity", "variant": "last-six", "operations": [], "text": "Soy BAXY, tu asistente virtual. ¿En qué puedo ayudarte?", "finish": "stop", "matches_expected": true}
+{"id": "assistant-identity", "variant": "bounded-history", "operations": [], "text": "Soy BAXY, tu asistente virtual. ¿En qué puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "both-identities", "variant": "last-six", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "both-identities", "variant": "bounded-history", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "english-personal", "variant": "last-six", "operations": [], "text": "You are the user interacting with BAXY, an AI assistant. I don't have access to your personal identity information, so I can't tell you who you specifically are.", "finish": "stop", "matches_expected": true}
+{"id": "english-personal", "variant": "bounded-history", "operations": [], "text": "You are Jordan.", "finish": "stop", "matches_expected": true}
+{"id": "third-person-reference", "variant": "last-six", "operations": [], "text": "I don't have access to personal information about your family members. To find your sister's name, you would need to check your personal records, family photos, or ask someone who knows your family.", "finish": "stop", "matches_expected": true}
+{"id": "third-person-reference", "variant": "bounded-history", "operations": [], "text": "Your sister's name is Olivia.", "finish": "stop", "matches_expected": true}
+{"id": "real-read-preserved", "variant": "last-six", "operations": ["baxy_window__active"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "real-read-preserved", "variant": "bounded-history", "operations": ["baxy_window__active"], "text": "", "finish": "tool_calls", "matches_expected": true}

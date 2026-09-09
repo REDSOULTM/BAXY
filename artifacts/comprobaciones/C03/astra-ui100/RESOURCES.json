@@ -1,0 +1,7 @@
+{
+  "elapsedSeconds": 987.44,
+  "gpuPeakMiB": 3504.640625,
+  "gpuAttributionAvailable": true,
+  "ramPeakMiB": 5959.11328125,
+  "stopReason": "monitor_stop_requested"
+}

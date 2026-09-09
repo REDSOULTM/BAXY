@@ -1,0 +1,55 @@
+.F.F.FFF.F.F.F.                                                          [100%]
+================================== FAILURES ===================================
+_ test_user_nouns_do_not_turn_direct_answers_into_internal_narration[who am I-You are the user speaking with me.] _
+tests\test_compose_contract.py:55: in test_user_nouns_do_not_turn_direct_answers_into_internal_narration
+    assert compose_visible_defect(reply, "conversation", user_text, {"situation": {"kind": "conversation"}}) == ""
+E   AssertionError: assert 'internal_code' == ''
+E     
+E     + internal_code
+_ test_user_nouns_do_not_turn_direct_answers_into_internal_narration[explain guest accounts-The user account has limited permissions.] _
+tests\test_compose_contract.py:55: in test_user_nouns_do_not_turn_direct_answers_into_internal_narration
+    assert compose_visible_defect(reply, "conversation", user_text, {"situation": {"kind": "conversation"}}) == ""
+E   AssertionError: assert 'internal_code' == ''
+E     
+E     + internal_code
+_ test_user_nouns_do_not_turn_direct_answers_into_internal_narration[explain this setting-This setting controls the user account permissions.] _
+tests\test_compose_contract.py:55: in test_user_nouns_do_not_turn_direct_answers_into_internal_narration
+    assert compose_visible_defect(reply, "conversation", user_text, {"situation": {"kind": "conversation"}}) == ""
+E   AssertionError: assert 'internal_code' == ''
+E     
+E     + internal_code
+_ test_composition_rejects_narrating_the_persons_request[Al usuario le gustar\xeda continuar.] _
+tests\test_compose_contract.py:70: in test_composition_rejects_narrating_the_persons_request
+    assert compose_visible_defect(reply, "conversation", "una frase", {"situation": {"kind": "conversation"}})
+E   AssertionError: assert ''
+E    +  where '' = compose_visible_defect('Al usuario le gustar�a continuar.', 'conversation', 'una frase', {'situation': {'kind': 'conversation'}})
+_ test_composition_rejects_narrating_the_persons_request[Esta persona salud\xf3 al asistente.] _
+tests\test_compose_contract.py:70: in test_composition_rejects_narrating_the_persons_request
+    assert compose_visible_defect(reply, "conversation", "una frase", {"situation": {"kind": "conversation"}})
+E   AssertionError: assert ''
+E    +  where '' = compose_visible_defect('Esta persona salud� al asistente.', 'conversation', 'una frase', {'situation': {'kind': 'conversation'}})
+_ test_composition_rejects_narrating_the_persons_request[Claro. Al usuario le gustar\xeda continuar.] _
+tests\test_compose_contract.py:70: in test_composition_rejects_narrating_the_persons_request
+    assert compose_visible_defect(reply, "conversation", "una frase", {"situation": {"kind": "conversation"}})
+E   AssertionError: assert ''
+E    +  where '' = compose_visible_defect('Claro. Al usuario le gustar�a continuar.', 'conversation', 'una frase', {'situation': {'kind': 'conversation'}})
+_ test_composition_rejects_narrating_the_persons_request[Claro, esta persona dijo que necesitaba ayuda.] _
+tests\test_compose_contract.py:70: in test_composition_rejects_narrating_the_persons_request
+    assert compose_visible_defect(reply, "conversation", "una frase", {"situation": {"kind": "conversation"}})
+E   AssertionError: assert ''
+E    +  where '' = compose_visible_defect('Claro, esta persona dijo que necesitaba ayuda.', 'conversation', 'una frase', {'situation': {'kind': 'conversation'}})
+_ test_composition_rejects_narrating_the_persons_request[Creo que el usuario quiere ayuda.] _
+tests\test_compose_contract.py:70: in test_composition_rejects_narrating_the_persons_request
+    assert compose_visible_defect(reply, "conversation", "una frase", {"situation": {"kind": "conversation"}})
+E   AssertionError: assert ''
+E    +  where '' = compose_visible_defect('Creo que el usuario quiere ayuda.', 'conversation', 'una frase', {'situation': {'kind': 'conversation'}})
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_user_nouns_do_not_turn_direct_answers_into_internal_narration[who am I-You are the user speaking with me.]
+FAILED tests/test_compose_contract.py::test_user_nouns_do_not_turn_direct_answers_into_internal_narration[explain guest accounts-The user account has limited permissions.]
+FAILED tests/test_compose_contract.py::test_user_nouns_do_not_turn_direct_answers_into_internal_narration[explain this setting-This setting controls the user account permissions.]
+FAILED tests/test_compose_contract.py::test_composition_rejects_narrating_the_persons_request[Al usuario le gustar\xeda continuar.]
+FAILED tests/test_compose_contract.py::test_composition_rejects_narrating_the_persons_request[Esta persona salud\xf3 al asistente.]
+FAILED tests/test_compose_contract.py::test_composition_rejects_narrating_the_persons_request[Claro. Al usuario le gustar\xeda continuar.]
+FAILED tests/test_compose_contract.py::test_composition_rejects_narrating_the_persons_request[Claro, esta persona dijo que necesitaba ayuda.]
+FAILED tests/test_compose_contract.py::test_composition_rejects_narrating_the_persons_request[Creo que el usuario quiere ayuda.]
+8 failed, 7 passed, 46 deselected in 0.77s

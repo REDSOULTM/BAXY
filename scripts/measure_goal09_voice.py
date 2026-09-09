@@ -183,11 +183,11 @@ def synthesize_holdout(output_dir: Path) -> dict[str, object]:
             _sapi_write(phrase, path, token, 0)
             other.append(path)
             index += 1
-    from baxy_mind.voice_output import _PiperOnnxEngine
+    from baxy_mind.piper_tts import PiperEngine
 
     model_path = resolve_neural_tts_model()
     if model_path is not None:
-        engine = _PiperOnnxEngine(model_path)
+        engine = PiperEngine(model_path)
         for phrase in ("Baxy", "Baxy, abre Spotify."):
             samples = _resample(engine.generate(phrase), engine.sample_rate)
             path = (output_dir / "positive") / f"piper_{phrase[:8].strip()}.wav"

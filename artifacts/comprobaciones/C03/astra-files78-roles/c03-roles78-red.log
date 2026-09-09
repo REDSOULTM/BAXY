@@ -1,0 +1,41 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error KnowledgeAnswerCanExplainAnEarlierFailure [76 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            "Why couldn't you read \"c03-invalid-utf8.txt\"?",
+            "I couldn't read \"c03-invalid-utf8.txt\" because the file contains invalid UTF-8 characters, which caused the read operation to fail.",
+            "en"), Is.Null)
+  Expected: null
+  But was:  "looks_like_failure"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.KnowledgeAnswerCanExplainAnEarlierFailure() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 28
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.KnowledgeAnswerCanExplainAnEarlierFailure() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 28
+
+
+  Con error MissingVolumeLevelQuestionCanReachThePerson [63 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ConversationReplyRejectionReason(
+            "Pon el volumen.", "¿A qué nivel quieres que ponga el volumen?", "es", clarification: true), Is.Null)
+  Expected: null
+  But was:  "unsolicited_catalog"
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.C03FactPreservationTests.MissingVolumeLevelQuestionCanReachThePerson() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 13
+
+1)    at Baxy.Integration.Tests.C03FactPreservationTests.MissingVolumeLevelQuestionCanReachThePerson() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\C03FactPreservationTests.cs:line 13
+
+
+
+Con error! - Con error:     2, Superado:    60, Omitido:     0, Total:    62, Duración: 4 s - Baxy.Integration.Tests.dll (net10.0)

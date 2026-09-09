@@ -1,0 +1,621 @@
+{
+  "utc": "2026-09-08T22:34:31.914340+00:00",
+  "model": "Qwen3-4B-Instruct-2507 Q4_K_M registered/b9980",
+  "source": "506",
+  "cases": [
+    {
+      "id": "definition-es-registered-0",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-en-registered-0",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-registered-0",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-es-registered-0",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-en-registered-0",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-registered-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-en-registered-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "registered",
+        "seed": 0,
+        "sampling": {
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-es-qwen_documented-0",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-en-qwen_documented-0",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-qwen_documented-0",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-es-qwen_documented-0",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-en-qwen_documented-0",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-qwen_documented-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-en-qwen_documented-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 0,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-es-registered-17",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-en-registered-17",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-registered-17",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-es-registered-17",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-en-registered-17",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-registered-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-en-registered-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "registered",
+        "seed": 17,
+        "sampling": {
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-es-qwen_documented-17",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-en-qwen_documented-17",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-qwen_documented-17",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-es-qwen_documented-17",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-en-qwen_documented-17",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-qwen_documented-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-en-qwen_documented-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "qwen_documented",
+        "seed": 17,
+        "sampling": {
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "name": "registered",
+      "seed": 0,
+      "sampling": {
+        "seed": 0
+      }
+    },
+    {
+      "name": "qwen_documented",
+      "seed": 0,
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      }
+    },
+    {
+      "name": "registered",
+      "seed": 17,
+      "sampling": {
+        "seed": 17
+      }
+    },
+    {
+      "name": "qwen_documented",
+      "seed": 17,
+      "sampling": {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      }
+    }
+  ],
+  "source_url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+  "method": "Same seven consumed cases, full mind with one process and explicit independent histories, two profiles at seeds0/17. A private hook changes only sampling on unstructured chat generation whose first system is exact SYSTEM_PROMPT. Selection, semantic classifier, structured repair, prompts, history, guards, backend, precision and memory parameters unchanged. The private driver sets profile only between completed requests; record before/after payloads and effective profile for every affected post. Verify actual profile coverage; a cached answer without a corresponding generation does not prove sampler quality.",
+  "output_limit": "Keep the existing256 tokens for brief answers to isolate sampling; inspect finish_reason/usage. Any length stop is failure, never silent truncation. Official16384 recommendation is not applied to these short requests inside the4096 slot; existing outputs ended naturally, so truncation is not the observed cause.",
+  "criteria": "Definition faithful, speaker attribution and user fact over wrong assistant fact correct, language natural; compare all controls and both seeds. No quality claim from empty operation selection, no optimization guarantee from recommendations, no default-only rejection. No source or runtime promotion; same4GiB ceiling."
+}

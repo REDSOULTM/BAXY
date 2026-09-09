@@ -1,0 +1,1 @@
+{"stage":"before_install","error":"Installed metadata uses sherpa_onnx, not sherpa-onnx; normalize distribution names in comparison","pipExecuted":false,"runtimeChanged":false}

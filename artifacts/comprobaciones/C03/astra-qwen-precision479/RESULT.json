@@ -1,0 +1,33 @@
+{
+  "completed": false,
+  "exit_code": 1,
+  "q4_compositions_completed": 16,
+  "q8_compositions_completed": 0,
+  "q4_confirmation_useful_by_seed": {
+    "0": "2/6",
+    "17": "2/6"
+  },
+  "q4_memory_controls_useful": 4,
+  "failure": "Q8 resource qualification reached diagnostic guard3800MiB before any inference; this is not a semantic Q8 result or evidence that it exceeded4GiB.",
+  "resources": {
+    "Q4_K_M": {
+      "completed": true,
+      "violations": [],
+      "gpu_peak_mib": 2631.3984375,
+      "ram_peak_mib": 1685.54296875,
+      "seconds": 29.703,
+      "manifest_unchanged": true
+    },
+    "Q8_0": {
+      "completed": false,
+      "violations": [
+        "gpu_bound"
+      ],
+      "gpu_peak_mib": 3800.53515625,
+      "ram_peak_mib": 2176.44140625,
+      "seconds": 5.5,
+      "manifest_unchanged": true
+    }
+  },
+  "decision": "Adjust temporary compute buffer, not quality/context/offload policy:480sameNGL26 withub128 for bothweights, restsame. Keep guard3800/freeRAM768 intact. Registeredruntime/source unchanged."
+}

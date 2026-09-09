@@ -1,0 +1,15 @@
+{
+  "src/baxy_mind/voice.py": "87f3e491d909515d592d190b82d5262e4fecd1d5d03e5a1b91c00d480a4450d1",
+  "src/baxy_mind/requirements-voice.txt": "54f3b1e542c784f20fc48d922fae7062ad2837876254ba92d70f95371f0bf9ff",
+  "scripts/build_sherpa_runtime.py": "c69344c53d5cdc9b767cc5009541fd0a2d7e449ca1f236b05c5386d50d73549f",
+  "scripts/verify_python_runtime_lock.py": "43a9eb2b4f98094e9c5df4d00041708141c47305957be4b2cf999d6b7656ea46",
+  "scripts/lock_python_dependencies.ps1": "c187c4a9135c256ee710141a32b4f701b49364deaa3c1bb3518be2125a9e0baa",
+  "constraints-runtime-win-x64.txt": "fc0db42ae39301e277626d49216916da9f824d1af0e407e8b7075d7835fe37eb",
+  "pylock.runtime-win-x64.toml": "400677e69c886fa5774a38feeb478ef1179ee0d65631c0e3245102e7bb59312e",
+  "tests/test_mind_voice_runtime.py": "f104d71658637f70ac768dfd8daf2312025a7a074688ea178c467b1989742384",
+  "tests/test_python_runtime_lock.py": "e6a3d076944f2734f0cab62cafdcb6f60f1cb6435a3eb31f5cd6a13677742532",
+  "tests/test_sherpa_runtime_package.py": "aab4989aec97e68234c4afdbff467f2da22680f5fdcfbc235e657c61120cf23e",
+  "runtime_wheels/sherpa-nemo-stream-decoder.patch": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163",
+  "runtime_wheels/README.md": "40bd455c4874acff4b775bd64d720992629e4965b754f3e72656551d49687398",
+  "docs/AI_CONTEXT_MAP.md": "49a18a6ffdd15e80c6462c0f11bb3350d9525d45e92bfce5f6888c75ffbfc570"
+}

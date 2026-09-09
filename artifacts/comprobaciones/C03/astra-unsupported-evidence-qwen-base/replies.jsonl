@@ -1,0 +1,9 @@
+{"stage": "guarded", "id": "unsupported-1", "request": "Abre EstudioC03Inexistente.", "response": "No puedo abrir EstudioC03Inexistente tal como fue pedido.", "finishReason": null, "error": null, "seconds": 0.562}
+{"stage": "guarded", "id": "unsupported-2", "request": "Open EstudioC03Inexistente.", "response": "I cannot open EstudioC03Inexistente as it does not exist.", "finishReason": null, "error": null, "seconds": 0.469}
+{"stage": "guarded", "id": "unsupported-3", "request": "Open EstudioC03Inexistente, por favor.", "response": "No puedo abrir EstudioC03Inexistente tal como fue pedido.", "finishReason": null, "error": null, "seconds": 0.516}
+{"stage": "guarded", "id": "unsupported-4", "request": "Abre la aplicación EstudioC03.", "response": "No puedo abrir la aplicación EstudioC03 tal como fue pedido.", "finishReason": null, "error": null, "seconds": 0.453}
+{"stage": "guarded", "id": "unsupported-5", "request": "Open the application EstudioC03.", "response": "I cannot open the application EstudioC03 as requested.", "finishReason": null, "error": null, "seconds": 0.406}
+{"stage": "guarded", "id": "unsupported-6", "request": "Open la aplicación EstudioC03, please.", "response": "No puedo abrir la aplicación EstudioC03 tal como fue pedido.", "finishReason": null, "error": null, "seconds": 0.485}
+{"stage": "guarded", "id": "unsupported-7", "request": "Abre el archivo AusenteC03.", "response": "No puedo abrir el archivo AusenteC03 tal como fue pedido.", "finishReason": null, "error": null, "seconds": 0.453}
+{"stage": "guarded", "id": "unsupported-8", "request": "Open the file MissingC03.", "response": "I cannot open the file MissingC03 as requested.", "finishReason": null, "error": null, "seconds": 0.39}
+{"stage": "guarded", "id": "unsupported-9", "request": "Open el archivo MissingC03, please.", "response": "No puedo abrir el archivo MissingC03 tal como fue pedido.", "finishReason": null, "error": null, "seconds": 0.469}

@@ -1,0 +1,233 @@
+--- before506/src/baxy_mind/llm.py
++++ source506/src/baxy_mind/llm.py
+@@ -5973,11 +5973,6 @@
+             "question": "",
+             "conversation_kind": "knowledge" if not operations else "",
+             "effect_operations": operations,
+-            **(
+-                {"conversation_reply": str(message.get("content") or "").strip()}
+-                if not operations and choices[0].get("finish_reason") == "stop"
+-                else {}
+-            ),
+             # A non-conversational result never exposes this field. If a veto
+             # changes presentation, independent language detection replaces it.
+             "response_language": "es",
+@@ -6249,7 +6244,6 @@
+         response_language: str | None = None,
+         authenticated_operations: tuple[str, ...] = (),
+         cancellation: ChatCompletionCancellation | None = None,
+-        initial_reply: str | None = None,
+     ) -> tuple[str, list[dict]]:
+         """Conversación general; tools opcionales en modo auto."""
+         # ``tools`` stays only for API compatibility. Chat never has authority
+@@ -6352,8 +6346,7 @@
+         )
+         cached = getattr(self, "_speculative_chat_handoff", None)
+         if (
+-            initial_reply is None
+-            and cached is not None
++            cached is not None
+             and cached[0] == handoff_key
+             and time.monotonic() - cached[1] <= 30.0
+         ):
+@@ -6607,23 +6600,15 @@
+             # slot order. A stable seed also makes a contract-rejected answer
+             # reproducible instead of intermittently falling into turn recovery.
+             payload["seed"] = presentation_seed
+-        if (
+-            initial_reply is not None and conversation_kind == "knowledge"
+-            and presentation_shape is None and not authenticated_operations
+-        ):
+-            # The primary selector already authored this draft for the same
+-            # turn. It still crosses every chat guard and retry below; it is
+-            # neither a cached final answer nor evidence of an executed effect.
+-            content = initial_reply.strip()
+-            message = {"content": content}
+-        else:
+-            response = (
+-                self._post(payload)
+-                if cancellation is None
+-                else self._post(payload, cancellation=cancellation)
+-            )
+-            message = response["choices"][0]["message"]
+-            content = str(message.get("content") or "").strip()
++        # Selector prose was authored under tool-selection instructions, not
++        # this conversation contract. Only the chat generation owns the reply.
++        response = (
++            self._post(payload)
++            if cancellation is None
++            else self._post(payload, cancellation=cancellation)
++        )
++        message = response["choices"][0]["message"]
++        content = str(message.get("content") or "").strip()
+         _capture_raw_conversation_reply(
+             attempt=1,
+             request=text,
+@@ -7208,10 +7193,6 @@
+             assert isinstance(canonical_native, dict)
+             operations = list(canonical_native["effect_operations"])
+             canonical_native["intent_operations"] = operations
+-            if canonical_native["mode"] == "conversation":
+-                draft = raw_native.get("conversation_reply")
+-                if isinstance(draft, str) and draft.strip():
+-                    canonical_native["conversation_reply"] = draft.strip()
+             if canonical_native["mode"] == "action":
+                 canonical_native["effect_verification"] = (
+                     "grounding_required"
+--- before506/src/baxy_mind/__main__.py
++++ source506/src/baxy_mind/__main__.py
+@@ -6103,12 +6103,6 @@
+         }
+     )
+     raw_intent_operations: object = None
+-    conversation_reply: str | None = None
+-    if isinstance(raw_decision, dict) and "conversation_reply" in raw_decision:
+-        raw_decision = dict(raw_decision)
+-        draft = raw_decision.pop("conversation_reply")
+-        if raw_decision.get("mode") == "conversation" and isinstance(draft, str):
+-            conversation_reply = draft
+     if isinstance(raw_decision, dict) and "intent_operations" in raw_decision:
+         raw_decision = dict(raw_decision)
+         raw_intent_operations = raw_decision.pop("intent_operations")
+@@ -6488,12 +6482,6 @@
+                 # Language is independently constrained from the current message.
+                 # The routing field cannot force the wrong response language.
+                 response_language=response_language,
+-                **(
+-                    {"initial_reply": conversation_reply}
+-                    if conversation_reply and not intent_operations
+-                    and presentation_conversation_kind == "knowledge"
+-                    else {}
+-                ),
+             )
+         reply_text = reply_text.strip()
+         if not reply_text:
+--- before506/tests/test_turn_policy.py
++++ source506/tests/test_turn_policy.py
+@@ -413,27 +413,39 @@
+     assert not visible_reply_asserts_an_unread_machine_state(reply, request=ask)
+ 
+ 
+-@pytest.mark.parametrize("draft", ["Eres Álvaro.", "Te llamas Álvaro."])
+-def test_chat_validates_the_native_name_draft_without_another_decode(draft: str) -> None:
++@pytest.mark.parametrize("reply", ["Eres Álvaro.", "Te llamas Álvaro."])
++def test_chat_authors_the_name_answer_with_conversation_context(reply: str) -> None:
+     runtime = object.__new__(LlmRuntime)
+-    runtime._post = lambda _payload: pytest.fail("the native draft already answered")
++    payloads = []
++
++    def post(payload):
++        payloads.append(payload)
++        return {"choices": [{"message": {"content": reply}}]}
++
++    runtime._post = post
+     answer, calls = runtime.chat(
+         "¿Cómo me llamo?",
+         history=[{"role": "user", "content": "Me llamo Álvaro."}],
+         temperature=0.0, conversation_kind="knowledge", response_language="es",
+-        initial_reply=draft,
+-    )
+-    assert answer == draft
++    )
++    assert answer == reply
+     assert calls == []
++    assert len(payloads) == 1
++    assert payloads[0]["messages"][0]["content"] == llm_module.SYSTEM_PROMPT
++    assert [message for message in payloads[0]["messages"] if message["role"] != "system"] == [
++        {"role": "user", "content": "Me llamo Álvaro."},
++        {"role": "user", "content": "¿Cómo me llamo?"},
++    ]
+ 
+ 
+ @pytest.mark.parametrize("draft", ["Your screen is dark.", "Hola, me llamo Jordan y estoy aquí para ayudarte."])
+-def test_native_chat_draft_still_crosses_observation_and_language_guards(draft: str) -> None:
++def test_chat_answer_still_crosses_observation_and_language_guards(draft: str) -> None:
+     runtime = object.__new__(LlmRuntime)
+     payloads = []
+     def post(payload):
+         payloads.append(payload)
+-        return {"choices": [{"message": {"content": '{"answer":"Your name is Jordan."}'}}]}
++        content = draft if len(payloads) == 1 else '{"answer":"Your name is Jordan."}'
++        return {"choices": [{"message": {"content": content}}]}
+     runtime._post = post
+     history = [
+         {"role": "user", "content": "My name is Jordan."},
+@@ -444,13 +456,12 @@
+         "What is my name?",
+         history=history,
+         temperature=0.0, conversation_kind="knowledge", response_language="en",
+-        initial_reply=draft,
+     )
+     assert answer == "Your name is Jordan."
+     assert calls == []
+-    assert len(payloads) == 1
+-    assert payloads[0]["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
+-    dialogue = [message for message in payloads[0]["messages"] if message["role"] != "system"]
++    assert len(payloads) == 2
++    assert payloads[1]["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
++    dialogue = [message for message in payloads[1]["messages"] if message["role"] != "system"]
+     assert dialogue == history
+ 
+ 
+@@ -460,7 +471,11 @@
+ 
+     def post(payload):
+         payloads.append(payload)
+-        return {"choices": [{"message": {"content": '{"answer":"RAM is temporary working memory."}'}}]}
++        content = (
++            "Hola, soy un asistente virtual y estoy aquí para ayudarte."
++            if len(payloads) == 1 else '{"answer":"RAM is temporary working memory."}'
++        )
++        return {"choices": [{"message": {"content": content}}]}
+ 
+     runtime._post = post
+     answer, calls = runtime.chat(
+@@ -470,13 +485,12 @@
+             {"role": "assistant", "content": "Hello Jordan."},
+         ],
+         temperature=0.0, conversation_kind="knowledge", response_language="en",
+-        initial_reply="Hola, soy un asistente virtual y estoy aquí para ayudarte.",
+     )
+     assert answer == "RAM is temporary working memory."
+     assert calls == []
+-    assert len(payloads) == 1
+-    assert payloads[0]["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
+-    assert [message for message in payloads[0]["messages"] if message["role"] != "system"] == [
++    assert len(payloads) == 2
++    assert payloads[1]["response_format"]["json_schema"]["name"] == "bounded_chat_answer"
++    assert [message for message in payloads[1]["messages"] if message["role"] != "system"] == [
+         {"role": "user", "content": "Explain what RAM is."},
+     ]
+ 
+@@ -10557,7 +10571,6 @@
+         "conversation_kind": "knowledge",
+         "effect_operations": [],
+         "response_language": "es",
+-        **({"conversation_reply": "El cielo es azul por dispersion."} if finish_reason == "stop" else {}),
+     }
+ 
+ 
+@@ -10683,7 +10696,7 @@
+ 
+ 
+ @pytest.mark.parametrize("operation", [None, "web.search"])
+-def test_primary_native_draft_is_separate_from_effect_authority(operation: str | None) -> None:
++def test_primary_native_draft_is_not_a_public_response(operation: str | None) -> None:
+     runtime = object.__new__(LlmRuntime)
+     runtime._native_tool_policy_enabled = True
+     runtime._post_native_tool_selection = lambda *_args: {
+@@ -10696,12 +10709,8 @@
+         "What is my name?",
+         [turn_candidate("web.search", "Search the web.", required=("query",))],
+     )
+-    if operation:
+-        assert "conversation_reply" not in result
+-        assert result["effect_operations"] == [operation]
+-    else:
+-        assert result["conversation_reply"] == "Your name is Jordan."
+-        assert result["effect_operations"] == []
++    assert "conversation_reply" not in result
++    assert result["effect_operations"] == ([operation] if operation else [])
+ 
+ 
+ def test_native_knowledge_is_not_reclassified_as_an_external_read() -> None:

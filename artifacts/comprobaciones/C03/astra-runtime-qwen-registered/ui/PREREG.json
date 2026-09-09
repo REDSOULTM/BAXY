@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-06T19:02:05.557173+00:00",
+  "kind": "registered-real-window-development-not-fresh-acceptance",
+  "method": "Existing FieldUiProbe sends one consumed development input through the real React composer. Observe the actual window independently with sky; probe row count alone does not prove final response. Wake/STT/TTS use registered defaults. No model, KV, sampling, PythonPath, voice or resource overrides; only existing audit sinks. Native UI will be inspected and may receive further development turns, separately recorded.",
+  "command": [
+    "py",
+    "main.py",
+    "--ui-probe",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\turns.jsonl",
+    "--ui-capture",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\rendered.jsonl"
+  ],
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "removedEnvironmentKeys": [],
+  "files": {
+    "scratchpad\\c03-registered-ui.py": "9f49c41514875bb7cba0b22ab854c8fa07f820aa6a39caa760804f4d9f718cbb",
+    "artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\turns.jsonl": "4fcd3b18a24a9785cdd5b830eb1ab161cce24b34340e45b6ae5307575bce8afd",
+    "src\\baxy_mind\\llm.py": "e80013c982f275df6b06d59a55e439f05dbb1a62932bd1ba87717a7fc3c39fc9",
+    "src\\Baxy.App\\MainWindowViewModel.cs": "a43aa675303d2b9e381c5d9b08e36f39e32fe048338dcfbd7a0b986a8c250507"
+  }
+}

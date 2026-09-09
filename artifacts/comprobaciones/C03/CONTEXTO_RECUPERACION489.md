@@ -1,0 +1,14 @@
+# 489 — contexto en recuperación, contraste previo a la intervención
+
+Fecha:2026-09-08. Fallo concreto: owner264 índice51 conserva el historial en la llamada nativa, pero audio.volume no figura entre28 candidatos. No inferir que cambiar el modelo resolvería la ausencia del contrato.
+
+Herencia: biblioteca/gemma4-agent/documentacion/07_latencia/research/4_contexto.md:23–57 distingue anáfora/continuación de una petición autónoma y describe herencia de herramientas. Es investigación histórica, no una medición del producto actual ni autorización para adoptar listas de frases. En el producto actual, __main__._turn_evidence_query ya usa historia para evidencia, mientras PlannerCatalog.shortlist recibe sólo routing_objective. MainWindowViewModel:1966–1999 termina el turno por RecoveryFailureCode antes de intentar reanudar la aclaración. UserMessagePolicy.MindClarificationPolicy preserva el objetivo sólo si la nueva petición no es independiente. No mover esa guarda sin demostrar los casos de cambio de tema.
+
+Fuentes primarias consultadas:
+- [Apple, Learning to Rank Intents in Voice Assistants,2020](https://machinelearning.apple.com/research/learning-to-rank-intents-in-voice-assistants): el contexto permite reducir ambigüedad al ordenar intenciones; propone un modelo aprendido distinto del nuestro. No demuestra resultados en BAXY ni impone añadir otro modelo.
+- [Kachuee et al., COLING2025](https://arxiv.org/abs/2412.03573): una consulta generada por LLM mejora recuperación de herramientas en su evaluación. Añade inferencia y posibles errores de reformulación; no se adopta sin necesidad.
+- [Krasakis et al., SIGIR2022](https://arxiv.org/abs/2204.10613): contextualizar búsqueda conservando el emparejamiento con la consulta actual ayuda en recuperación de pasajes. Dominio distinto; apoya aislar contexto de autorización, no un porcentaje de mejora local.
+
+Prueba acotada489: mismos ocho casos488, misma fuente487, mismo Qwen2507/b9980 registrado y mismos parámetros. Sólo para los dos casos con historia, PlannerCatalog.shortlist recibe el pedido literal previo del usuario seguido del actual. Se guardan listas original/contextual. No emplea la respuesta esperada, nombres de operaciones de un oráculo, texto generado ni la prosa del asistente para formar la consulta. Modelo y guardas deciden como siempre. No cambia fuente ni manifiesto. Las guardas físicas y demás límites de488 siguen.
+
+Esta intervención comprueba si una recuperación con el antecedente auténtico basta para los fallos observados. No define aún una política general de historial ni garantiza selección completa, seguridad o calidad. Si mejora, el siguiente paso requiere controles de cambio de tema, órdenes revocadas, antecedente ausente, contexto falso del asistente y política de aclaración real en C#; nunca convertir relevancia recuperada en permiso de ejecución. No aporta aceptación fresca ni recursos de UI/voz.

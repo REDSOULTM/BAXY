@@ -1,0 +1,1 @@
+{"stage":"preparation","error":"Exact source marker did not match original CRLF decoder file","externalSourceChanged":false,"retry":"c03-prepare-native215-retry.py normalizes in-memory decoder text before matching; exact original bytes remain saved for restoration"}

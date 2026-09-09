@@ -1,0 +1,90 @@
+[
+  {
+    "case": "native_echo149",
+    "samples": 135168,
+    "loadSeconds": 0.034360799996647984,
+    "processingSeconds": 2.9630997000058414,
+    "processingMsPer8msHop": 2.805965625005532,
+    "rssDeltaBytes": 85118976,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutGuard": 0,
+    "maxConsecutiveWithoutGuard": 0,
+    "firstQualifiedSeconds": null,
+    "transcripts": [],
+    "rms": 4.6328650931401704e-05
+  },
+  {
+    "case": "physical_echo",
+    "samples": 508928,
+    "loadSeconds": 0.03702619999239687,
+    "processingSeconds": 11.452957500005141,
+    "processingMsPer8msHop": 2.880522510061655,
+    "rssDeltaBytes": 36261888,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutGuard": 0,
+    "maxConsecutiveWithoutGuard": 0,
+    "firstQualifiedSeconds": null,
+    "transcripts": [],
+    "rms": 0.00020494698111698655
+  },
+  {
+    "case": "near_only",
+    "samples": 508928,
+    "loadSeconds": 0.03510110000206623,
+    "processingSeconds": 10.974749200002407,
+    "processingMsPer8msHop": 2.7602487927571446,
+    "rssDeltaBytes": 36245504,
+    "speechFrames": 86,
+    "qualifiedFramesWithoutGuard": 44,
+    "maxConsecutiveWithoutGuard": 8,
+    "firstQualifiedSeconds": 25.632,
+    "transcripts": [
+      {
+        "normalized": false,
+        "text": "Hola, aquí Paxi. ¿En qué te puedo ayudar hoy?"
+      },
+      {
+        "normalized": true,
+        "text": "Hola, aquí Paxi. ¿En qué te puedo ayudar hoy?"
+      }
+    ],
+    "rms": 0.001988975435582647
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "samples": 508928,
+    "loadSeconds": 0.041328699997393414,
+    "processingSeconds": 10.377519799993024,
+    "processingMsPer8msHop": 2.6100401911451265,
+    "rssDeltaBytes": 36257792,
+    "speechFrames": 90,
+    "qualifiedFramesWithoutGuard": 45,
+    "maxConsecutiveWithoutGuard": 9,
+    "firstQualifiedSeconds": 25.6,
+    "transcripts": [
+      {
+        "normalized": false,
+        "text": "Hola, aquí Patsy. ¿En qué te puedar hoy?"
+      },
+      {
+        "normalized": true,
+        "text": "Hola, aquí Batsy. ¿En qué te puedar hoy?"
+      }
+    ],
+    "rms": 0.002013107260928343
+  },
+  {
+    "case": "cold_silence",
+    "samples": 32000,
+    "loadSeconds": 0.03565740000340156,
+    "processingSeconds": 0.6189077000017278,
+    "processingMsPer8msHop": 2.475630800006911,
+    "rssDeltaBytes": 34217984,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutGuard": 0,
+    "maxConsecutiveWithoutGuard": 0,
+    "firstQualifiedSeconds": null,
+    "transcripts": [],
+    "rms": 0.0
+  }
+]

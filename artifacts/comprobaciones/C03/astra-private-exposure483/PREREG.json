@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-08T19:33:46.362736+00:00",
+  "method": "Read actual private C03 HTTP/composition/turn inputs by bounded folder and exact log-name inventory. Recursive JSON and exact full text/individual complete lines, NFC/casefold/whitespace only. No model calls, effects or product edits. Results exclude matched reserve candidates from acceptance; not code/repair examples. Hash files before and after; unstable/malformed files stay unresolved. Separate prior470 exposures, no certification from nonmatch.",
+  "files": 327,
+  "filenames": [
+    "compose-audit.jsonl",
+    "compose-overrides.jsonl",
+    "deferred-override.jsonl",
+    "forwarded-native.jsonl",
+    "http-posts.jsonl",
+    "messages.jsonl",
+    "posts.jsonl",
+    "turn-audit.jsonl",
+    "turns.jsonl"
+  ],
+  "prior_sha256": "12bf00278adbf00a7035f96d2d9584667466674062b298119a8a88cf2fb3e3dd",
+  "reserve_review_sha256": "7b9a64496c23b73e7b71df2cd71af98ca43d210b27671d6b1e3eb2b1476d6d2f"
+}

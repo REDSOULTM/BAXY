@@ -1,0 +1,8 @@
+{"id": "actual426-t5", "variant": "baseline", "request": "Me llamo Álvaro.", "answer": "Hola Álvaro, estoy listo para ayudarte.", "error": null, "seconds": 0.781}
+{"id": "actual426-t5", "variant": "conversation", "request": "Me llamo Álvaro.", "answer": "Hola Álvaro, ¿en qué puedo ayudarte hoy?", "error": null, "seconds": 0.344}
+{"id": "name-en", "variant": "baseline", "request": "My name is Nina.", "answer": "Nina, I have completed the session context.", "error": null, "seconds": 0.828}
+{"id": "name-en", "variant": "conversation", "request": "My name is Nina.", "answer": "Nice to meet you, Nina.", "error": null, "seconds": 0.344}
+{"id": "compound-name", "variant": "baseline", "request": "Mi nombre es Ana María.", "answer": "Hola Ana María, gusto en conocerte.", "error": null, "seconds": 0.359}
+{"id": "compound-name", "variant": "conversation", "request": "Mi nombre es Ana María.", "answer": "Hola Ana María, ¿en qué puedo ayudarte hoy?", "error": null, "seconds": 0.375}
+{"id": "hyphenated-name", "variant": "baseline", "request": "My name is Jean-Luc.", "answer": "Jean-Luc, the session context has been completed.", "error": null, "seconds": 1.078}
+{"id": "hyphenated-name", "variant": "conversation", "request": "My name is Jean-Luc.", "answer": "Nice to meet you, Jean-Luc.", "error": null, "seconds": 0.359}

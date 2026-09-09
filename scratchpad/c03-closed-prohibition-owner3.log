@@ -1,0 +1,194 @@
+..FFFFF.........                                                         [100%]
+================================== FAILURES ===================================
+_ test_closed_prohibition_does_not_become_a_catalog_observation[no silencies el audio] _
+
+text = 'no silencies el audio'
+
+    @pytest.mark.parametrize("text", [
+        "no silencies el audio", "no subas el volumen", "Don't mute the audio",
+        "no borres el archivo", "never close Steam",
+    ])
+    def test_closed_prohibition_does_not_become_a_catalog_observation(text: str) -> None:
+        tools = [_goal03c_catalog_tool(name) for name in ("audio.status", "audio.mute")]
+    
+        class Runtime:
+            _native_tool_policy_enabled = True
+    
+            def _verify_semantic_effect_shape(self, *_args: object) -> object:
+                pytest.fail("a closed prohibition must not be classified as a new effect")
+    
+            def _post_native_tool_selection(self, *_args: object) -> object:
+                pytest.fail("nearby tools cannot reopen a closed prohibition")
+    
+            @staticmethod
+            def chat(current: str, **kwargs: object) -> tuple[str, list]:
+                assert current == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Entendido, mantengo tu restricción.", []
+    
+        result = _prepare_turn_result(
+            {"id": "closed-prohibition", "text": text, "pendingClarification": False,
+             "history": [{"role": "user", "content": "está silenciado el audio"},
+                         {"role": "assistant", "content": "El audio no está silenciado."}]},
+            llm=Runtime(), planner_catalog=PlannerCatalog(tools), turn_evidence=_NoEvidence(),
+>           encoder=lambda _texts: (), tool_by_name={tool["name"]: tool for tool in tools},
+                                                     ^^^^^^^^^^^^
+        )
+E       KeyError: 'name'
+
+tests\test_turn_policy.py:1551: KeyError
+_ test_closed_prohibition_does_not_become_a_catalog_observation[no subas el volumen] _
+
+text = 'no subas el volumen'
+
+    @pytest.mark.parametrize("text", [
+        "no silencies el audio", "no subas el volumen", "Don't mute the audio",
+        "no borres el archivo", "never close Steam",
+    ])
+    def test_closed_prohibition_does_not_become_a_catalog_observation(text: str) -> None:
+        tools = [_goal03c_catalog_tool(name) for name in ("audio.status", "audio.mute")]
+    
+        class Runtime:
+            _native_tool_policy_enabled = True
+    
+            def _verify_semantic_effect_shape(self, *_args: object) -> object:
+                pytest.fail("a closed prohibition must not be classified as a new effect")
+    
+            def _post_native_tool_selection(self, *_args: object) -> object:
+                pytest.fail("nearby tools cannot reopen a closed prohibition")
+    
+            @staticmethod
+            def chat(current: str, **kwargs: object) -> tuple[str, list]:
+                assert current == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Entendido, mantengo tu restricción.", []
+    
+        result = _prepare_turn_result(
+            {"id": "closed-prohibition", "text": text, "pendingClarification": False,
+             "history": [{"role": "user", "content": "está silenciado el audio"},
+                         {"role": "assistant", "content": "El audio no está silenciado."}]},
+            llm=Runtime(), planner_catalog=PlannerCatalog(tools), turn_evidence=_NoEvidence(),
+>           encoder=lambda _texts: (), tool_by_name={tool["name"]: tool for tool in tools},
+                                                     ^^^^^^^^^^^^
+        )
+E       KeyError: 'name'
+
+tests\test_turn_policy.py:1551: KeyError
+_ test_closed_prohibition_does_not_become_a_catalog_observation[Don't mute the audio] _
+
+text = "Don't mute the audio"
+
+    @pytest.mark.parametrize("text", [
+        "no silencies el audio", "no subas el volumen", "Don't mute the audio",
+        "no borres el archivo", "never close Steam",
+    ])
+    def test_closed_prohibition_does_not_become_a_catalog_observation(text: str) -> None:
+        tools = [_goal03c_catalog_tool(name) for name in ("audio.status", "audio.mute")]
+    
+        class Runtime:
+            _native_tool_policy_enabled = True
+    
+            def _verify_semantic_effect_shape(self, *_args: object) -> object:
+                pytest.fail("a closed prohibition must not be classified as a new effect")
+    
+            def _post_native_tool_selection(self, *_args: object) -> object:
+                pytest.fail("nearby tools cannot reopen a closed prohibition")
+    
+            @staticmethod
+            def chat(current: str, **kwargs: object) -> tuple[str, list]:
+                assert current == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Entendido, mantengo tu restricción.", []
+    
+        result = _prepare_turn_result(
+            {"id": "closed-prohibition", "text": text, "pendingClarification": False,
+             "history": [{"role": "user", "content": "está silenciado el audio"},
+                         {"role": "assistant", "content": "El audio no está silenciado."}]},
+            llm=Runtime(), planner_catalog=PlannerCatalog(tools), turn_evidence=_NoEvidence(),
+>           encoder=lambda _texts: (), tool_by_name={tool["name"]: tool for tool in tools},
+                                                     ^^^^^^^^^^^^
+        )
+E       KeyError: 'name'
+
+tests\test_turn_policy.py:1551: KeyError
+_ test_closed_prohibition_does_not_become_a_catalog_observation[no borres el archivo] _
+
+text = 'no borres el archivo'
+
+    @pytest.mark.parametrize("text", [
+        "no silencies el audio", "no subas el volumen", "Don't mute the audio",
+        "no borres el archivo", "never close Steam",
+    ])
+    def test_closed_prohibition_does_not_become_a_catalog_observation(text: str) -> None:
+        tools = [_goal03c_catalog_tool(name) for name in ("audio.status", "audio.mute")]
+    
+        class Runtime:
+            _native_tool_policy_enabled = True
+    
+            def _verify_semantic_effect_shape(self, *_args: object) -> object:
+                pytest.fail("a closed prohibition must not be classified as a new effect")
+    
+            def _post_native_tool_selection(self, *_args: object) -> object:
+                pytest.fail("nearby tools cannot reopen a closed prohibition")
+    
+            @staticmethod
+            def chat(current: str, **kwargs: object) -> tuple[str, list]:
+                assert current == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Entendido, mantengo tu restricción.", []
+    
+        result = _prepare_turn_result(
+            {"id": "closed-prohibition", "text": text, "pendingClarification": False,
+             "history": [{"role": "user", "content": "está silenciado el audio"},
+                         {"role": "assistant", "content": "El audio no está silenciado."}]},
+            llm=Runtime(), planner_catalog=PlannerCatalog(tools), turn_evidence=_NoEvidence(),
+>           encoder=lambda _texts: (), tool_by_name={tool["name"]: tool for tool in tools},
+                                                     ^^^^^^^^^^^^
+        )
+E       KeyError: 'name'
+
+tests\test_turn_policy.py:1551: KeyError
+_ test_closed_prohibition_does_not_become_a_catalog_observation[never close Steam] _
+
+text = 'never close Steam'
+
+    @pytest.mark.parametrize("text", [
+        "no silencies el audio", "no subas el volumen", "Don't mute the audio",
+        "no borres el archivo", "never close Steam",
+    ])
+    def test_closed_prohibition_does_not_become_a_catalog_observation(text: str) -> None:
+        tools = [_goal03c_catalog_tool(name) for name in ("audio.status", "audio.mute")]
+    
+        class Runtime:
+            _native_tool_policy_enabled = True
+    
+            def _verify_semantic_effect_shape(self, *_args: object) -> object:
+                pytest.fail("a closed prohibition must not be classified as a new effect")
+    
+            def _post_native_tool_selection(self, *_args: object) -> object:
+                pytest.fail("nearby tools cannot reopen a closed prohibition")
+    
+            @staticmethod
+            def chat(current: str, **kwargs: object) -> tuple[str, list]:
+                assert current == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Entendido, mantengo tu restricción.", []
+    
+        result = _prepare_turn_result(
+            {"id": "closed-prohibition", "text": text, "pendingClarification": False,
+             "history": [{"role": "user", "content": "está silenciado el audio"},
+                         {"role": "assistant", "content": "El audio no está silenciado."}]},
+            llm=Runtime(), planner_catalog=PlannerCatalog(tools), turn_evidence=_NoEvidence(),
+>           encoder=lambda _texts: (), tool_by_name={tool["name"]: tool for tool in tools},
+                                                     ^^^^^^^^^^^^
+        )
+E       KeyError: 'name'
+
+tests\test_turn_policy.py:1551: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_closed_prohibition_does_not_become_a_catalog_observation[no silencies el audio]
+FAILED tests/test_turn_policy.py::test_closed_prohibition_does_not_become_a_catalog_observation[no subas el volumen]
+FAILED tests/test_turn_policy.py::test_closed_prohibition_does_not_become_a_catalog_observation[Don't mute the audio]
+FAILED tests/test_turn_policy.py::test_closed_prohibition_does_not_become_a_catalog_observation[no borres el archivo]
+FAILED tests/test_turn_policy.py::test_closed_prohibition_does_not_become_a_catalog_observation[never close Steam]
+5 failed, 11 passed, 893 deselected in 2.79s

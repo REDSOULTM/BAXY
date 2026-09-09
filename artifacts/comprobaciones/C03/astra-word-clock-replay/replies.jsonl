@@ -1,0 +1,4 @@
+{"case": "injected-contradiction", "request": "Dime la hora, please, en spanglish", "response": "Son las 13:23; son las 13:23", "error": null}
+{"case": "es", "request": "¿Qué hora es?", "response": "Son las 13:23.", "error": null}
+{"case": "en", "request": "What time is it?", "response": "It is 13:23.", "error": null}
+{"case": "mixed", "request": "Dime la hora, please, en spanglish", "response": "Son las 13:23; it’s 13:23.", "error": null}

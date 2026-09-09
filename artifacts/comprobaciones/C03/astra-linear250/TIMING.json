@@ -1,0 +1,6 @@
+{
+  "bridgeExact": true,
+  "nativeLinearLag": 64,
+  "bridgeLag": 128,
+  "totalRawPairDelay": 192
+}

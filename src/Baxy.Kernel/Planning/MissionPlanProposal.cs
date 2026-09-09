@@ -151,6 +151,7 @@ public static class MissionPlanValidator
         {
             "app.close" => ["window.resolve", "window.active"],
             "bluetooth.device.pair" => ["bluetooth.device.list"],
+            "filesystem.read.text" => ["filesystem.search", "filesystem.list"],
             "game.install.commit" => ["game.install.prepare"],
             "game.purchase.commit" => ["game.purchase.prepare"],
             "message.send" => ["message.recipient.resolve"],
@@ -202,6 +203,7 @@ public static class MissionPlanValidator
             "bluetooth.device.pair" or "peripheral.print"
                 or "peripheral.scan" => ["deviceId"],
             "browser.navigate" or "browser.navigate.named" => ["url"],
+            "filesystem.read.text" => ["resourceId"],
             "game.install.commit" or "game.purchase.commit"
                 or "package.install.commit" => ["confirmationId"],
             "message.send" => ["recipientId"],

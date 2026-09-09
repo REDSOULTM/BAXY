@@ -19,7 +19,7 @@ public sealed class WindowsSystemStatusProviderTests
             Memory = new MemoryReading(32 * Gibibyte, 12 * Gibibyte),
             Disk = new DiskReading(512L * (long)Gibibyte, 123L * (long)Gibibyte),
             Power = new PowerReading(1, 0x08, 77),
-            OperatingSystem = new OperatingSystemReading(10, 0, 26100, "x64", true),
+            OperatingSystem = new OperatingSystemReading(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro"),
             UptimeMilliseconds = 9_876_543,
         };
         probe.CpuSamples.Enqueue(new CpuTimeSample(100, 300, 100));
@@ -46,7 +46,7 @@ public sealed class WindowsSystemStatusProviderTests
             Assert.That(snapshot.Battery, Is.EqualTo(new BatteryStatus(true, 77, true, true)));
             Assert.That(
                 snapshot.OperatingSystem,
-                Is.EqualTo(new OperatingSystemStatus(10, 0, 26100, "x64", true)));
+                Is.EqualTo(new OperatingSystemStatus(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro")));
             Assert.That(snapshot.UptimeSeconds, Is.EqualTo(9_876));
             Assert.That(probe.DelayCalls, Is.EqualTo(1));
             Assert.That(probe.LastDelay, Is.EqualTo(TimeSpan.FromMilliseconds(10)));
@@ -399,7 +399,7 @@ public sealed class WindowsSystemStatusProviderTests
         public PowerReading Power { get; set; } = new(1, 0, 50);
 
         public OperatingSystemReading OperatingSystem { get; set; } =
-            new(10, 0, 26100, "x64", true);
+            new(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro");
 
         public ulong UptimeMilliseconds { get; set; } = 1_000;
 
@@ -498,7 +498,7 @@ public sealed class WindowsSystemStatusProviderTests
             return Power;
         }
 
-        public OperatingSystemReading ReadOperatingSystem()
+        public ValueTask<OperatingSystemReading> ReadOperatingSystemAsync(CancellationToken cancellationToken)
         {
             OperatingSystemCalls++;
             if (OperatingSystemException is not null)
@@ -506,7 +506,7 @@ public sealed class WindowsSystemStatusProviderTests
                 throw OperatingSystemException;
             }
 
-            return OperatingSystem;
+            return ValueTask.FromResult(OperatingSystem);
         }
 
         public ulong ReadUptimeMilliseconds()

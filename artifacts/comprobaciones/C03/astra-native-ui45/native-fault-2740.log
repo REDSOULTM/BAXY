@@ -1,0 +1,7 @@
+enabled pid=2740
+Windows fatal exception: access violation
+
+Thread 0x00001644 (most recent call first):
+  File "<frozen importlib._bootstrap_external>", line 161 in _path_stat
+  File "<frozen importlib._bootstrap_external>"Windows fatal exception: access violation
+

@@ -1,0 +1,5345 @@
+[
+  {
+    "request": "¿Qué hora es?",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "Son las 23 horas y 21 minutos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "¿Qué hora es?",
+          "ts": "23:21:29"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747689581,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747689690,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "Son las 23 horas y 21 minutos.",
+          "ts": "23:21:30",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747690148,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 30,
+        "draft_sha256": "36b79e9cda76be02ea771dd02c9dac6ce9b7b6befb75f6e5000ef368b2018a8b",
+        "payload": {
+          "clock": "23:21"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:21:29.7868655+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 23 horas y 21 minutos."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora y el estado del audio.",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "La hora local es 23:21. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "Dime la hora y el estado del audio.",
+          "ts": "23:21:30"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747690207,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747690222,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "La hora local es 23:21. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado.",
+          "ts": "23:21:31",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747691208,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "47d424f04f1a300bc168a4685ebeb158b33540bfe09a564c0d4ff4c1aca116ea",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y el estado del audio.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "23:21"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T02:21:30.2917280\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y el estado del audio.\",\"observed\":{\"utc\":\"2026-09-07T02:21:30.2917280+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 23:21. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "It's 23:21.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "23:21:31"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747691260,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747691285,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "It's 23:21.",
+          "ts": "23:21:31",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747691710,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "16a1814a9d1ca3f22f8dd9363f37d09ea04b400ebd96749c5e7f9d17353a9648",
+        "payload": {
+          "clock": "23:21"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:21:31.3381705+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 23:21."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Tell me the time and the volume.",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "The time is 23:21 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "Tell me the time and the volume.",
+          "ts": "23:21:31"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747691762,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747691777,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "The time is 23:21 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted.",
+          "ts": "23:21:32",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747692619,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 118,
+        "draft_sha256": "80799d987fa93691913325f0f420f9a19ac0f87ef08bc0ba72a6786d5997aa92",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Tell me the time and the volume.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "23:21"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T02:21:31.8574713\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Tell me the time and the volume.\",\"observed\":{\"utc\":\"2026-09-07T02:21:31.8574713+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "The time is 23:21 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora, please, en spanglish",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "Son las 23:21.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "Dime la hora, please, en spanglish",
+          "ts": "23:21:32"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747692671,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747692695,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "Son las 23:21.",
+          "ts": "23:21:33",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747693159,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "9936624e91ddea9ce41736f7f129e9aa109755ac66a7c7abfb26ad58007e2a0c",
+        "payload": {
+          "clock": "23:21"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:21:32.7629877+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 23:21."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it y cómo está el audio?",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "published_final",
+    "final": "Son las 23:21. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "What time is it y cómo está el audio?",
+          "ts": "23:21:33"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747693211,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747693227,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "BAXY",
+          "msg": "Son las 23:21. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100.",
+          "ts": "23:21:34",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747694073,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 99,
+        "draft_sha256": "59fec0430e68df192dd0abf81094da0f73848e8afab89532a0d92550cf1eb839",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "What time is it y cómo está el audio?",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "23:21"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T02:21:33.2905293\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"What time is it y cómo está el audio?\",\"observed\":{\"utc\":\"2026-09-07T02:21:33.2905293+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "Son las 23:21. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 13,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Hey, buenas",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "¡Hola! Bienvenido. ¿Cómo estás?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "Hey, buenas",
+          "ts": "23:21:34"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747694125,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "¡Hola! Bienvenido. ¿Cómo estás?",
+          "ts": "23:21:34",
+          "route": "welcome"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747694448,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "99b49a436f32690e9fa3d49750f16142a8c16531021d7b9a0205afbbc9cb88eb",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hola! Bienvenido. ¿Cómo estás?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 15,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explain encryption, pero en simple",
+    "injection": "none",
+    "turnId": "t8",
+    "terminal": "published_final",
+    "final": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así, los datos se protegen de que otros los vean o usen.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t8",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-16",
+          "src": "YOU",
+          "msg": "Explain encryption, pero en simple",
+          "ts": "23:21:34"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747694450,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747695451,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-17",
+          "src": "BAXY",
+          "msg": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así, los datos se protegen de que otros los vean o usen.",
+          "ts": "23:21:36",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747696019,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 17,
+      "userMessageCount": 8,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "injection": "none",
+    "turnId": "t9",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener una copia de tu libro en otro lugar, en caso de que lo pierdas.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t9",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-18",
+          "src": "YOU",
+          "msg": "responde en spanglish: qué es una copia de seguridad",
+          "ts": "23:21:36"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747696072,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-19",
+          "src": "BAXY",
+          "msg": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener una copia de tu libro en otro lugar, en caso de que lo pierdas.",
+          "ts": "23:21:37",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747697330,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 19,
+      "userMessageCount": 9,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explain gravity, pero sin tecnicismos",
+    "injection": "none",
+    "turnId": "t10",
+    "terminal": "published_final",
+    "final": "La gravedad es esa fuerza que mantiene todo lo que está cerca de la Tierra, como los objetos que caen al suelo o las cosas que no se van volando. Es como si todo lo que está cerca de la Tierra tuviera un pequeño hilo que la une, y por eso no se va volando al espacio.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t10",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-20",
+          "src": "YOU",
+          "msg": "Explain gravity, pero sin tecnicismos",
+          "ts": "23:21:37"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747697337,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747698337,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-21",
+          "src": "BAXY",
+          "msg": "La gravedad es esa fuerza que mantiene todo lo que está cerca de la Tierra, como los objetos que caen al suelo o las cosas que no se van volando. Es como si todo lo que está cerca de la Tierra tuviera un pequeño hilo que la une, y por eso no se va volando al espacio.",
+          "ts": "23:21:38",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747698844,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 21,
+      "userMessageCount": 10,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "no abras Paint",
+    "injection": "none",
+    "turnId": "t11",
+    "terminal": "published_final",
+    "final": "Entendido, no abriré Paint.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t11",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-22",
+          "src": "YOU",
+          "msg": "no abras Paint",
+          "ts": "23:21:38"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747698855,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-23",
+          "src": "BAXY",
+          "msg": "Entendido, no abriré Paint.",
+          "ts": "23:21:39",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747699262,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 23,
+      "userMessageCount": 11,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "what is the capital of Peru",
+    "injection": "none",
+    "turnId": "t12",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t12",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-24",
+          "src": "YOU",
+          "msg": "what is the capital of Peru",
+          "ts": "23:21:39"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747699317,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747700318,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-25",
+          "src": "BAXY",
+          "msg": "The capital of Peru is Lima.",
+          "ts": "23:21:40",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747700436,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 25,
+      "userMessageCount": 12,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explain photosynthesis in two sentences.",
+    "injection": "none",
+    "turnId": "t13",
+    "terminal": "published_final",
+    "final": "Photosynthesis is the process by which green plants use sunlight, carbon dioxide, and water to produce glucose and oxygen. It's basically nature's way of turning solar energy into food for the plant.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t13",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-26",
+          "src": "YOU",
+          "msg": "Explain photosynthesis in two sentences.",
+          "ts": "23:21:40"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747700477,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-27",
+          "src": "BAXY",
+          "msg": "Photosynthesis is the process by which green plants use sunlight, carbon dioxide, and water to produce glucose and oxygen. It's basically nature's way of turning solar energy into food for the plant.",
+          "ts": "23:21:41",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747701282,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 27,
+      "userMessageCount": 13,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Explícame por qué el hielo flota.",
+    "injection": "none",
+    "turnId": "t14",
+    "terminal": "published_final",
+    "final": "El hielo flota porque es menos denso que el agua. Cuando el agua se congela, sus moléculas se alejan unas de otras y ocupan más espacio, por eso el hielo pesa menos por volumen y flota.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t14",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-28",
+          "src": "YOU",
+          "msg": "Explícame por qué el hielo flota.",
+          "ts": "23:21:41"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747701286,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747702287,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-29",
+          "src": "BAXY",
+          "msg": "El hielo flota porque es menos denso que el agua. Cuando el agua se congela, sus moléculas se alejan unas de otras y ocupan más espacio, por eso el hielo pesa menos por volumen y flota.",
+          "ts": "23:21:42",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747702599,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 29,
+      "userMessageCount": 14,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.",
+    "injection": "none",
+    "turnId": "t15",
+    "terminal": "published_final",
+    "final": "Un archivo es un archivo de datos, como un documento o una imagen, mientras que una carpeta es como una caja donde puedes guardar varios archivos.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t15",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-30",
+          "src": "YOU",
+          "msg": "¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.",
+          "ts": "23:21:42"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747702603,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-31",
+          "src": "BAXY",
+          "msg": "Un archivo es un archivo de datos, como un documento o una imagen, mientras que una carpeta es como una caja donde puedes guardar varios archivos.",
+          "ts": "23:21:43",
+          "route": "conversation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747703744,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 31,
+      "userMessageCount": 15,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What is on my to do list?",
+    "injection": "none",
+    "turnId": "t16",
+    "terminal": "published_final",
+    "final": "Your to-do list is empty right now.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t16",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-32",
+          "src": "YOU",
+          "msg": "What is on my to do list?",
+          "ts": "23:21:43"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747703770,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747705770,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747705821,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-33",
+          "src": "BAXY",
+          "msg": "Your to-do list is empty right now.",
+          "ts": "23:21:46",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747706232,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "a136255619847df5b3a8898fc94d7d7208228bba453a871ef8ff554ba2b0ee82",
+        "payload": {
+          "seen": {
+            "tasks": [],
+            "count": 0,
+            "mode": "tasks",
+            "limit": 20
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"tasks\",\"limit\":20}}",
+        "draft": "Your to-do list is empty right now."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 33,
+      "userMessageCount": 16,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "injection": "none",
+    "turnId": "t17",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t17",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-34",
+          "src": "YOU",
+          "msg": "cierra la ventana titulada Ventana C03 de prueba",
+          "ts": "23:21:46"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747706284,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747706324,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747706371,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-35",
+          "src": "BAXY",
+          "msg": "¿Quieres confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?",
+          "ts": "23:21:47",
+          "route": "confirmation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707037,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 94,
+        "draft_sha256": "9e99ce2491fef68fa777693919ec2dd319201b47b99ff59ee0e2e9d4ad30b6ea",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_b2d1933de937fbcb6c7db50755510718\"}}}",
+        "draft": "¿Quieres confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 35,
+      "userMessageCount": 17,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": true,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "awaiting_mission_resume",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cancelar",
+    "injection": "none",
+    "turnId": "t18",
+    "terminal": "published_final",
+    "final": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana maximizada con el título indicado, pero la acción fue cancelada. No se realizó el cierre.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t18",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-36",
+          "src": "YOU",
+          "msg": "cancelar",
+          "ts": "23:21:47"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707090,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707090,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-37",
+          "src": "BAXY",
+          "msg": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana maximizada con el título indicado, pero la acción fue cancelada. No se realizó el cierre.",
+          "ts": "23:21:47",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707920,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cancelledAction",
+          "cancelledRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 203,
+        "draft_sha256": "38ebae8f73aa3cce7258e565aab7c3fa9d5d9e8005175fc21957d88b3d50c67f",
+        "payload": {
+          "kind": "status",
+          "cancelledRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "cancelledAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "outcome": "cancelled",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "processName": "C03TitleFixture",
+                      "title": "Ventana C03 de prueba",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1260,
+                      "height": 786
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "state": "remaining steps cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"remaining_steps_cancelled\",\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_b2d1933de937fbcb6c7db50755510718\\\",\\\"processName\\\":\\\"C03TitleFixture\\\",\\\"title\\\":\\\"Ventana C03 de prueba\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1260,\\\"height\\\":786}],\\\"count\\\":1},\\\"readOnly\\\":true}\"],\"cancelledRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"cancelledAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_b2d1933de937fbcb6c7db50755510718\"}}}",
+        "draft": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana maximizada con el título indicado, pero la acción fue cancelada. No se realizó el cierre."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 37,
+      "userMessageCount": 18,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "injection": "none",
+    "turnId": "t19",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t19",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-38",
+          "src": "YOU",
+          "msg": "cierra la ventana titulada Ventana C03 de prueba",
+          "ts": "23:21:47"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707921,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707931,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747707949,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-39",
+          "src": "BAXY",
+          "msg": "¿Quieres confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?",
+          "ts": "23:21:48",
+          "route": "confirmation"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747708766,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 94,
+        "draft_sha256": "9e99ce2491fef68fa777693919ec2dd319201b47b99ff59ee0e2e9d4ad30b6ea",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_0dc4dcf1891f483f2480fab25b2b3ef7\"}}}",
+        "draft": "¿Quieres confirmar o cancelar la acción de cerrar la ventana titulada Ventana C03 de prueba?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 39,
+      "userMessageCount": 19,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": true,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "awaiting_mission_resume",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "confirmar",
+    "injection": "none",
+    "turnId": "t20",
+    "terminal": "published_final",
+    "final": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t20",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-40",
+          "src": "YOU",
+          "msg": "confirmar",
+          "ts": "23:21:48"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747708818,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747708818,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-41",
+          "src": "BAXY",
+          "msg": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente.",
+          "ts": "23:21:49",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747709674,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 110,
+        "draft_sha256": "e1df6f804076bcf628121035d32f53f3087a61e7a5b08c5bac28a0047693a795",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "processName": "C03TitleFixture",
+                      "title": "Ventana C03 de prueba",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1260,
+                      "height": 786
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            },
+            {
+              "operation": "app.close",
+              "resultAtThisStep": {
+                "readOnly": false,
+                "seen": {
+                  "windowClosed": true
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_0dc4dcf1891f483f2480fab25b2b3ef7\\\",\\\"processName\\\":\\\"C03TitleFixture\\\",\\\"title\\\":\\\"Ventana C03 de prueba\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1260,\\\"height\\\":786}],\\\"count\\\":1},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"app.close\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windowClosed\\\":true},\\\"readOnly\\\":false}\"],\"completedRequest\":\"cierra la ventana titulada Ventana C03 de prueba\"}",
+        "draft": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 41,
+      "userMessageCount": 20,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "none",
+    "turnId": "t21",
+    "terminal": "published_final",
+    "final": "It's 23:21.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t21",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-42",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "23:21:49"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747709725,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747709741,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-43",
+          "src": "BAXY",
+          "msg": "It's 23:21.",
+          "ts": "23:21:50",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747710201,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t21",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "16a1814a9d1ca3f22f8dd9363f37d09ea04b400ebd96749c5e7f9d17353a9648",
+        "payload": {
+          "clock": "23:21"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:21:49.8049292+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 23:21."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 43,
+      "userMessageCount": 21,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Cómo está el audio?",
+    "injection": "none",
+    "turnId": "t22",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t22",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-44",
+          "src": "YOU",
+          "msg": "¿Cómo está el audio?",
+          "ts": "23:21:50"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747710253,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747710297,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-45",
+          "src": "BAXY",
+          "msg": "El audio está activo y el volumen está en 100.",
+          "ts": "23:21:50",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747710739,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t22",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 48,
+        "draft_sha256": "83903c6e89f5326c715c1ca7ddfcbef9f039dfd858faef22e944e895c2eb696e",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El audio está activo y el volumen está en 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 45,
+      "userMessageCount": 22,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Ajusta el volumen.",
+    "injection": "none",
+    "turnId": "t23",
+    "terminal": "published_final",
+    "final": "El volumen de los altavoces (Realtek(R) Audio) está en 100 y no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t23",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-46",
+          "src": "YOU",
+          "msg": "Ajusta el volumen.",
+          "ts": "23:21:50"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747710793,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747711793,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747712258,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-47",
+          "src": "BAXY",
+          "msg": "El volumen de los altavoces (Realtek(R) Audio) está en 100 y no está silenciado.",
+          "ts": "23:21:53",
+          "route": "result"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747713361,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747713361,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t23",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "reversed_mute",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 62,
+        "draft_sha256": "0c65f341201c1112ee9bebf6391c922b1d5a9f2261c7e30fcb34a71be1c56077",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El volumen está en 100 y los altavoces no están silenciados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t23",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 82,
+        "draft_sha256": "22b3528e434d009788beb4430f7523ee36c3af802767b431b80cb8e5749bd3f0",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El volumen de los altavoces (Realtek(R) Audio) está en 100 y no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 47,
+      "userMessageCount": 23,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Déjalo al 80%.",
+    "injection": "none",
+    "turnId": "t24",
+    "terminal": "published_final",
+    "final": "¿Te refieres al 80% de la tarea o al 80% del tiempo de ejecución?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t24",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-48",
+          "src": "YOU",
+          "msg": "Déjalo al 80%.",
+          "ts": "23:21:53"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747713412,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747714414,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-49",
+          "src": "BAXY",
+          "msg": "¿Te refieres al 80% de la tarea o al 80% del tiempo de ejecución?",
+          "ts": "23:21:56",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747716378,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t24",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 67,
+        "draft_sha256": "4b2b1d7bea8b895d0ab256435edad6d813c9d99a1629d36066524e3b970a916d",
+        "payload": {
+          "kind": "clarification",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"clarification\",\"polarity\":\"pending\",\"cause\":\"ambiguous_request\"}",
+        "draft": "¿Te refieres al 80% de la tarea o al 80% del tiempo de ejecución?"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 49,
+      "userMessageCount": 24,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿A qué volumen está?",
+    "injection": "none",
+    "turnId": "t25",
+    "terminal": "published_final",
+    "final": "Está en volumen 100. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t25",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-50",
+          "src": "YOU",
+          "msg": "¿A qué volumen está?",
+          "ts": "23:21:56"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747716430,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747716430,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747716472,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-51",
+          "src": "BAXY",
+          "msg": "Está en volumen 100. El sonido no está silenciado.",
+          "ts": "23:21:56",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747716971,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t25",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "391d4bd028737f3d61ecb6a6777fcda31dabbc26e7566917574d166dca971536",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "Está en volumen 100. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 51,
+      "userMessageCount": 25,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Set the volume.",
+    "injection": "none",
+    "turnId": "t26",
+    "terminal": "published_final",
+    "final": "How much and in which direction should the volume be adjusted?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t26",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-52",
+          "src": "YOU",
+          "msg": "Set the volume.",
+          "ts": "23:21:57"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747717023,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747718025,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-53",
+          "src": "BAXY",
+          "msg": "How much and in which direction should the volume be adjusted?",
+          "ts": "23:21:59",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747719260,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 53,
+      "userMessageCount": 26,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Set it to 60%.",
+    "injection": "none",
+    "turnId": "t27",
+    "terminal": "published_final",
+    "final": "The volume is set to 60%, and sound is not silenced.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t27",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-54",
+          "src": "YOU",
+          "msg": "Set it to 60%.",
+          "ts": "23:21:59"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747719312,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747719312,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747720313,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747722097,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-55",
+          "src": "BAXY",
+          "msg": "The volume is set to 60%, and sound is not silenced.",
+          "ts": "23:22:03",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747723056,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t27",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "effect",
+          "seen"
+        ],
+        "reason": "imperative_echo",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 42,
+        "draft_sha256": "1f497575dfcff0efc56140b4f126d106629a6d880306824e25c893ebf5e27fcf",
+        "payload": {
+          "effect": "applied",
+          "seen": {
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false,
+            "muted": false,
+            "level": 60
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":100,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "Set the volume to 60%. Sound is not muted."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t27",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "effect",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 52,
+        "draft_sha256": "10bb1599904b2944fff9ca89eff91ceca6ca756bdf2b3c8c0168884aa6be775b",
+        "payload": {
+          "effect": "applied",
+          "seen": {
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false,
+            "muted": false,
+            "level": 60
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":100,\"muted\":false},\"final\":{\"volumePercent\":60,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "The volume is set to 60%, and sound is not silenced."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 55,
+      "userMessageCount": 27,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What is the volume?",
+    "injection": "none",
+    "turnId": "t28",
+    "terminal": "published_final",
+    "final": "The volume is 60. Sound is not silenced.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t28",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-56",
+          "src": "YOU",
+          "msg": "What is the volume?",
+          "ts": "23:22:03"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747723108,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747723153,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-57",
+          "src": "BAXY",
+          "msg": "The volume is 60. Sound is not silenced.",
+          "ts": "23:22:03",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747723610,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t28",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 40,
+        "draft_sha256": "1cb6aa407058f1ec5ec03a785028c2e9b2bec4ed14c35bf94381b5c1c010014a",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 60
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":60,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "The volume is 60. Sound is not silenced."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 57,
+      "userMessageCount": 28,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Set the volume, por favor.",
+    "injection": "none",
+    "turnId": "t29",
+    "terminal": "published_final",
+    "final": "What level should the volume be set to?",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t29",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-58",
+          "src": "YOU",
+          "msg": "Set the volume, por favor.",
+          "ts": "23:22:03"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747723661,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747725662,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-59",
+          "src": "BAXY",
+          "msg": "What level should the volume be set to?",
+          "ts": "23:22:05",
+          "route": "clarification"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747725689,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 59,
+      "userMessageCount": 29,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "Esperando tu aclaración",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Al 40%, please.",
+    "injection": "none",
+    "turnId": "t30",
+    "terminal": "published_final",
+    "final": "El volumen se bajó al 40%. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t30",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-60",
+          "src": "YOU",
+          "msg": "Al 40%, please.",
+          "ts": "23:22:05"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "awaiting_reply",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747725740,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747725740,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747726741,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747727742,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747729297,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-61",
+          "src": "BAXY",
+          "msg": "El volumen se bajó al 40%. El sonido no está silenciado.",
+          "ts": "23:22:09",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747729896,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t30",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "effect",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 58,
+        "draft_sha256": "b2bb93d616054dea6aea2429b3ce0cf7d3ce84f4db8e654608b30d681a44e2ac",
+        "payload": {
+          "effect": "applied",
+          "seen": {
+            "baseline": {
+              "volumePercent": 60,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 40,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false,
+            "muted": false,
+            "level": 40
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":60,\"muted\":false},\"final\":{\"volumePercent\":40,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "El volumen se bajó al 40%. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 61,
+      "userMessageCount": 30,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Cómo está el audio?",
+    "injection": "none",
+    "turnId": "t31",
+    "terminal": "published_final",
+    "final": "El audio está activo, el volumen es de 40.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t31",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-62",
+          "src": "YOU",
+          "msg": "¿Cómo está el audio?",
+          "ts": "23:22:09"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747729949,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747730088,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-63",
+          "src": "BAXY",
+          "msg": "El audio está activo, el volumen es de 40.",
+          "ts": "23:22:10",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747730553,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t31",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 43,
+        "draft_sha256": "f53538a1345a7b0bda40a1ccafdba0bc31e6e8fb667dcca13a275f3399a05838",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 40
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":40,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El audio está activo, el volumen es de 40."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 63,
+      "userMessageCount": 31,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Pon el volumen al 100%.",
+    "injection": "none",
+    "turnId": "t32",
+    "terminal": "published_final",
+    "final": "Puse el volumen al 100%. El sonido no está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t32",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-64",
+          "src": "YOU",
+          "msg": "Pon el volumen al 100%.",
+          "ts": "23:22:10"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747730604,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747730794,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-65",
+          "src": "BAXY",
+          "msg": "Puse el volumen al 100%. El sonido no está silenciado.",
+          "ts": "23:22:11",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747731412,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t32",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "effect",
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "01ab817314047a94967304672917c575d26077bab8c2576e0a8d389af32ae654",
+        "payload": {
+          "effect": "applied",
+          "seen": {
+            "baseline": {
+              "volumePercent": 40,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "applied": true,
+            "reconciled": false,
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.volume\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.volume\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"baseline\":{\"volumePercent\":40,\"muted\":false},\"final\":{\"volumePercent\":100,\"muted\":false},\"applied\":true,\"reconciled\":false}}",
+        "draft": "Puse el volumen al 100%. El sonido no está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 65,
+      "userMessageCount": 32,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Cómo está el audio?",
+    "injection": "none",
+    "turnId": "t33",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t33",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-66",
+          "src": "YOU",
+          "msg": "¿Cómo está el audio?",
+          "ts": "23:22:11"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747731464,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747731497,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-67",
+          "src": "BAXY",
+          "msg": "El audio está activo y el volumen está en 100.",
+          "ts": "23:22:11",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747731991,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t33",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 48,
+        "draft_sha256": "83903c6e89f5326c715c1ca7ddfcbef9f039dfd858faef22e944e895c2eb696e",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El audio está activo y el volumen está en 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 67,
+      "userMessageCount": 33,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Qué hora es?",
+    "injection": "reject",
+    "turnId": "t34",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t34",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-68",
+          "src": "YOU",
+          "msg": "¿Qué hora es?",
+          "ts": "23:22:12"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747732042,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747732057,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747732156,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747732157,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "unsafe_language;recovery:unsafe_language;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": true
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-69",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "23:22:15",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 68,
+      "userMessageCount": 34,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "unsafe_language;recovery:unsafe_language;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Qué hora es?",
+    "injection": "none",
+    "turnId": "t35",
+    "terminal": "published_final",
+    "final": "Son las 23:22.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t35",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-70",
+          "src": "YOU",
+          "msg": "¿Qué hora es?",
+          "ts": "23:22:15"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735179,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735193,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-71",
+          "src": "BAXY",
+          "msg": "Son las 23:22.",
+          "ts": "23:22:15",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735530,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t35",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "97b3c8b4069f8ebc377ecdcb3e23f53116131d8f3b1ac2aa55a5ba5d0c10f5e0",
+        "payload": {
+          "clock": "23:22"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:22:15.2379481+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 23:22."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 70,
+      "userMessageCount": 35,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "timeout",
+    "turnId": "t36",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t36",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-72",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "23:22:15"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735582,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735599,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735697,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747735697,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "composer_request_failed;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": true
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-73",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "23:22:18",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 71,
+      "userMessageCount": 36,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "composer_request_failed;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it?",
+    "injection": "none",
+    "turnId": "t37",
+    "terminal": "published_final",
+    "final": "It's 23:22.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t37",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-74",
+          "src": "YOU",
+          "msg": "What time is it?",
+          "ts": "23:22:18"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747738723,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747738737,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-75",
+          "src": "BAXY",
+          "msg": "It's 23:22.",
+          "ts": "23:22:19",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747739241,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t37",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "9f1bfb56cb157b63815742ce29b35a08a4ba1a95fd61d7b122f535cc2e948800",
+        "payload": {
+          "clock": "23:22"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:22:18.9136459+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 23:22."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 73,
+      "userMessageCount": 37,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora, please.",
+    "injection": "exhaust",
+    "turnId": "t38",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t38",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-76",
+          "src": "YOU",
+          "msg": "Dime la hora, please.",
+          "ts": "23:22:19"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747739292,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747739309,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747739395,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747739395,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "no_response;recovery:no_response;retry_exhausted",
+        "controlsUsable": true,
+        "route": "result",
+        "injected": true
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-77",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "23:22:22",
+          "route": "result"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 74,
+      "userMessageCount": 38,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora, please.",
+    "injection": "none",
+    "turnId": "t39",
+    "terminal": "published_final",
+    "final": "Son las 23:22.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t39",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-78",
+          "src": "YOU",
+          "msg": "Dime la hora, please.",
+          "ts": "23:22:22"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747742429,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747742443,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-79",
+          "src": "BAXY",
+          "msg": "Son las 23:22.",
+          "ts": "23:22:22",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788747742803,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t39",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "97b3c8b4069f8ebc377ecdcb3e23f53116131d8f3b1ac2aa55a5ba5d0c10f5e0",
+        "payload": {
+          "clock": "23:22"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T02:22:22.4904675+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 23:22."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 76,
+      "userMessageCount": 39,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

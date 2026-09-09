@@ -1,0 +1,13 @@
+{
+  "fixtureSha256": "8D4114109469EDFD28BEB9A611E1A89A0A6DB1CCBA42FFD6D6D98E30A010BAE8",
+  "fixture": "D:\\Perfil\\Escritorio\\C03-Prueba-Respuesta-20260906.txt",
+  "purpose": "Same filename regression after correcting false credential detection. Development only.",
+  "expected": [
+    "Exact confirmation of named file; original request retained",
+    "Cancellation, file intact, no pending mission",
+    "Lima without pending state"
+  ],
+  "appHash": "6471934433FCBDCDF18803289E4FFA80849CB286807F19D9FD7B24304A26BF51",
+  "llmHash": "C3259EEC8A93179A7E305F3A05CA542F294D5F0FF49D23C3240A8BAE6ECE20BC",
+  "memorySourceHash": "A6237295E48D914850D5529186213BDC7A2BCE69AFEBB6FF38CAFAB6CEE98934"
+}

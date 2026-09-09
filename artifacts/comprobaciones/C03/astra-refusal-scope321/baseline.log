@@ -1,0 +1,40 @@
+FFFFFF.....                                                              [100%]
+================================== FAILURES ===================================
+_ test_person_reference_negation_does_not_invent_a_product_limit[nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo] _
+tests\test_request_reading.py:565: in test_person_reference_negation_does_not_invent_a_product_limit
+    assert "refuse" not in reading.intents
+E   AssertionError: assert 'refuse' not in frozenset({'identity', 'knowledge', 'refuse'})
+E    +  where frozenset({'identity', 'knowledge', 'refuse'}) = RequestReading(text='nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo', language='es', greetin...yo, no tu, dime quien eres tu y quien soy yo', intents=frozenset({'refuse', 'identity', 'knowledge'}), evidence=(5, 0)).intents
+_ test_person_reference_negation_does_not_invent_a_product_limit[No t\xfa, dime qui\xe9n soy yo.] _
+tests\test_request_reading.py:565: in test_person_reference_negation_does_not_invent_a_product_limit
+    assert "refuse" not in reading.intents
+E   AssertionError: assert 'refuse' not in frozenset({'refuse'})
+E    +  where frozenset({'refuse'}) = RequestReading(text='No t�, dime qui�n soy yo.', language='es', greeting='none', ask='No t�, dime qui�n soy yo.', intents=frozenset({'refuse'}), evidence=(5, 0)).intents
+_ test_person_reference_negation_does_not_invent_a_product_limit[Not you, tell me who I am.] _
+tests\test_request_reading.py:565: in test_person_reference_negation_does_not_invent_a_product_limit
+    assert "refuse" not in reading.intents
+E   AssertionError: assert 'refuse' not in frozenset({'refuse'})
+E    +  where frozenset({'refuse'}) = RequestReading(text='Not you, tell me who I am.', language='en', greeting='none', ask='Not you, tell me who I am.', intents=frozenset({'refuse'}), evidence=(0, 5)).intents
+_ test_person_reference_negation_does_not_invent_a_product_limit[Nunca te he dicho mi nombre, \xbfqui\xe9n soy?] _
+tests\test_request_reading.py:565: in test_person_reference_negation_does_not_invent_a_product_limit
+    assert "refuse" not in reading.intents
+E   AssertionError: assert 'refuse' not in frozenset({'refuse'})
+E    +  where frozenset({'refuse'}) = RequestReading(text='Nunca te he dicho mi nombre, �qui�n soy?', language='es', greeting='none', ask='Nunca te he dicho mi nombre, �qui�n soy?', intents=frozenset({'refuse'}), evidence=(6, 0)).intents
+_ test_person_reference_negation_does_not_invent_a_product_limit[No es tu nombre, es el m\xedo. \xbfQui\xe9n soy?] _
+tests\test_request_reading.py:565: in test_person_reference_negation_does_not_invent_a_product_limit
+    assert "refuse" not in reading.intents
+E   AssertionError: assert 'refuse' not in frozenset({'refuse'})
+E    +  where frozenset({'refuse'}) = RequestReading(text='No es tu nombre, es el m�o. �Qui�n soy?', language='es', greeting='none', ask='No es tu nombre, es el m�o. �Qui�n soy?', intents=frozenset({'refuse'}), evidence=(5, 0)).intents
+_ test_person_reference_negation_does_not_invent_a_product_limit[That is not your name. Who am I?] _
+tests\test_request_reading.py:565: in test_person_reference_negation_does_not_invent_a_product_limit
+    assert "refuse" not in reading.intents
+E   AssertionError: assert 'refuse' not in frozenset({'refuse'})
+E    +  where frozenset({'refuse'}) = RequestReading(text='That is not your name. Who am I?', language='en', greeting='none', ask='That is not your name. Who am I?', intents=frozenset({'refuse'}), evidence=(0, 6)).intents
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_person_reference_negation_does_not_invent_a_product_limit[nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo]
+FAILED tests/test_request_reading.py::test_person_reference_negation_does_not_invent_a_product_limit[No t\xfa, dime qui\xe9n soy yo.]
+FAILED tests/test_request_reading.py::test_person_reference_negation_does_not_invent_a_product_limit[Not you, tell me who I am.]
+FAILED tests/test_request_reading.py::test_person_reference_negation_does_not_invent_a_product_limit[Nunca te he dicho mi nombre, \xbfqui\xe9n soy?]
+FAILED tests/test_request_reading.py::test_person_reference_negation_does_not_invent_a_product_limit[No es tu nombre, es el m\xedo. \xbfQui\xe9n soy?]
+FAILED tests/test_request_reading.py::test_person_reference_negation_does_not_invent_a_product_limit[That is not your name. Who am I?]
+6 failed, 5 passed, 203 deselected in 1.33s

@@ -1,0 +1,7 @@
+# Qwen3.5-4B: mejor redacción, dos fallos de lectura pendientes
+
+33 salidas nativas por EOS. Greedy9/11 útiles; receta documentada8/11 en cada semilla0/17. Se conservaron el error, la decisión, la lectura, la hora y los dos controles de nombre del fallo437. El log acredita11 muestreos greedy y22 documentados. El perfil recomendado no garantiza mejor resultado: una muestra confirma un efecto antes del consentimiento y otra confunde replayed=false con reproducción de datos privados.
+
+El guardado y el progreso se expresan de manera útil con los tres perfiles. Pero la pregunta española de nombre almacenado se convierte en identidad del asistente, y la pregunta de capacidad produce negación de tener memoria. Ambos nacen ya en el modelo nativo. Los datos son lecturas resueltas por el flujo privado; la pregunta natural vuelve a inducir otra interpretación del sujeto o de la capacidad.525 comparará omitir sólo esa pregunta redundante del generador de esas lecturas, conservando datos, idioma y contratos. No modifica preguntas abiertas, decisiones, efectos ni la petición usada por el producto para elegir la operación.
+
+RAM1124,449MiB/GPU3174,539MiB16,469s sólo servidor. Sin violaciones y registro intacto. Sesión78100exit0; servidor terminado deliberadamente al acabar. No promoción, UI/voz ni aceptación fresca. El perfil greedy se considera por sus mediciones frente al recomendado, no por ser el default.

@@ -1,0 +1,40 @@
+{
+  "summary": [
+    {
+      "model": "qwen35-4b",
+      "backend": "b9980",
+      "useful": 6,
+      "total": 11,
+      "request_seconds": 5.078,
+      "max_completion_tokens": 26
+    },
+    {
+      "model": "qwen35-4b",
+      "backend": "b10809",
+      "useful": 6,
+      "total": 11,
+      "request_seconds": 4.734,
+      "max_completion_tokens": 26
+    },
+    {
+      "model": "gemma-published",
+      "backend": "b9980",
+      "useful": 9,
+      "total": 11,
+      "request_seconds": 3.61,
+      "max_completion_tokens": 52
+    },
+    {
+      "model": "gemma-published",
+      "backend": "b10809",
+      "useful": 8,
+      "total": 11,
+      "request_seconds": 4.156,
+      "max_completion_tokens": 66
+    }
+  ],
+  "decision": "No memory fix from backend alone. Do not promote or discard entire models.451 measures documented non-thinking profiles, two fixed seeds, including baseGemma and registered2507.",
+  "all_natural_stops": true,
+  "source_unchanged": true,
+  "runtime_promoted": false
+}

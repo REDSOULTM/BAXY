@@ -1,0 +1,114 @@
+[
+  {
+    "turn": 1,
+    "request": "My name is Jordan. Remember my name.",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": true,
+    "reason": "Confirma habilitación exacta; previamente explica fallo por memoria deshabilitada. No guardar sin esa confirmación."
+  },
+  {
+    "turn": 2,
+    "request": "confirm",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The memory has been saved successfully.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": true,
+    "reason": "Habilita y guarda el nombre autorizado; no basta esta frase para acreditar journal."
+  },
+  {
+    "turn": 3,
+    "request": "Abre una aplicación.",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿Qué aplicación deseas abrir?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": true,
+    "reason": "Pregunta por la aplicación, sin inventar destino."
+  },
+  {
+    "turn": 4,
+    "request": "What name have you saved in private memory?",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I saved the name Jordan in private memory.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": true,
+    "reason": "Recupera Jordan de memoria privada pese a aclaración pública pendiente."
+  },
+  {
+    "turn": 5,
+    "request": "Me llamo Álvaro.",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿Qué necesitas exactamente con tu PC?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": false,
+    "reason": "Pregunta qué necesita del PC en vez de responder a una presentación."
+  },
+  {
+    "turn": 6,
+    "request": "Abre una aplicación.",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿Quieres que abra la aplicación que tienes en mente?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": false,
+    "reason": "Pide permiso genérico en vez del nombre de aplicación; hereda aclaración T5."
+  },
+  {
+    "turn": 7,
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Mi nombre es Jordan.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": false,
+    "reason": "El dato Jordan es correcto, pero «Mi nombre» atribuye el nombre a BAXY."
+  },
+  {
+    "turn": 8,
+    "request": "¿Cómo me llamo?",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Tu nombre es Álvaro.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "useful_terminal": true,
+    "reason": "Nombre de la conversación Álvaro, distinto del persistido Jordan."
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "source": {
+    "src/baxy_mind/llm.py": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+    "tests/test_compose_contract.py": "97254c143c8250274eaaa1cd1a9bbaa79bdde26ef794b48dfa47d41bc711a8d1"
+  },
+  "files": {
+    "build-server-shutdown.log": "6abb8581d09e4d9de38fa7a70874e73f5f7bc04ce3aebf23bb7bb4981f2ebfdc",
+    "fast.log": "01b7c807926939c3fb666ffcb49c4f1e2896dfea656f58aeb905ec3abc4f3fe7",
+    "focused.log": "bff4ddd60bdc569a238b00ec5073ebc0577e7f1d20da106d2dd023e6bd1f4b85",
+    "owners.log": "f9e3188793175d86dbe23f704f7819ed769398a32678c288bb0daf841aea3850",
+    "PLAN.json": "383ff58620a665ddc7357c75480a4a28a62c1afd9988aeaf23ec4fd424f1aa00",
+    "RESULT.md": "266e7087a1198c096c2eb878b2c4bfd39b45eaf1a44aaed0382bf903c152137b"
+  }
+}

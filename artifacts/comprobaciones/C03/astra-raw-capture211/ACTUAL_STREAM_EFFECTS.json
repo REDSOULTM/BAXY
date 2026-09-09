@@ -1,0 +1,20 @@
+{
+  "default": [
+    {
+      "id": "6f64adbf-8211-11e2-8c70-2c27d7f001fa",
+      "state": 1,
+      "canSetState": false
+    },
+    {
+      "id": "6f64adc1-8211-11e2-8c70-2c27d7f001fa",
+      "state": 0,
+      "canSetState": false
+    },
+    {
+      "id": "6f64adbe-8211-11e2-8c70-2c27d7f001fa",
+      "state": 1,
+      "canSetState": false
+    }
+  ],
+  "raw": []
+}

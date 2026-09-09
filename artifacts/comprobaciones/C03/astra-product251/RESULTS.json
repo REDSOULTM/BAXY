@@ -1,0 +1,258 @@
+[
+  {
+    "case": "echo221",
+    "backend": "aec3-linear",
+    "human": null,
+    "referenceText": null,
+    "segments": [
+      {
+        "firstSample": 65024,
+        "lastSample": 81408,
+        "pcmSha256": "29f1e33e0b5405807023b5f0a2a1d9ecf546a47658d023def631949dcbc61221",
+        "text": "Hola."
+      }
+    ],
+    "cancellations": [
+      137
+    ],
+    "humanWindowText": null,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\echo221-aec3-linear.npz",
+    "sha256": "4b485118cf508f96e84f730e5c5a798a0390246c3bc5dea9276835e9c6e14296"
+  },
+  {
+    "case": "echo232",
+    "backend": "aec3-linear",
+    "human": null,
+    "referenceText": null,
+    "segments": [
+      {
+        "firstSample": 66048,
+        "lastSample": 83456,
+        "pcmSha256": "2ad6742568000087c9a50648748384b572466631f01869f394c84914d32cb480",
+        "text": "Tola."
+      },
+      {
+        "firstSample": 220672,
+        "lastSample": 241152,
+        "pcmSha256": "c140c713089c422629a2ccd6e89b7a7dee8438dc8f6120b84a5e722bc2a5462f",
+        "text": "S."
+      }
+    ],
+    "cancellations": [
+      441
+    ],
+    "humanWindowText": null,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\echo232-aec3-linear.npz",
+    "sha256": "8dde92fe4899fa8f199ab0dcb1649e4a716516b2c97b23b1ce1961be6ab23e1e"
+  },
+  {
+    "case": "h0-near",
+    "backend": "aec3-linear",
+    "human": 0,
+    "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "segments": [
+      {
+        "firstSample": 87552,
+        "lastSample": 261632,
+        "pcmSha256": "4df7a8e5ca9930c348408d4e55eee2fe08713f3b51f61f560ac51709decc6e04",
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h0-near-aec3-linear.npz",
+    "sha256": "7b8dcb40fdfb3aa88ff077a14146f665d3a2a5bb51b29d32391b33323d3fa6ac"
+  },
+  {
+    "case": "h0-raw",
+    "backend": "aec3-linear",
+    "human": 0,
+    "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "segments": [
+      {
+        "firstSample": 59392,
+        "lastSample": 261632,
+        "pcmSha256": "6273c44274b84898b6f686b1d2d2a947ea5fe60d900118bb5cfff1532f31ad66",
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje."
+      }
+    ],
+    "cancellations": [
+      182,
+      189,
+      193,
+      306,
+      319,
+      335,
+      348,
+      354,
+      367
+    ],
+    "humanWindowText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h0-raw-aec3-linear.npz",
+    "sha256": "2c61caf6a79d9e1db6d4a48cc6241300bb3bdfc32dc315760de503705c2a70d1"
+  },
+  {
+    "case": "h1-near",
+    "backend": "aec3-linear",
+    "human": 1,
+    "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "segments": [
+      {
+        "firstSample": 93184,
+        "lastSample": 212992,
+        "pcmSha256": "5d6eef5c7f18510eb5c0f5e0ac54f9f1e2283ac4f73665047ff32060a4f54edd",
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h1-near-aec3-linear.npz",
+    "sha256": "cdb44285699a422be625e54277c080bcd68ae0eacdeadcedf2432011dec820ad"
+  },
+  {
+    "case": "h1-raw",
+    "backend": "aec3-linear",
+    "human": 1,
+    "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "segments": [
+      {
+        "firstSample": 59392,
+        "lastSample": 212992,
+        "pcmSha256": "342b9132b5230460f6a1ebb9f0bbae076806caa566a655ce18cf30050fa417cd",
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro."
+      }
+    ],
+    "cancellations": [
+      192,
+      198,
+      306,
+      317,
+      333,
+      360,
+      365
+    ],
+    "humanWindowText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h1-raw-aec3-linear.npz",
+    "sha256": "4554e2fe9d63a802326bfde35d1c842bbd968b4bc60beb43c96903356eb9ce28"
+  },
+  {
+    "case": "h2-near",
+    "backend": "aec3-linear",
+    "human": 2,
+    "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "segments": [
+      {
+        "firstSample": 72192,
+        "lastSample": 210432,
+        "pcmSha256": "99231172833ff919009830b905fea305631930e173eb1b6d9c9225a97aaf0af1",
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h2-near-aec3-linear.npz",
+    "sha256": "6b7c204f0c5cb1d2546c018777fc1835de07d69cca729229821af8697c891cd3"
+  },
+  {
+    "case": "h2-raw",
+    "backend": "aec3-linear",
+    "human": 2,
+    "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "segments": [
+      {
+        "firstSample": 59904,
+        "lastSample": 129536,
+        "pcmSha256": "da9f8dce6a912aaf46d22c1d580527848f7b00cf05aac664a266f1a8083bd952",
+        "text": "D boxy."
+      },
+      {
+        "firstSample": 134656,
+        "lastSample": 210944,
+        "pcmSha256": "b464ab16b3d1332d1bd3e75ac6cf71e1af8e785651f55cbad5115c345e253bba",
+        "text": "in the West could lag behind by twenty five to thirty years."
+      }
+    ],
+    "cancellations": [
+      151,
+      160,
+      189,
+      202,
+      357
+    ],
+    "humanWindowText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h2-raw-aec3-linear.npz",
+    "sha256": "5d2cd781ab9cc7d217b5cf5486cfb6b7bacef43c3ee16e674593ffbcd88769e0"
+  },
+  {
+    "case": "h3-near",
+    "backend": "aec3-linear",
+    "human": 3,
+    "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "segments": [
+      {
+        "firstSample": 65024,
+        "lastSample": 202240,
+        "pcmSha256": "71b1e214c4732407d01cf7c31760024848897e0b4781ce85c2ff1712f83e8185",
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h3-near-aec3-linear.npz",
+    "sha256": "eecd1640f31f2ad42d25f46d5c34a83b13d975c787c0875d9d5c5ae4172ab169"
+  },
+  {
+    "case": "h3-raw",
+    "backend": "aec3-linear",
+    "human": 3,
+    "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "segments": [
+      {
+        "firstSample": 59392,
+        "lastSample": 201216,
+        "pcmSha256": "d1492ad00a059d8beb40183218a19718c1ca7b3a0dffdc7d9c1123d70838543d",
+        "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence."
+      }
+    ],
+    "cancellations": [
+      137,
+      160,
+      169,
+      176,
+      196,
+      312,
+      344,
+      365
+    ],
+    "humanWindowText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\h3-raw-aec3-linear.npz",
+    "sha256": "cde878d966724c0fa45f5d569957dcfc1f84dec240c2cb07796f7b5c29fa7587"
+  },
+  {
+    "case": "echo243",
+    "backend": "aec3-linear",
+    "human": null,
+    "referenceText": null,
+    "segments": [
+      {
+        "firstSample": 68096,
+        "lastSample": 87040,
+        "pcmSha256": "2cccee2a7bfc85749b574cd9934447f05acbec6304441da6922a4ab8be24b154",
+        "text": "Dola."
+      },
+      {
+        "firstSample": 223744,
+        "lastSample": 265728,
+        "pcmSha256": "36d656ca7ab296f2c8be63d4dac217d7393c579561df9bae43df1d61e23eb6db",
+        "text": "Son las 105."
+      }
+    ],
+    "cancellations": [
+      143,
+      447
+    ],
+    "humanWindowText": null,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product251-private\\echo243-aec3-linear.npz",
+    "sha256": "fca954ec826bc4213213c0d8f5ebce99550127e351701cb77609a8a7d6e057e3"
+  }
+]

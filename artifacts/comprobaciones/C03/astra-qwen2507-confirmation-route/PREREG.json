@@ -1,0 +1,33 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T10:32:09.912529+00:00",
+  "hypothesis": "Exercise real app.close confirmation (WorkLoss/Sensitive in the catalog) after opening Calculator. Cancel instead of confirming in ES and EN; read-only queries verify continuation. No request to send external messages or power off. Original product guards/prompts.",
+  "expected": "Verified calculator open, exact close confirmation in the requested language, honest cancellation and useful subsequent queries. Record effects rather than infer confirmation from a cancel acknowledgement.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "03d23cbf7ca2af7d05f88dcd42db6ae4bf2d329025769bf244fd1a7fb814d088",
+    "src/baxy_mind/__main__.py": "92df02b84fbda9aac8047b38a0ceca3caec0b8052eae1ab0e0fd8fa16ac4cbf9",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "b689bb910cfd7db689ce43d06432beb871ad76495d4d552c62c46c4fff14b9e1",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "9a93d81926d4f817218d6340814021b2b4a0084078cba3b0f62dea8f13619f66",
+    "artifacts/comprobaciones/C03/astra-qwen2507-confirmation-route.turns.jsonl": "74baefbe38f8dfeaaa055643bb5df56a8cae8cbe1972b900b9e6366ec2a926c8",
+    "artifacts/comprobaciones/C03/astra-qwen2507-confirmation-route/profile/sitecustomize.py": "d79a623fc840df945d46f2f02a893bed9705f2b245f33be66462a7d7d50ab934",
+    "scratchpad/c03-qwen2507-confirmation-route.py": "c1c7b609358c2446c212c8b526cdf0a6d58f996f5b2fa394ba44b693b3c88241"
+  }
+}

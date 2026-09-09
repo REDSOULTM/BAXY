@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_compose_contract.py _______________
+tests/test_compose_contract.py::test_composed_identity_preserves_the_observed_account: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR tests/test_compose_contract.py - Failed: tests/test_compose_contract.py...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.54s

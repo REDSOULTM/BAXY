@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-08T23:44:31.835503+00:00",
+  "cases": [
+    "My name is Jordan. Remember my name.",
+    "confirm",
+    "Abre una aplicación.",
+    "What name have you saved in private memory?",
+    "Me llamo Álvaro.",
+    "Abre una aplicación.",
+    "¿Qué nombre tienes guardado en tu memoria privada?",
+    "¿Cómo me llamo?",
+    "Desactiva la memoria privada."
+  ],
+  "method": "Two new isolated product profiles, baseline then filtered writer view, same source512/current registered Qwen2507Q4/b9980/profile. Same eight514 inputs plus a real disable control. Only treatment changes the model-facing situation line for completed private enable/disable/save/sensitive.save/correct: omit redundant state when seen exists, and omit corrected/sensitive/replayed only when exactlyfalse. Keep enabled=false and all true flags. Raw facts, caller payload, validators, operation, outcome, user request and all other messages remain intact. No visible reply editing. Actual isolated synthetic persistence, no owner data, UI or physical voice.",
+  "causal_scope": "Inspect original and effective targeted payloads and all downstream responses. Later dialogue may legitimately differ after changed narration; do not claim every downstream payload is identical. No sampler/backend/model promotion, no name-specific treatment.",
+  "controls": "Private recall, clarification, current-name vs stored-name, explicit confirmation and disabling memory must remain truthful. A new input is synthetic development, not reserve. A successful control does not prove all sensitive/correction/replay paths; true-flag and protected-value checks remain required before source adoption.",
+  "limits": "GPU3800MiB stop/freeRAM768MiB/240s per scenario; stop only owned process tree. Source unchanged during both runs."
+}

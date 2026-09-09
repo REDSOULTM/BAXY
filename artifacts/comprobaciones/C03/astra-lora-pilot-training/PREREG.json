@@ -1,0 +1,34 @@
+{
+  "kind": "development-QLoRA-pilot-not-product-acceptance",
+  "epochs": 2,
+  "microBatch": 1,
+  "accumulation": 4,
+  "sequenceMaximum": 512,
+  "rank": 8,
+  "alpha": 16,
+  "targets": [
+    "q_proj",
+    "v_proj"
+  ],
+  "learningRate": 0.0002,
+  "seed": 13,
+  "memoryLimitMiB": 4096,
+  "allocatorFraction": 0.55,
+  "quantization": "NF4 double,bfloat16 compute",
+  "loss": "Native final assistant answer only; request/facts/padding have no target loss. No truncation.",
+  "evaluation": "After training, compare base and adapter on frozen HOLDOUT plus existing nine-case development probe. No promotion unless materially improves useful faithful language and preserves pure ES/EN. All product routes remain unproven.",
+  "hashes": {
+    "TRAIN.jsonl": "5675fae305364fe7d944f5f263d6dd6ee8328ff5738a14050c689d67a0cfbe3b",
+    "HOLDOUT.jsonl": "62436f17ff9599bc4c31fc0a89ab853a69ada137e9a0b319ac57606e981abc6b",
+    "MANIFEST.json": "e4ad1ca006d426715cc447ad7776dc70ef8e74c9505a5734d111b38512a2a246"
+  },
+  "scriptSha256": "d31f756fac1ff6a05309965df0233aab87cd41525a31caf5fe24d686efc209e3",
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "4.57.1",
+    "peft": "0.18.1",
+    "bitsandbytes": "0.49.2",
+    "accelerate": "1.12.0",
+    "pywin32": "311"
+  }
+}

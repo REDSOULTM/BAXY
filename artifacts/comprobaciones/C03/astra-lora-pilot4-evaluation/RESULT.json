@@ -1,0 +1,16 @@
+[
+  {
+    "variant": "pilot3",
+    "elapsedSeconds": 40.33,
+    "gpuPeakMiB": 3521.55859375,
+    "ramPeakMiB": 3246.0546875,
+    "error": null
+  },
+  {
+    "variant": "pilot4",
+    "elapsedSeconds": 46.08,
+    "gpuPeakMiB": 3521.55859375,
+    "ramPeakMiB": 3246.16796875,
+    "error": null
+  }
+]

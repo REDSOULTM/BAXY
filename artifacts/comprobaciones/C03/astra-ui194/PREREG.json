@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-07T16:02:00.948757+00:00",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "method": "Actual py main.py and current192 App UI, existing registered runtime with Qwen3.5 override. External sitecustomize injects explicit wake/uncertain events only on command. Third case injects a technical voice.transcript while feedback composer is active and delays that diagnostic invocation0.5s. No authored response injection. Actual shared queue/policy/publication; observe UI via Computer Use.",
+  "limitations": "Synthetic events and technical transcript are not human voice or fresh reserve. Existing unapproved wake seam not accepted. Endpoint volume remains as found; no acoustic/output claim. Speex remains product AEC, no DTLN binding.",
+  "cases": [
+    "wake",
+    "uncertain",
+    "supersede with ¿Qué hora es?"
+  ],
+  "sourceFiles": {
+    "src/Baxy.App/MainWindowViewModel.cs": "16182b316a851feb3fc751bf0979b76eecbd4208a1c91d68bbbb6b45e698bff9",
+    "src/Baxy.App/TurnVisibleFacts.cs": "a5173eeba8db6884e37ddc33ed8934354fcf049951fe14faaf560bdd8be078e7",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "4dcef3872f842a02c8b5deb0aa48114311d92772e5bb0afb971b878500ab10a8",
+    "src/Baxy.App/ModelMessageComposer.cs": "886dfde3d3c89d467328934e68454a8b8dd5c5099f30994870acdb3a339bbc8b",
+    "src/baxy_mind/voice.py": "034e05dc7efcf984bd51248314715d51cc52acc9fea3ec401f369ede87a652ac",
+    "src/baxy_mind/llm.py": "79ea1c186830da43bd94cd459e11811f7f881992e2308fb048a7991b23fd8b17",
+    "src/baxy_mind/__main__.py": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+    "scratchpad/c03-ui194-hook/sitecustomize.py": "61c4c3d9262b5fbc5406c5b4d4dcfe3fe08f673c8c9dff4070e4e53ea795dbcd"
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

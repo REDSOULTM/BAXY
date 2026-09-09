@@ -1,0 +1,7 @@
+{"turnId": "t8", "variant": "isolated", "seconds": 1.312}
+{"turnId": "t9", "variant": "isolated", "seconds": 1.422}
+{"turnId": "t10", "variant": "isolated", "seconds": 1.656}
+{"turnId": "t13", "variant": "isolated", "seconds": 0.688}
+{"turnId": "t14", "variant": "isolated", "seconds": 1.453}
+{"turnId": "t15", "variant": "isolated", "seconds": 1.453}
+{"elapsedSeconds": 11.03, "gpuPeakMiB": 3497.55859375, "ramPeakMiB": 2820.75390625}

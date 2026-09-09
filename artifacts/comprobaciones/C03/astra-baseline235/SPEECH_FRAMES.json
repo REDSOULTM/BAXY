@@ -1,0 +1,222 @@
+[
+  {
+    "frame": 132,
+    "time": 103476.812,
+    "probability": 0.6044254302978516,
+    "energy": 0.014935343526303768,
+    "speaking": true,
+    "echo": true,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 133,
+    "time": 103476.843,
+    "probability": 0.6353886723518372,
+    "energy": 0.008772404864430428,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 134,
+    "time": 103476.875,
+    "probability": 0.5807844996452332,
+    "energy": 0.011653117835521698,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 135,
+    "time": 103476.906,
+    "probability": 0.5568716526031494,
+    "energy": 0.009268543682992458,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 136,
+    "time": 103476.937,
+    "probability": 0.7098451852798462,
+    "energy": 0.005805230233818293,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 137,
+    "time": 103476.968,
+    "probability": 0.773613691329956,
+    "energy": 0.005481401924043894,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 138,
+    "time": 103477.0,
+    "probability": 0.780075192451477,
+    "energy": 0.01174218114465475,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 139,
+    "time": 103477.031,
+    "probability": 0.8462021350860596,
+    "energy": 0.0040809535421431065,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 140,
+    "time": 103477.062,
+    "probability": 0.7943300008773804,
+    "energy": 0.001679179142229259,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 141,
+    "time": 103477.093,
+    "probability": 0.7363778352737427,
+    "energy": 0.0009674545144662261,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 142,
+    "time": 103477.125,
+    "probability": 0.6133115291595459,
+    "energy": 0.0006896364502608776,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 439,
+    "time": 103486.64,
+    "probability": 0.7982531785964966,
+    "energy": 0.002666627522557974,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 440,
+    "time": 103486.671,
+    "probability": 0.9361575841903687,
+    "energy": 0.004541458562016487,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 441,
+    "time": 103486.703,
+    "probability": 0.9842379093170166,
+    "energy": 0.01019125897437334,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 442,
+    "time": 103486.734,
+    "probability": 0.9865297079086304,
+    "energy": 0.007097391411662102,
+    "speaking": true,
+    "echo": false,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": false
+  },
+  {
+    "frame": 443,
+    "time": 103486.765,
+    "probability": 0.9936115741729736,
+    "energy": 0.002433484187349677,
+    "speaking": true,
+    "echo": true,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 444,
+    "time": 103486.796,
+    "probability": 0.988048791885376,
+    "energy": 0.0018979053711518645,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 445,
+    "time": 103486.828,
+    "probability": 0.9889285564422607,
+    "energy": 0.0032552534248679876,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 446,
+    "time": 103486.859,
+    "probability": 0.9625098705291748,
+    "energy": 0.0013447782257571816,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 447,
+    "time": 103486.89,
+    "probability": 0.9191865921020508,
+    "energy": 0.0006850143545307219,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 448,
+    "time": 103486.921,
+    "probability": 0.843293309211731,
+    "energy": 0.0006014593527652323,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  },
+  {
+    "frame": 449,
+    "time": 103486.953,
+    "probability": 0.6916928291320801,
+    "energy": 0.0004407729720696807,
+    "speaking": false,
+    "echo": null,
+    "bargeEnergyThreshold": 0.004,
+    "belowBargeEnergy": true
+  }
+]

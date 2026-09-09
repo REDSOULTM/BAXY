@@ -1,0 +1,12 @@
+{
+  "hypothesis": "Implicit personal context is not a persistence request. MainWindowViewModel's AskToSave early return consumes the entire input, including a requested greeting, before semantic conversation.",
+  "change": "Continue through the existing semantic turn boundary for AskToSave. Keep the parser outcome and MustNotPersist, explicit memory routes and sensitive handling. No new conversational service or persistent write path.",
+  "authorization_boundaries": [
+    "MainWindowViewModel.TryExecuteMindOperationAsync already rejects every memory.* selection lacking the explicit parser route.",
+    "MissionPlanValidator.Validate rejects memory.* plan steps; MindPlanBoundary calls it before execution.",
+    "MemoryOperationProtection is encryption/proof, not the reason this proposal is safe."
+  ],
+  "criteria": "Three unchanged development requests reach the original conversation boundary and publish injected model prose; no Core journal append and empty outbox. Adversarial memory.save selection must be rejected without append. Parser/shell/plan owner suites green, then native product comparison before claiming usefulness.",
+  "test_correction": "Initial baseline failed because the journal is held exclusively by Core. Use append-only journal file length (metadata) before/after rather than opening its contents. Preserve initial log; it is not evidence of the product defect.",
+  "inheritance": "Carter_v2 LLM_CONTEXT_MEMORY_REPORT.md distinguishes recent dialogue from confirmed persistent memory; existing BAXY explicit-memory and plan rejection boundaries inspected in source. No need to reconstruct encryption or introduce new consent authority."
+}

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-08T14:56:23.096945+00:00",
+  "hypothesis": "The existing explicit incomplete-request contract lacks a generic application object. Extend its app.open branch with a whole-request grammar using the existing opener/envelope and generic app nouns. Reuse ClarificationIntent(application), the existing model-authored question, and pending clarification. Do not widen the appId domain guard, approve guessed targets, introduce another classifier or fixed prose.",
+  "baseline": "Product426 T3 permission question and T6 false unsupported; both begin with native app.open then lose it at domain_grounding because appId is absent.",
+  "inheritance": "Current effect_intent.resolve_explicit_clarification_intent already handles missing volume/calendar/message fields and app.open window/default-browser ambiguity. __main__._prepare_turn_result already asks before retrieval/effect dispatch. Historical gemma4-agent slot_filling.md describes model questions plus platform-specific continuation: preserve asking for missing information, do not restore brand/TTL heuristics.",
+  "primary_sources": [
+    {
+      "url": "https://legacy-docs-oss.rasa.com/docs/rasa/forms/",
+      "scope": "Legacy OSS reference for requesting unfilled required slots; not a proposal to add Rasa or fixed utterances."
+    },
+    {
+      "url": "https://json-schema.org/understanding-json-schema/reference/object#required",
+      "scope": "Required-field validity is distinct from capability availability. No schema changes."
+    }
+  ],
+  "criteria": "ES/EN/natural mix and polite wrappers with only generic app object ask which app with no effect. Named installed/uninstalled targets, questions, negation, hypothetical, external device and appended commands must not be consumed by this grammar. Preserve pending private precedence. Product replay426 after owner/Fast validation, same eight turns individually judged. Synthetic development only.",
+  "validation": "Failing owner regressions before source; focused then effect_intent/turn_policy/current_catalog_review/catalog_operation_aliases owners and Fast. No Full during repair.",
+  "sources_before": {
+    "src/baxy_mind/effect_intent.py": "1f1ed36ee906c2c09919998bb5eb2ec1c5d8fac9535c011c85a9e42a37fe766e",
+    "src/baxy_mind/__main__.py": "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3",
+    "src/baxy_mind/llm.py": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+    "tests/test_effect_intent.py": "5bbed0ed89eb71dba72d744ced823795f58ec99178e5e933e6f206cc2c351bf9",
+    "tests/test_turn_policy.py": "2a26636d81d3ecfed6a102c58144f0594925df06c646a41d3a335456c22ee2e9"
+  }
+}

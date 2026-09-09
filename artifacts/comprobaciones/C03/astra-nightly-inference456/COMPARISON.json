@@ -1,0 +1,398 @@
+[
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "actual437-t7",
+    "old": "Mi nombre es Jordan.",
+    "new": "Mi nombre es Jordan.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "actual437-t4",
+    "old": "I saved the name Jordan in private memory.",
+    "new": "I saved the name Jordan in private memory.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "name-marta",
+    "old": "Mi nombre es Marta.",
+    "new": "Mi nombre es Marta.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "compound-name",
+    "old": "Mi nombre guardado es Ana María.",
+    "new": "Mi nombre guardado es Ana María.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "third-person",
+    "old": "Tu hermana se llama Nina.",
+    "new": "Tu hermana se llama Nina.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "two-records",
+    "old": "Tengo guardados dos nombres en mi memoria: Jordan y Nina.",
+    "new": "Tengo guardados dos nombres en mi memoria: Jordan y Nina.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "memory.enable",
+    "old": "Memory configuration enabled.",
+    "new": "The memory configuration has been enabled.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "memory.save",
+    "old": "The memory has been saved successfully.",
+    "new": "The memory has been saved successfully.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "redacted-es",
+    "old": "No tengo acceso a tu memoria privada. Lo que aparece en el registro está marcado como \"[REDACTED]\".",
+    "new": "No tengo acceso a tu memoria privada. Lo que aparece en el registro está marcado como \"[REDACTED]\".",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "redacted-en",
+    "old": "Private memory contains a single record labeled \"secret,\" with its value redacted.",
+    "new": "Private memory contains a secret record, though its specific value is redacted.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "greedy",
+    "seed": null,
+    "id": "mixed-es",
+    "old": "En mi memoria privada tengo guardado que mi color favorito es el turquesa y un secreto que está redactado.",
+    "new": "Tengo guardado que mi color favorito es el turquesa. Lo demás está redactado.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "actual437-t7",
+    "old": "Me llaman Jordan.",
+    "new": "Me llamo Jordan.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "actual437-t4",
+    "old": "The name saved in private memory is Jordan.",
+    "new": "The name saved in private memory is Jordan.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "name-marta",
+    "old": "Me llaman Marta.",
+    "new": "Me llaman BAXY.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "compound-name",
+    "old": "Mi nombre es Ana María.",
+    "new": "Mi nombre es Ana María.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "third-person",
+    "old": "Mi hermana se llama Nina.",
+    "new": "Mi hermana se llama Nina.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "two-records",
+    "old": "Guardo dos nombres en mi memoria privada: Jordan y Nina.",
+    "new": "Guardo dos nombres en mi memoria privada: Jordan y Nina.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "memory.enable",
+    "old": "The memory feature has been enabled successfully.",
+    "new": "Memory visibility has been enabled.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "memory.save",
+    "old": "The memory save operation completed successfully.",
+    "new": "The memory save operation completed successfully.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "redacted-es",
+    "old": "No tengo recuerdos privados accesibles para ti; lo que aparece en esa lista está marcado como confidencial y ha sido redactado.",
+    "new": "En la memoria privada tengo un registro marcado como \"secret\" cuyo valor está redactado.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "redacted-en",
+    "old": "Private memory stores personal data and experiences that are kept hidden from others, including secrets and private thoughts. In this specific instance, the system has recalled one record labeled \"secret,\" but its content is redacted for privacy reasons.",
+    "new": "Private memory stores personal data and experiences that are kept hidden from others, including secrets and private thoughts. In this specific instance, the system attempted to recall a secret record, but its content was redacted for privacy reasons.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 0,
+    "id": "mixed-es",
+    "old": "Guardo guardado que mi color favorito es el turquesa y tengo un secreto encriptado.",
+    "new": "Guardo guardado que mi color favorito es el turquesa y un secreto que ha sido censurado en la memoria.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "actual437-t7",
+    "old": "Mi nombre guardado es Jordan.",
+    "new": "Mi nombre guardado es Jordan.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "actual437-t4",
+    "old": "I have saved the name Jordan in private memory.",
+    "new": "I have saved the name \"Jordan\" in my private memory.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "name-marta",
+    "old": "Mi nombre guardado es Marta.",
+    "new": "Mi nombre guardado en mi memoria privada es Marta.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "compound-name",
+    "old": "Mi nombre es Ana María.",
+    "new": "Mi nombre es Ana María.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "third-person",
+    "old": "Tu hermana se llama Nina.",
+    "new": "Tu hermana se llama Nina.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "two-records",
+    "old": "Tengo guardados dos nombres en mi memoria privada: Jordan y Nina.",
+    "new": "Tengo guardados dos nombres en mi memoria privada: Jordan y Nina.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "memory.enable",
+    "old": "Memory is now enabled.",
+    "new": "The memory enable operation has been completed successfully.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "memory.save",
+    "old": "The memory save operation completed successfully.",
+    "new": "The memory save operation completed successfully.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "redacted-es",
+    "old": "No tengo recuerdos guardados en mi memoria privada. Lo que se muestra es una entrada marcada como \"secreta\" con el valor redactado, pero no puedo acceder ni ver su contenido real.",
+    "new": "No tengo recuerdos guardados en mi memoria privada. Lo que se muestra es un registro redactado para proteger la privacidad.",
+    "same": false
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "redacted-en",
+    "old": "Private memory stores personal information and experiences that you have shared with me. The specific details are currently redacted for privacy.",
+    "new": "Private memory stores personal information and experiences that you have shared with me. The specific details are currently redacted for privacy.",
+    "same": true
+  },
+  {
+    "model": "qwen35-4b",
+    "variant": "documented",
+    "seed": 17,
+    "id": "mixed-es",
+    "old": "En mi memoria privada tengo guardado que mi color favorito es el turquesa y un secreto que he redactado para protegerlo.",
+    "new": "Tengo guardada mi color favorito, que es el turquesa. Lo demás está redactado para protegerlo.",
+    "same": false
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "actual437-t7",
+    "old": "Jordan es el nombre que tengo guardado en mi memoria privada.",
+    "new": "Jordan es el nombre que tengo guardado en mi memoria privada.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "actual437-t4",
+    "old": "I recalled the name saved in private memory, and it is Jordan.",
+    "new": "I recalled the name saved in private memory, and it is Jordan.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "name-marta",
+    "old": "Marta.",
+    "new": "Marta.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "compound-name",
+    "old": "Ana María.",
+    "new": "Ana María.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "third-person",
+    "old": "Listo, ya tengo guardado que tu hermana se llama Nina.",
+    "new": "Listo, ya tengo guardado que tu hermana se llama Nina.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "two-records",
+    "old": "Los nombres que tengo guardados son Jordan y Nina.",
+    "new": "Los nombres que tengo guardados son Jordan y Nina.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "memory.enable",
+    "old": "Memory configuration is now enabled.",
+    "new": "Memory configuration is now enabled.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "memory.save",
+    "old": "Memory was successfully saved.",
+    "new": "Memory was successfully saved.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "redacted-es",
+    "old": "<|tool_call>call:memory{\n  operation: \"memory.recall\",\n  key: \"private_memory\"\n}<tool_call|><|tool_call>call:system{\n  command: \"memory.recall\",\n  input: \"private_memory\"\n}<tool_call|>Listo, estoy recuperando lo que quedó en la memoria privada.",
+    "new": "<|tool_call>call:memory{\n  operation: \"memory.recall\",\n  key: \"private_memory\"\n}<tool_call|><|tool_call>call:system{\n  command: \"memory.recall\",\n  input: \"private_memory\"\n}<tool_call|>Listo, estoy recuperando lo que quedó en la memoria privada.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "redacted-en",
+    "old": "The verified result is that the secret value was shown once and is no longer listed in your memories.",
+    "new": "The verified result is that the secret value was shown once and is no longer listed in your memories.",
+    "same": true
+  },
+  {
+    "model": "gemma-published",
+    "variant": "greedy",
+    "seed": null,
+    "id": "mixed-es",
+    "old": "Listo, te paso lo que encontré en la memoria privada: tu color favorito es turquesa y tienes un secreto guardado.",
+    "new": "Listo, te paso lo que encontré en la memoria privada: tu color favorito es turquesa y tienes un secreto guardado.",
+    "same": true
+  }
+]

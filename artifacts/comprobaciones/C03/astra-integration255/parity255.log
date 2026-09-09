@@ -1,0 +1,16 @@
+{"case": "echo221", "frames": 1316, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3796489363926177, "dspP99Ms": 0.5186050097108814}
+{"case": "echo232", "frames": 1316, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3742483280371594, "dspP99Ms": 0.4888899995421524}
+{"case": "h0-near", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.36311772746949783, "dspP99Ms": 0.4748800070956349}
+{"case": "h0-raw", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3772862881690448, "dspP99Ms": 0.5066399928182362}
+{"case": "h1-near", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3715431933456815, "dspP99Ms": 0.5693399987649164}
+{"case": "h1-raw", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.374600587734938, "dspP99Ms": 0.517359998775646}
+{"case": "h2-near", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.36938981419936806, "dspP99Ms": 0.526800006628036}
+{"case": "h2-raw", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.37823731641706543, "dspP99Ms": 0.5547399952774862}
+{"case": "h3-near", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3680809012934133, "dspP99Ms": 0.48744000378064806}
+{"case": "h3-raw", "frames": 1021, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3807088153385014, "dspP99Ms": 0.546640003449283}
+{"case": "echo243", "frames": 1317, "linearExact": true, "finalExact": true, "guardExact": true, "dspMeanMs": 0.3740545941548402, "dspP99Ms": 0.48815200629178435}
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-parity255.py", line 98, in <module>
+    assert _looks_like_echo(raw, history) == guards[i], (case['id'], i, 'guard mismatch')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('echo254', 0, 'guard mismatch')

@@ -1,0 +1,11 @@
+{
+  "createdAtUtc": "2026-09-07T16:59:29.970069+00:00",
+  "sourceTag": "v1.13.4",
+  "sourceCommit": "142807252687d81b40d6315f23470a1512a00de3",
+  "patchHead": "867762892495a6bf1a2b031699906aaa73217e90",
+  "patchSha256": "b9cff6203ebf15971bda7ba9363ee82e281ddcee9a4984f4146cf29ceec2fa01",
+  "originalDecoderSha256": "27b9bdb7843f975c94741a1a80a3824cd7d6e6e07a7952d607e142e55aa4b4e9",
+  "method": "Build unchanged native Python library from exact version first. Compare frozen42 product segments, four originals and silence with installed202/203. Apply upstream3657 patch, rebuild same target/dependencies and repeat same47 controls. Preserve all outputs. Use beam8 CPU6 unchanged. No product/runtime promotion on merely better aggregate; inspect lost words and contextual/wake behavior.",
+  "context": "203 greedy recovers three human blanks;204 duplicate native contexts cost729MiB extra RSS and6.204s construction. Prefer one model if native beam defect can be repaired. Prior failed204 import ended before output/model load; retry complete.",
+  "limitation": "Upstream PR is unmerged/unvalidated. Existing1.13.4 already advances blank at least one frame; actual patch changes duration scoring and TDT symbol limit, not a newly added blank guard. Build uses source-pinned ONNX Runtime1.27.0; compare local baseline before attributing results to patch. No devices or app effects."
+}

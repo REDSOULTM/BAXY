@@ -1,0 +1,9 @@
+{
+  "schema": "baxy-intent-pool-v1",
+  "model": "intfloat/multilingual-e5-small",
+  "bank_sha256": "f39c414ff92f376ef409d460ab86b8cac6de4916b338f2575bbe40e58b78d312",
+  "pool_sha256": "09f33ba167a5d0a396b8a2c0eca508c7bd3c58223dff69bf7c664e5cf4a980c2",
+  "rows": 638,
+  "dimensions": 384,
+  "normalized": true
+}

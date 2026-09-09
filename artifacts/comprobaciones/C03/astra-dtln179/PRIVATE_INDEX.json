@@ -1,0 +1,27 @@
+[
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\cold_silence-dtln128.wav",
+    "sha256": "20eaebffe1816e0ffa6f7f854f5ef4ea80d5349faaf0ce1fec1b713e7fde58fa",
+    "bytes": 64044
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\native_echo149-dtln128.wav",
+    "sha256": "f17dfaed66db62b6c4f40d1ba0d8496b1aa624e5d610846baef6d41d9ee5100e",
+    "bytes": 270380
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\near_only-dtln128.wav",
+    "sha256": "3a0345a05e7048d8ffdbc66a7c74f978028403fec71d2ed18149c7b9b028571a",
+    "bytes": 1017900
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\physical_echo-dtln128.wav",
+    "sha256": "dc5fcdc9277f6e1df1390368da16156cf0d76c9cbb2c00a5f8a290a74bafd55f",
+    "bytes": 1017900
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\physical_echo_plus_synthetic_near-dtln128.wav",
+    "sha256": "abacc7f38883f02654b607643fdcada0698ade3177ce98017c013baa85f7ba18",
+    "bytes": 1017900
+  }
+]

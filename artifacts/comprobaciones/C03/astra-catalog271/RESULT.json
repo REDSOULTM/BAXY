@@ -1,0 +1,84 @@
+[
+  {
+    "variant": "before",
+    "seconds": 2.5929999999934807,
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Steam ya está abierto."
+          }
+        }
+      ],
+      "created": 1788824058,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 2266,
+        "total_tokens": 2272,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-M79g7EkUHUPOLiAMFcIbuLpiQbQ4K2dt",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 2266,
+        "prompt_ms": 2171.297,
+        "prompt_per_token_ms": 0.9582069726390114,
+        "prompt_per_second": 1043.6158664613824,
+        "predicted_n": 6,
+        "predicted_ms": 148.549,
+        "predicted_per_token_ms": 24.758166666666668,
+        "predicted_per_second": 40.39071282876357
+      }
+    },
+    "payloadSha256": "2f774d77b83bf4822d30e2a6d130009f2778e80e19ffa3997fc05e8b142012da"
+  },
+  {
+    "variant": "app_open_visible",
+    "seconds": 2.360000000000582,
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Steam ya está abierto."
+          }
+        }
+      ],
+      "created": 1788824060,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 2285,
+        "total_tokens": 2291,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-Q8zejksUdiprPafCIeLJVYvjBSAGf8pP",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 2285,
+        "prompt_ms": 2180.522,
+        "prompt_per_token_ms": 0.9542765864332604,
+        "prompt_per_second": 1047.914215036583,
+        "predicted_n": 6,
+        "predicted_ms": 120.404,
+        "predicted_per_token_ms": 20.067333333333334,
+        "predicted_per_second": 49.832231487326
+      }
+    },
+    "payloadSha256": "1e597f5fe5ddb1ae1d69862fd6610156c7bdc509970ea8f65cbe38b45f410683"
+  }
+]

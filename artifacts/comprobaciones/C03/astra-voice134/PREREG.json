@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-07T12:03:16.473146+00:00",
+  "sources": {
+    "src/baxy_mind/voice.py": "8ef5458467d91688705151152670f65ce7956cb3ebbe89c47c06f87501e04881",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e",
+    "src/baxy_mind/voice_aec.py": "400d9db8ef27b65711470f229c64a25531343a056965a774d2371ae73e07e166",
+    "scratchpad/speex_stream134.py": "b0a996d2642a10dbf01e5b9924e767677c54039f4324ccbd039a4da9f62ce734"
+  },
+  "phases": [
+    "direct"
+  ],
+  "text": "The file read failed because the content is invalid UTF-8.",
+  "method": "Experimental wrapper preprocesses microphone before VAD/energy, Speex130 defaults/frame512/tail3200, using actual latest loopback512; echo guard sees corresponding prior raw microphone/reference because preprocessor delays one frame. Original raw VAD/guard observed in shadow without cancellation. No product source edit or UI acceptance. Existing later utterance NLMS still exists; transcript content is not an acceptance claim here, and transcripts never routed.",
+  "hypothesis": "Offline133 source125 eight frame phases: raw all interrupt around3.8s, AEC+existing guard none. Test actual loopback scheduling before source integration.",
+  "criteria": "Actual full phrase without own barge-in; compare shadow and capture. Do not relax thresholds or infer physical near-voice preservation from this case."
+}

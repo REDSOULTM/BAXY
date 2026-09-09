@@ -1,0 +1,23 @@
+{
+  "session": 34984,
+  "exit": 0,
+  "raw_calls": 8,
+  "pairs": 4,
+  "effective_differences_only": [
+    "grammar",
+    "grammar_lazy",
+    "grammar_triggers"
+  ],
+  "prompt_tokenization_verified": true,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 1692.18359375,
+    "ram_peak_mib": 1040.75390625,
+    "seconds": 37.828,
+    "manifest_unchanged": true
+  },
+  "adopted": false,
+  "findings": "All4native grammar cases add7-26calls; all4without grammar stop after requested count1/2. Three have valid operations/arguments; one invents volume__set. Allfree outputs also append activation/success prose before execution. Constraint-mediated repetition is demonstrated for these prompts; not sufficient to remove grammar in product.",
+  "next": "497 original Gemma checkpoint, documented same profile/controls, native grammar; compare prompt/raw before assuming weights-only cause."
+}

@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-07T18:17:58.894198+00:00",
+  "scriptSha256": "99a531983dbef566c437f8b2d4cee0f6539d4daefb4841ee5a0d184874ce925b",
+  "method": "Same215 observer plus exact merged upstream3857 math.cc/math-test.cc patch. Native near-constant/constant witnesses before/after; four exact214 recognition/feature controls, then broad controls without choosing by output. No epsilon/gain/sampler/model changes. External source restored; no install.",
+  "upstreamHead": "a0ba8800cf8580782a9cc9566659ff61f729d76d",
+  "mergeCommit": "0967a08db705d8eec9cf5cef962c8ec57c16e4a8",
+  "upstreamPatchSha256": "08472c0a69b07a11e3a72c2ebbb15789fd7cf9359c651371994f5bb03837e067",
+  "before": {
+    "sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h": "74369caf9afe59bd8e09c4eaee3cbb70722a1aa167aecf0e3a200901181daa7e",
+    "sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc": "510359cd31d9563c5d5c0b6d036b5e81b54ef8eb7626957910fcd06ccb9aaa36",
+    "sherpa-onnx/csrc/math.cc": "9ae17d9e0c6015077d493804a28cc1a9b64452fad68cd2d435220b54390b81d6",
+    "sherpa-onnx/csrc/math-test.cc": "77262f1236bfaebbe044e4e0cd22c52827e33f82e21eb4bef5aa945abe62b065"
+  },
+  "witnessSha256": "0e4ea59e42a48ecefd0eeb213759263fb42d574e63e01c613c70dff25076fee3"
+}

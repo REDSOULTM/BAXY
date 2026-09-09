@@ -1,0 +1,29 @@
+............FFFF........................................................ [ 77%]
+.....................                                                    [100%]
+================================== FAILURES ===================================
+_ test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[Si, ] _
+tests\test_effect_intent.py:66: in test_affirmative_preface_preserves_mixed_positive_and_negative_constraints
+    assert unresolved_compound_contract(prefix + user_text, available, apps) == expected
+E   AssertionError: assert CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) == None
+E    +  where CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) = unresolved_compound_contract(('Si, ' + 'no abras Steam y abre Orion'), ('app.open', 'system.time'), ('Steam', 'Orion'))
+_ test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[S\xed, ] _
+tests\test_effect_intent.py:66: in test_affirmative_preface_preserves_mixed_positive_and_negative_constraints
+    assert unresolved_compound_contract(prefix + user_text, available, apps) == expected
+E   AssertionError: assert CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) == None
+E    +  where CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) = unresolved_compound_contract(('S�, ' + 'no abras Steam y abre Orion'), ('app.open', 'system.time'), ('Steam', 'Orion'))
+_ test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[Yes, ] _
+tests\test_effect_intent.py:66: in test_affirmative_preface_preserves_mixed_positive_and_negative_constraints
+    assert unresolved_compound_contract(prefix + user_text, available, apps) == expected
+E   AssertionError: assert CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) == None
+E    +  where CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) = unresolved_compound_contract(('Yes, ' + 'no abras Steam y abre Orion'), ('app.open', 'system.time'), ('Steam', 'Orion'))
+_ test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[Okay, ] _
+tests\test_effect_intent.py:66: in test_affirmative_preface_preserves_mixed_positive_and_negative_constraints
+    assert unresolved_compound_contract(prefix + user_text, available, apps) == expected
+E   AssertionError: assert CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) == None
+E    +  where CompoundEffectContract(minimum_effects=1, required_clause_sequences=(), clause_requirements=()) = unresolved_compound_contract(('Okay, ' + 'no abras Steam y abre Orion'), ('app.open', 'system.time'), ('Steam', 'Orion'))
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[Si, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[S\xed, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[Yes, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_mixed_positive_and_negative_constraints[Okay, ]
+4 failed, 89 passed, 2497 deselected in 1.96s

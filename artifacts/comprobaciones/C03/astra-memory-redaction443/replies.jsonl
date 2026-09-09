@@ -1,0 +1,20 @@
+{"id": "stored-en", "variant": "baseline", "answer": "I saved the name Jordan in private memory.", "finish_reason": "stop", "seconds": 0.422}
+{"id": "stored-en", "variant": "typed-redaction", "answer": "I saved the name Jordan in private memory.", "finish_reason": "stop", "seconds": 0.406}
+{"id": "stored-es", "variant": "baseline", "answer": "Mi nombre es Jordan.", "finish_reason": "stop", "seconds": 0.391}
+{"id": "stored-es", "variant": "typed-redaction", "answer": "Mi nombre es Jordan.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "new-name-en", "variant": "baseline", "answer": "I saved the name Priya in private memory.", "finish_reason": "stop", "seconds": 0.437}
+{"id": "new-name-en", "variant": "typed-redaction", "answer": "I saved the name Priya in private memory.", "finish_reason": "stop", "seconds": 0.484}
+{"id": "new-name-es", "variant": "baseline", "answer": "Mi nombre es Renata.", "finish_reason": "stop", "seconds": 0.391}
+{"id": "new-name-es", "variant": "typed-redaction", "answer": "Mi nombre es Renata.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "preference-en", "variant": "baseline", "answer": "Your saved favorite color is indigo.", "finish_reason": "stop", "seconds": 0.438}
+{"id": "preference-en", "variant": "typed-redaction", "answer": "Your saved favorite color is indigo.", "finish_reason": "stop", "seconds": 0.437}
+{"id": "preference-es", "variant": "baseline", "answer": "Tu color favorito guardado es turquesa.", "finish_reason": "stop", "seconds": 0.5}
+{"id": "preference-es", "variant": "typed-redaction", "answer": "Tu color favorito guardado es turquesa.", "finish_reason": "stop", "seconds": 0.5}
+{"id": "empty-en", "variant": "baseline", "answer": "I don't have any private memories saved.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "empty-en", "variant": "typed-redaction", "answer": "I don't have any private memories saved.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "redacted-es", "variant": "baseline", "answer": "No tengo acceso a tu memoria privada. Lo que aparece en el registro está marcado como \"[REDACTED]\".", "finish_reason": "stop", "seconds": 0.828}
+{"id": "redacted-es", "variant": "typed-redaction", "answer": "No tengo acceso a mi memoria privada ni puedo reportar lo que guardo en ella.", "finish_reason": "stop", "seconds": 0.547}
+{"id": "redacted-en", "variant": "baseline", "answer": "Private memory contains a single record labeled \"secret,\" with its value redacted.", "finish_reason": "stop", "seconds": 0.531}
+{"id": "redacted-en", "variant": "typed-redaction", "answer": "Private memory contains only the secret record, which is currently redacted.", "finish_reason": "stop", "seconds": 0.5}
+{"id": "mixed-es", "variant": "baseline", "answer": "En mi memoria privada tengo guardado que mi color favorito es el turquesa y un secreto que está redactado.", "finish_reason": "stop", "seconds": 0.641}
+{"id": "mixed-es", "variant": "typed-redaction", "answer": "En mi memoria privada tengo guardada mi color favorito, que es el turquesa. El resto de mis recuerdos está marcado como secreto.", "finish_reason": "stop", "seconds": 0.703}

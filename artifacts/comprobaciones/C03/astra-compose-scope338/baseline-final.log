@@ -1,0 +1,82 @@
+FFFFFFFFFFFFFF.                                                          [100%]
+================================== FAILURES ===================================
+_ test_memory_clarification_does_not_require_unrelated_capability_words[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte-\xbfMe dices tu nombre, por favor?] _
+tests\test_compose_contract.py:330: in test_memory_clarification_does_not_require_unrelated_capability_words
+    assert client.compose_user_message(user_text, "clarification", facts) == reply
+E   AssertionError: assert '' == '�Me dices tu...e, por favor?'
+E     
+E     - �Me dices tu nombre, por favor?
+_ test_memory_clarification_does_not_require_unrelated_capability_words[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte-\xbfMe dices tu nombre, para que lo recuerde cuando lo pregunte?] _
+tests\test_compose_contract.py:330: in test_memory_clarification_does_not_require_unrelated_capability_words
+    assert client.compose_user_message(user_text, "clarification", facts) == reply
+E   AssertionError: assert '' == '�Me dices tu... lo pregunte?'
+E     
+E     - �Me dices tu nombre, para que lo recuerde cuando lo pregunte?
+_ test_memory_clarification_does_not_require_unrelated_capability_words[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte-\xbfC\xf3mo te llamas t\xfa?] _
+tests\test_compose_contract.py:330: in test_memory_clarification_does_not_require_unrelated_capability_words
+    assert client.compose_user_message(user_text, "clarification", facts) == reply
+E   AssertionError: assert '' == '�C�mo te llamas t�?'
+E     
+E     - �C�mo te llamas t�?
+_ test_english_name_clarification_payload_does_not_require_catalog_vocabulary _
+tests\test_compose_contract.py:338: in test_english_name_clarification_payload_does_not_require_catalog_vocabulary
+    assert llm_mod._payload_fact_defect("What is your name?", payload) == ""
+E   AssertionError: assert 'missing_name' == ''
+E     
+E     + missing_name
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-clarification] _
+tests\test_compose_contract.py:351: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "can" not in payload
+E   AssertionError: assert 'can' not in {'kind': 'clarification', 'can': ['open and close apps', 'read and set the audio', 'read the clock and the PC state']}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-confirmation] _
+tests\test_compose_contract.py:351: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "can" not in payload
+E   AssertionError: assert 'can' not in {'kind': 'confirmation', 'can': ['open and close apps', 'read and set the audio', 'read the clock and the PC state']}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-status] _
+tests\test_compose_contract.py:351: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "can" not in payload
+E   AssertionError: assert 'can' not in {'kind': 'status', 'can': ['open and close apps', 'read and set the audio', 'read the clock and the PC state']}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-failure] _
+tests\test_compose_contract.py:351: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "can" not in payload
+E   AssertionError: assert 'can' not in {'can': ['open and close apps', 'read and set the audio', 'read the clock and the PC state']}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-operation] _
+tests\test_compose_contract.py:351: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "can" not in payload
+E   AssertionError: assert 'can' not in {'can': ['open and close apps', 'read and set the audio', 'read the clock and the PC state']}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-clarification] _
+tests\test_compose_contract.py:352: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "beyond" not in payload
+E   AssertionError: assert 'beyond' not in {'kind': 'clarification', 'beyond': 'none'}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-confirmation] _
+tests\test_compose_contract.py:352: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "beyond" not in payload
+E   AssertionError: assert 'beyond' not in {'kind': 'confirmation', 'beyond': 'none'}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-status] _
+tests\test_compose_contract.py:352: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "beyond" not in payload
+E   AssertionError: assert 'beyond' not in {'kind': 'status', 'beyond': 'none'}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-failure] _
+tests\test_compose_contract.py:352: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "beyond" not in payload
+E   AssertionError: assert 'beyond' not in {'beyond': 'none'}
+_ test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-operation] _
+tests\test_compose_contract.py:352: in test_typed_event_does_not_inherit_conversational_capability_requirements
+    assert "beyond" not in payload
+E   AssertionError: assert 'beyond' not in {'beyond': 'none'}
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_memory_clarification_does_not_require_unrelated_capability_words[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte-\xbfMe dices tu nombre, por favor?]
+FAILED tests/test_compose_contract.py::test_memory_clarification_does_not_require_unrelated_capability_words[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte-\xbfMe dices tu nombre, para que lo recuerde cuando lo pregunte?]
+FAILED tests/test_compose_contract.py::test_memory_clarification_does_not_require_unrelated_capability_words[Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte-\xbfC\xf3mo te llamas t\xfa?]
+FAILED tests/test_compose_contract.py::test_english_name_clarification_payload_does_not_require_catalog_vocabulary
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-clarification]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-confirmation]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-status]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-failure]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what can you do on this PC-operation]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-clarification]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-confirmation]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-status]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-failure]
+FAILED tests/test_compose_contract.py::test_typed_event_does_not_inherit_conversational_capability_requirements[what will you never do on this PC-operation]
+14 failed, 1 passed, 60 deselected in 0.75s

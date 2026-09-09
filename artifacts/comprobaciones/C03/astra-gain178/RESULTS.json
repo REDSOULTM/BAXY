@@ -1,0 +1,138 @@
+[
+  {
+    "case": "native_echo149",
+    "stage": "final",
+    "finalPcmIdenticalTo174": false,
+    "maxPcmDifference": 45,
+    "rmsPcmDifference": 1.244466424804002,
+    "speechFrames": 0,
+    "longestQualifiedWithoutGuard": 0,
+    "transcripts": []
+  },
+  {
+    "case": "native_echo149",
+    "stage": "linear",
+    "finalPcmIdenticalTo174": false,
+    "maxPcmDifference": 45,
+    "rmsPcmDifference": 1.244466424804002,
+    "speechFrames": 119,
+    "longestQualifiedWithoutGuard": 6,
+    "transcripts": []
+  },
+  {
+    "case": "physical_echo",
+    "stage": "final",
+    "finalPcmIdenticalTo174": false,
+    "maxPcmDifference": 27,
+    "rmsPcmDifference": 0.27666022573392196,
+    "speechFrames": 0,
+    "longestQualifiedWithoutGuard": 0,
+    "transcripts": []
+  },
+  {
+    "case": "physical_echo",
+    "stage": "linear",
+    "finalPcmIdenticalTo174": false,
+    "maxPcmDifference": 27,
+    "rmsPcmDifference": 0.27666022573392196,
+    "speechFrames": 102,
+    "longestQualifiedWithoutGuard": 6,
+    "transcripts": []
+  },
+  {
+    "case": "near_only",
+    "stage": "final",
+    "finalPcmIdenticalTo174": true,
+    "maxPcmDifference": 0,
+    "rmsPcmDifference": 0.0,
+    "speechFrames": 87,
+    "longestQualifiedWithoutGuard": 9,
+    "transcripts": [
+      {
+        "normalized": false,
+        "text": "Hola, aquí Paxi. ¿En qué te puedo ayudar hoy?"
+      },
+      {
+        "normalized": true,
+        "text": "Hola, aquí Baxi. ¿En qué te puedo ayudar hoy?"
+      }
+    ]
+  },
+  {
+    "case": "near_only",
+    "stage": "linear",
+    "finalPcmIdenticalTo174": true,
+    "maxPcmDifference": 0,
+    "rmsPcmDifference": 0.0,
+    "speechFrames": 87,
+    "longestQualifiedWithoutGuard": 9,
+    "transcripts": [
+      {
+        "normalized": false,
+        "text": "Hola, aquí Paxi. ¿En qué te puedo ayudar hoy?"
+      },
+      {
+        "normalized": true,
+        "text": "Hola, aquí Paxi. ¿En qué te puedo ayudar hoy?"
+      }
+    ]
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "stage": "final",
+    "finalPcmIdenticalTo174": false,
+    "maxPcmDifference": 1052,
+    "rmsPcmDifference": 27.478249796358376,
+    "speechFrames": 79,
+    "longestQualifiedWithoutGuard": 8,
+    "transcripts": [
+      {
+        "normalized": false,
+        "text": "Exactly."
+      },
+      {
+        "normalized": true,
+        "text": "Exactly."
+      }
+    ]
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "stage": "linear",
+    "finalPcmIdenticalTo174": false,
+    "maxPcmDifference": 1052,
+    "rmsPcmDifference": 27.478249796358376,
+    "speechFrames": 117,
+    "longestQualifiedWithoutGuard": 13,
+    "transcripts": [
+      {
+        "normalized": false,
+        "text": "¿En qué te puedo ayudar?"
+      },
+      {
+        "normalized": true,
+        "text": "¿En qué te puedo ayudar?"
+      }
+    ]
+  },
+  {
+    "case": "cold_silence",
+    "stage": "final",
+    "finalPcmIdenticalTo174": true,
+    "maxPcmDifference": 0,
+    "rmsPcmDifference": 0.0,
+    "speechFrames": 0,
+    "longestQualifiedWithoutGuard": 0,
+    "transcripts": []
+  },
+  {
+    "case": "cold_silence",
+    "stage": "linear",
+    "finalPcmIdenticalTo174": true,
+    "maxPcmDifference": 0,
+    "rmsPcmDifference": 0.0,
+    "speechFrames": 0,
+    "longestQualifiedWithoutGuard": 0,
+    "transcripts": []
+  }
+]

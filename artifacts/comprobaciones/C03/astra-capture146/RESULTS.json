@@ -1,0 +1,23 @@
+[
+  {
+    "attempt": 0,
+    "comInitialized": true,
+    "ok": true,
+    "adc": 80692.1319581,
+    "device": 12
+  },
+  {
+    "attempt": 1,
+    "comInitialized": true,
+    "ok": true,
+    "adc": 80692.5684867,
+    "device": 12
+  },
+  {
+    "attempt": 2,
+    "comInitialized": true,
+    "ok": true,
+    "adc": 80693.0057726,
+    "device": 12
+  }
+]

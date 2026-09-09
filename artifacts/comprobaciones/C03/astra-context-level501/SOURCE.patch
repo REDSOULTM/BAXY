@@ -1,0 +1,123 @@
+--- before/src/baxy_mind/effect_intent.py
++++ after/src/baxy_mind/effect_intent.py
+@@ -732,6 +732,30 @@
+     if verdict is not None:
+         return verdict
+     return _uncovered_family_floor(_fold(text), operation)
++
++
++def _completed_missing_volume_level_request(
++    text: str, previous_user_text: str | None, available_operations: Iterable[str],
++) -> str | None:
++    """Attach a numeric answer only to a unique, incomplete local-level request.
++
++    Both surfaces are user-authored reference data. The ordinary resolver still
++    checks the resulting request, including every current denial and effect.
++    An assistant question or a completed earlier action cannot supply this target.
++    """
++    if not previous_user_text:
++        return None
++    clauses = _request_clauses(_strip_request_envelope(_fold(text)))
++    if not clauses or re.fullmatch(
++        r"(?:(?:a|al|to|at)\s+)?(?:100|\d{1,2})\s*"
++        r"(?:%|por ciento|percent)?[\s,.!?]*",
++        clauses[0],
++    ) is None:
++        return None
++    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
++    if prior is None or prior.operations != ("audio.volume",) or prior.missing_fields != ("level",):
++        return None
++    return f"{previous_user_text.strip()}\n{text}"
+ 
+ 
+ def _contextual_output_level_target(
+@@ -12298,6 +12322,13 @@
+         return None
+     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
+     available = frozenset(available_operations)
++    completed_level_request = _completed_missing_volume_level_request(
++        text, previous_user_text, available,
++    )
++    if completed_level_request is not None:
++        return resolve_explicit_effects(
++            completed_level_request, available, application_names, game_catalog,
++        )
+     if (previous_user_text and "system.time" in available
+             and _nominal_datetime_query(folded)):
+         # Inherit only the immediately preceding, independently resolved clock
+@@ -13244,6 +13275,7 @@
+     game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
+     *,
+     resolved_intent: EffectIntent | None | object = (_EXPLICIT_EFFECTS_NOT_RESOLVED),
++    previous_user_text: str | None = None,
+ ) -> CompoundEffectContract | None:
+     """Describe a compound whose positive clauses are not all recognized.
+ 
+@@ -13255,9 +13287,17 @@
+     operation identity cannot be proved by this operation-only recognizer.
+     """
+ 
++    available = tuple(available_operations)
++    completed_level_request = _completed_missing_volume_level_request(
++        text, previous_user_text, available,
++    )
++    if completed_level_request is not None:
++        return unresolved_compound_contract(
++            completed_level_request, available, application_names, game_catalog,
++            resolved_intent=resolved_intent,
++        )
+     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
+     clauses = _request_clauses(folded)
+-    available = tuple(available_operations)
+     authenticated_applications = build_application_catalog_index(
+         application_names,
+     )
+--- before/src/baxy_mind/__main__.py
++++ after/src/baxy_mind/__main__.py
+@@ -4799,6 +4799,21 @@
+             ),
+             folded,
+         )
++        if level is None:
++            # The closed contextual reader retains the two authored surfaces
++            # with a sentence boundary. Reprove that the earlier surface has
++            # only a missing level and the answer is one numeric clause; a
++            # nearby number, another object or an additional effect is not a
++            # literal level for this step.
++            prior, separator, answer = folded.rpartition(" . ")
++            if (
++                separator
++                and len(effect_intent._request_clauses(answer)) == 1
++                and effect_intent._completed_missing_volume_level_request(
++                    answer, prior, ("audio.volume",),
++                ) is not None
++            ):
++                return {"level": numbers[0]}
+         if level is None or int(level.group("level")) != numbers[0]:
+             return None
+         return {"level": numbers[0]}
+@@ -4861,7 +4876,7 @@
+ 
+     if operation == "audio.mute":
+         false_pattern = (
+-            r"\b(?:unmute|desmutea|desmutear|reactiva|reactivar)\b|"
++            rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
+             r"\bquita(?:r)?\s+(?:el\s+)?(?:mute|silencio)\b"
+         )
+         false_signal = bool(re.search(false_pattern, folded))
+@@ -5817,6 +5832,7 @@
+         application_names,
+         game_catalog,
+         resolved_intent=explicit_intent,
++        previous_user_text=_previous_user_request(history, objective),
+     )
+     explicit_conversation_decision = (
+         _explicit_unsupported_turn_decision(objective)
+@@ -7652,6 +7668,7 @@
+                         (tool.name for tool in planner_catalog.tools),
+                         application_catalog,
+                         game_catalog,
++                        previous_user_text=_previous_user_request(history, objective),
+                     )
+                     if expected_operations
+                     else None

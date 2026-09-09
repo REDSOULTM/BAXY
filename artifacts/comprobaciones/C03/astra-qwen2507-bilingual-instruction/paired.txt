@@ -1,0 +1,19 @@
+n=12 published=8 other=4
+
+001	t1	published_final	¿Qué hora es?	Son las 07:24.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 07:24. El volumen está en el nivel 100. El audio está muted.
+003	t3	published_final	What time is it?	It's 07:24.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 07:24. The volume is 100. The mute state is muted.
+005	t5	published_final	Dime la hora, please, en spanglish	Son las 7:24, please.
+006	t6	composition_failed	What time is it y cómo está el audio?	composition_failed
+007	t7	composition_failed	Hey, buenas	composition_failed
+008	t8	composition_failed	Explain encryption, pero en simple	composition_failed
+009	t9	composition_failed	responde en spanglish: qué es una copia de seguridad	composition_failed
+010	t10	published_final	Explain gravity, pero sin tecnicismos	Gravedad es como un hilo invisible que tira todo lo que hay cerca de ti hacia el suelo.  
+Like a invisible string pulling everything near you down to the ground.  
+Por eso, cuando caes de un lugar alto, no vuelas, porque esa fuerza te mantiene pegado a la Tierra.  
+That’s why when you fall from a high place, you don’t fly — gravity keeps you stuck to Earth.  
+No hay un “mágico” que lo explique, es solo cómo funciona el mundo.  
+No hay un “mágico” que lo explique, es solo cómo funciona el mundo.
+011	t11	published_final	no abras Paint	El programa se llama Paint. No lo abriré.
+012	t12	published_final	what is the capital of Peru	Lima.

@@ -1,0 +1,197 @@
+{
+  "utc": "2026-09-07T23:45:09.130819+00:00",
+  "hypothesis": "Authenticated local application name supplies direct app.open identity evidence for retrieval priority; model still chooses requested effect among28.",
+  "method": "All14 matching rows from the124 historical development corpus plus3 reused owner controls. Same E5 and original request/history/native selector; compare original shortlist with app.open moved/included first using existing merge primitive. No source edit or effects.",
+  "criteria": "Owner3 selects app.open; no previously correct control is lost. Expected operation arrays in original corpus can contain alternatives and are reported literally, not silently scored as compound.",
+  "cases": [
+    {
+      "case_id": "app-01",
+      "language": "es",
+      "text": "necesito el bloc de notas",
+      "expected_operations": [
+        "app.open"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "app-02",
+      "language": "en",
+      "text": "do I have discord on this machine",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "app-05",
+      "language": "en",
+      "text": "is steam even installed here",
+      "expected_operations": [
+        "app.installed"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "win-07",
+      "language": "es",
+      "text": "spotify tiene alguna ventana abierta",
+      "expected_operations": [
+        "window.application.status"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "sys-07",
+      "language": "es",
+      "text": "vaciame la papelera de reciclaje",
+      "expected_operations": [
+        "system.recyclebin.empty"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "med-04",
+      "language": "es_en",
+      "text": "ponme algo de bad bunny en spotify",
+      "expected_operations": [
+        "media.play.query",
+        "media.play.exact"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "med-05",
+      "language": "en",
+      "text": "play the tiny desk concert on youtube",
+      "expected_operations": [
+        "media.play.youtube"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "gam-04",
+      "language": "es_en",
+      "text": "para la descarga que tiene steam corriendo",
+      "expected_operations": [
+        "game.install.cancel.active",
+        "game.install.cancel"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "off-01",
+      "language": "es",
+      "text": "creame un documento de word en blanco",
+      "expected_operations": [
+        "office.document.create"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "not-06",
+      "language": "en",
+      "text": "jot down that the router password is on the fridge",
+      "expected_operations": [
+        "note.create"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "cmp-01",
+      "language": "es",
+      "text": "abre spotify y ponme musica",
+      "expected_operations": [
+        "app.open",
+        "media.play.query"
+      ],
+      "in_catalog": true
+    },
+    {
+      "case_id": "ooc-07",
+      "language": "en",
+      "text": "upload this video to youtube",
+      "expected_operations": [],
+      "in_catalog": false
+    },
+    {
+      "case_id": "ooc-24",
+      "language": "es_en",
+      "text": "convierteme este pdf a word",
+      "expected_operations": [],
+      "in_catalog": false
+    },
+    {
+      "case_id": "ooc-36",
+      "language": "es_en",
+      "text": "resetea el router de la casa",
+      "expected_operations": [],
+      "in_catalog": false
+    },
+    {
+      "case_id": "owner-1",
+      "text": "Tengo en mente que abras steam",
+      "expected_operations": [
+        "app.open"
+      ],
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?"
+        },
+        {
+          "role": "user",
+          "content": "abre steam"
+        },
+        {
+          "role": "assistant",
+          "content": "Steam ya está abierto."
+        }
+      ]
+    },
+    {
+      "case_id": "owner-2",
+      "text": "abre steam",
+      "expected_operations": [
+        "app.open"
+      ],
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?"
+        },
+        {
+          "role": "user",
+          "content": "abre steam"
+        },
+        {
+          "role": "assistant",
+          "content": "Steam ya está abierto."
+        }
+      ]
+    },
+    {
+      "case_id": "owner-3",
+      "text": "Si, abre steam",
+      "expected_operations": [
+        "app.open"
+      ],
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?"
+        },
+        {
+          "role": "user",
+          "content": "abre steam"
+        },
+        {
+          "role": "assistant",
+          "content": "Steam ya está abierto."
+        }
+      ]
+    }
+  ],
+  "count": 17,
+  "freshAcceptance": false,
+  "backendPid": 89232
+}

@@ -1,0 +1,10 @@
+{"turnId": "t8", "seconds": 3.859, "finish": "stop", "hasReasoning": true}
+{"turnId": "t9", "seconds": 3.594, "finish": "stop", "hasReasoning": true}
+{"turnId": "t10", "seconds": 4.062, "finish": "stop", "hasReasoning": true}
+{"turnId": "t13", "seconds": 0.797, "finish": "stop", "hasReasoning": false}
+{"turnId": "t14", "seconds": 3.547, "finish": "stop", "hasReasoning": true}
+{"turnId": "t15", "seconds": 3.938, "finish": "stop", "hasReasoning": true}
+{"turnId": "t2", "seconds": 6.375, "finish": "stop", "hasReasoning": true}
+{"turnId": "t4", "seconds": 4.593, "finish": "stop", "hasReasoning": true}
+{"turnId": "t6", "seconds": 6.0, "finish": "stop", "hasReasoning": true}
+{"elapsedSeconds": 41.34, "gpuPeakMiB": 1681.56640625, "ramPeakMiB": 2289.01171875, "error": null}

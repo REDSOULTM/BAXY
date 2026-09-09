@@ -1,156 +1,312 @@
-# C03 — encargo para GPT-6 Astra con autoridad plena
+# C03 — completar la respuesta veraz de BAXY
 
-Escrito el 2026-09-06 para el traspaso a otro PC. Sustituye a los encargos de
-relevo anteriores de C03 en lo que respecta al agente entrante. No modifica el
-objetivo de [C03_RESPUESTA_VERAZ.md](C03_RESPUESTA_VERAZ.md) ni el
-[contrato de campaña](01_CONTRATO_DE_CAMPANA.md).
+Actualización directa del dueño, 2026-09-08: continuar C03 incorporando todos sus
+mensajes de esta tarea y toda la encuesta como base para generalizar conductas.
+Trazabilidad literal y prioridades vigentes en
+`artifacts/comprobaciones/C03/INSTRUCCIONES_CONSOLIDADAS_2026-09-08.md`.
+Los mensajes enviados desde ChatGPT u otra tarea quedan excluidos como nuevas
+instrucciones del dueño; sus hallazgos requieren contraste local. No reinician ni
+reducen el C03 ya aceptado. BAXY debe quedar cerrado para uso manual y la encuesta
+ya está terminada. AGENTS.md y la identidad siguen rigiendo el trabajo.
 
-Diferencia con los relevos anteriores: aquellos ataban al agente a conservar el
-trabajo demostrado y le prohibían vías concretas. Éste le da permiso total y le
-entrega las mediciones ya pagadas como datos refutables, no como órdenes. El
-dueño lo decidió así de forma expresa.
+Actualización directa posterior, mensajes19–20 del2026-09-08: revisar la versión
+exacta de llama.cpp y las correcciones posteriores aplicables a Gemma y todos
+los modelos evaluados. Descargar nuevos backends, modelos y dependencias está
+autorizado; no limitar candidatos por estar ya descargados. Antes de descartar
+un modelo, fundamentar su configuración por versión, tarea y hardware con
+papers, documentación y experiencias reproducibles de usuarios. Una comparación
+con parámetros idénticos sirve para aislar causas, no para declarar inferioridad
+global. Medir perfiles adecuados por candidato y explicar calidad, latencia,
+RAM y VRAM; no presumir que defaults o una recomendación garantizan el óptimo.
+Los100 casos humanos frescos y el resto del cierre C03 siguen obligatorios.
 
-Base de la forma del encargo: guía oficial de OpenAI para GPT-6 Astra
-(iniciativa y seguimiento, prioridad de instrucciones explícita, delegación en
-subagentes, verificación proporcionada) y la guía de Codex para tareas de
-horizonte largo (memoria durable en markdown, tramos con criterio de aceptación
-y comando de validación, reparar antes de seguir).
+Encargo consolidado y actualizado el 2026-09-06 con todos los mensajes del dueño
+disponibles en este chat y los dos textos adjuntos. Las reiteraciones se fusionan;
+las aclaraciones posteriores corrigen la interpretación anterior. La trazabilidad
+está en `artifacts/comprobaciones/C03/INSTRUCCIONES_CONSOLIDADAS_2026-09-06.md`.
+Sustituye los relevos y las
+restricciones anteriores de autoridad. Conserva el alcance y los criterios de
+`C03_RESPUESTA_VERAZ.md`, el contrato de campaña y la identidad del producto.
 
-- <https://developers.openai.com/api/docs/guides/latest-model>
-- <https://developers.openai.com/blog/run-long-horizon-tasks-with-codex>
-- <https://developers.openai.com/api/docs/models/gpt-6-astra>
+Para reanudar, manda el estado más reciente de
+`artifacts/comprobaciones/C03/CHECKPOINT.md`; cualquier número de tramo anterior
+conservado en el resumen del goal es una referencia histórica, no la siguiente tarea.
 
----
+## Objetivo
 
-## Encargo
+Completar C03 en el producto real: BAXY responde a lo que la persona pide con
+utilidad, hechos verdaderos, voz propia e idioma adecuado —español, inglés o
+spanglish—, también al aclarar, confirmar, informar progreso y explicar errores.
+Los siguientes goals deben recibir estas conductas resueltas, sin heredar el
+atasco actual. Implementa y verifica; un diagnóstico o un plan no cierran C03.
 
-Eres el responsable de BAXY Definitivo. Trabaja con reasoning effort alto.
+## Autoridad
 
-### Objetivo
+Actúa autónomamente. Tienes permiso para modificar, reorganizar, sustituir o
+retirar código y documentación del repositorio, preparar el entorno, operar el
+PC y evaluar o cambiar el modelo local si mejora BAXY. No pidas confirmaciones
+rutinarias: la autorización del dueño ya está dada.
 
-BAXY debe responder a lo que se le pide: con sentido, con hechos verdaderos,
-con voz propia y en el idioma correcto, incluidas las rutas de error. Hoy no lo
-hace de forma fiable. El goal formal se llama C03 y su texto está en
-`documentacion/sprints/Sprints comprobación/C03_RESPUESTA_VERAZ.md`, pero el
-objetivo real es el producto, no aprobar un documento.
+Puedes descargar modelos, runtimes y dependencias que falten. Comprueba primero
+los activos existentes y reutiliza los adecuados. Qwen3-4B-Instruct-2507 Q4_K_M
+base es el candidato registrado tras la comparación; no una obligación ni una
+aceptación de C03: decide por calidad integrada y recursos medidos.
+El techo es **4 GB de VRAM para BAXY**, aunque esta GPU tenga más. Registra el
+perfil, las huellas, el consumo y la regresión de los roles afectados antes de
+promover un modelo; una prueba con override no cambia el runtime del producto.
 
-Después de C03 quedan C04–C09, 10.7–10.18, 11.1–11.16 y 12.1–12.3 hasta el
-producto instalado. Ver `documentacion/sprints/MAPA_COMPLETO_2026-09-05.md`.
-Deja C03 de forma que los siguientes no hereden el mismo atasco.
+Trabaja en `Goal-c03` o en otra rama fuera de `main`. Publica el trabajo propio
+validado en esa rama. Conserva los cambios ajenos y la evidencia de corridas;
+retirar código obsoleto no significa borrar las pruebas de lo que se midió.
+No hace falta integrar en `main` para cerrar C03.
 
-### Autoridad
+La autorización posterior para descargar y cambiar modelos sustituye la consulta
+previa del primer adjunto. No confundas el modelo local de BAXY con el agente que
+lo desarrolla. Respeta `AGENTS.md` —corrección expresa de «AX.md»— y la identidad;
+no cambies sus decisiones para facilitar el examen. Conserva `main` fuera del
+alcance de esta entrega y no borres la evidencia necesaria para contrastar mejoras.
 
-Tienes permiso total sobre este repositorio. Puedes reorganizar la
-arquitectura, mover o borrar módulos, reescribir componentes enteros, cambiar
-el modelo local, rehacer la suite de pruebas, y reescribir o fusionar los
-propios documentos de sprint si su planteamiento es el problema.
+## Prioridad y método
 
-No necesitas pedir permiso para decidir cómo se hace el trabajo. Decide y
-ejecuta. Si algo está mal planteado, replantéalo y di por qué.
+La prioridad es que BAXY funcione bien para quien lo usa. Trabaja con rapidez:
+hereda primero, investiga sólo lo que falta y construye al final. Consulta la
+biblioteca y las mediciones pertinentes antes de repetir un experimento.
+Compara las versiones anteriores y recupera sus mejores mecanismos cuando la
+evidencia los respalde; no restaures una versión completa por nostalgia.
+Reiteración expresa del dueño: hereda al máximo lo que ya esté hecho y funcione
+en los proyectos BAXY anteriores de `D:/Perfil/Escritorio/ETC/Programacion`.
+Son fuentes de herencia; el sitio de trabajo sigue siendo BAXY DEFINITIVO.
 
-Lo único que sí se consulta antes de hacerlo: publicar en `main`, borrar
-evidencia de corridas anteriores, o cambiar el modelo local del producto.
+**Herencia contrastada con el estado del arte actual.** Heredar es el punto de
+partida, no una razón para conservar una solución inferior. Para cada problema
+que bloquee C03, compara el mecanismo heredado con documentación vigente, papers
+y soluciones de usuarios o mantenedores que hayan resuelto un problema comparable.
+Esta regla abarca comprensión, contexto, arquitectura, prompts, inferencia,
+validadores y evaluación, no sólo elegir el LLM. Busca evidencia primaria y
+reproducciones con configuración, versiones y resultados; distingue testimonios,
+benchmarks ajenos y resultados propios. Comprueba aplicabilidad a Windows, uso
+local/privado, identidad y techo de 4 GB. Elige la alternativa más ligera que
+demuestre calidad: reutilizar, adaptar, sustituir o construir sólo lo que falte.
+Documenta qué se comparó y por qué se adoptó o descartó, con fuentes fechadas y
+medición local proporcionada. Evita una investigación general interminable: acota
+la búsqueda al bloqueo, reutiliza resultados vigentes y pasa a probar la hipótesis.
 
-Trabaja en la rama `Goal-c03` (`main` intacto) o crea la que prefieras. Puedes
-delegar en subagentes y paralelizar siempre que sirva; hazlo de forma proactiva,
-no como último recurso.
+Para cada decisión relevante deja una comparación breve y verificable: problema,
+solución heredada y su evidencia, alternativa actual y fuentes fechadas, diferencias
+de configuración, resultado local y decisión. «Heredar primero» no permite omitir
+el contraste actual; «estado del arte» tampoco obliga a sustituir lo que ya cumple.
+Una experiencia de usuario orienta la prueba cuando describe cómo la reprodujo;
+su popularidad o una afirmación de éxito no sustituyen la medición en BAXY.
 
-### Contexto que ahorra días
+**Investiga el modelo exacto antes de ajustar su tratamiento.** Consulta primero
+lo ya investigado y después su ficha oficial, documentación, informe técnico y
+experiencias de usuarios con configuración y reproducción comprobables. Separa
+familia, revisión, cuantización y backend: una receta de Thinking o de otro tamaño
+no demuestra cómo debe configurarse el Instruct usado. Registra enlaces, fecha,
+versión y diferencias con BAXY: template efectivo, roles de mensajes, contexto por
+slot, thinking, parámetros de muestreo, límites de salida, stop, reintentos y
+formatos estructurados. Inspecciona lo enviado al servidor, no sólo las constantes.
+Los testimonios aportan hipótesis; la adopción exige evidencia local. Reutiliza
+esta investigación mientras siga aplicando; no repitas búsquedas en cada edición.
+Al cambiar modelo o backend, actualízala. Estado inicial de esta revisión:
+`artifacts/comprobaciones/C03/INVESTIGACION_MODELO_C03.md`.
 
-Antes de decidir el enfoque, lee estos cuatro. No para obedecerlos: para no
-pagar dos veces el mismo experimento.
+**Aísla el LLM y añade BAXY por piezas.** Con los mismos casos reales de desarrollo,
+mide primero el servidor local con su template nativo, sin el wrapper de BAXY y
+con presupuesto suficiente para distinguir truncamiento de error. Luego añade
+identidad, instrucciones por función, catálogo/contexto, clasificación, validación
+y reintentos, composición y aplicación completa. Compara una diferencia cada vez
+cuando permita localizar la causa; no vuelvas a ejecutar capas ya demostradas sin
+motivo. Registra entrada, respuesta bruta, finish_reason, respuesta publicada,
+rechazo, tiempo y recursos. Si una prueba conserva guardas o límites de BAXY, no
+la llames «modelo solo». Compara muestreo por rol: conversación, selección de
+operaciones y composición tienen responsabilidades distintas. No atribuyas todo
+al modelo ni todo al ecosistema; localiza la primera transformación incorrecta.
+No envíes el corpus ni las conversaciones a servicios externos para investigarlo.
 
-| Archivo | Qué aporta |
-|---|---|
-| `artifacts/comprobaciones/C03/CHECKPOINT.md` | estado y candidato actual |
-| `artifacts/comprobaciones/C03/HANDOFF_OPUS_METODO.md` | detalle de la última sesión |
-| `artifacts/comprobaciones/C03/SEGUIMIENTOS.md` | causa raíz del contexto perdido |
-| `artifacts/audit/regresiones_20260822_20260905/INFORME.md` | qué se rompió y cuándo |
+El recuerdo del dueño de que BAXY funcionaba mejor hace dos semanas es una
+pista que debe contrastarse. La auditoría histórica ya demuestra una regresión
+en la conservación de la hora. La conversación abierta en Opera puede aportar
+contexto si es accesible, pero su lectura no debe detener el trabajo.
 
-Cuatro hipótesis ya se midieron y empeoraron el resultado, con población
-controlada: turno anterior como contexto (`panel-opus-4/-5`); muestreo 0.2/0.9
-(agotamientos 1 → 7); forzar la ruta contextual en elípticas (`seguimiento-3`);
-prohibir la definición en un seguimiento (de 9 en tema a 6). Están revertidas.
-Se puede volver a probar cualquiera con una razón nueva — sabiendo que ya
-costaron una sesión cada una.
+Baxy tiene demasiadas versiones anteriores, de las cuales seria ideal sacar la mejor de cada una para hacer este baxy definitivo.
 
-Dos hechos más que la evidencia demuestra:
+La conversación aportada ya explica la regresión del Goal 06 (`046f034`), la
+diferencia entre respuestas publicadas y correctas, y los límites de las pruebas
+antiguas de UI, recuperación y hora. Parte de la auditoría existente en
+`artifacts/audit/regresiones_20260822_20260905/INFORME.md`, del handoff y de
+`SEGUIMIENTOS.md` en la carpeta C03. No reconstruyas toda la campaña ni leas todos
+los commits por rutina: sigue las conductas y los cambios que puedan explicar
+una regresión. Conserva lo que funcionaba y comprueba que la herencia sigue
+respetando la identidad actual.
 
-1. Hubo una regresión real anterior a C03: el Goal 06 (23-ago, `046f034`) retiró
-   la conversión de hora local y dejó de exigir que ese dato sobreviviera a la
-   redacción. El dueño recuerda que BAXY funcionaba mejor hace dos semanas y esa
-   memoria tiene respaldo parcial. Snapshots en
-   `artifacts/audit/regresiones_20260822_20260905/snapshots/`.
-2. El intento de conseguir buenas respuestas acumulando filtros de cadena
-   literal llegó a 26 comprobaciones en el clasificador de `llm.py` y no cerró
-   nada. Volver a esa vía exige una razón que ese historial no tenga.
+Revisa el estado actual del repositorio y el historial de commits pertinente
+para localizar cuándo se perdieron conductas útiles y por qué las pruebas no
+avisaron. Parte de las auditorías y snapshots existentes; amplía la comparación
+cuando aporten una causa nueva. Recupera garantías demostradas de las versiones
+anteriores y fija las regresiones para que no vuelvan a los siguientes goals.
 
-### Entorno
+Puedes corregir, simplificar, sustituir o retirar verificadores defectuosos,
+incluidos filtros demasiado restrictivos. Su valor se mide por si distinguen
+respuestas útiles y verdaderas de respuestas incorrectas: no por conservar una
+implementación histórica. Demuestra con ejemplos válidos e inválidos que la nueva
+validación respeta la identidad, mantiene las garantías y mejora el producto.
 
-Este PC puede no tener Granite descargado: el GGUF (2,09 GB) no viaja por git.
-Compruébalo al arrancar y dilo. Sin él funcionan pytest, .NET y el censo; los
-paneles y las corridas de cien turnos, no.
+Resuelve sólo lo que bloquee C03, aunque pertenezca a un componente que otro
+goal validará después. No te desvíes hacia defectos internos sin impacto en
+la conducta comprometida. No aplaces a otro goal un fallo que impida responder
+bien. Si varios parches desplazan el síntoma sin mejorar la respuesta, cambia
+el enfoque. No acumules filtros de frases ni capas correctoras.
 
-Intérprete para pruebas Python:
-`%LOCALAPPDATA%\BAXYRuntime\python\mind-runtime-v1\Scripts\python.exe`
-Con el Python del sistema fallan 20 pruebas por dependencias ausentes.
+Trabaja en tramos con una hipótesis, criterio de aceptación y validación
+proporcionada. Mide antes/después sobre los mismos casos. Conserva regresiones
+y reserva una muestra nueva para aceptación. Actualiza
+`artifacts/comprobaciones/C03/CHECKPOINT.md` al terminar cada tramo y antes de
+compactar: estado, decisiones, evidencia, procesos activos y siguiente acción.
 
-Modelo local actual: Granite 4.2 3B Q4_K_M (gguf `e0406663`), sobre llama.cpp
-`b9980`. Se puede evaluar cambiarlo; se consulta antes de hacerlo efectivo.
+Tras dos intentos comparables sin mejora útil, abandona esa estrategia y cambia
+la hipótesis. No abras una colección de modelos ni repitas cien turnos para
+buscar una corrida favorable. Usa contexto acotado y validación por ownership;
+Full corresponde al candidato integrado, no a cada edición. Elige la vía más
+corta que conserve calidad y cobertura, sin prometer plazos que no hayas medido.
+Actualización expresa del dueño: no repetir Full entre cambios o tramos. Usa
+pruebas dueñas y mediciones del producto durante la reparación; ejecuta Full
+cuando esté resuelto todo lo necesario para cerrar C03 y comprueba verde entero.
+La ejecución ya iniciada puede terminar; no autoriza encadenar otra compuerta.
 
-### Prioridad de instrucciones
+Mantén razonamiento alto como base conforme a AGENTS; dedica más análisis sólo a
+una causa que lo necesite. El objetivo de eficiencia es reducir intentos y trabajo
+repetido, no saltar verificaciones que acreditan conducta. Si falta una dependencia,
+resuélvela dentro de la autorización existente y continúa con trabajo independiente.
 
-1. Que BAXY funcione de verdad para quien lo usa.
-2. Honestidad del producto: nunca un hecho inventado, nunca un éxito falso,
-   nunca un silencio disfrazado de normalidad. Un error honesto y recuperable
-   es aceptable como conducta; no como resultado final de una petición normal.
-3. Lo que el dueño diga en conversación.
-4. Los documentos de sprint. Si uno contradice lo anterior, el documento cede;
-   reescríbelo y deja dicho qué cambiaste.
+## Compromisos que no se rebajan
 
-### Método
+Catálogo tipado como única fuente de operaciones; mente propone, kernel
+autoriza y provider ejecuta. Ningún éxito sin verificación; confirmación ligada
+a la invocación exacta; terminales honestos; ninguna respuesta visible fija.
+Modelo local, privacidad y techo de 4 GB de VRAM. Arquitectura modular, sin
+código muerto ni capas duplicadas.
 
-Elige tu método. Sólo tres exigencias, y son por el límite de contexto, no por
-desconfianza:
+Un error honesto y recuperable es una conducta válida ante una avería real;
+no sustituye una respuesta útil ante una petición normal.
 
-- Mantén un registro vivo en `artifacts/comprobaciones/C03/CHECKPOINT.md`: en
-  qué vas, qué decidiste y por qué, qué falta. Actualízalo al cerrar cada tramo
-  y antes de compactar. Es lo que permite que otra sesión te releve.
-- Trabaja en tramos que quepan en una vuelta, cada uno con su criterio de
-  aceptación y su comando de validación. Si una validación falla, repárala antes
-  de seguir.
-- Mide antes/después sobre los mismos casos. Una corrida nueva sin hipótesis
-  nueva no es evidencia.
+## Encuesta como base de comportamiento — aclaración del dueño, 2026-09-08
 
-Prueba lo que lo merece. No escribas tests para cambios reversibles y de bajo
-impacto; sí para cualquier conducta que ya se rompió una vez.
+Usa todas las respuestas y notas del cuestionario como base para corregir la
+conducta de BAXY y generalizar a otros mensajes, junto a AGENTS.md y la identidad.
+No es únicamente una acreditación de autoría. Vincula los casos a comprensión,
+contexto, capacidad, aclaración, verificación y explicación de límites; contrasta
+las soluciones con variantes sin fijar respuestas ni alias por literal histórico.
+Conserva las distinciones entre autoría, expectativa positiva o negativa y las
+notas de alcance. Registro íntegro: `artifacts/comprobaciones/C03/SURVEY_REQUIREMENTS336.json`;
+criterios comunes: `artifacts/comprobaciones/C03/ENCUESTA_COMO_BASE_DE_CONDUCTA.md`.
+Todo caso que se use en desarrollo queda excluido de aceptación fresca; esta
+base no permite cambiar etiquetas, inventar humanos o rebajar el cierre siguiente.
 
-### Verificación y cierre
+## Cierre verificable
 
-C03 está hecho cuando: cien turnos frescos, en español, inglés y spanglish,
-repartidos entre bienvenida, conversación, aclaraciones, confirmaciones,
-progreso, resultados, errores y resumen — leídos y adjudicados — dan respuestas
-útiles y fieles a lo pedido, sin hechos ni palabras inventadas, sin plantillas,
-sin fugas del contrato interno y sin silencios; los errores conservan su causa;
-Full pasa sobre el candidato final; y el trabajo está publicado.
+Actualización expresa del dueño, 2026-09-06: seleccionar casos de uso de los
+turnos únicos reales de usuario registrados desde Carter hasta BAXY actual,
+heredando el corpus y los extractores del Goal10. No añadir instrucciones
+artificiales como «en spanglish» ni traducir o parafrasear para completar cuotas.
+Conservar texto literal, procedencia y contexto de las secuencias. El ámbito es
+español, inglés y mezcla natural; revisar semánticamente el idioma, porque las
+etiquetas históricas `other` también contienen español válido. Los ejemplos de
+documentación, prompts de agentes y pruebas sintéticas no se presentan como
+uso humano real. Separar desarrollo, regresión y reserva antes de ejecutar;
+un texto histórico no es automáticamente una prueba nueva ni independiente del
+entrenamiento. Los casos artificiales ya consumidos se conservan como evidencia
+y regresión técnica, no como representación del uso cotidiano. Esta selección
+no abre ni certifica el Goal10: se heredan sus datos para completar C03.
 
-Cuenta aciertos, no publicaciones. En `panel-opus-13` se publicaron 75 de 78 y
-sólo ~75 % respondían a lo pedido. «Publicado» no es «correcto».
+Aclaración del dueño del 2026-09-06, posterior a los pilotos: «spanglish» exige
+comprensión de entradas mixtas, no alternancia obligatoria en la respuesta.
+Responder en español a una petición mixta es válido; nombres de productos no
+obligan a cambiar de idioma. Se respeta el idioma pedido expresamente, sin cuotas
+de frases o palabras de cada lengua. Se aprueban explicaciones sencillas y
+bienvenidas naturales aunque mezclen o repitan un saludo. No se exige exhaustividad
+técnica cuando la persona no la pide. Conservar contradicciones, hechos inventados
+y efectos no verificados como fallos; no confundir simplificación con falsedad.
+Los cuatro ejemplos aprobados expresamente por el dueño y su adjudicación anterior
+se conservan en artifacts/comprobaciones/C03/ACLARACION_DUENO_2026-09-06.md.
 
-Si un fallo bloquea C03, repáralo aunque toque componentes que otro goal también
-validará. Reetiquetarlo a C05/C06 no lo cierra.
+C03 termina cuando se cumplen todos los criterios del goal formal, incluidos:
 
-### Cómo se informa
+1. Cien turnos normales frescos, congelados antes de ejecutarlos y leídos y
+   adjudicados individualmente: 100/100 útiles y fieles a lo pedido, en los tres
+   idiomas y distribuidos entre las ocho rutas de respuesta. Sin hechos o
+   palabras inventados, plantillas, fugas internas, agotamientos ni silencios.
+2. Los errores conservan su causa y permiten recuperar la sesión. Las averías
+   inyectadas se evalúan aparte y no se cuentan entre los cien turnos normales.
+3. El recorrido compartido de producto, la UI real y el runtime registrado
+   satisfacen las comprobaciones de C03. La salida de un conductor sin ventana
+   no acredita por sí sola pantalla ni audio físico.
+4. Pruebas dueñas y `scripts/test_source_quality.ps1 -Mode Full` verdes sobre el
+   candidato final, sin omitir fallos ni relajar criterios. Runtime y evidencia
+   reproducibles; trabajo propio publicado en la rama de trabajo.
 
-Prosa clara, párrafos con una idea cada uno. Sin muletillas de informe, sin
-listas de viñetas para todo, sin avisos ni descargos no pedidos. Qué hiciste,
-qué mediste y qué decidiste.
+Cuenta respuestas correctas, no mensajes publicados ni tests estructurales.
+Mantén C03 EN_CURSO hasta demostrar el cierre. Si aparece un bloqueo externo
+real que no puedes resolver, documenta la evidencia y la reanudación exacta.
+La dificultad, el consumo de contexto o un contratiempo reparable no cierran
+el goal. Informa con prosa breve: qué cambió, qué se midió y qué falta.
 
-### Cuándo paras
+## Evidencia comprensible y continuidad de la sesión
 
-Paras cuando C03 cumple lo de arriba con evidencia, o cuando llegas a un bloqueo
-real que no puedes resolver — y entonces lo dejas escrito con su reanudación, en
-EN_CURSO. Quedarse sin contexto o sin cuota no cierra el goal ni rebaja un
-criterio.
+Mantén un Markdown legible para el dueño con cada entrada literal que se le dio a
+BAXY, la respuesta literal recibida y su adjudicación explicada. Para secuencias,
+conserva orden y contexto; identifica los hechos observados y enlaza los prompts
+internos/payloads y borradores cuando expliquen el fallo. Separa corpus histórico,
+desarrollo, regresión y reserva; no reescribas respuestas capturadas ni presentes
+una corrección de rúbrica como mejora del modelo. Conserva los cuatro ejemplos
+aprobados expresamente en `ACLARACION_DUENO_2026-09-06.md`. Respeta la privacidad
+de los logs al decidir qué puede versionarse; el informe local puede enlazar
+evidencia privada sin publicar datos sensibles.
 
-Implementa. No entregues un plan ni otro informe de diagnóstico.
+Cuando el dueño pregunte por avance, explica qué fallaba al inicio, qué reparación
+está demostrada, qué falla ahora, por qué y qué falta para cerrar. Distingue el
+inicio de toda la campaña del inicio de esta sesión. Si pide porcentaje, indica
+criterios cumplidos/pendientes y el método de estimación; una tasa de un panel no
+es el porcentaje del goal. No inventes plazos ni atribuyas garantías de éxito a un
+modelo, esfuerzo de razonamiento o suscripción.
+
+No dependas de recordar el chat: registra decisiones y procesos a medida que
+avanzas, con siguiente acción y comando de reanudación. El dueño autoriza nuevas
+tareas si conservar el contexto lo justifica; no las abras por rutina ni dupliques
+escritores del mismo trabajo. Hereda el checkpoint y confirma qué procesos siguen
+activos antes de repetirlos. La conversación de Opera es una fuente opcional de
+contexto; los adjuntos ya aportados se incorporan sin convertir antiguas órdenes
+de cerrar sesiones de Grok/Opus en órdenes de detener el trabajo actual.
+
+## Punto de reanudación de este encargo
+
+No empezar desde cero. El estado vigente es el tramo43 de CHECKPOINT.md y
+ASTRA-TRAMO-43.md, en artifacts/comprobaciones/C03/. Qwen3-4B-Instruct-2507 Q4_K_M
+sigue registrado. Fecha contextual, volumen absoluto contextual y prohibiciones
+simples ya tienen evidencia integrada. No son cien turnos frescos ni un porcentaje
+del goal. El tramo44 sólo comenzó con inspección de código antes del relevo pedido
+por el dueño; no hay implementación ni procesos pendientes de ese tramo.
+
+La siguiente acción parte de effect_intent._has_contradictory_correction y
+unresolved_compound_contract: distinguir una restricción independiente posterior
+de una revocación del mismo efecto, y una pregunta negativa de una prohibición.
+Los controles fallidos y la selección nativa correcta están capturados. No cambiar
+otra vez el prompt para compensar estos vetos ni repetir variantes ya rechazadas.
+Heredar investigación y pruebas vigentes; después continuar la reserva de cien,
+ocho rutas, recuperación, UI/voz/recursos y Full de cierre. Para nuevos relevos,
+manda siempre el checkpoint más reciente sobre este resumen fechado.
+
+## Continuidad del producto
+
+Las decisiones deben favorecer también C04–C09 y los goals posteriores hasta la
+instalación. Comprueba las dependencias afectadas por C03 y deja contratos,
+regresiones y runtime reproducibles que permitan continuar sin el mismo atasco.
+Parte de la revisión de sprints ya realizada y de
+`documentacion/sprints/MAPA_COMPLETO_2026-09-05.md`. Ajusta los prompts y criterios
+posteriores que resulten incompatibles con el producto reparado: comportamiento
+observable, pruebas contra contratos reales y continuidad hasta instalación,
+hardware y aceptación del producto instalado en 12.3. Un cierre histórico o
+miles de pruebas verdes no certifican esas conductas en el candidato nuevo.
+No expandas C03 a ejecutar todos los goals a la vez: cada uno conserva su propia
+aceptación. La autoridad amplia no sustituye las decisiones de identidad de
+`documentacion/00_IDENTIDAD.md` ni los seis invariantes de `AGENTS.md`.

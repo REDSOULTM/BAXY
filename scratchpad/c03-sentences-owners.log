@@ -1,0 +1,57 @@
+........................................................................ [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 28%]
+........................................................................ [ 34%]
+........................................................................ [ 40%]
+........................................................................ [ 45%]
+........................................................................ [ 51%]
+........................................................................ [ 57%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 74%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+.......................... [ 88%]
+.................................. [ 90%]
+.............................................................. [ 95%]
+.....................F......................s.........            [100%]
+================================== FAILURES ===================================
+___ PlannerLlmBoundaryTests.test_visible_status_retries_an_imperative_echo ____
+
+self = <test_planner.PlannerLlmBoundaryTests testMethod=test_visible_status_retries_an_imperative_echo>
+
+    def test_visible_status_retries_an_imperative_echo(self):
+        runtime = object.__new__(LlmRuntime)
+        replies = iter(
+            [
+                "Dime la hora. Paso 1: La hora local es 14:25.",
+                "Paso 1: La hora local es 14:25.",
+            ]
+        )
+        seen = []
+    
+        def fake_post(payload):
+            seen.append(payload)
+            return {"choices": [{"message": {"content": next(replies)}}]}
+    
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "dime la hora",
+            "status",
+            {
+                "situation": "Paso 1: La hora local es 14:25.",
+                "requiredFacts": ["Paso 1: La hora local es 14:25."],
+            },
+        )
+    
+>       self.assertEqual(result, "Paso 1: La hora local es 14:25.")
+E       AssertionError: 'La hora. Paso 1: La hora local es 14:25.' != 'Paso 1: La hora local es 14:25.'
+E       - La hora. Paso 1: La hora local es 14:25.
+E       + Paso 1: La hora local es 14:25.
+
+tests\test_planner.py:3355: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_planner.py::PlannerLlmBoundaryTests::test_visible_status_retries_an_imperative_echo
+1 failed, 1254 passed, 1 skipped, 101 subtests passed in 15.04s

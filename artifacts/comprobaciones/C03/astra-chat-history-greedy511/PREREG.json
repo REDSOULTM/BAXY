@@ -1,0 +1,625 @@
+{
+  "utc": "2026-09-08T22:53:38.350588+00:00",
+  "cases": [
+    {
+      "id": "definition-es-greedy_quoted-0",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-en-greedy_quoted-0",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-greedy_quoted-0",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-es-greedy_quoted-0",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "name-en-greedy_quoted-0",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-greedy_quoted-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-en-greedy_quoted-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "recall-es-conflict-greedy_quoted-0",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "Te llamas Pedro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es-conflict",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "human-correction-greedy_quoted-0",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "human-correction",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "other-person-greedy_quoted-0",
+      "request": "Who is my sister?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My sister is Olivia."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister is Emma."
+        }
+      ],
+      "expected": [],
+      "case_id": "other-person",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "assistant-reference-greedy_quoted-0",
+      "request": "What name did you just say?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "assistant-reference",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 0,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 0
+        }
+      }
+    },
+    {
+      "id": "definition-es-greedy_quoted-17",
+      "request": "¿Qué significa desmutear?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-es",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "definition-en-greedy_quoted-17",
+      "request": "What does unmute mean?",
+      "history": [],
+      "expected": [],
+      "case_id": "definition-en",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "ram-new-topic-greedy_quoted-17",
+      "request": "Explain what RAM is.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "ram-new-topic",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-es-greedy_quoted-17",
+      "request": "Me llamo Álvaro. ¿Cuál es mi nombre?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-es",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "name-en-greedy_quoted-17",
+      "request": "My name is Jordan. What is my name?",
+      "history": [],
+      "expected": [],
+      "case_id": "name-en",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-greedy_quoted-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-en-greedy_quoted-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-en",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "recall-es-conflict-greedy_quoted-17",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "Te llamas Pedro."
+        }
+      ],
+      "expected": [],
+      "case_id": "recall-es-conflict",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "human-correction-greedy_quoted-17",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Jordan."
+        }
+      ],
+      "expected": [],
+      "case_id": "human-correction",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "other-person-greedy_quoted-17",
+      "request": "Who is my sister?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My sister is Olivia."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister is Emma."
+        }
+      ],
+      "expected": [],
+      "case_id": "other-person",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    },
+    {
+      "id": "assistant-reference-greedy_quoted-17",
+      "request": "What name did you just say?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": [],
+      "case_id": "assistant-reference",
+      "profile": {
+        "name": "greedy_quoted",
+        "seed": 17,
+        "provenance": true,
+        "quote_history": true,
+        "sampling": {
+          "temperature": 0.0,
+          "top_p": 0.8,
+          "top_k": 20,
+          "min_p": 0.0,
+          "presence_penalty": 0.0,
+          "repeat_penalty": 1.0,
+          "seed": 17
+        }
+      }
+    }
+  ],
+  "method": "Same source506/private representation510, policy509, exact11cases andseeds0/17. Only temperature changes0.7 to0 relative to matching510quoted payloads; all other effective sampler fields remain documented values. Audit message/template/output-limit equality against510, actual generation coverage, complete output/EOS, source/manifest hashes and resources. No new prompt, metadata key, name rule, source or model.",
+  "criteria": "Resolve English wrong-speaker recall, preserve every useful control and assistant-reference, remove the observed self-correction aside without introducing another failure. Do not count source adoption or C03 acceptance from this diagnostic alone. If not green, no further temperature sweep."
+}

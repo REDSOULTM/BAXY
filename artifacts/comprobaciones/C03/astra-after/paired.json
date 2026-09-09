@@ -1,0 +1,1722 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Good afternoon",
+    "terminal": "published_final",
+    "final": "Good afternoon.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 15,
+        "draft_sha256": "b2a872e9f53a0e3a6416aa8db9cde6cab4b53123e351ba0274615c5556b83bfc",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good afternoon."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "internal_code;recovery:reversed_result;retry_exhausted",
+    "compositionFailure": "internal_code;recovery:reversed_result;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 163,
+        "draft_sha256": "507783007e154adfdabaea7badc80f8b3a3b54bb8e87e66175b2f5ba20f34795",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I cannot define DNS in one sentence due to the compose unavailable error. The cause is that the compose service is not available, preventing the definition of DNS."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 51,
+        "draft_sha256": "9f8d22d4ad4057a6cbccca7647b81b293f15d5bfc094a57aa46fe87dd10b74ed",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure is caused by compose being unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 92,
+        "draft_sha256": "deeae98754ce1f4b8014df639202ef88311f228c2d2ed1c5ac7f0248f4950da1",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "Define DNS as a system that translates domain names into IP addresses to locate web servers."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 84,
+        "draft_sha256": "b42933a3f290843c6ad2a0d6f1b8dd4736731910fd63514b4531cae086c90e3a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The DNS definition could not be composed because the compose service is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 84,
+        "draft_sha256": "b42933a3f290843c6ad2a0d6f1b8dd4736731910fd63514b4531cae086c90e3a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The DNS definition could not be composed because the compose service is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 232,
+        "draft_sha256": "e940ae7a905dfce1cd4bbf8bcbd075c3a77fbdd13688cbfd41f028587d0e2c6c",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "DNS is defined as a system that maps domain names to IP addresses, enabling devices to resolve human-readable hostnames into the numeric IP addresses needed for network communication. The cause of the failure is compose unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 89,
+        "draft_sha256": "160a3a1c4d915e4e16b7ae6437bb5f52972b428b703aac4b9a48e4ab1f74a394",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "In this sentence, I cannot define DNS because the compose unavailable causes the failure."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 84,
+        "draft_sha256": "b42933a3f290843c6ad2a0d6f1b8dd4736731910fd63514b4531cae086c90e3a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The DNS definition could not be composed because the compose service is unavailable."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Hi again",
+    "terminal": "published_final",
+    "final": "Hi again! How can I help you today?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "6bed584f4a5bf271da41bc7260dcdaa236a885d7c81f01a934a8ac3a73feb9f7",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hi again! How can I help you today?"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Good evening",
+    "terminal": "published_final",
+    "final": "Good evening!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "0248808ddaa3479e17482884c8bb3f281b20264c8299aa434d2b6cba256b9ec3",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good evening!"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda una señal en viajar de un punto a otro en una red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 93,
+        "draft_sha256": "19a5f3ed498cd2d16b3e37bafc696a962378aaab5089a3364029936c558ca857",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red es el tiempo que tarda una señal en viajar de un punto a otro en una red."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia de red importa porque afecta el tiempo de reacción y la calidad de experiencia en aplicaciones que requieren respuesta rápida.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": true,
+        "draft_bytes": 169,
+        "draft_sha256": "a463d364d81f664165f6104cc9694cf810674bcd87c22bbed4f091bbefd295fc",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta la calidad de experiencia en aplicaciones que requieren respuesta rápida, como navegación web o comunicaciones en tiempo real."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": false,
+        "draft_bytes": 175,
+        "draft_sha256": "49cd9f2c8ddaa417998de5d90d5d842600f5bd72c73793eea64ba86f153992af",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta la calidad y rapidez de las comunicaciones, lo cual puede influir en la experiencia del usuario y en la eficiencia de las operaciones."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": false,
+        "draft_bytes": 157,
+        "draft_sha256": "b7878b5293d23831bda51a0dac4fd474c964f5e2130277630517cf4b9fb7ca11",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta el tiempo en que las instrucciones se completan, lo que puede influir en la calidad y eficiencia de las operaciones."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": true,
+        "draft_bytes": 171,
+        "draft_sha256": "2547ec7216dd4c0b34382173165c75a2f8c7fe08da555267b429223e6d96bd63",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta el tiempo que tarda la información en llegar y ser procesada, lo cual puede influir en la usabilidad y la eficiencia del sistema."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": true,
+        "draft_bytes": 140,
+        "draft_sha256": "bab3547baad489767354f34eeaff8ed225b01eee6121f90b60e476fc1427e5cf",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta el tiempo de reacción y la calidad de experiencia en aplicaciones que requieren respuesta rápida."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "why does it matter?",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 109,
+        "draft_sha256": "af9b8e7de973dc42146c03b9cb093d65aecb06a2480c30f2aba10dbcb50c231c",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The cause of failure is that the compose function is unavailable, which prevents the process from proceeding."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 113,
+        "draft_sha256": "9059c88c521d88dfda17d599dc1a2e01628a2024ddd730085099c94f30e68ee0",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure occurred because the composition process was unavailable, preventing the outcome from being achieved."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 103,
+        "draft_sha256": "4c30796c8a5b2da4459b3d20076b54beb2dbf3b76980e1a434d59633555661d8",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "It matters because the composition is unavailable, which prevents the required process from proceeding."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 63,
+        "draft_sha256": "e296e24559526faf690bda9d2009a77891bd36077096542ce07e16a92d5a4434",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The system failed because the compose function was unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "cf5a4cab0f19f920cd19b8a7bd676b197ddb6d6aed15a2fcf21ee4474284b9d4",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "It matters because the compose unavailable cause prevents the system from completing the required action."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 123,
+        "draft_sha256": "1543c3cb582c222cccef24e7577788bf6ccd9d13e93ade9ce0ce6bdf914245c1",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "It matters because without composition being unavailable, the task cannot be completed, and the outcome will remain failed."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 131,
+        "draft_sha256": "ecc4dabfbe9b22d95afa91b957d2df0e94dd0ce41e835708dd8a37b421446838",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The cause of the failure is compose unavailable, meaning the composition function was not available when the process was attempted."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 135,
+        "draft_sha256": "c95a44d35bcbee0c210bcf385821b0dc4081e0d13eff15b3a26767f794d5bdc6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "It matters because the system cannot compose the required content due to the unavailable component, which prevents the desired outcome."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 80,
+        "draft_sha256": "48b56c2fc302427a94eeef49ebafad92d727e11e57b56d351262587ed1bcc42b",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I cannot compose the requested sentence because the compose tool is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 114,
+        "draft_sha256": "d94a0cd66dfdbfc28df5f383470aa96fbe02573024d317bf27c86c4dd65405ac",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "A VPN is a service that encrypts your internet traffic and routes it through a secure tunnel to a remote location."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "invented",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 465,
+        "draft_sha256": "24b6df8a098b63cce0162ebb5e67ff55c832d1f05ca97c109da4c5c4553c90f2",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I cannot provide a sentence because the requested failure cause is not applicable to the task. The situation indicates an internal error unrelated to the explanation.\n\nI can instead explain what a VPN is in one clear sentence: A VPN encrypts your internet traffic and routes it through a secure tunnel, allowing you to browse anonymously on public networks.\n\nThis is a single sentence, in English, without using forbidden terms, and it answers the original request."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "e9ae9bb0a12668a881b8a4b28081d3147c159f5bfc10a13898f45497dda6f440",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I cannot explain what a VPN is because the composition tool is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 421,
+        "draft_sha256": "77dbbae6f8dbf110e8305ff9a008a9be646458142bdcb7184488b0426e80a63f",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I cannot provide a clear explanation in one sentence because the required phrase must be written solely in English and must avoid internal codes, references, or external terms, while strictly following the instruction to name the failure cause in prose without using disallowed words.\n\nNo JSON. No codes. One sentence. English only. One sentence.\n\nI am unable to compose the required sentence under the given constraints."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 95,
+        "draft_sha256": "ea9c495a5f9cc8c5554cf973a8897bd25aaeb64d08ab89352ce7b177455993a5",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "A VPN is a service that encrypts internet traffic to provide secure access to private networks."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "invented",
+        "finish_reason": "length",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 1171,
+        "draft_sha256": "e3bd1df9e784fef242997f8d5e959012b5418fe9374a569a53afc4e2539604f0",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I cannot provide a sentence explaining what a VPN is because the compose tool is unavailable.\n\nBut the instructions say: \"Compose ONE sentence in English, no Spanish words, mandatory language English, return only the phrase.\" Also \"situation\" is given: outcome failed, cause compose unavailable. And they want a phrase in the language requested, which is English.\n\nBut the task: \"Redacta UNA frase en el idioma del pedido.\" (Write one phrase in the language of the order). They also say \"Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré». English only.\"\n\nSo we need to output a phrase in English that states the failure cause in prose. The phrase should be one sentence? The instruction: \"Outside literal contract items, do not introduce Spanish words ... English only. Name the failure cause in prose.\"\n\nThus we need to produce a phrase (English sentence) that states the failure cause in prose. The phrase should be a single sentence? The original request: \"Redacta UNA frase en el idioma del pedido.\" That's one phrase. So we should output a single English sentence describing the failure cause.\n\nWe also have situation:"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t9",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 251,
+        "draft_sha256": "2fc4234081d68a640fbf540a30b226259d3233b43d8e2952d32f783469f1c78c",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "A VPN is a service that encrypts your internet connection, allowing you to securely access private networks or the public internet as if you were on the same local network, but it cannot be composed because the compose unavailable condition is active."
+      }
+    ]
+  },
+  {
+    "turnId": "t10",
+    "request": "why does it matter?",
+    "terminal": "filtered",
+    "final": "",
+    "diagnostic": "reversed_result;recovery:reversed_result",
+    "compositionFailure": null,
+    "status": "Todo listo",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 69,
+        "draft_sha256": "c4881b8401d2e062b5c856f9ac26a6518b91f0517a2680bb85dd65da9db60670",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The cause of the failure is that the compose function is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 61,
+        "draft_sha256": "d71f5ec3a2997525c3b9f592d6a7dd1f14ddc587827037103f770c623d72af0a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure is caused by the inability to compose a response."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 128,
+        "draft_sha256": "35201f69a0f40539504215f72193c120515ecea88ba368010cf2f0da847b5b49",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "It matters because without composition being available, the process cannot proceed, and the intended outcome cannot be achieved."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 73,
+        "draft_sha256": "2350380a4eea71e8613660239ee92d8ca5904b1ba288420d1f194e6eed4b4ae6",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The cause of the failure is that the composition function is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 70,
+        "draft_sha256": "96f030a5456797471de2bc9d98420562cc833b3bc3ad6bf45c405d82ab409aa1",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure occurred because the required composition was unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 106,
+        "draft_sha256": "17a8581e8452513454d3dc286b3d67f44ebe249df7c62830f2cac681b7e441c1",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I don't see why it matters, but the system cannot compose because the required information is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "2425d43468d4fd09053c1ee78f63f95c8b08c2ef1e31e346d2fb825879daee59",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure occurred because the compose function was unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 64,
+        "draft_sha256": "247e80e781f78f85420a9a895fcf56318b50570509813ac576c3ac09584ca7d0",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure occurred because the compose service is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 109,
+        "draft_sha256": "ca7118da103cbea20ab9ef93452f2fb3bb64e5fc2d8698ec13e675fed9f376c9",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "I don't understand why it matters; the system cannot compose because the required information is unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 68,
+        "draft_sha256": "7ca0b7691d68a8f9a247b6dca3c56f7b74239ad7f332a67c3f0f9ebd9f548104",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure occurred because the composition module was unavailable."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "e05ca64d8da6f2b5b4b64426b695782a970674106470fb718b20821f925afc39",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "The failure occurs because the required component is unavailable, preventing the process from proceeding."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 112,
+        "draft_sha256": "bc403a8888b4a818f0b68f86791ce435e20454f1bcbf0e64390c91bf170b8293",
+        "payload": {
+          "outcome": "failed",
+          "cause": "compose unavailable"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"compose_unavailable\"}",
+        "draft": "It matters because without the compose module, the system cannot complete the intended task, leading to failure."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario entre tu dispositivo y la red, gestionando la comunicación y permitiendo acceder a recursos remotos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 86,
+        "draft_sha256": "4e22e21b826e283b31ba95164e801ad4a3446018c86928720e08fcecddc8abdd",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy actúa como intermediario entre dos partes para gestionar el acceso o la red."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 104,
+        "draft_sha256": "72562343ef2c00864b4a98176da1b05d094db12ca0101237faafcea6b4563085",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy actúa como intermediario entre dos sistemas, redirigiendo el tráfico y gestionando el acceso."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 136,
+        "draft_sha256": "06233921c62bdb409c17088aae4f98bcd110df809c810feb7f11317268dedfc7",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy actúa como intermediario entre tu dispositivo y la red, gestionando la comunicación y permitiendo acceder a recursos remotos."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "¿y por qué se usa?",
+    "terminal": "published_final",
+    "final": "Por qué se usa el proxy en el tema \"proxy\", se usa para filtrar o modificar el acceso a recursos, permitiendo un control centralizado sin exponer directamente los datos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 76,
+        "draft_sha256": "bd1d33714cf173e5c00143e1e3e7fc18eb467804a3a9397ff8488594a207914a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Se usa para actuar como intermediario y enrutar solicitudes al destino real."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "answered_with_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": false,
+        "draft_bytes": 24,
+        "draft_sha256": "29f8b5341de7c2838a97d74250813643a03938a57282d744a39d4923823a3613",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "¿Por qué se usa proxy?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 123,
+        "draft_sha256": "2e44753e28ed531d987e8f1bb057db8c9e08bb63c3df5549ee5c5a958928651e",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Porque se usa para facilitar el acceso a información o recursos que de otro modo serían difíciles de obtener o proteger."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 170,
+        "draft_sha256": "afcab1db6d880ed397fb1a2ea4038af43c24d5b5f0a1607c0336cd2e13fe4249",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Por qué se usa el proxy en el tema \"proxy\", se usa para filtrar o modificar el acceso a recursos, permitiendo un control centralizado sin exponer directamente los datos."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router direciona el flujo de datos entre redes.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 65,
+        "draft_sha256": "b5c6654e24c486b580818eb73f6faacbcedeb3c28644e6b40d57ea24dd2bf79e",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router enruta la información entre tu dispositivo y internet."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "d4fa51ddf9d6d43f2e10017ba5dccfce4e74f42943aefbd8a2a584cef371e5d9",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router enruta el tráfico de red entre dispositivos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 50,
+        "draft_sha256": "89148f65adb3db8c3bddf621f571f6a56e3cfdd2fb3af58de9958492c3c72500",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router direciona el flujo de datos entre redes."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "¿y para qué sirve?",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 18,
+        "draft_sha256": "dc2ae34bb4d73134fee238c04e02b0493e8d8bf5e68d0da23fb1675022b0ed1e",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "¿Para qué sirve?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 55,
+        "draft_sha256": "c4bf22577764a910b703df14c1edca4b439a97f9aee111c5efb5ea2a9c5c972a",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No sé a qué sirve porque la solicitud no está clara."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 122,
+        "draft_sha256": "69baab4a65f74bb04500a0adc649b6331a8350dfd0fd7b4bdb20273613131573",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Yo no sé exactamente por qué necesitas ayuda, así que voy a explicarte paso a paso para que puedas seguir con claridad."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 90,
+        "draft_sha256": "8e5e56f183ea82977cfed04f99008c84eb66097921e3e893c4a4015c044bac48",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No puedo ayudar si la solicitud no está clara. Por favor, explica mejor lo que necesitas."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 109,
+        "draft_sha256": "b77398dd0a9d3d8453914668b274fb74105f68adc8b50738218e1cb66427107c",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No entiendo claramente tu pregunta. ¿Podrías explicarlo de forma más sencilla o usar palabras más claras?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 22,
+        "draft_sha256": "6a1531fefa9037c56a3d50899e47fe685401f4ff000b11ec2daae293f8b568b2",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No sé por qué sirve."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 90,
+        "draft_sha256": "5a398ef25c56905b003820cfc8e3952fd2773edc5cba777a02feb68c97461154",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No sé exactamente para qué sirve. ¿Puedes aclarar la pregunta o indicar qué necesitas?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "6063e9cc8bb647310ff3e751e4fa1b5bf09cfe6601c21c9172602c6e21f51a30",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "La falta de claridad en la solicitud hace que no sepa a qué sirve."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 151,
+        "draft_sha256": "3c6abc7126652ec87649c4f3e0b49a001ea75fe3426d96f527e05361fa7b4af5",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "No sé exactamente por qué necesitas ayuda, así que te lo diré de forma clara.  \nPrefiero que me expliques mejor lo que buscas, y yo te ayudo mejor."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "4b0c9a04969a9076df0fc010f8f33503a277b7463ffefe9aec44b8317cf12660",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Pregúntame qué lo que necesitas más aclarar."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 111,
+        "draft_sha256": "824662635eea4603268aca478a8c61723481fea2ba6a82f637eb347a8104de34",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "La falta de claridad en la solicitud hace que no se pueda determinar por qué sirve la información solicitada."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 58,
+        "draft_sha256": "e549df7af1559cc712877db2d5479037018381f861681a399b99c98e912daf6b",
+        "payload": {
+          "outcome": "failed",
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Yo no sé a qué sirve porque la solicitud no está clara."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "Twelve por ocho es doce.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 100,
+        "draft_sha256": "107d108cc0461785f079e767aa75fe8bd7f0f7981a13c05849b58ede962b68be",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Doce dividido entre ocho es igual a un y dos octavos, por lo que doce por ocho es uno y dos octavos."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 24,
+        "draft_sha256": "c0e263b0842a7ed30a1f6385a4509ce400d8dde7ca48b6c88ae64cad32d8bb7f",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Twelve por ocho es doce."
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "Lima",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

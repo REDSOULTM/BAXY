@@ -1,0 +1,16 @@
+{"id": "memory.recall", "variant": "baseline", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "memory.recall", "variant": "provenance", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "variant": "baseline", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-lina", "variant": "provenance", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-accent", "variant": "provenance", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-english", "variant": "baseline", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "name-english", "variant": "provenance", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "sister", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "sister", "variant": "provenance", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "assistant-es", "variant": "baseline", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "assistant-es", "variant": "provenance", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "both-es", "variant": "baseline", "answer": "Yo soy BAXY, tu compañero. Tú eres Emmanuel.", "finish_reason": "stop"}
+{"id": "both-es", "variant": "provenance", "answer": "Yo soy BAXY, tu compañero. Tú te llamas Emmanuel.", "finish_reason": "stop"}
+{"id": "assistant-en", "variant": "baseline", "answer": "My name is Taylor.", "finish_reason": "stop"}
+{"id": "assistant-en", "variant": "provenance", "answer": "My name is Taylor.", "finish_reason": "stop"}

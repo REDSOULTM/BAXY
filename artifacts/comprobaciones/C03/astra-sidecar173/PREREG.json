@@ -1,0 +1,16 @@
+{
+  "method": "Same physical fullsidecar168/catalog/model/observed App env and four consumed texts. Only product difference: source172 resets the interruption count on non-speech or non-speaking frames and emits at the third qualifying frame, not every subsequent frame. Same three-frame duration, VAD, energy, echo guard and Speex configuration. Same state-only observer as168; no169 snapshot/per-frame taps. Compare interruption events and actual complete output; do not call a pass proof of100-turn/wake acceptance.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "sourceFiles": {
+    "src/baxy_mind/__main__.py": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/voice.py": "bdbfcc088fe023232ad37df4c75d95b6d699f7c7e8fe1b395cbeca14081ed06a",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  }
+}

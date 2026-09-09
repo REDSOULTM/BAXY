@@ -1,0 +1,26 @@
+[
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice127-private\\loopback.wav",
+    "sha256": "ec8749bd348806a89d821a2e7bdc358b92799b7b45b032991163ede4abb92315"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\near_only-raw.wav",
+    "sha256": "5741aa87852048fa11b684ba817ed0a8da7f2c1b7b26d3e7a213f80c417c1ab5"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\near_only-linear.wav",
+    "sha256": "6f6c8beac55c7d3f65316611ed689c64987597933d9efcf6f5ca9e07e573f49a"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\physical_echo_plus_synthetic_near-linear.wav",
+    "sha256": "c24f8f0ba12a03fe0929dd99d120e7db6bfee8416b5c2b9a45c1bb7d1a482014"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\near_only-final.wav",
+    "sha256": "8b69b65b011dee666ca7312c769492c47e49bb4a2fd6fe056a4f008d5407f7cf"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\physical_echo_plus_synthetic_near-final.wav",
+    "sha256": "e44d7bde96d12d02d88070232dd8831acfe48e96f91abcffd32e2c088db801de"
+  }
+]

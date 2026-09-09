@@ -28,7 +28,8 @@ public sealed record WindowCandidate(
     int X,
     int Y,
     int Width,
-    int Height);
+    int Height,
+    string? Title = null);
 
 public sealed record WindowResolveResult(
     bool Succeeded,
@@ -56,7 +57,8 @@ public interface IWindowControlProvider
     ValueTask<WindowResolveResult> ResolveAsync(
         string processName,
         int limit,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        bool byTitle = false);
 
     ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,

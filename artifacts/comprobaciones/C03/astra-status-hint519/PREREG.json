@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-09T00:14:00.806874+00:00",
+  "cases": [
+    "My name is Jordan. Remember my name.",
+    "confirm",
+    "Abre una aplicación.",
+    "What name have you saved in private memory?",
+    "Me llamo Álvaro.",
+    "Abre una aplicación.",
+    "¿Qué nombre tienes guardado en tu memoria privada?",
+    "¿Cómo me llamo?",
+    "Desactiva la memoria privada.",
+    "Dime la hora.",
+    "¿Tienes memoria local?"
+  ],
+  "cause": "517 T9 receives verified enabled=false but adds absence of detected PC changes. _compose_shape_instruction appends the broad no-PC-change hint to every successful status, including private mutations. Facts themselves remain correct.",
+  "method": "Two new isolated product profiles, baseline then treatment. Same source516/current registered Qwen/b9980. Only treatment removes the exact second sentence from the shape instruction: Completing a request does not imply changing the PC. Keep Report the verified results, all seen flags, operation/state/outcome, sampler, validators and original caller facts. Instrument shape before/after. No status515 view filter or source edit.",
+  "criteria": "T9 must report actual disabled state without unobserved detection claims or invented additional effects. T1-T8 retain their original binding and factual behavior; T2 known internal prose remains a failure if present. T10 verified time must not invent a PC change; T11 must report memory capability/state consistent with enabled=false. Judge all final/activity/progress outputs, not just targeted sentence removal. No fixed visible reply, no acceptance reserve.",
+  "causal_limits": "Later dialogue may differ after changed narration; compare exact shape outputs and targeted payload facts. One fixed profile source diagnostic, not model ranking. No UI or voice, private synthetic persistence only; own-tree GPU3800MiB/freeRAM768MiB/240s. Source unchanged during both runs."
+}

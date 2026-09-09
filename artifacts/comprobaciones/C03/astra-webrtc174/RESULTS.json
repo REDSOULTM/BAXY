@@ -1,0 +1,224 @@
+[
+  {
+    "case": "native_echo149",
+    "method": "raw",
+    "samples": 135168,
+    "speechFrames": 120,
+    "qualifiedFramesWithoutEchoGuard": 44,
+    "maxConsecutiveWithoutEchoGuard": 7,
+    "firstQualifiedSeconds": 3.488,
+    "rms": 0.004057082211108992,
+    "nativeTimeMs": null,
+    "rssDeltaBytes": 4096
+  },
+  {
+    "case": "native_echo149",
+    "method": "speex",
+    "samples": 135168,
+    "speechFrames": 42,
+    "qualifiedFramesWithoutEchoGuard": 6,
+    "maxConsecutiveWithoutEchoGuard": 6,
+    "firstQualifiedSeconds": 3.52,
+    "rms": 0.0020141962542973902,
+    "nativeTimeMs": {
+      "mean": 0.1454689400182388,
+      "p99": 0.2047570004651789,
+      "total": 38.40380016481504
+    },
+    "rssDeltaBytes": 311296
+  },
+  {
+    "case": "native_echo149",
+    "method": "webrtc",
+    "samples": 135040,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutEchoGuard": 0,
+    "maxConsecutiveWithoutEchoGuard": 0,
+    "firstQualifiedSeconds": null,
+    "rms": 0.00015234924997754339,
+    "nativeTimeMs": {
+      "mean": 0.07788424162672485,
+      "p99": 0.10641300163115369,
+      "total": 65.73429993295576
+    },
+    "rssDeltaBytes": 364544
+  },
+  {
+    "case": "physical_echo",
+    "method": "raw",
+    "samples": 508928,
+    "speechFrames": 127,
+    "qualifiedFramesWithoutEchoGuard": 25,
+    "maxConsecutiveWithoutEchoGuard": 7,
+    "firstQualifiedSeconds": 25.824,
+    "rms": 0.0014907980292317856,
+    "nativeTimeMs": null,
+    "rssDeltaBytes": 2039808
+  },
+  {
+    "case": "physical_echo",
+    "method": "speex",
+    "samples": 508928,
+    "speechFrames": 33,
+    "qualifiedFramesWithoutEchoGuard": 6,
+    "maxConsecutiveWithoutEchoGuard": 6,
+    "firstQualifiedSeconds": 25.856,
+    "rms": 0.0008763412541944565,
+    "nativeTimeMs": {
+      "mean": 0.13660040251995947,
+      "p99": 0.20975899446057134,
+      "total": 135.78080010483973
+    },
+    "rssDeltaBytes": 4112384
+  },
+  {
+    "case": "physical_echo",
+    "method": "webrtc",
+    "samples": 508800,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutEchoGuard": 0,
+    "maxConsecutiveWithoutEchoGuard": 0,
+    "firstQualifiedSeconds": null,
+    "rms": 0.0001993514787569822,
+    "nativeTimeMs": {
+      "mean": 0.07474547150104055,
+      "p99": 0.1060209923889488,
+      "total": 237.69059937330894
+    },
+    "rssDeltaBytes": 2531328
+  },
+  {
+    "case": "near_only",
+    "method": "raw",
+    "samples": 508928,
+    "speechFrames": 86,
+    "qualifiedFramesWithoutEchoGuard": 45,
+    "maxConsecutiveWithoutEchoGuard": 9,
+    "firstQualifiedSeconds": 25.6,
+    "rms": 0.0019897639643026935,
+    "nativeTimeMs": null,
+    "rssDeltaBytes": 2039808
+  },
+  {
+    "case": "near_only",
+    "method": "speex",
+    "samples": 508928,
+    "speechFrames": 86,
+    "qualifiedFramesWithoutEchoGuard": 45,
+    "maxConsecutiveWithoutEchoGuard": 10,
+    "firstQualifiedSeconds": 25.6,
+    "rms": 0.0019264829969192264,
+    "nativeTimeMs": {
+      "mean": 0.13446841032082174,
+      "p99": 0.21044299865025065,
+      "total": 133.6615998588968
+    },
+    "rssDeltaBytes": 2072576,
+    "observedOutputLagSamples": 511
+  },
+  {
+    "case": "near_only",
+    "method": "webrtc",
+    "samples": 508800,
+    "speechFrames": 87,
+    "qualifiedFramesWithoutEchoGuard": 45,
+    "maxConsecutiveWithoutEchoGuard": 9,
+    "firstQualifiedSeconds": 25.6,
+    "rms": 0.0019661001830299576,
+    "nativeTimeMs": {
+      "mean": 0.07484433979400779,
+      "p99": 0.11444699834100905,
+      "total": 238.00500054494478
+    },
+    "rssDeltaBytes": 2039808,
+    "observedOutputLagSamples": 127
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "method": "raw",
+    "samples": 508928,
+    "speechFrames": 113,
+    "qualifiedFramesWithoutEchoGuard": 64,
+    "maxConsecutiveWithoutEchoGuard": 14,
+    "firstQualifiedSeconds": 25.6,
+    "rms": 0.002486456795245306,
+    "nativeTimeMs": null,
+    "rssDeltaBytes": 2039808
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "method": "speex",
+    "samples": 508928,
+    "speechFrames": 92,
+    "qualifiedFramesWithoutEchoGuard": 49,
+    "maxConsecutiveWithoutEchoGuard": 14,
+    "firstQualifiedSeconds": 25.6,
+    "rms": 0.0020200293897030533,
+    "nativeTimeMs": {
+      "mean": 0.13503692167557182,
+      "p99": 0.20304698802647167,
+      "total": 134.2267001455184
+    },
+    "rssDeltaBytes": 2060288
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "method": "webrtc",
+    "samples": 508800,
+    "speechFrames": 67,
+    "qualifiedFramesWithoutEchoGuard": 28,
+    "maxConsecutiveWithoutEchoGuard": 8,
+    "firstQualifiedSeconds": 25.6,
+    "rms": 0.0013655072825837654,
+    "nativeTimeMs": {
+      "mean": 0.07481135224041957,
+      "p99": 0.11002599378116432,
+      "total": 237.90010012453422
+    },
+    "rssDeltaBytes": 2064384
+  },
+  {
+    "case": "cold_silence",
+    "method": "raw",
+    "samples": 32000,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutEchoGuard": 0,
+    "maxConsecutiveWithoutEchoGuard": 0,
+    "firstQualifiedSeconds": null,
+    "rms": 0.0,
+    "nativeTimeMs": null,
+    "rssDeltaBytes": 0
+  },
+  {
+    "case": "cold_silence",
+    "method": "speex",
+    "samples": 31744,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutEchoGuard": 0,
+    "maxConsecutiveWithoutEchoGuard": 0,
+    "firstQualifiedSeconds": null,
+    "rms": 0.0,
+    "nativeTimeMs": {
+      "mean": 0.13558709765821997,
+      "p99": 0.27100699851871474,
+      "total": 8.406400054809637
+    },
+    "rssDeltaBytes": -2043904
+  },
+  {
+    "case": "cold_silence",
+    "method": "webrtc",
+    "samples": 32000,
+    "speechFrames": 0,
+    "qualifiedFramesWithoutEchoGuard": 0,
+    "maxConsecutiveWithoutEchoGuard": 0,
+    "firstQualifiedSeconds": null,
+    "rms": 0.0,
+    "nativeTimeMs": {
+      "mean": 0.07303999991563614,
+      "p99": 0.09887999578495503,
+      "total": 14.607999983127229
+    },
+    "rssDeltaBytes": 4096
+  }
+]

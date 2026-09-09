@@ -1,0 +1,194 @@
+F.FFF                                                                    [100%]
+================================== FAILURES ===================================
+_ test_barge_in_requires_consecutive_speech_during_output[probabilities0-speaking0-expected_frames0] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021A787AF5F0>
+probabilities = [0.9, 0.0, 0.9, 0.0, 0.9]
+speaking = [True, True, True, True, True], expected_frames = []
+
+    @pytest.mark.parametrize(
+        ("probabilities", "speaking", "expected_frames"),
+        [
+            ([0.9, 0.0, 0.9, 0.0, 0.9], [True] * 5, []),
+            ([0.9] * 3, [True] * 3, [3]),
+            ([0.9, 0.9, 0.0, 0.9, 0.9, 0.9], [True] * 6, [6]),
+            ([0.9] * 6, [True, True, False, True, True, True], [6]),
+            ([0.9] * 6, [True] * 6, [3]),
+        ],
+    )
+    def test_barge_in_requires_consecutive_speech_during_output(
+        monkeypatch, probabilities, speaking, expected_frames,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, len(probabilities))
+        cancelled_at = []
+        # Audio cancellation is asynchronous: speaking may remain true for a few
+        # more frames after the cancellation request. One sustained run emits once.
+        monkeypatch.setattr(
+            VoiceEngine, "speaking",
+            property(lambda _: speaking[max(0, min(stream.reads - 1, len(speaking) - 1))]),
+        )
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=queue.Queue(),
+                streaming_queue=queue.Queue(), capture_ready_event=threading.Event(),
+            )
+>           assert cancelled_at == expected_frames
+E           assert [5] == []
+E             
+E             Left contains one more item: 5
+E             Use -v to get more diff
+
+tests\test_mind_voice_runtime.py:2004: AssertionError
+_ test_barge_in_requires_consecutive_speech_during_output[probabilities2-speaking2-expected_frames2] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021A787EC500>
+probabilities = [0.9, 0.9, 0.0, 0.9, 0.9, 0.9]
+speaking = [True, True, True, True, True, True], expected_frames = [6]
+
+    @pytest.mark.parametrize(
+        ("probabilities", "speaking", "expected_frames"),
+        [
+            ([0.9, 0.0, 0.9, 0.0, 0.9], [True] * 5, []),
+            ([0.9] * 3, [True] * 3, [3]),
+            ([0.9, 0.9, 0.0, 0.9, 0.9, 0.9], [True] * 6, [6]),
+            ([0.9] * 6, [True, True, False, True, True, True], [6]),
+            ([0.9] * 6, [True] * 6, [3]),
+        ],
+    )
+    def test_barge_in_requires_consecutive_speech_during_output(
+        monkeypatch, probabilities, speaking, expected_frames,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, len(probabilities))
+        cancelled_at = []
+        # Audio cancellation is asynchronous: speaking may remain true for a few
+        # more frames after the cancellation request. One sustained run emits once.
+        monkeypatch.setattr(
+            VoiceEngine, "speaking",
+            property(lambda _: speaking[max(0, min(stream.reads - 1, len(speaking) - 1))]),
+        )
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=queue.Queue(),
+                streaming_queue=queue.Queue(), capture_ready_event=threading.Event(),
+            )
+>           assert cancelled_at == expected_frames
+E           assert [4, 5, 6] == [6]
+E             
+E             At index 0 diff: 4 != 6
+E             Left contains 2 more items, first extra item: 5
+E             Use -v to get more diff
+
+tests\test_mind_voice_runtime.py:2004: AssertionError
+_ test_barge_in_requires_consecutive_speech_during_output[probabilities3-speaking3-expected_frames3] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021A784DFDD0>
+probabilities = [0.9, 0.9, 0.9, 0.9, 0.9, 0.9]
+speaking = [True, True, False, True, True, True], expected_frames = [6]
+
+    @pytest.mark.parametrize(
+        ("probabilities", "speaking", "expected_frames"),
+        [
+            ([0.9, 0.0, 0.9, 0.0, 0.9], [True] * 5, []),
+            ([0.9] * 3, [True] * 3, [3]),
+            ([0.9, 0.9, 0.0, 0.9, 0.9, 0.9], [True] * 6, [6]),
+            ([0.9] * 6, [True, True, False, True, True, True], [6]),
+            ([0.9] * 6, [True] * 6, [3]),
+        ],
+    )
+    def test_barge_in_requires_consecutive_speech_during_output(
+        monkeypatch, probabilities, speaking, expected_frames,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, len(probabilities))
+        cancelled_at = []
+        # Audio cancellation is asynchronous: speaking may remain true for a few
+        # more frames after the cancellation request. One sustained run emits once.
+        monkeypatch.setattr(
+            VoiceEngine, "speaking",
+            property(lambda _: speaking[max(0, min(stream.reads - 1, len(speaking) - 1))]),
+        )
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=queue.Queue(),
+                streaming_queue=queue.Queue(), capture_ready_event=threading.Event(),
+            )
+>           assert cancelled_at == expected_frames
+E           assert [4, 5, 6] == [6]
+E             
+E             At index 0 diff: 4 != 6
+E             Left contains 2 more items, first extra item: 5
+E             Use -v to get more diff
+
+tests\test_mind_voice_runtime.py:2004: AssertionError
+_ test_barge_in_requires_consecutive_speech_during_output[probabilities4-speaking4-expected_frames4] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021A78257E60>
+probabilities = [0.9, 0.9, 0.9, 0.9, 0.9, 0.9]
+speaking = [True, True, True, True, True, True], expected_frames = [3]
+
+    @pytest.mark.parametrize(
+        ("probabilities", "speaking", "expected_frames"),
+        [
+            ([0.9, 0.0, 0.9, 0.0, 0.9], [True] * 5, []),
+            ([0.9] * 3, [True] * 3, [3]),
+            ([0.9, 0.9, 0.0, 0.9, 0.9, 0.9], [True] * 6, [6]),
+            ([0.9] * 6, [True, True, False, True, True, True], [6]),
+            ([0.9] * 6, [True] * 6, [3]),
+        ],
+    )
+    def test_barge_in_requires_consecutive_speech_during_output(
+        monkeypatch, probabilities, speaking, expected_frames,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, len(probabilities))
+        cancelled_at = []
+        # Audio cancellation is asynchronous: speaking may remain true for a few
+        # more frames after the cancellation request. One sustained run emits once.
+        monkeypatch.setattr(
+            VoiceEngine, "speaking",
+            property(lambda _: speaking[max(0, min(stream.reads - 1, len(speaking) - 1))]),
+        )
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=queue.Queue(),
+                streaming_queue=queue.Queue(), capture_ready_event=threading.Event(),
+            )
+>           assert cancelled_at == expected_frames
+E           assert [3, 4, 5, 6] == [3]
+E             
+E             Left contains 3 more items, first extra item: 4
+E             Use -v to get more diff
+
+tests\test_mind_voice_runtime.py:2004: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_barge_in_requires_consecutive_speech_during_output[probabilities0-speaking0-expected_frames0]
+FAILED tests/test_mind_voice_runtime.py::test_barge_in_requires_consecutive_speech_during_output[probabilities2-speaking2-expected_frames2]
+FAILED tests/test_mind_voice_runtime.py::test_barge_in_requires_consecutive_speech_during_output[probabilities3-speaking3-expected_frames3]
+FAILED tests/test_mind_voice_runtime.py::test_barge_in_requires_consecutive_speech_during_output[probabilities4-speaking4-expected_frames4]
+4 failed, 1 passed, 81 deselected in 1.42s

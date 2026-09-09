@@ -1,0 +1,28 @@
+[
+  {
+    "model": "qwen35-4b",
+    "backend": "b10865",
+    "completed": 33,
+    "violations": [],
+    "effective_seeds_observed": [
+      0,
+      17,
+      4294967295
+    ],
+    "gpu_peak_mib": 3176.5390625,
+    "ram_peak_mib": 1162.58203125,
+    "seconds": 21.188
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10865",
+    "completed": 11,
+    "violations": [],
+    "effective_seeds_observed": [
+      4294967295
+    ],
+    "gpu_peak_mib": 1695.7890625,
+    "ram_peak_mib": 2827.67578125,
+    "seconds": 10.437
+  }
+]

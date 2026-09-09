@@ -1,0 +1,14 @@
+{
+  "scope": "Source108 owner tests169/Fast, UI109 real error and recovery; C03 remains incomplete",
+  "files": {
+    "artifacts/comprobaciones/C03/ASTRA-TRAMO-108.md": "37d28262b6599e3db2a19d3d083e2159976a355df1798908eedb137396789066",
+    "artifacts/comprobaciones/C03/PRUEBAS_UI107.md": "d93ff222b08067ed0d4817bf5af011592f73480181341a0af5f3b7581ee747e5",
+    "artifacts/comprobaciones/C03/PRUEBAS_UI109.md": "295bd83e8a21693381dcd12fab79a6031f3507d29cdf62861b2ba965913aa9d4",
+    "artifacts/comprobaciones/C03/astra-ui109/PREREG.json": "bc9dc75dbe0c0ce0f48e1a874bb450b82bfd8f95acbf14ca53b5d5453e2b7adc",
+    "artifacts/comprobaciones/C03/astra-ui109/SOURCE_AFTER.json": "f4451aa0d69607a89972e400d04dd7374e008c2ef9d7a1da61a29eaf46e506c5",
+    "artifacts/comprobaciones/C03/astra-ui109/RUNTIME_AFTER_LAUNCH.json": "43dfe59e7a826b09023d6cf37be3d05d49f6f98c3de23440927776a0929ae8cc",
+    "artifacts/comprobaciones/C03/astra-ui109/RESOURCES.json": "f29ea1807833c9d8bc2e7e44842cdaa9be82321227b37291d4abbbf2982a15c2",
+    "artifacts/comprobaciones/C03/astra-ui109/RESUMED.json": "2bacab5e2c67beffa74d65c29624e0aae06db372be7704a5fafe832a5fdfb4e5",
+    "src/Baxy.FieldUi/ORIGIN.md": "07b58df55b68b38d9d61429f2b0e68bf01827eb39c7ac782dd848e6144cd6da8"
+  }
+}

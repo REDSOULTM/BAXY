@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-08T15:22:57.311190+00:00",
+  "change": "In __main__._prepare_turn_result, pass no prior history to chat only when explicit_conversation_decision exists and final presentation kind is social. Keeps actual message history intact. Recall/followup/compound/pending/model-classified social preserve ordinary history. No other source/model/prompt change.",
+  "evidence": "435 exact434 baseline and scoped7social pairs4/7->7/7 semantic, three identical non-scoped controls. Both remaining actual434 failures stay open until product.",
+  "validation": "Extend existing no-unused-social-work owner with real historical save-shaped context and immutability check, baseline then owner/Fast. Same8 product434 replay437. No Full or human acceptance.",
+  "sources_before": {
+    "src/baxy_mind/__main__.py": "7d723a0d078506a8307b21a3ab033b40aec2cccbf3559e2edbc2a7c8ebe1ee52",
+    "tests/test_turn_policy.py": "b7a06317e4017482e082224c261b0365a51bab27df09fca3f9af39907eca4d93"
+  }
+}

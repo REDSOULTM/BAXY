@@ -1,0 +1,179 @@
+FF....FF.F.F.F.....                                                      [100%]
+================================== FAILURES ===================================
+_ test_spanish_naming_clauses_do_not_depend_on_an_accented_name[Me llamo Jordan.] _
+
+text = 'Me llamo Jordan.'
+
+    @pytest.mark.parametrize("text", ["Me llamo Jordan.", "Te llamas Morgan.", "Se llama Lina."])
+    def test_spanish_naming_clauses_do_not_depend_on_an_accented_name(text: str) -> None:
+>       assert read_request(text, conversation_language="en").language == "es"
+E       AssertionError: assert 'en' == 'es'
+E         
+E         - es
+E         + en
+
+tests\test_request_reading.py:56: AssertionError
+_ test_spanish_naming_clauses_do_not_depend_on_an_accented_name[Te llamas Morgan.] _
+
+text = 'Te llamas Morgan.'
+
+    @pytest.mark.parametrize("text", ["Me llamo Jordan.", "Te llamas Morgan.", "Se llama Lina."])
+    def test_spanish_naming_clauses_do_not_depend_on_an_accented_name(text: str) -> None:
+>       assert read_request(text, conversation_language="en").language == "es"
+E       AssertionError: assert 'en' == 'es'
+E         
+E         - es
+E         + en
+
+tests\test_request_reading.py:56: AssertionError
+_ test_naming_does_not_override_english_or_an_explicit_language[Me llamo Lina, and I'm ready.-mixed] _
+
+text = "Me llamo Lina, and I'm ready.", expected = 'mixed'
+
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("My name is Lina.", "en"),
+            ("Call me Lina.", "en"),
+            ("Me llamo Lina, reply in English.", "en"),
+            ("Me llamo Lina, and I'm ready.", "mixed"),
+        ],
+    )
+    def test_naming_does_not_override_english_or_an_explicit_language(text: str, expected: str) -> None:
+>       assert read_request(text).language == expected
+E       AssertionError: assert 'en' == 'mixed'
+E         
+E         - mixed
+E         + en
+
+tests\test_request_reading.py:69: AssertionError
+_ test_reply_language_uses_the_sentence_instead_of_an_accented_name[I understand you're \xc1lvaro. I've noted your name.-es-True] _
+
+text = "I understand you're �lvaro. I've noted your name.", language = 'es'
+rejected = True
+
+    @pytest.mark.parametrize(
+        "text, language, rejected",
+        [
+            ("I understand you're �lvaro. I've noted your name.", "es", True),
+            ("I understand you're �lvaro. I've noted your name.", "en", False),
+            ("Your name is Jos�.", "es", True),
+            ("Your name is Jos�.", "en", False),
+            ("�lvaro.", "en", False),
+            ("�lvaro.", "es", False),
+            ("Te llamas Jordan.", "en", True),
+            ("Te llamas Jordan.", "es", False),
+            ("S�.", "en", True),
+            ("S�.", "es", False),
+            ("S� c�mo hacerlo.", "en", True),
+            ("Your name is Jos�.", "mixed", False),
+        ],
+    )
+    def test_reply_language_uses_the_sentence_instead_of_an_accented_name(
+        text: str, language: str, rejected: bool,
+    ) -> None:
+>       assert llm_mod._reply_uses_opposite_language(text, language) is rejected
+E       assert False is True
+E        +  where False = <function _reply_uses_opposite_language at 0x000001AAC79877E0>("I understand you're �lvaro. I've noted your name.", 'es')
+E        +    where <function _reply_uses_opposite_language at 0x000001AAC79877E0> = llm_mod._reply_uses_opposite_language
+
+tests\test_request_reading.py:92: AssertionError
+_ test_reply_language_uses_the_sentence_instead_of_an_accented_name[Your name is Jos\xe9.-es-True] _
+
+text = 'Your name is Jos�.', language = 'es', rejected = True
+
+    @pytest.mark.parametrize(
+        "text, language, rejected",
+        [
+            ("I understand you're �lvaro. I've noted your name.", "es", True),
+            ("I understand you're �lvaro. I've noted your name.", "en", False),
+            ("Your name is Jos�.", "es", True),
+            ("Your name is Jos�.", "en", False),
+            ("�lvaro.", "en", False),
+            ("�lvaro.", "es", False),
+            ("Te llamas Jordan.", "en", True),
+            ("Te llamas Jordan.", "es", False),
+            ("S�.", "en", True),
+            ("S�.", "es", False),
+            ("S� c�mo hacerlo.", "en", True),
+            ("Your name is Jos�.", "mixed", False),
+        ],
+    )
+    def test_reply_language_uses_the_sentence_instead_of_an_accented_name(
+        text: str, language: str, rejected: bool,
+    ) -> None:
+>       assert llm_mod._reply_uses_opposite_language(text, language) is rejected
+E       AssertionError: assert False is True
+E        +  where False = <function _reply_uses_opposite_language at 0x000001AAC79877E0>('Your name is Jos�.', 'es')
+E        +    where <function _reply_uses_opposite_language at 0x000001AAC79877E0> = llm_mod._reply_uses_opposite_language
+
+tests\test_request_reading.py:92: AssertionError
+_ test_reply_language_uses_the_sentence_instead_of_an_accented_name[\xc1lvaro.-en-False] _
+
+text = '�lvaro.', language = 'en', rejected = False
+
+    @pytest.mark.parametrize(
+        "text, language, rejected",
+        [
+            ("I understand you're �lvaro. I've noted your name.", "es", True),
+            ("I understand you're �lvaro. I've noted your name.", "en", False),
+            ("Your name is Jos�.", "es", True),
+            ("Your name is Jos�.", "en", False),
+            ("�lvaro.", "en", False),
+            ("�lvaro.", "es", False),
+            ("Te llamas Jordan.", "en", True),
+            ("Te llamas Jordan.", "es", False),
+            ("S�.", "en", True),
+            ("S�.", "es", False),
+            ("S� c�mo hacerlo.", "en", True),
+            ("Your name is Jos�.", "mixed", False),
+        ],
+    )
+    def test_reply_language_uses_the_sentence_instead_of_an_accented_name(
+        text: str, language: str, rejected: bool,
+    ) -> None:
+>       assert llm_mod._reply_uses_opposite_language(text, language) is rejected
+E       AssertionError: assert True is False
+E        +  where True = <function _reply_uses_opposite_language at 0x000001AAC79877E0>('�lvaro.', 'en')
+E        +    where <function _reply_uses_opposite_language at 0x000001AAC79877E0> = llm_mod._reply_uses_opposite_language
+
+tests\test_request_reading.py:92: AssertionError
+_ test_reply_language_uses_the_sentence_instead_of_an_accented_name[Te llamas Jordan.-en-True] _
+
+text = 'Te llamas Jordan.', language = 'en', rejected = True
+
+    @pytest.mark.parametrize(
+        "text, language, rejected",
+        [
+            ("I understand you're �lvaro. I've noted your name.", "es", True),
+            ("I understand you're �lvaro. I've noted your name.", "en", False),
+            ("Your name is Jos�.", "es", True),
+            ("Your name is Jos�.", "en", False),
+            ("�lvaro.", "en", False),
+            ("�lvaro.", "es", False),
+            ("Te llamas Jordan.", "en", True),
+            ("Te llamas Jordan.", "es", False),
+            ("S�.", "en", True),
+            ("S�.", "es", False),
+            ("S� c�mo hacerlo.", "en", True),
+            ("Your name is Jos�.", "mixed", False),
+        ],
+    )
+    def test_reply_language_uses_the_sentence_instead_of_an_accented_name(
+        text: str, language: str, rejected: bool,
+    ) -> None:
+>       assert llm_mod._reply_uses_opposite_language(text, language) is rejected
+E       AssertionError: assert False is True
+E        +  where False = <function _reply_uses_opposite_language at 0x000001AAC79877E0>('Te llamas Jordan.', 'en')
+E        +    where <function _reply_uses_opposite_language at 0x000001AAC79877E0> = llm_mod._reply_uses_opposite_language
+
+tests\test_request_reading.py:92: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_spanish_naming_clauses_do_not_depend_on_an_accented_name[Me llamo Jordan.]
+FAILED tests/test_request_reading.py::test_spanish_naming_clauses_do_not_depend_on_an_accented_name[Te llamas Morgan.]
+FAILED tests/test_request_reading.py::test_naming_does_not_override_english_or_an_explicit_language[Me llamo Lina, and I'm ready.-mixed]
+FAILED tests/test_request_reading.py::test_reply_language_uses_the_sentence_instead_of_an_accented_name[I understand you're \xc1lvaro. I've noted your name.-es-True]
+FAILED tests/test_request_reading.py::test_reply_language_uses_the_sentence_instead_of_an_accented_name[Your name is Jos\xe9.-es-True]
+FAILED tests/test_request_reading.py::test_reply_language_uses_the_sentence_instead_of_an_accented_name[\xc1lvaro.-en-False]
+FAILED tests/test_request_reading.py::test_reply_language_uses_the_sentence_instead_of_an_accented_name[Te llamas Jordan.-en-True]
+7 failed, 12 passed, 226 deselected in 0.60s

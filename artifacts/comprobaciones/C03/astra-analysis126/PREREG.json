@@ -1,0 +1,10 @@
+{
+  "purpose": "Offline content and alignment comparison of existing physical123/125 captures",
+  "sources": [
+    123,
+    125
+  ],
+  "newPlayback": false,
+  "sourceMutation": false,
+  "method": "Registered Parakeet CPU, raw and peak-normalized; no text hints. Windows from speaking events +/-0.5s; capture start is approximate, not ADC timestamps."
+}

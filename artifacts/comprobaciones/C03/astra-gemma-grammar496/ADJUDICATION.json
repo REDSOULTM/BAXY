@@ -1,0 +1,161 @@
+[
+  {
+    "id": "owner46-seed0",
+    "seed": 0,
+    "variant": "native_grammar",
+    "operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__volume__adjust",
+      "baxy_audio__status",
+      "baxy_audio__volume__adjust",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__volume__adjust",
+      "baxy_audio__status"
+    ],
+    "status": "extra_effects",
+    "reason": "Adds unrequested operations; true in all four constrained cases.",
+    "generated_tokens": 379,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner46-seed0",
+    "seed": 0,
+    "variant": "no_grammar",
+    "operations": [
+      "baxy_audio__mute"
+    ],
+    "status": "proposal_correct_unverified_prose",
+    "reason": "Requested operations/arguments only; however trailing prose narrates activation/success before execution. Native proposal improvement, not a complete honest product response.",
+    "generated_tokens": 244,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed0",
+    "seed": 0,
+    "variant": "native_grammar",
+    "operations": [
+      "baxy_audio__volume__adjust",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_media__status",
+      "baxy_audio__status",
+      "baxy_system__settings__set",
+      "baxy_window__maximize",
+      "baxy_audio__volume__adjust",
+      "baxy_window__maximize",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_media__status",
+      "baxy_audio__status",
+      "baxy_window__maximize",
+      "baxy_audio__volume__adjust",
+      "baxy_window__maximize",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_media__status",
+      "baxy_audio__status",
+      "baxy_window__maximize",
+      "baxy_audio__volume__adjust",
+      "baxy_window__maximize"
+    ],
+    "status": "extra_effects",
+    "reason": "Adds unrequested operations; true in all four constrained cases.",
+    "generated_tokens": 602,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed0",
+    "seed": 0,
+    "variant": "no_grammar",
+    "operations": [
+      "baxy_audio__volume__set",
+      "baxy_audio__mute"
+    ],
+    "status": "unknown_operation_and_false_success",
+    "reason": "No repetition but invents a non-catalogue volume__set operation and claims execution. Cannot map it silently to volume.",
+    "generated_tokens": 241,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed0",
+    "seed": 17,
+    "variant": "native_grammar",
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_input__pointer__control",
+      "baxy_audio__status",
+      "baxy_input__pointer__control",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_input__pointer__control",
+      "baxy_input__pointer__control",
+      "baxy_audio__volume",
+      "baxy_audio__status"
+    ],
+    "status": "extra_effects",
+    "reason": "Adds unrequested operations; true in all four constrained cases.",
+    "generated_tokens": 429,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "owner51-seed0",
+    "seed": 17,
+    "variant": "no_grammar",
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute"
+    ],
+    "status": "proposal_correct_unverified_prose",
+    "reason": "Requested operations/arguments only; however trailing prose narrates activation/success before execution. Native proposal improvement, not a complete honest product response.",
+    "generated_tokens": 293,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "volume-unmute",
+    "seed": 0,
+    "variant": "native_grammar",
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status",
+      "baxy_system__status"
+    ],
+    "status": "extra_effects",
+    "reason": "Adds unrequested operations; true in all four constrained cases.",
+    "generated_tokens": 186,
+    "stop_type": "eos",
+    "truncated": false
+  },
+  {
+    "id": "volume-unmute",
+    "seed": 0,
+    "variant": "no_grammar",
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute"
+    ],
+    "status": "proposal_correct_unverified_prose",
+    "reason": "Requested operations/arguments only; however trailing prose narrates activation/success before execution. Native proposal improvement, not a complete honest product response.",
+    "generated_tokens": 141,
+    "stop_type": "eos",
+    "truncated": false
+  }
+]

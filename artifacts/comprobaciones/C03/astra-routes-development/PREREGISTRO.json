@@ -1,0 +1,103 @@
+{
+  "purpose": "Broader development, inherited v18 requests plus language and exact confirmation contrasts. Not fresh acceptance. Progress is observed when emitted; absence is a coverage gap, not credited.",
+  "cases": [
+    {
+      "expected": "Saludo natural en español, sin efectos afirmados",
+      "route": "welcome",
+      "text": "Buenas"
+    },
+    {
+      "expected": "Capacidades reales del catálogo, sin afirmar ejecución",
+      "route": "conversation",
+      "text": "qué puedes hacer aquí en el PC"
+    },
+    {
+      "expected": "Hora concordante con system.time observado",
+      "route": "result",
+      "text": "¿Qué hora es?"
+    },
+    {
+      "expected": "Hora y estado de audio verificados, sin pasos omitidos",
+      "route": "mission_summary",
+      "text": "Dime la hora y el estado del audio."
+    },
+    {
+      "expected": "Buenas tardes o buenas noches según contexto, sin encargo añadido",
+      "route": "conversation",
+      "text": "traduce good evening al español, nada más"
+    },
+    {
+      "expected": "Pregunta breve sobre la aplicación o ventana desconocida; ningún cierre",
+      "reset": true,
+      "route": "clarification",
+      "text": "cierra aquello"
+    },
+    {
+      "expected": "Conserva prohibición, no afirma haber abierto Paint",
+      "route": "conversation",
+      "text": "no abras Paint"
+    },
+    {
+      "expected": "No encontrar/no poder abrir ese programa, sin afirmar éxito ni causa inventada",
+      "route": "error",
+      "text": "abre la aplicación C03ProgramaInexistente20260906"
+    },
+    {
+      "expected": "English greeting",
+      "reset": true,
+      "route": "welcome",
+      "text": "Hello"
+    },
+    {
+      "expected": "Observed current time, English",
+      "route": "result",
+      "text": "What time is it?"
+    },
+    {
+      "expected": "Both observed facts, English",
+      "route": "mission_summary",
+      "text": "Tell me the time and the volume."
+    },
+    {
+      "expected": "Ask for the missing target; no guessed effect",
+      "reset": true,
+      "route": "clarification",
+      "text": "open that"
+    },
+    {
+      "expected": "Explicación correcta y sencilla, español e inglés, sin repetir pedido",
+      "route": "conversation",
+      "text": "Explain encryption, pero en simple"
+    },
+    {
+      "expected": "Saludo natural acorde al pedido, sin efectos",
+      "route": "welcome",
+      "text": "Hey, buenas"
+    },
+    {
+      "expected": "Hora observada, mezcla natural ES/EN",
+      "route": "result",
+      "text": "Dime la hora, please, en spanglish"
+    },
+    {
+      "expected": "Confirmación exacta del archivo antes de moverlo; permanece hasta confirmar",
+      "route": "confirmation",
+      "text": "Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio"
+    },
+    {
+      "expected": "Cancelación honesta, archivo permanece, sin misión pendiente",
+      "route": "cancellation",
+      "text": "cancelar"
+    },
+    {
+      "expected": "Lima, sin arrastrar estado pendiente",
+      "route": "conversation",
+      "text": "what is the capital of Peru"
+    }
+  ],
+  "mainHash": "F71B2C934088618FF2CB98B14B09B561FBBF0400B809C1C7AC7E5B66B2F38FBA",
+  "fixtureSha256": "8D4114109469EDFD28BEB9A611E1A89A0A6DB1CCBA42FFD6D6D98E30A010BAE8",
+  "fixture": "D:\\Perfil\\Escritorio\\C03-Prueba-Respuesta-20260906.txt",
+  "startedUtc": "2026-09-06T06:52:13.1227333Z",
+  "llmHash": "C3259EEC8A93179A7E305F3A05CA542F294D5F0FF49D23C3240A8BAE6ECE20BC"
+}

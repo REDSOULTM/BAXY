@@ -1,0 +1,144 @@
+[
+  {
+    "turnId": "t1",
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "terminal": "published_final",
+    "final": "¿Cuál es el nombre del proceso para la ventana titulada Ventana C03 de prueba?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "La clarificación fue cancelada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 32,
+        "draft_sha256": "fd84d76249551a195c05e4cf2f9188e598d760a73db25283f1a3092f77f8fbb0",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "state": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "La clarificación fue cancelada."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "terminal": "published_final",
+    "final": "¿Cuál es el nombre del proceso para la ventana titulada Ventana C03 de prueba?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t4",
+    "request": "confirmar",
+    "terminal": "published_final",
+    "final": "¿Cuál es el nombre del proceso para cerrar la ventana titulada 'Ventana C03 de prueba'?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t5",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 10:54.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "d2606c99308d98269783a04cb42b91929abd58eb9c575a276bdb13143c18c4d3",
+        "payload": {
+          "clock": "10:54"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T13:54:05.3685984+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 10:54."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What is on my to do list?",
+    "terminal": "published_final",
+    "final": "I don't have access to your to-do list. You'll need to check your own list or ask someone who has access to it.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 111,
+        "draft_sha256": "7eb092d33ce9e3f1c817377b03c5bd40a4bc2198fa3c9d77d8df147310879197",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don't have access to your to-do list. You'll need to check your own list or ask someone who has access to it."
+      }
+    ]
+  }
+]

@@ -1,0 +1,327 @@
+[
+  {
+    "variant": "stage1_history1",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste.\n\nPolítica interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla.\n\nPolítica interna de idioma: responde exclusivamente en español."
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Hola hablame de paris, donde podria ir?"
+        },
+        {
+          "role": "assistant",
+          "content": "No puedo darte recomendaciones porque la interpretación de tu solicitud falló."
+        },
+        {
+          "role": "user",
+          "content": "Porque no? no conoces paris?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sí, conozco París."
+        },
+        {
+          "role": "user",
+          "content": "Entonces dime donde deberia visitar en paris"
+        }
+      ],
+      "temperature": 0.0,
+      "max_tokens": 256,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "seed": 0
+    },
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "¡Claro! Visita la Torre Eiffel, el Louvre, la Catedral de Notre-Dame y el Jardín del Louvre. También vale la pena caminar por la zona de Montmartre y probar comida típica en el quartier latin. ¿Quieres que te recomiende algo más específico?"
+          }
+        }
+      ],
+      "created": 1788826901,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 73,
+        "prompt_tokens": 395,
+        "total_tokens": 468,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "id": "chatcmpl-f8xm8RNm3ODBjpx7r1c7kVqtrcMKypgq",
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 395,
+        "prompt_ms": 259.491,
+        "prompt_per_token_ms": 0.6569392405063291,
+        "prompt_per_second": 1522.2107895842246,
+        "predicted_n": 73,
+        "predicted_ms": 994.221,
+        "predicted_per_token_ms": 13.619465753424658,
+        "predicted_per_second": 73.42431914031185
+      }
+    }
+  },
+  {
+    "variant": "stage0_history1",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste.\n\nPolítica interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla.\n\nPolítica interna de idioma: responde exclusivamente en español."
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?"
+        },
+        {
+          "role": "user",
+          "content": "Hola hablame de paris, donde podria ir?"
+        },
+        {
+          "role": "assistant",
+          "content": "No puedo darte recomendaciones porque la interpretación de tu solicitud falló."
+        },
+        {
+          "role": "user",
+          "content": "Porque no? no conoces paris?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sí, conozco París."
+        },
+        {
+          "role": "user",
+          "content": "Entonces dime donde deberia visitar en paris"
+        }
+      ],
+      "temperature": 0.0,
+      "max_tokens": 256,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "seed": 0
+    },
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "¡Claro! Visita la Torre Eiffel, el Louvre, la Catedral de Notre-Dame y el Champs-Élysées. Si quieres algo más tranquilo, el Jardín del Louvre o el Parque del Liceo también son geniales. ¿Quieres algo más específico?"
+          }
+        }
+      ],
+      "created": 1788826902,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 69,
+        "prompt_tokens": 353,
+        "total_tokens": 422,
+        "prompt_tokens_details": {
+          "cached_tokens": 65
+        }
+      },
+      "id": "chatcmpl-hatsqYFvW5Y47WMvHHLIap1YmxAN2V8P",
+      "timings": {
+        "cache_n": 65,
+        "prompt_n": 288,
+        "prompt_ms": 119.035,
+        "prompt_per_token_ms": 0.4133159722222222,
+        "prompt_per_second": 2419.456462385013,
+        "predicted_n": 69,
+        "predicted_ms": 838.827,
+        "predicted_per_token_ms": 12.15691304347826,
+        "predicted_per_second": 82.25772417912157
+      }
+    }
+  },
+  {
+    "variant": "stage1_history0",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste.\n\nPolítica interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla.\n\nPolítica interna de idioma: responde exclusivamente en español."
+        },
+        {
+          "role": "user",
+          "content": "Entonces dime donde deberia visitar en paris"
+        }
+      ],
+      "temperature": 0.0,
+      "max_tokens": 256,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "seed": 0
+    },
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "¡Claro! Paris es increíble, y depende de lo que te apetezca: historia, arte, comida o playa de la ciudad. Si quieres algo clásico, visita la Torre Eiffel, el Louvre y la Puerta del Sol. Si te gusta el ambiente bohemio, el Montmartre o el Sacré-Cœur. Y si buscas comida, no puedes perder el tiempo en el quai de la Marseillaise o el marché de Saint-Germain. ¿Qué te gustaría más? 😎"
+          }
+        }
+      ],
+      "created": 1788826904,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 118,
+        "prompt_tokens": 306,
+        "total_tokens": 424,
+        "prompt_tokens_details": {
+          "cached_tokens": 289
+        }
+      },
+      "id": "chatcmpl-bjBO611SfrcwSEdwGikyhA14TyMzk482",
+      "timings": {
+        "cache_n": 289,
+        "prompt_n": 17,
+        "prompt_ms": 25.191,
+        "prompt_per_token_ms": 1.4818235294117645,
+        "prompt_per_second": 674.8441903854551,
+        "predicted_n": 118,
+        "predicted_ms": 1446.244,
+        "predicted_per_token_ms": 12.256305084745762,
+        "predicted_per_second": 81.59065828449418
+      }
+    }
+  },
+  {
+    "variant": "stage0_history0",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste.\n\nPolítica interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla.\n\nPolítica interna de idioma: responde exclusivamente en español."
+        },
+        {
+          "role": "user",
+          "content": "Entonces dime donde deberia visitar en paris"
+        }
+      ],
+      "temperature": 0.0,
+      "max_tokens": 256,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "seed": 0
+    },
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "¡Claro! Si quieres una experiencia auténtica, visita la Torre Eiffel, el Louvre, la Catedral de Notre-Dame y el Montmartre. Si te gusta el arte, no te pierdas el Musée d'Orsay. ¿Quieres algo más específico, como comida o lugares para caminar?"
+          }
+        }
+      ],
+      "created": 1788826905,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 73,
+        "prompt_tokens": 264,
+        "total_tokens": 337,
+        "prompt_tokens_details": {
+          "cached_tokens": 247
+        }
+      },
+      "id": "chatcmpl-eKvwffKo4KPjFt27aDmGL192XKeknyjp",
+      "timings": {
+        "cache_n": 247,
+        "prompt_n": 17,
+        "prompt_ms": 22.861,
+        "prompt_per_token_ms": 1.344764705882353,
+        "prompt_per_second": 743.6245133633699,
+        "predicted_n": 73,
+        "predicted_ms": 1030.349,
+        "predicted_per_token_ms": 14.114369863013698,
+        "predicted_per_second": 70.8497800259912
+      }
+    }
+  },
+  {
+    "variant": "identity_only",
+    "payload": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas."
+        },
+        {
+          "role": "user",
+          "content": "Entonces dime donde deberia visitar en paris"
+        }
+      ],
+      "temperature": 0.0,
+      "max_tokens": 256,
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "seed": 0
+    },
+    "response": {
+      "choices": [
+        {
+          "finish_reason": "length",
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "¡Claro que sí! ¿Ya te has pasado por el Sena o te quedaste en el Louvre? 😄  \nParis es una locura de lugares, pero si quieres que te guíe por los más *esenciales* y *no tan masificados*, aquí va un plan que te deja con el corazón latiendo y el alma satisfecha:\n\n---\n\n📍 **Primero, el Louvre** – ¡obligatorio! No solo por el *Mona Lisa*, sino porque es un monumento que te hace sentir como si estuvieras en un cuento de Disney. Aunque el museo es enorme, si vas en temporada, mejor ir con un poco de paciencia y un buen mapa mental.\n\n👉 *Consejo*: Visita el jardín del Louvre por la tarde, cuando el sol te da un toque dorado y el aire está más fresco.\n\n---\n\n📍 **Luego, el Montmartre** – sube a la cima de la colina, allí hay el **Sacré-Cœur**, y si te gusta la vista, ¡no te pierdas el atardecer! Además, el **Place du Tertre** es un lugar de arte calle"
+          }
+        }
+      ],
+      "created": 1788826909,
+      "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "system_fingerprint": "b9980-8014d2cf9",
+      "object": "chat.completion",
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 46,
+        "total_tokens": 302,
+        "prompt_tokens_details": {
+          "cached_tokens": 26
+        }
+      },
+      "id": "chatcmpl-tzw3j8YlKf7MCAJI7pyjA1k66iCHkFEn",
+      "timings": {
+        "cache_n": 26,
+        "prompt_n": 20,
+        "prompt_ms": 22.984,
+        "prompt_per_token_ms": 1.1492,
+        "prompt_per_second": 870.1705534284719,
+        "predicted_n": 256,
+        "predicted_ms": 3305.397,
+        "predicted_per_token_ms": 12.91170703125,
+        "predicted_per_second": 77.44909310439866
+      }
+    }
+  }
+]

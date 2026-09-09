@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-08T21:18:33.808118+00:00",
+  "session": 19054,
+  "exit": 0,
+  "correct_operation_selections": 6,
+  "contextual_failures": 3,
+  "knowledge_response_defects": 1,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1770.82421875,
+    "seconds": 56.609,
+    "manifest_unchanged": true
+  },
+  "adopted_runtime": false,
+  "next": "Source500 volume-setting clitic and incomplete local-device target; preserve guards and real context problem."
+}

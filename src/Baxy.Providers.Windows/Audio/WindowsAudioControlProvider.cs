@@ -98,7 +98,10 @@ public sealed class WindowsAudioControlProvider : IAudioControlProvider
                     observation.EndpointIdHash,
                     observation.State,
                     Verified: true,
-                    ErrorCode: null));
+                    ErrorCode: null)
+                {
+                    EndpointName = endpoint.ReadDisplayName(),
+                });
             }
             catch (AudioPlatformException exception)
             {

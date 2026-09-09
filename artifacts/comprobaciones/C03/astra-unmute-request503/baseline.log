@@ -1,0 +1,78 @@
+FFFFFFFFFFFF...........F.                                                [100%]
+================================== FAILURES ===================================
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Desilencia el audio-operations0] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Dessilencia el audio-operations1] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Necesito que lo desilencies-operations2] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Necesito que desmutees el audio-operations3] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   AssertionError: assert (EffectIntent(operations=('audio.status',), evidence=('necesito que desmutees el audio',)) is not None and ('audio.status',) == ('audio.mute',)
+E     
+E     At index 0 diff: 'audio.status' != 'audio.mute'
+E     Use -v to get more diff)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[perfecto, necesito lo dessilencies pls-operations4] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfecto, desmutealo-operations5] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfect, I need you to unmute the audio-operations6] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfecto, necesito abrir Spotify-operations7] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfect, I would like to open Spotify-operations8] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Necesito poner el volumen al 37-operations9] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   AssertionError: assert (EffectIntent(operations=('audio.status',), evidence=('necesito poner el volumen al 37',)) is not None and ('audio.status',) == ('audio.volume',)
+E     
+E     At index 0 diff: 'audio.status' != 'audio.volume'
+E     Use -v to get more diff)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[Quiero desmutearlo-operations10] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[I need to unmute the audio but tell me the time-operations11] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   AssertionError: assert (EffectIntent(operations=('audio.status', 'system.time'), evidence=('i need to unmute the audio', 'time')) is not None and ('audio.statu...'system.time') == ('audio.mute', 'system.time')
+E     
+E     At index 0 diff: 'audio.status' != 'audio.mute'
+E     Use -v to get more diff)
+_______ test_explicit_need_inside_note_is_payload_after_acknowledgement _______
+tests\test_effect_intent.py:7095: in test_explicit_need_inside_note_is_payload_after_acknowledgement
+    assert result is not None and result.operations == ("note.create",)
+E   assert (None is not None)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Desilencia el audio-operations0]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Dessilencia el audio-operations1]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Necesito que lo desilencies-operations2]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Necesito que desmutees el audio-operations3]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[perfecto, necesito lo dessilencies pls-operations4]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfecto, desmutealo-operations5]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfect, I need you to unmute the audio-operations6]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfecto, necesito abrir Spotify-operations7]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Perfect, I would like to open Spotify-operations8]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Necesito poner el volumen al 37-operations9]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[Quiero desmutearlo-operations10]
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[I need to unmute the audio but tell me the time-operations11]
+FAILED tests/test_effect_intent.py::test_explicit_need_inside_note_is_payload_after_acknowledgement
+13 failed, 12 passed, 1810 deselected in 2.04s

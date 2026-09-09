@@ -13,7 +13,10 @@ internal sealed class WindowResolveHandler(IWindowControlProvider provider) : IO
     {
         string process = invocation.Arguments.GetProperty("process").GetString()!;
         int limit = invocation.Arguments.TryGetProperty("limit", out JsonElement value) ? value.GetInt32() : 20;
-        WindowResolveResult result = await provider.ResolveAsync(process, limit, cancellationToken).ConfigureAwait(false);
+        bool byTitle = invocation.Arguments.TryGetProperty("byTitle", out JsonElement titleValue)
+            && titleValue.GetBoolean();
+        WindowResolveResult result = await provider.ResolveAsync(process, limit, cancellationToken, byTitle)
+            .ConfigureAwait(false);
         return result.Succeeded && result.Verified
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows))
             : OperationOutcome.Failure(result.ErrorCode ?? "window_resolve_failed");
@@ -159,6 +162,8 @@ internal static class WindowControlResultJson
         writer.WriteString("windowId", window.WindowId);
         writer.WriteNumber("processId", window.ProcessId);
         writer.WriteString("processName", window.ProcessName);
+        if (window.Title is not null)
+            writer.WriteString("title", window.Title);
         writer.WriteString("state", window.State);
         writer.WriteBoolean("foreground", window.Foreground);
         writer.WriteNumber("x", window.X);

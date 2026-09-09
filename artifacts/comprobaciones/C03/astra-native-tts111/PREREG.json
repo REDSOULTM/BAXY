@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-07T10:20:59.871486+00:00",
+  "method": "Native CPU ONNX TTS only, no playback, UI, microphone or LLM. Same four literal visible responses from audio110, same registered ONNX voice/config, espeak CLI phonemes and inference scales. Compare current ids without PAD against official Piper framing with PAD after each mapped phoneme, same BOS/EOS. Independently transcribe raw PCM with registered offline STT on CPU, no expected text prompt/hotwords. Keep both raw WAVs/phonemes/ids/durations/decodes. No source edits.",
+  "cases": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 07:13.",
+    "It is 07:14.",
+    "Son las 07:15."
+  ],
+  "model": "D:\\BAXYRuntime\\assets\\voice\\baxy-es\\es_MX-claude-high.onnx",
+  "modelSha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+  "configSha256": "1afc81f703c0e4cb3b4d7c0dca096b8b54a98806807f0170cf5eb5557723c12d",
+  "sourceSha256": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source": "https://raw.githubusercontent.com/rhasspy/piper/master/src/python_run/piper/voice.py",
+  "sourceConsulted": "2026-09-07; phonemes_to_ids adds mapped PAD after each known phoneme",
+  "runtime": {
+    "onnxruntime": "1.27.0"
+  }
+}

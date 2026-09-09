@@ -1,0 +1,9 @@
+{
+  "commit": "2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49",
+  "sourceHashes": {
+    "src/baxy_mind/request_reading.py": "17B043C61549B832DD7A04AB3765499413EBA8DC659BEF3C89EE2BD955C216CF",
+    "src/baxy_mind/llm.py": "1B6D453937435DFF769884C1545A1D6B4B79B93B91BB219D042511CF571F1D68",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "7CCBC98568D8ED743D56CD3D8BCA97CEBEFA10E9F782046B7CC52FBDE75DE21B"
+  },
+  "purpose": "Same 16 development turns, knowledge separated from PC observation-only prose. Also removes startup greeting clipping and prescribed mission intro."
+}

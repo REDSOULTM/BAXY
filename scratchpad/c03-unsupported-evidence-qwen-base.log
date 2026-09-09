@@ -1,0 +1,10 @@
+{"stage": "guarded", "case": "unsupported-1", "seconds": 0.562, "error": null}
+{"stage": "guarded", "case": "unsupported-2", "seconds": 0.469, "error": null}
+{"stage": "guarded", "case": "unsupported-3", "seconds": 0.516, "error": null}
+{"stage": "guarded", "case": "unsupported-4", "seconds": 0.453, "error": null}
+{"stage": "guarded", "case": "unsupported-5", "seconds": 0.406, "error": null}
+{"stage": "guarded", "case": "unsupported-6", "seconds": 0.485, "error": null}
+{"stage": "guarded", "case": "unsupported-7", "seconds": 0.453, "error": null}
+{"stage": "guarded", "case": "unsupported-8", "seconds": 0.39, "error": null}
+{"stage": "guarded", "case": "unsupported-9", "seconds": 0.469, "error": null}
+{"seconds": 7.55, "gpuPeakMiB": 3497.55859375, "ramPeakMiB": 2821.1796875, "error": null, "registrationUnchanged": true}

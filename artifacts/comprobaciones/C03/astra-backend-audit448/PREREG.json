@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-08T16:14:15.842926+00:00",
+  "owner_request": "Check actual llama.cpp and newer fixes across tested models; new downloads explicitly allowed. Continue full C03, no registration on download.",
+  "baseline": {
+    "version": "b9980",
+    "commit": "8014d2cf9",
+    "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "candidate": {
+    "stable": "v0.4.0",
+    "binary_tag": "b10809",
+    "cuda": "12.4",
+    "target": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4"
+  },
+  "hardware": "NVIDIA GeForce RTX3060 Laptop6GiB; driver581.57. BAXY ceiling remains4GiB, not the card capacity.",
+  "method": "Fetch official stable/nightly metadata and bounded commit titles from b9980 to b10809. Download official WinCUDA12.4 binaries and matching runtime zip with API sha256 verification; extract only inside new target. No source changes, no manifest/profile promotion, no models during audit. Native comparison is separate, with fixed payloads/model/parameters and measured resources.",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

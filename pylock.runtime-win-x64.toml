@@ -389,6 +389,17 @@ url = "https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85
 sha256 = "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
 
 [[packages]]
+name = "pywebrtc-audio"
+version = "0.2.0+baxy.1"
+
+[[packages.wheels]]
+name = "pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl"
+path = "runtime_wheels/pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb"
+
+[[packages]]
 name = "pywin32"
 version = "311"
 
@@ -511,14 +522,14 @@ sha256 = "7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686"
 
 [[packages]]
 name = "sherpa-onnx"
-version = "1.13.4"
+version = "1.13.4+baxy.2"
 
 [[packages.wheels]]
-name = "sherpa_onnx-1.13.4-cp312-cp312-win_amd64.whl"
-url = "https://files.pythonhosted.org/packages/bb/bb/1e723ab703a1e354f390de19981ec0c347576f87be01915d826dc6fc9f41/sherpa_onnx-1.13.4-cp312-cp312-win_amd64.whl"
+name = "sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl"
+path = "runtime_wheels/sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl"
 
 [packages.wheels.hashes]
-sha256 = "b8436ffe2763b3fd522fbac8fe53f47d611721c84819c241acfb65d122403d7d"
+sha256 = "abb55ee911483d7e9be5b874d168ee50273f59dec8f862dfb4c6cce0cabd665b"
 
 [[packages]]
 name = "sherpa-onnx-core"

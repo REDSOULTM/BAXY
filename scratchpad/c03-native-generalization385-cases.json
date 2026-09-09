@@ -1,0 +1,305 @@
+{
+  "origin": "Five development371 cases, actual synthetic380T9 context, eleven explicitly synthetic generalization controls. Not fresh human acceptance.",
+  "cases": [
+    {
+      "id": "t5",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan. Remember my name."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "What would I be confirming?"
+        },
+        {
+          "role": "assistant",
+          "content": "What would you like to confirm or cancel? Please choose either confirm or cancel."
+        },
+        {
+          "role": "user",
+          "content": "cancel"
+        },
+        {
+          "role": "assistant",
+          "content": "Cancelado."
+        },
+        {
+          "role": "user",
+          "content": "Who am I?"
+        },
+        {
+          "role": "assistant",
+          "content": "You are Jordan, a user who just tried to enable private local memory but canceled the action."
+        }
+      ],
+      "expected": "Use the current human declaration (Jordan/Álvaro); memory.recall failed, no assertion of persistence."
+    },
+    {
+      "id": "t10",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "You are Jordan, a user who just tried to enable private local memory but canceled the action."
+        },
+        {
+          "role": "user",
+          "content": "What is my name?"
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro y quiero que guardes mi nombre."
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Álvaro, no puedo guardar tu nombre porque la memoria está deshabilitada."
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Álvaro, ¿te gustaría que active mi memoria privada para guardarte tu nombre? Por favor, dime si quieres confirmar o cancelar."
+        },
+        {
+          "role": "user",
+          "content": "¿Qué vas a activar?"
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué vas a activar? ¿Confirmar o cancelar?"
+        },
+        {
+          "role": "user",
+          "content": "cancelar"
+        },
+        {
+          "role": "assistant",
+          "content": "Se ha cancelado la memoria."
+        },
+        {
+          "role": "user",
+          "content": "quién soy ahora"
+        },
+        {
+          "role": "assistant",
+          "content": "Eres Álvaro, pero como cancelaste la activación de la memoria privada, no tengo guardado tu nombre en mi contexto actual."
+        }
+      ],
+      "expected": "Use the current human declaration (Jordan/Álvaro); memory.recall failed, no assertion of persistence."
+    },
+    {
+      "id": "third-party",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My coworker is Morgan."
+        },
+        {
+          "role": "assistant",
+          "content": "Morgan is your coworker."
+        }
+      ],
+      "expected": "Do not call the user Morgan. A targeted question or memory.recall proposal is legitimate when no human name is supplied; Windows account is not the requested personal identity."
+    },
+    {
+      "id": "assistant-conflict",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Your name is Morgan."
+        }
+      ],
+      "expected": "Human declaration Jordan outranks the incorrect assistant statement Morgan."
+    },
+    {
+      "id": "explicit-persistence",
+      "request": "What name have you saved in private memory?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Jordan."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Jordan."
+        }
+      ],
+      "expected": "Propose memory.recall for the explicitly stored name; do not claim a saved value from conversational context."
+    },
+    {
+      "id": "product380-t9",
+      "request": "quién soy ahora",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "The memory enable action has been cancelled."
+        },
+        {
+          "role": "user",
+          "content": "Who am I?"
+        },
+        {
+          "role": "assistant",
+          "content": "You are Jordan, a user who just asked me to remember your name."
+        },
+        {
+          "role": "user",
+          "content": "What is my name?"
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro y quiero que guardes mi nombre."
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Álvaro, no puedo guardar tu nombre porque la memoria está deshabilitada."
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Álvaro, ¿te gustaría que active mi memoria privada para guardarte tu nombre? Por favor, dime si quieres confirmar o cancelar."
+        },
+        {
+          "role": "user",
+          "content": "¿Qué vas a activar?"
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué vas a activar? ¿Confirmar o cancelar la activación de la memoria local privada?"
+        },
+        {
+          "role": "user",
+          "content": "cancelar"
+        },
+        {
+          "role": "assistant",
+          "content": "Se ha cancelado la activación de la memoria privada local."
+        }
+      ],
+      "expected": "Identify Álvaro from the actual human declaration; do not identify BAXY or deny knowing the available session name."
+    },
+    {
+      "id": "assistant-identity",
+      "request": "Who are you?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Taylor."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Taylor."
+        }
+      ],
+      "expected": "Identify BAXY, not Taylor; no action."
+    },
+    {
+      "id": "human-identity-es",
+      "request": "¿Quién soy?",
+      "history": [
+        {
+          "role": "user",
+          "content": "Me llamo Eva."
+        },
+        {
+          "role": "assistant",
+          "content": "Tu cuenta de Windows es otra identidad."
+        }
+      ],
+      "expected": "Name Eva from the human statement, not Windows or BAXY."
+    },
+    {
+      "id": "family-identity",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My brother is Noah."
+        },
+        {
+          "role": "assistant",
+          "content": "Noah is your brother."
+        }
+      ],
+      "expected": "No human self-name supplied: do not call the user Noah. Honest unknown or targeted question."
+    },
+    {
+      "id": "mixed-self-name",
+      "request": "Me llamo Lucía. What's my name?",
+      "history": [],
+      "expected": "Name Lucía, no persistence claim or operation."
+    },
+    {
+      "id": "corrected-self-name",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Taylor."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello Taylor."
+        },
+        {
+          "role": "user",
+          "content": "Actually, my name is Casey."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for correcting that."
+        }
+      ],
+      "expected": "Use Casey, the latest human correction; no persistence claim."
+    },
+    {
+      "id": "ram-definition",
+      "request": "Explain RAM in one sentence.",
+      "history": [],
+      "expected": "Explain volatile working memory; do not measure this PC or claim current machine values."
+    },
+    {
+      "id": "air-composition",
+      "request": "El aire es H2O?",
+      "history": [],
+      "expected": "No; air is a mixture mainly nitrogen and oxygen. H2O is water. No unnecessary web action."
+    },
+    {
+      "id": "capital-france",
+      "request": "¿Cuál es la capital de Francia?",
+      "history": [],
+      "expected": "Answer París, no unnecessary operation."
+    },
+    {
+      "id": "steam-no-effect",
+      "request": "No abras Steam; explícame qué es.",
+      "history": [],
+      "expected": "Explain Steam without opening it or claiming an effect."
+    },
+    {
+      "id": "clock-read",
+      "request": "¿Qué hora es?",
+      "history": [],
+      "expected": "Propose the catalog clock read, not an invented present time; no provider executed in this diagnostic."
+    },
+    {
+      "id": "volume-missing",
+      "request": "Pon el volumen.",
+      "history": [],
+      "expected": "Clarify the level; no chosen or claimed volume change."
+    }
+  ]
+}

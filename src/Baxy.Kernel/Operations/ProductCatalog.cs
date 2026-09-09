@@ -66,7 +66,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "audio.status.endpoint.read.v1",
             ToolExposure.Public,
-            "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla."),
+            "Identifica por nombre la salida de audio predeterminada actual y lee su volumen y silencio, sin modificarla."),
         Descriptor(
             "audio.volume",
             Schema([Integer("level", 0, 100)], ["level"]),
@@ -1274,7 +1274,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "system.identity.windows.environment.secondread.v1",
             ToolExposure.Public,
-            "Lee el dominio y usuario efectivos del proceso BAXY mediante dos observaciones coherentes."),
+            "Lee la cuenta de Windows bajo la que se ejecuta BAXY: su dominio y nombre de usuario, mediante dos observaciones coherentes. No identifica a la persona ni recupera su nombre dicho en conversación."),
         Descriptor(
             "system.power",
             Schema([String("action", values: ["lock", "restart", "shutdown", "signout", "sleep"])], ["action"]),
@@ -1601,6 +1601,7 @@ public static class ProductCatalog
             "window.resolve",
             Schema(
                 [
+                    Boolean("byTitle"),
                     Integer("limit", 1, 50),
                     String("process", maximumLength: 260, nonWhitespace: true),
                 ],
@@ -1608,7 +1609,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "window.resolve.identity.snapshot.v1",
             ToolExposure.Public,
-            "Resuelve ventanas visibles por nombre de proceso y emite identificadores efimeros estables."),
+            "Resuelve ventanas visibles: process contiene el nombre del proceso; con byTitle=true contiene el título visible de la ventana o aplicación. Devuelve títulos e identificadores efimeros; varias coincidencias requieren elegir la ventana."),
         Descriptor(
             "window.restore",
             WindowIdSchema(),

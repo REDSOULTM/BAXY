@@ -1,0 +1,3 @@
+{"repo": "REDSOULTM/baxy-gemma4-E2B-GGUF", "revision": "f9b84ecdcd4ffdc112a5baa21b86d553a9360c71", "filename": "gemma-4-E2B-it-Q4_K_M.gguf", "size": 3427879072, "expectedSha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7", "source": "README.md of local Probando Gemma 4, lines 223-260; remote public metadata verified before download."}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{"phase": "verified", "path": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf", "sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7", "elapsedSeconds": 54.94}

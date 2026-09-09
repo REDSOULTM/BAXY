@@ -1,0 +1,367 @@
+[
+  {
+    "id": "owner46-seed0",
+    "variant": "zero",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 8,
+    "operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status"
+    ],
+    "usage": {
+      "completion_tokens": 377,
+      "prompt_tokens": 1606,
+      "total_tokens": 1983,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "reasoning_chars": 1012
+  },
+  {
+    "id": "owner46-seed0",
+    "variant": "typed",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 15,
+    "operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume"
+    ],
+    "usage": {
+      "completion_tokens": 707,
+      "prompt_tokens": 2316,
+      "total_tokens": 3023,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "reasoning_chars": 1812
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "zero",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 12,
+    "operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__volume__adjust",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__volume__adjust",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_window__restore"
+    ],
+    "usage": {
+      "completion_tokens": 563,
+      "prompt_tokens": 1606,
+      "total_tokens": 2169,
+      "prompt_tokens_details": {
+        "cached_tokens": 1601
+      }
+    },
+    "reasoning_chars": 1399
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "typed",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 40,
+    "operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__play__query",
+      "baxy_audio__status",
+      "baxy_game__install__prepare",
+      "baxy_audio__status",
+      "baxy_media__play__exact",
+      "baxy_audio__status",
+      "baxy_game__install__prepare",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__play__query",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__play__exact",
+      "baxy_audio__status",
+      "baxy_app__installed",
+      "baxy_audio__status",
+      "baxy_media__play__query",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__play__exact",
+      "baxy_audio__status",
+      "baxy_app__installed",
+      "baxy_audio__status",
+      "baxy_media__play__query",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__play__exact",
+      "baxy_audio__status",
+      "baxy_app__installed",
+      "baxy_audio__status",
+      "baxy_media__play__query",
+      "baxy_audio__status"
+    ],
+    "usage": {
+      "completion_tokens": 974,
+      "prompt_tokens": 2316,
+      "total_tokens": 3290,
+      "prompt_tokens_details": {
+        "cached_tokens": 2311
+      }
+    },
+    "reasoning_chars": 1299
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "zero",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 7,
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status"
+    ],
+    "usage": {
+      "completion_tokens": 344,
+      "prompt_tokens": 1532,
+      "total_tokens": 1876,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "reasoning_chars": 817
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "typed",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 6,
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status",
+      "baxy_system__status"
+    ],
+    "usage": {
+      "completion_tokens": 326,
+      "prompt_tokens": 2213,
+      "total_tokens": 2539,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "reasoning_chars": 754
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "zero",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 8,
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_system__settings__set",
+      "baxy_audio__status",
+      "baxy_system__status"
+    ],
+    "usage": {
+      "completion_tokens": 319,
+      "prompt_tokens": 1532,
+      "total_tokens": 1851,
+      "prompt_tokens_details": {
+        "cached_tokens": 1527
+      }
+    },
+    "reasoning_chars": 649
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "typed",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 8,
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_media__status",
+      "baxy_audio__status",
+      "baxy_audio__volume"
+    ],
+    "usage": {
+      "completion_tokens": 280,
+      "prompt_tokens": 2213,
+      "total_tokens": 2493,
+      "prompt_tokens_details": {
+        "cached_tokens": 2208
+      }
+    },
+    "reasoning_chars": 596
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "zero",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 7,
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__status",
+      "baxy_audio__status",
+      "baxy_audio__status"
+    ],
+    "usage": {
+      "completion_tokens": 192,
+      "prompt_tokens": 1511,
+      "total_tokens": 1703,
+      "prompt_tokens_details": {
+        "cached_tokens": 1271
+      }
+    },
+    "reasoning_chars": 337
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "typed",
+    "status": "extra_unrequested_calls",
+    "reason": "Starts with requested effects but adds/repeats status and other operations. No trimming or deduplication can count as correct. Generation versus PEG extraction is still under investigation494.",
+    "parsed_call_count": 6,
+    "operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status"
+    ],
+    "usage": {
+      "completion_tokens": 150,
+      "prompt_tokens": 2192,
+      "total_tokens": 2342,
+      "prompt_tokens_details": {
+        "cached_tokens": 1952
+      }
+    },
+    "reasoning_chars": 231
+  },
+  {
+    "id": "word-meaning",
+    "variant": "zero",
+    "status": "native_correct",
+    "reason": "Correct meaning/no-effect response; no physical/product acceptance.",
+    "parsed_call_count": 0,
+    "operations": [],
+    "usage": {
+      "completion_tokens": 151,
+      "prompt_tokens": 1506,
+      "total_tokens": 1657,
+      "prompt_tokens_details": {
+        "cached_tokens": 1494
+      }
+    },
+    "reasoning_chars": 512
+  },
+  {
+    "id": "word-meaning",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Correct meaning/no-effect response; no physical/product acceptance.",
+    "parsed_call_count": 0,
+    "operations": [],
+    "usage": {
+      "completion_tokens": 66,
+      "prompt_tokens": 2187,
+      "total_tokens": 2253,
+      "prompt_tokens_details": {
+        "cached_tokens": 2175
+      }
+    },
+    "reasoning_chars": 205
+  },
+  {
+    "id": "negative-only",
+    "variant": "zero",
+    "status": "native_correct",
+    "reason": "Correct meaning/no-effect response; no physical/product acceptance.",
+    "parsed_call_count": 0,
+    "operations": [],
+    "usage": {
+      "completion_tokens": 241,
+      "prompt_tokens": 1505,
+      "total_tokens": 1746,
+      "prompt_tokens_details": {
+        "cached_tokens": 1494
+      }
+    },
+    "reasoning_chars": 891
+  },
+  {
+    "id": "negative-only",
+    "variant": "typed",
+    "status": "unsupported_state_claim",
+    "reason": "No calls but claims audio remains muted; no current mute state was supplied.",
+    "parsed_call_count": 0,
+    "operations": [],
+    "usage": {
+      "completion_tokens": 127,
+      "prompt_tokens": 2186,
+      "total_tokens": 2313,
+      "prompt_tokens_details": {
+        "cached_tokens": 2175
+      }
+    },
+    "reasoning_chars": 452
+  }
+]

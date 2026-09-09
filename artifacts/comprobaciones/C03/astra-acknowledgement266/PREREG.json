@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-07T22:46:54.130603+00:00",
+  "hypothesis": "A separated affirmative discourse marker is not a second requested effect. Existing shared request-envelope normalization must preserve the following speech act and be used by authenticated app argument resolution too.",
+  "evidence": "astra-boundaries265/RESULT.json: Si, abre steam has minimum_effects=2 because si is counted as unresolved positive clause; catalogUnavailable is null. No LLM fault at this first transformation.",
+  "method": "Before/after owner boundary tests using literal UI263 regression plus constructed grammatical controls clearly marked synthetic. No inference or actions in the owner264 window. No new prompt, operation, or success prose. Same frozen Core262 three-case replay after source change.",
+  "criteria": "Affirmative marker leaves independently authorized operation and authenticated target intact; bare affirmation, conditions, quoted data, prohibitions, unknown apps, and actual compound constraints retain their boundaries. Existing effect, compound and turn policy suites pass.",
+  "sourceBefore": {
+    "src/baxy_mind/effect_intent.py": "0f12d86e856b8840fd57015e7b79fd0f2fd4656fdfd2db1894e866da2e91366c",
+    "tests/test_effect_intent.py": "5dc87ff9f00e0c39d3b73b7f17b5d60bf9d4723e2ca066548580eeb61fcca47e"
+  },
+  "limitations": "This repairs the deterministic boundary, not the missing long-phrase retrieval or compositor proof. Actual UI and model regression still required before acceptance.",
+  "priorResearch": [
+    "INVESTIGACION_FORMATO_Y_CLASIFICACION_C03.md",
+    "SEGUIMIENTOS.md"
+  ],
+  "primarySource": "https://www.rae.es/dpd/s%C3%AD"
+}

@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.App;
 using Baxy.Contracts;
 using Baxy.Kernel.Journal;
@@ -40,6 +41,309 @@ public sealed class MindShellEndToEndTests
         ContractTraceEnvironmentVariable,
         PhysicalAttestationEnvironmentVariable,
     ];
+
+    [TestCase("no abras Steam, dime la hora")]
+    [TestCase("don't launch Steam, tell me the time")]
+    [TestCase("no abras el bloc de notas")]
+    [TestCase("Dime la hora y el estado del audio.")]
+    [TestCase("Dime la hora, revisa el estado del audio y dime el uso de CPU.")]
+    [TestCase("Dime la hora y no silencies el audio.")]
+    public async Task ConstraintsAndCompoundRequestsCrossTheMindDecisionBoundary(string request)
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, request);
+            JsonElement decision = ReadTrace(tracePath).Single(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide");
+            Assert.That(decision.GetProperty("text").GetString(), Is.EqualTo(request));
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+        });
+    }
+
+    [Test]
+    public async Task PersonalQuestionExecutesItsSelectedReadInsteadOfBecomingConversation()
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            string result = await SubmitAsync(viewModel, "What is in my task list?");
+            Assert.That(result, Does.Contain("\"operation\":\"task.list\""));
+            Assert.That(result, Does.Contain("\"verified\":true"));
+            Assert.That(result, Does.Not.Contain("\"kind\":\"conversation\""));
+            Assert.That(ReadTrace(tracePath).Count(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide"), Is.EqualTo(1));
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+            AssertOutboxEmpty(dataRoot);
+        });
+    }
+
+    [TestCase("me llamo emmanuel, dime hola emmanuel", "Hola Emmanuel, ¿cómo estás?", "es")]
+    [TestCase("me llamo Albeda", "Hola Albeda, encantado de conocerte.", "es")]
+    [TestCase("my favorite city is Lima", "What do you enjoy most about Lima?", "en")]
+    public async Task ImplicitPersonalContextReachesConversationWithoutPersistence(
+        string request, string reply, string language)
+    {
+        const string variable = "BAXY_MIND_CONTRACT_TURN_RESULT";
+        using var environment = new EnvironmentVariableScope([variable]);
+        Environment.SetEnvironmentVariable(variable, new JsonObject
+        {
+            ["kind"] = "conversation",
+            ["effectOperations"] = new JsonArray(),
+            ["reply"] = reply,
+            ["question"] = string.Empty,
+            ["responseLanguage"] = language,
+        }.ToJsonString());
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+            string result = await SubmitAsync(viewModel, request);
+            Assert.That(result, Is.EqualTo(reply));
+            JsonElement decision = ReadTrace(tracePath).Single(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide");
+            Assert.That(decision.GetProperty("text").GetString(), Is.EqualTo(request));
+            Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before),
+                "Personal context must not invoke persistent memory or another effect.");
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+            Assert.That(File.Exists(Path.Combine(dataRoot, "shell", "retry-outbox.v1.json")), Is.False);
+        });
+    }
+
+    [TestCase("Me llamo Lina.", "¿Cómo me llamo?", true)]
+    [TestCase("My name is Priya.", "What is my name?", true)]
+    [TestCase("Me llamo Renata.", "¿Cómo me llamo?", true)]
+    [TestCase("Me llamo Lina.", "What name have you saved in private memory?", false)]
+    [TestCase("Mi hermana se llama Lina.", "¿Cómo me llamo?", false)]
+    [TestCase("hola", "¿Cómo me llamo?", false)]
+    public async Task CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead(
+        string declaration, string recall, bool usesConversation)
+    {
+        const string variable = "BAXY_MIND_CONTRACT_TURN_RESULT";
+        using var environment = new EnvironmentVariableScope([variable]);
+        bool english = declaration.StartsWith("My", StringComparison.Ordinal);
+        string reply = english ? "Your name is Priya." : "Te llamas Lina.";
+        Environment.SetEnvironmentVariable(variable, new JsonObject
+        {
+            ["kind"] = "conversation",
+            ["effectOperations"] = new JsonArray(),
+            ["reply"] = reply,
+            ["question"] = string.Empty,
+            ["responseLanguage"] = english ? "en" : "es",
+        }.ToJsonString());
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, declaration);
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+            int decisionsBefore = ReadTrace(tracePath).Count(entry => Property(entry, "type") == "turn.decide");
+            string result = await SubmitAsync(viewModel, recall);
+            JsonElement[] decisions = ReadTrace(tracePath).Where(entry => Property(entry, "type") == "turn.decide").ToArray();
+            if (usesConversation)
+            {
+                Assert.Multiple(() =>
+                {
+                    Assert.That(decisions.Length, Is.EqualTo(decisionsBefore + 1));
+                    Assert.That(result, Is.EqualTo(reply));
+                    Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before),
+                        "The current human name stays in conversation; no persistent read or write.");
+                    Assert.That(File.Exists(Path.Combine(dataRoot, "shell", "retry-outbox.v1.json")), Is.False);
+                });
+                AssertHistoryContainsUser(decisions[^1], declaration);
+            }
+            else
+            {
+                Assert.Multiple(() =>
+                {
+                    Assert.That(decisions.Length, Is.EqualTo(decisionsBefore));
+                    Assert.That(result, Does.Contain("memory_disabled"));
+                    Assert.That(new FileInfo(journalPath).Length, Is.GreaterThan(before));
+                });
+                AssertOutboxEmpty(dataRoot);
+            }
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+        });
+    }
+
+    [Test]
+    public async Task ImplicitPersonalContextCannotAuthorizeAModelProposedMemoryWrite()
+    {
+        const string variable = "BAXY_MIND_CONTRACT_TURN_RESULT";
+        using var environment = new EnvironmentVariableScope([variable]);
+        Environment.SetEnvironmentVariable(variable, new JsonObject
+        {
+            ["kind"] = "action",
+            ["operation"] = "memory.save",
+            ["effectOperations"] = new JsonArray("memory.save"),
+            ["reply"] = string.Empty,
+            ["question"] = string.Empty,
+        }.ToJsonString());
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+            string result = await SubmitAsync(viewModel, "me llamo Albeda");
+            Assert.That(ReadTrace(tracePath).Count(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide"), Is.EqualTo(1));
+            Assert.That(result, Does.Contain("memory_needs_explicit_request"));
+            Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before));
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+            Assert.That(File.Exists(Path.Combine(dataRoot, "shell", "retry-outbox.v1.json")), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task DecisionRecoveryPreservesFailureInsteadOfInventingPersonalData()
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            string result = await SubmitAsync(viewModel, "What is on my to do list?");
+            Assert.That(result, Does.Contain("\"cause\":\"turn_runtime_failure\""));
+            Assert.That(result, Does.Contain("\"operationAttempted\":false"));
+            Assert.That(result, Does.Not.Contain("\"kind\":\"conversation\""));
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+            _ = await SubmitAsync(viewModel, "Explícame la fotosíntesis");
+            JsonElement next = ReadTrace(tracePath).Last(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide");
+            Assert.That(next.GetProperty("pendingClarification").GetBoolean(), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task RejectedUnsupportedReplyKeepsItsCatalogBoundaryDuringComposition()
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            string result = await SubmitAsync(viewModel,
+                "abre la aplicación C03ProgramaInexistente20260906");
+            Assert.That(result, Does.Contain("\"cause\":\"out_of_catalog\""));
+            Assert.That(result, Does.Not.Contain("\"kind\":\"conversation\""));
+            Assert.That(ReadTrace(tracePath).Count(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide"), Is.EqualTo(1));
+            Assert.That(viewModel.HasPendingPlan, Is.False);
+        });
+    }
+
+    [TestCase("cancelar")]
+    [TestCase("cancel that")]
+    [TestCase("cancela eso")]
+    public async Task CancellingPendingClarificationDoesNotReinterpretTheOriginalRequest(string cancellation)
+    {
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, "Haz eso");
+            int decisions = ReadTrace(tracePath).Count(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide");
+            string cancelled = await SubmitAsync(viewModel, cancellation);
+            Assert.That(cancelled, Does.Contain("clarification_cancelled"));
+            Assert.That(ReadTrace(tracePath).Count(entry =>
+                entry.GetProperty("type").GetString() == "turn.decide"), Is.EqualTo(decisions));
+            Assert.That(viewModel.StatusDescription, Does.Not.Contain("aclaración"));
+        });
+    }
+
+    [Test]
+    public async Task LateVoiceCancellationAcknowledgementDoesNotInvalidateModelWork()
+    {
+        using var environment = new EnvironmentVariableScope(MindEnvironmentVariables);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        await using var mind = new MindSidecarClient();
+        Assert.That(await mind.TryStartAsync([], TimeSpan.FromSeconds(10), CancellationToken.None), Is.True);
+        Task<MindComposedMessage?> current = mind.ComposeUserMessageAsync("current", "conversation",
+            new JsonObject { ["situation"] = "Current reply", ["fixtureDelayMilliseconds"] = 400 },
+            TimeSpan.FromSeconds(2), CancellationToken.None);
+
+        Assert.That(await mind.VoiceCancelAsync(TimeSpan.FromMilliseconds(60), CancellationToken.None), Is.False);
+        Assert.That(mind.IsReady, Is.True, "A missing voice acknowledgement is not a dead model transport.");
+        Assert.That((await current)?.Text, Is.EqualTo("Current reply"));
+        MindComposedMessage? next = await mind.ComposeUserMessageAsync("next", "conversation",
+            new JsonObject { ["situation"] = "Next reply" },
+            TimeSpan.FromSeconds(2), CancellationToken.None);
+        Assert.That(next?.Text, Is.EqualTo("Next reply"));
+    }
+
+    [Test]
+    public async Task MissingDecisionReportsMindUnavailabilityInsteadOfAmbiguousUserInput()
+    {
+        const string failureVariable = "BAXY_MIND_CONTRACT_DECISION_UNAVAILABLE";
+        using var environment = new EnvironmentVariableScope([failureVariable]);
+        Environment.SetEnvironmentVariable(failureVariable, "1");
+        await WithContractMindAsync(async (viewModel, _, _) =>
+        {
+            string result = await SubmitAsync(viewModel, "abre Paint");
+            Assert.That(result, Does.Contain("\"cause\":\"mind_unavailable\""));
+            Assert.That(result, Does.Not.Contain("ambiguous_request"));
+        });
+    }
+
+    [Test]
+    public async Task QueuedCompositionKeepsItsOwnExecutionBudgetAndTheSidecarReady()
+    {
+        using var environment = new EnvironmentVariableScope(MindEnvironmentVariables);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        await using var mind = new MindSidecarClient();
+        Assert.That(await mind.TryStartAsync([], TimeSpan.FromSeconds(10), CancellationToken.None), Is.True);
+
+        Task<MindComposedMessage?> slow = mind.ComposeUserMessageAsync("slow", "conversation",
+            new JsonObject { ["situation"] = "First reply", ["fixtureDelayMilliseconds"] = 800 },
+            TimeSpan.FromSeconds(3), CancellationToken.None);
+        Task<MindComposedMessage?> queued = mind.ComposeUserMessageAsync("next", "conversation",
+            new JsonObject { ["situation"] = "Next reply" },
+            TimeSpan.FromMilliseconds(400), CancellationToken.None);
+        Assert.That(mind.HasActiveRequest, Is.True);
+        MindComposedMessage?[] replies = await Task.WhenAll(slow, queued);
+        Assert.Multiple(() =>
+        {
+            Assert.That(replies[0]?.Text, Is.EqualTo("First reply"));
+            Assert.That(replies[1]?.Text, Is.EqualTo("Next reply"));
+            Assert.That(mind.IsReady, Is.True);
+            Assert.That(mind.HasActiveRequest, Is.False);
+        });
+    }
+
+    [Test]
+    public async Task ProgressFromARetiredRequestCannotReachTheCurrentTurn()
+    {
+        using var environment = new EnvironmentVariableScope(MindEnvironmentVariables);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        await using var mind = new MindSidecarClient();
+        Assert.That(await mind.TryStartAsync([], TimeSpan.FromSeconds(10), CancellationToken.None), Is.True);
+        var signals = new System.Collections.Concurrent.ConcurrentQueue<string>();
+        mind.TurnSignalReceived += signals.Enqueue;
+
+        MindComposedMessage? result = await mind.ComposeUserMessageAsync("current", "conversation",
+            new JsonObject { ["situation"] = "Current reply", ["fixtureTurnSignals"] = true },
+            TimeSpan.FromSeconds(2), CancellationToken.None);
+
+        Assert.That(result?.Text, Is.EqualTo("Current reply"));
+        Assert.That(signals, Has.Count.EqualTo(1));
+        Assert.That(signals, Does.Not.Contain("retired-request"));
+    }
+
+    [Test]
+    public async Task CancellingAQueuedCompositionDoesNotInvalidateTheActiveRequest()
+    {
+        using var environment = new EnvironmentVariableScope(MindEnvironmentVariables);
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, FindPython());
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonPathEnvironmentVariable,
+            Path.Combine(FindRepositoryRoot(), "tests", "fixtures", "mind_turn_contract"));
+        await using var mind = new MindSidecarClient();
+        Assert.That(await mind.TryStartAsync([], TimeSpan.FromSeconds(10), CancellationToken.None), Is.True);
+        Task<MindComposedMessage?> slow = mind.ComposeUserMessageAsync("slow", "conversation",
+            new JsonObject { ["situation"] = "First reply", ["fixtureDelayMilliseconds"] = 800 },
+            TimeSpan.FromSeconds(3), CancellationToken.None);
+        using var cancellation = new CancellationTokenSource();
+        Task<MindComposedMessage?> queued = mind.ComposeUserMessageAsync("next", "conversation",
+            new JsonObject(), TimeSpan.FromMilliseconds(400), cancellation.Token);
+        await cancellation.CancelAsync();
+        Assert.That(async () => await queued, Throws.InstanceOf<OperationCanceledException>());
+        Assert.That((await slow)?.Text, Is.EqualTo("First reply"));
+        Assert.That(mind.IsReady, Is.True);
+    }
 
     [Test]
     public async Task ContextualConversationAndClarificationCrossTheMindProcessBoundary()
@@ -133,6 +437,34 @@ public sealed class MindShellEndToEndTests
     }
 
     [Test]
+    public async Task PendingClarificationDoesNotErasePriorUserFacts()
+    {
+        const string nonce = "Nimbo7391";
+        const string introduction = "Presento una palabra temporal: " + nonce + ".";
+        const string recall = "¿Qué palabra temporal presenté?";
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            await SubmitAsync(viewModel, introduction);
+            await SubmitAsync(viewModel, "Haz eso");
+            Assert.That(viewModel.StatusDescription, Is.EqualTo("Esperando tu aclaración"));
+
+            string answer = await SubmitAsync(viewModel, recall);
+            JsonElement decision = ReadTrace(tracePath).Single(entry =>
+                Property(entry, "type") == "turn.decide"
+                && Property(entry, "text") == recall);
+            AssertHistoryContainsUser(decision, introduction);
+            Assert.Multiple(() =>
+            {
+                Assert.That(answer, Does.Contain(nonce));
+                Assert.That(decision.GetProperty("pendingClarification").GetBoolean(), Is.False);
+                Assert.That(ReadTrace(tracePath), Has.None.Matches<JsonElement>(static entry =>
+                    Property(entry, "type") is "arguments" or "plan"));
+            });
+            Assert.That(File.Exists(Path.Combine(dataRoot, "shell", "retry-outbox.v1.json")), Is.False);
+        });
+    }
+
+    [Test]
     public async Task SelfContainedOrdersSupersedePendingTurnClarification()
     {
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
@@ -179,6 +511,67 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    [TestCase("What name have you saved in private memory?", "memory.recall")]
+    [TestCase("¿Qué nombre tienes guardado en tu memoria privada?", "memory.recall")]
+    [TestCase("do you have memory", "memory.status")]
+    [TestCase("tienes memoria", "memory.status")]
+    public async Task ExplicitPrivateMemoryRequestSupersedesMindClarification(
+        string request, string operation)
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, "Haz eso");
+            Assert.That(viewModel.StatusDescription, Is.EqualTo("Esperando tu aclaración"));
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+            int decisionsBefore = ReadTrace(tracePath).Count(entry => Property(entry, "type") == "turn.decide");
+
+            string result = await SubmitAsync(viewModel, request);
+            using var journal = new FileStream(journalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = new StreamReader(journal);
+            string persisted = await reader.ReadToEndAsync();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(ReadTrace(tracePath).Count(entry => Property(entry, "type") == "turn.decide"),
+                    Is.EqualTo(decisionsBefore), "The typed private route must not be reclassified as a public slot reply.");
+                Assert.That(new FileInfo(journalPath).Length, Is.GreaterThan(before));
+                Assert.That(persisted, Does.Contain(operation));
+                if (operation == "memory.recall")
+                {
+                    Assert.That(result, Does.Contain("memory_disabled"));
+                }
+            });
+            AssertOutboxEmpty(dataRoot);
+        });
+    }
+
+    [TestCase("Recuerda mi nombre")]
+    [TestCase("I want you to save my name")]
+    public async Task PrivateMissingValueReplacesPublicClarificationWithoutInventingIt(string request)
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, "Haz eso");
+            string journalPath = Path.Combine(dataRoot, "journal", "missions.jsonl");
+            long before = new FileInfo(journalPath).Length;
+            int decisionsBefore = ReadTrace(tracePath).Count(entry => Property(entry, "type") == "turn.decide");
+
+            string question = await SubmitAsync(viewModel, request);
+            string cancellation = await SubmitAsync(viewModel, "cancelar");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(question, Does.Contain("memory_save_needs_content"));
+                Assert.That(cancellation, Does.Contain("memory_cancelled"));
+                Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before));
+                Assert.That(ReadTrace(tracePath).Count(entry => Property(entry, "type") == "turn.decide"),
+                    Is.EqualTo(decisionsBefore));
+            });
+            Assert.That(File.Exists(Path.Combine(dataRoot, "shell", "retry-outbox.v1.json")), Is.False);
+        });
+    }
+
     [Test]
     public async Task ClarificationFragmentPreservesAndResumesTheObjective()
     {
@@ -211,10 +604,34 @@ public sealed class MindShellEndToEndTests
                         "mañana a las 9",
                         clarifiedObjective,
                     }));
-                Assert.That(
-                    turns[1].GetProperty("history").GetArrayLength(),
-                    Is.EqualTo(0));
+                // Context is preserved while the first reading remains
+                // independent of pending-objective authorization.
+                AssertHistoryContainsUser(turns[1], "Haz eso");
+                Assert.That(turns[1].GetProperty("pendingClarification").GetBoolean(), Is.False);
             });
+        });
+    }
+
+    [TestCase("Set the volume, por favor.")]
+    [TestCase("Ajusta el volumen, por favor.")]
+    [TestCase("Set the speaker volume, please.")]
+    public async Task RejectedClarificationWordingKeepsThePendingObjective(string request)
+    {
+        const string question = "¿Quieres que ajuste el volumen de la salida a un nivel específico?";
+        Assert.That(UserMessagePolicy.IsSafeConversationReply(request, question, "mixed"), Is.False);
+        await WithContractMindAsync(async (viewModel, _, tracePath) =>
+        {
+            string first = await SubmitAsync(viewModel, request);
+            Assert.That(viewModel.StatusDescription, Is.EqualTo("Esperando tu aclaración"),
+                first + " | " + string.Join(" | ", ReadTrace(tracePath)
+                    .Select(static entry => Property(entry, "type") + ":" + Property(entry, "text"))));
+            await SubmitAsync(viewModel, "Al 40%, please.");
+            string?[] requests = ReadTrace(tracePath)
+                .Where(static entry => Property(entry, "type") == "turn.decide")
+                .Select(static entry => Property(entry, "text"))
+                .ToArray();
+            Assert.That(requests, Does.Contain(
+                request + "\nAclaración confiable del usuario: Al 40%, please."));
         });
     }
 
@@ -245,6 +662,29 @@ public sealed class MindShellEndToEndTests
                         Property(entry, "type") == "plan"));
                 Assert.That(answer, Does.Contain("system.time"));
                 Assert.That(answer, Does.Contain("\"polarity\":\"success\""));
+            });
+            AssertOutboxEmpty(dataRoot);
+        });
+    }
+
+    [TestCase("y la fecha?")]
+    [TestCase("and the date?")]
+    public async Task GroundedContextualDateReachesCoreOutsideTheClockFastPath(string request)
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            await SubmitAsync(viewModel, "Dime la hora actual");
+            string answer = await SubmitAsync(viewModel, request);
+            JsonElement decision = ReadTrace(tracePath).Single(entry =>
+                Property(entry, "type") == "turn.decide"
+                && Property(entry, "text") == request);
+            AssertHistoryContainsUser(decision, "Dime la hora actual");
+            Assert.Multiple(() =>
+            {
+                Assert.That(answer, Does.Contain("system.time"));
+                Assert.That(answer, Does.Contain("\"polarity\":\"success\""));
+                Assert.That(answer, Does.Contain("localUtcOffsetMinutes"));
+                Assert.That(answer, Does.Contain("utc"));
             });
             AssertOutboxEmpty(dataRoot);
         });

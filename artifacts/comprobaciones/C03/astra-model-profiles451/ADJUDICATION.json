@@ -1,0 +1,882 @@
+[
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t7",
+    "answer": "Me llaman Jordan.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Jordan a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t4",
+    "answer": "The name saved in private memory is Jordan.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "name-marta",
+    "answer": "Me llaman Marta.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Marta a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "compound-name",
+    "answer": "Mi nombre es Ana María.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Ana María a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "third-person",
+    "answer": "Mi hermana se llama Nina.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye la hermana a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "two-records",
+    "answer": "Guardo dos nombres en mi memoria privada: Jordan y Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.enable",
+    "answer": "The memory feature has been enabled successfully.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.save",
+    "answer": "The memory save operation completed successfully.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-es",
+    "answer": "No tengo recuerdos privados accesibles para ti; lo que aparece en esa lista está marcado como confidencial y ha sido redactado.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Niega recuerdos accesibles; confunde ocultamiento con falta de acceso."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-en",
+    "answer": "Private memory stores personal data and experiences that are kept hidden from others, including secrets and private thoughts. In this specific instance, the system has recalled one record labeled \"secret,\" but its content is redacted for privacy reasons.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "mixed-es",
+    "answer": "Guardo guardado que mi color favorito es el turquesa y tengo un secreto encriptado.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye el color a BAXY e inventa cifrado."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t7",
+    "answer": "Mi nombre guardado es Jordan.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Jordan a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t4",
+    "answer": "I have saved the name Jordan in private memory.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "name-marta",
+    "answer": "Mi nombre guardado es Marta.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Marta a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "compound-name",
+    "answer": "Mi nombre es Ana María.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Ana María a BAXY."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "third-person",
+    "answer": "Tu hermana se llama Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "two-records",
+    "answer": "Tengo guardados dos nombres en mi memoria privada: Jordan y Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.enable",
+    "answer": "Memory is now enabled.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.save",
+    "answer": "The memory save operation completed successfully.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-es",
+    "answer": "No tengo recuerdos guardados en mi memoria privada. Lo que se muestra es una entrada marcada como \"secreta\" con el valor redactado, pero no puedo acceder ni ver su contenido real.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Niega recuerdos existentes pese al registro leído."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-en",
+    "answer": "Private memory stores personal information and experiences that you have shared with me. The specific details are currently redacted for privacy.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Explicación genérica; no informa qué registro está guardado."
+  },
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "mixed-es",
+    "answer": "En mi memoria privada tengo guardado que mi color favorito es el turquesa y un secreto que he redactado para protegerlo.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye el color a BAXY y confunde redactado con ocultamiento."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t7",
+    "answer": "Jordan",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t4",
+    "answer": "Jordan",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "name-marta",
+    "answer": "Marta",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "compound-name",
+    "answer": "Ana María",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "third-person",
+    "answer": "Nina",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "two-records",
+    "answer": "Jordan, Nina",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.enable",
+    "answer": "The memory enable operation has been successfully completed. The system is now in memory configuration mode and memory is enabled.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Añade un modo de configuración actual no observado."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.save",
+    "answer": "Memory saved successfully. No corrections made. State updated to \"memory updated\".",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Expone estado interno literal; no cumple la instrucción de ocultar detalles del programa."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-es",
+    "answer": "Tengo guardado un dato llamado \"secret\", cuyo valor está enmascarado.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-en",
+    "answer": "The private memory contains a secret entry with a redacted value.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "mixed-es",
+    "answer": "Tengo guardado que mi color favorito es turquesa y un secreto que está encriptado.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye el color a BAXY e inventa cifrado."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t7",
+    "answer": "Jordan",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t4",
+    "answer": "Jordan",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "name-marta",
+    "answer": "Marta",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "compound-name",
+    "answer": "Ana María",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "third-person",
+    "answer": "Nina",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "two-records",
+    "answer": "Jordan, Nina",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.enable",
+    "answer": "Memory configuration enabled successfully. Operation completed.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.save",
+    "answer": "Memory saved successfully. No corrections made. Status confirmed as completed.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-es",
+    "answer": "Tengo guardado un dato llamado \"secret\", cuyo valor está enmascarado.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-en",
+    "answer": "The private memory contains a secret entry with a redacted value.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "mixed-es",
+    "answer": "Tengo guardado el color favorito turquesa y un secreto que no puedo revelar.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t7",
+    "answer": "Mi nombre guardado es Jordan.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Jordan a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t4",
+    "answer": "I have saved the name Jordan in private memory.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "name-marta",
+    "answer": "Mi nombre guardado en la memoria privada es Marta.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Marta a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "compound-name",
+    "answer": "Mi nombre guardado es Ana María.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Ana María a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "third-person",
+    "answer": "Tu hermana se llama Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "two-records",
+    "answer": "Tengo guardados los nombres Jordan y Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.enable",
+    "answer": "Memory enabling operation is completed.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.save",
+    "answer": "The memory save operation was completed.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-es",
+    "answer": "Tengo guardada una memoria etiquetada como \"secret\".",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Omite que el valor está oculto."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-en",
+    "answer": "Private memory stores secrets.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Explicación genérica sin informar el resultado protegido."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "mixed-es",
+    "answer": "Tengo guardada la preferencia de color turquesa y un recuerdo marcado como secreto.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "No explica que el secreto está oculto."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t7",
+    "answer": "Mi nombre guardado es Jordan.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Jordan a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t4",
+    "answer": "I have saved the name Jordan in private memory.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "name-marta",
+    "answer": "Mi nombre guardado es Marta.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Marta a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "compound-name",
+    "answer": "Mi nombre guardado en la memoria privada es Ana María.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Atribuye Ana María a BAXY."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "third-person",
+    "answer": "Tu hermana se llama Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "two-records",
+    "answer": "Tengo guardados los nombres Jordan y Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.enable",
+    "answer": "Memory enabling operation has completed.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.save",
+    "answer": "The memory save operation was completed.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-es",
+    "answer": "Tengo guardado un registro etiquetado como \"secret\".",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Omite que el valor está oculto."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-en",
+    "answer": "Private memory stores secrets.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Explicación genérica sin informar el resultado protegido."
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "mixed-es",
+    "answer": "Tengo guardado el color favorito turquesa y un secreto que está redactado.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Redactado en español no explica inequívocamente ocultamiento."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t7",
+    "answer": "<|tool_call>call:memory{\n  label: \"name\",\n  value: \"Jordan\"\n}<tool_call|>Listo, guardé 'Jordan' en tu memoria privada.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Herramienta falsa y escritura inventada."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "actual437-t4",
+    "answer": "I recalled your name and it is Jordan.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "name-marta",
+    "answer": "Marta",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "compound-name",
+    "answer": "Te llamo Ana María.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "third-person",
+    "answer": "<|tool_call>call:memory{memory_id: \"sister.name\",value: \"Nina\"}<tool_call|>Listo, guardé que tu hermana se llama Nina.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Herramienta falsa y escritura inventada."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "two-records",
+    "answer": "Listo. Los nombres que tengo guardados son Jordan y Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.enable",
+    "answer": "Memory is now enabled.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "memory.save",
+    "answer": "Everything you asked to be done is complete.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Conclusión genérica de todo terminado sin informar el guardado."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-es",
+    "answer": "Listo. ¿Necesitas algo más?",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "No responde al contenido leído."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "redacted-en",
+    "answer": "The system confirms the requested memory recall was completed, and the record labeled \"secret\" is now listed in your memories.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Omite que el valor está oculto."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 0,
+    "id": "mixed-es",
+    "answer": "<|tool_call>call:memory{\n  label: \"favorite color\",\n  value: \"turquesa\"\n}<tool_call|>Listo, ya guardé tu color favorito como turquesa. ¿Querés que lo busque de nuevo?",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Herramienta y escritura inventadas; omite el secreto."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t7",
+    "answer": "Jordan",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "actual437-t4",
+    "answer": "I recalled your name from private memory and it is Jordan.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "name-marta",
+    "answer": "Marta",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "compound-name",
+    "answer": "Ana María",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "third-person",
+    "answer": "Tu hermana se llama Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "two-records",
+    "answer": "Los nombres que tengo guardados son Jordan y Nina.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.enable",
+    "answer": "Memory is now enabled.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "memory.save",
+    "answer": "Memory has been updated successfully.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-es",
+    "answer": "<|tool_call>call:memory{\n  label: \"secret\",\n  value: \"[REDACTED]\"\n}<tool_call|>Listo, busqué lo que guardé en la memoria privada y te lo muestro.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Herramienta falsa; anuncia mostrar pero no explica registro ni protección."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "redacted-en",
+    "answer": "The system reported that the memory recall was completed and showed one record labeled \"secret\" with a redacted value.",
+    "finish_reason": "stop",
+    "useful": true,
+    "reason": "Respuesta útil; conserva el dato/resultado solicitado sin inventar efectos."
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "seed": 17,
+    "id": "mixed-es",
+    "answer": "Listo.",
+    "finish_reason": "stop",
+    "useful": false,
+    "reason": "Listo no informa datos ni protección."
+  }
+]

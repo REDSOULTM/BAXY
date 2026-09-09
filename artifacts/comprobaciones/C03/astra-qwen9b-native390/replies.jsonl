@@ -1,0 +1,4 @@
+{"id": "actual-human-es", "seconds": 9.516, "choice": {"finish_reason": "stop", "index": 0, "message": {"role": "assistant", "content": "Tu cuenta de Windows es otra identidad."}}}
+{"id": "human-en", "seconds": 2.75, "choice": {"finish_reason": "stop", "index": 0, "message": {"role": "assistant", "content": "Tu cuenta de Windows es otra identidad."}}}
+{"id": "account-es", "seconds": 4.687, "choice": {"finish_reason": "tool_calls", "index": 0, "message": {"role": "assistant", "content": "", "tool_calls": [{"type": "function", "function": {"name": "baxy_system__identity", "arguments": "{}"}, "id": "fsqLIgFSSNrxgChP6pVPH9FNIO07f5uH"}]}}}
+{"id": "account-en", "seconds": 4.625, "choice": {"finish_reason": "tool_calls", "index": 0, "message": {"role": "assistant", "content": "", "tool_calls": [{"type": "function", "function": {"name": "baxy_system__identity", "arguments": "{}"}, "id": "pL6sk7xQdL0pHLIZJT3Foy5SAGIcU0HZ"}]}}}

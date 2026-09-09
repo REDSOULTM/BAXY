@@ -1,0 +1,15 @@
+{
+  "method": "Current source81 and isolated Qwen3.5 override. First actual compose payload for six technical progress requests, with existing role/sampler and no added instruction, guards or retries. Source64 prepared comparison was never run and is not a baseline. No file/audio effects, human reserve, UI or acoustic claim. Judge whether wording infers target properties or claims a new read for a why question.",
+  "texts": [
+    "Read the file \"c03-invalid-utf8.txt\" in the sandbox.",
+    "Lee el archivo \"informe-corrupto.txt\" del sandbox.",
+    "Read the file \"disk-full.txt\" in the sandbox.",
+    "Dime la hora y el uso de CPU.",
+    "Pon el volumen al 20%.",
+    "Why couldn't you read that file?"
+  ],
+  "model": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+  "addedInstruction": null,
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "sourceSha256": "5e68e5f41caa9970d44cf062d4c2c171bb37d75f8533efc813b987158f466816"
+}

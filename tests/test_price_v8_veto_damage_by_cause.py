@@ -85,12 +85,22 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 2026-09-05 movió los dos otra vez: el compositor recibe el tema de
 # un seguimiento elíptico y una explicación no puede ser sólo otra
 # pregunta. La población y el veredicto de V8 siguen siendo históricos.
+# C03 Astra 2026-09-06: conserva pedido/contexto en reintentos y hechos de
+# hora y errores; se actualizan los programas actuales, no el veredicto V8.
+# C03 Astra 2026-09-08: el camino de decisión y la composición ya conservan
+# operaciones/hechos privados e historial nativo (checkpoint369/374). La guarda
+# de observación distingue sujetos del equipo de hechos personales. Se sellan
+# esos programas actuales; los seis artefactos, aritmética y veredicto V8 no cambian.
+# Fuente379 conserva identidad/outcome de la cancelación privada; mismo criterio de pins.
+# Fuente383 conserva el borrador nativo primario pasando por las guardas de chat.
+# Fuente395 conserva el historial ya acotado al reparar ese borrador; V8 sigue histórico.
+# Fuente397 separa la tilde de un nombre de las palabras del idioma de la respuesta.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "15d0322e040ed705b03742116ae9009d860c12f18043047b01d5566e8e4d85d4"
+        "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3"
     ),
     "src/baxy_mind/llm.py": (
-        "399d13809a6f75ddacae636c012a92b6f1baea490e5a035ddfd7cf003396e1ea"
+        "5c3db6952201a8099cf13992adb09e55cd895ed2db5a1f26041629d0b067e7fa"
     ),
 }
 

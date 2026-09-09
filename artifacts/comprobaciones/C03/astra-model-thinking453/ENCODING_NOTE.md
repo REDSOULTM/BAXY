@@ -1,0 +1,1 @@
+Los textos derivados se regeneraron desde replies.jsonl UTF-8: una lectura de postproceso con encoding predeterminado de Windows alteraba acentos. Los payloads, respuestas nativas, conteos y adjudicaciones semánticas no cambiaron. Todas las lecturas posteriores especifican UTF-8.

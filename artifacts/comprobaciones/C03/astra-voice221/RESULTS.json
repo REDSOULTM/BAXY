@@ -1,0 +1,83 @@
+{
+  "frames": 1316,
+  "audioSeconds": 42.112,
+  "effects": [
+    []
+  ],
+  "admissions": [
+    {
+      "index": 0,
+      "time": 101887.375,
+      "admitted": true
+    },
+    {
+      "index": 1,
+      "time": 101897.39,
+      "admitted": true
+    },
+    {
+      "index": 2,
+      "time": 101907.39,
+      "admitted": true
+    },
+    {
+      "index": 3,
+      "time": 101917.359,
+      "admitted": true
+    }
+  ],
+  "generated": 4,
+  "before": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "after": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "restoredExactly": true,
+  "workersAlive": {
+    "_capture_worker": false,
+    "_decode_worker": false,
+    "_streaming_worker": false,
+    "_acoustic_wake_worker": false
+  },
+  "outputWorkerAlive": false,
+  "bargeInCount": 0,
+  "transcriptCount": 1,
+  "voiceErrors": [],
+  "driverErrors": [],
+  "lastError": null,
+  "wakeBackend": "unavailable",
+  "wakeError": "wake_verifier_manifest_missing",
+  "columns": [
+    "monotonic",
+    "dspMs",
+    "copyMs",
+    "speaking",
+    "vadProbability",
+    "echoGuard"
+  ],
+  "privateFiles": [
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\EVENTS.json",
+      "sha256": "6b00bc90c62caef21639eb5160b5d8fda98f29806147fe0ec5f92b2f360d5a25"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\generated221.json",
+      "sha256": "3e84bfb7dedcccedea37b13dddd91688fa96b8d0fe3b118ced783f4b6e823d23"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\generated221.npz",
+      "sha256": "325b335f5f2e252081261f5f0b52f17096681f7687f796fb7c096e5f1bbef176"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\STATUS.json",
+      "sha256": "3e9e4ea0564960d662fc9127bd91d4d8e3db218d49765ed8f8a835fe69b8a33b"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\tap221.npz",
+      "sha256": "c6c6e6d8d07727731a749ecfa34b27c4e828e674062749539a4406c3fd789f3d"
+    }
+  ]
+}

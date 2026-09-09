@@ -1,0 +1,56 @@
+[
+  {
+    "id": "actual-enable-en",
+    "profile": "current-greedy",
+    "answer": "Got it, Jordan. I'll remember your name. Which choice do you want: confirm or cancel?",
+    "attempts": 1,
+    "seconds": 0.797,
+    "useful": false,
+    "reason": "Unchanged enable control still does not identify enablement."
+  },
+  {
+    "id": "export-es",
+    "profile": "current-greedy",
+    "answer": "¿Querés confirmar la exportación de tus recuerdos a la carpeta Documents/BAXY, o cancelar esta acción?",
+    "attempts": 1,
+    "seconds": 0.407,
+    "useful": false,
+    "reason": "Destination now conveyed, but possible redirect/sync still omitted; seed17 thinking also translates the literal destination."
+  },
+  {
+    "id": "export-es",
+    "profile": "documented-thinking-False-seed-0",
+    "answer": "",
+    "attempts": 3,
+    "seconds": 1.687,
+    "useful": false,
+    "reason": "No useful answer after guards."
+  },
+  {
+    "id": "export-es",
+    "profile": "documented-thinking-False-seed-17",
+    "answer": "¿Querés confirmar la exportación de tus recuerdos a la carpeta Documents/BAXY, o cancelar esta acción?",
+    "attempts": 1,
+    "seconds": 0.406,
+    "useful": false,
+    "reason": "Destination now conveyed, but possible redirect/sync still omitted; seed17 thinking also translates the literal destination."
+  },
+  {
+    "id": "export-es",
+    "profile": "documented-thinking-True-seed-0",
+    "answer": "¿Querés confirmar la exportación de tus recuerdos a la carpeta Documents/BAXY, o cancelar la acción?",
+    "attempts": 1,
+    "seconds": 4.844,
+    "useful": false,
+    "reason": "Destination now conveyed, but possible redirect/sync still omitted; seed17 thinking also translates the literal destination."
+  },
+  {
+    "id": "export-es",
+    "profile": "documented-thinking-True-seed-17",
+    "answer": "Quiero exportar tus recuerdos. ¿Querés confirmar la exportación a Documentos/BAXY o cancelar esta acción? Decime qué opción eliges.",
+    "attempts": 1,
+    "seconds": 4.172,
+    "useful": false,
+    "reason": "Destination now conveyed, but possible redirect/sync still omitted; seed17 thinking also translates the literal destination."
+  }
+]

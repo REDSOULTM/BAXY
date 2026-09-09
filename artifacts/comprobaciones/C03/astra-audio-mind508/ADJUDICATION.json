@@ -1,0 +1,546 @@
+[
+  {
+    "id": "definition-es-registered-0",
+    "seconds": 4.641,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que una persona o un dispositivo (como un chat o una cuenta en redes) vuelva a emitir sonidos o mensajes que antes estaban silenciados. En redes sociales, por ejemplo, si estás mutado, no escuchas los mensajes; al desmutear, vuelves a escucharlos.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Spanish definition confuses social muting with permission to emit/interact or reverses speaker/listener."
+  },
+  {
+    "id": "definition-en-registered-0",
+    "seconds": 0.687,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard in a conversation or meeting.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "ram-new-topic-registered-0",
+    "seconds": 1.469,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is short for Random Access Memory — it's the temporary storage that your computer uses to quickly access and process data while running programs. Think of it like a workspace: when you're working on a document or playing a game, the data you're using is stored in RAM so your computer can access it fast. It's volatile, meaning it loses all data when the power is turned off.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-es-registered-0",
+    "seconds": 2.515,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Tu nombre es Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-en-registered-0",
+    "seconds": 2.047,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-es-registered-0",
+    "seconds": 2.172,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-en-registered-0",
+    "seconds": 0.406,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-registered-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Assistant-authored Morgan replaces user-authored Jordan."
+  },
+  {
+    "id": "definition-es-qwen_documented-0",
+    "seconds": 4.141,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que un usuario o dispositivo (como un chat o una cuenta en redes) vuelva a emitir o compartir contenido, al estar anteriormente en modo de silencio o desactivado. En el contexto de redes sociales, por ejemplo, desmutear una cuenta permite que vuelva a recibir notificaciones o que comience a interactuar nuevamente.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Spanish definition confuses social muting with permission to emit/interact or reverses speaker/listener."
+  },
+  {
+    "id": "definition-en-qwen_documented-0",
+    "seconds": 0.344,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard during a call or video chat.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "ram-new-topic-qwen_documented-0",
+    "seconds": 1.454,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is Random Access Memory, a type of volatile memory that temporarily stores data and instructions for quick access by the CPU while a computer is running.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-es-qwen_documented-0",
+    "seconds": 1.875,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Tu nombre es Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-en-qwen_documented-0",
+    "seconds": 1.609,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-es-qwen_documented-0",
+    "seconds": 1.75,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-en-qwen_documented-0",
+    "seconds": 0.109,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-qwen_documented-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Assistant-authored Morgan replaces user-authored Jordan."
+  },
+  {
+    "id": "definition-es-registered-17",
+    "seconds": 4.016,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que una persona o un dispositivo (como un chat o una llamada) vuelva a emitir sonido o se active nuevamente después de estar en modo silencioso o muteado. En redes sociales o chats, desmutear permite que tu voz o tus mensajes se escuchen o se envíen nuevamente.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Semantic review: describes a valid unmute sense (sound output/voice or chat delivery); a simple definition need not list microphone, speaker and feed senses. No observed device effect is claimed. Earlier blanket rejection of listener/output wording was too strict."
+  },
+  {
+    "id": "definition-en-registered-17",
+    "seconds": 0.344,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard in a conversation or meeting.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "ram-new-topic-registered-17",
+    "seconds": 0.718,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is random access memory, a type of volatile memory that temporarily stores data and instructions for the CPU to access quickly while a computer is running. It's essential for running applications and multitasking, but loses its data when the power is turned off.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-es-registered-17",
+    "seconds": 1.829,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Tu nombre es Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-en-registered-17",
+    "seconds": 1.625,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-es-registered-17",
+    "seconds": 1.687,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-en-registered-17",
+    "seconds": 0.109,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-registered-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Assistant-authored Morgan replaces user-authored Jordan."
+  },
+  {
+    "id": "definition-es-qwen_documented-17",
+    "seconds": 3.875,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que alguien vuelva a poder escuchar o recibir mensajes en un entorno digital, como en una llamada o en una conversación en línea. Si estás en una app o plataforma, desmutear es activar el sonido para que puedas escuchar lo que dice la otra persona.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Semantic review: describes a valid unmute sense (sound output/voice or chat delivery); a simple definition need not list microphone, speaker and feed senses. No observed device effect is claimed. Earlier blanket rejection of listener/output wording was too strict."
+  },
+  {
+    "id": "definition-en-qwen_documented-17",
+    "seconds": 0.36,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard during a call or video chat.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "ram-new-topic-qwen_documented-17",
+    "seconds": 0.828,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is short for Random Access Memory, a type of volatile memory that temporarily stores data and instructions that the CPU needs to access quickly while running programs. It's like a high-speed workspace for your computer—data is stored and retrieved in milliseconds, but it loses all information when the power is turned off.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-es-qwen_documented-17",
+    "seconds": 1.828,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Tu nombre es Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "name-en-qwen_documented-17",
+    "seconds": 1.64,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-es-qwen_documented-17",
+    "seconds": 1.703,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Correct useful conversation; no authority to execute."
+  },
+  {
+    "id": "recall-en-qwen_documented-17",
+    "seconds": 0.11,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-qwen_documented-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Assistant-authored Morgan replaces user-authored Jordan."
+  }
+]

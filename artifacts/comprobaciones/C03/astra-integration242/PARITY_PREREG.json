@@ -1,0 +1,22 @@
+{
+  "scriptSha256": "814d8fa7b7011ad35631df99f96513631139a1b5c4353febdfd0bf71e6a6d8c9",
+  "baseline": "astra-dsp238",
+  "cases": [
+    "echo221",
+    "echo232",
+    "h0-near",
+    "h0-raw",
+    "h1-near",
+    "h1-raw",
+    "h2-near",
+    "h2-raw",
+    "h3-near",
+    "h3-raw"
+  ],
+  "source": {
+    "src/baxy_mind/dtln_aec.py": "9f3224a502aa5af60d72f14e9986b6158c316146309a37bfce5474f35eb63f58",
+    "src/baxy_mind/voice.py": "982c5b126d320c8a5a95e1ce19b827627f32d76fbbd841871f984cee127963ea",
+    "pylock.runtime-win-x64.toml": "8aaaed6427c0c4710e574aefab5689cba2b41c0051f09d5b17d0ec141056c1c9"
+  },
+  "acceptance": "Every cleaned sample and actual returned-pair echo guard must equal frozen238. This is DSP integration parity, not ASR or full C03 acceptance."
+}

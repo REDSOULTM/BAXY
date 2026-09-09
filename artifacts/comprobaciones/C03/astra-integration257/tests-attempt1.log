@@ -1,0 +1,344 @@
+........................................................................ [ 52%]
+..................FFF............................................        [100%]
+================================== FAILURES ===================================
+_ test_two_aec_views_preserve_onset_but_require_independent_admission[human_during_output-16-0] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D24D432BD0>
+case = 'human_during_output', expected_admission = 16, expected_first = 0
+
+    @pytest.mark.parametrize("case,expected_admission,expected_first", [
+        ("human_during_output", 16, 0),
+        ("human_after_output", 24, 0),
+        ("confirmation_only", 16, 6),
+        ("echo_tail", None, None),
+        ("transient_confirmation", None, None),
+    ])
+    def test_two_aec_views_preserve_onset_but_require_independent_admission(
+        monkeypatch, case, expected_admission, expected_first,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._loopback._stream = object()  # noqa: SLF001
+        linear_probabilities = [0.0] * 8 + [0.9] * 25 + [0.0] * 30
+        confirmation_probabilities = [0.0] * 14 + [0.9] * 19 + [0.0] * 30
+        if case == "confirmation_only":
+            linear_probabilities = [0.0] * 63
+        elif case == "human_after_output":
+            confirmation_probabilities = [0.0] * 24 + [0.9] * 9 + [0.0] * 30
+        elif case == "echo_tail":
+            confirmation_probabilities = [0.0] * 63
+        elif case == "transient_confirmation":
+            confirmation_probabilities = [0.0] * 14 + [0.9] + [0.0] * 48
+        linear_vad = _SequenceVad(linear_probabilities)
+        confirmation_vad = _SequenceVad(confirmation_probabilities)
+        seen = [[], []]
+    
+        def observe(vad, index):
+            original = vad.process
+    
+            def process(frame):
+                seen[index].append(frame.copy())
+                return original(frame)
+    
+            return process
+    
+        monkeypatch.setattr(linear_vad, "process", observe(linear_vad, 0))
+        monkeypatch.setattr(confirmation_vad, "process", observe(confirmation_vad, 1))
+        engine._vad = linear_vad  # noqa: SLF001
+        monkeypatch.setattr(voice_module, "SileroVad", lambda: confirmation_vad)
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, 63)
+        stream.adc_time = 100.0
+    
+        class Canceller:
+            sha256 = "fixture-native"
+    
+            @staticmethod
+            def process(_mic, reference):
+                index = stream.reads - 1
+                recognition = np.full(512, (index + 1) / 1000, np.float32)
+                confirmation = np.full(512, .02 if confirmation_probabilities[index] else 0, np.float32)
+                return recognition, confirmation, np.zeros(512, np.float32), reference
+    
+            @staticmethod
+            def close():
+                pass
+    
+        monkeypatch.setattr(voice_module, "EchoCanceller", Canceller)
+        monkeypatch.setattr(engine._loopback, "sample_index", lambda *_: 0)  # noqa: SLF001
+        monkeypatch.setattr(engine._loopback, "window_at", lambda _end, count, _stop: np.zeros(count, np.int16))  # noqa: SLF001
+        output_finishes = case in {"human_after_output", "echo_tail", "transient_confirmation"}
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads <= 20))
+        admissions, cancellations, streaming = [], [], []
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads - 1))
+        monkeypatch.setattr(engine._ducker, "duck", lambda: admissions.append(stream.reads - 1))  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        requests = queue.Queue()
+        try:
+            engine._capture_loop(stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event())  # noqa: SLF001
+            assert not any(item["event"] == "error" for item in events)
+            assert len(seen[0]) == len(seen[1]) == 63
+            assert linear_vad is not confirmation_vad
+            assert linear_vad.resets == confirmation_vad.resets == 1
+            assert not np.array_equal(seen[0][14], seen[1][14])
+            if expected_admission is None:
+                assert requests.empty() and not admissions and not cancellations and not streaming
+            else:
+                assert admissions == [expected_admission]
+                assert cancellations == ([16] if not output_finishes else [])
+                assert requests.qsize() == 1
+                actual = requests.get_nowait().audio
+                expected = np.concatenate(seen[0][expected_first:55])
+>               np.testing.assert_array_equal(actual, expected)
+
+tests\test_mind_voice_runtime.py:2355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([0.001, 0.001, 0.001, ..., 0.054, 0.054, 0.054], dtype=float32), array([0.001, 0.001, 0.001, ..., 0.055, 0.055, 0.055], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           (shapes (27648,), (28160,) mismatch)
+E            x: array([0.001, 0.001, 0.001, ..., 0.054, 0.054, 0.054], dtype=float32)
+E            y: array([0.001, 0.001, 0.001, ..., 0.055, 0.055, 0.055], dtype=float32)
+
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:81: AssertionError
+_ test_two_aec_views_preserve_onset_but_require_independent_admission[human_after_output-24-0] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D24D40E330>
+case = 'human_after_output', expected_admission = 24, expected_first = 0
+
+    @pytest.mark.parametrize("case,expected_admission,expected_first", [
+        ("human_during_output", 16, 0),
+        ("human_after_output", 24, 0),
+        ("confirmation_only", 16, 6),
+        ("echo_tail", None, None),
+        ("transient_confirmation", None, None),
+    ])
+    def test_two_aec_views_preserve_onset_but_require_independent_admission(
+        monkeypatch, case, expected_admission, expected_first,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._loopback._stream = object()  # noqa: SLF001
+        linear_probabilities = [0.0] * 8 + [0.9] * 25 + [0.0] * 30
+        confirmation_probabilities = [0.0] * 14 + [0.9] * 19 + [0.0] * 30
+        if case == "confirmation_only":
+            linear_probabilities = [0.0] * 63
+        elif case == "human_after_output":
+            confirmation_probabilities = [0.0] * 24 + [0.9] * 9 + [0.0] * 30
+        elif case == "echo_tail":
+            confirmation_probabilities = [0.0] * 63
+        elif case == "transient_confirmation":
+            confirmation_probabilities = [0.0] * 14 + [0.9] + [0.0] * 48
+        linear_vad = _SequenceVad(linear_probabilities)
+        confirmation_vad = _SequenceVad(confirmation_probabilities)
+        seen = [[], []]
+    
+        def observe(vad, index):
+            original = vad.process
+    
+            def process(frame):
+                seen[index].append(frame.copy())
+                return original(frame)
+    
+            return process
+    
+        monkeypatch.setattr(linear_vad, "process", observe(linear_vad, 0))
+        monkeypatch.setattr(confirmation_vad, "process", observe(confirmation_vad, 1))
+        engine._vad = linear_vad  # noqa: SLF001
+        monkeypatch.setattr(voice_module, "SileroVad", lambda: confirmation_vad)
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, 63)
+        stream.adc_time = 100.0
+    
+        class Canceller:
+            sha256 = "fixture-native"
+    
+            @staticmethod
+            def process(_mic, reference):
+                index = stream.reads - 1
+                recognition = np.full(512, (index + 1) / 1000, np.float32)
+                confirmation = np.full(512, .02 if confirmation_probabilities[index] else 0, np.float32)
+                return recognition, confirmation, np.zeros(512, np.float32), reference
+    
+            @staticmethod
+            def close():
+                pass
+    
+        monkeypatch.setattr(voice_module, "EchoCanceller", Canceller)
+        monkeypatch.setattr(engine._loopback, "sample_index", lambda *_: 0)  # noqa: SLF001
+        monkeypatch.setattr(engine._loopback, "window_at", lambda _end, count, _stop: np.zeros(count, np.int16))  # noqa: SLF001
+        output_finishes = case in {"human_after_output", "echo_tail", "transient_confirmation"}
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads <= 20))
+        admissions, cancellations, streaming = [], [], []
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads - 1))
+        monkeypatch.setattr(engine._ducker, "duck", lambda: admissions.append(stream.reads - 1))  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        requests = queue.Queue()
+        try:
+            engine._capture_loop(stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event())  # noqa: SLF001
+            assert not any(item["event"] == "error" for item in events)
+            assert len(seen[0]) == len(seen[1]) == 63
+            assert linear_vad is not confirmation_vad
+            assert linear_vad.resets == confirmation_vad.resets == 1
+            assert not np.array_equal(seen[0][14], seen[1][14])
+            if expected_admission is None:
+                assert requests.empty() and not admissions and not cancellations and not streaming
+            else:
+                assert admissions == [expected_admission]
+                assert cancellations == ([16] if not output_finishes else [])
+                assert requests.qsize() == 1
+                actual = requests.get_nowait().audio
+                expected = np.concatenate(seen[0][expected_first:55])
+>               np.testing.assert_array_equal(actual, expected)
+
+tests\test_mind_voice_runtime.py:2355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([0.001, 0.001, 0.001, ..., 0.054, 0.054, 0.054], dtype=float32), array([0.001, 0.001, 0.001, ..., 0.055, 0.055, 0.055], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           (shapes (27648,), (28160,) mismatch)
+E            x: array([0.001, 0.001, 0.001, ..., 0.054, 0.054, 0.054], dtype=float32)
+E            y: array([0.001, 0.001, 0.001, ..., 0.055, 0.055, 0.055], dtype=float32)
+
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:81: AssertionError
+_ test_two_aec_views_preserve_onset_but_require_independent_admission[confirmation_only-16-6] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D24D4333E0>
+case = 'confirmation_only', expected_admission = 16, expected_first = 6
+
+    @pytest.mark.parametrize("case,expected_admission,expected_first", [
+        ("human_during_output", 16, 0),
+        ("human_after_output", 24, 0),
+        ("confirmation_only", 16, 6),
+        ("echo_tail", None, None),
+        ("transient_confirmation", None, None),
+    ])
+    def test_two_aec_views_preserve_onset_but_require_independent_admission(
+        monkeypatch, case, expected_admission, expected_first,
+    ):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        engine._loopback._stream = object()  # noqa: SLF001
+        linear_probabilities = [0.0] * 8 + [0.9] * 25 + [0.0] * 30
+        confirmation_probabilities = [0.0] * 14 + [0.9] * 19 + [0.0] * 30
+        if case == "confirmation_only":
+            linear_probabilities = [0.0] * 63
+        elif case == "human_after_output":
+            confirmation_probabilities = [0.0] * 24 + [0.9] * 9 + [0.0] * 30
+        elif case == "echo_tail":
+            confirmation_probabilities = [0.0] * 63
+        elif case == "transient_confirmation":
+            confirmation_probabilities = [0.0] * 14 + [0.9] + [0.0] * 48
+        linear_vad = _SequenceVad(linear_probabilities)
+        confirmation_vad = _SequenceVad(confirmation_probabilities)
+        seen = [[], []]
+    
+        def observe(vad, index):
+            original = vad.process
+    
+            def process(frame):
+                seen[index].append(frame.copy())
+                return original(frame)
+    
+            return process
+    
+        monkeypatch.setattr(linear_vad, "process", observe(linear_vad, 0))
+        monkeypatch.setattr(confirmation_vad, "process", observe(confirmation_vad, 1))
+        engine._vad = linear_vad  # noqa: SLF001
+        monkeypatch.setattr(voice_module, "SileroVad", lambda: confirmation_vad)
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, 63)
+        stream.adc_time = 100.0
+    
+        class Canceller:
+            sha256 = "fixture-native"
+    
+            @staticmethod
+            def process(_mic, reference):
+                index = stream.reads - 1
+                recognition = np.full(512, (index + 1) / 1000, np.float32)
+                confirmation = np.full(512, .02 if confirmation_probabilities[index] else 0, np.float32)
+                return recognition, confirmation, np.zeros(512, np.float32), reference
+    
+            @staticmethod
+            def close():
+                pass
+    
+        monkeypatch.setattr(voice_module, "EchoCanceller", Canceller)
+        monkeypatch.setattr(engine._loopback, "sample_index", lambda *_: 0)  # noqa: SLF001
+        monkeypatch.setattr(engine._loopback, "window_at", lambda _end, count, _stop: np.zeros(count, np.int16))  # noqa: SLF001
+        output_finishes = case in {"human_after_output", "echo_tail", "transient_confirmation"}
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads <= 20))
+        admissions, cancellations, streaming = [], [], []
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads - 1))
+        monkeypatch.setattr(engine._ducker, "duck", lambda: admissions.append(stream.reads - 1))  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        requests = queue.Queue()
+        try:
+            engine._capture_loop(stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event())  # noqa: SLF001
+            assert not any(item["event"] == "error" for item in events)
+            assert len(seen[0]) == len(seen[1]) == 63
+            assert linear_vad is not confirmation_vad
+            assert linear_vad.resets == confirmation_vad.resets == 1
+            assert not np.array_equal(seen[0][14], seen[1][14])
+            if expected_admission is None:
+                assert requests.empty() and not admissions and not cancellations and not streaming
+            else:
+                assert admissions == [expected_admission]
+                assert cancellations == ([16] if not output_finishes else [])
+                assert requests.qsize() == 1
+                actual = requests.get_nowait().audio
+                expected = np.concatenate(seen[0][expected_first:55])
+>               np.testing.assert_array_equal(actual, expected)
+
+tests\test_mind_voice_runtime.py:2355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([0.007, 0.007, 0.007, ..., 0.054, 0.054, 0.054], dtype=float32), array([0.007, 0.007, 0.007, ..., 0.055, 0.055, 0.055], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           (shapes (24576,), (25088,) mismatch)
+E            x: array([0.007, 0.007, 0.007, ..., 0.054, 0.054, 0.054], dtype=float32)
+E            y: array([0.007, 0.007, 0.007, ..., 0.055, 0.055, 0.055], dtype=float32)
+
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:81: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_two_aec_views_preserve_onset_but_require_independent_admission[human_during_output-16-0]
+FAILED tests/test_mind_voice_runtime.py::test_two_aec_views_preserve_onset_but_require_independent_admission[human_after_output-24-0]
+FAILED tests/test_mind_voice_runtime.py::test_two_aec_views_preserve_onset_but_require_independent_admission[confirmation_only-16-6]
+3 failed, 134 passed in 6.34s

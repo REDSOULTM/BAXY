@@ -1,0 +1,2 @@
+W0906 13:02:28.580000 13768 torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
+{"torch": "2.11.0+cu128", "peft": "0.18.1", "bnb": "0.49.2", "accelerate": "1.12.0", "cuda": true}

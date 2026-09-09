@@ -1,0 +1,151 @@
+................FFFFFF.............................                      [100%]
+================================== FAILURES ===================================
+_ test_personal_conversation_facts_are_not_machine_observations[My name is Jordan. What is my name?-Your name is Jordan.] _
+
+ask = 'My name is Jordan. What is my name?', reply = 'Your name is Jordan.'
+
+    @pytest.mark.parametrize(
+        "ask, reply",
+        [
+            ("My name is Jordan. What is my name?", "Your name is Jordan."),
+            ("Me llamo �lvaro. �Cu�l es mi nombre?", "Tu nombre es �lvaro."),
+            ("My sister is Olivia. Who is my sister?", "Your sister is Olivia."),
+            ("My hometown is Lima. Where am I from?", "Your hometown is Lima."),
+            ("Mi apellido es Vargas. �Cu�l es mi apellido?", "Tu apellido es Vargas."),
+        ],
+    )
+    def test_personal_conversation_facts_are_not_machine_observations(
+        ask: str, reply: str,
+    ) -> None:
+>       assert not visible_reply_asserts_an_unread_machine_state(reply, request=ask)
+E       AssertionError: assert not True
+E        +  where True = visible_reply_asserts_an_unread_machine_state('Your name is Jordan.', request='My name is Jordan. What is my name?')
+
+tests\test_turn_policy.py:413: AssertionError
+_ test_personal_conversation_facts_are_not_machine_observations[Me llamo \xc1lvaro. \xbfCu\xe1l es mi nombre?-Tu nombre es \xc1lvaro.] _
+
+ask = 'Me llamo �lvaro. �Cu�l es mi nombre?', reply = 'Tu nombre es �lvaro.'
+
+    @pytest.mark.parametrize(
+        "ask, reply",
+        [
+            ("My name is Jordan. What is my name?", "Your name is Jordan."),
+            ("Me llamo �lvaro. �Cu�l es mi nombre?", "Tu nombre es �lvaro."),
+            ("My sister is Olivia. Who is my sister?", "Your sister is Olivia."),
+            ("My hometown is Lima. Where am I from?", "Your hometown is Lima."),
+            ("Mi apellido es Vargas. �Cu�l es mi apellido?", "Tu apellido es Vargas."),
+        ],
+    )
+    def test_personal_conversation_facts_are_not_machine_observations(
+        ask: str, reply: str,
+    ) -> None:
+>       assert not visible_reply_asserts_an_unread_machine_state(reply, request=ask)
+E       AssertionError: assert not True
+E        +  where True = visible_reply_asserts_an_unread_machine_state('Tu nombre es �lvaro.', request='Me llamo �lvaro. �Cu�l es mi nombre?')
+
+tests\test_turn_policy.py:413: AssertionError
+_ test_personal_conversation_facts_are_not_machine_observations[My sister is Olivia. Who is my sister?-Your sister is Olivia.] _
+
+ask = 'My sister is Olivia. Who is my sister?', reply = 'Your sister is Olivia.'
+
+    @pytest.mark.parametrize(
+        "ask, reply",
+        [
+            ("My name is Jordan. What is my name?", "Your name is Jordan."),
+            ("Me llamo �lvaro. �Cu�l es mi nombre?", "Tu nombre es �lvaro."),
+            ("My sister is Olivia. Who is my sister?", "Your sister is Olivia."),
+            ("My hometown is Lima. Where am I from?", "Your hometown is Lima."),
+            ("Mi apellido es Vargas. �Cu�l es mi apellido?", "Tu apellido es Vargas."),
+        ],
+    )
+    def test_personal_conversation_facts_are_not_machine_observations(
+        ask: str, reply: str,
+    ) -> None:
+>       assert not visible_reply_asserts_an_unread_machine_state(reply, request=ask)
+E       AssertionError: assert not True
+E        +  where True = visible_reply_asserts_an_unread_machine_state('Your sister is Olivia.', request='My sister is Olivia. Who is my sister?')
+
+tests\test_turn_policy.py:413: AssertionError
+_ test_personal_conversation_facts_are_not_machine_observations[My hometown is Lima. Where am I from?-Your hometown is Lima.] _
+
+ask = 'My hometown is Lima. Where am I from?', reply = 'Your hometown is Lima.'
+
+    @pytest.mark.parametrize(
+        "ask, reply",
+        [
+            ("My name is Jordan. What is my name?", "Your name is Jordan."),
+            ("Me llamo �lvaro. �Cu�l es mi nombre?", "Tu nombre es �lvaro."),
+            ("My sister is Olivia. Who is my sister?", "Your sister is Olivia."),
+            ("My hometown is Lima. Where am I from?", "Your hometown is Lima."),
+            ("Mi apellido es Vargas. �Cu�l es mi apellido?", "Tu apellido es Vargas."),
+        ],
+    )
+    def test_personal_conversation_facts_are_not_machine_observations(
+        ask: str, reply: str,
+    ) -> None:
+>       assert not visible_reply_asserts_an_unread_machine_state(reply, request=ask)
+E       AssertionError: assert not True
+E        +  where True = visible_reply_asserts_an_unread_machine_state('Your hometown is Lima.', request='My hometown is Lima. Where am I from?')
+
+tests\test_turn_policy.py:413: AssertionError
+_ test_personal_conversation_facts_are_not_machine_observations[Mi apellido es Vargas. \xbfCu\xe1l es mi apellido?-Tu apellido es Vargas.] _
+
+ask = 'Mi apellido es Vargas. �Cu�l es mi apellido?'
+reply = 'Tu apellido es Vargas.'
+
+    @pytest.mark.parametrize(
+        "ask, reply",
+        [
+            ("My name is Jordan. What is my name?", "Your name is Jordan."),
+            ("Me llamo �lvaro. �Cu�l es mi nombre?", "Tu nombre es �lvaro."),
+            ("My sister is Olivia. Who is my sister?", "Your sister is Olivia."),
+            ("My hometown is Lima. Where am I from?", "Your hometown is Lima."),
+            ("Mi apellido es Vargas. �Cu�l es mi apellido?", "Tu apellido es Vargas."),
+        ],
+    )
+    def test_personal_conversation_facts_are_not_machine_observations(
+        ask: str, reply: str,
+    ) -> None:
+>       assert not visible_reply_asserts_an_unread_machine_state(reply, request=ask)
+E       AssertionError: assert not True
+E        +  where True = visible_reply_asserts_an_unread_machine_state('Tu apellido es Vargas.', request='Mi apellido es Vargas. �Cu�l es mi apellido?')
+
+tests\test_turn_policy.py:413: AssertionError
+___ test_chat_keeps_the_human_name_instead_of_rewriting_it_without_history ____
+
+    def test_chat_keeps_the_human_name_instead_of_rewriting_it_without_history() -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads: list[dict] = []
+    
+        def post(payload: dict) -> dict:
+            payloads.append(payload)
+            # Actual373 first answer and the replacement after the incorrect veto.
+            answer = "Your name is Jordan." if len(payloads) == 1 else json.dumps(
+                {"answer": "I don't know your name."},
+            )
+            return {"choices": [{"message": {"content": answer}, "finish_reason": "stop"}]}
+    
+        runtime._post = post  # type: ignore[method-assign]
+        answer, calls = runtime.chat(
+            "What is my name?",
+            history=[
+                {"role": "user", "content": "My name is Jordan."},
+                {"role": "assistant", "content": "Your name is Morgan."},
+            ],
+            temperature=0.0, conversation_kind="knowledge", response_language="en",
+        )
+>       assert answer == "Your name is Jordan."
+E       assert "I don't know your name." == 'Your name is Jordan.'
+E         
+E         - Your name is Jordan.
+E         + I don't know your name.
+
+tests\test_turn_policy.py:437: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_personal_conversation_facts_are_not_machine_observations[My name is Jordan. What is my name?-Your name is Jordan.]
+FAILED tests/test_turn_policy.py::test_personal_conversation_facts_are_not_machine_observations[Me llamo \xc1lvaro. \xbfCu\xe1l es mi nombre?-Tu nombre es \xc1lvaro.]
+FAILED tests/test_turn_policy.py::test_personal_conversation_facts_are_not_machine_observations[My sister is Olivia. Who is my sister?-Your sister is Olivia.]
+FAILED tests/test_turn_policy.py::test_personal_conversation_facts_are_not_machine_observations[My hometown is Lima. Where am I from?-Your hometown is Lima.]
+FAILED tests/test_turn_policy.py::test_personal_conversation_facts_are_not_machine_observations[Mi apellido es Vargas. \xbfCu\xe1l es mi apellido?-Tu apellido es Vargas.]
+FAILED tests/test_turn_policy.py::test_chat_keeps_the_human_name_instead_of_rewriting_it_without_history
+6 failed, 45 passed, 908 deselected in 2.14s

@@ -1,0 +1,9 @@
+{
+  "purpose": "Offline content around the observed interruption148: compare microphone and loopback; no assumption of its cause",
+  "sources": [
+    148
+  ],
+  "newPlayback": false,
+  "sourceMutation": false,
+  "method": "Registered Parakeet CPU, raw and peak-normalized; no text hints. Windows from speaking events +/-0.5s; capture start is approximate, not ADC timestamps."
+}

@@ -1,0 +1,22 @@
+{
+  "method": "Exact unique HTTP400 payloads75 and one successful native selector control. Compare captured messages with only trusted system messages joined in original order at position0. Preserve all non-system messages byte-for-byte/in order; no instruction removal, current request rewrite, model setting change, functions executed, UI/audio or human reserve. Native replay, not product acceptance. Qwen3.5 official template rejects every system message except first; registered2507 is compatibility control.",
+  "source": "https://huggingface.co/Qwen/Qwen3.5-4B/blob/main/chat_template.jinja",
+  "sourceConsulted": "2026-09-07",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "modelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "wireSha256": "78c7efd7d3a56cf30a45a6e5261211916d198f9911f08d9dc7741c982cf1f2eb",
+  "sourceSha256": "f9fdd12c8d98732d339bf5f35ee56e8b73f1afdd0e03ae50c81cf6bd365e356d",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "cases": [
+    "error1",
+    "error2",
+    "error3",
+    "error4",
+    "error5",
+    "error6",
+    "error7",
+    "error8",
+    "error9",
+    "selector_control"
+  ]
+}

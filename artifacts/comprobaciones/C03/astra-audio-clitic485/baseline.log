@@ -1,0 +1,24 @@
+.FFFF.......                                                             [100%]
+================================== FAILURES ===================================
+__ test_unmute_clitics_preserve_operation_and_compound_coverage[desmutealo] ___
+tests\test_effect_intent.py:6861: in test_unmute_clitics_preserve_operation_and_compound_coverage
+    assert single is not None and single.operations == ("audio.mute",)
+E   assert (None is not None)
+_ test_unmute_clitics_preserve_operation_and_compound_coverage[desmut\xe9alo] _
+tests\test_effect_intent.py:6861: in test_unmute_clitics_preserve_operation_and_compound_coverage
+    assert single is not None and single.operations == ("audio.mute",)
+E   assert (None is not None)
+_ test_unmute_clitics_preserve_operation_and_compound_coverage[desmut\xe9ala] _
+tests\test_effect_intent.py:6861: in test_unmute_clitics_preserve_operation_and_compound_coverage
+    assert single is not None and single.operations == ("audio.mute",)
+E   assert (None is not None)
+__ test_unmute_clitics_preserve_operation_and_compound_coverage[desmutearlo] __
+tests\test_effect_intent.py:6861: in test_unmute_clitics_preserve_operation_and_compound_coverage
+    assert single is not None and single.operations == ("audio.mute",)
+E   assert (None is not None)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_unmute_clitics_preserve_operation_and_compound_coverage[desmutealo]
+FAILED tests/test_effect_intent.py::test_unmute_clitics_preserve_operation_and_compound_coverage[desmut\xe9alo]
+FAILED tests/test_effect_intent.py::test_unmute_clitics_preserve_operation_and_compound_coverage[desmut\xe9ala]
+FAILED tests/test_effect_intent.py::test_unmute_clitics_preserve_operation_and_compound_coverage[desmutearlo]
+4 failed, 8 passed, 1723 deselected in 1.40s

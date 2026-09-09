@@ -1,0 +1,65 @@
+{
+  "completed": true,
+  "compositions": 32,
+  "resources": [
+    {
+      "completed": true,
+      "violations": [],
+      "gpu_peak_mib": 3578.93359375,
+      "ram_peak_mib": 2509.3359375,
+      "seconds": 65.516,
+      "manifest_unchanged": true
+    },
+    {
+      "completed": true,
+      "violations": [],
+      "gpu_peak_mib": 2457.61328125,
+      "ram_peak_mib": 1848.00390625,
+      "seconds": 34.953,
+      "manifest_unchanged": true
+    }
+  ],
+  "source_unchanged": true,
+  "manifest_unchanged": true,
+  "needs_semantic_adjudication": false,
+  "native_calls": 32,
+  "finish_reasons": {
+    "stop": 32
+  },
+  "retries": 0,
+  "decision": "No adoptar Q8 ni barrer Q5/Q6: no mejora las confirmaciones completas, aumenta RAM/VRAM y latencia. No es un rechazo global del modelo por cuantización.",
+  "scores": [
+    {
+      "precision": "Q8_0",
+      "seed": 0,
+      "confirmations_useful": 2,
+      "confirmations_total": 6,
+      "memory_controls_useful": 2,
+      "memory_controls_total": 2
+    },
+    {
+      "precision": "Q8_0",
+      "seed": 17,
+      "confirmations_useful": 2,
+      "confirmations_total": 6,
+      "memory_controls_useful": 2,
+      "memory_controls_total": 2
+    },
+    {
+      "precision": "Q4_K_M",
+      "seed": 0,
+      "confirmations_useful": 2,
+      "confirmations_total": 6,
+      "memory_controls_useful": 2,
+      "memory_controls_total": 2
+    },
+    {
+      "precision": "Q4_K_M",
+      "seed": 17,
+      "confirmations_useful": 2,
+      "confirmations_total": 6,
+      "memory_controls_useful": 2,
+      "memory_controls_total": 2
+    }
+  ]
+}

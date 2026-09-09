@@ -1,0 +1,94 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_preclassification_progress_cannot_exhaust_an_answerable_turn[What is encryption?] _
+
+text = 'What is encryption?'
+
+    @pytest.mark.parametrize("text", ["What is encryption?", "Explain encryption, pero en simple"])
+    def test_preclassification_progress_cannot_exhaust_an_answerable_turn(text: str) -> None:
+        class ConversationalLlm(_WithheldEffectLlm):
+            def compose_user_message(self, *_args: object, **_kwargs: object) -> str:
+                raise TimeoutError("optional progress consumed the turn budget")
+    
+            def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+                return {"mode": "conversation", "operation": None, "question": "",
+                        "conversation_kind": "knowledge", "effect_count": "zero",
+                        "effect_operations": [], "effect_verification": "not_applicable",
+                        "response_language": "mixed" if "pero" in text else "en"}
+    
+            def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+                return "El cifrado protege tus datos so only someone with the key can read them.", []
+    
+        signals: list[dict] = []
+>       result = _prepare_turn_result(
+            {"id": "progress-budget", "text": text}, llm=ConversationalLlm(identifies=False),
+            planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            tool_by_name={"network.status": _NETWORK_STATUS_TOOL}, on_signal=signals.append,
+        )
+
+tests\test_turn_policy.py:10432: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:5736: in _prepare_turn_result
+    _emit_early_turn_signal(
+src\baxy_mind\__main__.py:5525: in _emit_early_turn_signal
+    text = compose(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_turn_policy.test_preclassification_progress_cannot_exhaust_an_answerable_turn.<locals>.ConversationalLlm object at 0x0000014581C48BC0>
+_args = ('What is encryption?', 'status', {'situation': '{"kind": "status", "cause": "acting", "polarity": "success"}'})
+_kwargs = {}
+
+    def compose_user_message(self, *_args: object, **_kwargs: object) -> str:
+>       raise TimeoutError("optional progress consumed the turn budget")
+E       TimeoutError: optional progress consumed the turn budget
+
+tests\test_turn_policy.py:10420: TimeoutError
+_ test_preclassification_progress_cannot_exhaust_an_answerable_turn[Explain encryption, pero en simple] _
+
+text = 'Explain encryption, pero en simple'
+
+    @pytest.mark.parametrize("text", ["What is encryption?", "Explain encryption, pero en simple"])
+    def test_preclassification_progress_cannot_exhaust_an_answerable_turn(text: str) -> None:
+        class ConversationalLlm(_WithheldEffectLlm):
+            def compose_user_message(self, *_args: object, **_kwargs: object) -> str:
+                raise TimeoutError("optional progress consumed the turn budget")
+    
+            def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+                return {"mode": "conversation", "operation": None, "question": "",
+                        "conversation_kind": "knowledge", "effect_count": "zero",
+                        "effect_operations": [], "effect_verification": "not_applicable",
+                        "response_language": "mixed" if "pero" in text else "en"}
+    
+            def chat(self, *_args: object, **_kwargs: object) -> tuple[str, list[object]]:
+                return "El cifrado protege tus datos so only someone with the key can read them.", []
+    
+        signals: list[dict] = []
+>       result = _prepare_turn_result(
+            {"id": "progress-budget", "text": text}, llm=ConversationalLlm(identifies=False),
+            planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            tool_by_name={"network.status": _NETWORK_STATUS_TOOL}, on_signal=signals.append,
+        )
+
+tests\test_turn_policy.py:10432: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:5873: in _prepare_turn_result
+    _emit_early_turn_signal(
+src\baxy_mind\__main__.py:5525: in _emit_early_turn_signal
+    text = compose(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_turn_policy.test_preclassification_progress_cannot_exhaust_an_answerable_turn.<locals>.ConversationalLlm object at 0x0000014581D206E0>
+_args = ('Explain encryption, pero en simple', 'status', {'situation': '{"kind": "status", "cause": "acting", "polarity": "success"}'})
+_kwargs = {}
+
+    def compose_user_message(self, *_args: object, **_kwargs: object) -> str:
+>       raise TimeoutError("optional progress consumed the turn budget")
+E       TimeoutError: optional progress consumed the turn budget
+
+tests\test_turn_policy.py:10420: TimeoutError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_preclassification_progress_cannot_exhaust_an_answerable_turn[What is encryption?]
+FAILED tests/test_turn_policy.py::test_preclassification_progress_cannot_exhaust_an_answerable_turn[Explain encryption, pero en simple]
+2 failed, 838 deselected in 4.12s

@@ -99,11 +99,23 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
         cancellationToken.ThrowIfCancellationRequested();
         if (scope.HasFlag(SystemStatusScope.OperatingSystem))
         {
-            TryRead(
-                SystemStatusScope.OperatingSystem,
-                () => CreateOperatingSystemStatus(_probe.ReadOperatingSystem()),
-                value => operatingSystem = value,
-                failures);
+            try
+            {
+                operatingSystem = CreateOperatingSystemStatus(
+                    await _probe.ReadOperatingSystemAsync(cancellationToken).ConfigureAwait(false));
+                if (operatingSystem is null)
+                {
+                    failures.Add(Invalid(SystemStatusScope.OperatingSystem));
+                }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception) when (IsExpectedProbeFailure(exception))
+            {
+                failures.Add(Failed(SystemStatusScope.OperatingSystem, exception));
+            }
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -261,12 +273,16 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
             && reading.MinorVersion >= 0
             && reading.BuildNumber > 0
             && reading.Architecture is "x64" or "x86" or "arm64" or "arm"
+            && !string.IsNullOrWhiteSpace(reading.Caption)
+            && reading.Caption.Length <= 64
+            && !reading.Caption.Any(char.IsControl)
                 ? new OperatingSystemStatus(
                     reading.MajorVersion,
                     reading.MinorVersion,
                     reading.BuildNumber,
                     reading.Architecture,
-                    reading.IsWorkstation)
+                    reading.IsWorkstation,
+                    reading.Caption)
                 : null;
 
     private static long? CreateUptimeSeconds(ulong milliseconds)
@@ -342,6 +358,7 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
         or OverflowException
         or PlatformNotSupportedException
         or SecurityException
+        or TimeoutException
         or UnauthorizedAccessException
         or Win32Exception;
 

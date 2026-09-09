@@ -1,0 +1,33 @@
+{
+  "kind": "qwen-base-integrated-diagnostic-not-acceptance",
+  "utc": "2026-09-07T02:20:35.444115+00:00",
+  "method": "Registered Qwen runtime with no model/KV/PythonPath/sampling overrides or sitecustomize instrumentation. Existing 33 consumed technical regression requests (including historical synthetic mixed prompts, NOT human acceptance), then separate reject/timeout/exhaust injections each followed by restore and a normal request in the SAME process/profile/session. Recovery requests do not count as normal acceptance. Existing own empty window fixture; no user windows are closed. Conductor inherently disables wake; this run cannot prove simultaneous voice budget or graphical UI.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "modelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "files": {
+    "src/baxy_mind/voice_output.py": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+    "artifacts/comprobaciones/C03/TRAMO45_PINS.json": "5249969cf4c188902004706d133efb970e64c31ebb13c8c60e056fdc86c15363",
+    "tests/data/turn_evidence_runtime.v1.jsonl": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "src/baxy_mind/data/turn_evidence_abstention_policy.v1.json": "7768fe1a5d13349f590d7a6f24d4fe0b4769e56cd76967807d0fb2239aec06c2",
+    "src/baxy_mind/planner.py": "1291081aa86021972c74195cff7dc492e44b5084a7a723d13e48b899d1df79bb",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "93eab6c7278cdb90ff14b5f8e62050e42177a5f83f508e948fba2a989fb75040",
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "4c6380372f565a39c9e14a2d74d3450ef3d46e9a253a5354c41e3473dfb0dc99",
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "9ebeab789bfa601f040a92e7126e9fa6d5458f0caacc81c20ebc75457e6ccc9c",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "de9ddae019538e05d1e96d842f5425adddcad67f16cd261cf890c9936acbcd07",
+    "src/Baxy.Core/bin/Release/net10.0-windows10.0.19041.0/win-x64/publish/baxy-core.exe": "a4a1b5c2fa47f5a8c6ff9443b8cd0905d02a67f82788be532ca25b1908293ea3",
+    "src/baxy_mind/llm.py": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+    "src/baxy_mind/__main__.py": "aa290163fbf9ff44bc5e3a1de5bfa32e155168fc4ff21e9e524d9b222958ad56",
+    "src/baxy_mind/request_reading.py": "0b358b495f89e3d3ddb24c6b556631470b13fb4d45dac5149d2e808b72690cb2",
+    "src/baxy_mind/effect_intent.py": "da6c5df8be655c6d9a7108d030669d56b5c2ce735988c03e41b5fd1a8c35424e",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "e9f765824ec44bd9672303a16c64b5acea6068ba69533ffed05b44e240ba336b",
+    "src/Baxy.App/MainWindowViewModel.cs": "f5e2c22c139296974fa64def440e9affcf3bdb07728efea25b41d329bc22b1c6",
+    "src/Baxy.App/MissionNarration.cs": "9049517ea737be382dec6e2d4eac1e007c131030a774ffffddad45e6a80e49c6",
+    "src/Baxy.App/MindPlanSession.cs": "f6c77be7b508b3f86d032d53028019aea9d488572d612a3ca56cb9c159289b51",
+    "src/Baxy.App/UserMessagePolicy.cs": "de99e83c7d88da728c73ab48508000553386acf7355ff40581f8d380cc071978",
+    "artifacts/comprobaciones/C03/astra-routes-regression46.turns.jsonl": "c56c139544f9c6f52f44515333fd2a37777eca70af2639483d0085a73eeb6401",
+    "scratchpad/c03-routes-regression46.py": "90a7c701f8e6a2c77a2269d04541f92b2e4aba50013f99fff34a6844bb89850a"
+  },
+  "preparation": "Hold stdin for 50 seconds to allow normal warmup, no readiness instrumentation or runtime overrides. Warm development and recovery, not cold-start latency or fresh acceptance."
+}

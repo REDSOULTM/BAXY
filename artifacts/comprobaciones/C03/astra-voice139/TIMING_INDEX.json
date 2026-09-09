@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice139-private\\timing139.json",
+      "sha256": "d8555c1e6877b040303171f31ca69881b84e41f118efc6dbaaa4d5f3fdd3d66f"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice139-private\\timing139.npz",
+      "sha256": "694817ca58812e77a03b9c1421c9fd672ac8b6308b4f178f125e2c83feb275e7"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice139-private\\timing140.json",
+      "sha256": "5042ca654ad856bef691bb6c92afe78eb28ef38acebd075fdff424dcaf82ab4d"
+    }
+  ]
+}

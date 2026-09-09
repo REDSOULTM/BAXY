@@ -1,0 +1,8 @@
+n=6 published=6 other=0
+
+001	t1	published_final	Good afternoon	Hello!
+002	t2	published_final	define DNS in one sentence	DNS stands for Domain Name System, a system that maps domain names to IP addresses.
+003	t3	published_final	Hi again	Hello!
+004	t4	published_final	Good evening	Hello!
+005	t5	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda un dato en viajar desde su origen hasta su destino.
+006	t6	published_final	¿por qué importa?	La latencia de red es el retraso que ocurre entre el envío de una señal y su recepción, afectando la calidad y puntualidad de los datos en sistemas de comunicación.

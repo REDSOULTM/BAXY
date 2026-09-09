@@ -1,0 +1,10 @@
+{
+  "acceptance": false,
+  "files": {
+    "RESPUESTAS.md": "5550cc8faa0add1ccd1740b11e8b13533943d09fa4dd7d000cddf7969c6e435b",
+    "ADJUDICACION.json": "470216e54202aae72f87be240ae55c31fc4cc0c50b5f6489cf803cd778c8614e",
+    "paired.json": "a4eb4b6b47682a294151961b94f13e206b2d26f51f9551a2cb11dc33fad83136",
+    "PREREG.json": "41551f240d5981234b65b7de3f49fd8e5b480d18103249b8fcb41aca8196a107",
+    "RESULT.json": "96c3844cdbd147113fb562744252727c7b701af640d9eac2be1c5cfce373b813"
+  }
+}

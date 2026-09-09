@@ -1,0 +1,90 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_semantic_language_evidence_can_resolve_a_lexical_mixed_false_rejection[Encryption es como poner un candado en un mensaje: necesitas la clave para leerlo.] _
+
+reply = 'Encryption es como poner un candado en un mensaje: necesitas la clave para leerlo.'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D1BC264620>
+
+    @pytest.mark.parametrize("reply", [
+        "Encryption es como poner un candado en un mensaje: necesitas la clave para leerlo.",
+        "Okay, imagine tu mensaje dentro de una caja: solo quien tiene la clave puede leerlo.",
+    ])
+    def test_semantic_language_evidence_can_resolve_a_lexical_mixed_false_rejection(
+        reply: str, monkeypatch,
+    ) -> None:
+        client = Recorder([reply])
+        classified: list[str] = []
+    
+        def classify(text: str, **kwargs) -> str:
+            classified.append(text)
+            return "mixed"
+    
+        monkeypatch.setattr(client, "detect_response_language", classify)
+>       result = client.compose_user_message("Explain encryption, pero en simple", "conversation", {
+            "situation": json.dumps({"kind": "conversation", "polarity": "success"}),
+        })
+
+tests\test_c03_request_preservation.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9442: in compose_user_message
+    retry = self._post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x000001D1BC264410>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero. Eres un �l. Tuteas. Responde de forma breve y na...ion, pero en simple\nsituation: {"kind": "conversation"}'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:19: StopIteration
+_ test_semantic_language_evidence_can_resolve_a_lexical_mixed_false_rejection[Okay, imagine tu mensaje dentro de una caja: solo quien tiene la clave puede leerlo.] _
+
+reply = 'Okay, imagine tu mensaje dentro de una caja: solo quien tiene la clave puede leerlo.'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D1BC266F90>
+
+    @pytest.mark.parametrize("reply", [
+        "Encryption es como poner un candado en un mensaje: necesitas la clave para leerlo.",
+        "Okay, imagine tu mensaje dentro de una caja: solo quien tiene la clave puede leerlo.",
+    ])
+    def test_semantic_language_evidence_can_resolve_a_lexical_mixed_false_rejection(
+        reply: str, monkeypatch,
+    ) -> None:
+        client = Recorder([reply])
+        classified: list[str] = []
+    
+        def classify(text: str, **kwargs) -> str:
+            classified.append(text)
+            return "mixed"
+    
+        monkeypatch.setattr(client, "detect_response_language", classify)
+>       result = client.compose_user_message("Explain encryption, pero en simple", "conversation", {
+            "situation": json.dumps({"kind": "conversation", "polarity": "success"}),
+        })
+
+tests\test_c03_request_preservation.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9442: in compose_user_message
+    retry = self._post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x000001D1BC266BD0>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero. Eres un �l. Tuteas. Responde de forma breve y na...ion, pero en simple\nsituation: {"kind": "conversation"}'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:19: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_semantic_language_evidence_can_resolve_a_lexical_mixed_false_rejection[Encryption es como poner un candado en un mensaje: necesitas la clave para leerlo.]
+FAILED tests/test_c03_request_preservation.py::test_semantic_language_evidence_can_resolve_a_lexical_mixed_false_rejection[Okay, imagine tu mensaje dentro de una caja: solo quien tiene la clave puede leerlo.]
+2 failed, 60 deselected in 1.30s

@@ -1,0 +1,221 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 40%]
+........................................................................ [ 47%]
+........................................................................ [ 54%]
+........................................................................ [ 61%]
+........................................................................ [ 68%]
+.................................................F....FFFF.............. [ 75%]
+........................................................................ [ 81%]
+........................................................................ [ 88%]
+........................................................................ [ 95%]
+................................................                         [100%]
+================================== FAILURES ===================================
+____ test_native_tool_selection_accepts_only_declared_parameterless_calls _____
+
+    def test_native_tool_selection_accepts_only_declared_parameterless_calls() -> None:
+        runtime = object.__new__(LlmRuntime)
+        payloads: list[dict[str, object]] = []
+    
+        def post(payload: dict[str, object]) -> dict[str, object]:
+            payloads.append(payload)
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": "",
+                            "tool_calls": [
+                                {
+                                    "function": {
+                                        "name": "baxy_system__time",
+                                        "arguments": "{}",
+                                    }
+                                }
+                            ],
+                        }
+                    }
+                ]
+            }
+    
+        runtime._post = post  # type: ignore[method-assign]
+        result = runtime._post_native_tool_selection(
+            "Dime la hora",
+            ["system.time"],
+            {"system.time": {"description": "Read the current local time."}},
+            [],
+        )
+    
+        assert result["mode"] == "action"
+        assert result["effect_operations"] == ["system.time"]
+>       assert payloads[0]["tool_choice"] == "required"
+E       AssertionError: assert 'auto' == 'required'
+E         
+E         - required
+E         + auto
+
+tests\test_turn_policy.py:10062: AssertionError
+__ test_native_tool_selection_cannot_bypass_candidate_free_conversation_veto __
+
+    def test_native_tool_selection_cannot_bypass_candidate_free_conversation_veto() -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._native_tool_policy_enabled = True
+        runtime._parallel_turn_verification = False
+        runtime._semantic_effect_cache = {}
+    
+        def native_selection(*_args: object, **_kwargs: object) -> dict[str, object]:
+            return {
+                "mode": "action",
+                "question": "",
+                "conversation_kind": "",
+                "effect_operations": ["web.search"],
+                "response_language": "es",
+            }
+    
+        runtime._post_native_tool_selection = native_selection  # type: ignore[method-assign]
+        runtime._verify_semantic_effect_shape = (  # type: ignore[method-assign]
+            lambda _text: ("no_effect", "zero")
+        )
+    
+        result = runtime.decide_turn(
+            "Expl�came brevemente la fotos�ntesis.",
+            [turn_candidate("web.search", "Search the current web.", required=("query",))],
+        )
+    
+>       assert result["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:10201: AssertionError
+_____ test_native_verified_recovery_reports_the_recovered_intent_identity _____
+
+    def test_native_verified_recovery_reports_the_recovered_intent_identity() -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._native_tool_policy_enabled = True
+        runtime._parallel_turn_verification = False
+        runtime._semantic_effect_cache = {}
+        runtime._post_native_tool_selection = (  # type: ignore[method-assign]
+            lambda *_args, **_kwargs: {
+                "mode": "conversation",
+                "question": "",
+                "conversation_kind": "knowledge",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "response_language": "es",
+            }
+        )
+        runtime._verify_semantic_effect_shape = (  # type: ignore[method-assign]
+            lambda _text: ("complete", "one")
+        )
+        runtime._select_single_effect_operation = (  # type: ignore[method-assign]
+            lambda *_args, **_kwargs: "web.search"
+        )
+        runtime._operation_is_fully_compatible = (  # type: ignore[method-assign]
+            lambda *_args, **_kwargs: True
+        )
+    
+        result = runtime.decide_turn(
+            "Busca el dato vigente en la web.",
+            [turn_candidate("web.search", "Search the web.", required=("query",))],
+        )
+    
+>       assert result["mode"] == "action"
+E       AssertionError: assert 'conversation' == 'action'
+E         
+E         - action
+E         + conversation
+
+tests\test_turn_policy.py:10238: AssertionError
+_______ test_native_single_effect_agreement_does_not_repeat_model_count _______
+
+    def test_native_single_effect_agreement_does_not_repeat_model_count() -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._native_tool_policy_enabled = True
+        runtime._parallel_turn_verification = False
+        runtime._semantic_effect_cache = {}
+        runtime._post_native_tool_selection = (  # type: ignore[method-assign]
+            lambda *_args, **_kwargs: {
+                "mode": "action",
+                "question": "",
+                "conversation_kind": "",
+                "effect_count": "one",
+                "effect_operations": ["system.time"],
+                "response_language": "es",
+            }
+        )
+        runtime._verify_semantic_effect_shape = (  # type: ignore[method-assign]
+            lambda _text: ("complete", "one")
+        )
+        runtime._verify_effect_count = (  # type: ignore[method-assign]
+            lambda _text: (_ for _ in ()).throw(
+                AssertionError("the redundant third count must not run")
+            )
+        )
+    
+        result = runtime.decide_turn(
+            "�Qu� hora es?",
+            [turn_candidate("system.time", "Read the current local time.")],
+        )
+    
+        assert result["mode"] == "action"
+        assert result["effect_operations"] == ["system.time"]
+>       assert result["effect_verification"] == "agreed"
+E       AssertionError: assert 'primary' == 'agreed'
+E         
+E         - agreed
+E         + primary
+
+tests\test_turn_policy.py:10275: AssertionError
+_____ test_native_conversation_veto_uses_history_for_contextual_followup ______
+
+    def test_native_conversation_veto_uses_history_for_contextual_followup() -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._native_tool_policy_enabled = True
+        runtime._parallel_turn_verification = False
+        runtime._semantic_effect_cache = {}
+        runtime._post_native_tool_selection = (  # type: ignore[method-assign]
+            lambda *_args, **_kwargs: {
+                "mode": "action",
+                "question": "",
+                "conversation_kind": "",
+                "effect_operations": ["web.search"],
+                "response_language": "es",
+            }
+        )
+        runtime._verify_semantic_effect_shape = (  # type: ignore[method-assign]
+            lambda _text: ("no_effect", "zero")
+        )
+    
+        result = runtime.decide_turn(
+            "�Qu� palabra inventada mencion� en mi pregunta anterior?",
+            [turn_candidate("web.search", "Search the current web.", required=("query",))],
+            history=[
+                {
+                    "role": "user",
+                    "content": "Explica por qu� la palabra inventada �Nimbo7391� suena amistosa.",
+                },
+                {
+                    "role": "assistant",
+                    "content": "Su combinaci�n de sonidos resulta suave y cercana.",
+                },
+            ],
+        )
+    
+>       assert result["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:10311: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_native_tool_selection_accepts_only_declared_parameterless_calls
+FAILED tests/test_turn_policy.py::test_native_tool_selection_cannot_bypass_candidate_free_conversation_veto
+FAILED tests/test_turn_policy.py::test_native_verified_recovery_reports_the_recovered_intent_identity
+FAILED tests/test_turn_policy.py::test_native_single_effect_agreement_does_not_repeat_model_count
+FAILED tests/test_turn_policy.py::test_native_conversation_veto_uses_history_for_contextual_followup
+5 failed, 1051 passed in 7.41s

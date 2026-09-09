@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using Baxy.Providers.Windows.Applications;
 
 namespace Baxy.Providers.Windows.Windows;
 
@@ -70,10 +71,14 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     public ValueTask<WindowResolveResult> ResolveAsync(
         string processName,
         int limit,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool byTitle = false)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        string? selector = NormalizeProcessName(processName);
+        string? selector = byTitle
+            ? (!string.IsNullOrWhiteSpace(processName) && processName.Length <= 260
+                && !processName.Contains('\0') ? processName.Trim() : null)
+            : NormalizeProcessName(processName);
         if (selector is null || limit is < 1 or > 50)
         {
             return ValueTask.FromResult(new WindowResolveResult(
@@ -83,7 +88,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         IReadOnlyList<WindowSnapshot> snapshots;
         try
         {
-            snapshots = _platform.FindVisibleWindows(selector, limit);
+            snapshots = _platform.FindVisibleWindows(selector, limit, byTitle);
         }
         catch (Exception exception) when (exception is Win32Exception
             or InvalidOperationException
@@ -474,7 +479,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     private static WindowCandidate ToCandidate(WindowSnapshot snapshot, string id) =>
         new(id, snapshot.Identity.ProcessId, snapshot.Identity.ProcessName,
             snapshot.State, snapshot.Foreground, snapshot.Bounds.X, snapshot.Bounds.Y,
-            snapshot.Bounds.Width, snapshot.Bounds.Height);
+            snapshot.Bounds.Width, snapshot.Bounds.Height, snapshot.Title);
 }
 
 internal sealed class WindowsWindowControlVerifier(IWindowControlPlatform platform)
@@ -518,6 +523,7 @@ internal sealed class WindowsWindowControlVerifier(IWindowControlPlatform platfo
             && string.Equals(candidate.ProcessName, observed.Identity.ProcessName,
                 StringComparison.OrdinalIgnoreCase)
             && string.Equals(candidate.State, observed.State, StringComparison.Ordinal)
+            && string.Equals(candidate.Title, observed.Title, StringComparison.Ordinal)
             && candidate.Foreground == observed.Foreground
             && candidate.X == observed.Bounds.X
             && candidate.Y == observed.Bounds.Y
@@ -552,13 +558,14 @@ internal sealed record WindowSnapshot(
     WindowIdentity Identity,
     string State,
     bool Foreground,
-    WindowBounds Bounds);
+    WindowBounds Bounds,
+    string? Title = null);
 
 internal interface IWindowControlPlatform
 {
     DateTimeOffset UtcNow { get; }
     WindowSnapshot? FindForegroundWindow();
-    IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit);
+    IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit, bool byTitle = false);
     WindowSnapshot Observe(WindowIdentity identity);
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
@@ -606,52 +613,39 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return Observe(identity);
     }
 
-    public IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit)
+    public IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit, bool byTitle = false)
     {
         var result = new List<WindowSnapshot>();
-        Process[] processes = Process.GetProcessesByName(processName);
-        try
+        string selector = InstalledApplicationResolver.Normalize(processName);
+        EnumWindowsProc callback = (handle, _) =>
         {
-            foreach (Process process in processes.OrderBy(static item => item.Id))
+            if (!IsWindowVisible(handle))
+                return true;
+            GetWindowThreadProcessId(handle, out uint owner);
+            if (owner == 0 || owner > int.MaxValue)
+                return true;
+            try
             {
-                if (result.Count >= limit)
-                {
-                    break;
-                }
-
-                try
-                {
-                    process.Refresh();
-                    nint handle = process.MainWindowHandle;
-                    if (handle == 0 || !IsWindowVisible(handle))
-                    {
-                        continue;
-                    }
-
-                    var identity = new WindowIdentity(
-                        handle,
-                        process.Id,
-                        process.StartTime.ToUniversalTime().Ticks,
-                        process.ProcessName,
-                        UtcNow);
-                    result.Add(Observe(identity));
-                }
-                catch (Exception exception) when (exception is Win32Exception
-                    or InvalidOperationException
-                    or NotSupportedException)
-                {
-                    // A candidate can disappear while the bounded inventory is read.
-                }
+                using Process process = Process.GetProcessById(checked((int)owner));
+                string title = ReadWindowTitle(handle);
+                bool matches = byTitle
+                    ? WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
+                        InstalledApplicationResolver.Normalize(title), selector)
+                    : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase);
+                if (!matches)
+                    return true;
+                var identity = new WindowIdentity(handle, process.Id,
+                    process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
+                result.Add(Observe(identity));
             }
-        }
-        finally
-        {
-            foreach (Process process in processes)
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or NotSupportedException or ArgumentException)
             {
-                process.Dispose();
+                // A window or its owner can disappear during enumeration.
             }
-        }
-
+            return result.Count < limit;
+        };
+        _ = EnumWindows(callback, nint.Zero);
         return result;
     }
 
@@ -691,7 +685,8 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
                 rectangle.Left,
                 rectangle.Top,
                 checked(rectangle.Right - rectangle.Left),
-                checked(rectangle.Bottom - rectangle.Top)));
+                checked(rectangle.Bottom - rectangle.Top)),
+            ReadWindowTitle(identity.Handle));
     }
 
     public bool Execute(WindowIdentity identity, WindowControlAction action)
@@ -734,6 +729,24 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             bounds.Height,
             repaint: true);
     }
+
+    private static unsafe string ReadWindowTitle(nint handle)
+    {
+        const int capacity = 1024;
+        char* buffer = stackalloc char[capacity];
+        int length = GetWindowText(handle, buffer, capacity);
+        return length > 0 ? new string(buffer, 0, length) : string.Empty;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Winapi)]
+    private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW")]
+    private static unsafe partial int GetWindowText(nint window, char* text, int capacity);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct NativeRect

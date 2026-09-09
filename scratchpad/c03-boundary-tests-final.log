@@ -1,0 +1,48 @@
+........................................................................ [  6%]
+........................................................................ [ 12%]
+........................................................................ [ 18%]
+........................................................................ [ 24%]
+........................................................................ [ 31%]
+........................................................................ [ 37%]
+........................................................................ [ 43%]
+........................................................................ [ 49%]
+........................................................................ [ 56%]
+........................................................................ [ 62%]
+........................................................................ [ 68%]
+........................................................................ [ 74%]
+........................................................................ [ 80%]
+........................................................................ [ 87%]
+........................................................................................................................................F............                         [100%]
+================================== FAILURES ===================================
+_ PlannerLlmBoundaryTests.test_visible_message_retries_when_required_options_are_dropped _
+
+self = <test_planner.PlannerLlmBoundaryTests testMethod=test_visible_message_retries_when_required_options_are_dropped>
+
+    def test_visible_message_retries_when_required_options_are_dropped(self):
+        runtime = object.__new__(LlmRuntime)
+        replies = ["Confirmar / cancel"]
+        seen = []
+    
+        def fake_post(payload):
+            seen.append(payload)
+            text = replies[0] if len(seen) == 1 else "�Confirmas o cancelas?"
+            return {"choices": [{"message": {"content": text}}]}
+    
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "borra el archivo",
+            "confirmation",
+            {"situation": '{"kind":"confirmation","polarity":"pending"}'},
+        )
+    
+>       self.assertEqual(result, "�Confirmas o cancelas?")
+E       AssertionError: 'Confirmar / cancel' != '�Confirmas o cancelas?'
+E       - Confirmar / cancel
+E       ?         ^^^
+E       + �Confirmas o cancelas?
+E       ? +        ^^^       +++
+
+tests\test_planner.py:2990: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_planner.py::PlannerLlmBoundaryTests::test_visible_message_retries_when_required_options_are_dropped
+1 failed, 1156 passed, 115 subtests passed in 7.27s

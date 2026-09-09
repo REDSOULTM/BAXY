@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-08T20:04:38.236594+00:00",
+  "session": 41875,
+  "session_exit": 0,
+  "turns": 8,
+  "correct_operation_selections": 4,
+  "failed_action_requests": 3,
+  "knowledge_meaning_correct_voice_failed": 1,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1769.0234375,
+    "seconds": 53.782,
+    "manifest_unchanged": true
+  },
+  "source": "485",
+  "model": "registered Qwen2507 Q4 / b9980; regression baseline only",
+  "physical_effects": 0,
+  "acceptance_credit": false,
+  "model_promoted": false,
+  "next": "487 reuse independent negative-clause mechanism for pero/but. Then investigate context-based candidate loss for owner51 and false tool-free success for owner46. Do not relax factual guard."
+}

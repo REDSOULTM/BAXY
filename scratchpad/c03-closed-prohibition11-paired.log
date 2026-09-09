@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-pair-registered.py", line 25, in <module>
+    assert len(paired)==len(requests),(len(paired),len(requests))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (8, 11)

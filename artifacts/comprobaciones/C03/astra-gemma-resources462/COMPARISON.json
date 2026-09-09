@@ -1,0 +1,14 @@
+{
+  "baseline": "460",
+  "change": "--lazy-mode on",
+  "equal_finals": 12,
+  "total_finals": 12,
+  "equal_attempt_counts": true,
+  "baseline_ram_mib": 2832.90234375,
+  "candidate_ram_mib": 1005.5078125,
+  "baseline_gpu_mib": 1695.7890625,
+  "candidate_gpu_mib": 1692.18359375,
+  "baseline_seconds": 49.859,
+  "candidate_seconds": 45.859,
+  "quality": "Baseline10/11; bounded mixed requiredFact completes11/11. Identical to460, no quality improvement claimed from lazy."
+}

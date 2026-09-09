@@ -1,0 +1,225 @@
+[
+  {
+    "request": "me llamo emmanuel, dime hola emmanuel",
+    "audit_reason": "shaped_presentation",
+    "trace": [
+      {
+        "predicate": "repeats_a_sent_instruction",
+        "reply": "Hola Emmanuel, ¿cómo estás? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_denies_a_served_capability",
+        "reply": "Hola Emmanuel, ¿cómo estás? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_asserts_an_unread_machine_state",
+        "reply": "Hola Emmanuel, ¿cómo estás? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_restates_the_request",
+        "reply": "Hola Emmanuel, ¿cómo estás? 😎",
+        "result": true
+      },
+      {
+        "predicate": "_shaped_conversation_answer_violates_contract",
+        "reply": "Hola Emmanuel, ¿cómo estás? 😎",
+        "result": true
+      },
+      {
+        "predicate": "_reply_uses_opposite_language",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": false
+      },
+      {
+        "predicate": "repeats_a_sent_instruction",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_denies_a_served_capability",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_asserts_an_unread_machine_state",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_restates_the_request",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": true
+      },
+      {
+        "predicate": "_shaped_conversation_answer_violates_contract",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": true
+      },
+      {
+        "predicate": "_reply_uses_opposite_language",
+        "reply": "Hola Emmanuel, ¿cómo estás hoy?",
+        "result": false
+      }
+    ]
+  },
+  {
+    "request": "me llamo Albeda",
+    "answer": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+    "trace": [
+      {
+        "predicate": "repeats_a_sent_instruction",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_denies_a_served_capability",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_asserts_an_unread_machine_state",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_restates_the_request",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_invents_a_spanish_infinitive",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_is_a_fixed_stall",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "_shaped_conversation_answer_violates_contract",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "_reply_uses_opposite_language",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "_reply_uses_opposite_language",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "repeats_a_sent_instruction",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_denies_a_served_capability",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_asserts_an_unread_machine_state",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_restates_the_request",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_invents_a_spanish_infinitive",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_is_a_fixed_stall",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      },
+      {
+        "predicate": "_shaped_conversation_answer_violates_contract",
+        "reply": "¡Hola Albeda! ¿Cómo estás hoy? 😎",
+        "result": false
+      }
+    ]
+  },
+  {
+    "request": "my favorite city is Lima",
+    "answer": "Lima",
+    "trace": [
+      {
+        "predicate": "repeats_a_sent_instruction",
+        "reply": "Lima's got that cool mix of old-world charm and modern vibes, right? 🌆 What’s your favorite spot there?",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_denies_a_served_capability",
+        "reply": "Lima's got that cool mix of old-world charm and modern vibes, right? 🌆 What’s your favorite spot there?",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_asserts_an_unread_machine_state",
+        "reply": "Lima's got that cool mix of old-world charm and modern vibes, right? 🌆 What’s your favorite spot there?",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_restates_the_request",
+        "reply": "Lima's got that cool mix of old-world charm and modern vibes, right? 🌆 What’s your favorite spot there?",
+        "result": true
+      },
+      {
+        "predicate": "_shaped_conversation_answer_violates_contract",
+        "reply": "Lima's got that cool mix of old-world charm and modern vibes, right? 🌆 What’s your favorite spot there?",
+        "result": true
+      },
+      {
+        "predicate": "_reply_uses_opposite_language",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "repeats_a_sent_instruction",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_denies_a_served_capability",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_asserts_an_unread_machine_state",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_restates_the_request",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_invents_a_spanish_infinitive",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "visible_reply_is_a_fixed_stall",
+        "reply": "Lima",
+        "result": false
+      },
+      {
+        "predicate": "_shaped_conversation_answer_violates_contract",
+        "reply": "Lima",
+        "result": false
+      }
+    ]
+  }
+]

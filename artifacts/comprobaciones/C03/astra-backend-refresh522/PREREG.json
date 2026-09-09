@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-09T00:21:26.851496+00:00",
+  "cause": "Latest release feed reports b10867 after previously tested b10865. Stable latest remains v0.4.0/b10809. Inspect exact upstream delta for applicability before downloading or retesting models.",
+  "baseline_commit": "d4389a4dd920d24c9592f1dc3badbd69be23bd09",
+  "new_commit": "f3f1a8f2760f28325a5ec20c05b171e5b7c83a29",
+  "url": "https://api.github.com/repos/ggml-org/llama.cpp/compare/d4389a4dd920d24c9592f1dc3badbd69be23bd09...f3f1a8f2760f28325a5ec20c05b171e5b7c83a29",
+  "scope": "Read-only upstream code comparison, no BAXY runtime/model/source changes; current520 source tests continue independently."
+}

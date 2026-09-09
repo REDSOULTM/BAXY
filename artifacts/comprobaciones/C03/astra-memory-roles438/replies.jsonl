@@ -1,0 +1,16 @@
+{"id": "actual437-t7", "variant": "baseline", "answer": "Mi nombre es Jordan.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "actual437-t7", "variant": "tool-return", "answer": "Mi nombre guardado es Jordan.", "finish_reason": "stop", "seconds": 0.469}
+{"id": "actual437-t4", "variant": "baseline", "answer": "I saved the name Jordan in private memory.", "finish_reason": "stop", "seconds": 0.453}
+{"id": "actual437-t4", "variant": "tool-return", "answer": "The name saved in private memory is Jordan.", "finish_reason": "stop", "seconds": 0.469}
+{"id": "name-marta", "variant": "baseline", "answer": "Mi nombre es Marta.", "finish_reason": "stop", "seconds": 0.39}
+{"id": "name-marta", "variant": "tool-return", "answer": "Mi nombre guardado es Marta.", "finish_reason": "stop", "seconds": 0.453}
+{"id": "compound-name", "variant": "baseline", "answer": "Mi nombre guardado es Ana María.", "finish_reason": "stop", "seconds": 0.422}
+{"id": "compound-name", "variant": "tool-return", "answer": "Mi nombre guardado es Ana María.", "finish_reason": "stop", "seconds": 0.485}
+{"id": "third-person", "variant": "baseline", "answer": "Tu hermana se llama Nina.", "finish_reason": "stop", "seconds": 0.406}
+{"id": "third-person", "variant": "tool-return", "answer": "Tu hermana se llama Nina.", "finish_reason": "stop", "seconds": 0.484}
+{"id": "two-records", "variant": "baseline", "answer": "Tengo guardados dos nombres en mi memoria: Jordan y Nina.", "finish_reason": "stop", "seconds": 0.532}
+{"id": "two-records", "variant": "tool-return", "answer": "Tengo guardados dos nombres en mi memoria: Jordan y Nina.", "finish_reason": "stop", "seconds": 0.562}
+{"id": "memory.enable", "variant": "baseline", "answer": "Memory configuration enabled.", "finish_reason": "stop", "seconds": 0.344}
+{"id": "memory.enable", "variant": "tool-return", "answer": "Memory enabled.", "finish_reason": "stop", "seconds": 0.375}
+{"id": "memory.save", "variant": "baseline", "answer": "The memory has been saved successfully.", "finish_reason": "stop", "seconds": 0.359}
+{"id": "memory.save", "variant": "tool-return", "answer": "I have saved the memory.", "finish_reason": "stop", "seconds": 0.406}

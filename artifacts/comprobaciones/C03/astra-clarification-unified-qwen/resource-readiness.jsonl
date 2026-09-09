@@ -1,0 +1,5 @@
+{"component": "planner_catalog", "encoderSupplied": false, "seconds": 0.0, "error": null}
+{"component": "skill_registry", "encoderSupplied": false, "seconds": 0.01599999999962165, "error": null}
+{"component": "turn_evidence", "seconds": 26.061999999999898, "diagnostics": {"state": "ready", "failure": "", "count": 25156, "dimensions": 384, "source_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680", "encoder_identity": "intfloat/multilingual-e5-small|query-prefix|normalize=true|dimensions=384", "abstention_policy": {"state": "loaded", "failure": "", "calibration_fingerprint": "7fddf0c569340762cf1728a3e71dbe6790fdb8b98e0d78b51d28b96ed61cdcab", "calibration_rows": 3460, "authority": "conversation_signal_or_abstain_only", "retrieval_enabled": true}}}
+{"component": "planner_catalog", "encoderSupplied": true, "seconds": 3.6569999999992433, "error": null}
+{"component": "skill_registry", "encoderSupplied": true, "seconds": 0.8430000000007567, "error": null}

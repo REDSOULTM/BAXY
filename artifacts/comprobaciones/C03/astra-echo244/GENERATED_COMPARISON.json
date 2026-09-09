@@ -1,0 +1,42 @@
+[
+  {
+    "index": 0,
+    "samples240": 81326,
+    "samples243": 82862,
+    "exact": false,
+    "sha240": "b38addabd3ecbda34ee0e2e1b95197f96f4991e011a5c9200db62517e4cc4c0f",
+    "sha243": "55a7c8b920e0fb5cb82a961ad014b8d8afbdd6235e6ce29f7bbe60777975e840",
+    "rms240": 0.19001464545726776,
+    "rms243": 0.19416332244873047
+  },
+  {
+    "index": 1,
+    "samples240": 46906,
+    "samples243": 46138,
+    "exact": false,
+    "sha240": "150a7d775320e30619cbfc94c2eed30e364b0f847f50a3e2bc5e17eb43707528",
+    "sha243": "c45527f91ad1e3144bf1ba062c0f06856c1353db68fd43556aa2047750288943",
+    "rms240": 0.2227650135755539,
+    "rms243": 0.22857192158699036
+  },
+  {
+    "index": 2,
+    "samples240": 37434,
+    "samples243": 40250,
+    "exact": false,
+    "sha240": "522bfb9d33d89eb84d9c3cf97d12914c9dc888e058167e6eeabb9de855a1c88e",
+    "sha243": "ba06b683d6cbb5c855c09a5a721a983836191290d45a8400bf44d26c2a8bc5c0",
+    "rms240": 0.10248734802007675,
+    "rms243": 0.12349417805671692
+  },
+  {
+    "index": 3,
+    "samples240": 42554,
+    "samples243": 43322,
+    "exact": false,
+    "sha240": "85d21d7c962ceaaabcd17ad7bad1fbb3c956428e5244a6edf2b4475a0b2103f9",
+    "sha243": "a0b611f8bf6ff07e67face406a0cd8a190ca190b9fe9bbf3ff2564cba5764e45",
+    "rms240": 0.217626690864563,
+    "rms243": 0.20286037027835846
+  }
+]

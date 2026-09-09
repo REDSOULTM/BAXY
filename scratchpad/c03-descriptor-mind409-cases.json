@@ -1,0 +1,340 @@
+{
+  "cases": [
+    {
+      "id": "account-es",
+      "request": "¿Con qué cuenta de Windows se está ejecutando BAXY?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I saved the name Jordan in private memory."
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué necesitas exactamente con tu PC?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué nombre tienes guardado en tu memoria privada?"
+        },
+        {
+          "role": "assistant",
+          "content": "El nombre que tengo guardado en mi memoria privada es \"Jordan\"."
+        },
+        {
+          "role": "user",
+          "content": "¿Con qué cuenta de Windows se está ejecutando BAXY?"
+        }
+      ],
+      "expected": "Propose system.identity for explicit Windows account."
+    },
+    {
+      "id": "account-en",
+      "request": "Which Windows account is running BAXY?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I saved the name Jordan in private memory."
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué necesitas exactamente con tu PC?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué nombre tienes guardado en tu memoria privada?"
+        },
+        {
+          "role": "assistant",
+          "content": "El nombre que tengo guardado en mi memoria privada es \"Jordan\"."
+        },
+        {
+          "role": "user",
+          "content": "Which Windows account is running BAXY?"
+        }
+      ],
+      "expected": "Propose system.identity for explicit Windows account."
+    },
+    {
+      "id": "username-en",
+      "request": "What is my Windows username?",
+      "history": [],
+      "expected": "system.identity, not resource/OS status."
+    },
+    {
+      "id": "username-es",
+      "request": "Dime la cuenta actual de Windows.",
+      "history": [],
+      "expected": "system.identity, not resource/OS status."
+    },
+    {
+      "id": "os-version",
+      "request": "Which Windows version am I running?",
+      "history": [],
+      "expected": "system.status, OS version scope preserved."
+    },
+    {
+      "id": "os-memory",
+      "request": "Qué Windows tengo y cuánta RAM tiene esta máquina",
+      "history": [],
+      "expected": "system.status, OS and memory scope preserved."
+    },
+    {
+      "id": "cpu",
+      "request": "Dime el uso actual de la CPU.",
+      "history": [],
+      "expected": "system.status, CPU scope preserved."
+    },
+    {
+      "id": "concept",
+      "request": "¿Qué es una cuenta de Windows?",
+      "history": [],
+      "expected": "Explain account concept; no PC operation."
+    },
+    {
+      "id": "negative",
+      "request": "Do not read my Windows account.",
+      "history": [],
+      "expected": "Respect prohibition, no operation or claimed reading."
+    },
+    {
+      "id": "actual402b-t6",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I saved the name Jordan in private memory."
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué necesitas exactamente con tu PC?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué nombre tienes guardado en tu memoria privada?"
+        },
+        {
+          "role": "assistant",
+          "content": "El nombre que tengo guardado en mi memoria privada es \"Jordan\"."
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo me llamo?"
+        }
+      ],
+      "expected": "Answer Alvaro from the current human declaration; no new PC read or persistence claim."
+    },
+    {
+      "id": "english-name",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I saved the name Jordan in private memory."
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué necesitas exactamente con tu PC?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué nombre tienes guardado en tu memoria privada?"
+        },
+        {
+          "role": "assistant",
+          "content": "El nombre que tengo guardado en mi memoria privada es \"Jordan\"."
+        },
+        {
+          "role": "user",
+          "content": "What is my name?"
+        }
+      ],
+      "expected": "Answer Alvaro in English, no stored-name substitution."
+    },
+    {
+      "id": "new-name",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I saved the name Jordan in private memory."
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Renata."
+        },
+        {
+          "role": "assistant",
+          "content": "¿Qué necesitas exactamente con tu PC?"
+        },
+        {
+          "role": "user",
+          "content": "¿Qué nombre tienes guardado en tu memoria privada?"
+        },
+        {
+          "role": "assistant",
+          "content": "El nombre que tengo guardado en mi memoria privada es \"Jordan\"."
+        },
+        {
+          "role": "user",
+          "content": "¿Cómo me llamo?"
+        }
+      ],
+      "expected": "Answer Renata from the human declaration; no substitution with Jordan."
+    },
+    {
+      "id": "third-party",
+      "request": "What is my name?",
+      "history": [
+        {
+          "role": "user",
+          "content": "My name is Priya."
+        },
+        {
+          "role": "assistant",
+          "content": "Hello, Priya."
+        },
+        {
+          "role": "user",
+          "content": "My sister is named Casey."
+        }
+      ],
+      "expected": "Answer Priya, not sister Casey; no Windows read or persistence claim."
+    }
+  ]
+}

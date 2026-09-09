@@ -566,7 +566,7 @@ internal static partial class ConfirmationReplyParser
     private static partial Regex ConfirmPattern();
 
     [GeneratedRegex(
-        "^(?:no|cancela|cancelar|d[e\\u00e9]jalo|cancel|never[ \\t]+mind|don['\\u2019]t|do[ \\t]+not)[.!]?$",
+        "^(?:no|cancelar?(?:[ \\t]+eso)?|d[e\\u00e9]jalo|cancel(?:[ \\t]+(?:that|it))?|never[ \\t]+mind|don['\\u2019]t|do[ \\t]+not)[.!]?$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex CancelPattern();
 }

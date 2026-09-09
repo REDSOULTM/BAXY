@@ -478,38 +478,13 @@ internal static class PlanObservationProjector
         ArgumentNullException.ThrowIfNull(step);
         ArgumentNullException.ThrowIfNull(observations);
         arguments = null;
-        if (step.ArgumentsMode != "after_dependencies"
-            || step.DependsOn.Count == 0)
-        {
-            return false;
-        }
-
-        var dependencies = new HashSet<string>(step.DependsOn, StringComparer.Ordinal);
-        string[] producers = MissionPlanValidator.DependencyProducerOperations(
-            step.Operation);
         string[] fields = DeterministicDependencyFields(step.Operation);
-        if (producers.Length == 0 || fields.Length == 0)
+        if (fields.Length == 0)
         {
             return false;
         }
 
-        JsonObject[] producerResults = observations
-            .OfType<JsonObject>()
-            .Where(observation =>
-                (bool?)observation["verified"] == true
-                && string.Equals(
-                    (string?)observation["status"],
-                    OperationStatuses.Completed,
-                    StringComparison.Ordinal)
-                && producers.Contains(
-                    (string?)observation["operation"],
-                    StringComparer.Ordinal)
-                && (string?)observation["stepId"] is { } stepId
-                && dependencies.Contains(stepId))
-            .Select(observation => observation["result"] as JsonObject)
-            .Where(static result => result is not null)
-            .Cast<JsonObject>()
-            .ToArray();
+        JsonObject[] producerResults = VerifiedIdentityProducerResults(step, observations);
         if (producerResults.Length == 0)
         {
             return false;
@@ -537,6 +512,44 @@ internal static class PlanObservationProjector
         return true;
     }
 
+    internal static bool IsVerifiedEmptyFileSearch(MindPlanStep step, JsonArray observations)
+    {
+        ArgumentNullException.ThrowIfNull(step);
+        ArgumentNullException.ThrowIfNull(observations);
+        if (step.Operation != "filesystem.read.text")
+        {
+            return false;
+        }
+
+        JsonObject[] results = VerifiedIdentityProducerResults(step, observations);
+        // An explicit zero is a completed search result, not missing data.
+        // Missing, inconsistent or unverified results cannot prove no matches.
+        return results.Length > 0 && results.All(static result =>
+            result["entries"] is JsonArray { Count: 0 }
+            && result["count"] is JsonValue count
+            && count.TryGetValue<int>(out int value) && value == 0);
+    }
+
+    private static JsonObject[] VerifiedIdentityProducerResults(MindPlanStep step, JsonArray observations)
+    {
+        if (step.ArgumentsMode != "after_dependencies" || step.DependsOn.Count == 0)
+        {
+            return [];
+        }
+        var dependencies = new HashSet<string>(step.DependsOn, StringComparer.Ordinal);
+        string[] producers = MissionPlanValidator.DependencyProducerOperations(step.Operation);
+        return observations.OfType<JsonObject>()
+            .Where(observation =>
+                (bool?)observation["verified"] == true
+                && string.Equals((string?)observation["status"], OperationStatuses.Completed, StringComparison.Ordinal)
+                && producers.Contains((string?)observation["operation"], StringComparer.Ordinal)
+                && (string?)observation["stepId"] is { } stepId && dependencies.Contains(stepId))
+            .Select(observation => observation["result"] as JsonObject)
+            .Where(static result => result is not null)
+            .Cast<JsonObject>()
+            .ToArray();
+    }
+
     private static string[] DeterministicDependencyFields(string operation) =>
         operation switch
         {
@@ -545,6 +558,7 @@ internal static class PlanObservationProjector
                 or "window.restore" => ["windowId"],
             "bluetooth.device.pair" or "peripheral.scan" => ["deviceId"],
             "browser.navigate" or "browser.navigate.named" => ["url"],
+            "filesystem.read.text" => ["resourceId"],
             "game.install.commit" or "package.install.commit" =>
                 ["confirmationId"],
             "game.purchase.commit" => ["confirmationId", "expectedPriceCents"],

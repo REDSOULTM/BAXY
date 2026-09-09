@@ -1,0 +1,36 @@
+{
+  "state": "clock/progress/polarity repaired; C03 ongoing",
+  "files": {
+    "src/baxy_mind/effect_intent.py": "48a37645cc2d75744f5aedb456654e9feb4b390d0138956cbcb6f1e1c2cc37bc",
+    "tests/test_effect_intent.py": "934b23d8f4b5b904756177f45e5888755aa9215950557a3c5d11cebbf75c7fae",
+    "src/Baxy.App/MainWindowViewModel.cs": "92984b4b28c50f75c5c5e4fe1f8c13a7eb935646d3124b03942ad955154c5f1e",
+    "src/Baxy.App/UserMessagePolicy.cs": "aa3516e0afc298763359f347cccd8d90b32de1e27c98fcca559b94f56f3e7ac1",
+    "src/baxy_mind/llm.py": "902b32ddcf1bc62f89b1a0e9c7a7dde0b5a35a7cd018cba282fcde62b076dbb1",
+    "src/baxy_mind/request_reading.py": "5a6c3868f16e2af6aa1a6c1ce5e6861bc7d516a7526225cbadcc6f3a59b31d45",
+    "src/baxy_mind/voice_output.py": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+    "artifacts/comprobaciones/C03/astra-polarity52/PREREG.json": "931c241eaee5abe43858fdccd9a737f8fc624f73264788ae7ccf3cf60b9cee1a",
+    "artifacts/comprobaciones/C03/astra-polarity52/RESULT.json": "cca03cf22be718b81181c4136589efe9bfd7a24850da8f71a7065534017fad2b",
+    "artifacts/comprobaciones/C03/astra-polarity52/paired.json": "ef52af156ad3f27e87e1b1d9c262e18eb146a5c2fbc2eccfb03f6911aaa21816",
+    "tests/test_c03_request_preservation.py": "e4134d958ca1e69d975f33ed535dee9bc03b55277bbd1d6b1621dd054def9855",
+    "tests/Baxy.Integration.Tests/C03FactPreservationTests.cs": "c828dde835e16d0bf717a1cd12e0a7284a032f1955ba3dc9c0d2435af51c5330"
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "validation": {
+    "pythonInheritedUnchangedFrom51": {
+      "passed": 3123,
+      "subtests": 115,
+      "skips": 0,
+      "seconds": 46.52
+    },
+    "dotnet": {
+      "passed": 173,
+      "skips": 0,
+      "seconds": 8
+    },
+    "sourceQuality": "Fast passed",
+    "releaseBuildSeconds": 16.1,
+    "warnings": 0,
+    "errors": 0,
+    "Full": "not run during repair"
+  }
+}

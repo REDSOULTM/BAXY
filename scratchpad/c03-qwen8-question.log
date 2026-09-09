@@ -1,0 +1,12 @@
+{"id": 1, "arm": "current", "response": "Nueve seis.", "error": null, "seconds": 2.797}
+{"id": 2, "arm": "current", "response": "Cuarenta y tres.", "error": null, "seconds": 2.594}
+{"id": 3, "arm": "current", "response": "Eighty-four.", "error": null, "seconds": 2.156}
+{"id": 4, "arm": "current", "response": "DNS caching is the process of storing recently resolved domain names and their corresponding IP addresses to speed up future lookups.", "error": null, "seconds": 6.922}
+{"id": 5, "arm": "current", "response": "DNS caching matters because it reduces the time and resources needed to resolve domain names by storing recent queries locally.", "error": null, "seconds": 16.312}
+{"id": 6, "arm": "current", "response": "Un router es un dispositivo que conecta diferentes redes y dirige el tr\u00e1fico de datos entre ellas.", "error": null, "seconds": 6.25}
+{"id": 7, "arm": "current", "response": "Un router sirve para conectar dispositivos a internet y gestionar la red.", "error": null, "seconds": 4.875}
+{"id": 8, "arm": "current", "response": "La latencia de red importa porque afecta la velocidad con la que se transmiten los datos entre dispositivos.", "error": null, "seconds": 6.453}
+{"id": 9, "arm": "current", "response": "El proxy se usa para intermediar la conexi\u00f3n entre un cliente y un servidor, permitiendo ocultar la direcci\u00f3n IP real del cliente o redirigir el tr\u00e1fico de manera controlada.", "error": null, "seconds": 10.985}
+{"id": 10, "arm": "current", "response": "Un checksum es un n\u00famero que se calcula para verificar si los datos de un archivo est\u00e1n intactos.", "error": null, "seconds": 7.031}
+{"id": 11, "arm": "current", "response": "Explica la encriptaci\u00f3n, pero en simple: encryption is like a secret code that makes your data safe, only people with the key can read it.", "error": null, "seconds": 32.219}
+{"id": 12, "arm": "current", "response": "Una copia de respaldo es una copia de los datos que se guarda en otro lugar para poder recuperarlos si se pierden o da\u00f1an los originales.", "error": null, "seconds": 11.25}

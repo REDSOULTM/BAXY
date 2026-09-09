@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-07T13:06:22.312858+00:00",
+  "sources": {
+    "src/baxy_mind/voice.py": "7e94dd63b24d97dcd805e2d462339c2ad157b2cf0a9fa6eee2928e2e086b35d4",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e",
+    "src/baxy_mind/voice_aec.py": "3732660fae67ce7a546152392699758fd59f55e8ce0b97235bffaadc00ce5f11",
+    "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "assets.manifest.json": "d1f9891f670928f8cb30dcd8ad747c80d364dad06f320fc10e40e7d4efd599ba",
+    "src/baxy_mind/voice_capture.py": "1005f17b4358940dada0421019e25f2d97d4d656c236d6dbd4f84f22fcaacdff"
+  },
+  "phases": [
+    "direct-0",
+    "direct-1",
+    "direct-2"
+  ],
+  "text": "The file read failed because the content is invalid UTF-8.",
+  "method": "Three preregistered cold capture starts in one loaded VoiceEngine, stop after every phase. Source147 unchanged, observational AEC/VAD/guard/anchor tap149 plus full returned Piper PCM copy. Every original output returned unchanged. Physical mic/speaker/loopback0.30, restore in finally.",
+  "criteria": "Keep all three outcomes and exact generated/captured PCM. Seek a recorded failure and distinguish synthesis variation from observation scheduling. Diagnostic only; no best-run selection, source mutation or threshold change."
+}

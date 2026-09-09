@@ -1,0 +1,25 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_contextual_answer_cannot_bypass_the_mixed_language_contract _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CE6C74A900>
+
+    def test_contextual_answer_cannot_bypass_the_mixed_language_contract(monkeypatch) -> None:
+        corrected = "El cifrado protege tus datos so only someone with the key can read them."
+        client = Recorder([corrected])
+        monkeypatch.setattr(client, "_resolve_contextual_answer", lambda **kwargs:
+                            "El cifrado protege tus datos para que nadie los lea sin una clave.")
+        answer, calls = client.chat(
+            "responde en spanglish: qu� es el cifrado", conversation_kind="followup",
+            response_language="mixed", history=[{"role": "assistant", "content": "Hola."}],
+        )
+>       assert answer == corrected
+E       AssertionError: assert 'El cifrado p...in una clave.' == 'El cifrado p...an read them.'
+E         
+E         - El cifrado protege tus datos so only someone with the key can read them.
+E         + El cifrado protege tus datos para que nadie los lea sin una clave.
+
+tests\test_c03_request_preservation.py:76: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_contextual_answer_cannot_bypass_the_mixed_language_contract
+1 failed, 44 deselected in 0.72s

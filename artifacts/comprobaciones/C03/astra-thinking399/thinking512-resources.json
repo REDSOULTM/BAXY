@@ -1,0 +1,10 @@
+{
+  "variant": "thinking512",
+  "completed": true,
+  "violations": [],
+  "gpu_peak_mib": 3175.5625,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 3906.91015625,
+  "seconds": 40.86,
+  "manifest_unchanged": true
+}

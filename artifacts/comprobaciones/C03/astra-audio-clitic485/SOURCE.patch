@@ -1,0 +1,34 @@
+--- effect_intent-before485.py
++++ src/baxy_mind/effect_intent.py
+@@ -4834,9 +4834,10 @@
+ # Verbos que ponen o quitan el silencio global. «apaga» y «activa» solo
+ # cuentan con un objeto de audio explícito, porque también gobiernan el equipo
+ # y otros dispositivos.
++_UNMUTE_VERB = r"(?:unmute|desmutea(?:me|lo|la)?|desmutear(?:lo|la)?)"
+ _MUTE_VERB = (
+     r"(?:silencia|silenciar|silenciame|silencialo|silenciala|mutea|mutear|muteame|"
+-    r"mute|unmute|desmutea|desmutear|reactiva|reactivar|reactivalo|"
++    rf"mute|{_UNMUTE_VERB}|reactiva|reactivar|reactivalo|"
+     r"reactivala|apaga|apagar|activa|activar)"
+ )
+ # «apaga»/«activa» también gobiernan el equipo, la pantalla o la radio; solo
+@@ -4881,7 +4882,7 @@
+             r"(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
+             r"\bturn\s+(?:the\s+)?(?:audio|sound|volume)\s+back\s+on\b|"
+             # Órdenes elípticas inequívocas: sólo existe un silencio global.
+-            r"^[¿?¡!\s]*(?:unmute|desmutea|desmutear|desmuteame)"
++            rf"^[¿?¡!\s]*{_UNMUTE_VERB}"
+             r"(?:\s+(?:it|please|por favor|todo|everything|el audio|"
+             r"the audio))?[\s?!.]*$"
+         ),
+@@ -6330,8 +6331,8 @@
+     r"haz|toma|captura|take|capture|pon|deja|dejar|put|leave|"
+     r"fija|ajusta|adjust|establece|set|sube|baja|bajalo|subelo|aumenta|"
+     r"pone|ponme|arranca|cambia|cambiar|change|get rid|"
+-    r"reduce|increment|decrease|silencia|silenciame|mute|unmute|mutea|mutear|desmutea|"
+-    r"desmutear|quita|quitar|saca|sacar|maximiza|minimiza|"
++    rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
++    r"quita|quitar|saca|sacar|maximiza|minimiza|"
+     r"sacale|"
+     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
+     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"

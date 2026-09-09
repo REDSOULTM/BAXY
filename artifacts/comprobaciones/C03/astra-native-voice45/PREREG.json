@@ -1,0 +1,5 @@
+{
+  "method": "VoiceEngine alone, registered STT/wake and default TTS asset resolution; greeting, wake start, wait, cancel, wait, stop. Same voice calls as UI; no LLM or shell. faulthandler on stderr, 120-second bound. Development failure isolation only.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "scriptSha256": "5dfa93786d1da0e2f93666b5d71cb8a0944edda58efbcd7e2d864bf99892a80c"
+}

@@ -1,0 +1,85 @@
+........................................................................ [ 58%]
+.FFFF..............................................                      [100%]
+================================== FAILURES ===================================
+_ test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[Son las trece y veintitr\xe9s; it\u2019s 13:23.] _
+
+draft = 'Son las trece y veintitr�s; it�s 13:23.'
+
+    @pytest.mark.parametrize("draft", [
+        "Son las trece y veintitr�s; it�s 13:23.",
+        "It's one twenty-three PM.",
+        "Son las una y veintitr�s PM.",
+        "Son las 13:23 y hay tres y veintitr�s archivos.",
+    ])
+    def test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks(
+        draft: str,
+    ) -> None:
+>       assert llm._payload_fact_defect(draft, {"clock": "13:23"}) is None
+E       AssertionError: assert '' is None
+E        +  where '' = <function _payload_fact_defect at 0x000001EF7135D9E0>('Son las trece y veintitr�s; it�s 13:23.', {'clock': '13:23'})
+E        +    where <function _payload_fact_defect at 0x000001EF7135D9E0> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:398: AssertionError
+_ test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[It's one twenty-three PM.] _
+
+draft = "It's one twenty-three PM."
+
+    @pytest.mark.parametrize("draft", [
+        "Son las trece y veintitr�s; it�s 13:23.",
+        "It's one twenty-three PM.",
+        "Son las una y veintitr�s PM.",
+        "Son las 13:23 y hay tres y veintitr�s archivos.",
+    ])
+    def test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks(
+        draft: str,
+    ) -> None:
+>       assert llm._payload_fact_defect(draft, {"clock": "13:23"}) is None
+E       assert '' is None
+E        +  where '' = <function _payload_fact_defect at 0x000001EF7135D9E0>("It's one twenty-three PM.", {'clock': '13:23'})
+E        +    where <function _payload_fact_defect at 0x000001EF7135D9E0> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:398: AssertionError
+_ test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[Son las una y veintitr\xe9s PM.] _
+
+draft = 'Son las una y veintitr�s PM.'
+
+    @pytest.mark.parametrize("draft", [
+        "Son las trece y veintitr�s; it�s 13:23.",
+        "It's one twenty-three PM.",
+        "Son las una y veintitr�s PM.",
+        "Son las 13:23 y hay tres y veintitr�s archivos.",
+    ])
+    def test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks(
+        draft: str,
+    ) -> None:
+>       assert llm._payload_fact_defect(draft, {"clock": "13:23"}) is None
+E       AssertionError: assert '' is None
+E        +  where '' = <function _payload_fact_defect at 0x000001EF7135D9E0>('Son las una y veintitr�s PM.', {'clock': '13:23'})
+E        +    where <function _payload_fact_defect at 0x000001EF7135D9E0> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:398: AssertionError
+_ test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[Son las 13:23 y hay tres y veintitr\xe9s archivos.] _
+
+draft = 'Son las 13:23 y hay tres y veintitr�s archivos.'
+
+    @pytest.mark.parametrize("draft", [
+        "Son las trece y veintitr�s; it�s 13:23.",
+        "It's one twenty-three PM.",
+        "Son las una y veintitr�s PM.",
+        "Son las 13:23 y hay tres y veintitr�s archivos.",
+    ])
+    def test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks(
+        draft: str,
+    ) -> None:
+>       assert llm._payload_fact_defect(draft, {"clock": "13:23"}) is None
+E       AssertionError: assert '' is None
+E        +  where '' = <function _payload_fact_defect at 0x000001EF7135D9E0>('Son las 13:23 y hay tres y veintitr�s archivos.', {'clock': '13:23'})
+E        +    where <function _payload_fact_defect at 0x000001EF7135D9E0> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:398: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[Son las trece y veintitr\xe9s; it\u2019s 13:23.]
+FAILED tests/test_c03_request_preservation.py::test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[It's one twenty-three PM.]
+FAILED tests/test_c03_request_preservation.py::test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[Son las una y veintitr\xe9s PM.]
+FAILED tests/test_c03_request_preservation.py::test_word_clock_equivalence_does_not_turn_unframed_counts_into_clocks[Son las 13:23 y hay tres y veintitr\xe9s archivos.]
+4 failed, 119 passed in 1.72s

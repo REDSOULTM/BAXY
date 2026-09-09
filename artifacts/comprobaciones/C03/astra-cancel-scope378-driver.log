@@ -1,0 +1,13 @@
+Could not find platform independent libraries <prefix>
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-cancel-scope378.py", line 87, in <module>
+    answer = client.compose_user_message(case['request'], 'status', {'situation': json.dumps(situation, ensure_ascii=False)})
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 9753, in compose_user_message
+    response = post(payload)
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 9021, in post
+    return self._post(payload)
+           ~~~~~~~~~~^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-cancel-scope378.py", line 62, in _post
+    assert payload == self.case['reference'], 'baseline differs from actual product payload'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: baseline differs from actual product payload

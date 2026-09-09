@@ -1,0 +1,66 @@
+{
+  "method": "Return to registered Qwen3-2507. Compare exact full selector payloads64/68 with only earlier assistant machine-result prose replaced by its typed source facts. File cases replace only the real first absolute-search failure; later out-of-catalog replies are interpretations and are NOT upgraded into verified observations. Synthetic reference3/4 replace found-files narration by explicit synthetic typed search fixtures; reference6 uses the assumed failed-search facts. Offers remain literal. No deletion of stored conversation, rewrite of current requests, extra classifier, prompt or model change. No actual functions/UI/audio/human reserve; this is a representation comparison before implementation.",
+  "syntheticFixtures": {
+    "reft3": {
+      "kind": "operation",
+      "operation": "filesystem.search",
+      "polarity": "success",
+      "verified": true,
+      "succeeded": true,
+      "readOnly": true,
+      "observed": {
+        "version": 1,
+        "entries": [
+          {
+            "resourceId": "fs_11111111111111111111111111111111",
+            "name": "informe.txt",
+            "kind": "file"
+          }
+        ],
+        "count": 1
+      }
+    },
+    "reft4": {
+      "kind": "operation",
+      "operation": "filesystem.search",
+      "polarity": "success",
+      "verified": true,
+      "succeeded": true,
+      "readOnly": true,
+      "observed": {
+        "version": 1,
+        "entries": [
+          {
+            "resourceId": "fs_11111111111111111111111111111111",
+            "name": "report-a.txt",
+            "kind": "file"
+          },
+          {
+            "resourceId": "fs_22222222222222222222222222222222",
+            "name": "report-b.txt",
+            "kind": "file"
+          }
+        ],
+        "count": 2
+      }
+    }
+  },
+  "actualFailureSource": {
+    "No pude leer el archivo porque el sistema no soporta la búsqueda por ruta absoluta.": {
+      "kind": "failure",
+      "polarity": "failure",
+      "cause": "mission_failed",
+      "stepCount": 0,
+      "steps": [],
+      "reason": {
+        "kind": "operation",
+        "operation": "filesystem.search",
+        "polarity": "failure",
+        "verified": false,
+        "succeeded": false,
+        "error": "absolute_path_search_unsupported"
+      }
+    }
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

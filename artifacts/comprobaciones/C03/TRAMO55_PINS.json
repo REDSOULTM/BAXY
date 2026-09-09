@@ -1,0 +1,14 @@
+{
+  "scope": "C# repair source and consumed diagnostic captures; not complete C03 acceptance",
+  "files": {
+    "src/Baxy.App/MainWindowViewModel.cs": "3f9c1aa9b172cc651271a9556fe36e4a7b3b9022b5d27b70ec2cf92feaf1a71a",
+    "src/Baxy.App/UserMessagePolicy.cs": "d43de02f64d8785a70a37c082a6cbf08962cca37f9d0b8dadfa13ff56be56850",
+    "artifacts/comprobaciones/C03/astra-files55-trace/RESULT.json": "343c57ab455e99157dabbe975c1b7d563ce3bef98c5f19dac241e5e716eabc2a",
+    "artifacts/comprobaciones/C03/astra-files55-trace/PREREG.json": "9de8a2fff013780016872fde4b54d6ade4f865a5bd0b190209f6c9c1f76c0b50",
+    "artifacts/comprobaciones/C03/astra-files55-trace/paired.json": "22cdf9b9918fd419dc591b55cf8b50bc8339661de4337014e8de00a67621fda8",
+    "artifacts/comprobaciones/C03/astra-files55-reason/RESULT.json": "e872be3fac6062a2ece5e915ccbd2f621d17913b1bf62716d8af49e537886620",
+    "artifacts/comprobaciones/C03/astra-files55-reason/PREREG.json": "fb12e87b8bae7e55db1aa1e325f96a43bf4054052fea657ae9ff5ddfe9074436",
+    "artifacts/comprobaciones/C03/astra-files55-reason/paired.json": "d5c77252b90e24fed2428fd25caed82c74df9861e08319b9c8043379ec60e70b",
+    "artifacts/comprobaciones/C03/PRUEBAS_TIPOS_ERROR55.md": "6806deeec5c2f5f86bbd43d6b07ee1572c0f63f99e39d13adb82fd9c70c99f95"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "hypothesis": "Restatement must compare each question span, not declarative answers or separate questions pooled together. Trace297 proves the false rejection of both greeting candidates and Lima first reply296.",
+  "change": "Restrict existing lexical-overlap guard to spans ending in a question mark, respecting inverted question marks and sentence boundaries. Preserve threshold and independent safeguards.",
+  "criteria": "Six diverse valid answer/question controls survive, three prefixed/multiple/question-mark restatements remain rejected, real chat publishes greeting once; all existing owner suites green. Exact raw296 replay before/after and current native three-case check. No storage effects, no claim that parser AskToSave is already fixed.",
+  "baseline": "6 failed,4 passed,925 deselected in3.37s; baseline.log",
+  "inheritance": "Existing seven measured veto-reach V1 controls retained; Carter_v2 LLM_CONTEXT_MEMORY_REPORT.md structural low-information guards contrasted with current false lexical-overlap publication veto. Model/template research remains applicable; this change is deterministic text scope, not model configuration or new prompt."
+}

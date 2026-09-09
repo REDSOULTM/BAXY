@@ -1,0 +1,59 @@
+{
+  "utc": "2026-09-08T15:52:01.106519+00:00",
+  "method": "Eight identical first-native payloads from438: compare its current4B baseline with the existing9B asset at partial ngl14, inherited390. No prompt, data, sampling, token count, roles, validators, source or manifest edits. Current425 cache0/no-mmap retained. No tools offered or effects. Capability/resource diagnostic; not guarded product/UI/voice/fresh acceptance.",
+  "new_evidence": "438 and439/440 reject roles and feedback for the current memory composition defect.390 tested a different responsibility: native AUTO selector with historical identity answers; this does not resolve whether9B can compose memory records accurately. Reuse388 model-specific research and390 measured loading profile; no additional models downloaded. See440 RESULT for strategy change.",
+  "criteria": "All8 semantically useful, literal values/third-party relation preserved, no assistant-name attribution or extra effects. Review all responses and finish reasons. Report extra RAM and time honestly; a pass here only permits integrated comparison, never promotion. Keep3800MiB GPU watchdog and768MiB system free RAM.120s diagnostic timeout does not certify product latency.",
+  "ngl": 14,
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "origin": "exact437 native ES recall",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "actual437-t4",
+      "origin": "exact437 native EN recall",
+      "request": "What name have you saved in private memory?"
+    },
+    {
+      "id": "name-marta",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "compound-name",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "third-person",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombre de mi hermana tienes guardado?"
+    },
+    {
+      "id": "two-records",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombres tienes guardados en tu memoria privada?"
+    },
+    {
+      "id": "memory.enable",
+      "origin": "exact437 completed private result control",
+      "request": "confirm"
+    },
+    {
+      "id": "memory.save",
+      "origin": "exact437 completed private result control",
+      "request": "confirm"
+    }
+  ],
+  "model_sha256": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "llm_source_sha256": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 120
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory-9b441-private"
+}

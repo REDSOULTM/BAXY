@@ -1,0 +1,112 @@
+[
+  {
+    "folder": "astra-layer-ablation-v2-registered",
+    "rows": 72,
+    "result": {
+      "seconds": 102.67,
+      "gpuPeakMiB": 2687.5546875,
+      "ramPeakMiB": 2736.5390625,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-layer-ablation-v2-qwen-base",
+    "rows": 72,
+    "result": {
+      "seconds": 131.11,
+      "gpuPeakMiB": 3499.55859375,
+      "ramPeakMiB": 3419.75390625,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-compositor-ablation-registered",
+    "rows": 72,
+    "result": {
+      "seconds": 58.66,
+      "gpuPeakMiB": 2687.5546875,
+      "ramPeakMiB": 2831.33984375,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-compositor-ablation-qwen-base",
+    "rows": 72,
+    "result": {
+      "seconds": 53.27,
+      "gpuPeakMiB": 3499.55859375,
+      "ramPeakMiB": 3479.18359375,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-layer-wrapper-fixed-registered",
+    "rows": 3,
+    "result": {
+      "seconds": 6.36,
+      "gpuPeakMiB": 2687.5546875,
+      "ramPeakMiB": 2426.45703125,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-layer-wrapper-fixed-qwen-base",
+    "rows": 3,
+    "result": {
+      "seconds": 6.94,
+      "gpuPeakMiB": 3497.55859375,
+      "ramPeakMiB": 2819.10546875,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-presentation-guards-fixed-registered",
+    "rows": 9,
+    "result": {
+      "seconds": 8.84,
+      "gpuPeakMiB": 2687.5546875,
+      "ramPeakMiB": 2504.30078125,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-presentation-guards-fixed-qwen-base",
+    "rows": 9,
+    "result": {
+      "seconds": 6.69,
+      "gpuPeakMiB": 3497.55859375,
+      "ramPeakMiB": 2889.703125,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-unsupported-evidence-qwen-base",
+    "rows": 9,
+    "result": {
+      "seconds": 7.55,
+      "gpuPeakMiB": 3497.55859375,
+      "ramPeakMiB": 2821.1796875,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  },
+  {
+    "folder": "astra-unsupported-cause-qwen-base",
+    "rows": 9,
+    "result": {
+      "seconds": 7.95,
+      "gpuPeakMiB": 3497.55859375,
+      "ramPeakMiB": 2827.82421875,
+      "error": null,
+      "registrationUnchanged": true
+    }
+  }
+]

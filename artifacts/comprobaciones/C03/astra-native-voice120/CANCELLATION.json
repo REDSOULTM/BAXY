@@ -1,0 +1,10 @@
+{
+  "result": "InterruptedError",
+  "observedChild": {
+    "pid": 38440,
+    "created": 1788779162.5291443
+  },
+  "cancelAndJoinSeconds": 0.09399999999732245,
+  "workerStopped": true,
+  "childReaped": true
+}

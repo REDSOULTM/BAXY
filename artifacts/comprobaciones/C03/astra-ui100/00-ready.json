@@ -1,0 +1,16 @@
+{
+  "archivedUtc": "2026-09-07T08:25:49.787Z",
+  "observedUtc": null,
+  "window": {
+    "app": "process:D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
+    "id": 4395546,
+    "title": "BAXY"
+  },
+  "accessibility": {
+    "focused_element": "11 texto Sin título ID: view_9",
+    "tree": "Window: \"BAXY, asistente local\", App: Baxy.exe.\n\t0 ventana BAXY, asistente local Secondary Actions: Raise ID: BaxyMainWindow\n\t\t1 panel BAXY Field, interfaz local ID: HistoricalFieldUi\n\t\t\t2 texto\n\t\t\t\t3 panel\n\t\t\t\t\t4 panel field · gemma4\n\t\t\t\t\t\t5 panel (disabled)\n\t\t\t\t\t\t6 panel (disabled)\n\t\t\t\t\t\t7 región field · gemma4: contenido web\n\t\t\t\t\t\t\t8 región\n\t\t\t\t\t\t\t\t9 región\n\t\t\t\t\t\t\t\t10 región\n\t\t\t\t\t\t\t\t\t11 texto Sin título ID: view_9\n\t\t\t\t\t\t\t\t\t12 región\n\t\t\t\t\t\t\t\t\t\t13 botón Minimizar ID: view_2\n\t\t\t\t\t\t\t\t\t\t14 botón Maximizar ID: view_3\n\t\t\t\t\t\t\t\t\t\t15 botón Cerrar ID: view_7\n\t\t\t\t\t\t\t\t\t16 región\n\t\t\t\t\t\t\t\t\t\t17 región\n\t\t\t\t\t\t\t\t\t\t18 región\n\t\t\t\t\t\t\t\t\t\t\t19 región\n\t\t\t\t\t\t\t\t\t\t\t\t20 región\n\t\t\t\t\t\t\t\t\t\t\t\t\t21 región\n\t\t\t\t\t\t\t\t\t\t22 región\n\t\t\t\t\t\t\t\t23 región\n\nThe focused UI element is 11 texto Sin título ID: view_9."
+  },
+  "screenshotId": "screenshot-0",
+  "width": 1220,
+  "height": 746
+}

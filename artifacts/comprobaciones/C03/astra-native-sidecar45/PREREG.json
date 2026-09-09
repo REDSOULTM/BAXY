@@ -1,0 +1,5 @@
+{
+  "method": "Authenticated core catalog, registered sidecar, voice status/speak/wake, wait40s, cancel and conversational turn, status and shutdown. Adds real mind to voice-only control; no UI or fresh acceptance. Native faulthandler stderr capture.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "scriptSha256": "72a705f49701b9ca416de9d16fb669a4f31fa5986f2efe9f886f8a4adfdfc716"
+}

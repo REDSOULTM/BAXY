@@ -1,0 +1,122 @@
+[
+  {
+    "id": "owner46-seed0",
+    "variant": "zero",
+    "status": "wrong_operation",
+    "reason": "Still repeats audio.volume rather than unmuting."
+  },
+  {
+    "id": "owner46-seed0",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Correct audio.mute state=false with both seeds; new descriptor plus typed interface recovers typo/context."
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "zero",
+    "status": "wrong_operation",
+    "reason": "Still repeats audio.volume rather than unmuting."
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Correct audio.mute state=false with both seeds; new descriptor plus typed interface recovers typo/context."
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "zero",
+    "status": "partial_selection",
+    "reason": "Only audio.volume; requested unmute absent."
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "typed",
+    "status": "failed",
+    "reason": "Spurious incapacity to perform volume and unmute together; seed17 also reverses mute polarity."
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "zero",
+    "status": "partial_selection",
+    "reason": "Only audio.volume; requested unmute absent."
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "typed",
+    "status": "failed",
+    "reason": "Spurious incapacity to perform volume and unmute together; seed17 also reverses mute polarity."
+  },
+  {
+    "id": "clitic-alone",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Correct selection or definition; no arguments/execution proved."
+  },
+  {
+    "id": "clitic-alone",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operations/order/arguments (or definition) retained; no provider execution."
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Correct selection or definition; no arguments/execution proved."
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operations/order/arguments (or definition) retained; no provider execution."
+  },
+  {
+    "id": "unmute-volume",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Correct selection or definition; no arguments/execution proved."
+  },
+  {
+    "id": "unmute-volume",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operations/order/arguments (or definition) retained; no provider execution."
+  },
+  {
+    "id": "negative-unmute",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Correct selection or definition; no arguments/execution proved."
+  },
+  {
+    "id": "negative-unmute",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operations/order/arguments (or definition) retained; no provider execution."
+  },
+  {
+    "id": "word-meaning",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Correct selection or definition; no arguments/execution proved."
+  },
+  {
+    "id": "word-meaning",
+    "variant": "typed",
+    "status": "meaning_correct_voice_failed",
+    "reason": "Definition includes internal function name and state parameter."
+  },
+  {
+    "id": "negative-only",
+    "variant": "zero",
+    "status": "unauthorized_native_proposal",
+    "reason": "Proposes audio.mute despite explicit prohibition. Diagnostic only, no effect executed. Regression versus491."
+  },
+  {
+    "id": "negative-only",
+    "variant": "typed",
+    "status": "no_effect_correct",
+    "reason": "No function call; grammatical defect in prose, native stage not product voice acceptance."
+  }
+]

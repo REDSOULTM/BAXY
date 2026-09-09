@@ -1,0 +1,17 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_an_unidentified_proposal_keeps_the_honest_unsupported_answer ______
+
+    def test_an_unidentified_proposal_keeps_the_honest_unsupported_answer() -> None:
+        llm = _WithheldEffectLlm(identifies=False)
+        result = _withheld_effect_turn(llm)
+    
+        assert result["kind"] == "conversation"
+>       assert result["conversationKind"] == "unsupported"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'conversationKind'
+
+tests\test_turn_policy.py:10453: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_an_unidentified_proposal_keeps_the_honest_unsupported_answer
+1 failed, 833 deselected in 3.25s

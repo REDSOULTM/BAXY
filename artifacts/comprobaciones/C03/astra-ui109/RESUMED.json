@@ -1,0 +1,13 @@
+{
+  "helper": 11140,
+  "app": 37276,
+  "server": 20156,
+  "serverCreateTime": 1788775161.0188248,
+  "psutilVersion": "7.0.0",
+  "startedUtc": "2026-09-07T10:00:49.515260+00:00",
+  "statusAfterSuspend": "stopped",
+  "resumeReason": "requested_after_observation",
+  "statusAfterResume": "running",
+  "finishedUtc": "2026-09-07T10:02:09.671447+00:00",
+  "elapsedSeconds": 80.16
+}

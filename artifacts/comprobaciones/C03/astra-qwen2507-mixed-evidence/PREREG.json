@@ -1,0 +1,31 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T09:17:13.126362+00:00",
+  "hypothesis": "The finite lexical mixed-language guard falsely rejects meaningful code-switching outside its vocabulary. For suspected monolingual replies only, reuse the existing semantic language classifier; keep rejecting genuinely monolingual output and keep fact/polarity/authority checks. Same model, sampling, six controls and budgets as qwen2507-explanation. No model promotion.",
+  "expected": "Six useful faithful replies; no unnecessary clarification, invented words, or loss of requested mixed language.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "bb36a0d99f7194159ada8309e488682687fba55493d0c991424b374691e9b695",
+    "src/baxy_mind/__main__.py": "f40cbdf1010223b1e8d2b97cc78f28a529036e1a4afd8b7406fd661e0fc145ba",
+    "src/baxy_mind/request_reading.py": "87e23ca4adeb5749dd8a8f48e62e125bdf61aa6b455a06efcf8a1b662f776c64",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "a3e3f36c3e01f82db6d7b6bb8bfd7e1afa6fde15c7278f36f78738d5ff6c42f5",
+    "artifacts/comprobaciones/C03/astra-qwen2507-mixed-evidence.turns.jsonl": "3aeb4bfb01febfe7a5e37154836b4c333faedf1cdadba6b04026b293269b89e9",
+    "artifacts/comprobaciones/C03/astra-qwen2507-mixed-evidence/profile/sitecustomize.py": "b1b15333a98b5fcddd77e6a556d9130b4d377e53656668dbf43c978a8b67e15c",
+    "scratchpad/c03-qwen2507-mixed-evidence.py": "5926a50719475625bafddc7e28b66e8948bad7823af8c770521ed6f1f4856afc"
+  }
+}

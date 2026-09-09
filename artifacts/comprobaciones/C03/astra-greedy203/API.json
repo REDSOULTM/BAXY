@@ -1,0 +1,36 @@
+{
+  "wrapperMethods": [
+    "config",
+    "create_stream",
+    "decode_stream",
+    "decode_streams",
+    "from_cohere_transcribe",
+    "from_dolphin_ctc",
+    "from_fire_red_asr",
+    "from_fire_red_asr_ctc",
+    "from_funasr_nano",
+    "from_medasr_ctc",
+    "from_moonshine",
+    "from_moonshine_v2",
+    "from_nemo_canary",
+    "from_nemo_ctc",
+    "from_omnilingual_asr_ctc",
+    "from_paraformer",
+    "from_qwen3_asr",
+    "from_sense_voice",
+    "from_tdnn_ctc",
+    "from_telespeech_ctc",
+    "from_transducer",
+    "from_wenet_ctc",
+    "from_whisper",
+    "from_zipformer_ctc",
+    "recognizer"
+  ],
+  "nativeMethods": [
+    "create_stream",
+    "decode_stream",
+    "decode_streams",
+    "set_config"
+  ],
+  "sherpaVersion": "1.13.4"
+}

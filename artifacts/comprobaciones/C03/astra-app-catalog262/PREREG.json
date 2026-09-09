@@ -1,0 +1,9 @@
+{
+  "sourceHashes": {
+    "provider": "1A1113CE8C123A9610B4F730D36F054AF6A5195B3ECBD844236E1ADF546C6658",
+    "tests": "86D0448D4DA7D142A260B2F6B52D91E92DBED3DC7776E0E3ADD0CB130F077BD0"
+  },
+  "evidence": "astra-retrieval261; C03-retrieval261-private/START_APPS_STEAM.json",
+  "method": "One change: enrich duplicate Start entries with Shell target metadata; discard a missing local executable alias only when one different identity has a verified existing target and every other candidate is verified missing. Unknown metadata, inaccessible targets, two existing targets and genuine ambiguity remain unresolved. No Steam exceptions or shortcut edits. Owner tests then current Core hello and real product controls.",
+  "utc": "2026-09-07T22:15:19.5417011Z"
+}

@@ -1,0 +1,148 @@
+{
+  "method": "Preserved physical183; registered Parakeet CPU6 beam8, no hints. All four intervals, microphone and loopback, raw and peak0.8 normalization. Mono mean then scipy resample_poly48000->16000 for loopback.",
+  "limitation": "183 speaking state has monotonic only; map with wall-minus-monotonic measured now on same boot. Assumes no intervening wall clock jump. Use one second margin each side and preserve boundaries/energy. Recognition and normalization are diagnostic, not proof of human input or complete fidelity.",
+  "clockSamples": [
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    },
+    {
+      "monotonicBefore": 89253.015,
+      "wall": 1788794396.2336893,
+      "monotonicAfter": 89253.015,
+      "offset": 1788705143.2186892
+    }
+  ],
+  "offsetSeconds": 1788705143.2186892,
+  "inputs": [
+    {
+      "name": "microphone",
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar183-private\\microphone.wav",
+      "sha256": "feddf53d2257f755dbad0becc3d755ec45a5eaf9f49cfc30815315447a325ab1",
+      "rate": 16000,
+      "channels": 1,
+      "resampledSamples": 1291264
+    },
+    {
+      "name": "loopback",
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar183-private\\loopback.wav",
+      "sha256": "26ffececaab8d1642ac02d8153d3cadc45e6cb2f810d756197eedabc6d884c19",
+      "rate": 48000,
+      "channels": 2,
+      "resampledSamples": 1292630
+    }
+  ],
+  "windows": [
+    {
+      "output": 1,
+      "channel": "microphone",
+      "samples": [
+        611386,
+        720378
+      ],
+      "speakingSeconds": 4.812000000005355
+    },
+    {
+      "output": 1,
+      "channel": "loopback",
+      "samples": [
+        612538,
+        721530
+      ],
+      "speakingSeconds": 4.812000000005355
+    },
+    {
+      "output": 2,
+      "channel": "microphone",
+      "samples": [
+        787386,
+        843386
+      ],
+      "speakingSeconds": 1.5
+    },
+    {
+      "output": 2,
+      "channel": "loopback",
+      "samples": [
+        788538,
+        844538
+      ],
+      "speakingSeconds": 1.5
+    },
+    {
+      "output": 3,
+      "channel": "microphone",
+      "samples": [
+        954634,
+        1030122
+      ],
+      "speakingSeconds": 2.7180000000080327
+    },
+    {
+      "output": 3,
+      "channel": "loopback",
+      "samples": [
+        955786,
+        1031274
+      ],
+      "speakingSeconds": 2.7180000000080327
+    },
+    {
+      "output": 4,
+      "channel": "microphone",
+      "samples": [
+        1107386,
+        1187882
+      ],
+      "speakingSeconds": 3.0310000000026776
+    },
+    {
+      "output": 4,
+      "channel": "loopback",
+      "samples": [
+        1108538,
+        1189034
+      ],
+      "speakingSeconds": 3.0310000000026776
+    }
+  ],
+  "runtimeManifestSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

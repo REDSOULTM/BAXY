@@ -1,0 +1,73 @@
+{
+  "utc": "2026-09-08T16:04:39.096911+00:00",
+  "method": "Eleven identical first-native payloads:8baseline438 plus3protected/mixed baseline443. Only GGUF changes from444 published adaptation to the existing verified standard Gemma E2B base asset; no adapter. Native model template, unchanged inputs/sampler/output allowance and ngl99/KVq8_0/cache0/no-mmap. No separate adapter, source edits, offered tools/effects or manifest change. Composition diagnostic, not integrated/fresh acceptance.",
+  "new_evidence": "444 published Gemma improves8/8 basic cases but emits phantom tools for redactedES and invents redactedEN deletion. Ablate adaptation using its existing standard base. Qwen4B/9B both fail attribution with current memory data; feedback and representation probes rejected438–443. Existing Gemma comparison covered other responsibilities and older prompts, so preserve its rejection while measuring this new target. Reuse its exact verified published GGUF/hash; official family card/system support rechecked2026-09-08 at https://huggingface.co/google/gemma-4-E2B-it. Card does not certify this published checkpoint.",
+  "criteria": "All11 useful with correct subject/values/redaction, no extra effects or false access denial; every finish reason reviewed. All8 original controls remain explicit and three protected cases cannot be omitted. GPU3800MiB/freeRAM768MiB watchdog retained; resource absence blocks success. No promotion on native alone: guarded composition and product/regression/installed profile required.",
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "origin": "exact437 native ES recall",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "actual437-t4",
+      "origin": "exact437 native EN recall",
+      "request": "What name have you saved in private memory?"
+    },
+    {
+      "id": "name-marta",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "compound-name",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "third-person",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombre de mi hermana tienes guardado?"
+    },
+    {
+      "id": "two-records",
+      "origin": "synthetic current recall payload; literal contract updated consistently",
+      "request": "¿Qué nombres tienes guardados en tu memoria privada?"
+    },
+    {
+      "id": "memory.enable",
+      "origin": "exact437 completed private result control",
+      "request": "confirm"
+    },
+    {
+      "id": "memory.save",
+      "origin": "exact437 completed private result control",
+      "request": "confirm"
+    },
+    {
+      "id": "redacted-es",
+      "origin": "exact443 baseline native protected/mixed record",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    },
+    {
+      "id": "redacted-en",
+      "origin": "exact443 baseline native protected/mixed record",
+      "request": "What is stored in private memory?"
+    },
+    {
+      "id": "mixed-es",
+      "origin": "exact443 baseline native protected/mixed record",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    }
+  ],
+  "model_sha256": "740185b21d22ceb83a11c3aa62ad5842ef32c70f6096d756bbee85a1e4ec34b8",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "llm_source_sha256": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 40
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory-gemma-base445-private"
+}

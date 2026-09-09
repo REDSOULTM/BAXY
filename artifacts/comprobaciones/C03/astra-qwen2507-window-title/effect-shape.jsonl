@@ -1,0 +1,4 @@
+{"requestId": "7", "user": "Mensaje actual:\ncancelar", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "11", "user": "Mensaje actual:\ncierra la ventana titulada Ventana C03 de prueba", "response": {"role": "assistant", "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"}}
+{"requestId": "15", "user": "Mensaje actual:\nconfirmar", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "22", "user": "Mensaje actual:\nWhat is on my to do list?", "response": {"role": "assistant", "content": "{\"request_type\":\"external_read\",\"effect_count\":\"one\"}"}}

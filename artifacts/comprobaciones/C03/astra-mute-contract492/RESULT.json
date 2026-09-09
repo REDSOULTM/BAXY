@@ -1,0 +1,19 @@
+{
+  "session": 94004,
+  "exit": 0,
+  "native_calls": 20,
+  "errors": 0,
+  "context_overflows": 0,
+  "length_finishes": 0,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 782.8046875,
+    "seconds": 19.89,
+    "manifest_unchanged": true
+  },
+  "adopted": false,
+  "findings": "Typed+polarity descriptor fixes owner46 both seeds but owner51 regresses to false incapacity; zero interface still loses effects and now proposes a prohibited mute. No product descriptor or interface change adopted.",
+  "next": "Change candidate strategy493: published Gemma4E2B documented thinking profile and measured lazy-on, same consumed native controls/contract semantics; no prompt/temperature sweep."
+}

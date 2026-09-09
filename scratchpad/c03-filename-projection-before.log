@@ -1,0 +1,53 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error PublicProjectionDistinguishesDocumentNamesFromCredentialTokens("Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio",False) [124 ms]
+  Mensaje de error:
+     Assert.That(NaturalMemoryRequestParser.ContainsSensitiveMaterial(text), Is.EqualTo(expectedSensitive))
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(String text, Boolean expectedSensitive) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 23
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(String text, Boolean expectedSensitive) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 23
+
+
+  Con error PublicProjectionDistinguishesDocumentNamesFromCredentialTokens("open Quarterly-customer-report-20260830-final.pdf",False) [4 ms]
+  Mensaje de error:
+     Assert.That(NaturalMemoryRequestParser.ContainsSensitiveMaterial(text), Is.EqualTo(expectedSensitive))
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(String text, Boolean expectedSensitive) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 23
+   at InvokeStub_NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(String text, Boolean expectedSensitive) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 23
+   at InvokeStub_NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(Object, Span`1)
+
+
+  Con error PublicProjectionDistinguishesDocumentNamesFromCredentialTokens("move configuration-production-20260830-backup.json",False) [< 1 ms]
+  Mensaje de error:
+     Assert.That(NaturalMemoryRequestParser.ContainsSensitiveMaterial(text), Is.EqualTo(expectedSensitive))
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(String text, Boolean expectedSensitive) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 23
+   at InvokeStub_NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(String text, Boolean expectedSensitive) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 23
+   at InvokeStub_NaturalMemoryRequestParserTests.PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(Object, Span`1)
+
+
+
+Con error! - Con error:     3, Superado:     4, Omitido:     0, Total:     7, Duración: 132 ms - Baxy.Integration.Tests.dll (net10.0)

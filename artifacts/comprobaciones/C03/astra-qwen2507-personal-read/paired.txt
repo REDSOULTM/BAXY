@@ -1,0 +1,23 @@
+n=21 published=21 other=0
+
+001	t1	published_final	¿Qué hora es?	Son las 09:48.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 09:48. El audio está muteado y el nivel de volumen es 100.
+003	t3	published_final	What time is it?	It's 09:48.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 09:48. The volume is at 100. The audio is muted.
+005	t5	published_final	Dime la hora, please, en spanglish	It's 9:48, man.
+006	t6	published_final	What time is it y cómo está el audio?	Es 09:48, el audio está muteado con el nivel en 100.
+007	t7	published_final	Hey, buenas	Hey, buenos días, ¿cómo va? ¿Listo para dar el pistoletazo de salida? 😎
+008	t8	published_final	Explain encryption, pero en simple	Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como si escribieras un mensaje en un libro y lo guardaras en un cajón con un candado. Sin la llave, nadie puede abrirlo. Así se protege el dato de que alguien lo vea o lo use sin permiso.
+009	t9	published_final	responde en spanglish: qué es una copia de seguridad	Una copia de seguridad es como tener un backup del archivo o datos en otro lugar, para que si se pierden o se borran, los puedas recuperar fácilmente. Es como tener una copia del libro en otra casa, en caso de que se quiera perder el original.
+010	t10	published_final	Explain gravity, pero sin tecnicismos	Gravity es como si todo lo que está cerca de ti, como la Tierra, tuviera un poder para tirar todo lo que está a su alrededor hacia abajo. Es por eso que las cosas caen cuando las soltas, y por eso el planeta se mantiene en su lugar.
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima
+013	t13	published_final	Explain photosynthesis in two sentences.	Photosynthesis is how plants use sunlight to turn carbon dioxide and water into food (sugar) and oxygen. It's like the plant is cooking with the sun's energy to grow and give us fresh air.
+014	t14	published_final	Explícame por qué el hielo flota.	El hielo flota porque es menos denso que el agua líquida. Cuando el agua se congela, sus moléculas se alejan unas de otras y ocupan más espacio, así que el hielo pesa menos por unidad de volumen y flota.
+015	t15	published_final	¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.	Un archivo es un archivo de datos, como un documento o imagen, mientras que una carpeta es como un contenedor que organiza y guarda varios archivos juntos.
+016	t16	published_final	What is on my to do list?	I don't have access to your to-do list.
+017	t17	published_final	cierra la ventana del proceso C03WindowFixture	¿Quieres confirmar que cierro la ventana del proceso C03WindowFixture? Elige: confirmar o cancelar.
+018	t18	published_final	cancelar	Se canceló la ejecución y se confirmó el estado final. El proceso se detuvo en el paso correspondiente, sin realizar cambios en el sistema.
+019	t19	published_final	cierra la ventana del proceso C03WindowFixture	¿Quieres confirmar que se cierre la ventana del proceso C03WindowFixture? Elige: confirmar o cancelar.
+020	t20	published_final	confirmar	Se confirmó el estado final: se resolvió la ventana maximizada de C03WindowFixture y se cerró la aplicación.
+021	t21	published_final	What time is it?	It's 09:49.

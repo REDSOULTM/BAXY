@@ -1,0 +1,18 @@
+{
+  "session": 15347,
+  "exit": 0,
+  "useful": 18,
+  "total": 20,
+  "bindings_correct": 11,
+  "bindings": 11,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1778.3203125,
+    "seconds": 48.921,
+    "manifest_unchanged": true
+  },
+  "source": "effect_intent503,__main__506,llm506",
+  "limits": "Development mind only; no UI, provider effects, audio, voice or acceptance."
+}

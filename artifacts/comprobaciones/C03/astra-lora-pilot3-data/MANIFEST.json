@@ -1,0 +1,12 @@
+{
+  "kind": "development-format-coverage-pilot-not-acceptance",
+  "trainCount": 132,
+  "holdoutCount": 30,
+  "hypothesis": "All 28 prior mixed-language training targets have one sentence and no explicit sentence-count request. Add 48 examples following two-sentence requests, including mixed history, without changing model, loss, hyperparameters, or holdout answers.",
+  "inheritance": "Reuse all 84 reviewed pilot2 examples, their input construction and response-only training inherited from the Gemma project. Historical train_v3 is not bulk inherited: inspected examples contain identity substitution and obsolete privacy rules.",
+  "criterion": "Compare same 27 prior cases and 12 new frozen format holdouts with v2. Read each answer; format gains must not trade away facts, language or usefulness. No scale sweep.",
+  "files": {
+    "TRAIN.jsonl": "bb1858124b9d8cc8060002b997780f18843f6bf9e9a3a67475242a39fce7951d",
+    "HOLDOUT.jsonl": "77a08029c8ca8828dec82824d69964ce20cded59725a60c5334d305571d3e1b5"
+  }
+}

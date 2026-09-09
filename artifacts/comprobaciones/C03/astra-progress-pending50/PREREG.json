@@ -1,0 +1,11 @@
+{
+  "texts": [
+    "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "Dime la hora y el estado del audio.",
+    "Tell me the time and the volume.",
+    "What time is it y cómo está el audio?",
+    "Dime la hora y revisa la CPU"
+  ],
+  "method": "Five direct native completions from exact first payloads captured by progress-purpose50. Move the literal original request from its outer prose label into situation.pendingRequest, an existing representation used for unfinished actions. Keep kind=status, state=in progress, all system messages, language instruction, model/template/sampler/budget unchanged. No validator/retry. No invented observations or provider calls. This tests scope of the request as pending data, not another status/progress tag or new instruction. No promotion or human/UI/audio acceptance.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

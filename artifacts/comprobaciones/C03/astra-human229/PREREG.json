@@ -1,0 +1,67 @@
+{
+  "method": "Eight exact213 full cleaned timelines: four195 humans near_speex with speakingFalse and raw_speex with fixed212 scheduled speaking mask. Baseline225 vs source228 through their actual capture segmentation, fresh-reset Silero and actual guard on reconstructed213 delayed raw/reference pairs. Same installed baxy.2 model shared for native decoding; no hints, normalization, threshold or gain changes.",
+  "criterion": "Compare every segment/sample range/transcription/cancellation. Preserve human content; publish any differences and errors instead of counting mere execution as semantic passes.",
+  "limitation": "Constructed human+physical echo with fixed playback mask, not simultaneous physical human or actual counterfactual speaker cancellation. ADC mask approximate at playback boundaries as212.",
+  "scriptSha256": "2ed37e071c46b52aa770e5521ecf997857634dc29258d27fc384d8c5675acfd1",
+  "baselineSha256": "f7b8e662f7f965390ecac32cd82021b918cba628682457b7c8ed4c8c3c4fb6ad",
+  "currentSha256": "0bbc8e85a4101efc6504b1c9310b92c7b410c0e4e47647032868d5750e958097",
+  "rawCaptureSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+  "inputs": [
+    {
+      "human": 0,
+      "condition": "near_speex",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "sha256": "b45605aa5933c22135fe2a641259a928874c0cb36f8a879adf1356646ff4403f"
+    },
+    {
+      "human": 0,
+      "condition": "raw_speex",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "sha256": "b5dc49152ae3c977145d6247dbff072e4734b47d3a9d9f90300bac3df3d75ad1"
+    },
+    {
+      "human": 1,
+      "condition": "near_speex",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "sha256": "47e58ef0b14f9e7785dc7f687b5bf28b57f81050361a3b130e8f739429869cf2"
+    },
+    {
+      "human": 1,
+      "condition": "raw_speex",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "sha256": "0567ffba87a2ddc07791163a582ed142d447d932e4f5be94bc35e23aee4bd35d"
+    },
+    {
+      "human": 2,
+      "condition": "near_speex",
+      "gain": 2.685755280268361,
+      "onset": 59109,
+      "sha256": "b7e1e5b1c3844b502b357e47bed056573665cbf78c3a2cc1144a8159ee7be75f"
+    },
+    {
+      "human": 2,
+      "condition": "raw_speex",
+      "gain": 2.685755280268361,
+      "onset": 59109,
+      "sha256": "1b10c18bb9d3c21a778cba5b2b18697e2edd470d6790142e106ec72de07c3076"
+    },
+    {
+      "human": 3,
+      "condition": "near_speex",
+      "gain": 0.11946231772179287,
+      "onset": 59109,
+      "sha256": "c8f82e83ea174c3a95355620a3eab5a9de8403f7d63cb216b07be0add4df056b"
+    },
+    {
+      "human": 3,
+      "condition": "raw_speex",
+      "gain": 0.11946231772179287,
+      "onset": 59109,
+      "sha256": "9b6de654d62e20b440a55c9ba61359da85b62deef350a76a9b861878cc2c4037"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "cases": 6,
+  "checks": "PCM parity, reference alignment, ownership/closed/invalid input all pass; no runtime promotion or source changes."
+}

@@ -1,0 +1,14 @@
+{
+  "scope": "Unpromoted model72 and native history representation73; no acceptance claim",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_PRODUCTO_Y_HECHOS72_73.md": "4dbc785808a1cc1bc4b072f6738561710489a3696ba1d7b8e986ef1a846d0583",
+    "artifacts/comprobaciones/C03/astra-files72-qwen35/PREREG.json": "9dab5263d93e95d367c27f15583a140c8c79d3884888f1e2a442e318e46426b8",
+    "artifacts/comprobaciones/C03/astra-files72-qwen35/RESULT.json": "6bb33f257b067bcf6c6a8b5537ebcf4672d1558a092daf876c8fbafa6832fb15",
+    "artifacts/comprobaciones/C03/astra-files72-qwen35/paired.json": "6996ed98ee2b73455b3c448788c6642e2eff068c867b523b85fe673ca485df1e",
+    "artifacts/comprobaciones/C03/astra-files72-qwen35/wire-29372.jsonl": "d27b982e96e5c4a84d26d5dffe21f81418a9649cfef4025e22cfbace75a5881d",
+    "artifacts/comprobaciones/C03/astra-files72-qwen35/compose-audit.jsonl": "7f85fe287a4913e1711b695028c58910252ee3e7ee3a3f8308f40af3d1867152",
+    "artifacts/comprobaciones/C03/astra-selector-facts73/PREREG.json": "5dd2982ea7a93a669e177d539fd059bff9e7abe5657accf24f29091c889a3bfc",
+    "artifacts/comprobaciones/C03/astra-selector-facts73/RESULT.json": "220b02218962251603b9324ed4f29518e2fe4f07f6ba5048077e8e278d89f9b5",
+    "artifacts/comprobaciones/C03/astra-selector-facts73/posts.jsonl": "861ba1f116dcd2965707617fbae367e9deac553349d22f76ef5adf166d8e3ee4"
+  }
+}

@@ -1,0 +1,173 @@
+.......................FFFFFF........................................... [ 55%]
+.........................................................                [100%]
+================================== FAILURES ===================================
+__ test_audio_projection_names_state_without_changing_raw_evidence[True-es] ___
+
+language = 'es', muted = True
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("muted", [True, False])
+    def test_audio_projection_names_state_without_changing_raw_evidence(language, muted) -> None:
+        from copy import deepcopy
+    
+        situation = {"kind": "operation", "operation": "audio.status",
+                     "polarity": "success", "observed": {"state": {
+                         "muted": muted, "volumePercent": 37}}}
+        original = deepcopy(situation)
+        payload = llm._compose_situation_payload(situation, language)
+        assert payload["seen"] == {"muteState": "muted" if muted else "unmuted", "level": 37}
+        assert situation == original
+        faithful = "The speakers are muted." if muted else "The audio is unmuted."
+        reversed_text = "The audio is unmuted." if muted else "The speakers are muted."
+        # The existing validator still reads the provider's original boolean.
+>       assert llm.compose_visible_defect(reversed_text, "status", "audio status",
+                                          {"situation": situation}) == "reversed_mute"
+E       AssertionError: assert 'wrong_language' == 'reversed_mute'
+E         
+E         - reversed_mute
+E         + wrong_language
+
+tests\test_c03_request_preservation.py:115: AssertionError
+__ test_audio_projection_names_state_without_changing_raw_evidence[True-en] ___
+
+language = 'en', muted = True
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("muted", [True, False])
+    def test_audio_projection_names_state_without_changing_raw_evidence(language, muted) -> None:
+        from copy import deepcopy
+    
+        situation = {"kind": "operation", "operation": "audio.status",
+                     "polarity": "success", "observed": {"state": {
+                         "muted": muted, "volumePercent": 37}}}
+        original = deepcopy(situation)
+        payload = llm._compose_situation_payload(situation, language)
+        assert payload["seen"] == {"muteState": "muted" if muted else "unmuted", "level": 37}
+        assert situation == original
+        faithful = "The speakers are muted." if muted else "The audio is unmuted."
+        reversed_text = "The audio is unmuted." if muted else "The speakers are muted."
+        # The existing validator still reads the provider's original boolean.
+>       assert llm.compose_visible_defect(reversed_text, "status", "audio status",
+                                          {"situation": situation}) == "reversed_mute"
+E       AssertionError: assert 'wrong_language' == 'reversed_mute'
+E         
+E         - reversed_mute
+E         + wrong_language
+
+tests\test_c03_request_preservation.py:115: AssertionError
+_ test_audio_projection_names_state_without_changing_raw_evidence[True-mixed] _
+
+language = 'mixed', muted = True
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("muted", [True, False])
+    def test_audio_projection_names_state_without_changing_raw_evidence(language, muted) -> None:
+        from copy import deepcopy
+    
+        situation = {"kind": "operation", "operation": "audio.status",
+                     "polarity": "success", "observed": {"state": {
+                         "muted": muted, "volumePercent": 37}}}
+        original = deepcopy(situation)
+        payload = llm._compose_situation_payload(situation, language)
+        assert payload["seen"] == {"muteState": "muted" if muted else "unmuted", "level": 37}
+        assert situation == original
+        faithful = "The speakers are muted." if muted else "The audio is unmuted."
+        reversed_text = "The audio is unmuted." if muted else "The speakers are muted."
+        # The existing validator still reads the provider's original boolean.
+>       assert llm.compose_visible_defect(reversed_text, "status", "audio status",
+                                          {"situation": situation}) == "reversed_mute"
+E       AssertionError: assert 'wrong_language' == 'reversed_mute'
+E         
+E         - reversed_mute
+E         + wrong_language
+
+tests\test_c03_request_preservation.py:115: AssertionError
+__ test_audio_projection_names_state_without_changing_raw_evidence[False-es] __
+
+language = 'es', muted = False
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("muted", [True, False])
+    def test_audio_projection_names_state_without_changing_raw_evidence(language, muted) -> None:
+        from copy import deepcopy
+    
+        situation = {"kind": "operation", "operation": "audio.status",
+                     "polarity": "success", "observed": {"state": {
+                         "muted": muted, "volumePercent": 37}}}
+        original = deepcopy(situation)
+        payload = llm._compose_situation_payload(situation, language)
+        assert payload["seen"] == {"muteState": "muted" if muted else "unmuted", "level": 37}
+        assert situation == original
+        faithful = "The speakers are muted." if muted else "The audio is unmuted."
+        reversed_text = "The audio is unmuted." if muted else "The speakers are muted."
+        # The existing validator still reads the provider's original boolean.
+>       assert llm.compose_visible_defect(reversed_text, "status", "audio status",
+                                          {"situation": situation}) == "reversed_mute"
+E       AssertionError: assert 'wrong_language' == 'reversed_mute'
+E         
+E         - reversed_mute
+E         + wrong_language
+
+tests\test_c03_request_preservation.py:115: AssertionError
+__ test_audio_projection_names_state_without_changing_raw_evidence[False-en] __
+
+language = 'en', muted = False
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("muted", [True, False])
+    def test_audio_projection_names_state_without_changing_raw_evidence(language, muted) -> None:
+        from copy import deepcopy
+    
+        situation = {"kind": "operation", "operation": "audio.status",
+                     "polarity": "success", "observed": {"state": {
+                         "muted": muted, "volumePercent": 37}}}
+        original = deepcopy(situation)
+        payload = llm._compose_situation_payload(situation, language)
+        assert payload["seen"] == {"muteState": "muted" if muted else "unmuted", "level": 37}
+        assert situation == original
+        faithful = "The speakers are muted." if muted else "The audio is unmuted."
+        reversed_text = "The audio is unmuted." if muted else "The speakers are muted."
+        # The existing validator still reads the provider's original boolean.
+>       assert llm.compose_visible_defect(reversed_text, "status", "audio status",
+                                          {"situation": situation}) == "reversed_mute"
+E       AssertionError: assert 'wrong_language' == 'reversed_mute'
+E         
+E         - reversed_mute
+E         + wrong_language
+
+tests\test_c03_request_preservation.py:115: AssertionError
+_ test_audio_projection_names_state_without_changing_raw_evidence[False-mixed] _
+
+language = 'mixed', muted = False
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    @pytest.mark.parametrize("muted", [True, False])
+    def test_audio_projection_names_state_without_changing_raw_evidence(language, muted) -> None:
+        from copy import deepcopy
+    
+        situation = {"kind": "operation", "operation": "audio.status",
+                     "polarity": "success", "observed": {"state": {
+                         "muted": muted, "volumePercent": 37}}}
+        original = deepcopy(situation)
+        payload = llm._compose_situation_payload(situation, language)
+        assert payload["seen"] == {"muteState": "muted" if muted else "unmuted", "level": 37}
+        assert situation == original
+        faithful = "The speakers are muted." if muted else "The audio is unmuted."
+        reversed_text = "The audio is unmuted." if muted else "The speakers are muted."
+        # The existing validator still reads the provider's original boolean.
+>       assert llm.compose_visible_defect(reversed_text, "status", "audio status",
+                                          {"situation": situation}) == "reversed_mute"
+E       AssertionError: assert 'wrong_language' == 'reversed_mute'
+E         
+E         - reversed_mute
+E         + wrong_language
+
+tests\test_c03_request_preservation.py:115: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_audio_projection_names_state_without_changing_raw_evidence[True-es]
+FAILED tests/test_c03_request_preservation.py::test_audio_projection_names_state_without_changing_raw_evidence[True-en]
+FAILED tests/test_c03_request_preservation.py::test_audio_projection_names_state_without_changing_raw_evidence[True-mixed]
+FAILED tests/test_c03_request_preservation.py::test_audio_projection_names_state_without_changing_raw_evidence[False-es]
+FAILED tests/test_c03_request_preservation.py::test_audio_projection_names_state_without_changing_raw_evidence[False-en]
+FAILED tests/test_c03_request_preservation.py::test_audio_projection_names_state_without_changing_raw_evidence[False-mixed]
+6 failed, 123 passed in 2.05s

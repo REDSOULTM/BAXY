@@ -1,0 +1,6 @@
+{"phase": "load", "inputTokens": 274, "answerTokens": 16}
+W0906 13:06:15.936000 13676 torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
+{"step": 1, "loss": 5.180698871612549, "gradNorm": 7.727208614349365, "seconds": 1.968, "torchReservedMiB": 2918.0, "gpuPeakMiB": 3039.53515625}
+{"step": 2, "loss": 4.803863525390625, "gradNorm": 7.536622047424316, "seconds": 1.032, "torchReservedMiB": 2918.0, "gpuPeakMiB": 3067.53515625}
+{"step": 3, "loss": 3.9490437507629395, "gradNorm": 7.3264241218566895, "seconds": 1.031, "torchReservedMiB": 2918.0, "gpuPeakMiB": 3067.53515625}
+{"status": "steps_completed", "steps": [{"step": 1, "loss": 5.180698871612549, "gradNorm": 7.727208614349365, "seconds": 1.968, "torchReservedMiB": 2918.0, "gpuPeakMiB": 3039.53515625}, {"step": 2, "loss": 4.803863525390625, "gradNorm": 7.536622047424316, "seconds": 1.032, "torchReservedMiB": 2918.0, "gpuPeakMiB": 3067.53515625}, {"step": 3, "loss": 3.9490437507629395, "gradNorm": 7.3264241218566895, "seconds": 1.031, "torchReservedMiB": 2918.0, "gpuPeakMiB": 3067.53515625}], "inputTokens": 274, "answerTokens": 16, "trainableParameters": 2949120, "torchPeakMiB": 2918.0, "elapsedSeconds": 32.59, "gpuPeakMiB": 3067.53515625, "ramPeakMiB": 4619.1640625, "telemetryAvailable": true, "viable": true}

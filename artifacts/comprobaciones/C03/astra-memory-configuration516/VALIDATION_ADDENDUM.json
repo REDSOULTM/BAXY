@@ -1,0 +1,13 @@
+{
+  "first_owners": {
+    "passed": 1961,
+    "failed": 1,
+    "skips": 0,
+    "duration": "4 m 1 s",
+    "session": 77040,
+    "exit": 1
+  },
+  "failure": "ExportCreatesInspectableSecretFreeJsonAndReplaysTheSameFile expects Spanish substring Documentos/BAXY inside raw JSON. Current typed export projection and MemoryAppFlowTests require Documents/BAXY. Not produced by configuration grammar; no export source edited in516.",
+  "repair": "Replace obsolete substring assertion with parsed typed destination, operation, record count, integrity and sync facts; retain actual file path, hash, replay and all canary secrecy assertions. No product behavior or threshold changed.",
+  "before_sha256": "bd1e2a4b57e28d07c31d1d6280d9730e2847623b86a6bd19637f3c1c79cedb01"
+}

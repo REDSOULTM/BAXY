@@ -1,0 +1,11 @@
+{
+  "scope": "Unsolved empty-search cause; recovery demonstrated; source81 unchanged",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_BUSQUEDA_VACIA83.md": "177c68028a6c05e50785b33cd916e5f46aa85858134c812f965a59a2dfa97a56",
+    "artifacts/comprobaciones/C03/astra-files83-empty/PREREG.json": "f4307c3090130ac38b3525d820d770103c382f36866218468e1298e7940d3146",
+    "artifacts/comprobaciones/C03/astra-files83-empty/RESULT.json": "ac381e810493d4a00448e86b54300fbf8f4a4ea4dab9f487301d8c4f3f500434",
+    "artifacts/comprobaciones/C03/astra-files83-empty/paired.json": "b989c2e6e4001cac856c2edc177a690374b9968a694927cb2255385b9880cfea",
+    "artifacts/comprobaciones/C03/astra-files83-empty/compose-audit.jsonl": "09763085e04a834e5ab4ad450d37bd7ae3c099787b57159908154cccbf3e6d50",
+    "artifacts/comprobaciones/C03/astra-files83-empty/turn-audit.jsonl": "fdc7d46e21d42928f7c0ac5ee066dfd0a7262604a2c3214be19307671478f642"
+  }
+}

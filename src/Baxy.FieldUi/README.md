@@ -11,7 +11,7 @@ La arquitectura completa está en
 ADR-0008 restauró literalmente la interfaz histórica solicitada por el usuario.
 La procedencia exacta está en [ORIGIN.md](ORIGIN.md):
 
-- `src/` permite inspeccionar y validar la presentación histórica intacta;
+- `src/` conserva la presentación histórica con las reaperturas documentadas en ADR-0008;
 - `dist/` contiene los tres blobs que carga el producto;
 - ambos tienen tests y hashes de procedencia y del sello vigente;
 - el `dist/` versionado es una excepción deliberada a la regla de outputs

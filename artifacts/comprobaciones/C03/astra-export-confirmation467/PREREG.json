@@ -1,0 +1,162 @@
+{
+  "utc": "2026-09-08T17:42:51.458456+00:00",
+  "method": "Source466 vs465: only projection preserves existing destination and mayRedirectOrSync for confirmation. Same documented Gemma profiles, original six prepared fixtures; execute only export at all5profiles and actual enableT0 as unchanged control (6compositions total). Existing first-enable offline equality464 still passes. No repeated other four cases because their payload fields are unchanged and owner tests cover projection. Full composer/guards, no prompt edits. Expect model can now name observed export destination and sync risk; result may still fail semantically, report individually. Source466 owner1404pass/0skips and Fast3.66s already passed.",
+  "criteria": "Export must explain pending export to Documents/BAXY and possible redirection/sync, both choices and no success claim; control identical. Count all fixed profiles/seeds, not best-of. No global candidate promotion or fresh acceptance.",
+  "profiles": [
+    {
+      "id": "current-greedy",
+      "sampling": {
+        "temperature": 0.0
+      },
+      "thinking": false,
+      "max_tokens": 256
+    },
+    {
+      "id": "documented-thinking-False-seed-0",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      },
+      "thinking": false,
+      "max_tokens": 1024
+    },
+    {
+      "id": "documented-thinking-False-seed-17",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      },
+      "thinking": false,
+      "max_tokens": 1024
+    },
+    {
+      "id": "documented-thinking-True-seed-0",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      },
+      "thinking": true,
+      "max_tokens": 3072
+    },
+    {
+      "id": "documented-thinking-True-seed-17",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      },
+      "thinking": true,
+      "max_tokens": 3072
+    }
+  ],
+  "cases": [
+    {
+      "id": "actual-enable-en",
+      "request": "My name is Jordan. Remember my name.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_enable\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.enable\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "enable-es",
+      "request": "Me llamo Marta. Recuerda mi nombre.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_enable\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.enable\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "forget-es",
+      "request": "Olvida mi color favorito.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_forget_irreversible\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.forget\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "forget-en",
+      "request": "Forget my favorite color.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_forget_irreversible\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.forget\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "sensitive-en",
+      "request": "Save my secret in your memory.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_sensitive_save\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.sensitive.save\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "export-es",
+      "request": "Exporta mis recuerdos guardados.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_export_privacy\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.export\", \"target\": \"private local memory\"}, \"destination\": \"Documents/BAXY\", \"mayRedirectOrSync\": true}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    }
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf",
+  "model_sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7",
+  "server": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "source_sha256": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "limits": {
+    "composition_seconds": 55,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  }
+}

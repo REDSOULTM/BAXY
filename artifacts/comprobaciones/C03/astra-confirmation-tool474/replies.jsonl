@@ -1,0 +1,14 @@
+{"id": "actual437-t7", "variant": "baseline", "seed": 0, "answer": "Jordan", "attempts": 1, "seconds": 0.266}
+{"id": "actual-enable-en", "variant": "confirmation", "seed": 0, "answer": "Alright, I remember your name is Jordan.  \nWe’re asking about enabling private local memory.  \nDo you want to confirm or cancel this action?", "attempts": 1, "seconds": 0.578}
+{"id": "enable-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar o cancelar la acción de habilitar la memoria privada local?", "attempts": 1, "seconds": 0.437}
+{"id": "forget-es", "variant": "confirmation", "seed": 0, "answer": "¿Quieres confirmar olvidar tu color favorito o cancelar la acción?", "attempts": 1, "seconds": 0.438}
+{"id": "forget-en", "variant": "confirmation", "seed": 0, "answer": "Do you want to confirm or cancel forgetting your favorite color?", "attempts": 1, "seconds": 0.343}
+{"id": "sensitive-en", "variant": "confirmation", "seed": 0, "answer": "Do you want to confirm or cancel saving your secret in private local memory?", "attempts": 1, "seconds": 0.36}
+{"id": "export-es", "variant": "confirmation", "seed": 0, "answer": "Quieres exportar tus recuerdos guardados a la carpeta Documents/BAXY?  \n¿Confirmar o cancelar?", "attempts": 1, "seconds": 0.547}
+{"id": "actual437-t7", "variant": "baseline", "seed": 17, "answer": "Jordan", "attempts": 1, "seconds": 0.156}
+{"id": "actual-enable-en", "variant": "confirmation", "seed": 17, "answer": "Alright, I remember your name is Jordan.  \nWe’re asking about enabling private local memory.  \nDo you want to confirm or cancel this action?", "attempts": 1, "seconds": 0.578}
+{"id": "enable-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar o cancelar la acción de habilitar la memoria privada local?", "attempts": 1, "seconds": 0.469}
+{"id": "forget-es", "variant": "confirmation", "seed": 17, "answer": "¿Quieres confirmar olvidar tu color favorito o cancelar la acción?", "attempts": 1, "seconds": 0.437}
+{"id": "forget-en", "variant": "confirmation", "seed": 17, "answer": "Do you want to confirm or cancel forgetting your favorite color?", "attempts": 1, "seconds": 0.328}
+{"id": "sensitive-en", "variant": "confirmation", "seed": 17, "answer": "Do you want to confirm or cancel saving your secret in private local memory?", "attempts": 1, "seconds": 0.375}
+{"id": "export-es", "variant": "confirmation", "seed": 17, "answer": "Quieres exportar tus recuerdos guardados a la carpeta Documents/BAXY?  \n¿Confirmar o cancelar?", "attempts": 1, "seconds": 0.563}

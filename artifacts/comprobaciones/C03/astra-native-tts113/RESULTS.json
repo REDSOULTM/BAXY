@@ -1,0 +1,78 @@
+[
+  {
+    "index": 0,
+    "text": "It is 07:14.",
+    "phonemizerVoice": "es-419",
+    "phonemes": "ˈit ˈis sjˈete katˈoɾse",
+    "unknownPhonemes": [],
+    "seconds": 1.3467573696145125,
+    "generationSeconds": 0.15599999998812564,
+    "transcript": "Y T714",
+    "wavSha256": "f8f9b105840053a3739e624af53015acc69281936e12007b7629aa4b9aabdef9"
+  },
+  {
+    "index": 0,
+    "text": "It is 07:14.",
+    "phonemizerVoice": "en-us",
+    "phonemes": "ɪɾ ɪz sˈɛvən fˈɔː‍ɹtiːn",
+    "unknownPhonemes": [
+      "‍"
+    ],
+    "seconds": 1.18421768707483,
+    "generationSeconds": 0.14100000000325963,
+    "transcript": "It is seven fourteen.",
+    "wavSha256": "d1644f8c8b785b4716599f855c37ee5de96bd1288ff7bc0bd29d3cc0a60b39ec"
+  },
+  {
+    "index": 1,
+    "text": "The file read failed because the content is invalid UTF-8.",
+    "phonemizerVoice": "es-419",
+    "phonemes": "tˈe fˈa‍ɪl reˈad fa‍ɪlˈed βekˈa‍ʊse tˈe kontˈɛnt ˈis ˌimbalˈið ˌutˌeˈɛfe ˈot‍ʃo",
+    "unknownPhonemes": [
+      "‍"
+    ],
+    "seconds": 4.446621315192743,
+    "generationSeconds": 0.34399999999732245,
+    "transcript": "E file read file edbcause t content is invalid UTF 8.",
+    "wavSha256": "4bbf01f2017a152a6828a50f2acb92a20d9a13fc8d46411e4357fc9f56115adf"
+  },
+  {
+    "index": 1,
+    "text": "The file read failed because the content is invalid UTF-8.",
+    "phonemizerVoice": "en-us",
+    "phonemes": "ðə fˈa‍ɪl ɹˈiːd fˈe‍ɪld bɪkˈʌz ðə kˈɑːntɛnt ɪz ɪnvˈælɪd jˌuːtˌiːˈɛf ˈe‍ɪt",
+    "unknownPhonemes": [
+      "‍"
+    ],
+    "seconds": 4.0751020408163265,
+    "generationSeconds": 0.3129999999946449,
+    "transcript": "The file leader failed because the content is invalid, you'll be the fake.",
+    "wavSha256": "54151f1562e5f9bd23e82737bddbd5915ad6d3e412004be95d13a41bff9661be"
+  },
+  {
+    "index": 2,
+    "text": "I couldn't read the file because it wasn't found in the sandbox.",
+    "phonemizerVoice": "es-419",
+    "phonemes": "ˈi kˈowldnt reˈad tˈe fˈa‍ɪl βekˈa‍ʊse ˈit wˈasnt fˈownð ˈin tˈe sandβˈoks",
+    "unknownPhonemes": [
+      "‍"
+    ],
+    "seconds": 4.051882086167801,
+    "generationSeconds": 0.32800000000861473,
+    "transcript": "I calln't read te file because it wasn't the phone in te sandbox.",
+    "wavSha256": "7fcdf901f33847e28645e27ff59bdb4799848354d8ff8d577785be9c550c2061"
+  },
+  {
+    "index": 2,
+    "text": "I couldn't read the file because it wasn't found in the sandbox.",
+    "phonemizerVoice": "en-us",
+    "phonemes": "a‍ɪ kˌʊdənt ɹˈiːd ðə fˈa‍ɪl bɪkˈʌz ɪt wˈʌzn̩t fˈa‍ʊnd ɪnðə sˈændbɑːks",
+    "unknownPhonemes": [
+      "‍"
+    ],
+    "seconds": 3.900952380952381,
+    "generationSeconds": 0.32800000000861473,
+    "transcript": "I couldn't heal the file because it wasn't found in the sandbox.",
+    "wavSha256": "84a85259696d79031d8ee6f9dae12b290cd88f1c47b3ef41114dbfc3db4d4de1"
+  }
+]

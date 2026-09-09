@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-07T18:27:58.655577+00:00",
+  "scriptSha256": "091c1f4fa3e364f56190f4e59d14f95680d21ba213dc3c725d6ad30dac61bcf4",
+  "method": "Integrate exact math.cc/math-test.cc backport3857 atop207 per-stream decoder. Build baxy.2 with strict source/patch checks and native math tests; no observer source. Verify owner/Fast/lock/package then install via complete hashed lock and compare actual product63greedy outputs to217.",
+  "knownOpenQuality": "217 has numeric content and echo regressions. Integration is a candidate, not final ASR/audio/C03 acceptance. No change to models or registered manifest; preserve baxy.1 rollback.",
+  "patchSha256": "79cb34698cf0fb6083d8f66ab194970e5fddef9e26422f469183822412e87c48",
+  "regression217Sha256": "850117e23af8b8c2dd02c4d0ef269beb489d36776b50c030496474bfde077574",
+  "before": {
+    "scripts/build_sherpa_runtime.py": "c69344c53d5cdc9b767cc5009541fd0a2d7e449ca1f236b05c5386d50d73549f",
+    "constraints-runtime-win-x64.txt": "fc0db42ae39301e277626d49216916da9f824d1af0e407e8b7075d7835fe37eb",
+    "src/baxy_mind/requirements-voice.txt": "54f3b1e542c784f20fc48d922fae7062ad2837876254ba92d70f95371f0bf9ff",
+    "pylock.runtime-win-x64.toml": "400677e69c886fa5774a38feeb478ef1179ee0d65631c0e3245102e7bb59312e",
+    "tests/test_sherpa_runtime_package.py": "aab4989aec97e68234c4afdbff467f2da22680f5fdcfbc235e657c61120cf23e",
+    "runtime_wheels/README.md": "40bd455c4874acff4b775bd64d720992629e4965b754f3e72656551d49687398"
+  }
+}

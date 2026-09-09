@@ -71,6 +71,7 @@ from .llm import (
     _native_selection_description,
     _reads_as_an_observation,
     served_capability_families,
+    visible_reply_is_only_questions,
 )
 from .planner import (
     MAX_SHORTLIST_OPERATIONS,
@@ -87,10 +88,14 @@ from .planner import (
     validate_skeleton,
 )
 from .request_reading import (
+    _INTERROGATIVE,
     fold as read_fold,
+    INTENT_AMBIGUOUS_ACTION,
     INTENT_CAPABILITY,
     INTENT_CONTINUE_CONSTRAINT,
+    INTENT_IDENTITY,
     INTENT_REFUSE,
+    is_elliptical_followup,
     read_request,
     response_language as read_language,
 )
@@ -107,6 +112,7 @@ from .router import (
 )
 from .turn_evidence import TurnEvidenceService
 from .voice import VoiceEngine
+from .voice_aec import prepare_resampler
 
 _write_lock = threading.Lock()
 _turn_audit_lock = threading.Lock()
@@ -184,6 +190,7 @@ _IDENTITY_CONSUMERS = frozenset(
     {
         "app.close",
         "bluetooth.device.pair",
+        "filesystem.read.text",
         "game.install.commit",
         "game.purchase.commit",
         "message.send",
@@ -706,6 +713,7 @@ _DETERMINISTIC_DEPENDENCY_FIELDS = {
     "peripheral.scan": ("deviceId",),
     "browser.navigate": ("url",),
     "browser.navigate.named": ("url",),
+    "filesystem.read.text": ("resourceId",),
     "game.install.commit": ("confirmationId",),
     "package.install.commit": ("confirmationId",),
     "game.purchase.commit": ("confirmationId", "expectedPriceCents"),
@@ -725,8 +733,10 @@ def _collect_dependency_field_values(value: object, field: str) -> list[object]:
     values: list[object] = []
     if isinstance(value, dict):
         for name, child in value.items():
-            if name == field and child is not None and not isinstance(
-                child, (dict, list)
+            if (
+                name == field
+                and child is not None
+                and not isinstance(child, (dict, list))
             ):
                 values.append(child)
             values.extend(_collect_dependency_field_values(child, field))
@@ -1217,9 +1227,7 @@ def apply_turn_action_grounding_gate(
     operation = decision.get("operation")
     tool = tool_by_name.get(operation) if isinstance(operation, str) else None
     if tool is None:
-        raise PlannerContractError(
-            "the pending grounding action is not in the catalog"
-        )
+        raise PlannerContractError("the pending grounding action is not in the catalog")
     if required_predecessors(operation):
         # The missing identity belongs to a verified producer, not to the
         # person. Preserve the selected leaf effect and let the planner add its
@@ -1441,6 +1449,10 @@ def apply_information_question_effect_veto(
         "como",
         "cual",
         "cuando",
+        "cuanto",
+        "cuanta",
+        "cuantos",
+        "cuantas",
         "donde",
         "esta",
         "estan",
@@ -1453,7 +1465,8 @@ def apply_information_question_effect_veto(
         "where",
         "which",
         "who",
-    }:
+        "why",
+    } and not is_elliptical_followup(objective):
         return decision
     operations = decision.get("effect_operations")
     if not isinstance(operations, list) or not operations:
@@ -1528,6 +1541,9 @@ def apply_operation_domain_grounding_veto(
     application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
     compound_contract: CompoundEffectContract | None = None,
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    *,
+    previous_user_text: str | None = None,
+    available_operations: tuple[str, ...] = (),
 ) -> dict[str, object]:
     """Remove authority when an ambiguous operation lacks its real domain.
 
@@ -1710,6 +1726,8 @@ def apply_operation_domain_grounding_veto(
                 objective,
                 operation,
                 application_names,
+                previous_user_text=previous_user_text,
+                available_operations=available_operations,
             )
             is False
             for operation in operations
@@ -1794,19 +1812,11 @@ def apply_compound_effect_conservation_veto(
                     return decision
             except Exception:  # noqa: BLE001 - uncertainty removes authority
                 pass
-    vetoed = dict(decision)
-    vetoed.update(
-        {
-            "mode": "conversation",
-            "operation": None,
-            "question": "",
-            "conversation_kind": "knowledge",
-            "effect_count": "zero",
-            "effect_operations": [],
-            "effect_verification": "not_applicable",
-        }
-    )
-    return vetoed
+    # Failing to preserve the requested effects is an interpretation failure,
+    # not evidence that the request can be answered from general knowledge.
+    # Reuse bounded turn recovery instead of inviting chat to invent the
+    # observation that was just withheld. No effects have been dispatched.
+    raise PlannerContractError("unresolved_compound_effects")
 
 
 def _compound_compatibility_all(
@@ -2013,6 +2023,7 @@ def _catalog_answers_the_request(
     application_names: tuple[str, ...] | ApplicationCatalogIndex,
     *,
     depth: int = 4,
+    history: list[dict[str, str]] | None = None,
 ) -> str:
     """Name a catalogue operation that *is* what a closed refusal denied.
 
@@ -2039,10 +2050,36 @@ def _catalog_answers_the_request(
     refusal, after which the ordinary ranked path decides the turn.
     """
 
+    shortlist = planner_catalog.shortlist(routing_objective)[:depth]
+    native_select = getattr(llm, "_post_native_tool_selection", None)
+    if getattr(llm, "_native_tool_policy_enabled", False) and callable(native_select):
+        contracts = {
+            tool.name: contract
+            for tool in shortlist
+            if (contract := _turn_operation_contract(
+                tool_by_name.get(tool.name), tool.name, objective, application_names,
+            )) is not None
+        }
+        if not contracts:
+            return ""
+        try:
+            selected = native_select(objective, list(contracts), contracts, history or [])
+            operations = selected.get("effect_operations")
+            if (
+                isinstance(operations, list)
+                and operations
+                and all(isinstance(name, str) and name in contracts for name in operations)
+            ):
+                return operations[0]
+        except Exception:  # noqa: BLE001 - a failed probe adds no authority
+            pass
+        # AUTO may abstain. Do not override that with the older weak identity
+        # classifier: it called an SSID follow-up a clock, audio and web read.
+        return ""
     identifies = getattr(llm, "operation_is_the_requested_effect", None)
     if not callable(identifies):
         return ""
-    for tool in planner_catalog.shortlist(routing_objective)[:depth]:
+    for tool in shortlist:
         contract = _turn_operation_contract(
             tool_by_name.get(tool.name),
             tool.name,
@@ -2286,7 +2323,7 @@ def _explicit_response_language(objective: str) -> str:
 
 
 def _decisive_request_language(objective: str) -> str | None:
-    """Idioma cuando la evidencia del texto apunta sólo a un lado.
+    """Idioma cuando la lectura tiene una selección inequívoca o mezcla explícita.
 
     El detector del modelo respondía en español a «post a letter to Eris» y a
     «book a shuttle to Callisto». Cuando la lectura del pedido tiene evidencia
@@ -2295,6 +2332,10 @@ def _decisive_request_language(objective: str) -> str | None:
     """
 
     reading = read_request(objective)
+    if reading.language == "mixed":
+        # Balanced evidence is a positive request for both languages, not an
+        # absence of evidence to be replaced by a second monolingual choice.
+        return "mixed"
     spanish, english = reading.evidence
     if bool(spanish) == bool(english):
         return None
@@ -2424,13 +2465,15 @@ _SOCIAL_TURNS: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
 def _explicit_social_turn_decision(
     objective: str,
     history: object = None,
+    *,
+    pending_clarification: bool | None = None,
 ) -> dict[str, object] | None:
     """Classify a standalone social act without routing it as an effect."""
 
     # Una aclaración pendiente convierte cualquier respuesta en parte de ese
     # intercambio. Ante la duda se devuelve el turno al modelo, que es
     # exactamente el comportamiento previo.
-    if _history_has_pending_clarification(history):
+    if _history_has_pending_clarification(history, pending_clarification):
         return None
     assistant_preference = False
     folded = unicodedata.normalize("NFKD", objective.casefold())
@@ -2446,6 +2489,26 @@ def _explicit_social_turn_decision(
         ),
         None,
     )
+    if language is None:
+        # The private-memory parser recognizes this declarative form, but it
+        # grants no persistence authority. A whole self-introduction belongs
+        # to conversation, before PC tools can prime a Windows-account read.
+        declaration = re.fullmatch(
+            r"(?:(?P<es>(?:yo\s+)?me\s+llamo|mi\s+nombre\s+es)|"
+            r"my\s+name\s+is)\s+"
+            r"(?P<name>[^\W\d_](?:[^\W\d_]|[ '’\-]){0,79})[.!]*",
+            folded,
+        )
+        if declaration is not None:
+            # Do not swallow an unpunctuated question or command after the
+            # asserted first name. Reuse the shared vocabulary, not a name list.
+            tail = declaration.group("name").strip().partition(" ")[2]
+            if (
+                _INTERROGATIVE.search(tail) is None
+                and re.search(rf"\b{effect_intent._COVERAGE_ACTION_HEAD}\b", tail)
+                is None
+            ):
+                language = "es" if declaration.group("es") is not None else "en"
     if language is None:
         personal_wellbeing_report = (
             (
@@ -2514,8 +2577,34 @@ def _explicit_social_turn_decision(
     }
 
 
-def _history_has_pending_clarification(history: object) -> bool:
-    """Conservatively recognize the latest assistant question as pending."""
+def _previous_user_request(history: list[object], current_request: str) -> str | None:
+    """Read the preceding user turn, allowing the shell's trailing current echo."""
+    previous = history
+    if (
+        history
+        and isinstance(history[-1], dict)
+        and history[-1].get("role") == "user"
+        and history[-1].get("content") == current_request
+    ):
+        previous = history[:-1]
+    return next(
+        (
+            str(item.get("content") or "")
+            for item in reversed(previous)
+            if isinstance(item, dict) and item.get("role") == "user"
+        ),
+        None,
+    )
+
+
+def _history_has_pending_clarification(
+    history: object,
+    pending_clarification: bool | None = None,
+) -> bool:
+    """Use shell state; punctuation is only a legacy history-only hint."""
+
+    if isinstance(pending_clarification, bool):
+        return pending_clarification
 
     if not isinstance(history, list):
         return False
@@ -2534,10 +2623,12 @@ def _history_has_pending_clarification(history: object) -> bool:
 def _explicit_nonunderstanding_turn_decision(
     objective: str,
     history: object = None,
+    *,
+    pending_clarification: bool | None = None,
 ) -> dict[str, object] | None:
     """Classify only a standalone comprehension reaction outside clarification."""
 
-    if _history_has_pending_clarification(history):
+    if _history_has_pending_clarification(history, pending_clarification):
         return None
     folded = unicodedata.normalize("NFKD", objective.casefold())
     folded = "".join(
@@ -2647,6 +2738,8 @@ def _assistant_capability_aspiration(objective: str) -> bool:
 def _standalone_deictic_request(objective: str) -> bool:
     """Recognize a command whose required referent is entirely absent."""
 
+    if read_request(objective).has(INTENT_AMBIGUOUS_ACTION):
+        return True
     folded = effect_intent._fold(objective).strip()
     return (
         re.fullmatch(
@@ -2892,6 +2985,8 @@ def _closed_unsupported_request(objective: str) -> bool:
 def _explicit_stable_no_effect_turn_decision(
     objective: str,
     history: object = None,
+    *,
+    pending_clarification: bool | None = None,
 ) -> dict[str, object] | None:
     """Close only unambiguous non-effect clauses before tool selection.
 
@@ -2915,7 +3010,7 @@ def _explicit_stable_no_effect_turn_decision(
             "effect_verification": "not_applicable",
             "response_language": _explicit_response_language(objective),
         }
-    if _history_has_pending_clarification(history):
+    if _history_has_pending_clarification(history, pending_clarification):
         return None
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     if not folded:
@@ -3019,9 +3114,7 @@ def _explicit_stable_no_effect_turn_decision(
         re.match(
             (
                 r"^[¿?¡!\s]*(?:"
-                r"define\b|"
-                r"(?:explica|explicame|explain)\b.{0,48}\b(?:por\s+que|why|"
-                r"diferencia|difference)\b|"
+                r"(?:define|explica|explicame|explain)\b|"
                 r"(?:por\s+que|why)\b|"
                 r"(?:(?:que|what)\s+quiere\s+decir)\b|"
                 r"what\s+does\b.{0,96}\b(?:mean|significa|decir)\b|"
@@ -3059,6 +3152,7 @@ def _explicit_stable_no_effect_turn_decision(
         re.match(
             (
                 r"^(?:no|nunca|jamas|do\s+not|don't|never)\b[^;]{1,160};\s*"
+                r"(?:(?:solo|solamente|just)\s+)?"
                 r"(?:explica|explicame|explain|define|dime\s+que|tell\s+me\s+what|"
                 r"what\s+does)\b"
             ),
@@ -3161,6 +3255,10 @@ def _explicit_stable_no_effect_turn_decision(
             re.IGNORECASE,
         )
         is not None
+        # A negative opening cannot cancel a later positive request. Leave
+        # compound turns to the normal selector instead of forcing zero effects.
+        and len(effect_intent._request_clauses(folded)) == 1
+        and not any(separator in folded for separator in (",", ";"))
     )
     other_device = effect_intent._has(
         folded,
@@ -3291,6 +3389,7 @@ def _explicit_stable_no_effect_turn_decision(
                 or opinion_prompt
                 or capability_question
                 or counterfactual_hypothetical
+                or (leading_negation and not assistant_silence_preference)
                 # A denial of instruction asks to be talked to, not refused.
                 # "unsupported" would answer an answerable question with an
                 # inability, which is the visible defect R125 measured.
@@ -4112,6 +4211,10 @@ def _explicit_arguments_from_evidence(
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)
 
+    if operation == "window.resolve":
+        title = effect_intent.explicit_window_title(evidence)
+        return {"process": title, "byTitle": True} if title is not None else None
+
     if operation == "app.open":
         app_id = resolve_application_catalog_app_id(evidence, application_names)
         return {"appId": app_id} if app_id is not None else None
@@ -4172,11 +4275,7 @@ def _explicit_arguments_from_evidence(
                 and relative_path[0] in {'"', "'"}
             ):
                 relative_path = relative_path[1:-1].strip()
-            if (
-                len(text) >= 2
-                and text[0] == text[-1]
-                and text[0] in {'"', "'"}
-            ):
+            if len(text) >= 2 and text[0] == text[-1] and text[0] in {'"', "'"}:
                 text = text[1:-1]
             path_segments = re.split(r"[\\/]", relative_path)
             safe_path = (
@@ -4700,6 +4799,21 @@ def _explicit_arguments_from_evidence(
             ),
             folded,
         )
+        if level is None:
+            # The closed contextual reader retains the two authored surfaces
+            # with a sentence boundary. Reprove that the earlier surface has
+            # only a missing level and the answer is one numeric clause; a
+            # nearby number, another object or an additional effect is not a
+            # literal level for this step.
+            prior, separator, answer = folded.rpartition(" . ")
+            if (
+                separator
+                and len(effect_intent._request_clauses(answer)) == 1
+                and effect_intent._completed_missing_volume_level_request(
+                    answer, prior, ("audio.volume",),
+                ) is not None
+            ):
+                return {"level": numbers[0]}
         if level is None or int(level.group("level")) != numbers[0]:
             return None
         return {"level": numbers[0]}
@@ -4762,7 +4876,7 @@ def _explicit_arguments_from_evidence(
 
     if operation == "audio.mute":
         false_pattern = (
-            r"\b(?:unmute|desmutea|desmutear|reactiva|reactivar)\b|"
+            rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
             r"\bquita(?:r)?\s+(?:el\s+)?(?:mute|silencio)\b"
         )
         false_signal = bool(re.search(false_pattern, folded))
@@ -4810,6 +4924,12 @@ def _ground_explicit_arguments(
     )
     if explicit is None:
         return None
+    if operation == "window.resolve" and not validate_json_schema_instance(
+        explicit, schema
+    ):
+        # A legacy process-only schema cannot represent title identity. Never
+        # discard the selector to make this literal fit a different contract.
+        return None
     if operation in {
         "app.installed",
         "app.open",
@@ -4820,6 +4940,7 @@ def _ground_explicit_arguments(
         "game.launch",
         "media.control",
         "media.play.query",
+        "system.status",
     }:
         # Core's verified installed application/game snapshots own identity
         # canonicalization. Requiring a canonical display name or opaque AppID
@@ -4827,7 +4948,9 @@ def _ground_explicit_arguments(
         # Browser destinations cross an equally closed parser: only a literal
         # URL, bare host, or the named YouTube service is canonical. The media
         # query parser preserves the literal query and supplies the catalog's
-        # sole provider value. Every path still crosses the exact catalog JSON
+        # sole provider value. System scopes are enum identities selected by
+        # the existing domain parser, not words the user must spell literally.
+        # Every path still crosses the exact catalog JSON
         # Schema here.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     grounded, _ = normalize_objective_arguments(
@@ -4906,10 +5029,9 @@ def _fully_enumerated_note_create_arguments(
         ):
             return ()
         arguments.append({"title": title, "content": content})
-    if (
-        len(arguments) != len(requested_order)
-        or len({item["title"].casefold() for item in arguments}) != len(arguments)
-    ):
+    if len(arguments) != len(requested_order) or len(
+        {item["title"].casefold() for item in arguments}
+    ) != len(arguments):
         return ()
     return tuple(arguments)
 
@@ -5504,6 +5626,7 @@ def _emit_early_turn_signal(
     already_signaled: list[bool],
     step_count: int = 1,
     llm: Any = None,
+    phase: str = "understanding",
 ) -> None:
     if already_signaled or on_signal is None:
         return
@@ -5512,16 +5635,30 @@ def _emit_early_turn_signal(
     compose = getattr(llm, "compose_user_message", None)
     if compose is None:
         return
-    text = compose(
-        objective,
-        "status",
-        {
-            "situation": json.dumps(
-                {"kind": "status", "cause": "acting", "polarity": "success"},
-                ensure_ascii=False,
-            )
-        },
-    )
+    try:
+        text = compose(
+            objective,
+            "status",
+            {
+                "traceId": str(request_id or ""),
+                "situation": json.dumps(
+                    {
+                        "kind": "status", "cause": "acting",
+                        "polarity": "success", "phase": phase,
+                    },
+                    ensure_ascii=False,
+                ),
+            },
+            timeout=2.5,
+        )
+    except Exception as error:  # noqa: BLE001 - optional prose cannot fail the turn
+        _append_turn_audit({
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": request_id,
+            "phase": "progress_unavailable",
+            "error_type": type(error).__name__,
+        })
+        return
     if not str(text or "").strip():
         return
     on_signal(
@@ -5642,6 +5779,7 @@ def _prepare_turn_result(
         or _explicit_stable_no_effect_turn_decision(
             objective,
             history,
+            pending_clarification=message.get("pendingClarification"),
         )
     )
     stable_no_effect_is_closed = (
@@ -5674,6 +5812,7 @@ def _prepare_turn_result(
             available_operations,
             application_names,
             game_catalog,
+            previous_user_text=_previous_user_request(history, objective),
         )
     )
     # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
@@ -5693,6 +5832,7 @@ def _prepare_turn_result(
         application_names,
         game_catalog,
         resolved_intent=explicit_intent,
+        previous_user_text=_previous_user_request(history, objective),
     )
     explicit_conversation_decision = (
         _explicit_unsupported_turn_decision(objective)
@@ -5712,25 +5852,55 @@ def _prepare_turn_result(
             )
         )
         else catalog_unavailable_decision
-        or _explicit_social_turn_decision(objective, history)
-        or _explicit_nonunderstanding_turn_decision(objective, history)
+        or _explicit_social_turn_decision(
+            objective,
+            history,
+            pending_clarification=message.get("pendingClarification"),
+        )
+        or _explicit_nonunderstanding_turn_decision(
+            objective,
+            history,
+            pending_clarification=message.get("pendingClarification"),
+        )
         or stable_no_effect_decision
     )
+    # Resolve the speech act before catalog candidates can prime a related
+    # effect. The existing candidate-free guard includes personal/live reads
+    # and compound actions; only agreement on stable knowledge closes here.
+    # The inherited prohibition reader already distinguishes negative commands
+    # from statements, questions and compounds, using the shared action heads.
+    # Reclassifying its closed no-effect result against nearby tools can turn
+    # an acknowledgement into an unsolicited observation. Keep its authority
+    # identical to the prose contract: no operation and no asserted PC state.
+    closed_no_effect_conversation = (
+        stable_no_effect_decision is not None
+        and effect_intent.explicit_negative_constraint(objective)
+    )
+    verify_shape = getattr(llm, "_verify_semantic_effect_shape", None)
+    if (
+        not closed_no_effect_conversation
+        and explicit_intent is None
+        and non_target_language is None
+        and stable_no_effect_decision is not None
+        and stable_no_effect_decision.get("conversation_kind") == "knowledge"
+        and callable(verify_shape)
+    ):
+        try:
+            closed_no_effect_conversation = verify_shape(objective) == ("no_effect", "zero")
+        except Exception:  # noqa: BLE001 - retain normal interpretation on failure
+            pass
+    if closed_no_effect_conversation:
+        explicit_conversation_decision = stable_no_effect_decision
     withdrawn_closed_refusal = ""
     if (
-        explicit_conversation_decision is not None
+        not closed_no_effect_conversation
+        and explicit_conversation_decision is not None
         and non_target_language is None
         and explicit_conversation_decision.get("conversation_kind")
         in {"unsupported", "knowledge"}
     ):
-        _emit_early_turn_signal(
-            path=PATH_MODEL,
-            objective=objective,
-            request_id=message.get("id"),
-            on_signal=on_signal,
-            already_signaled=already_signaled,
-            llm=llm,
-        )
+        # This is still interpretation, not an execution milestone. Composing
+        # progress here spent the same deadline needed to decide and answer.
         withdrawn_closed_refusal = _catalog_answers_the_request(
             routing_objective,
             objective,
@@ -5738,6 +5908,7 @@ def _prepare_turn_result(
             tool_by_name,
             llm,
             application_names,
+            history=history,
         )
         if withdrawn_closed_refusal:
             explicit_conversation_decision = None
@@ -5765,6 +5936,14 @@ def _prepare_turn_result(
         shortlist = ()
     else:
         evidence_query = _turn_evidence_query(routing_objective, history)
+        _emit_early_turn_signal(
+            path=PATH_MODEL,
+            objective=objective,
+            request_id=message.get("id"),
+            on_signal=on_signal,
+            already_signaled=already_signaled,
+            llm=llm,
+        )
         # Retrieval ranks operations, not families. Ranking families and then
         # handing out a window inside the winner is a coarser question than the
         # one being asked, and the leaf the person meant lost its place to
@@ -5856,18 +6035,6 @@ def _prepare_turn_result(
             [tool.name for tool in shortlist],
         )
     )
-    if (
-        explicit_conversation_decision is None
-        and explicit_intent is None
-    ):
-        _emit_early_turn_signal(
-            path=PATH_MODEL,
-            objective=objective,
-            request_id=message.get("id"),
-            on_signal=on_signal,
-            already_signaled=already_signaled,
-            llm=llm,
-        )
     raw_decision = (
         explicit_conversation_decision
         if explicit_conversation_decision is not None
@@ -5895,9 +6062,7 @@ def _prepare_turn_result(
         "request_id": message.get("id"),
         "phase": "final",
         "decision_path": decision_path,
-        "retrieval": (
-            "semantic" if planner_catalog.ranks_semantically else "lexical"
-        ),
+        "retrieval": ("semantic" if planner_catalog.ranks_semantically else "lexical"),
         "candidate_operations": [tool.name for tool in shortlist],
         "raw_decision": raw_decision,
         "stages": [
@@ -5997,6 +6162,8 @@ def _prepare_turn_result(
         application_names,
         unresolved_compound_effects,
         game_catalog,
+        previous_user_text=_previous_user_request(history, objective),
+        available_operations=available_operations,
     )
     decision = validate_turn_decision(
         decision,
@@ -6156,6 +6323,7 @@ def _prepare_turn_result(
             tool_by_name,
             llm,
             application_names,
+            history=history,
         )
         question = (
             _domain_confirmation_question(objective, (observing,), tool_by_name, llm)
@@ -6273,17 +6441,48 @@ def _prepare_turn_result(
                         response_language = llm.detect_response_language(objective)
                     except ValueError:
                         response_language = None
-        reply_text, _ = llm.chat(
-            objective,
-            history=history,
-            tools=None,
-            temperature=0.0,
-            conversation_kind=presentation_conversation_kind,
-            authenticated_operations=tuple(intent_operations),
-            # Language is independently constrained from the current message.
-            # The routing field cannot force the wrong response language.
-            response_language=response_language,
-        )
+        if (
+            presentation_conversation_kind == "unsupported"
+            and catalog_unavailable_decision is not None
+        ):
+            # The catalog established a capability boundary, not a failed
+            # provider operation or proof that a named object does not exist.
+            # Use the same typed error composer as the shell; the separate
+            # conversational refusal inferred absence from the target name.
+            reply_text = llm.compose_user_message(
+                objective,
+                "error",
+                {
+                    "situation": json.dumps(
+                        {
+                            "kind": "failure",
+                            "polarity": "failure",
+                            "cause": "out_of_catalog",
+                        }
+                    )
+                },
+            )
+        else:
+            reply_text, _ = llm.chat(
+                objective,
+                # A closed social act is a complete new presentation. Replaying
+                # an earlier saved-memory result made a new introduction claim
+                # another save. Scope this generation; retain the actual dialogue
+                # and all context-dependent or model-classified conversations.
+                history=(
+                    []
+                    if explicit_conversation_decision is not None
+                    and presentation_conversation_kind == "social"
+                    else history
+                ),
+                tools=None,
+                temperature=0.0,
+                conversation_kind=presentation_conversation_kind,
+                authenticated_operations=tuple(intent_operations),
+                # Language is independently constrained from the current message.
+                # The routing field cannot force the wrong response language.
+                response_language=response_language,
+            )
         reply_text = reply_text.strip()
         if not reply_text:
             raise PlannerContractError(
@@ -6301,12 +6500,9 @@ def _prepare_turn_result(
                 or read_request(objective).intents
                 & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
             )
-            and reply_text.rstrip().endswith(("?", "？"))
-            and re.search(r"[.!][\"'»]?\s", reply_text) is None
+            and visible_reply_is_only_questions(reply_text)
         ):
-            raise PlannerContractError(
-                "una explicación no puede ser sólo una pregunta"
-            )
+            raise PlannerContractError("una explicación no puede ser sólo una pregunta")
     else:
         # P may finish before the independent language inference.  Keep L alive
         # through every outer veto, then cancel it only once the final result is
@@ -6333,9 +6529,23 @@ def _prepare_turn_result(
         objective,
         history,
     ):
-        # Devolver la petición anterior como pregunta no aclara nada: se trata
-        # como un turno fallido para que la recuperación formule una de verdad.
-        raise PlannerContractError("aclaración que repite un turno anterior")
+        # The decision already asks for missing information with zero effects.
+        # Reword its invalid prose before retrying the whole interpretation:
+        # that retry changed a valid clarification into an unsupported request.
+        reword = getattr(llm, "clarify_after_turn_failure", None)
+        question = (
+            reword(
+                objective, history=history, timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+            )
+            if callable(reword)
+            else ""
+        )
+        if not _recovery_question_is_valid(question, objective, history):
+            raise PlannerContractError("aclaración que repite un turno anterior")
+        decision = {**decision, "question": question}
+        turn_audit["stages"].append(
+            _turn_audit_stage("clarification_reworded", decision)
+        )
     result = {
         "type": "turn.result",
         "id": message.get("id"),
@@ -6346,6 +6556,21 @@ def _prepare_turn_result(
         "question": decision["question"],
         "reply": reply_text,
     }
+    if decision["mode"] == "conversation":
+        result["conversationKind"] = presentation_conversation_kind
+        if (
+            (
+                stable_no_effect_decision is not None
+                and stable_no_effect_decision.get("conversation_kind") == "knowledge"
+                and presentation_conversation_kind == "knowledge"
+            )
+            or read_request(objective).intents
+            & {INTENT_IDENTITY, INTENT_CAPABILITY, INTENT_REFUSE}
+        ):
+            # A closed standalone explanation or negative constraint is a new
+            # request, not a value for an earlier clarification. Reuse the
+            # existing protocol flag; elliptical fragments retain its default.
+            result["preserveObjective"] = False
     if response_language in {"es", "en", "mixed"}:
         result["responseLanguage"] = response_language
     turn_audit["final"] = {
@@ -6631,7 +6856,16 @@ def _recovery_visible_from_compose(llm: Any, objective: str) -> tuple[str, str]:
             compose(
                 objective,
                 "error",
-                {"situation": json.dumps({"kind": "failure", "cause": "request_analysis_failed", "polarity": "failure"}, ensure_ascii=False)},
+                {
+                    "situation": json.dumps(
+                        {
+                            "kind": "failure",
+                            "cause": "request_analysis_failed",
+                            "polarity": "failure",
+                        },
+                        ensure_ascii=False,
+                    )
+                },
             )
             or ""
         ).strip()
@@ -7422,6 +7656,7 @@ def _run_sidecar(
                         (tool.name for tool in planner_catalog.tools),
                         application_catalog,
                         game_catalog,
+                        previous_user_text=_previous_user_request(history, objective),
                     )
                     if expected_operations
                     else None
@@ -7450,6 +7685,16 @@ def _run_sidecar(
                     planner_catalog,
                     skill_registry,
                 )
+                if not expected_operations:
+                    _emit_early_turn_signal(
+                        path=PATH_MODEL,
+                        objective=objective,
+                        request_id=request_id,
+                        on_signal=write_request_message,
+                        already_signaled=[],
+                        llm=llm,
+                        phase="preparing_steps",
+                    )
                 raw = (
                     _explicit_plan_skeleton(
                         expected_operations,
@@ -7559,9 +7804,8 @@ def _run_sidecar(
                                 grounded,
                                 objective,
                             )
-                        if (
-                            grounded is None
-                            or not validate_json_schema_instance(grounded, schema)
+                        if grounded is None or not validate_json_schema_instance(
+                            grounded, schema
                         ):
                             raise PlannerContractError(
                                 "la lista enumerada de notas no valida contra el catálogo"
@@ -7643,19 +7887,23 @@ def _run_sidecar(
                 objective = str(message.get("objective", ""))
                 observations = message.get("observations") or []
                 arguments = (
-                    _verified_message_send_arguments(objective, observations)
-                    if operation == "message.send"
-                    else None
-                ) or _verified_dependency_identity_arguments(
-                    operation,
-                    objective,
-                    observations,
-                    tool,
-                ) or llm.ground_plan_arguments(
-                    objective,
-                    str(message.get("purpose", "")),
-                    observations,
-                    tool,
+                    (
+                        _verified_message_send_arguments(objective, observations)
+                        if operation == "message.send"
+                        else None
+                    )
+                    or _verified_dependency_identity_arguments(
+                        operation,
+                        objective,
+                        observations,
+                        tool,
+                    )
+                    or llm.ground_plan_arguments(
+                        objective,
+                        str(message.get("purpose", "")),
+                        observations,
+                        tool,
+                    )
                 )
                 schema = tool["function"]["parameters"]
                 if not validate_json_schema_instance(arguments, schema):
@@ -8035,6 +8283,7 @@ def main() -> int:
     result: int | None = None
     completed = False
     try:
+        prepare_resampler()
         result = _run_control_plane(lifecycle)
         completed = True
         return result

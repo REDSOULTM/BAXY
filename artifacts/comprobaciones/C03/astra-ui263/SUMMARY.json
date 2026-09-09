@@ -1,0 +1,28 @@
+{
+  "resources": {
+    "reason": "deadline_600s",
+    "seconds": 600.41,
+    "gpuPeakMiB": 3504.70703125,
+    "gpuAttributionAvailable": true,
+    "ramPeakMiB": 5624.85546875,
+    "launcherExit": 0,
+    "cleanupExit": 0,
+    "volumeBefore": {
+      "levelScalar": 0.0,
+      "muted": true
+    },
+    "volumeAfter": {
+      "levelScalar": 0.0,
+      "muted": true
+    },
+    "volumeRestoredExactly": true
+  },
+  "sourceFilesUnchanged": 37,
+  "verifiedSteamResults": 2,
+  "piperGenerated": 5,
+  "httpObservations": 90,
+  "acousticCaptureActivated": false,
+  "closeButton": "Hides window by MainWindow.OnClosing; deadline closed the owned tree.",
+  "allFiveControlsPassed": false,
+  "knownProcessesSurviving": []
+}

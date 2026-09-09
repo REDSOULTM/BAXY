@@ -1,0 +1,100 @@
+[
+  {
+    "index": 3,
+    "case": "3/0",
+    "content": "humano 0, mixed, raw, solape humano 205440 muestras",
+    "before": "Hola.",
+    "after": ""
+  },
+  {
+    "index": 13,
+    "case": "9/1",
+    "content": "humano 1, mixed, raw, solape humano 0 muestras",
+    "before": "Son las diez cincuenta y cinco.",
+    "after": "Son las diez."
+  },
+  {
+    "index": 16,
+    "case": "10/0",
+    "content": "humano 1, mixed, speex, solape humano 20352 muestras",
+    "before": "Hola, aquí vas.",
+    "after": ""
+  },
+  {
+    "index": 17,
+    "case": "10/1",
+    "content": "humano 1, mixed, speex, solape humano 120320 muestras",
+    "before": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "after": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro."
+  },
+  {
+    "index": 19,
+    "case": "11/0",
+    "content": "humano 1, mixed, dtln128, solape humano 120320 muestras",
+    "before": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "after": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro."
+  },
+  {
+    "index": 25,
+    "case": "15/1",
+    "content": "humano 2, mixed, raw, solape humano 0 muestras",
+    "before": "Son las diez cincuenta y cinco.",
+    "after": "Son las diez."
+  },
+  {
+    "index": 28,
+    "case": "16/0",
+    "content": "humano 2, mixed, speex, solape humano 150912 muestras",
+    "before": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "after": ""
+  },
+  {
+    "index": 31,
+    "case": "18/0",
+    "content": "humano 3, near_only, raw, solape humano 133632 muestras",
+    "before": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "after": ""
+  },
+  {
+    "index": 33,
+    "case": "20/0",
+    "content": "humano 3, near_only, dtln128, solape humano 134144 muestras",
+    "before": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "after": ""
+  },
+  {
+    "index": 35,
+    "case": "21/1",
+    "content": "humano 3, mixed, raw, solape humano 0 muestras",
+    "before": "Son las diez cincuenta y cinco.",
+    "after": "Son las diez."
+  },
+  {
+    "index": 38,
+    "case": "22/0",
+    "content": "humano 3, mixed, speex, solape humano 140160 muestras",
+    "before": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "after": ""
+  },
+  {
+    "index": 41,
+    "case": "23/1",
+    "content": "humano 3, mixed, dtln128, solape humano 0 muestras",
+    "before": "S.",
+    "after": ""
+  },
+  {
+    "index": 45,
+    "case": "original 3",
+    "content": "WAV humano original con padding197",
+    "before": "All nouns alongside the world say for you always begin with a capital letter even in the middle of a sentence.",
+    "after": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence."
+  },
+  {
+    "index": 46,
+    "case": "silencio",
+    "content": "dos segundos de ceros",
+    "before": "Thank you.",
+    "after": ""
+  }
+]

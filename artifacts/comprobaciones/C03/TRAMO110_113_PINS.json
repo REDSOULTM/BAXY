@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-07T10:34:37.367479+00:00",
+  "files": {
+    "src/baxy_mind/voice_output.py": "979ed2bd0cad5d8762633bf85c6591fbf66ffdd99bf49f71ca3737a7dd61aeaa",
+    "tests/test_neural_speech_output.py": "e3311d81df2ee083dd7271d37d7e7f21f7a1c98d63fc3697f03f268a2aa46024",
+    "artifacts/comprobaciones/C03/ASTRA-TRAMO-112.md": "e3469e35e08270bc70813f4e3cdba49d07f99e60395a293c23c029fc386a3b1f",
+    "artifacts/comprobaciones/C03/PRUEBAS_AUDIO110_NATIVE111.md": "f6a9c71d5d3f305af2da457a62be041a47010492825770f738e12034b3b25ca7",
+    "artifacts/comprobaciones/C03/astra-audio110/PREREG.json": "e9f7722fdaabce7d109bed5585376ff3afd90d27641fb6a8cf75215db84be851",
+    "artifacts/comprobaciones/C03/astra-audio110/RESOURCES.json": "f37cc91d295217354a77b69426a9ad14259c7b135529b09fcf5a542241dca75b",
+    "artifacts/comprobaciones/C03/astra-audio110/AUDIO_RESULT.json": "b2d02ea2ed4b8cb3d474a49b9c84e36482f1d600771bdf27b43ba264d5fda16d",
+    "artifacts/comprobaciones/C03/astra-audio110/TRANSCRIPTION_INDEX.json": "4d7f1f593d339d197d232e2ff55bfd06b145b4f0e0daaec3c602a23e78efed9f",
+    "artifacts/comprobaciones/C03/astra-native-tts111/PREREG.json": "9c0113252a00bd50b9a807909f9d7525f818deed986b8d39d70ac881b87cc2a4",
+    "artifacts/comprobaciones/C03/astra-native-tts111/RESULTS.json": "c885a5328b5b558143d901138d8c58d7d977352dc02bdd8e08f418d47a15ffb0",
+    "artifacts/comprobaciones/C03/astra-native-tts113/PREREG.json": "cd68cb1a3d538ae9c75ebd05d9cd885a2074599f551e607d599543a87e08e67f",
+    "artifacts/comprobaciones/C03/astra-native-tts113/RESULTS.json": "71ad5a69b9b39703d128df4a3a1d7e4375270ffcc26ffafafb3c7ca089e99ac6"
+  }
+}

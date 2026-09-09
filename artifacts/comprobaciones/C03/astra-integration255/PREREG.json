@@ -1,0 +1,9 @@
+{
+  "state": "native_package_preparation; productive source242 unchanged",
+  "hypothesis": "Export the linear frame from the same original AEC3; no diagnostic metrics or algorithm tuning. Package version0.2.0+baxy.1. Prove exact output parity with254 before productive integration.",
+  "originalOwnerSha256": "0552de46203def0aecee263e495ab63c0c94d8f652a5f0ca22a2767cac904658",
+  "patchedOwnerSha256": "21cefa8d2f7f94e2044316226555502ba647747edce056f0f1af6bd14da9fdf0",
+  "patchSha256": "548763188c319936ae00475b03885e75bf986d1917b8bba8b86ed1746f0fe020",
+  "previousTurn": "Status report requested by owner; no implementation progress. Next available action255 performed.",
+  "remaining": "Source integration/locks, owner tests/Fast, actual product/UI/human voice/combined resources, fresh100/100, faults, installation, continuityC04-C09, finalFull and publication outside main."
+}

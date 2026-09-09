@@ -1,0 +1,162 @@
+{
+  "utc": "2026-09-08T17:34:53.072721+00:00",
+  "method": "Actual compose_user_message and all guards/retries, no source edits. Offline first payload exactly equals464 T1. Six development memory confirmations preserve existing PrivateOperationNarration schema/cause/target/choices; export includes real destination and sync disclosure. Compare currentT0 to official Gemma T1/p.95/k64/min0/neutral penalties with no-thinking and thinking at seeds0/17, all prefixed before generation. Same model, backend, prompts, context4096x3, KVq8_0 and lazyon measured462. Request thinking uses server-1 with per-call explicit0 for no-thinking; directHTTP single attempt55s and max output recorded. Docs/research reused INVES_MODELO_C03/462; not native model only or actual effect execution.",
+  "criteria": "Each reply explains the exact pending action (enable is not save), private target, both choices and no claimed completion. Forget acknowledges irreversible deletion; sensitive save acknowledges protected data; export preserves destination/redirect-or-sync risk. Judge each reply and all fixed seeds, no best-of selection. Not fresh human acceptance. A documented starting recipe is not an optimum. If insufficient, first inspect facts/prompt transformation; no extra phrase patch.",
+  "profiles": [
+    {
+      "id": "current-greedy",
+      "sampling": {
+        "temperature": 0.0
+      },
+      "thinking": false,
+      "max_tokens": 256
+    },
+    {
+      "id": "documented-thinking-False-seed-0",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      },
+      "thinking": false,
+      "max_tokens": 1024
+    },
+    {
+      "id": "documented-thinking-False-seed-17",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      },
+      "thinking": false,
+      "max_tokens": 1024
+    },
+    {
+      "id": "documented-thinking-True-seed-0",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      },
+      "thinking": true,
+      "max_tokens": 3072
+    },
+    {
+      "id": "documented-thinking-True-seed-17",
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 64,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      },
+      "thinking": true,
+      "max_tokens": 3072
+    }
+  ],
+  "cases": [
+    {
+      "id": "actual-enable-en",
+      "request": "My name is Jordan. Remember my name.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_enable\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.enable\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "enable-es",
+      "request": "Me llamo Marta. Recuerda mi nombre.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_enable\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.enable\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "forget-es",
+      "request": "Olvida mi color favorito.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_forget_irreversible\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.forget\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "forget-en",
+      "request": "Forget my favorite color.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_forget_irreversible\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.forget\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "sensitive-en",
+      "request": "Save my secret in your memory.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_sensitive_save\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.sensitive.save\", \"target\": \"private local memory\"}}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    },
+    {
+      "id": "export-es",
+      "request": "Exporta mis recuerdos guardados.",
+      "facts": {
+        "situation": "{\"kind\": \"confirmation\", \"polarity\": \"pending\", \"cause\": \"memory_export_privacy\", \"choices\": [\"confirmar\", \"confirm\", \"cancelar\", \"cancel\"], \"pendingAction\": {\"operation\": \"memory.export\", \"target\": \"private local memory\"}, \"destination\": \"Documents/BAXY\", \"mayRedirectOrSync\": true}",
+        "requiredResponseWords": [
+          "confirmar",
+          "confirm",
+          "cancelar",
+          "cancel"
+        ]
+      }
+    }
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf",
+  "model_sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7",
+  "server": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "source_sha256": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "limits": {
+    "composition_seconds": 55,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  }
+}

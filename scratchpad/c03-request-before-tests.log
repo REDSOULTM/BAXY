@@ -1,0 +1,120 @@
+FFFF....                                                                 [100%]
+================================== FAILURES ===================================
+_ test_a_social_greeting_survives_without_rewriting[Good afternoon-Hi! How can I help you today?] _
+
+user_text = 'Good afternoon', reply = 'Hi! How can I help you today?'
+
+    @pytest.mark.parametrize("user_text, reply", [
+        ("Good afternoon", "Hi! How can I help you today?"),
+        ("Good evening", "Good evening! What can I help you with?"),
+        ("Buenos d�as", "�Buenos d�as! �En qu� te ayudo?"),
+    ])
+    def test_a_social_greeting_survives_without_rewriting(user_text: str, reply: str) -> None:
+        client = Recorder([reply])
+>       assert client.compose_user_message(user_text, "welcome", {
+            "situation": '{"kind":"welcome","polarity":"success"}',
+        }) == reply
+
+tests\test_c03_request_preservation.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9499: in compose_user_message
+    retry = self._post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000010E2D033EF0>
+payload = {'messages': [{'role': 'system', 'content': 'One sentence with situation.greeting. Nothing else. Return only the messa...role': 'user', 'content': 'situation: {"greeting": "hi"}'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:16: StopIteration
+_ test_a_social_greeting_survives_without_rewriting[Good evening-Good evening! What can I help you with?] _
+
+user_text = 'Good evening', reply = 'Good evening! What can I help you with?'
+
+    @pytest.mark.parametrize("user_text, reply", [
+        ("Good afternoon", "Hi! How can I help you today?"),
+        ("Good evening", "Good evening! What can I help you with?"),
+        ("Buenos d�as", "�Buenos d�as! �En qu� te ayudo?"),
+    ])
+    def test_a_social_greeting_survives_without_rewriting(user_text: str, reply: str) -> None:
+        client = Recorder([reply])
+>       assert client.compose_user_message(user_text, "welcome", {
+            "situation": '{"kind":"welcome","polarity":"success"}',
+        }) == reply
+
+tests\test_c03_request_preservation.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9499: in compose_user_message
+    retry = self._post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000010E2D0459A0>
+payload = {'messages': [{'role': 'system', 'content': 'One sentence with situation.greeting. Nothing else. Return only the messa...role': 'user', 'content': 'situation: {"greeting": "hi"}'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:16: StopIteration
+_ test_a_social_greeting_survives_without_rewriting[Buenos d\xedas-\xa1Buenos d\xedas! \xbfEn qu\xe9 te ayudo?] _
+
+user_text = 'Buenos d�as', reply = '�Buenos d�as! �En qu� te ayudo?'
+
+    @pytest.mark.parametrize("user_text, reply", [
+        ("Good afternoon", "Hi! How can I help you today?"),
+        ("Good evening", "Good evening! What can I help you with?"),
+        ("Buenos d�as", "�Buenos d�as! �En qu� te ayudo?"),
+    ])
+    def test_a_social_greeting_survives_without_rewriting(user_text: str, reply: str) -> None:
+        client = Recorder([reply])
+>       assert client.compose_user_message(user_text, "welcome", {
+            "situation": '{"kind":"welcome","polarity":"success"}',
+        }) == reply
+E       AssertionError: assert '�Buenos d�as!' == '�Buenos d�as...qu� te ayudo?'
+E         
+E         - �Buenos d�as! �En qu� te ayudo?
+E         + �Buenos d�as!
+
+tests\test_c03_request_preservation.py:27: AssertionError
+_______________ test_a_followup_keeps_its_topic_on_every_retry ________________
+
+    def test_a_followup_keeps_its_topic_on_every_retry() -> None:
+        client = Recorder([
+            "�Por qu� importa?", "�Para qu� sirve?",
+            "La cach� importa porque evita volver a buscar los mismos datos.",
+        ])
+        result = client.compose_user_message("�por qu� importa?", "conversation", {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+            "priorRequests": ["expl�came qu� es la cach�, una frase"],
+        })
+        assert "cach�" in result
+        assert len(client.payloads) == 3
+        for payload in client.payloads:
+            content = "\n".join(message["content"] for message in payload["messages"])
+            assert "�cach�" in content
+>           assert "Explain the concept" not in content
+E           AssertionError: assert 'Explain the concept' not in 'Eres BAXY, ...the request.'
+E             
+E             'Explain the concept' is contained here:
+E               reguntes.
+E             ? ^
+E               Explain the concept in one short sentence. Do not greet. Do not configure or set. Do not restate the request.
+E             ? ^^^^^  +++++++++++++++
+
+tests\test_c03_request_preservation.py:50: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_a_social_greeting_survives_without_rewriting[Good afternoon-Hi! How can I help you today?]
+FAILED tests/test_c03_request_preservation.py::test_a_social_greeting_survives_without_rewriting[Good evening-Good evening! What can I help you with?]
+FAILED tests/test_c03_request_preservation.py::test_a_social_greeting_survives_without_rewriting[Buenos d\xedas-\xa1Buenos d\xedas! \xbfEn qu\xe9 te ayudo?]
+FAILED tests/test_c03_request_preservation.py::test_a_followup_keeps_its_topic_on_every_retry
+4 failed, 4 passed in 1.31s

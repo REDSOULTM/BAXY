@@ -1,0 +1,10 @@
+{"utc":"2026-09-07T08:31:08.890Z","case":1,"event":"submit_requested","text":"Dime la hora."}
+{"utc":"2026-09-07T08:32:26.353Z","case":2,"event":"submit_requested","text":"Lee el archivo \"c03-ui100-ausente.txt\" del sandbox."}
+{"utc":"2026-09-07T08:33:13.376Z","case":3,"event":"submit_requested","text":"Why couldn't you read that file?"}
+{"utc":"2026-09-07T08:33:59.919Z","case":4,"event":"submit_requested","text":"Lee el contenido del archivo \"c03-ui100-lectura.txt\" del sandbox."}
+{"utc":"2026-09-07T08:34:46.389Z","case":5,"event":"submit_requested","text":"Read the file \"c03-ui100-invalid-utf8.txt\" in the sandbox."}
+{"utc":"2026-09-07T08:36:14.410Z","case":6,"event":"submit_requested","text":"Why couldn't you read that file?"}
+{"event":"evidence_excluded","file":"06-why-invalid-observed.jpg","reason":"Screenshot occluded by Codex window; not BAXY visual evidence. No input sent to that window."}
+{"utc":"2026-09-07T08:37:36.379Z","case":7,"event":"submit_requested","text":"Dime la hora, el audio y el uso de CPU."}
+{"utc":"2026-09-07T08:38:54.386Z","case":8,"event":"submit_requested","text":"Pon el volumen."}
+{"event":"owned_process_cleanup","rootPid":25164,"method":"taskkill /PID 25164 /T /F after exact executable verification","reason":"Window close hides to tray by design; terminate only this owned technical run before source work. Not a graceful-shutdown acceptance."}

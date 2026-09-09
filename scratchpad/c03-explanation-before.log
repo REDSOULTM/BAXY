@@ -1,0 +1,168 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_ test_complete_explanation_uses_the_existing_knowledge_path[Explain encryption, pero en simple] _
+
+text = 'Explain encryption, pero en simple'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple", "Explain gravity in plain English",
+        "Explica la evaporaci�n", "Expl�came los eclipses",
+    ])
+    def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> None:
+        class ExplanationLlm(_WithheldEffectLlm):
+            def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+                raise AssertionError("a complete explanation does not need a second turn classifier")
+    
+            def chat(self, actual: str, **kwargs: object) -> tuple[str, list[object]]:
+                assert actual == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Respuesta de conocimiento formulada por la mente.", []
+    
+>       result = _prepare_turn_result(
+            {"id": "complete-explanation", "text": text}, llm=ExplanationLlm(identifies=False),
+            planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+        )
+
+tests\test_turn_policy.py:10462: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:5868: in _prepare_turn_result
+    else llm.decide_turn(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_turn_policy.test_complete_explanation_uses_the_existing_knowledge_path.<locals>.ExplanationLlm object at 0x000002113076CAD0>
+_args = ('Explain encryption, pero en simple', [{'name': 'network.status', 'description': 'Read connectivity and active interf...ging them.', 'arguments_schema': {'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False}}])
+_kwargs = {'history': [], 'evidence': []}
+
+    def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+>       raise AssertionError("a complete explanation does not need a second turn classifier")
+E       AssertionError: a complete explanation does not need a second turn classifier
+
+tests\test_turn_policy.py:10455: AssertionError
+_ test_complete_explanation_uses_the_existing_knowledge_path[Explain gravity in plain English] _
+
+text = 'Explain gravity in plain English'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple", "Explain gravity in plain English",
+        "Explica la evaporaci�n", "Expl�came los eclipses",
+    ])
+    def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> None:
+        class ExplanationLlm(_WithheldEffectLlm):
+            def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+                raise AssertionError("a complete explanation does not need a second turn classifier")
+    
+            def chat(self, actual: str, **kwargs: object) -> tuple[str, list[object]]:
+                assert actual == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Respuesta de conocimiento formulada por la mente.", []
+    
+>       result = _prepare_turn_result(
+            {"id": "complete-explanation", "text": text}, llm=ExplanationLlm(identifies=False),
+            planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+        )
+
+tests\test_turn_policy.py:10462: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:5868: in _prepare_turn_result
+    else llm.decide_turn(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_turn_policy.test_complete_explanation_uses_the_existing_knowledge_path.<locals>.ExplanationLlm object at 0x0000021130642120>
+_args = ('Explain gravity in plain English', [{'name': 'network.status', 'description': 'Read connectivity and active interfac...ging them.', 'arguments_schema': {'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False}}])
+_kwargs = {'history': [], 'evidence': []}
+
+    def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+>       raise AssertionError("a complete explanation does not need a second turn classifier")
+E       AssertionError: a complete explanation does not need a second turn classifier
+
+tests\test_turn_policy.py:10455: AssertionError
+_ test_complete_explanation_uses_the_existing_knowledge_path[Explica la evaporaci\xf3n] _
+
+text = 'Explica la evaporaci�n'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple", "Explain gravity in plain English",
+        "Explica la evaporaci�n", "Expl�came los eclipses",
+    ])
+    def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> None:
+        class ExplanationLlm(_WithheldEffectLlm):
+            def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+                raise AssertionError("a complete explanation does not need a second turn classifier")
+    
+            def chat(self, actual: str, **kwargs: object) -> tuple[str, list[object]]:
+                assert actual == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Respuesta de conocimiento formulada por la mente.", []
+    
+>       result = _prepare_turn_result(
+            {"id": "complete-explanation", "text": text}, llm=ExplanationLlm(identifies=False),
+            planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+        )
+
+tests\test_turn_policy.py:10462: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:5868: in _prepare_turn_result
+    else llm.decide_turn(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_turn_policy.test_complete_explanation_uses_the_existing_knowledge_path.<locals>.ExplanationLlm object at 0x00000211308C06E0>
+_args = ('Explica la evaporaci�n', [{'name': 'network.status', 'description': 'Read connectivity and active interfaces without...ging them.', 'arguments_schema': {'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False}}])
+_kwargs = {'history': [], 'evidence': []}
+
+    def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+>       raise AssertionError("a complete explanation does not need a second turn classifier")
+E       AssertionError: a complete explanation does not need a second turn classifier
+
+tests\test_turn_policy.py:10455: AssertionError
+_ test_complete_explanation_uses_the_existing_knowledge_path[Expl\xedcame los eclipses] _
+
+text = 'Expl�came los eclipses'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple", "Explain gravity in plain English",
+        "Explica la evaporaci�n", "Expl�came los eclipses",
+    ])
+    def test_complete_explanation_uses_the_existing_knowledge_path(text: str) -> None:
+        class ExplanationLlm(_WithheldEffectLlm):
+            def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+                raise AssertionError("a complete explanation does not need a second turn classifier")
+    
+            def chat(self, actual: str, **kwargs: object) -> tuple[str, list[object]]:
+                assert actual == text
+                assert kwargs["conversation_kind"] == "knowledge"
+                return "Respuesta de conocimiento formulada por la mente.", []
+    
+>       result = _prepare_turn_result(
+            {"id": "complete-explanation", "text": text}, llm=ExplanationLlm(identifies=False),
+            planner_catalog=PlannerCatalog([_NETWORK_STATUS_TOOL]),
+            turn_evidence=_NoEvidence(), encoder=lambda _: [],
+            tool_by_name={"network.status": _NETWORK_STATUS_TOOL},
+        )
+
+tests\test_turn_policy.py:10462: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:5868: in _prepare_turn_result
+    else llm.decide_turn(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_turn_policy.test_complete_explanation_uses_the_existing_knowledge_path.<locals>.ExplanationLlm object at 0x00000211308C12B0>
+_args = ('Expl�came los eclipses', [{'name': 'network.status', 'description': 'Read connectivity and active interfaces without...ging them.', 'arguments_schema': {'type': 'object', 'properties': {}, 'required': [], 'additionalProperties': False}}])
+_kwargs = {'history': [], 'evidence': []}
+
+    def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
+>       raise AssertionError("a complete explanation does not need a second turn classifier")
+E       AssertionError: a complete explanation does not need a second turn classifier
+
+tests\test_turn_policy.py:10455: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_complete_explanation_uses_the_existing_knowledge_path[Explain encryption, pero en simple]
+FAILED tests/test_turn_policy.py::test_complete_explanation_uses_the_existing_knowledge_path[Explain gravity in plain English]
+FAILED tests/test_turn_policy.py::test_complete_explanation_uses_the_existing_knowledge_path[Explica la evaporaci\xf3n]
+FAILED tests/test_turn_policy.py::test_complete_explanation_uses_the_existing_knowledge_path[Expl\xedcame los eclipses]
+4 failed, 840 deselected in 4.97s

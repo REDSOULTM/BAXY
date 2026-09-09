@@ -1,0 +1,10 @@
+{"stage": "guarded", "case": "unsupported-1", "seconds": 0.485, "error": null}
+{"stage": "guarded", "case": "unsupported-2", "seconds": 1.296, "error": "ConversationReplyContractError: respuesta conversacional vac\u00eda o repetida"}
+{"stage": "guarded", "case": "unsupported-3", "seconds": 0.516, "error": null}
+{"stage": "guarded", "case": "unsupported-4", "seconds": 0.453, "error": null}
+{"stage": "guarded", "case": "unsupported-5", "seconds": 0.406, "error": null}
+{"stage": "guarded", "case": "unsupported-6", "seconds": 0.5, "error": null}
+{"stage": "guarded", "case": "unsupported-7", "seconds": 0.454, "error": null}
+{"stage": "guarded", "case": "unsupported-8", "seconds": 0.39, "error": null}
+{"stage": "guarded", "case": "unsupported-9", "seconds": 0.469, "error": null}
+{"seconds": 7.95, "gpuPeakMiB": 3497.55859375, "ramPeakMiB": 2827.82421875, "error": null, "registrationUnchanged": true}

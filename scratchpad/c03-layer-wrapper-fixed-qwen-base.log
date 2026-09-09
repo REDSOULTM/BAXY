@@ -1,0 +1,4 @@
+{"stage": "guarded", "case": "t8", "seconds": 1.578, "error": null}
+{"stage": "guarded", "case": "t9", "seconds": 1.36, "error": null}
+{"stage": "guarded", "case": "t13", "seconds": 0.781, "error": null}
+{"seconds": 6.94, "gpuPeakMiB": 3497.55859375, "ramPeakMiB": 2819.10546875, "error": null, "registrationUnchanged": true}

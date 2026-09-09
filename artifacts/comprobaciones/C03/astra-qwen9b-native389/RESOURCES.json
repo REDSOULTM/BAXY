@@ -1,0 +1,11 @@
+{
+  "completed": false,
+  "violations": [
+    "system_free_ram_bound"
+  ],
+  "gpu_peak_mib": 2905.57421875,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 5770.9140625,
+  "seconds": 13.797,
+  "manifest_unchanged": true
+}

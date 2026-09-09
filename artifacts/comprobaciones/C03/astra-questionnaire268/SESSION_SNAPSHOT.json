@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-07T23:27:43.269315+00:00",
+  "privateDirectory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner264-snapshot268",
+  "ownerAuthorizedReview": true,
+  "files": {
+    "compose-audit.jsonl": {
+      "bytes": 221585,
+      "sha256": "d34d0eef0c6f8022f1cccebdb93cf87f18d925b56ee64703bd5db414c6f348f5"
+    },
+    "turn-audit.jsonl": {
+      "bytes": 198339,
+      "sha256": "df865b878277fae5996f6724d60c6ccb3e3d13e8a3934ed6d4230a5278976856"
+    },
+    "raw-replies.jsonl": {
+      "bytes": 30442,
+      "sha256": "3285f8502e22db1ed409242c787ea4603a6c18729014b398c5ce7215c9c6aabe"
+    },
+    "LAUNCH.json": {
+      "bytes": 454,
+      "sha256": "83f8573d2073cc872b9039eb248bb638b2526746b3e136951b0f0e32a400697f"
+    },
+    "launch.log": {
+      "bytes": 378,
+      "sha256": "929e193fe2614d32b1240d6192bfb1ad6e5a46d638706ca5f6c3a47b86e4f583"
+    },
+    "shell-trace.jsonl": {
+      "bytes": 176803,
+      "sha256": "673a5b77818bdefa425fdcaac79a532c3197cc9c5ba67a374bf2b454ecfec839"
+    }
+  },
+  "completeUiTranscript": false
+}

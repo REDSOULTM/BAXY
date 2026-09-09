@@ -1,0 +1,237 @@
+source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified
+source_quality_stage_started: powershell-source
+source_quality_stage_passed: powershell-source
+source_quality_stage_started: python-ruff
+All checks passed!
+source_quality_stage_passed: python-ruff
+source_quality_stage_started: python-compileall
+source_quality_stage_passed: python-compileall
+source_quality_stage_started: field-ui-eslint
+source_quality_stage_passed: field-ui-eslint
+source_quality_stage_started: field-ui-tsc-app
+source_quality_stage_passed: field-ui-tsc-app
+source_quality_stage_started: field-ui-tsc-node
+source_quality_stage_passed: field-ui-tsc-node
+source_quality_stage_started: dotnet-format
+source_quality_stage_passed: dotnet-format
+source_quality_stage_started: dotnet-build-release
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Contracts.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Setup -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Setup\bin\Release\net10.0-windows10.0.19041.0\win-x64\Baxy.Setup.dll
+  Baxy.Kernel.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll
+  Baxy.Setup.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Providers.Windows.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:33.30
+source_quality_stage_passed: dotnet-build-release
+source_quality_stage_started: dotnet-tests
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+
+Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 738 ms - Baxy.Contracts.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareLegacyAndCurrentJsonHotPaths [2 ms]
+  Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]
+  Omitidas EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [30 ms]
+  Omitidas SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]
+  Omitidas OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam","Steam") [< 1 ms]
+  Omitidas ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Bloc de notas","Bloc de notas") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Discord si está instalado","Discord") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam pero no maximices ni lances juegos","Steam") [< 1 ms]
+shell_visible_indication_ms p50=0.193 p95=0.680 max=0.680
+shell_published_text_ms_without_llm_composition p50=58.161 p95=103.192 max=103.192
+
+
+Correctas! - Con error:     0, Superado:  2927, Omitido:     1, Total:  2928, Duración: 5 m 16 s - Baxy.Integration.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareMemoryStreamAndArrayBufferWriterImplementations [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   138, Omitido:     0, Total:   138, Duración: 2 s - Baxy.Kernel.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas NativeAotCoreAudioJsonlRoundTripReplaysWithoutAnotherEffectAndRestoresBaseline [1 ms]
+  Omitidas WifiStatusReadsActualWindowsStateTwice [< 1 ms]
+  Omitidas DxgiAndPdhProduceOneCoherentLocalSnapshot [< 1 ms]
+  Omitidas ActualIpListReturnsStableParseableAddressesWithoutInterfaceNames [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   451, Omitido:     0, Total:   451, Duración: 58 s - Baxy.Providers.Windows.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas InstallationMoveWorksWhileAnExecutableRunsFromTheRoot [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 44 s - Baxy.Setup.Tests.dll (net10.0)
+source_quality_stage_passed: dotnet-tests
+source_quality_stage_started: python-tests
+.........................................s........................ss.... [  0%]
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 27%]
+................................................................. [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 71%]
+........................................................................ [ 72%]
+............................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 75%]
+............................................................... [ 75%]
+........................................................................ [ 76%]
+................................................................... [ 77%]
+.................. [ 77%]
+............................................... [ 78%]
+.............................................................. [ 78%]
+................................................................. [ 79%]
+...................F................................................. [ 80%]
+....................................ss................................ [ 81%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+..................................................s........................................................................... [ 84%]
+........................................................................ [ 84%]
+......................................................................s. [ 85%]
+...........................................................s.............................................................. [ 87%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 91%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+......................................................ss................ [ 99%]
+........................................................................ [ 99%]
+..................                                                       [100%]
+================================== FAILURES ===================================
+_______ test_published_split_and_ceiling_are_the_numbers_r144_reported ________
+
+    def test_published_split_and_ceiling_are_the_numbers_r144_reported() -> None:
+        candidate = _module()
+        report = candidate.build()
+    
+        integrity = report["integrity"]
+        assert integrity["v8_artifacts"]["observed"] == V8_EVIDENCE_SHA256
+        # What moved since the campaign, named file by file and split by kind: the
+        # catalogue aliases moved with the catalogue (157 -> 158 operations), and
+        # goal 03 replaced the two decision-path programs.
+        identity = integrity["program_identity"]
+>       assert {
+            row["file"]: row["observed_sha256"]
+            for row in identity["files"]
+            if not row["identical"] and not row["file"].startswith("tests/")
+        } == {
+            **V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN,
+            **V8_PROGRAMS_REPLACED_BY_GOAL_03,
+        }
+E       AssertionError: assert {'src/baxy_mi...e28b26ea10cc'} == {'src/baxy_mi...cf003396e1ea'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'src/baxy_mind/llm.py': 'ae88fa9ac0bc3a2bc18d391f9f452fb1b925b28b75f92cfc8a71e28b26ea10cc'} != {'src/baxy_mind/llm.py': '399d13809a6f75ddacae636c012a92b6f1baea490e5a035ddfd7cf003396e1ea'}
+E         {'src/baxy_mind/__main__.py': '5092f2e5c3a89ae9e184614cd90a5abf8b2d178a949e3d7e2b4512c13d935e5d'} != {'src/baxy_mind/__main__.py': '15d0322e040ed705b03742116ae9009d860c12f18043047b01d5566e8e4d85d4'}
+E         Use -v to get more diff
+
+tests\test_price_v8_veto_damage_by_cause.py:159: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported
+1 failed, 8993 passed, 10 skipped, 446 subtests passed in 957.01s (0:15:57)

@@ -1,0 +1,67 @@
+{
+  "aecSmoke": {
+    "erle_db": 19.89,
+    "passed": true
+  },
+  "distributions": [
+    true,
+    [
+      {
+        "distribution": "sherpa-onnx",
+        "expected": "1.13.4+baxy.2",
+        "actual": "1.13.4+baxy.2",
+        "license": "Apache-2.0",
+        "ok": true
+      },
+      {
+        "distribution": "pywebrtc-audio",
+        "expected": "0.2.0+baxy.1",
+        "actual": "0.2.0+baxy.1",
+        "license": "Apache-2.0; bundled WebRTC and third-party notices",
+        "ok": true
+      },
+      {
+        "distribution": "livekit-wakeword",
+        "expected": "0.2.1",
+        "actual": "0.2.1",
+        "license": "Apache-2.0",
+        "ok": true
+      },
+      {
+        "distribution": "silero-vad",
+        "expected": "6.2.1",
+        "actual": "6.2.1",
+        "license": "MIT",
+        "ok": true
+      },
+      {
+        "distribution": "sounddevice",
+        "expected": "0.5.5",
+        "actual": "0.5.5",
+        "license": "MIT",
+        "ok": true
+      },
+      {
+        "distribution": "pywin32",
+        "expected": "311",
+        "actual": "311",
+        "license": "PSF",
+        "ok": true
+      },
+      {
+        "distribution": "PyAudioWPatch",
+        "expected": "0.2.12.8",
+        "actual": "0.2.12.8",
+        "license": "Apache-2.0",
+        "ok": true
+      },
+      {
+        "distribution": "pycaw",
+        "expected": "20251023",
+        "actual": "20251023",
+        "license": "MIT",
+        "ok": true
+      }
+    ]
+  ]
+}

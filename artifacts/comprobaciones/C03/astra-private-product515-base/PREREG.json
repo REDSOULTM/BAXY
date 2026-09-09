@@ -1,0 +1,52 @@
+{
+  "utc": "2026-09-08T23:44:34.332347+00:00",
+  "production_verification": "515 base: source512 actual product, registered runtime, same9cases; see astra-memory-view515/PREREG.json. Only treatment mutates the writer view, never replies or source.",
+  "method": "Compare actual memory narration and preserve private/core/confirmation behavior; no profile tuning or model ranking.",
+  "profile_inheritance": "New dedicated LOCALAPPDATA/BAXY child with persistence initially disabled. A synthetic Jordan save is explicitly requested; the exact product enable confirmation is accepted and its bound name save may resume. Later Alvaro declaration does not authorize overwriting that persisted name. All effects and journal remain inside the diagnostic profile; owner memory is outside scope.",
+  "criteria": "T1 honestly requests enabling, T2 accepts exact pending enable and resumes authorized synthetic save. T3/T6 clarify the missing application without inventing a target; T4/T7 perform a private recall despite that pending public clarification. Stored name is Jordan, current conversational name is Alvaro, with correct human subject and no unrequested overwrite. Prose failure is separate from successful private dispatch. Check every final, operation and native call; admission200 is not acceptance.",
+  "cases": [
+    "My name is Jordan. Remember my name.",
+    "confirm",
+    "Abre una aplicación.",
+    "What name have you saved in private memory?",
+    "Me llamo Álvaro.",
+    "Abre una aplicación.",
+    "¿Qué nombre tienes guardado en tu memoria privada?",
+    "¿Cómo me llamo?",
+    "Desactiva la memoria privada."
+  ],
+  "source_sha256": {
+    "src/baxy_mind/effect_intent.py": "efe4545df50a755ccdd55ff80b70d26e925d33b918af1ba437177e85991bee90",
+    "src/baxy_mind/__main__.py": "b6d23414d607e221ecc721cbc95770785236ee190263c617893614c2fefddb3d",
+    "src/baxy_mind/llm.py": "ab0e3064c4f93334fc98ad3282fbeaf9c7edc4d818858bb0b071dfc53a1c47d7"
+  },
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "registered_model": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  },
+  "registered_backend": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "sources": {
+    "src/baxy_mind/__main__.py": "b6d23414d607e221ecc721cbc95770785236ee190263c617893614c2fefddb3d",
+    "src/baxy_mind/request_reading.py": "992719a876529fabc94ea2fa100ea9a2809d108b843f7d10d41d8a0a3c8f9d41",
+    "src/baxy_mind/effect_intent.py": "efe4545df50a755ccdd55ff80b70d26e925d33b918af1ba437177e85991bee90",
+    "src/baxy_mind/llm.py": "ab0e3064c4f93334fc98ad3282fbeaf9c7edc4d818858bb0b071dfc53a1c47d7",
+    "src/Baxy.App/MainWindowViewModel.cs": "345129465b89adc3ec568907e24377ff84ab5a34770783e7cf0dc704d1aaaf06",
+    "src/Baxy.App/UserMessagePolicy.cs": "9387bc6797864ee03eb8f051a80e146adde4a017b7ce7217ed972ed6762c611c",
+    "src/Baxy.App/MemoryTurnSession.cs": "f9f0c06490df52bddeaee117e5486209504c39cb96e759bdc58f5338a467b08a",
+    "src/Baxy.App/NaturalMemoryRequestParser.cs": "ed2fe272fb1c30afcf487923522f73125d6f8141e838535bb573e2f09683580f",
+    "src/Baxy.App/PrivateOperationNarration.cs": "24cbbfe7b43c94a9fdfc7eeba64fa0cd68a89a5cd584fa2a73f56c21342fed5b",
+    "src/Baxy.App/MemoryOperationResponseProjection.cs": "3464a3a9bdb4b090c4a900958c2dcf638c76dd847f7361c98f05f73e1e42f127",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "d77ec020d6b53ed55369212d93ff1a48899e466b691a985223e9c48dd89a0d05"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-private-product515-base-private",
+  "resource_limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "wall_time_seconds": 240,
+    "scope": "owned hidden diagnostic process tree, no physical voice; stop only that tree on bound"
+  }
+}

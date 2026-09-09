@@ -1,0 +1,53 @@
+FFFFFFFFF.....                                                           [100%]
+================================== FAILURES ===================================
+_ test_volume_dative_clitic_preserves_complete_local_effects[Ponle el volumen al 37-operations0] _
+tests\test_effect_intent.py:6975: in test_volume_dative_clitic_preserves_complete_local_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_volume_dative_clitic_preserves_complete_local_effects[Ponle volumen al pc al 64-operations1] _
+tests\test_effect_intent.py:6975: in test_volume_dative_clitic_preserves_complete_local_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_volume_dative_clitic_preserves_complete_local_effects[Dime la hora pero ponle el volumen al 37-operations2] _
+tests\test_effect_intent.py:6975: in test_volume_dative_clitic_preserves_complete_local_effects
+    assert result is not None and result.operations == operations
+E   AssertionError: assert (EffectIntent(operations=('audio.status',), evidence=('dime la hora pero ponle el volumen al 37',)) is not None and ('audio.status',) == ('system.time...audio.volume')
+E     
+E     At index 0 diff: 'audio.status' != 'system.time'
+E     Right contains one more item: 'audio.volume'
+E     Use -v to get more diff)
+_ test_volume_dative_clitic_preserves_complete_local_effects[Ponle volumen al pc\nAclaraci\xf3n confiable del usuario: Al 100, pero desmutealo-operations3] _
+tests\test_effect_intent.py:6975: in test_volume_dative_clitic_preserves_complete_local_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_volume_dative_clitic_and_local_device_keep_missing_level[Ponle volumen al pc] _
+tests\test_effect_intent.py:6985: in test_volume_dative_clitic_and_local_device_keep_missing_level
+    assert intent is not None and intent.operations == ("audio.volume",)
+E   assert (None is not None)
+_ test_volume_dative_clitic_and_local_device_keep_missing_level[Ponle el volumen del equipo] _
+tests\test_effect_intent.py:6985: in test_volume_dative_clitic_and_local_device_keep_missing_level
+    assert intent is not None and intent.operations == ("audio.volume",)
+E   assert (None is not None)
+_ test_volume_dative_clitic_and_local_device_keep_missing_level[Pon el volumen del pc] _
+tests\test_effect_intent.py:6985: in test_volume_dative_clitic_and_local_device_keep_missing_level
+    assert intent is not None and intent.operations == ("audio.volume",)
+E   assert (None is not None)
+_ test_volume_dative_clitic_and_local_device_keep_missing_level[Set the volume of the computer] _
+tests\test_effect_intent.py:6985: in test_volume_dative_clitic_and_local_device_keep_missing_level
+    assert intent is not None and intent.operations == ("audio.volume",)
+E   assert (None is not None)
+_ test_volume_dative_clitic_and_local_device_keep_missing_level[Adjust volume on my computer] _
+tests\test_effect_intent.py:6985: in test_volume_dative_clitic_and_local_device_keep_missing_level
+    assert intent is not None and intent.operations == ("audio.volume",)
+E   assert (None is not None)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_preserves_complete_local_effects[Ponle el volumen al 37-operations0]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_preserves_complete_local_effects[Ponle volumen al pc al 64-operations1]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_preserves_complete_local_effects[Dime la hora pero ponle el volumen al 37-operations2]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_preserves_complete_local_effects[Ponle volumen al pc\nAclaraci\xf3n confiable del usuario: Al 100, pero desmutealo-operations3]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_and_local_device_keep_missing_level[Ponle volumen al pc]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_and_local_device_keep_missing_level[Ponle el volumen del equipo]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_and_local_device_keep_missing_level[Pon el volumen del pc]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_and_local_device_keep_missing_level[Set the volume of the computer]
+FAILED tests/test_effect_intent.py::test_volume_dative_clitic_and_local_device_keep_missing_level[Adjust volume on my computer]
+9 failed, 5 passed, 1770 deselected in 1.73s

@@ -1,0 +1,23 @@
+{
+  "hypothesis": "Integrate the exact native255 two-view bridge and capture253 admission, one independent confirmation VAD per acoustic capture session. Replace DTLN, no cascade or new gains.",
+  "before": {
+    "src/baxy_mind/dtln_aec.py": "c99e4fa0d83d2961560ed030153b49fd230d26334b20e56ee4d37e9714ba8c11",
+    "src/baxy_mind/voice.py": "982c5b126d320c8a5a95e1ce19b827627f32d76fbbd841871f984cee127963ea",
+    "src/baxy_mind/voice_capture.py": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+    "src/baxy_mind/requirements-voice.txt": "7377b5f3fb60ee0c8c2a69972786deae391a6cde820a906355356c10c3d1257c",
+    "src/baxy_mind/licenses/DTLN-aec.txt": "aa95acd8c8a7341bfcdb2823694dcbb27a2a4143e860bb52db1ff0f29c85e5a1",
+    "scripts/install_dtln_aec.py": "535ed25017df67d0b20102cfaecd5996aa95c7b5ab79c59e95f47836da534f5b",
+    "scripts/run_voice_system_gate.py": "fc57c42bc3e71bd517a7977c28a6f1065989fbda4742d089822b69fecdbe3889",
+    "tests/test_dtln_aec.py": "57d95fa132afc17f18ba202de71b7b04ebbf5af96f7d3e9ae5a1c1a7ca286e65",
+    "tests/test_mind_voice_runtime.py": "fb18df0feb2f6165f2e81b1ca345e97c73c60ae90829cb8c21e4807016221b79",
+    "tests/test_python_runtime_lock.py": "01d5d396690bbfb5897620ab912d510227e7adbb8802a474466ce1d8cab35560",
+    "assets.manifest.json": "cc1f2d99b2b7c4628ccc3c2a3e2203ff8a869a389ce816046493dfa6eb9c7e5b",
+    "constraints-runtime-win-x64.txt": "a63b4d9ce730ac3e6d160b7cbcb73745340f6db1f210de4fe6e478956e1bc9b7",
+    "pylock.runtime-win-x64.toml": "8aaaed6427c0c4710e574aefab5689cba2b41c0051f09d5b17d0ec141056c1c9",
+    "docs/AI_CONTEXT_MAP.md": "79f74cffe090d8d1d44eb915d8641ff7784133577a25c81414f2ed8e92378809",
+    "runtime_wheels/README.md": "4f20df999eea4b3214170efab5aa6f58dcafcc84f279dc321ee33beffaeed9a8"
+  },
+  "scope": "Native owner, capture, dependency graph, AEC descriptor/installer retirement, tests and owner docs. Preserve human content, echo controls and source lifecycle semantics.",
+  "validation": "Owner tests, lock installation, all12 DSP parity, actual capture/ASR253 parity, Fast; physical/UI/combined resources and full C03 acceptance remain.",
+  "previousTurn": "Progress: versioned native package built and verified, 13433 exact blocks, tests/Fast; no external blocker."
+}

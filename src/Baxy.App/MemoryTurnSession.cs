@@ -31,18 +31,20 @@ internal sealed class MemoryTurnSession
         { get; init; }
     }
 
-    internal sealed record PublicAfterMemory(
+    private sealed record MemoryContinuation(
         PreparedOperation Predecessor,
-        string Objective,
-        MissionInputSource Source);
+        string? Objective,
+        MissionInputSource Source,
+        PreparedOperation? SaveAfterEnable = null);
 
     private readonly Host _host;
     private PendingMemoryConfirmation? _confirmation;
     private bool _confirmationIsDurable;
     private bool _confirmationRequiresReconciliation;
     private PreparedOperation? _pendingOperation;
-    private PublicAfterMemory? _publicAfter;
+    private MemoryContinuation? _continuation;
     private bool _recoveryAnnounced;
+    private MemorySaveSubject? _missingSaveSubject;
 
     internal MemoryTurnSession(Host host)
     {
@@ -57,6 +59,50 @@ internal sealed class MemoryTurnSession
 
     internal PreparedOperation? PendingOperation => _pendingOperation;
 
+    internal void AwaitSaveInput(MemoryParseResult request)
+    {
+        _missingSaveSubject = request.MissingSaveSubject;
+    }
+
+    internal bool TryCancelSaveInput(string text)
+    {
+        if (_missingSaveSubject is null
+            || ConfirmationReplyParser.Parse(text) != ConfirmationReplyKind.Cancel)
+        {
+            return false;
+        }
+
+        _missingSaveSubject = null;
+        return true;
+    }
+
+    internal bool TryResolveSaveInput(MissionInputRoute input, out MissionInputRoute? bound)
+    {
+        bound = null;
+        if (_missingSaveSubject is not { } subject || HasConfirmation || HasPendingOperation)
+        {
+            return false;
+        }
+
+        if (NaturalMemoryRequestParser.WithdrawsPendingSave(input.Text)
+            || input.Memory.Outcome is MemoryParseOutcome.Route
+                or MemoryParseOutcome.ConfirmSensitiveSave
+                or MemoryParseOutcome.RejectAuthorizationPersistence
+                or MemoryParseOutcome.SessionContextOnly)
+        {
+            _missingSaveSubject = null;
+            return false;
+        }
+
+        if (!NaturalMemoryRequestParser.TryBindSaveInput(subject, input, out bound))
+        {
+            return false;
+        }
+
+        _missingSaveSubject = null;
+        return true;
+    }
+
     internal void ClearConfirmation()
     {
         _confirmation = null;
@@ -68,6 +114,14 @@ internal sealed class MemoryTurnSession
     {
         _pendingOperation = null;
         _recoveryAnnounced = false;
+        _missingSaveSubject = null;
+    }
+
+    internal void ResetSession()
+    {
+        ClearConfirmation();
+        ResetOperation();
+        _continuation = null;
     }
 
     internal async Task HandleConfirmationAsync(
@@ -83,13 +137,9 @@ internal sealed class MemoryTurnSession
         {
             case ConfirmationReplyKind.Invalid:
                 _host.Publish(
-                    _confirmationRequiresReconciliation
-                        ? TurnVisibleFacts.Confirmation(
-                            "memory_reconcile_only",
-                            TurnVisibleFacts.ConfirmCancel)
-                        : TurnVisibleFacts.Confirmation(
-                            "memory_confirm_or_cancel",
-                            TurnVisibleFacts.ConfirmCancel),
+                    PrivateOperationNarration.CreateMemoryConfirmationPrompt(
+                        pending.Prepared,
+                        _confirmationRequiresReconciliation),
                     UserMessageEvent.Confirmation);
                 return;
             case ConfirmationReplyKind.Cancel:
@@ -98,7 +148,8 @@ internal sealed class MemoryTurnSession
                     _host.Publish(
                         TurnVisibleFacts.Confirmation(
                             "cannot_withdraw_uncertain",
-                            TurnVisibleFacts.ConfirmCancel),
+                            ["confirmar", "confirm"],
+                            PrivateOperationNarration.PendingMemoryAction(pending.Prepared)),
                         UserMessageEvent.Confirmation);
                     return;
                 }
@@ -111,9 +162,9 @@ internal sealed class MemoryTurnSession
                     return;
                 }
 
-                ClearPublicAfter(pending.Prepared);
+                ClearContinuation(pending.Prepared);
                 ClearConfirmation();
-                _host.Publish(TurnVisibleFacts.Status("memory_cancelled"), null);
+                _host.Publish(PrivateOperationNarration.CreateMemoryCancellationMessage(pending.Prepared), null);
                 ContinueRecovery(registry);
                 return;
             case ConfirmationReplyKind.Confirm:
@@ -159,8 +210,9 @@ internal sealed class MemoryTurnSession
                 return;
             }
 
+            ClearContinuation(pending);
             ResetOperation();
-            _host.Publish(TurnVisibleFacts.Status("memory_cancelled"), null);
+            _host.Publish(PrivateOperationNarration.CreateMemoryCancellationMessage(pending), null);
             ContinueRecovery(registry);
             return;
         }
@@ -199,7 +251,7 @@ internal sealed class MemoryTurnSession
             : protectedOperation.Prepared;
         if (!string.IsNullOrWhiteSpace(publicObjective))
         {
-            _publicAfter = new PublicAfterMemory(
+            _continuation = new MemoryContinuation(
                 prepared,
                 publicObjective,
                 publicSource);
@@ -293,7 +345,8 @@ internal sealed class MemoryTurnSession
         RetryableOperationRegistry registry,
         bool isDurable,
         string? confirmationToken,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool allowEnableOffer = true)
     {
         CoreProcessClient client = _host.Core()
             ?? throw new InvalidOperationException("El motor local no está disponible.");
@@ -330,7 +383,7 @@ internal sealed class MemoryTurnSession
 
         if (!isDurable)
         {
-            ClearPublicAfter(prepared);
+            ClearContinuation(prepared);
             _host.Publish(
                 "No recibí una confirmación segura para guardar ese dato sensible. No lo añadí a la cola de recuperación.",
                 UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
@@ -362,8 +415,10 @@ internal sealed class MemoryTurnSession
             }
 
             ClearConfirmationFor(prepared);
-            Resolve(registry, prepared);
-            await ContinuePublicAfterAsync(prepared, registry, cancellationToken);
+            if (Resolve(registry, prepared))
+            {
+                await ContinueAfterAsync(prepared, registry, cancellationToken);
+            }
             return;
         }
 
@@ -380,23 +435,82 @@ internal sealed class MemoryTurnSession
             return;
         }
 
-        ClearPublicAfter(prepared);
+        if (allowEnableOffer
+            && prepared.OperationName == "memory.save"
+            && response.Status == OperationStatuses.Failed
+            && response.ErrorCode == "memory_disabled"
+            && protector.InspectForRecovery(prepared).OriginatesInCurrentSession)
+        {
+            // The failed save is terminal. Enabling has its own invocation and
+            // challenge; only a verified enable can create a new save attempt.
+            if (!TryRemove(registry, prepared))
+            {
+                SetPending(registry, prepared);
+                return;
+            }
+
+            ClearConfirmationFor(prepared);
+            if (IsSame(_pendingOperation, prepared))
+            {
+                ResetOperation();
+            }
+
+            MemoryContinuation? previous = _continuation is { } candidate
+                && IsSame(candidate.Predecessor, prepared) ? candidate : null;
+            PreparedOperation enable = registry.GetOrAdd(protector.Prepare(
+                new MemoryRoutedOperation("memory.configure", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["enabled"] = true,
+                })));
+            _continuation = new MemoryContinuation(
+                enable, previous?.Objective, previous?.Source ?? MissionInputSource.Text, prepared);
+            await SendPreparedAsync(enable, registry, isDurable: true,
+                confirmationToken: null, cancellationToken);
+            return;
+        }
+
+        ClearContinuation(prepared);
         ClearConfirmationFor(prepared);
         Resolve(registry, prepared);
     }
 
-    private async Task ContinuePublicAfterAsync(
+    private async Task ContinueAfterAsync(
         PreparedOperation predecessor,
         RetryableOperationRegistry registry,
         CancellationToken cancellationToken)
     {
-        PublicAfterMemory? continuation = _publicAfter;
+        MemoryContinuation? continuation = _continuation;
         if (continuation is null || !IsSame(continuation.Predecessor, predecessor))
         {
             return;
         }
 
-        _publicAfter = null;
+        _continuation = null;
+        if (continuation.SaveAfterEnable is { } originalSave)
+        {
+            MemoryOperationProtector protector = _host.Protector()
+                ?? throw new InvalidOperationException("La protección de memoria no está disponible.");
+            using OpenedBoundProtectedJson opened = protector.OpenPrivateArguments(originalSave);
+            var arguments = JsonNode.Parse(opened.Payload.GetRawText()) as JsonObject
+                ?? throw new InvalidDataException("El guardado pendiente perdió sus argumentos privados.");
+            PreparedOperation next = registry.GetOrAdd(protector.Prepare(
+                new MemoryRoutedOperation("memory.save", arguments)));
+            if (!string.IsNullOrWhiteSpace(continuation.Objective))
+            {
+                _continuation = new MemoryContinuation(next, continuation.Objective, continuation.Source);
+            }
+
+            await SendPreparedAsync(next, registry, isDurable: true,
+                confirmationToken: null, cancellationToken, allowEnableOffer: false);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(continuation.Objective))
+        {
+            return;
+        }
+
         var publicRoute = new MissionInputRoute(
             continuation.Objective,
             continuation.Source,
@@ -409,21 +523,21 @@ internal sealed class MemoryTurnSession
         }
     }
 
-    private void ClearPublicAfter(PreparedOperation predecessor)
+    private void ClearContinuation(PreparedOperation predecessor)
     {
-        if (_publicAfter is { } continuation
+        if (_continuation is { } continuation
             && IsSame(continuation.Predecessor, predecessor))
         {
-            _publicAfter = null;
+            _continuation = null;
         }
     }
 
-    private void Resolve(RetryableOperationRegistry registry, PreparedOperation prepared)
+    private bool Resolve(RetryableOperationRegistry registry, PreparedOperation prepared)
     {
         if (!TryRemove(registry, prepared))
         {
             SetPending(registry, prepared);
-            return;
+            return false;
         }
 
         if (IsSame(_pendingOperation, prepared))
@@ -432,6 +546,7 @@ internal sealed class MemoryTurnSession
         }
 
         ContinueRecovery(registry);
+        return true;
     }
 
     private bool TryRemove(RetryableOperationRegistry registry, PreparedOperation prepared)

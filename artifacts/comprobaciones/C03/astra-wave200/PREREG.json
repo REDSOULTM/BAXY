@@ -1,0 +1,10 @@
+{
+  "method": "Unchanged198 signals against exact human195 source scaled with frozen198 gain. Correct only known algorithm latency: raw0,Speex512,DTLN384 samples; no estimated lag, gain or parameter search. Report full clip and contiguous0.5s blocks. Projection gain, centered correlation and scale-invariant target/residual ratio are diagnostics, not intelligibility or physical acceptance.",
+  "onsetSample": 31872,
+  "knownDelays": {
+    "raw": 0,
+    "speex": 512,
+    "dtln128": 384
+  },
+  "focus": "Second English mixed loses beginning in DTLN readings; first English near-only has blank Parakeet/Speex but full Nemotron. Compare all24 conditions, preserve weak or conflicting metrics."
+}

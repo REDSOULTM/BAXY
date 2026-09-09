@@ -1,0 +1,91 @@
+{
+  "development": [
+    {
+      "id": "fb76695707f5c912d07bcec0a43b24bec5ac354f27059113ceaff56b2131a8b1",
+      "text_literal": "Dime que hora es",
+      "source_references": [
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:40503",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:40543",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:40560",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        }
+      ],
+      "expected": "Current verified local time.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "62f9c6512803bdae2964f2a4ebc1a1ade6c70fc92c7a21690f42cd13130a241e",
+      "text_literal": "y la fecha?",
+      "source_references": [
+        {
+          "message_id": "msg_fd242736841f6d28c011",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:12346",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:54:53-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:12346",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-20T02:54:53-0400",
+          "turn_id": "20260620_025453_c32fa713",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Understand date follow-up and read current date.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "482bbb9128050f734a2e44f15c0bb1066848c6b18444a90c771061c030ff2534",
+      "text_literal": "what time is it?",
+      "source_references": [
+        {
+          "message_id": "msg_2270fc11f75c02d9bbda",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:35201",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T20:57:26-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:35201",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T20:57:26-0400",
+          "turn_id": "20260624_205726_7f827cc2",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Current verified local time in English.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    }
+  ],
+  "method": "Three consumed literal real-user inputs: clock, elliptical calendar date, English clock. Expect current local facts derived from each actual UTC/offset capture. No date paraphrase or synthetic user input. Same new diagnostic sequence, not an original contiguous historical conversation."
+}

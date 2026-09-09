@@ -1,0 +1,107 @@
+FFFF....                                                                 [100%]
+================================== FAILURES ===================================
+_ test_equivalent_useful_prose_is_not_rejected_for_sentence_count[hola-\xa1Hola! Soy Baxy, tu compa\xf1ero. \xbfEn qu\xe9 puedo ayudarte?-welcome] _
+
+user_text = 'hola'
+answer = '�Hola! Soy Baxy, tu compa�ero. �En qu� puedo ayudarte?'
+intent = 'welcome'
+
+    @pytest.mark.parametrize("user_text, answer, intent", [
+        ("hola", "�Hola! Soy Baxy, tu compa�ero. �En qu� puedo ayudarte?", "welcome"),
+        ("Hello", "Hello! I'm Baxy. What can I help you with?", "welcome"),
+        ("explica qu� es DNS en dos frases",
+         "DNS traduce nombres de dominio a direcciones IP. As� puedes usar un nombre f�cil de recordar.", "conversation"),
+        ("Explain encryption, pero en simple",
+         "El cifrado transforma tus datos para protegerlos. You need the key to read them.", "conversation"),
+    ])
+    def test_equivalent_useful_prose_is_not_rejected_for_sentence_count(
+        user_text: str, answer: str, intent: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(answer, intent, user_text, {
+            "situation": json.dumps({"kind": intent, "polarity": "success"}),
+        }) == ""
+E       AssertionError: assert 'too_many_sentences' == ''
+E         
+E         + too_many_sentences
+
+tests\test_c03_request_preservation.py:130: AssertionError
+_ test_equivalent_useful_prose_is_not_rejected_for_sentence_count[Hello-Hello! I'm Baxy. What can I help you with?-welcome] _
+
+user_text = 'Hello', answer = "Hello! I'm Baxy. What can I help you with?"
+intent = 'welcome'
+
+    @pytest.mark.parametrize("user_text, answer, intent", [
+        ("hola", "�Hola! Soy Baxy, tu compa�ero. �En qu� puedo ayudarte?", "welcome"),
+        ("Hello", "Hello! I'm Baxy. What can I help you with?", "welcome"),
+        ("explica qu� es DNS en dos frases",
+         "DNS traduce nombres de dominio a direcciones IP. As� puedes usar un nombre f�cil de recordar.", "conversation"),
+        ("Explain encryption, pero en simple",
+         "El cifrado transforma tus datos para protegerlos. You need the key to read them.", "conversation"),
+    ])
+    def test_equivalent_useful_prose_is_not_rejected_for_sentence_count(
+        user_text: str, answer: str, intent: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(answer, intent, user_text, {
+            "situation": json.dumps({"kind": intent, "polarity": "success"}),
+        }) == ""
+E       AssertionError: assert 'too_many_sentences' == ''
+E         
+E         + too_many_sentences
+
+tests\test_c03_request_preservation.py:130: AssertionError
+_ test_equivalent_useful_prose_is_not_rejected_for_sentence_count[explica qu\xe9 es DNS en dos frases-DNS traduce nombres de dominio a direcciones IP. As\xed puedes usar un nombre f\xe1cil de recordar.-conversation] _
+
+user_text = 'explica qu� es DNS en dos frases'
+answer = 'DNS traduce nombres de dominio a direcciones IP. As� puedes usar un nombre f�cil de recordar.'
+intent = 'conversation'
+
+    @pytest.mark.parametrize("user_text, answer, intent", [
+        ("hola", "�Hola! Soy Baxy, tu compa�ero. �En qu� puedo ayudarte?", "welcome"),
+        ("Hello", "Hello! I'm Baxy. What can I help you with?", "welcome"),
+        ("explica qu� es DNS en dos frases",
+         "DNS traduce nombres de dominio a direcciones IP. As� puedes usar un nombre f�cil de recordar.", "conversation"),
+        ("Explain encryption, pero en simple",
+         "El cifrado transforma tus datos para protegerlos. You need the key to read them.", "conversation"),
+    ])
+    def test_equivalent_useful_prose_is_not_rejected_for_sentence_count(
+        user_text: str, answer: str, intent: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(answer, intent, user_text, {
+            "situation": json.dumps({"kind": intent, "polarity": "success"}),
+        }) == ""
+E       AssertionError: assert 'too_many_sentences' == ''
+E         
+E         + too_many_sentences
+
+tests\test_c03_request_preservation.py:130: AssertionError
+_ test_equivalent_useful_prose_is_not_rejected_for_sentence_count[Explain encryption, pero en simple-El cifrado transforma tus datos para protegerlos. You need the key to read them.-conversation] _
+
+user_text = 'Explain encryption, pero en simple'
+answer = 'El cifrado transforma tus datos para protegerlos. You need the key to read them.'
+intent = 'conversation'
+
+    @pytest.mark.parametrize("user_text, answer, intent", [
+        ("hola", "�Hola! Soy Baxy, tu compa�ero. �En qu� puedo ayudarte?", "welcome"),
+        ("Hello", "Hello! I'm Baxy. What can I help you with?", "welcome"),
+        ("explica qu� es DNS en dos frases",
+         "DNS traduce nombres de dominio a direcciones IP. As� puedes usar un nombre f�cil de recordar.", "conversation"),
+        ("Explain encryption, pero en simple",
+         "El cifrado transforma tus datos para protegerlos. You need the key to read them.", "conversation"),
+    ])
+    def test_equivalent_useful_prose_is_not_rejected_for_sentence_count(
+        user_text: str, answer: str, intent: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(answer, intent, user_text, {
+            "situation": json.dumps({"kind": intent, "polarity": "success"}),
+        }) == ""
+E       AssertionError: assert 'too_many_sentences' == ''
+E         
+E         + too_many_sentences
+
+tests\test_c03_request_preservation.py:130: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_equivalent_useful_prose_is_not_rejected_for_sentence_count[hola-\xa1Hola! Soy Baxy, tu compa\xf1ero. \xbfEn qu\xe9 puedo ayudarte?-welcome]
+FAILED tests/test_c03_request_preservation.py::test_equivalent_useful_prose_is_not_rejected_for_sentence_count[Hello-Hello! I'm Baxy. What can I help you with?-welcome]
+FAILED tests/test_c03_request_preservation.py::test_equivalent_useful_prose_is_not_rejected_for_sentence_count[explica qu\xe9 es DNS en dos frases-DNS traduce nombres de dominio a direcciones IP. As\xed puedes usar un nombre f\xe1cil de recordar.-conversation]
+FAILED tests/test_c03_request_preservation.py::test_equivalent_useful_prose_is_not_rejected_for_sentence_count[Explain encryption, pero en simple-El cifrado transforma tus datos para protegerlos. You need the key to read them.-conversation]
+4 failed, 4 passed, 50 deselected in 0.94s

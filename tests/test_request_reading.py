@@ -51,14 +51,80 @@ def test_english_greetings_and_definitions_are_not_spanish() -> None:
     assert _message_response_language("abre Spotify and pause") == "mixed"
 
 
+@pytest.mark.parametrize("text", ["Me llamo Jordan.", "Te llamas Morgan.", "Se llama Lina."])
+def test_spanish_naming_clauses_do_not_depend_on_an_accented_name(text: str) -> None:
+    assert read_request(text, conversation_language="en").language == "es"
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("My name is Lina.", "en"),
+        ("Call me Lina.", "en"),
+        ("I see white llamas.", "en"),
+        ("These llamas are white.", "en"),
+        ("Me llamo Lina, reply in English.", "en"),
+        ("Me llamo Lina, and I'm ready.", "mixed"),
+    ],
+)
+def test_naming_does_not_override_english_or_an_explicit_language(text: str, expected: str) -> None:
+    assert read_request(text).language == expected
+
+
+@pytest.mark.parametrize(
+    "text, language, rejected",
+    [
+        ("I understand you're Álvaro. I've noted your name.", "es", True),
+        ("I understand you're Álvaro. I've noted your name.", "en", False),
+        ("Your name is José.", "es", True),
+        ("Your name is José.", "en", False),
+        ("Álvaro.", "en", False),
+        ("Álvaro.", "es", False),
+        ("Te llamas Jordan.", "en", True),
+        ("Te llamas Jordan.", "es", False),
+        ("Sí.", "en", True),
+        ("Sí.", "es", False),
+        ("Sé cómo hacerlo.", "en", True),
+        ("Your name is José.", "mixed", False),
+    ],
+)
+def test_reply_language_uses_the_sentence_instead_of_an_accented_name(
+    text: str, language: str, rejected: bool,
+) -> None:
+    assert llm_mod._reply_uses_opposite_language(text, language) is rejected
+
+
 def test_translation_and_explicit_language_win_over_the_text() -> None:
     assert _message_response_language("traduce buenos días al inglés") == "en"
     assert _message_response_language("translate good morning to spanish") == "es"
 
 
+@pytest.mark.parametrize("text", [
+    "responde en spanglish: qué es el cifrado",
+    "reply in spanglish: what is encryption",
+    "traduce esta explicación a spanglish",
+])
+def test_explicit_spanglish_is_a_language_request(text: str) -> None:
+    assert read_request(text).language == "mixed"
+
+
 def test_conversation_language_only_decides_without_evidence() -> None:
     assert read_request("Deimos", conversation_language="en").language == "en"
     assert read_request("open Deimos", conversation_language="es").language == "en"
+
+
+@pytest.mark.parametrize("previous_language", ["es", "en"])
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+        ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+    ],
+)
+def test_decision_verbs_supply_language_evidence(
+    text: str, expected: str, previous_language: str,
+) -> None:
+    assert read_request(text, conversation_language=previous_language).language == expected
 
 
 def test_a_greeting_with_a_request_keeps_the_request() -> None:
@@ -70,16 +136,15 @@ def test_a_greeting_with_a_request_keeps_the_request() -> None:
         reading = read_request(text)
         assert reading.greeting == "leading"
         assert reading.ask == expected
-        content = _compose_user_content(text, {}, "LANG", reading=reading)
+        content = _compose_user_content(text, {}, "LANG")
         assert text in content
 
     only = read_request("Good afternoon")
     assert only.greeting_only
-    assert "Good afternoon" not in _compose_user_content(
+    assert "Good afternoon" in _compose_user_content(
         "Good afternoon",
-        {"situation": {"greeting": "hi"}},
+        {},
         "LANG",
-        reading=only,
     )
 
 
@@ -184,7 +249,8 @@ def test_an_english_greeting_reaches_granite_in_english() -> None:
     assert captured[0]["messages"][0]["content"] == (
         llm_mod.GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT
     )
-    assert '"greeting": "hi"' in captured[0]["messages"][1]["content"]
+    assert "Good afternoon" in captured[0]["messages"][1]["content"]
+    assert '"greeting":' not in captured[0]["messages"][1]["content"]
     assert "hola" not in captured[0]["messages"][1]["content"]
 
 
@@ -243,6 +309,12 @@ def test_a_question_that_names_its_subject_is_not_elliptical(text: str) -> None:
         ("explain what DNS caching is in one sentence", "DNS caching"),
         ("qué es una VLAN, una frase", "VLAN"),
         ("define DNS in one sentence", "DNS"),
+        ("Explain gravity, pero sin tecnicismos", "gravity"),
+        ("Explain encryption, pero en simple", "encryption"),
+        ("Explica la gravedad sin tecnicismos", "gravedad"),
+        ("Explain gravity without jargon", "gravity"),
+        ("Explain encryption in simple terms", "encryption"),
+        ("Define gravity, but in plain language", "gravity"),
         ("¿Qué hora es?", None),
         ("abre la calculadora", None),
     ],
@@ -252,6 +324,34 @@ def test_the_topic_is_read_from_the_words_the_person_used(
     topic: str | None,
 ) -> None:
     assert reading_mod.request_topic(text) == topic
+
+
+@pytest.mark.parametrize(
+    ("text", "prior", "expected"),
+    [
+        ("ahora explicame que es Steam", ["El agua es h2o?"], True),
+        ("What is an SSID?", ["Explain air composition"], True),
+        ("define DNS", ["Explain encryption"], True),
+        ("Explain gravity, pero sin tecnicismos", ["Encryption is a code"], True),
+        ("Explain encryption, pero en simple", ["It is 23:34"], True),
+        ("Explain gravity, pero sin tecnicismos", ["We discussed gravity"], False),
+        ("Explain that, pero sin tecnicismos", ["A proxy forwards requests"], False),
+        ("Explain this error in simple terms", ["The application failed"], False),
+        ("Explain gravity and encryption in simple terms", ["A proxy"], False),
+        ("Explain gravity in simple terms using that example", ["A proxy"], False),
+        ("Explica gravedad en simple como lo anterior", ["Un proxy"], False),
+        ("define DNS", ["You mentioned DNS caching"], False),
+        ("¿Qué es eso?", ["Un proxy"], False),
+        ("explain that", ["A proxy forwards requests"], False),
+        ("qué es el error anterior", ["La aplicación falló"], False),
+        ("¿y para qué sirve?", ["qué es un proxy"], False),
+        ("abre Steam", ["El agua es h2o?"], False),
+    ],
+)
+def test_new_definition_context_preserves_references_and_known_subjects(
+    text: str, prior: list[str], expected: bool,
+) -> None:
+    assert reading_mod.starts_new_definition_topic(text, prior) is expected
 
 
 def test_the_followup_topic_comes_from_the_last_request_that_had_one() -> None:
@@ -507,6 +607,35 @@ def test_asking_what_the_product_does_is_read_by_its_shape(
     # «what do you handle», y esas preguntas se contestaban con una aclaración
     # construida con vocabulario del planificador (panel-opus-13/038, /052).
     assert intent in reading_mod.read_request(text).intents
+
+
+@pytest.mark.parametrize("text", [
+    "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo",
+    "No tú, dime quién soy yo.",
+    "Not you, tell me who I am.",
+    "Nunca te he dicho mi nombre, ¿quién soy?",
+    "No es tu nombre, es el mío. ¿Quién soy?",
+    "That is not your name. Who am I?",
+])
+def test_person_reference_negation_does_not_invent_a_product_limit(text: str) -> None:
+    reading = read_request(text)
+    assert "refuse" not in reading.intents
+    assert "capability" not in reading.intents
+    projected = _compose_situation_payload(
+        {"kind": "conversation", "polarity": "success"}, reading.language, text,
+    )
+    assert "beyond" not in projected
+
+
+@pytest.mark.parametrize("text", [
+    "¿Qué no sueles hacer?",
+    "¿En qué no me puedes ayudar?",
+    "What can you never do?",
+    "What are you not able to handle?",
+    "What can you not do here?",
+])
+def test_negation_bound_to_product_activity_still_marks_a_limit(text: str) -> None:
+    assert "refuse" in read_request(text).intents
 
 
 def test_asking_both_what_it_does_and_what_it_does_not_is_a_capability_ask() -> None:

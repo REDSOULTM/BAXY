@@ -169,7 +169,9 @@ public sealed class MissionPlanValidatorTests
 
     [TestCase("notification.dismiss", "notification.list.due")]
     [TestCase("reminder.delete", "reminder.resolve.exact")]
-    public void DeferredMutationFamiliesRequireTheirResolvers(
+    [TestCase("filesystem.read.text", "filesystem.search")]
+    [TestCase("filesystem.read.text", "filesystem.list")]
+    public void DeferredIdentityConsumersRequireTheirResolvers(
         string consumer,
         string producer)
     {
@@ -189,9 +191,12 @@ public sealed class MissionPlanValidatorTests
                 "Resuelve una identidad exacta.",
                 [],
                 "literal",
-                producer == "notification.list.due"
-                    ? Json("{}")
-                    : Json("""{"title":"Prueba"}""")),
+                producer switch
+                {
+                    "notification.list.due" or "filesystem.list" => Json("{}"),
+                    "filesystem.search" => Json("""{"query":"Prueba"}"""),
+                    _ => Json("""{"title":"Prueba"}"""),
+                }),
             Step(
                 "mutate",
                 consumer,

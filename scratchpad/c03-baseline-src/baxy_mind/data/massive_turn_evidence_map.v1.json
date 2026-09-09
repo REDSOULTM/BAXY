@@ -1,0 +1,53 @@
+{
+  "schema": "baxy.turn-evidence-source-map.v1",
+  "source": {
+    "name": "MASSIVE v1.1",
+    "download_url": "https://amazon-massive-nlu-dataset.s3.amazonaws.com/amazon-massive-dataset-1.1.tar.gz",
+    "project_url": "https://github.com/alexa/massive",
+    "license": "CC-BY-4.0",
+    "citation": "FitzGerald et al. (2023), MASSIVE: A 1M-Example Multilingual Natural Language Understanding Dataset",
+    "upstream_citation": "Bastianelli et al. (2020), SLURP: A Spoken Language Understanding Resource Package"
+  },
+  "selection": {
+    "locales": ["es-ES", "en-US"],
+    "require_empty_previous_turns": false,
+    "maximum_text_characters": 384,
+    "minimum_localized_judgments": 2,
+    "minimum_localized_grammar_score": 3
+  },
+  "labels": {
+    "alarm_set": {"mode": "action", "families": ["notification"], "rationale": "BAXY ya programa notificaciones locales."},
+    "alarm_query": {"mode": "action", "families": ["notification"], "rationale": "BAXY ya diagnostica notificaciones locales."},
+    "alarm_remove": {"mode": "action", "families": ["notification"], "rationale": "BAXY ya cancela la notificacion local mas reciente."},
+    "audio_volume_mute": {"mode": "action", "families": ["audio"], "rationale": "BAXY ya controla silencio de audio."},
+    "audio_volume_down": {"mode": "action", "families": ["audio"], "rationale": "BAXY ya ajusta volumen de audio."},
+    "audio_volume_other": {"mode": "action", "families": ["audio"], "rationale": "BAXY ya ajusta volumen de audio."},
+    "audio_volume_up": {"mode": "action", "families": ["audio"], "rationale": "BAXY ya ajusta volumen de audio."},
+    "calendar_query": {"mode": "action", "families": ["calendar"], "rationale": "BAXY ya lista eventos de calendario autenticado."},
+    "calendar_set": {"mode": "action", "families": ["calendar"], "rationale": "BAXY ya crea eventos de calendario autenticado."},
+    "cooking_query": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica en la web."},
+    "cooking_recipe": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica en la web."},
+    "datetime_query": {"mode": "action", "families": ["system"], "rationale": "BAXY ya consulta hora local del sistema."},
+    "general_greet": {"mode": "conversation", "families": [], "rationale": "Un saludo no solicita una operacion."},
+    "general_joke": {"mode": "conversation", "families": [], "rationale": "Una peticion de charla no solicita una operacion."},
+    "general_quirky": {"mode": "conversation", "families": [], "rationale": "Una peticion de charla no solicita una operacion."},
+    "news_query": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica en la web."},
+    "play_audiobook": {"mode": "action", "families": ["media"], "rationale": "BAXY ya reproduce y controla contenido multimedia."},
+    "play_game": {"mode": "action", "families": ["game"], "rationale": "BAXY ya expone catalogo, estado e inicio de juegos locales."},
+    "play_music": {"mode": "action", "families": ["media"], "rationale": "BAXY ya reproduce y controla contenido multimedia."},
+    "play_podcasts": {"mode": "action", "families": ["media"], "rationale": "BAXY ya reproduce y controla contenido multimedia."},
+    "play_radio": {"mode": "action", "families": ["media"], "rationale": "BAXY ya reproduce y controla contenido multimedia."},
+    "qa_currency": {"mode": "action", "families": ["web"], "rationale": "El valor actual se consulta mediante busqueda publica, no se inventa."},
+    "qa_definition": {"mode": "conversation", "families": [], "rationale": "Una definicion es una consulta conversacional."},
+    "qa_factoid": {"mode": "conversation", "families": [], "rationale": "Una pregunta factual es una consulta conversacional."},
+    "qa_maths": {"mode": "conversation", "families": [], "rationale": "Un calculo explicado es una consulta conversacional."},
+    "qa_stock": {"mode": "action", "families": ["web"], "rationale": "Un precio actual se consulta mediante busqueda publica, no se inventa."},
+    "recommendation_events": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica en la web."},
+    "recommendation_locations": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica en la web."},
+    "recommendation_movies": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica en la web."},
+    "takeaway_query": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica; no realiza pedidos."},
+    "transport_query": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica; no reserva transporte."},
+    "transport_traffic": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica de trafico."},
+    "weather_query": {"mode": "action", "families": ["web"], "rationale": "BAXY ya busca informacion publica de clima."}
+  }
+}

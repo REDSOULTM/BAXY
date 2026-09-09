@@ -1,0 +1,8 @@
+n=6 published=5 other=1
+
+001	t1	composition_failed	cierra aquello	composition_failed
+002	t2	published_final	cancelar	La clarificación fue cancelada.
+003	t3	published_final	¿Qué hora es?	Son las 07:07.
+004	t4	published_final	close that	Which window or object do you want me to close?
+005	t5	published_final	cancel that	Cancelled the clarification.
+006	t6	published_final	What is fourteen times six?	84

@@ -1,0 +1,196 @@
+{
+  "utc": "2026-09-08T02:32:12.239618+00:00",
+  "method": "Use existing LlmRuntime._resolve_contextual_answer, no new prompt or grammar, on actual319 user/assistant dialogue. Three identity/reference requests plus the next actual owner110 HDMI/VGA new-topic control. This changes the presentation path as a diagnostic, not production selection/authorization. Same registered model/backend/KV profile, standalone hidden server, no desktop UI or effects. Native replies319 remain baseline.",
+  "criteria": "Recognize Emmanuel from the supplied user turn, distinguish BAXY and person, keep the new topic free of name/memory contamination. Preserve pending failures and no unverified memory claim. Existing resolver can be considered only after contextual and new-topic regression; no adoption on one phrase.",
+  "modelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "args": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "57485",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cont-batching"
+  ],
+  "cases": [
+    {
+      "request": "Yo soy el",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Cómo estás?"
+        },
+        {
+          "role": "user",
+          "content": "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte"
+        },
+        {
+          "role": "user",
+          "content": "mhhhhhh amigo deberias poder"
+        },
+        {
+          "role": "assistant",
+          "content": "Mmm, sí, pero no pude entender bien la solicitud. Vamos a intentarlo de nuevo."
+        },
+        {
+          "role": "user",
+          "content": "me llamo emmanuel, dime hola emmanuel"
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Emmanuel! 😎"
+        }
+      ]
+    },
+    {
+      "request": "quien soy",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Cómo estás?"
+        },
+        {
+          "role": "user",
+          "content": "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte"
+        },
+        {
+          "role": "user",
+          "content": "mhhhhhh amigo deberias poder"
+        },
+        {
+          "role": "assistant",
+          "content": "Mmm, sí, pero no pude entender bien la solicitud. Vamos a intentarlo de nuevo."
+        },
+        {
+          "role": "user",
+          "content": "me llamo emmanuel, dime hola emmanuel"
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Emmanuel! 😎"
+        },
+        {
+          "role": "user",
+          "content": "Yo soy el"
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Y tú cómo te llamas? 😎"
+        }
+      ]
+    },
+    {
+      "request": "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Cómo estás?"
+        },
+        {
+          "role": "user",
+          "content": "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte"
+        },
+        {
+          "role": "user",
+          "content": "mhhhhhh amigo deberias poder"
+        },
+        {
+          "role": "assistant",
+          "content": "Mmm, sí, pero no pude entender bien la solicitud. Vamos a intentarlo de nuevo."
+        },
+        {
+          "role": "user",
+          "content": "me llamo emmanuel, dime hola emmanuel"
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Emmanuel! 😎"
+        },
+        {
+          "role": "user",
+          "content": "Yo soy el"
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Y tú cómo te llamas? 😎"
+        },
+        {
+          "role": "user",
+          "content": "quien soy"
+        }
+      ]
+    },
+    {
+      "request": "Un hdmi es igual a un vga no",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Cómo estás?"
+        },
+        {
+          "role": "user",
+          "content": "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte"
+        },
+        {
+          "role": "user",
+          "content": "mhhhhhh amigo deberias poder"
+        },
+        {
+          "role": "assistant",
+          "content": "Mmm, sí, pero no pude entender bien la solicitud. Vamos a intentarlo de nuevo."
+        },
+        {
+          "role": "user",
+          "content": "me llamo emmanuel, dime hola emmanuel"
+        },
+        {
+          "role": "assistant",
+          "content": "Hola Emmanuel! 😎"
+        },
+        {
+          "role": "user",
+          "content": "Yo soy el"
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! ¿Y tú cómo te llamas? 😎"
+        },
+        {
+          "role": "user",
+          "content": "quien soy"
+        },
+        {
+          "role": "user",
+          "content": "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo"
+        },
+        {
+          "role": "assistant",
+          "content": "Yo soy BAXY, un compañero que solo hace lo que este PC le pide y nada más."
+        }
+      ],
+      "new_topic_control": true
+    }
+  ]
+}

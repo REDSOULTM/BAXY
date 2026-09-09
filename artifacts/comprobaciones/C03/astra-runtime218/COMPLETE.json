@@ -1,0 +1,14 @@
+{
+  "nativeMathPass": 8,
+  "voicePass": 91,
+  "correctorPass": 6,
+  "wheelPass": 1,
+  "lockFinalPass": 12,
+  "skips": 0,
+  "initialCombined": "109pass/1fail; obsolete version string in mutation test corrected",
+  "fastExitCode": 0,
+  "lockCheckExitCode": 0,
+  "releaseSeconds": 2.93,
+  "productNativeParity": 63,
+  "semanticAcceptance": false
+}

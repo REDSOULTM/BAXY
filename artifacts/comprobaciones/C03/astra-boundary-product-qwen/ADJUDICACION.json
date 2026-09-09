@@ -1,0 +1,50 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t7": {
+    "verdict": "FALLO DE CONTINUIDAD",
+    "reason": "La pregunta se publicó como conversación sin conservar aclaración pendiente; confirmado en la siguiente corrida de continuación."
+  },
+  "t8": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t9": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  }
+}

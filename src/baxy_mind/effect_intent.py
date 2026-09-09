@@ -506,6 +506,14 @@ def _public_live_lookup_request(folded: str) -> bool:
     )
 
 
+def _nominal_datetime_query(folded: str) -> bool:
+    return re.fullmatch(
+        r"(?:(?:y|and)\s+)?(?:(?:la|el|the)\s+)?"
+        r"(?:hora|fecha|time|date)[\s?!.]*",
+        folded.lstrip("¿¡ "),
+    ) is not None
+
+
 def _direct_current_time_request(folded: str) -> bool:
     """Recognize a direct request for the computer's current local time."""
 
@@ -676,6 +684,9 @@ def operation_domain_is_grounded(
     text: str,
     operation: str,
     application_names: Iterable[str] | ApplicationCatalogIndex = (),
+    *,
+    previous_user_text: str | None = None,
+    available_operations: Iterable[str] = (),
 ) -> bool | None:
     """Apply the curated one-sided family gates.
 
@@ -711,9 +722,71 @@ def operation_domain_is_grounded(
         # verifier may revive the latter; it must not revive the former.
         return False
     verdict = _curated_domain_is_grounded(text, operation, application_names)
+    if (
+        verdict is False
+        and operation == "audio.volume"
+        and previous_user_text
+        and _contextual_output_level_target(text, previous_user_text, available_operations)
+    ):
+        return True
     if verdict is not None:
         return verdict
     return _uncovered_family_floor(_fold(text), operation)
+
+
+def _completed_missing_volume_level_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+) -> str | None:
+    """Attach a numeric answer only to a unique, incomplete local-level request.
+
+    Both surfaces are user-authored reference data. The ordinary resolver still
+    checks the resulting request, including every current denial and effect.
+    An assistant question or a completed earlier action cannot supply this target.
+    """
+    if not previous_user_text:
+        return None
+    clauses = _request_clauses(_strip_request_envelope(_fold(text)))
+    if not clauses or re.fullmatch(
+        r"(?:(?:a|al|to|at)\s+)?(?:100|\d{1,2})\s*"
+        r"(?:%|por ciento|percent)?[\s,.!?]*",
+        clauses[0],
+    ) is None:
+        return None
+    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
+    if prior is None or prior.operations != ("audio.volume",) or prior.missing_fields != ("level",):
+        return None
+    return f"{previous_user_text.strip()}\n{text}"
+
+
+def _contextual_output_level_target(
+    text: str, previous_user_text: str, available_operations: Iterable[str],
+) -> bool:
+    """Ground a numeric pronoun target in the immediately preceding audio request.
+
+    This only checks the domain of a proposed absolute-level operation. It does
+    not choose the operation, extract its value or claim an observed level.
+    Full-clause matching keeps another object or effect outside this inheritance.
+    """
+    folded = _strip_request_envelope(_fold(text))
+    if re.fullmatch(
+        r"(?:(?:pon|fija|ajusta|deja|establece)(?:lo|la)\s+(?:a|al)|"
+        r"(?:set|put|leave|adjust)\s+it\s+(?:to|at))\s+"
+        r"\d{1,3}\s*(?:%|por ciento|percent)?"
+        r"(?:\s+(?:ahora|now|please|por favor))?[.!?]*",
+        folded,
+    ) is None:
+        return False
+    # A list of earlier targets is not a unique antecedent, even when the
+    # audio recognizer can account for one part of that request.
+    if _has(_fold(previous_user_text), r"\b(?:y|and|o|or)\b|;"):
+        return False
+    prior = resolve_explicit_effects(previous_user_text, available_operations)
+    return (
+        prior is not None
+        and len(prior.operations) == 1
+        and prior.operations[0] in {"audio.status", "audio.volume", "audio.volume.adjust"}
+        and operation_domain_is_grounded(previous_user_text, prior.operations[0]) is True
+    )
 
 
 _FILESYSTEM_OBJECT_NOUN = (
@@ -810,16 +883,20 @@ def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
         )
     if operation.startswith("filesystem."):
         return (
-            _has(folded, r"\b(?:clon(?:a|ar|ame)|clone)\b")
-            and _has(folded, r"\b(?:disco|disk|drive|hdd|ssd)\b")
-            and not _has(folded, _FILESYSTEM_OBJECT_NOUN)
-        ) or (
-            operation in {"filesystem.trash.restore", "filesystem.trash.commit"}
-            and _has(folded, r"\b(?:desfragmenta|desfragmentar|defrag)\b")
-        ) or (
-            operation == "filesystem.write.text"
-            and _has(folded, r"\b(?:formatea|formatear|format)\b")
-            and _has(folded, r"\b(?:pendrive|usb|disco|disk)\b")
+            (
+                _has(folded, r"\b(?:clon(?:a|ar|ame)|clone)\b")
+                and _has(folded, r"\b(?:disco|disk|drive|hdd|ssd)\b")
+                and not _has(folded, _FILESYSTEM_OBJECT_NOUN)
+            )
+            or (
+                operation in {"filesystem.trash.restore", "filesystem.trash.commit"}
+                and _has(folded, r"\b(?:desfragmenta|desfragmentar|defrag)\b")
+            )
+            or (
+                operation == "filesystem.write.text"
+                and _has(folded, r"\b(?:formatea|formatear|format)\b")
+                and _has(folded, r"\b(?:pendrive|usb|disco|disk)\b")
+            )
         )
     if operation in {"media.seek.relative", "media.control"}:
         return _has(
@@ -871,13 +948,17 @@ def operation_identity_is_a_near_miss(text: str, operation: str) -> bool:
             r"dolares?|dollars?|transfer(?:e|ir|iere)?|transfiere)\b",
         ) and not _has(folded, r"\b(?:steam|juego|game)\b")
     if operation == "note.create":
-        return _has(
-            folded,
-            r"\b(?:call|llama|llamame|phone)\b",
-        ) and _has(
-            folded,
-            r"\b(?:madre|mother|mom|papa|father|dad)\b",
-        ) and not _has(folded, r"\b(?:nota|note|notas|notes)\b")
+        return (
+            _has(
+                folded,
+                r"\b(?:call|llama|llamame|phone)\b",
+            )
+            and _has(
+                folded,
+                r"\b(?:madre|mother|mom|papa|father|dad)\b",
+            )
+            and not _has(folded, r"\b(?:nota|note|notas|notes)\b")
+        )
     if operation == "system.status":
         return _has(folded, r"\b(?:antivirus|virus)\b") and not _has(
             folded,
@@ -999,14 +1080,13 @@ def _curated_domain_is_grounded(
         # Closing something on screen needs the screen named: an authenticated
         # application, or the literal window/program vocabulary.
         applications = build_application_catalog_index(application_names)
-        return (
-            _authenticated_application_target(folded, applications) is not None
-            or _has(
-                folded,
-                r"\b(?:aplicacion|aplicaciones|application|applications|app|apps|"
-                r"programa|programas|program|programs|ventana|ventanas|"
-                r"window|windows|pestana|pestanas|tab|tabs|proceso|process)\b",
-            )
+        return _authenticated_application_target(
+            folded, applications
+        ) is not None or _has(
+            folded,
+            r"\b(?:aplicacion|aplicaciones|application|applications|app|apps|"
+            r"programa|programas|program|programs|ventana|ventanas|"
+            r"window|windows|pestana|pestanas|tab|tabs|proceso|process)\b",
         )
     if operation == "backup.list":
         return (
@@ -1193,9 +1273,7 @@ def _curated_domain_is_grounded(
             )
         )
     if operation == "filesystem.hash":
-        if _has(folded, r"\bhash\b") and _has(
-            folded, r"\b(?:archivo|file)\b"
-        ):
+        if _has(folded, r"\bhash\b") and _has(folded, r"\b(?:archivo|file)\b"):
             return True
         return None
     if operation == "filesystem.list":
@@ -1474,6 +1552,12 @@ def _curated_domain_is_grounded(
             and not _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")
         )
     if operation == "system.time":
+        # A nominal clock/calendar query is still compatible with this domain.
+        # The contextual policy selects the operation; this one-sided veto must
+        # not require the person to repeat a verb in an elliptical follow-up.
+        # A qualified date (an event, person or historical date) is not covered.
+        if _nominal_datetime_query(folded):
+            return True
         return _has(
             folded,
             (
@@ -2652,7 +2736,11 @@ def resolve_explicit_clarification_intent(
         incomplete_message_shape = False
     relative_spoken_volume = (
         re.fullmatch(
-            r"(?:speak|talk)\s+(?:softer|quieter|louder)(?:\s+please)?[.!?]*",
+            r"(?:(?:speak|talk)\s+(?:softer|quieter|louder)|"
+            r"turn\s+(?:(?:the\s+)?volume\s+(?:up|down)|"
+            r"(?:up|down)\s+(?:the\s+)?volume)|"
+            r"(?:raise|lower|increase|decrease)\s+(?:the\s+)?volume)"
+            r"(?:\s+please)?[.!?]*",
             folded,
             re.IGNORECASE,
         )
@@ -2877,10 +2965,22 @@ def resolve_explicit_clarification_intent(
     if (
         "app.open" in available
         and _head_is(_request_head(folded), _OPEN)
-        and _has(
-            folded,
-            r"\b(?:navegador\s+por\s+defecto|default\s+browser|"
-            r"(?:la\s+|the\s+)?ventana|window)\b",
+        and (
+            # A generic app object is missing an identity, not a capability.
+            # Consume the whole request so a named target or added instruction
+            # stays with its ordinary argument/domain handling.
+            re.fullmatch(
+                rf"[¿?¡!\s]*{_OPEN}\s+(?:(?:un|una|a|an|el|la|the)\s+)?"
+                r"(?:aplicacion|application|app|programa|program)"
+                r"(?:\s*[,;]?\s*(?:por\s+favor|please))?[\s.!?]*",
+                folded,
+            )
+            is not None
+            or _has(
+                folded,
+                r"\b(?:navegador\s+por\s+defecto|default\s+browser|"
+                r"(?:la\s+|the\s+)?ventana|window)\b",
+            )
         )
         and not _has(folded, _KNOWN_APPLICATION)
         and not _has(folded, r"\b(?:incognito|incognita|privada|private)\b")
@@ -2954,6 +3054,20 @@ def resolve_explicit_clarification_intent(
         )
     ):
         return ClarificationIntent(("media.play.query",), ("query",))
+    if (
+        "audio.volume" in available
+        and re.fullmatch(
+            rf"{_SET_VOLUME_VERB}\s+(?:(?:el|the)\s+)?(?:volumen|volume)"
+            r"(?:\s+(?:(?:al?|del?)\s+(?:sistema|equipo|pc|computador(?:a)?|ordenador)|"
+            r"(?:of|on)\s+(?:the|my)\s+(?:system|computer|pc)))?"
+            r"(?:\s*,?\s*(?:please|por favor))?[.!?]*",
+            folded,
+        ) is not None
+    ):
+        # The same setting head with no target level is incomplete, not a
+        # request to observe the previous level. Preserve the known operation
+        # before the native selector can repeat an earlier status request.
+        return ClarificationIntent(("audio.volume",), ("level",))
     if (
         "audio.volume.adjust" in available
         and (
@@ -3389,7 +3503,7 @@ def resolve_application_catalog_app_id(
     """Resolve one conservative provider input from the authenticated snapshot."""
 
     catalog = build_application_catalog_index(application_names)
-    folded = _fold(text)
+    folded = _strip_request_envelope(_fold(text))
     target = _authenticated_application_target(folded, catalog)
     if target is None:
         target = _authenticated_application_desired_open(folded, catalog)
@@ -3983,6 +4097,10 @@ _EXPLICIT_NON_ACTION_FRAME = (
     r")"
 )
 _REQUEST_PREFIX = (
+    # A language directive changes presentation, not the following speech act.
+    # Require its separator; quoted content and unclosed clauses stay literal.
+    r"(?:(?:(?:responde|contesta)\s+en|(?:answer|reply|respond)\s+in)\s+"
+    r"(?:espa[nñ]ol|ingl[eé]s|spanish|english|spanglish)\s*:\s*|"
     # Prefer the longest, most specific local-task frames before the generic
     # courtesy token below; otherwise ``Please handle ...`` would lose only
     # ``Please`` and leave the rest of the wrapper as apparent request text.
@@ -4014,8 +4132,18 @@ _REQUEST_PREFIX = (
     rf"good morning|good afternoon|good evening|hello|hi|hey)\s*[,;:.!?]{_PREFIX_GAP}|"
     r"(?:(?:che|oye|oiga|hey|ey|ok|okay|hola|hello|hi|escucha|listen|"
     r"a ver)\s+)?"
-    rf"baxy\s*[,;:.!?\-\u2013\u2014]?{_PREFIX_GAP})?"
+    rf"baxy\s*[,;:.!?\-\u2013\u2014]?{_PREFIX_GAP})?)"
 )
+# The shared prefix is large; compile it once for the repeated head reads.
+_EXPLICIT_DESIRE_REQUEST = re.compile(
+    rf"^[¿?¡!\s]*{_REQUEST_PREFIX}"
+    r"(?:(?:i|we)\s+(?:need|want|would\s+like)\s+(?:you\s+)?to|"
+    r"i['’]?d\s+like\s+to|(?:yo\s+)?(?:quiero|quisiera|necesito)"
+    r"(?:\s+que)?)\s+(?:(?:lo|la|me)\s+)?"
+    r"(?P<body>(?P<head>[a-z]+)\b.*)$",
+    re.IGNORECASE,
+)
+
 # Una cola de cierre social no cambia el acto de habla: sólo anuncia que el
 # pedido terminó. La gramática es acotada y simétrica con la del parser privado
 # de memoria en `Baxy.App`; ambas fronteras deben quitar exactamente la misma
@@ -4073,10 +4201,25 @@ def _strip_request_envelope(text: str) -> str:
 
     current = _strip_trailing_social_closure(text).rstrip()
     for _ in range(6):
+        # Agreement is not an extra effect when a separate, explicit request
+        # follows it. Reuse the clause reader's action heads, including a
+        # negative command, rather than stripping agreement from statements
+        # such as "sí, sí, te oigo" or treating a conditional as a preface.
         found = _match(
             current,
-            rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?P<body>.+)$",
+            r"^[¿?¡!\s]*(?:s[ií]|yes|ok(?:ay)?|perfecto|perfect)\s*[,;:.!]+\s*"
+            r"(?P<body>.+)$",
         )
+        if found is not None and not (
+            _head_is(_request_head(found.group("body")), _COVERAGE_ACTION_HEAD)
+            or _negative_action_forms(found.group("body"))
+        ):
+            found = None
+        if found is None:
+            found = _match(
+                current,
+                rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?P<body>.+)$",
+            )
         if found is None or found.start("body") == 0:
             break
         body = found.group("body")
@@ -4110,7 +4253,24 @@ def explicit_non_action_frame(text: str) -> bool:
     return explicit_non_action_body(text) is not None
 
 
+def _explicit_desire_request(text: str) -> re.Match[str] | None:
+    # A need/desire introduces a request only when its next head is an
+    # explicit effect verb. Inspect it before the literal first word so a
+    # Spanish "quiero/necesito" cannot hide that verb. A denial, condition or
+    # noun remains opaque; the frame never removes words from literal payloads.
+    desired = _EXPLICIT_DESIRE_REQUEST.match(text)
+    return (
+        desired
+        if desired is not None and _head_is(desired.group("head"), _COVERAGE_ACTION_HEAD)
+        else None
+    )
+
+
 def _request_head(text: str) -> str:
+    text = _negative_state_question_body(text) or text
+    desired = _explicit_desire_request(text)
+    if desired is not None:
+        return desired.group("head")
     found = _match(
         text,
         rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?P<head>[a-z]+)",
@@ -4119,18 +4279,15 @@ def _request_head(text: str) -> str:
         head = found.group("head")
         if head not in {"i", "yo"}:
             return head
-    # Desire framing is transparent only when the next token is itself the
-    # action head. Keep it out of ``_REQUEST_PREFIX`` so anchored parsers do
-    # not strip the same words from literal payloads.
-    desired = _match(
+    # Preserve the original non-action heads (for example "write" in a note
+    # request) for readers whose vocabulary is broader than clause boundaries.
+    legacy_desire = _match(
         text,
-        (
-            r"^[¿?¡!\s]*(?:i\s+(?:want|would\s+like)\s+to|"
-            r"i['’]?d\s+like\s+to|yo\s+quiero|quiero|quisiera)\s+"
-            r"(?P<head>[a-z]+)"
-        ),
+        r"^[¿?¡!\s]*(?:i\s+(?:want|would\s+like)\s+to|"
+        r"i['’]?d\s+like\s+to|yo\s+quiero|quiero|quisiera)\s+"
+        r"(?P<head>[a-z]+)",
     )
-    return desired.group("head") if desired is not None else ""
+    return legacy_desire.group("head") if legacy_desire is not None else ""
 
 
 def _head_is(head: str, pattern: str) -> bool:
@@ -4146,6 +4303,55 @@ def _is_builtin_keyboard_request(text: str) -> bool:
     )
 
 
+def explicit_negative_constraint(text: str) -> bool:
+    """Recognize a standalone prohibition for prose, never operation authority.
+
+    Reuse the existing action-head vocabulary. Spanish negative imperatives
+    use subjunctive endings rather than the affirmative command forms in that
+    vocabulary. A negated statement or a compound request stays with the normal
+    reader; neither a leading ``no`` nor a device noun proves a prohibition.
+    """
+
+    folded = _strip_request_envelope(_fold(text))
+    if any(mark in folded for mark in ("?", "¿", ";", ",")):
+        return False
+    if re.search(r"\b(?:y|and|pero|but|sino)\b", folded):
+        return False
+    if len(_request_clauses(folded)) != 1:
+        return False
+    return bool(_negative_action_forms(folded))
+
+
+def _negative_action_forms(folded: str) -> tuple[str, ...]:
+    """Project a prohibited action for scope comparison, never execution."""
+
+    found = re.match(
+        r"^[¡!\s]*(?:(?P<es>no|nunca|jamas)\s+"
+        r"(?:(?:me|lo|la|los|las|nos)\s+)?|(?:never|don't|dont|do\s+not)\s+)"
+        r"(?P<verb>[a-z]+)\b",
+        folded,
+    )
+    if found is None:
+        return ()
+    verb = found.group("verb")
+    if found.group("es"):
+        candidates = {"pongas": "pon", "hagas": "haz", "vayas": "ve"}
+        heads = [candidates.get(verb, "")]
+        for ending, replacement in (
+            ("es", "a"), ("as", "e"), ("ces", "za"),
+            ("ques", "ca"), ("gues", "ga"),
+        ):
+            if verb.endswith(ending):
+                heads.append(verb[:-len(ending)] + replacement)
+    else:
+        heads = [verb]
+    return tuple(
+        head + folded[found.end():]
+        for head in dict.fromkeys(heads)
+        if re.fullmatch(_COVERAGE_ACTION_HEAD, head)
+    )
+
+
 def _is_negative_effect_clause(text: str) -> bool:
     # A closed yes/no answer envelope is not an instruction negation.  Strip
     # only that leading envelope, then still fail closed if the actual clause
@@ -4157,10 +4363,25 @@ def _is_negative_effect_clause(text: str) -> bool:
         count=1,
         flags=re.IGNORECASE,
     )
+    # A negated state question asks for evidence; it does not prohibit the
+    # observation. Imperatives (including questions such as "no cierres?")
+    # and incomplete retractions keep the prohibition boundary below.
+    if _negative_state_question_body(text) is not None:
+        return False
     return _has(
         text,
-        r"^[¿?¡!\s]*(?:no|nunca|jamas|never|don'?t|do\s+not)\b",
+        r"^[¿?¡!\s]*(?:no|nunca|jamas|never|don'?t|do\s+not|"
+        r"(?:i|we)\s+(?:don'?t|do\s+not)|(?:yo|nosotros)\s+no)\b",
     )
+
+
+def _negative_state_question_body(text: str) -> str | None:
+    """Expose the state-query head while retaining the original request as data."""
+
+    if "?" not in text and "¿" not in text:
+        return None
+    found = _match(text, r"^[¿?¡!\s]*no\s+(?=(?:esta|estan)\b)")
+    return text[found.end():] if found is not None else None
 
 
 def _is_social_clause(text: str) -> bool:
@@ -4326,7 +4547,8 @@ def _machine_status_is_the_whole_clause(text: str) -> bool:
             r"\b(?:hora|horas|time|fecha|date)\b|"
             r"\b(?:ip|direccion ip|ip address)\b|"
             r"\b(?:red|network|wi[\s-]?fi|internet|conexion|connection)\b|"
-            r"\b(?:bluetooth|perifericos?|peripherals?)\b"
+            r"\b(?:bluetooth|perifericos?|peripherals?)\b|"
+            r"\b(?:cuentas?|usuarios?|accounts?|user(?:name)?s?)\b"
         ),
     )
 
@@ -4573,6 +4795,8 @@ def _network_status_domain(text: str) -> bool:
 def _volume_domain(text: str) -> bool:
     if _has_app_scoped_audio(text):
         return False
+    if _has(text, r"\b(?:data\s+volume|volumen\s+de\s+datos)\b"):
+        return False
     if _has(text, r"\b(?:audio|sonido|sound)\b"):
         return True
     if _has(
@@ -4596,7 +4820,10 @@ def _volume_domain(text: str) -> bool:
     volume = _match(text, r"\b(?:volumen|volume)\b")
     if volume is None:
         return False
-    suffix = text[volume.end() :].lstrip()
+    # A comma/semicolon separates the same modifiers already handled below;
+    # it does not turn "volume, please" into an unknown non-audio domain.
+    # Keep the modifier checks: "volumen, de ventas" is still not PC audio.
+    suffix = text[volume.end() :].lstrip(" \t,;")
     if not suffix or re.match(r"^[?!.]", suffix):
         return True
     modifier = _match(
@@ -4655,9 +4882,13 @@ def _volume_domain(text: str) -> bool:
 # Verbos que ponen o quitan el silencio global. «apaga» y «activa» solo
 # cuentan con un objeto de audio explícito, porque también gobiernan el equipo
 # y otros dispositivos.
+_UNMUTE_VERB = (
+    r"(?:unmute|desmutea(?:me|lo|la)?|desmutear(?:lo|la)?|desmutees|"
+    r"des(?:s)?ilenci(?:a(?:r(?:lo|la)?|me|lo|la)?|es))"
+)
 _MUTE_VERB = (
     r"(?:silencia|silenciar|silenciame|silencialo|silenciala|mutea|mutear|muteame|"
-    r"mute|unmute|desmutea|desmutear|reactiva|reactivar|reactivalo|"
+    rf"mute|{_UNMUTE_VERB}|reactiva|reactivar|reactivalo|"
     r"reactivala|apaga|apagar|activa|activar)"
 )
 # «apaga»/«activa» también gobiernan el equipo, la pantalla o la radio; solo
@@ -4702,12 +4933,17 @@ def _audio_mute_domain(text: str) -> bool:
             r"(?:en|in|on)\s+(?:mudo|silencio|mute|silent)\b|"
             r"\bturn\s+(?:the\s+)?(?:audio|sound|volume)\s+back\s+on\b|"
             # Órdenes elípticas inequívocas: sólo existe un silencio global.
-            r"^[¿?¡!\s]*(?:unmute|desmutea|desmutear|desmuteame)"
-            r"(?:\s+(?:it|please|por favor|todo|everything|el audio|"
+            rf"^[¿?¡!\s]*{_UNMUTE_VERB}"
+            r"(?:\s+(?:it|please|pls|plz|por favor|porfa|todo|everything|el audio|"
             r"the audio))?[\s?!.]*$"
         ),
     )
 
+
+_SET_VOLUME_VERB = (
+    r"(?:pon(?:me|le)?|poner|fija|ajusta|adjust|establece|set|"
+    r"cambia|change|deja|dejame|leave)"
+)
 
 # Señales de que se pregunta por el nivel actual de audio, no por cambiarlo.
 _AUDIO_LEVEL_CUE = (
@@ -4794,7 +5030,7 @@ def _has_app_scoped_audio(text: str) -> bool:
         text,
         (
             rf"\b(?:audio|sonido|sound|musica|music|volumen|volume)\s+"
-            rf"(?:de|del|of)\s+(?:la\s+|el\s+|the\s+|mi\s+|my\s+)?"
+            rf"(?:a|al|de|del|of|to)\s+(?:la\s+|el\s+|the\s+|mi\s+|my\s+)?"
             rf"{_AUDIO_APPLICATION_SCOPE}\b|"
             rf"\b(?:en|on)\s+(?:spotify|chrome|opera|edge|firefox|discord|"
             rf"zoom|teams|youtube|netflix)\b|"
@@ -4824,9 +5060,42 @@ def _browser_page_domain(text: str) -> bool:
     return not document_domain or explicit_browser
 
 
+def explicit_window_title(text: str) -> str | None:
+    """Copy one explicitly named window title; never infer a process or HWND."""
+    matches = tuple(
+        re.finditer(
+            r"\b(?:ventana|window)\s+(?:titulada|titled|llamada|called|named|"
+            r"(?:con|with)(?:\s+(?:el|the))?\s+(?:t[ií]tulo|title|nombre|name))\s+",
+            text,
+            re.IGNORECASE,
+        )
+    )
+    if len(matches) != 1:
+        return None
+    title = text[matches[0].end() :].strip()
+    if not title:
+        return None
+    quotes = {'"': '"', "'": "'", "«": "»", "“": "”", "‘": "’"}
+    closing = quotes.get(title[0])
+    if closing is not None:
+        end = title.find(closing, 1)
+        if end < 0 or title[end + 1 :].strip(" .!?"):
+            return None
+        title = title[1:end]
+    return title if title.strip() and len(title) <= 260 and "\0" not in title else None
+
+
+def has_named_window_target(text: str) -> bool:
+    # The same literal relation serves recognition and argument grounding.
+    # It supplies a query, never authority over an unobserved window.
+    return explicit_window_title(text) is not None
+
+
 def _window_domain(text: str) -> bool:
     if not _has(text, r"\b(?:ventana|window)\b"):
         return False
+    if has_named_window_target(text):
+        return True
     if _has(
         text,
         (
@@ -5225,17 +5494,32 @@ def _media_play_domain(text: str) -> bool:
 def _has_unsupported_deferred_effect(text: str) -> bool:
     """Veto immediate execution when the request actually asks for later."""
 
+    # Retaining a fact for a later question is not scheduling its write. Only
+    # remove that subordinate purpose, leaving an earlier "tomorrow" or a
+    # separate coordinated action visible to the existing timing check.
+    deferred_scope = re.sub(
+        rf"\b(?:recuerda|recuerdes|recordar|remember|recall)\b"
+        rf"(?!\s+(?:to\s+)?(?:{_COVERAGE_ACTION_HEAD})\b)"
+        rf"(?:(?!\b(?:y|and)\s+(?:(?:luego|despues|then)\s+)?"
+        rf"(?:{_COVERAGE_ACTION_HEAD})\b)[^.!?;,]){{0,160}}?"
+        r"(?P<purpose>\b(?:(?:para|for)\s+)?(?:"
+        r"cuando\s+te\s+(?:lo\s+)?pregunte(?:\s+de\s+nuevo)?|"
+        r"when\s+i\s+ask(?:\s+you)?(?:\s+again)?)\b)"
+        r"(?=\s*(?:[.!?;,]|$))",
+        lambda match: match.group(0)[:match.start("purpose") - match.start()] + " ",
+        text,
+        flags=re.IGNORECASE,
+    )
     # Timing words inside a quoted message are payload, not scheduling for the
     # send operation itself: `send ... message “I arrive in ten minutes”` must
     # remain an immediate send. Timing outside the quote is deliberately kept,
     # so `send ... at seven` continues to fail closed until a scheduled-send
     # operation exists in the authenticated catalog.
-    deferred_scope = text
     if _head_is(_request_head(text), r"(?:envia|enviar|manda|mandar|send)"):
         deferred_scope = re.sub(
             r"«[^»]*»|“[^”]*”|‘[^’]*’|\"[^\"]*\"|'[^']*'",
             " ",
-            text,
+            deferred_scope,
         )
     # These phrases sequence a second explicit action; they do not defer the
     # mission to a later real-world event. Keep ``after that meeting`` and
@@ -5760,11 +6044,11 @@ def _fully_enumerated_note_read_order(
         return ()
     ordered: list[int] = []
     for found in re.finditer(
-            rf"\b(?:la|el|the)?\s*(?P<ordinal>{_ORDINAL_WORD}|middle|last)\s+"
-            r"(?:nota|note)\b",
-            text,
-            re.IGNORECASE,
-        ):
+        rf"\b(?:la|el|the)?\s*(?P<ordinal>{_ORDINAL_WORD}|middle|last)\s+"
+        r"(?:nota|note)\b",
+        text,
+        re.IGNORECASE,
+    ):
         word = found.group("ordinal")
         if word == "middle":
             if total_count is None or total_count < 3 or total_count % 2 == 0:
@@ -5886,7 +6170,32 @@ def enumerated_note_dependency_order(text: str) -> tuple[int, ...]:
 
 
 def _is_meta_or_tool_denial(text: str) -> bool:
-    """Reject descriptions, how-to questions, quotations, and denied tools."""
+    """Decline lexical recognition of definitions as well as explicit constraints."""
+
+    return _is_definition_question(text) or _is_explicit_meta_or_tool_denial(text)
+
+
+def _is_definition_question(text: str) -> bool:
+    """A syntactic hint for the recognizer, not an execution prohibition."""
+
+    return (
+        _has(
+            text,
+            r"^[Â¿?Â¡!\s]*(?:que\s+es|que\s+son|what\s+(?:is|are|es)|"
+            r"para\s+que\s+sirve|explain\s+what)\b",
+        )
+        and not _has(
+            text,
+            r"\b(?:actual|actualmente|ahora|current|currently|right\s+now|"
+            r"volumen|volume|hora|time|fecha|date|estado|status|"
+            r"sonando|playing|usando|using)\b",
+        )
+        and not _has(text, r"^what\s+is\s+going\s+on\b")
+    )
+
+
+def _is_explicit_meta_or_tool_denial(text: str) -> bool:
+    """Recognize explicit how-to, quotation and no-tool constraints."""
 
     supported_live_status_question = (
         re.match(r"^[¿?¡!\s]*tell\s+me\s+how\b", text, re.IGNORECASE) is not None
@@ -5905,23 +6214,8 @@ def _is_meta_or_tool_denial(text: str) -> bool:
             )
         )
     )
-    definition_question = (
-        _has(
-            text,
-            r"^[Â¿?Â¡!\s]*(?:que\s+es|que\s+son|what\s+(?:is|are|es)|"
-            r"para\s+que\s+sirve|explain\s+what)\b",
-        )
-        and not _has(
-            text,
-            r"\b(?:actual|actualmente|ahora|current|currently|right\s+now|"
-            r"volumen|volume|hora|time|fecha|date|estado|status|"
-            r"sonando|playing|usando|using)\b",
-        )
-        and not _has(text, r"^what\s+is\s+going\s+on\b")
-    )
     return (
-        definition_question
-        or (
+        (
             _has(
                 text,
                 (
@@ -5963,6 +6257,11 @@ def _is_meta_or_tool_denial(text: str) -> bool:
 def _is_negated_match(text: str, found: re.Match[str]) -> bool:
     """Treat a nearby clause-local negation as a veto, never as an effect."""
 
+    state_question = _negative_state_question_body(text)
+    if state_question is not None:
+        # Keep character offsets: the matched observation belongs to the
+        # original evidence, and any later prohibition remains visible.
+        text = " " * (len(text) - len(state_question)) + state_question
     prefix = text[max(0, found.start() - 80) : found.start()]
     boundary = max(
         prefix.rfind(","),
@@ -6025,9 +6324,7 @@ _KNOWN_APPLICATION = (
     r"configuracion(?:es)?(?: de windows)?|windows settings)"
 )
 _NOTEPAD_OBJECT = r"\b(?:(?:bloc|app|coso)\s+de\s+notas|notepad)\b"
-_DUPLICATE_FILES = (
-    r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b"
-)
+_DUPLICATE_FILES = r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b"
 _CONNECTED_INVENTORY = (
     r"\b(?:cosas?|things?|dispositivos?|devices?|perifericos?|peripherals?|"
     r"accesorios?|accessories)\b.{0,48}"
@@ -6081,12 +6378,12 @@ _SEARCH = r"(?:busca|buscar|encuentra|search|find|look\s+up)"
 # resolved, the whole deterministic path abstains instead of executing a
 # recognized prefix and silently dropping the rest of the request.
 _COVERAGE_ACTION_HEAD = (
-    rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|"
-    r"haz|toma|captura|take|capture|pon|deja|dejar|put|leave|"
-    r"fija|ajusta|adjust|establece|set|sube|baja|bajalo|subelo|aumenta|"
-    r"pone|ponme|arranca|cambia|cambiar|change|get rid|"
-    r"reduce|increment|decrease|silencia|silenciame|mute|unmute|mutea|mutear|desmutea|"
-    r"desmutear|quita|quitar|saca|sacar|maximiza|minimiza|"
+    rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
+    r"haz|toma|captura|take|capture|dejar|put|"
+    r"sube|baja|bajalo|subelo|aumenta|"
+    r"pone|arranca|cambiar|get rid|"
+    rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
+    r"quita|quitar|saca|sacar|maximiza|minimiza|"
     r"sacale|"
     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
@@ -6130,7 +6427,9 @@ _COVERAGE_ACTION_HEAD = (
 _SEQUENCE_NOMINAL_HEAD = r"(?:alarma|alarm|recordatorio|reminder)"
 
 
-def _has_contradictory_correction(text: str) -> bool:
+def _has_contradictory_correction(
+    text: str, available_operations: Iterable[str] = (),
+) -> bool:
     """Reject an earlier effect when a later adversative clause revokes it."""
 
     # ``yes or no`` asks for a binary answer; its ``or`` is not an alternative
@@ -6143,6 +6442,45 @@ def _has_contradictory_correction(text: str) -> bool:
         count=1,
         flags=re.IGNORECASE,
     )
+    # With the real catalog, the reader and conservation veto can prove that
+    # a complete prohibition concerns a
+    # different operation from every positive clause. Retractions without an
+    # object and overlapping operations cannot be discharged this way.
+    available = frozenset(available_operations)
+    if available:
+        clauses = _request_clauses(text)
+        positives = tuple(c for c in clauses if not _is_negative_effect_clause(c))
+        negatives = tuple(c for c in clauses if _is_negative_effect_clause(c))
+        if positives and negatives:
+            applications = build_application_catalog_index(())
+            positive_intents = tuple(
+                _resolve_explicit_effects_single(
+                    c, available, application_names=applications,
+                ) for c in positives
+            )
+            if all(intent is not None for intent in positive_intents):
+                positive_operations = {
+                    op for intent in positive_intents if intent is not None
+                    for op in intent.operations
+                }
+                independent = True
+                for clause in negatives:
+                    forms = _negative_action_forms(clause)
+                    intents = tuple(
+                        _resolve_explicit_effects_single(
+                            form, available, application_names=applications,
+                        )
+                        for form in forms
+                    )
+                    recognized = tuple(i for i in intents if i is not None)
+                    if not recognized or any(
+                        positive_operations.intersection(intent.operations)
+                        for intent in recognized
+                    ):
+                        independent = False
+                        break
+                if independent:
+                    text = "; ".join(positives)
     # Preserving the authored sequence is a positive mission constraint, not
     # a revocation of the requested effects. Remove only that bounded phrase;
     # any independent ``but do not ...`` clause remains visible below.
@@ -6188,7 +6526,7 @@ def _has_contradictory_correction(text: str) -> bool:
         or _has(
             text,
             (
-                r"(?:[,;.]|\b(?:pero|aunque|but|though)\b)\s*"
+                r"(?:[,;.!?]|\b(?:pero|aunque|but|though)\b)\s*"
                 r"(?:(?:mejor|en realidad|actually|on second thought)\s+)?"
                 r"(?:no\b|don'?t\b|do\s+not\b|better\s+not\b)|"
                 r"\b(?:mejor\s+no|en realidad\s+no|better\s+not|"
@@ -6302,9 +6640,9 @@ def _review_local_data_effects(
 ) -> bool:
     """Append clause-local data effects and report explicit web-search intent."""
 
-    if _head_is(
-        head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)"
-    ) and not _has(folded, r"\b(?:nota|note)\b"):
+    if _head_is(head, r"(?:anota|anotar|anotame|apunta|apuntame|jot)") and not _has(
+        folded, r"\b(?:nota|note)\b"
+    ):
         _append(
             matches,
             folded,
@@ -6892,6 +7230,7 @@ _MACHINE_STATUS_OBSERVATION_HEAD = (
 def _is_direct_request(text: str) -> bool:
     """Require a request speech act before granting deterministic authority."""
 
+    text = _negative_state_question_body(text) or text
     request_head = (
         rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_MUTE_VERB}|"
         r"haz|hacer|hazme|haceme|hace|toma|tomar|fotografia|fotografiar|"
@@ -6991,6 +7330,11 @@ def _strict_catalog_request(
     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
     # at most one remaining non-semantic layer for surface invariance.
     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
+    desired = _explicit_desire_request(text)
+    if desired is not None:
+        # A need for an explicit action is not a noun-only request to observe
+        # the mentioned domain. Restrict this normalization to effect readers.
+        text = desired.group("body")
     text = re.sub(
         r"^(?:primero|first)\s*[,;:]?\s+",
         "",
@@ -7556,11 +7900,11 @@ def _strict_catalog_request(
             for item in found_domains
             if item[1] != "note.list" or _note_inventory_object(text)
         ]
-        if any(operation == "filesystem.known.duplicates" for _, operation in found_domains):
+        if any(
+            operation == "filesystem.known.duplicates" for _, operation in found_domains
+        ):
             found_domains = [
-                item
-                for item in found_domains
-                if item[1] != "filesystem.known.search"
+                item for item in found_domains if item[1] != "filesystem.known.search"
             ]
         installed_game_catalog = next(
             (
@@ -7768,9 +8112,7 @@ def _strict_catalog_request(
             found_domains = [
                 item for item in found_domains if item[1] != "system.status"
             ]
-        if any(
-            operation == "audio.status" for _, operation in found_domains
-        ) and _has(
+        if any(operation == "audio.status" for _, operation in found_domains) and _has(
             text,
             r"\b(?:a la mitad|to half|bajito|bajalo|subelo)\b",
         ):
@@ -8942,7 +9284,9 @@ def _review_system_and_network_effects(
         folded,
         (
             r"\b(?:time\s+now|que\s+hora\s+es(?:\s+ahora)?|what\s+time\s+is\s+it"
-            r"(?:\s+now)?|dime\s+la\s+hora(?:\s+local)?|"
+            r"(?:\s+now)?|(?:dime|muestra|show(?:\s+me)?|tell\s+me)\s+"
+            r"(?:(?:la|the)\s+)?(?:local\s+)?(?:hora|fecha|time|date)"
+            r"(?:\s+local)?|"
             r"hora\s+(?:actual|local)|(?:current|local)\s+time|"
             r"que\s+fecha\s+es(?:\s+hoy)?|"
             r"fecha\s+(?:de\s+)?hoy|today(?:'s)?\s+date|"
@@ -9234,16 +9578,8 @@ def _review_audio_effects(
                 r"\b(?:sube|subir|baja|bajar|aumenta|reduce|increment|decrease)\b",
             )
         elif (
-            _head_is(
-                head,
-                r"(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
-                r"cambia|change|deja|dejame|leave)",
-            )
-            and _has(
-                folded,
-                r"\b(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
-                r"cambia|change|deja|dejame|leave)\b",
-            )
+            _head_is(head, _SET_VOLUME_VERB)
+            and _has(folded, rf"\b{_SET_VOLUME_VERB}\b")
             and (
                 _has(folded, r"(?:\b\d{1,3}\b|\bpor ciento\b|%)")
                 or _literal_percentage_word_value(folded) is not None
@@ -9253,8 +9589,7 @@ def _review_audio_effects(
                 matches,
                 folded,
                 "audio.volume",
-                r"\b(?:pon|poner|ponme|fija|ajusta|adjust|establece|set|"
-                r"cambia|change|deja|dejame|leave)\b",
+                rf"\b{_SET_VOLUME_VERB}\b",
             )
         elif context_audio and _has(
             folded,
@@ -9267,8 +9602,7 @@ def _review_audio_effects(
                 r"\d{1,3}",
             )
         already_set_volume = any(
-            entry[2] in {"audio.volume", "audio.volume.adjust"}
-            for entry in matches
+            entry[2] in {"audio.volume", "audio.volume.adjust"} for entry in matches
         )
         level_query = (
             not already_set_volume
@@ -9654,9 +9988,7 @@ def _review_file_and_game_effects(
             "filesystem.file.open.latest",
             rf"\b{_OPEN}\b",
         )
-    if _has(folded, r"\bhash\b") and _has(
-        folded, r"\b(?:archivo|file)\b"
-    ):
+    if _has(folded, r"\bhash\b") and _has(folded, r"\b(?:archivo|file)\b"):
         _append(matches, folded, "filesystem.hash", r"\bhash\b")
     if (
         _head_is(head, r"(?:que|cuales|what|which)")
@@ -9782,7 +10114,8 @@ def _review_application_and_window_effects(
     if (
         _head_is(head, r"(?:cierra|cerra|cerrar|close|cierralo|cierrala)")
         and (
-            (
+            has_named_window_target(folded)
+            or (
                 _has(folded, r"\b(?:cierra|cerra|cerrar|close)\b")
                 and _has(
                     folded,
@@ -10665,6 +10998,12 @@ def _resolve_explicit_effects_single(
     """Resolve effects inside one request clause with bounded prior context."""
 
     folded = _fold(text)
+    desired = _explicit_desire_request(folded)
+    if desired is not None:
+        # This clause is now being read for effects. Keep the original need
+        # frame visible to the earlier conversation/clarification readers;
+        # only anchored operation matchers consume the explicit action body.
+        folded = desired.group("body")
     available = frozenset(available_operations)
     authenticated_request = _authenticated_application_request(
         folded,
@@ -10863,10 +11202,12 @@ def _request_clauses(text: str) -> tuple[str, ...]:
         rf"(?=[¿?¡!\s]*(?!(?:reproducela|reproducelo|play it|"
         rf"leerla con ocr|leerlo con ocr|read it with ocr)\b)"
         rf"(?:{action_after_clause}|{elliptical_head}|"
-        rf"{_SEQUENCE_NOMINAL_HEAD})\b)"
+        rf"{_SEQUENCE_NOMINAL_HEAD}|como\s+esta|how\s+is|"
+        rf"what\s+time|que\s+hora)\b)"
     )
     separator = re.compile(
         (
+            r"\s*[,;.!?]\s*(?=(?:no|nunca|jamas|never|don't|do\s+not)\b)|"
             rf"\s*(?:(?:[.;!?]+|[,;]\s*(?:y|and)?)\s*{next_action_head}|"
             rf";\s*{next_nominal_head}|"
             r"(?:[,;]\s*)?\b(?:y despues|y luego|and then|"
@@ -10876,17 +11217,33 @@ def _request_clauses(text: str) -> tuple[str, ...]:
             rf"(?:[,;]\s*)?\b(?:(?:y|and)\s+)?(?:finalmente|finally)\b"
             rf"\s*[,;:]?\s*"
             rf"{next_effect_head}|"
-            r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:no|nunca|jamas|never|"
+            r"\b(?:y|and|pero|but)\b\s*(?=[¿?¡!\s]*(?:no|nunca|jamas|never|"
             r"don'?t|do\s+not)\b)|"
             r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:gracias|thanks|thank you|"
             r"por favor|please|que tengas (?:un )?buen dia)\b)|"
+            rf"\b(?:pero|but)\b\s*{next_action_head}|"
             rf"\b(?:y|and)\b\s*{next_effect_head})\s*"
         ),
         re.IGNORECASE,
     )
+    # A conjunction inside quoted payload is not a boundary between requests.
+    # Mask only for locating separators; slice the original so literal content
+    # and evidence survive unchanged. Word boundaries keep don't/it's from
+    # opening a single-quoted payload.
+    boundary_text = re.sub(
+        r'«[^»]*»|“[^”]*”|‘[^’]*’|"[^\"]*"|(?<!\w)\'[^\']*\'(?!\w)',
+        lambda match: "x" * len(match.group(0)),
+        text,
+    )
+    parts = []
+    start = 0
+    for boundary in separator.finditer(boundary_text):
+        parts.append(text[start:boundary.start()])
+        start = boundary.end()
+    parts.append(text[start:])
     clauses = tuple(
         clause
-        for clause in (part.strip() for part in separator.split(text))
+        for clause in (part.strip() for part in parts)
         if clause and re.search(r"\w", clause, re.UNICODE) is not None
     )
     return _normalize_dependent_clauses(clauses)
@@ -10968,14 +11325,14 @@ _STATUS_DOMAIN_NOMINAL = (
     r"(?:audio|network|red|system|sistema|wifi|bluetooth|bateria|battery|"
     r"disco|disk|memoria|memory|cpu|gpu|sonido|sound)"
 )
-_COORDINATED_STATUS_TAIL = re.compile(
-    rf"\s+(?:y|and)\s+(?=(?:(?:el|la|the)\s+)?{_STATUS_DOMAIN_NOMINAL}"
-    r"\s+(?:status|state|estado)\b)",
-    re.IGNORECASE,
-)
 _STATUS_NOMINAL_ITEM = (
-    rf"(?:(?:el|la|los|las|the)\s+)?{_STATUS_DOMAIN_NOMINAL}"
-    r"\s+(?:status|state|estado)"
+    rf"(?:(?:el|la|los|las|the)\s+)?(?:{_STATUS_DOMAIN_NOMINAL}"
+    rf"(?:\s+(?:status|state|estado|usage))?|(?:estado|uso)\s+(?:del?|de\s+la)\s+"
+    rf"{_STATUS_DOMAIN_NOMINAL}|hora|fecha|time|date|volumen|volume)"
+)
+_COORDINATED_STATUS_TAIL = re.compile(
+    rf"\s*(?:,\s*(?:(?:y|and)\s+)?|\b(?:y|and)\s+)(?={_STATUS_NOMINAL_ITEM}\b)",
+    re.IGNORECASE,
 )
 # Splitting a coordination is only safe when the whole clause is nothing but
 # coordinated status nominals. Otherwise a segment the recognizer cannot
@@ -10989,7 +11346,7 @@ _PURE_COORDINATED_STATUS_CLAUSE = re.compile(
     r"show|dime|tell\s+me|consulta|lee|read|dame|give\s+me)\s+)?"
     rf"{_STATUS_NOMINAL_ITEM}"
     rf"(?:\s*,\s*{_STATUS_NOMINAL_ITEM})*"
-    rf"\s+(?:y|and)\s+{_STATUS_NOMINAL_ITEM}[\s.!?]*$",
+    rf"\s*,?\s+(?:y|and)\s+{_STATUS_NOMINAL_ITEM}[\s.!?]*$",
     re.IGNORECASE,
 )
 
@@ -11089,6 +11446,8 @@ _STRICT_COMPOSITION_NOMINAL_OPERATIONS = (
 
 
 def _strict_composition_nominal_operation(segment: str) -> str | None:
+    if _nominal_datetime_query(segment):
+        return "system.time"
     observation_head = (
         r"(?:(?:reporta?|show|muestra|consulta|lee|read|enumera|list|"
         r"give|dame|revisa|revisar|check|comprueba|comprobar|"
@@ -11991,6 +12350,8 @@ def resolve_explicit_effects(
     available_operations: Iterable[str],
     application_names: Iterable[str] | ApplicationCatalogIndex = (),
     game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
+    *,
+    previous_user_text: str | None = None,
 ) -> EffectIntent | None:
     """Resolve a bounded sequence of clause-local, closed-catalog effects."""
 
@@ -11998,6 +12359,23 @@ def resolve_explicit_effects(
         return None
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     available = frozenset(available_operations)
+    completed_level_request = _completed_missing_volume_level_request(
+        text, previous_user_text, available,
+    )
+    if completed_level_request is not None:
+        return resolve_explicit_effects(
+            completed_level_request, available, application_names, game_catalog,
+        )
+    if (previous_user_text and "system.time" in available
+            and _nominal_datetime_query(folded)):
+        # Inherit only the immediately preceding, independently resolved clock
+        # request. The assistant's prose cannot authorize a read or manufacture
+        # a referent; another topic or an absent antecedent stays unresolved.
+        previous = resolve_explicit_effects(
+            previous_user_text, available, application_names, game_catalog,
+        )
+        if previous is not None and previous.operations == ("system.time",):
+            return EffectIntent(("system.time",), (folded,))
     authenticated_applications = build_application_catalog_index(
         application_names,
     )
@@ -12010,10 +12388,7 @@ def resolve_explicit_effects(
     if not folded or len(folded) > 16_384:
         return None
     note_dependency_order = enumerated_note_dependency_order(folded)
-    if (
-        note_dependency_order
-        and {"note.create", "note.read"} <= available
-    ):
+    if note_dependency_order and {"note.create", "note.read"} <= available:
         note_count = len(note_dependency_order)
         operations = ("note.create",) * note_count + ("note.read",) * note_count
         return EffectIntent(operations, tuple(folded for _ in operations))
@@ -12557,7 +12932,7 @@ def resolve_explicit_effects(
         shared_domain_minimum = max(2, shared_domain_minimum or 0)
     if (
         _is_meta_or_tool_denial(folded)
-        or _has_contradictory_correction(folded)
+        or _has_contradictory_correction(folded, available)
         or _other_device_effect_scope(folded)
         or (
             _has_unsupported_deferred_effect(folded)
@@ -12937,6 +13312,7 @@ def unresolved_compound_contract(
     game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
     *,
     resolved_intent: EffectIntent | None | object = (_EXPLICIT_EFFECTS_NOT_RESOLVED),
+    previous_user_text: str | None = None,
 ) -> CompoundEffectContract | None:
     """Describe a compound whose positive clauses are not all recognized.
 
@@ -12948,9 +13324,17 @@ def unresolved_compound_contract(
     operation identity cannot be proved by this operation-only recognizer.
     """
 
+    available = tuple(available_operations)
+    completed_level_request = _completed_missing_volume_level_request(
+        text, previous_user_text, available,
+    )
+    if completed_level_request is not None:
+        return unresolved_compound_contract(
+            completed_level_request, available, application_names, game_catalog,
+            resolved_intent=resolved_intent,
+        )
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     clauses = _request_clauses(folded)
-    available = tuple(available_operations)
     authenticated_applications = build_application_catalog_index(
         application_names,
     )
@@ -13010,8 +13394,7 @@ def unresolved_compound_contract(
     benign_trash_prepare_without_commit = (
         isinstance(resolved_intent, EffectIntent)
         and resolved_intent.operations == ("filesystem.trash.prepare",)
-        and exact_catalog_operation_plan(folded)
-        == ("filesystem.trash.prepare",)
+        and exact_catalog_operation_plan(folded) == ("filesystem.trash.prepare",)
     )
     benign_routine_catalog_question = (
         isinstance(resolved_intent, EffectIntent)
@@ -13041,10 +13424,16 @@ def unresolved_compound_contract(
             _is_negative_effect_clause(folded)
             or any(_is_negative_effect_clause(clause) for clause in clauses)
         )
+        # A negative clause is not a global ban on an independent positive
+        # clause. The full semantic request still carries its constraints;
+        # conservation below counts positive effects, not negative statements.
+        # Standalone negatives, explicit tool denial, corrections and device
+        # restrictions retain their separate fail-closed contracts.
+        and len(clauses) < 2
         and not benign_exhaustive_report
         and not benign_trash_prepare_without_commit
         or (
-            _has_contradictory_correction(folded)
+            _has_contradictory_correction(folded, available)
             and not benign_media_alternative
             and not benign_asr_catalog_report
             and not benign_product_correction
@@ -13052,7 +13441,12 @@ def unresolved_compound_contract(
             and not benign_game_correction
             and not benign_trash_prepare_without_commit
         )
-        or (_is_meta_or_tool_denial(folded) and not benign_routine_catalog_question)
+        # A "what is" envelope can ask for a personal observation. Leaving
+        # it to semantic selection is not a missing clause or a no-tool order.
+        or (
+            _is_explicit_meta_or_tool_denial(folded)
+            and not benign_routine_catalog_question
+        )
         or _other_device_effect_scope(folded)
     ):
         return CompoundEffectContract(1, ())

@@ -1,0 +1,10 @@
+{
+  "scope": "Native first-draft progress diagnostic, not publication acceptance",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_PROGRESO82.md": "c2e5f588277bc9b156a4cb2449cf677f0b7e395fe5a07c47087aa0772eddea2c",
+    "artifacts/comprobaciones/C03/astra-progress-baseline82/PREREG.json": "d7e008cd83f16fedd81725d1f407413084483c245e51946788ead1f82f275a76",
+    "artifacts/comprobaciones/C03/astra-progress-baseline82/RESULT.json": "54da9b013f7675adabcccf9f545563156e17b966d9ac5625e6a0ca6509a68153",
+    "artifacts/comprobaciones/C03/astra-progress-baseline82/posts.jsonl": "353f467616747e5cf4c031052aa6ff376cb78f71b6f02101a896e7418bad5fb4",
+    "scratchpad/c03-progress-baseline82.py": "30e320996643b82833151d921d7858a843ea735b75292a5782be3b67c3ffe4ee"
+  }
+}

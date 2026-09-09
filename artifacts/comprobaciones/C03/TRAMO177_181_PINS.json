@@ -1,0 +1,336 @@
+{
+  "public": [
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-timing177\\PREREG.json",
+      "sha256": "1e0f66fb8a2934c9a1110d46a972425b0720f483af7aefd184696321a89b79d0",
+      "bytes": 473
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-timing177\\RESULTS.json",
+      "sha256": "78de42dbe5bfc1eb0085284e0c81931e3d06220431e953cc8aa185efa026ead5",
+      "bytes": 6683
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-timing177\\INPUT_INDEX.json",
+      "sha256": "b4285b1767699626d634867c181d6c1dc838f744b501dd02e2f937559ea95213",
+      "bytes": 1236
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\PREREG.json",
+      "sha256": "89196b252995b3854607231430efbcac00a94619d1b0c3858cce224d426d6f54",
+      "bytes": 1539
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\RESULTS.json",
+      "sha256": "e41de3057d4418ef57ce3bf56ed0fd566ad9f2be00973d4f29be1c93345616b3",
+      "bytes": 3446
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\BUILD.json",
+      "sha256": "e639f877ca0cb217719a466f3c0b3ae780a274001ecdb24b646cb5e87140e5cb",
+      "bytes": 426
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\PRIVATE_INDEX.json",
+      "sha256": "5a932f634d1a247ede7d840720d78b828ca3aba75c81d4222b13e726019c2322",
+      "bytes": 3416
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\c03-gain178-build.log",
+      "sha256": "f6c1834e89fce07f3b728cebb0d72f8be993daa67d723c05500b51c42c509945",
+      "bytes": 6090
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\c03-gain178-build-retry.log",
+      "sha256": "e51c378ee631f8a1cbcb53f31fc4295dd02923fdfad055ea01e8256976cdf618",
+      "bytes": 1278
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\c03-gain178-evaluate.log",
+      "sha256": "9a8cd0383799006a2472c329ee0af91a313418c639098e45b53c7f5f3fb7851c",
+      "bytes": 2661
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\CMakeLists.txt.patch",
+      "sha256": "99b2fff04595e19743e3787beb6061c48fca895f6e8d83f24785a48fbfe58145",
+      "bytes": 999
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-gain178\\webrtc_audio_bindings.cpp.patch",
+      "sha256": "fc7a7588e4c6e9ec83774053316f6a55d57ef0d8067692e86cd6e66782b8ee82",
+      "bytes": 795
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\PREREG.json",
+      "sha256": "bfd348fae98793ec02e242e50ee370ca7dd3a83297ae00be2cc4f6716a139906",
+      "bytes": 943
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\DOWNLOADS.json",
+      "sha256": "509913da7525afe5883c0e3b32d57144f7a881310b21b923a571d90569ed23a7",
+      "bytes": 2118
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\RUNTIME_METADATA.json",
+      "sha256": "3708b3bebd76eb4b51fdfcf9492df5f0e1d305252c919466a3a1b6b2974ac75f",
+      "bytes": 648
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\INPUTS.json",
+      "sha256": "5017952d695239399b99d438ceea77841389c28470a5e4957440e27d260dd130",
+      "bytes": 1656
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\RESULTS.json",
+      "sha256": "fca0151b709a9c92c222ed348ae2186daa087a114cc0c528dcce35c60d982fa1",
+      "bytes": 2600
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\PRIVATE_INDEX.json",
+      "sha256": "6daf9baad8b730f64f85a3d09d8c50799942b99b91b7a3deb03ab401de94ee98",
+      "bytes": 1148
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\COMPLETE.json",
+      "sha256": "0ae3e0a723eab1b27155fba8247403a12595d5d403968b18a2029ad335d4cff6",
+      "bytes": 210
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln179\\c03-dtln179-evaluate.log",
+      "sha256": "b6ae9c817be39b34b152c6894b2a84d0e03b16dc97dd41ff3b0c1ef25ab8ad57",
+      "bytes": 2162
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\PREREG.json",
+      "sha256": "b133932636aa8d9b4125b51e1ecb579256cab3c7df3767207f3e70f75181a212",
+      "bytes": 723
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\DOWNLOADS.json",
+      "sha256": "fd29e0cd1f0f1967b483f924154cc67acbba8ed996681527c29ef4ed83b48d17",
+      "bytes": 1608
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\INPUTS.json",
+      "sha256": "5017952d695239399b99d438ceea77841389c28470a5e4957440e27d260dd130",
+      "bytes": 1656
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\RESULTS.json",
+      "sha256": "7b86d50c9af7009af5a39ec682c5e016448acb935f3699e4444a8c79bbb1f55a",
+      "bytes": 2618
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\PRIVATE_INDEX.json",
+      "sha256": "74b746cff5de7a29ada13132bff1e220fa42e1ccec7c1c2bc381e071b7a5c227",
+      "bytes": 1148
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\COMPLETE.json",
+      "sha256": "0ae3e0a723eab1b27155fba8247403a12595d5d403968b18a2029ad335d4cff6",
+      "bytes": 210
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dtln180\\c03-dtln180-evaluate.log",
+      "sha256": "e9e88d44eb3518fbfd4bc956c7a1dbe2984531c66aeb97cd90e9835ffc169dc2",
+      "bytes": 2180
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe181\\PREREG.json",
+      "sha256": "efb63cd6e9fe64c14559b43a326e2fb506c572e03ea436e5b0da86788357d031",
+      "bytes": 479
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe181\\RESULTS.json",
+      "sha256": "964fae53706a81c8ec2ee7b14cf6ab57156bd1025d9f2a3dcf7216a420ed7920",
+      "bytes": 1559
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe181\\c03-observe181.log",
+      "sha256": "cc31c7c48f34ecd85b901ef2ee4cac3c38fe575f0d8c748071f13c17cefa403c",
+      "bytes": 1250
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_AEC177_178.md",
+      "sha256": "25fc33422930e298f4aa80bdd28540e644fc2d904b72418de0072c59f1900662",
+      "bytes": 3000
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_DTLN179_181.md",
+      "sha256": "92de20abe95aed5c273f1a42c08290056e4ebc7dcc8327e9aabf4f57406833b7",
+      "bytes": 6181
+    },
+    {
+      "path": "scratchpad\\c03-timing177.py",
+      "sha256": "5c9dad0afd9d3b0025036c8dcb01b805d1f9fcc982ef1a1834c2fd4b86f9d3e5",
+      "bytes": 3681
+    },
+    {
+      "path": "scratchpad\\c03-prepare178.py",
+      "sha256": "e29eb22c7e7e09bebc3c0294a5c808d188bbf07be5073d37527213bc6c3a40da",
+      "bytes": 2964
+    },
+    {
+      "path": "scratchpad\\c03-prepare-evaluation178.py",
+      "sha256": "fbeab022274bede35a169d7f2a51780019fda231ed8c704a04361b869d45dcfe",
+      "bytes": 1049
+    },
+    {
+      "path": "scratchpad\\c03-evaluate178.py",
+      "sha256": "f0407316c32348859dcd3f6352cfa80edb0456a102c23f826fa013a0fbbc9715",
+      "bytes": 5877
+    },
+    {
+      "path": "scratchpad\\c03-prepare179.py",
+      "sha256": "a4591bcc8cd2919bb53ec106fb5a964befb05d9b1e3aa6713edd8d2f1d19e695",
+      "bytes": 3456
+    },
+    {
+      "path": "scratchpad\\c03-evaluate179.py",
+      "sha256": "a02459601efc6839bf7c3d0f39f95d3070ff89baad1598a7bba8e382e35367cd",
+      "bytes": 6780
+    },
+    {
+      "path": "scratchpad\\c03-prepare180.py",
+      "sha256": "266c776aab51597f7c3f91adff5d099f3dd46b1e62a1b2dbfef410a7f94da911",
+      "bytes": 2866
+    },
+    {
+      "path": "scratchpad\\c03-evaluate180.py",
+      "sha256": "9f5f18bd4e0dca4d31e1683e1fe38f9a8b9fb5c3e2b79085762450731e0d2f9f",
+      "bytes": 6915
+    },
+    {
+      "path": "scratchpad\\c03-observe181.py",
+      "sha256": "bd3a0ef780dbad7b6613a24c873b9170e75e5ae2e01bc108d46b7aceba366c9b",
+      "bytes": 2547
+    }
+  ],
+  "private": [
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\cold_silence-final.wav",
+      "bytes": 64044,
+      "sha256": "20eaebffe1816e0ffa6f7f854f5ef4ea80d5349faaf0ce1fec1b713e7fde58fa"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\cold_silence-linear.wav",
+      "bytes": 64044,
+      "sha256": "20eaebffe1816e0ffa6f7f854f5ef4ea80d5349faaf0ce1fec1b713e7fde58fa"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\cold_silence-metrics.json",
+      "bytes": 3245,
+      "sha256": "439cac84592199854e4db600868a8e948c4a9fb13567c584d4dcc797a3c77936"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\native_echo149-final.wav",
+      "bytes": 270124,
+      "sha256": "0d1f67de4fc765c63c3054b90176cfb1a3bd30baf8c068975d849c393d5ad2b0"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\native_echo149-linear.wav",
+      "bytes": 270124,
+      "sha256": "39ca68abddea658f95f233cbcdbc91d6cf11df3103657c8c2a7984f50291ed1e"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\native_echo149-metrics.json",
+      "bytes": 13887,
+      "sha256": "34f1ca5ee1a4ac1f4f87de51c6d76f80076370f30bcdc98c39a48d917756c49d"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\near_only-final.wav",
+      "bytes": 1017644,
+      "sha256": "8b69b65b011dee666ca7312c769492c47e49bb4a2fd6fe056a4f008d5407f7cf"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\near_only-linear.wav",
+      "bytes": 1017644,
+      "sha256": "6f6c8beac55c7d3f65316611ed689c64987597933d9efcf6f5ca9e07e573f49a"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\near_only-metrics.json",
+      "bytes": 51739,
+      "sha256": "226a17cab4dc91cbf142d25a93d973abb7ddbd502366990c691b3d2d6f905ac9"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\physical_echo-final.wav",
+      "bytes": 1017644,
+      "sha256": "ac7449dd25dadc3d8ac01bd8bb7079f6c07081cea5be9a36b0526abae80cda52"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\physical_echo-linear.wav",
+      "bytes": 1017644,
+      "sha256": "1deda6bce99cec6ca949d648ece79a0a7c196b9a209a0ca3b75ed79fb32a02a9"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\physical_echo-metrics.json",
+      "bytes": 52268,
+      "sha256": "57f8c43359290fa1b351b5f2ff02d0a7685badb19a9b0639735fc05dcd1b1531"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\physical_echo_plus_synthetic_near-final.wav",
+      "bytes": 1017644,
+      "sha256": "fd2794579d9e6937266efa9308bfd032cbf3f7b6c455670fdb78bbfff516e5a8"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\physical_echo_plus_synthetic_near-linear.wav",
+      "bytes": 1017644,
+      "sha256": "c24f8f0ba12a03fe0929dd99d120e7db6bfee8416b5c2b9a45c1bb7d1a482014"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gain178-private\\physical_echo_plus_synthetic_near-metrics.json",
+      "bytes": 52239,
+      "sha256": "33f64e7b2b127873465d4b0d2a9dc758a90b17cf22c44cf0b7aff09772efc6bc"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\cold_silence-dtln128.wav",
+      "sha256": "20eaebffe1816e0ffa6f7f854f5ef4ea80d5349faaf0ce1fec1b713e7fde58fa",
+      "bytes": 64044
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\native_echo149-dtln128.wav",
+      "sha256": "f17dfaed66db62b6c4f40d1ba0d8496b1aa624e5d610846baef6d41d9ee5100e",
+      "bytes": 270380
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\near_only-dtln128.wav",
+      "sha256": "3a0345a05e7048d8ffdbc66a7c74f978028403fec71d2ed18149c7b9b028571a",
+      "bytes": 1017900
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\physical_echo-dtln128.wav",
+      "sha256": "dc5fcdc9277f6e1df1390368da16156cf0d76c9cbb2c00a5f8a290a74bafd55f",
+      "bytes": 1017900
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln179-private\\physical_echo_plus_synthetic_near-dtln128.wav",
+      "sha256": "abacc7f38883f02654b607643fdcada0698ade3177ce98017c013baa85f7ba18",
+      "bytes": 1017900
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln180-private\\cold_silence-dtln512.wav",
+      "sha256": "20eaebffe1816e0ffa6f7f854f5ef4ea80d5349faaf0ce1fec1b713e7fde58fa",
+      "bytes": 64044
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln180-private\\native_echo149-dtln512.wav",
+      "sha256": "658811610fd8465c520cb17812810a51687122e4bdba1d39ca185c71d8d20bc3",
+      "bytes": 270380
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln180-private\\near_only-dtln512.wav",
+      "sha256": "29e2424d9210d097a0f3d853f123a613b983bf7bc62852f833bc3183dcf84798",
+      "bytes": 1017900
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln180-private\\physical_echo-dtln512.wav",
+      "sha256": "70b2027d8d30199d68e0d562ccf54351ff549573ca13a7c9b4c271e39e1d6e66",
+      "bytes": 1017900
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dtln180-private\\physical_echo_plus_synthetic_near-dtln512.wav",
+      "sha256": "5cdd9338c7df64c69d8b4506ff6d7e7540a652344b6bfeb596868bc7aa840496",
+      "bytes": 1017900
+    }
+  ]
+}

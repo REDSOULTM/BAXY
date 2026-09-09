@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-08T22:58:21.141232+00:00",
+  "session": 48490,
+  "exit": 0,
+  "useful": 22,
+  "total": 22,
+  "same_payload_except_temperature_pairs": 22,
+  "http_responses": 73,
+  "finish_reason": "all stop",
+  "max_completion_tokens": 85,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1766.328125,
+    "seconds": 63.984,
+    "manifest_unchanged": true
+  },
+  "decision": "Implement quoted evidence for direct knowledge presentation, including its existing repair path, with exact provenance rule. Keep original history for semantic reading, audits, topic scoping and other presentation shapes. Production turn already usesT0; validate its actual registered pipeline rather than silently promoting private sampler fields. No model/runtime promotion."
+}

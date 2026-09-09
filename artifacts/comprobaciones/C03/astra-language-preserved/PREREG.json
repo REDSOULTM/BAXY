@@ -1,0 +1,15 @@
+{
+  "kind": "same-development-cases",
+  "utc": "2026-09-06T08:00:12.224571+00:00",
+  "hypothesis": "Mixed reading reaches composition unchanged; a trailing response language does not replace a current-time read.",
+  "expected": "Eight useful faithful replies with observed clock and both languages for mixed requests.",
+  "files": {
+    "src/baxy_mind/llm.py": "55278fcb0ac1f78ce4f9b6f0af663b9833f1b2764b05ad4ef060e7944848c451",
+    "src/baxy_mind/__main__.py": "811e6385450a5004e4f86a5a4231045986ff683bef443624c1a146c5295af533",
+    "src/baxy_mind/request_reading.py": "d33c96657ba27182531f9f5c3120386d90434ee2619cb490e1a2f0024b9462e5",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "a3e3f36c3e01f82db6d7b6bb8bfd7e1afa6fde15c7278f36f78738d5ff6c42f5",
+    "src/Baxy.App/NaturalSystemStatusRequestParser.cs": "8da6c539ad4ebc6ed6fc707fb3418c94108c73dd6aeff8e1011273a3252006c3",
+    "artifacts/comprobaciones/C03/astra-language-boundary.turns.jsonl": "1ed7e2e3ce0a0a7c3d9ca9f9e6be175fc032e6b8e2b1a7e47e07a1738d5b7bdf"
+  }
+}

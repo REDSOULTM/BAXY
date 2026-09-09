@@ -9,6 +9,41 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class LocalFilesystemProviderTests
 {
     [Test]
+    public void SearchDistinguishesUnsupportedAbsolutePathsFromEmptyNameSearches()
+    {
+        using TemporaryDirectory temporary = new();
+        string sandbox = Path.Combine(temporary.Path, "sandbox");
+        var provider = new LocalFilesystemProvider(sandbox);
+        provider.WriteText("same.txt", "inside", null);
+        string outside = Path.Combine(temporary.Path, "same.txt");
+        File.WriteAllText(outside, "outside");
+        string[] absolutePaths =
+        [
+            outside,
+            outside.Replace('\\', '/'),
+            Path.Combine(sandbox, "same.txt"),
+            Path.Combine(temporary.Path, "absent.txt"),
+            @"\\server\share\same.txt",
+        ];
+
+        Assert.Multiple(() =>
+        {
+            foreach (string path in absolutePaths)
+            {
+                Assert.That(() => provider.Search(path, 10),
+                    Throws.TypeOf<FilesystemProviderException>()
+                        .With.Property(nameof(FilesystemProviderException.Code))
+                        .EqualTo("absolute_path_search_unsupported"), path);
+            }
+
+            FilesystemEntry match = provider.Search("SAME.txt", 10).Entries.Single();
+            Assert.That(provider.ReadText(match.ResourceId, 100).Text, Is.EqualTo("inside"));
+            Assert.That(provider.Search("absent.txt", 10).Count, Is.Zero);
+            Assert.That(File.ReadAllText(outside), Is.EqualTo("outside"));
+        });
+    }
+
+    [Test]
     public void ListReadWriteAndTransferUseOpaqueRevalidatedResources()
     {
         using TemporaryDirectory temporary = new();

@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______ test_unconfirmed_barge_candidate_does_not_open_a_transcription[1] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FF35F9E150>
+speech_blocks = 1
+
+    @pytest.mark.parametrize("speech_blocks", [1, 2])
+    def test_unconfirmed_barge_candidate_does_not_open_a_transcription(monkeypatch, speech_blocks):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        probabilities = [0.0] * 8 + [0.9] * speech_blocks + [0.0] * 32
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, len(probabilities))
+        requests = queue.Queue()
+        cancellations = []
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads))
+        monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+            )
+>           assert requests.empty()
+E           assert False
+E            +  where False = empty()
+E            +    where empty = <queue.Queue object at 0x000001FF35F9D550>.empty
+
+tests\test_mind_voice_runtime.py:2089: AssertionError
+______ test_unconfirmed_barge_candidate_does_not_open_a_transcription[2] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001FF35F9F350>
+speech_blocks = 2
+
+    @pytest.mark.parametrize("speech_blocks", [1, 2])
+    def test_unconfirmed_barge_candidate_does_not_open_a_transcription(monkeypatch, speech_blocks):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        probabilities = [0.0] * 8 + [0.9] * speech_blocks + [0.0] * 32
+        engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
+        stop = threading.Event()
+        stream = _FiniteInputStream(stop, len(probabilities))
+        requests = queue.Queue()
+        cancellations = []
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
+        monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads))
+        monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+            )
+>           assert requests.empty()
+E           assert False
+E            +  where False = empty()
+E            +    where empty = <queue.Queue object at 0x000001FF35F1D190>.empty
+
+tests\test_mind_voice_runtime.py:2089: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_unconfirmed_barge_candidate_does_not_open_a_transcription[1]
+FAILED tests/test_mind_voice_runtime.py::test_unconfirmed_barge_candidate_does_not_open_a_transcription[2]
+2 failed, 95 deselected in 0.91s

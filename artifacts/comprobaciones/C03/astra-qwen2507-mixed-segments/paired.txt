@@ -1,0 +1,14 @@
+n=12 published=11 other=1
+
+001	t1	published_final	¿Qué hora es?	Son las 06:45.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 06:45. El volumen está en el nivel 100. El audio está muteado.
+003	t3	published_final	What time is it?	It's 06:45.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 06:45. The volume level is 100. The mute state is muted.
+005	t5	published_final	Dime la hora, please, en spanglish	Son las 06:45, seis y cuarenta y cinco It's 06:45, six forty-five
+006	t6	published_final	What time is it y cómo está el audio?	Son las 06:45, el audio está mutado, el volumen está en 100 It's 06:45, the audio is muted, volume is at 100
+007	t7	published_final	Hey, buenas	¡Buenas! ¿Cómo va todo? Hey! How's it going?
+008	t8	published_final	Explain encryption, pero en simple	La encriptación es como poner un código a la información para que solo las personas con la clave puedan leerlo. Es como guardar un mensaje en un cajón con llave, nadie más puede abrirlo sin la llave. Encryption is like putting a code on information so only people with the key can read it. It's like putting a message in a box with a lock, only people with the key can open it.
+009	t9	composition_failed	responde en spanglish: qué es una copia de seguridad	composition_failed
+010	t10	published_final	Explain gravity, pero sin tecnicismos	La gravedad es como un tirón que mantiene a todo lo que está cerca de la Tierra, como si hubiera una fuerza invisible que lo atrae hacia abajo. Es lo que hace que las cosas caigan cuando las soltas y que las personas no se vayan volando al espacio. Gravity is like a pull that keeps everything near Earth, as if there were an invisible force pulling it down. It's what makes things fall when you let go and keeps people from floating into space.
+011	t11	published_final	no abras Paint	El programa se llama Paint. No lo abriré.
+012	t12	published_final	what is the capital of Peru	Lima.

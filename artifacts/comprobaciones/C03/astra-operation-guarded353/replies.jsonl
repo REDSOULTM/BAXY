@@ -1,0 +1,36 @@
+{"id": "memory.enable", "model": "registered2507", "variant": "baseline", "answer": "La configuración de la memoria se ha confirmado como completada. El estado actual es \"memory configuration\" y el resultado es exitoso. El sistema ha sido revisado y está en funcionamiento.", "error": null}
+{"id": "memory.enable", "model": "registered2507", "variant": "operation-scope", "answer": "La operación de habilitación de la configuración de memoria se completó con éxito.", "error": null}
+{"id": "memory.save", "model": "registered2507", "variant": "baseline", "answer": "La memoria fue actualizada correctamente. No se realizaron cambios en el sistema.", "error": null}
+{"id": "memory.save", "model": "registered2507", "variant": "operation-scope", "answer": "La memoria se ha guardado correctamente. No se realizaron correcciones ni acciones de replay. El estado actual es actualización de memoria.", "error": null}
+{"id": "memory.recall", "model": "registered2507", "variant": "baseline", "answer": "Me llamo Emmanuel.", "error": null}
+{"id": "memory.recall", "model": "registered2507", "variant": "operation-scope", "answer": "Me llamo Emmanuel.", "error": null}
+{"id": "name-lina", "model": "registered2507", "variant": "baseline", "answer": "Me llamo Lina.", "error": null}
+{"id": "name-lina", "model": "registered2507", "variant": "operation-scope", "answer": "Me llamo Lina.", "error": null}
+{"id": "name-accent", "model": "registered2507", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "error": null}
+{"id": "name-accent", "model": "registered2507", "variant": "operation-scope", "answer": "Tu nombre es Álvaro.", "error": null}
+{"id": "name-english", "model": "registered2507", "variant": "baseline", "answer": "Your name is Taylor.", "error": null}
+{"id": "name-english", "model": "registered2507", "variant": "operation-scope", "answer": "Your name is Taylor.", "error": null}
+{"id": "sister", "model": "registered2507", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "error": null}
+{"id": "sister", "model": "registered2507", "variant": "operation-scope", "answer": "Olivia.", "error": null}
+{"id": "disabled-control", "model": "registered2507", "variant": "baseline", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "error": null}
+{"id": "disabled-control", "model": "registered2507", "variant": "operation-scope", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "error": null}
+{"id": "save-disabled-greeting-request", "model": "registered2507", "variant": "baseline", "answer": "La causa del fallo es que la memoria está desactivada.", "error": null}
+{"id": "save-disabled-greeting-request", "model": "registered2507", "variant": "operation-scope", "answer": "Hola Emmanuel, ¿cómo va? Parece que no se pudo guardar la memoria porque está desactivada.", "error": null}
+{"id": "memory.enable", "model": "available-qwen35", "variant": "baseline", "answer": "He confirmado que la configuración de memoria está activa y que la vista está habilitada.", "error": null}
+{"id": "memory.enable", "model": "available-qwen35", "variant": "operation-scope", "answer": "He confirmado que la configuración de memoria está activa.", "error": null}
+{"id": "memory.save", "model": "available-qwen35", "variant": "baseline", "answer": "He confirmado que la memoria se ha actualizado correctamente.", "error": null}
+{"id": "memory.save", "model": "available-qwen35", "variant": "operation-scope", "answer": "He confirmado que la memoria se ha guardado correctamente.", "error": null}
+{"id": "memory.recall", "model": "available-qwen35", "variant": "baseline", "answer": "Tu nombre es Emmanuel.", "error": null}
+{"id": "memory.recall", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu nombre es Emmanuel.", "error": null}
+{"id": "name-lina", "model": "available-qwen35", "variant": "baseline", "answer": "Tu nombre es Lina.", "error": null}
+{"id": "name-lina", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu nombre es Lina.", "error": null}
+{"id": "name-accent", "model": "available-qwen35", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "error": null}
+{"id": "name-accent", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu nombre es Álvaro.", "error": null}
+{"id": "name-english", "model": "available-qwen35", "variant": "baseline", "answer": "Your name is Taylor.", "error": null}
+{"id": "name-english", "model": "available-qwen35", "variant": "operation-scope", "answer": "Your name is Taylor.", "error": null}
+{"id": "sister", "model": "available-qwen35", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "error": null}
+{"id": "sister", "model": "available-qwen35", "variant": "operation-scope", "answer": "Tu hermana se llama Olivia.", "error": null}
+{"id": "disabled-control", "model": "available-qwen35", "variant": "baseline", "answer": "He desactivado la memoria.", "error": null}
+{"id": "disabled-control", "model": "available-qwen35", "variant": "operation-scope", "answer": "He desactivado la memoria.", "error": null}
+{"id": "save-disabled-greeting-request", "model": "available-qwen35", "variant": "baseline", "answer": "Hola Emmanuel, no puedo saludarte porque la memoria está deshabilitada.", "error": null}
+{"id": "save-disabled-greeting-request", "model": "available-qwen35", "variant": "operation-scope", "answer": "Hola Emmanuel, no pude guardar la información porque la memoria está deshabilitada.", "error": null}

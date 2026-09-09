@@ -1,0 +1,18 @@
+--- 176/bindings/webrtc_audio_bindings.cpp
++++ 178/bindings/webrtc_audio_bindings.cpp
+@@ -426,6 +426,7 @@
+ 
+         webrtc::EchoCanceller3Config config;
+         config.filter.export_linear_aec_output = true;
++        config.ep_strength.default_gain = 0.1f;
+         webrtc::EchoCanceller3Factory factory(config);
+         aec_ = factory.Create(sample_rate, num_channels, num_channels);
+ 
+@@ -518,6 +519,7 @@
+     void reset() {
+         webrtc::EchoCanceller3Config config;
+         config.filter.export_linear_aec_output = true;
++        config.ep_strength.default_gain = 0.1f;
+         webrtc::EchoCanceller3Factory factory(config);
+         aec_ = factory.Create(sample_rate_, num_channels_, num_channels_);
+         hp_filter_ = std::make_unique<webrtc::HighPassFilter>(

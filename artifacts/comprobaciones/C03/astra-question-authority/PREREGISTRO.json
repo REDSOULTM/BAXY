@@ -1,0 +1,11 @@
+{
+  "mainHash": "F71B2C934088618FF2CB98B14B09B561FBBF0400B809C1C7AC7E5B66B2F38FBA",
+  "llmHash": "1B6D453937435DFF769884C1545A1D6B4B79B93B91BB219D042511CF571F1D68",
+  "purpose": "Regression only. Informational followup must not create a mutating mission; subsequent arithmetic and geography remain independent.",
+  "expected": [
+    "Defines a router",
+    "Explains usefulness, no wifi proposal or confirmation",
+    "96, no confirmation",
+    "Lima, no pending mission"
+  ]
+}

@@ -1,0 +1,8 @@
+{"id": "enable-cancel", "variant": "baseline", "answer": "The request has been cancelled."}
+{"id": "enable-cancel", "variant": "cancelled-action", "answer": "The memory enable operation for private local memory has been cancelled."}
+{"id": "enable-cancelar", "variant": "baseline", "answer": "Se ha cancelado la memoria."}
+{"id": "enable-cancelar", "variant": "cancelled-action", "answer": "Se ha cancelado la activación de la memoria privada local."}
+{"id": "forget-en", "variant": "baseline", "answer": "The request has been cancelled."}
+{"id": "forget-en", "variant": "cancelled-action", "answer": "The request to clear private local memory has been cancelled."}
+{"id": "export-es", "variant": "baseline", "answer": "Se ha cancelado la memoria."}
+{"id": "export-es", "variant": "cancelled-action", "answer": "Se ha cancelado la exportación de la memoria privada local."}

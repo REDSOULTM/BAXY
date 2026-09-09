@@ -13,7 +13,7 @@ public sealed class MainWindowShellContractTests
 {
     private const string HistoricalCommit = "4a83f2d082d6b0fec8297e801b96a0da620b059e";
     private const string CurrentFieldTreeSha256 =
-        "0F6DCDA5DCF7DFA8A89C64763EF4E75067967977C5673121197825F8EB0E1C71";
+        "99FF9838C07CE32F25F329AACF830F62D8DD70C5931E26C2EC483B710B2CA657";
     private static readonly XNamespace XamlNamespace =
         "http://schemas.microsoft.com/winfx/2006/xaml";
 

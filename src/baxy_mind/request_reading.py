@@ -48,9 +48,9 @@ _ES_WORDS = frozenset(
     """
     abras abre abrir actual ademas al algo alguna alguno alli ambos ante
     antes aquello aqui asi aunque ayer borra buenas buenos busca cada
-    cierra cierre como con contra crea cual cuales cuando cuanto cuenta
+    cancelar cierra cierre como con confirmar continuar contra crea cual cuales cuando cuanto cuenta
     cuentame de dejar del desde dias dice dices dime donde dos durante el
-    ella ellas ellos encontrar encuentra entendi entiendo entonces era
+    ella ellas ellos encontrar encuentra entendi entiendo entonces era explica explicame
     eres esa ese eso esta estan este esto estoy fue gracias hace hacer
     haces hacia han has hasta haz hola hora horas hoy igual incluso la las
     lee lista listo lo los luego manana mas mi mientras mis misma mismo
@@ -70,9 +70,9 @@ _EN_WORDS = frozenset(
     about above across after again against all along already also although
     always am among an and another any anything are around as ask asked at
     be because been before being below beside between both build but buy
-    by bye call can cannot close computer could couple create currently
+    by bye call can cancel cannot close computer confirm continue could couple create currently
     delete details did does doing done down during each either else email
-    enough even ever every everything few find first for from get give
+    enough even ever every everything explain few find first for from get give
     going good goodbye got great hard have having hear hello her here hers
     hey hi him his how however i if in into is isn it its just keep kind
     know later launch let letter like line list listen little look lose
@@ -101,6 +101,9 @@ _ES_PHRASES = (
     "hasta luego",
     "nos vemos",
     "como estas",
+    "me llamo",
+    "te llamas",
+    "se llama",
 )
 
 _EN_PHRASES = (
@@ -156,7 +159,7 @@ _TO_SPANISH = ("al espanol", "to spanish", "en espanol", "in spanish")
 _TO_ENGLISH = ("al ingles", "to english", "en ingles", "in english")
 
 _KNOWLEDGE_TOKENS = (
-    "que es ", "que es un", "explicame", "explica ", "define ",
+    "que es ", "que es un", "explicame", "explica ", "explain ", "define ",
     "definicion de", "what is ", "what are ", "why ", "por que ",
     "te ocupas", "what do you do", "what can you do", "que puedes hacer",
     "que sabes hacer", "able to do", "echar una mano", "what will you",
@@ -175,7 +178,7 @@ _CAPABILITY_TOKENS = (
 )
 
 _IDENTITY_TOKENS = (
-    "who are you", "quien eres", "who is speaking", "quien habla",
+    "who are you", "quien eres", "quien sos", "who is speaking", "quien habla",
     "quien esta hablando", "introduce yourself", "presentate",
     "describe yourself", "describete",
 )
@@ -205,10 +208,14 @@ _DOING = re.compile(
     r"manage|able|offer|help|capable)\b"
 )
 _LIMIT = re.compile(
-    r"\b(?:no|nunca|jamas|niegas|negarse|rechazas|limite|limites|limitacion|"
-    r"limitaciones|restriccion|restricciones|never|not|refuse|refuses|"
-    r"limit|limits|limitation|limitations|restriction|restrictions|"
-    r"cannot|cant|wont)\b"
+    r"\b(?:niegas|negarse|rechazas|limite|limites|limitacion|"
+    r"limitaciones|restriccion|restricciones|refuse|refuses|"
+    r"limit|limits|limitation|limitations|restriction|restrictions)\b"
+)
+_NEGATED_DOING = re.compile(
+    r"\b(?:no|nunca|jamas|never|not|cannot|cant|wont)\s+"
+    r"(?:(?:me|te|le|nos|os|les|suelo|sueles|suele|suelen)\s+)*"
+    + _DOING.pattern
 )
 
 _CAPABILITY_OVERRIDE_TOKENS = (
@@ -316,17 +323,14 @@ class RequestReading:
 def _explicit_language(folded: str) -> str | None:
     """Traducción y idioma pedido mandan sobre la evidencia del texto."""
 
-    if _contains_any(folded, _TRANSLATION_TOKENS):
-        if _contains_any(folded, _TO_SPANISH):
-            return "es"
-        if _contains_any(folded, _TO_ENGLISH):
-            return "en"
-        return None
-    if _contains_any(
+    if _contains_any(folded, _TRANSLATION_TOKENS) or _contains_any(
         folded,
         ("responde en ", "contesta en ", "answer in ", "reply in ",
          "respond in "),
     ):
+        if _contains_any(folded, ("en spanglish", "in spanglish", "to spanglish",
+                                  "a spanglish", "al spanglish")):
+            return "mixed"
         if _contains_any(folded, _TO_SPANISH):
             return "es"
         if _contains_any(folded, _TO_ENGLISH):
@@ -338,8 +342,12 @@ def _language_evidence(text: str, folded: str) -> tuple[int, int]:
     tokens = set(re.findall(r"[a-z]+", folded))
     spanish = len(tokens & _ES_WORDS)
     english = len(tokens & _EN_WORDS)
-    spanish += 2 * sum(1 for phrase in _ES_PHRASES if phrase in folded)
-    english += 2 * sum(1 for phrase in _EN_PHRASES if phrase in folded)
+    spanish += 2 * sum(
+        1 for phrase in _ES_PHRASES if re.search(rf"\b{re.escape(phrase)}\b", folded)
+    )
+    english += 2 * sum(
+        1 for phrase in _EN_PHRASES if re.search(rf"\b{re.escape(phrase)}\b", folded)
+    )
     if _SPANISH_ORTHOGRAPHY.search(text or ""):
         spanish += 2
     if _ENGLISH_CONTRACTION.search(text or ""):
@@ -442,7 +450,9 @@ def _read_intents(ask: str) -> frozenset[str]:
     # gobernaba las frases enteras gobierna también la forma.
     marks_a_limit = (
         about_you
-        and _LIMIT.search(folded) is not None
+        # A negated person/reference ("no tú") says nothing about capability.
+        # Bind negation to the activity; explicit limit nouns still stand alone.
+        and (_LIMIT.search(folded) is not None or _NEGATED_DOING.search(folded) is not None)
         and not _contains_any(folded, _CAPABILITY_OVERRIDE_TOKENS)
     )
     if not continue_constraint and (
@@ -459,7 +469,12 @@ def _read_intents(ask: str) -> frozenset[str]:
         intents.add(INTENT_REFUSE)
     if _contains_any(folded, _TRANSLATION_TOKENS):
         intents.add(INTENT_TRANSLATION)
-    if _contains_any(folded, _AMBIGUOUS_ACTION_TOKENS):
+    bare_request = re.sub(
+        r"^(?:por favor|please)\s*,?\s+|\s*,?\s*(?:por favor|please)$",
+        "",
+        folded.strip(_ASK_TRIM),
+    )
+    if bare_request in _AMBIGUOUS_ACTION_TOKENS:
         intents.add(INTENT_AMBIGUOUS_ACTION)
     return frozenset(intents)
 
@@ -494,6 +509,12 @@ def response_language(
     """Idioma visible del turno. Único punto de decisión determinista."""
 
     return read_request(text, conversation_language).language
+
+
+def spoken_language(text: str) -> str:
+    """Voice of already composed text; quoted language requests are not instructions."""
+    spanish, english = _language_evidence(text, fold(text))
+    return "en" if english > spanish else "es"
 
 
 # --- Seguimiento elíptico --------------------------------------------------
@@ -585,7 +606,10 @@ _TOPIC_FRAMES = (
 )
 _TOPIC_TAIL = re.compile(
     r"[,;]?\s*(?:(?:en|in)\s+)?(?:una?\s+frase|one\s+sentence|dos\s+frases|"
-    r"two\s+sentences|brevemente|briefly|corto|short|por\s+favor|please)\b.*$",
+    r"two\s+sentences|brevemente|briefly|corto|short|por\s+favor|please)\b.*$|"
+    r"[,;]?\s*(?:(?:pero|but)\s+)?(?:(?:en|in)\s+)?(?:"
+    r"sin\s+tecnicismos|without\s+jargon|simple\s+terms|plain\s+language|"
+    r"simple|sencillo)[.!?\s]*$",
     re.IGNORECASE,
 )
 _TOPIC_LEAD = re.compile(
@@ -636,6 +660,25 @@ def request_topic(text: str) -> str | None:
         if topic and len(topic.split()) <= 8 and fold(topic) not in _FRAME_WORDS:
             return topic
     return None
+
+
+def starts_new_definition_topic(text: str, prior_texts: list[str]) -> bool:
+    """Recognize a new, explicitly named simple definition topic.
+
+    Keep context for references, multiword descriptions and previously mentioned
+    subjects. This conservative boundary reuses topic extraction; it does not
+    classify actions or erase conversation state.
+    """
+    topic = request_topic(text)
+    if topic is None or is_elliptical_followup(text):
+        return False
+    normalized = fold(topic)
+    if len(normalized.split()) != 1 or normalized in _FRAME_WORDS:
+        return False
+    return not any(
+        re.search(r"(?<!\w)" + re.escape(normalized) + r"(?!\w)", fold(previous))
+        for previous in prior_texts
+    )
 
 
 def followup_topic(text: str, prior_user_texts: object) -> str | None:

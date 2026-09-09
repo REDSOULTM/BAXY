@@ -15,6 +15,34 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class FieldProgressContractTests
 {
+    [TestCase("understanding", "understanding", false)]
+    [TestCase("Preparando los pasos", "preparing_steps", false)]
+    [TestCase("acting", "acting", true)]
+    [TestCase("Ejecutando paso 2 de 3", "acting", true)]
+    public void MilestoneFactsKeepActualPhaseAndOnlyCurrentExecutionCounts(
+        string status, string expectedPhase, bool hasStep)
+    {
+        UserMessageDraft draft = MainWindowViewModel.CreateMilestoneDraft(status, 2, 3);
+        JsonNode facts = JsonNode.Parse(draft.Source)!;
+        Assert.That((string?)facts["phase"], Is.EqualTo(expectedPhase));
+        Assert.That((int?)facts["step"], Is.EqualTo(hasStep ? 2 : null));
+        Assert.That((int?)facts["totalSteps"], Is.EqualTo(hasStep ? 3 : null));
+    }
+
+    [Test]
+    public async Task ADelayedMilestoneCannotPublishInAnotherTurnOrPhase()
+    {
+        await using var viewModel = new MainWindowViewModel();
+        const string label = "Estoy revisando los detalles de tu petición.";
+        Assert.That(viewModel.TryApplyMilestone(label, "t0", "understanding"), Is.False);
+        viewModel.BeginTurnPresentation("Lee el archivo de prueba.", DateTimeOffset.UtcNow);
+        Assert.That(viewModel.TryApplyMilestone(label, "previous-turn", "understanding"), Is.False);
+        Assert.That(viewModel.TryApplyMilestone(label, "t0", "acting"), Is.False);
+        Assert.That(viewModel.ProgressLabel, Is.Null);
+        Assert.That(viewModel.TryApplyMilestone(label, "t0", "understanding"), Is.True);
+        Assert.That(viewModel.ProgressLabel, Is.EqualTo(label));
+    }
+
     [Test]
     public void ReadyAndIdleShowsNoIndication()
     {

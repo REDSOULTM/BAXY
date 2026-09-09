@@ -1,0 +1,39 @@
+{
+  "utc": "2026-09-08T21:43:29.970050+00:00",
+  "session": 48855,
+  "exit": 0,
+  "correct_proposals_or_clarifications": 12,
+  "cases": 14,
+  "correct_bindings": 10,
+  "binding_calls": 10,
+  "open_cases": [
+    "owner46",
+    "word-meaning"
+  ],
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1773.1796875,
+    "seconds": 45.297,
+    "manifest_unchanged": true
+  },
+  "owner51": {
+    "turn_seconds": 0.484,
+    "plan_seconds_rounded": 0.0,
+    "operations": [
+      "audio.volume",
+      "audio.mute"
+    ],
+    "arguments": [
+      {
+        "level": 100
+      },
+      {
+        "state": false
+      }
+    ]
+  },
+  "comparison": "Owner51 failed in499 after6.188s;502 preserves antecedent, effects and arguments. Original resumed string also gives both correct arguments. No model/runtime/profile change.",
+  "limits": "Actual mind protocol and shell-shaped binding requests, not execution of C# UI, kernel/provider effects or voice. No fresh acceptance reserve."
+}

@@ -1,0 +1,132 @@
+[
+  {
+    "case": "echo221",
+    "frames": 1316,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "3ec8e973f445c6d5093dee18468fdafbd72505a48d7bc9aee6dee406a158f889",
+    "dspMs": {
+      "mean": 9.833081003119617,
+      "p99": 14.796990001195804,
+      "max": 18.42449999821838
+    }
+  },
+  {
+    "case": "echo232",
+    "frames": 1316,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "6c51b603f50b8e906704fc9edee219213c43893cde3da5bf33ed44482a221134",
+    "dspMs": {
+      "mean": 9.852996732252134,
+      "p99": 13.474639996275064,
+      "max": 22.775699995690957
+    }
+  },
+  {
+    "case": "h0-near",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "e431f52bc7d36713be2b42b1e368160b976a8743066f9463839df8631e927137",
+    "dspMs": {
+      "mean": 9.708218315168034,
+      "p99": 14.817919995402915,
+      "max": 22.159000000101514
+    }
+  },
+  {
+    "case": "h0-raw",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "581da3ccdae66804ebf8a108ff1fddbcd13ada370e10e74d33ff21a0c19bd6ca",
+    "dspMs": {
+      "mean": 9.793061998045212,
+      "p99": 13.60575999424327,
+      "max": 16.746799999964423
+    }
+  },
+  {
+    "case": "h1-near",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "8e99a4f46101ac72cd77098d79a7397ef827499d1e56075dd8a8e69d7645ac71",
+    "dspMs": {
+      "mean": 9.67826650320711,
+      "p99": 12.577999994391572,
+      "max": 16.676799990818836
+    }
+  },
+  {
+    "case": "h1-raw",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "ea66dc2da107caf77661ce4aaa74a2d2f35a2b7d2496b3047737d0c8edaa09b9",
+    "dspMs": {
+      "mean": 11.535060039008684,
+      "p99": 17.752419994212683,
+      "max": 22.652400002698414
+    }
+  },
+  {
+    "case": "h2-near",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "b5002e49a4e4253ca01d826e9fb273d63a08f2c91229aa706da41084549c6f80",
+    "dspMs": {
+      "mean": 17.74499794356771,
+      "p99": 29.815880005480707,
+      "max": 34.868100003222935
+    }
+  },
+  {
+    "case": "h2-raw",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "a95d2836feeb274854c81a9528d3f87a181dbc426c40b5a617de0ad95203e520",
+    "dspMs": {
+      "mean": 19.785243388714957,
+      "p99": 29.77659999451134,
+      "max": 33.32689999660943
+    }
+  },
+  {
+    "case": "h3-near",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "adf266a4f59986be85cb02259951f55d50c2e5a3ecf3096537af10bf7d22693b",
+    "dspMs": {
+      "mean": 23.566774730475977,
+      "p99": 36.74339999852234,
+      "max": 52.15060000773519
+    }
+  },
+  {
+    "case": "h3-raw",
+    "frames": 1021,
+    "cleanExact": true,
+    "guardsExact": true,
+    "modelSha256": "16d9fde43240f1cc9bdcf93801bb7a4434bfd4cccdbeaa05ee1cc3c33d3ee1fc",
+    "baselineSha256": "add9b1a7f1590f1199bc66019fda0d10b0f3049b49e30a63b1e9ace59b0be2ec",
+    "dspMs": {
+      "mean": 17.088874534637203,
+      "p99": 33.00887999357654,
+      "max": 41.833700001006946
+    }
+  }
+]

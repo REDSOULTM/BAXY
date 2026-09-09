@@ -1,0 +1,21 @@
+{"text":"Buenas","cmd":"turn"}
+{"text":"qué puedes hacer aquí en el PC","cmd":"turn"}
+{"text":"¿Qué hora es?","cmd":"turn"}
+{"text":"Dime la hora y el estado del audio.","cmd":"turn"}
+{"text":"traduce good evening al español, nada más","cmd":"turn"}
+{"cmd":"session.new"}
+{"text":"cierra aquello","cmd":"turn"}
+{"text":"no abras Paint","cmd":"turn"}
+{"text":"abre la aplicación C03ProgramaInexistente20260906","cmd":"turn"}
+{"cmd":"session.new"}
+{"text":"Hello","cmd":"turn"}
+{"text":"What time is it?","cmd":"turn"}
+{"text":"Tell me the time and the volume.","cmd":"turn"}
+{"cmd":"session.new"}
+{"text":"open that","cmd":"turn"}
+{"text":"Explain encryption, pero en simple","cmd":"turn"}
+{"text":"Hey, buenas","cmd":"turn"}
+{"text":"Dime la hora, please, en spanglish","cmd":"turn"}
+{"text":"Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio","cmd":"turn"}
+{"text":"cancelar","cmd":"turn"}
+{"text":"what is the capital of Peru","cmd":"turn"}

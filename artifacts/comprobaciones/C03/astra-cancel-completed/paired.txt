@@ -1,0 +1,8 @@
+n=6 published=6 other=0
+
+001	t1	published_final	Haz eso	¿Qué acción específica deseas realizar ahora?
+002	t2	published_final	cancelar	El proceso se canceló debido a que se aclaró.
+003	t3	published_final	what is the capital of Peru	The capital of Peru is Lima.
+004	t4	published_final	open that	Which file or window should I open?
+005	t5	published_final	cancel that	The cancellation has been completed.
+006	t6	published_final	What is fourteen times six?	Fourteen times six is 84.

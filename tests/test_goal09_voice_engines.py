@@ -24,7 +24,7 @@ from baxy_mind.voice import (  # noqa: E402
 )
 from baxy_mind.voice_output import (  # noqa: E402
     NeuralSpeechOutput,
-    _espeak_exe,
+    resolve_piper_executable,
     create_speech_output,
     resolve_neural_tts_model,
 )
@@ -113,8 +113,8 @@ def _require_neural_tts() -> Path:
     path = resolve_neural_tts_model()
     if path is None or not path.is_file():
         _fail_environment("neural TTS model is not on this machine")
-    if _espeak_exe() is None:
-        _fail_environment("eSpeak NG is not on this machine")
+    if resolve_piper_executable() is None:
+        _fail_environment("Piper runtime is not on this machine")
     return path
 
 

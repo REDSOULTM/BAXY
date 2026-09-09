@@ -1,0 +1,110 @@
+{
+  "t1": {
+    "verdict": "FALLO",
+    "reason": "Sin respuesta: borrador correcto con horas/minutos rechazado."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:09,volumen100 y muteo desactivado conservados; redacción mejorable."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:09 correcta, inglés."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:09,volumen100,muted:false conservados en inglés."
+  },
+  "t5": {
+    "verdict": "FALLO",
+    "reason": "Sin respuesta: conversiones16:09→4:09 sin PM, reintento inventa un día de Ana."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:09,audio activo y nivel100 conservados."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Saludo natural; bienvenida y pregunta social admitidas por el dueño."
+  },
+  "t8": {
+    "verdict": "ÚTIL",
+    "reason": "Explicación sencilla del cifrado con clave y analogía de candado; útil bajo la rúbrica del dueño."
+  },
+  "t9": {
+    "verdict": "ÚTIL",
+    "reason": "Copia en otro lugar para recuperar datos perdidos o dañados; definición simple suficiente."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Explicación cotidiana de atracción hacia la Tierra; hilo presentado como analogía, no hecho literal."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Respeta no abrir Paint; no anuncia ejecución."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Lima es la capital de Perú."
+  },
+  "t13": {
+    "verdict": "ÚTIL",
+    "reason": "Dos oraciones; fotosíntesis explica luz,agua,CO2,glucosa y oxígeno."
+  },
+  "t14": {
+    "verdict": "ÚTIL",
+    "reason": "Menor densidad del hielo por expansión: explicación correcta."
+  },
+  "t15": {
+    "verdict": "ÚTIL",
+    "reason": "Ejemplos distinguen archivo de contenedor; definición circular inicial mejorable, pero diferencia útil."
+  },
+  "t16": {
+    "verdict": "ÚTIL",
+    "reason": "Lista vacía en el perfil de prueba según lectura real; no extrapolar al resto de perfiles."
+  },
+  "t17": {
+    "verdict": "ÚTIL",
+    "reason": "Pregunta por confirmar/cancelar el cierre de la ventana concreta, antes del efecto."
+  },
+  "t18": {
+    "verdict": "ÚTIL",
+    "reason": "Cancela la solicitud, conserva que no se cerró la ventana."
+  },
+  "t19": {
+    "verdict": "ÚTIL",
+    "reason": "Nueva pregunta de confirmación para la ventana concreta; no reutiliza autorización cancelada."
+  },
+  "t20": {
+    "verdict": "ÚTIL",
+    "reason": "Cierre de fixture propio confirmado por producto y por su proceso terminado antes de limpieza."
+  },
+  "t21": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:10 en inglés; sesión continúa tras cierre."
+  },
+  "t22": {
+    "verdict": "AVERÍA INYECTADA — ESTADO RECUPERABLE",
+    "reason": "Sin prosa por avería forzada. Estado composition_failed visible en protocolo, causa conservada y controles usables; no es una respuesta normal aprobada."
+  },
+  "t23": {
+    "verdict": "RECUPERACIÓN ÚTIL",
+    "reason": "Tras restore, responde la hora correcta en la misma sesión y retira el error; se conserva fuera de la muestra normal."
+  },
+  "t24": {
+    "verdict": "AVERÍA INYECTADA — ESTADO RECUPERABLE",
+    "reason": "Sin prosa por avería forzada. Estado composition_failed visible en protocolo, causa conservada y controles usables; no es una respuesta normal aprobada."
+  },
+  "t25": {
+    "verdict": "RECUPERACIÓN ÚTIL",
+    "reason": "Tras restore, responde la hora correcta en la misma sesión y retira el error; se conserva fuera de la muestra normal."
+  },
+  "t26": {
+    "verdict": "AVERÍA INYECTADA — ESTADO RECUPERABLE",
+    "reason": "Sin prosa por avería forzada. Estado composition_failed visible en protocolo, causa conservada y controles usables; no es una respuesta normal aprobada."
+  },
+  "t27": {
+    "verdict": "RECUPERACIÓN ÚTIL",
+    "reason": "Tras restore, responde la hora correcta en la misma sesión y retira el error; se conserva fuera de la muestra normal."
+  }
+}

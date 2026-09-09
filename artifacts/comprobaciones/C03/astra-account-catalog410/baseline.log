@@ -1,0 +1,109 @@
+FF.FFF......                                                             [100%]
+================================== FAILURES ===================================
+_ test_account_read_is_not_satisfied_by_machine_resource_status[\xbfCon qu\xe9 cuenta de Windows se est\xe1 ejecutando BAXY?] _
+
+text = '�Con qu� cuenta de Windows se est� ejecutando BAXY?'
+
+    @pytest.mark.parametrize("text", [
+        "�Con qu� cuenta de Windows se est� ejecutando BAXY?",
+        "Which Windows account is running BAXY?",
+        "What is my Windows username?",
+        "Dime la cuenta actual de Windows.",
+        "Dime mi usuario de Windows y cu�nta RAM tengo",
+        "Show my Windows account and CPU usage",
+    ])
+    def test_account_read_is_not_satisfied_by_machine_resource_status(text: str) -> None:
+        # Resource/OS observations cannot supply the effective account. Decline
+        # instead of forcing identity: the ordinary catalog selection owns that.
+>       assert resolve_explicit_effects(text, {"system.status", "system.identity"}) is None
+E       AssertionError: assert EffectIntent(operations=('system.status',), evidence=('con que cuenta de windows se esta ejecutando baxy',)) is None
+E        +  where EffectIntent(operations=('system.status',), evidence=('con que cuenta de windows se esta ejecutando baxy',)) = resolve_explicit_effects('�Con qu� cuenta de Windows se est� ejecutando BAXY?', {'system.identity', 'system.status'})
+
+tests\test_effect_intent.py:3950: AssertionError
+_ test_account_read_is_not_satisfied_by_machine_resource_status[Which Windows account is running BAXY?] _
+
+text = 'Which Windows account is running BAXY?'
+
+    @pytest.mark.parametrize("text", [
+        "�Con qu� cuenta de Windows se est� ejecutando BAXY?",
+        "Which Windows account is running BAXY?",
+        "What is my Windows username?",
+        "Dime la cuenta actual de Windows.",
+        "Dime mi usuario de Windows y cu�nta RAM tengo",
+        "Show my Windows account and CPU usage",
+    ])
+    def test_account_read_is_not_satisfied_by_machine_resource_status(text: str) -> None:
+        # Resource/OS observations cannot supply the effective account. Decline
+        # instead of forcing identity: the ordinary catalog selection owns that.
+>       assert resolve_explicit_effects(text, {"system.status", "system.identity"}) is None
+E       AssertionError: assert EffectIntent(operations=('system.status',), evidence=('which windows account is running baxy?',)) is None
+E        +  where EffectIntent(operations=('system.status',), evidence=('which windows account is running baxy?',)) = resolve_explicit_effects('Which Windows account is running BAXY?', {'system.identity', 'system.status'})
+
+tests\test_effect_intent.py:3950: AssertionError
+_ test_account_read_is_not_satisfied_by_machine_resource_status[Dime la cuenta actual de Windows.] _
+
+text = 'Dime la cuenta actual de Windows.'
+
+    @pytest.mark.parametrize("text", [
+        "�Con qu� cuenta de Windows se est� ejecutando BAXY?",
+        "Which Windows account is running BAXY?",
+        "What is my Windows username?",
+        "Dime la cuenta actual de Windows.",
+        "Dime mi usuario de Windows y cu�nta RAM tengo",
+        "Show my Windows account and CPU usage",
+    ])
+    def test_account_read_is_not_satisfied_by_machine_resource_status(text: str) -> None:
+        # Resource/OS observations cannot supply the effective account. Decline
+        # instead of forcing identity: the ordinary catalog selection owns that.
+>       assert resolve_explicit_effects(text, {"system.status", "system.identity"}) is None
+E       AssertionError: assert EffectIntent(operations=('system.status',), evidence=('dime la cuenta actual de windows.',)) is None
+E        +  where EffectIntent(operations=('system.status',), evidence=('dime la cuenta actual de windows.',)) = resolve_explicit_effects('Dime la cuenta actual de Windows.', {'system.identity', 'system.status'})
+
+tests\test_effect_intent.py:3950: AssertionError
+_ test_account_read_is_not_satisfied_by_machine_resource_status[Dime mi usuario de Windows y cu\xe1nta RAM tengo] _
+
+text = 'Dime mi usuario de Windows y cu�nta RAM tengo'
+
+    @pytest.mark.parametrize("text", [
+        "�Con qu� cuenta de Windows se est� ejecutando BAXY?",
+        "Which Windows account is running BAXY?",
+        "What is my Windows username?",
+        "Dime la cuenta actual de Windows.",
+        "Dime mi usuario de Windows y cu�nta RAM tengo",
+        "Show my Windows account and CPU usage",
+    ])
+    def test_account_read_is_not_satisfied_by_machine_resource_status(text: str) -> None:
+        # Resource/OS observations cannot supply the effective account. Decline
+        # instead of forcing identity: the ordinary catalog selection owns that.
+>       assert resolve_explicit_effects(text, {"system.status", "system.identity"}) is None
+E       AssertionError: assert EffectIntent(operations=('system.status',), evidence=('dime mi usuario de windows y cuanta ram tengo',)) is None
+E        +  where EffectIntent(operations=('system.status',), evidence=('dime mi usuario de windows y cuanta ram tengo',)) = resolve_explicit_effects('Dime mi usuario de Windows y cu�nta RAM tengo', {'system.identity', 'system.status'})
+
+tests\test_effect_intent.py:3950: AssertionError
+_ test_account_read_is_not_satisfied_by_machine_resource_status[Show my Windows account and CPU usage] _
+
+text = 'Show my Windows account and CPU usage'
+
+    @pytest.mark.parametrize("text", [
+        "�Con qu� cuenta de Windows se est� ejecutando BAXY?",
+        "Which Windows account is running BAXY?",
+        "What is my Windows username?",
+        "Dime la cuenta actual de Windows.",
+        "Dime mi usuario de Windows y cu�nta RAM tengo",
+        "Show my Windows account and CPU usage",
+    ])
+    def test_account_read_is_not_satisfied_by_machine_resource_status(text: str) -> None:
+        # Resource/OS observations cannot supply the effective account. Decline
+        # instead of forcing identity: the ordinary catalog selection owns that.
+>       assert resolve_explicit_effects(text, {"system.status", "system.identity"}) is None
+E       AssertionError: assert EffectIntent(operations=('system.status',), evidence=('cpu usage',)) is None
+E        +  where EffectIntent(operations=('system.status',), evidence=('cpu usage',)) = resolve_explicit_effects('Show my Windows account and CPU usage', {'system.identity', 'system.status'})
+
+tests\test_effect_intent.py:3950: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_account_read_is_not_satisfied_by_machine_resource_status[\xbfCon qu\xe9 cuenta de Windows se est\xe1 ejecutando BAXY?]
+FAILED tests/test_effect_intent.py::test_account_read_is_not_satisfied_by_machine_resource_status[Which Windows account is running BAXY?]
+FAILED tests/test_effect_intent.py::test_account_read_is_not_satisfied_by_machine_resource_status[Dime la cuenta actual de Windows.]
+FAILED tests/test_effect_intent.py::test_account_read_is_not_satisfied_by_machine_resource_status[Dime mi usuario de Windows y cu\xe1nta RAM tengo]
+FAILED tests/test_effect_intent.py::test_account_read_is_not_satisfied_by_machine_resource_status[Show my Windows account and CPU usage]
+5 failed, 7 passed, 1683 deselected in 1.41s

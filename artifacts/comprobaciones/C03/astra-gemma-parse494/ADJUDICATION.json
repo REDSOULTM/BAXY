@@ -1,0 +1,98 @@
+[
+  {
+    "id": "owner46-seed0",
+    "raw_operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume"
+    ],
+    "parsed_operations": [
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume",
+      "baxy_audio__status",
+      "baxy_audio__volume"
+    ],
+    "identical_sequences": true,
+    "stop_type": "eos",
+    "truncated": false,
+    "generated_tokens": 707,
+    "status": "extra_calls_present_in_generation"
+  },
+  {
+    "id": "owner51-seed0",
+    "raw_operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status"
+    ],
+    "parsed_operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status"
+    ],
+    "identical_sequences": true,
+    "stop_type": "eos",
+    "truncated": false,
+    "generated_tokens": 274,
+    "status": "extra_calls_present_in_generation"
+  },
+  {
+    "id": "volume-unmute",
+    "raw_operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__status"
+    ],
+    "parsed_operations": [
+      "baxy_audio__volume",
+      "baxy_audio__mute",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_system__status",
+      "baxy_audio__status",
+      "baxy_audio__status",
+      "baxy_media__status"
+    ],
+    "identical_sequences": true,
+    "stop_type": "eos",
+    "truncated": false,
+    "generated_tokens": 197,
+    "status": "extra_calls_present_in_generation"
+  }
+]

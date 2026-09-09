@@ -1,0 +1,10 @@
+{"id": "t5", "answer": "Your name is Jordan.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.534}
+{"id": "t10", "answer": "Tu nombre es Álvaro.", "unread_machine_claim": false, "opposite_language": false, "seconds": 2.177}
+{"id": "third-party", "answer": "Tu nombre es Morgan.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.377}
+{"id": "assistant-conflict", "answer": "Your name is Jordan.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.671}
+{"id": "explicit-persistence", "answer": "I have saved the name 'Jordan' in private memory.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.356}
+{"id": "product380-t9", "answer": "No tengo información sobre quién eres ahora, ya que no puedo recordar tu identidad porque la memoria está deshabilitada.", "unread_machine_claim": false, "opposite_language": false, "seconds": 2.564}
+{"id": "assistant-identity", "answer": "Soy un asistente virtual diseñado para ayudarte con tareas y responder preguntas.", "unread_machine_claim": false, "opposite_language": true, "seconds": 1.468}
+{"id": "human-identity-es", "answer": "Eres Eva.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.44}
+{"id": "family-identity", "answer": "Tu nombre es Noah.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.22}
+{"id": "corrected-self-name", "answer": "Your name is Casey.", "unread_machine_claim": false, "opposite_language": false, "seconds": 1.146}

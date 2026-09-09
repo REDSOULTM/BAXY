@@ -1,0 +1,1528 @@
+[
+  {
+    "request": "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "injection": "none",
+    "turnId": "t1",
+    "terminal": "published_final",
+    "final": "La hora local es 00:27. El volumen de los altavoces (Realtek(R) Audio) está en 100 y no está silenciado. El uso actual de la CPU es del 14,375%.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t1",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-2",
+          "src": "YOU",
+          "msg": "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+          "ts": "00:27:36"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751656483,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751657484,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": "La hora es 14:30, el audio está en curso y el uso de CPU es del 45%.",
+        "progress": null,
+        "error": null,
+        "t": 1788751657623,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": "La hora es 14:30, el audio está en curso y el uso de CPU es del 45%.",
+        "progress": null,
+        "error": null,
+        "t": 1788751657627,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": "La hora es 14:30, el audio está en curso y el uso de CPU es del 45%.",
+        "progress": null,
+        "error": null,
+        "t": 1788751657706,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-3",
+          "src": "BAXY",
+          "msg": "La hora local es 00:27. El volumen de los altavoces (Realtek(R) Audio) está en 100 y no está silenciado. El uso actual de la CPU es del 14,375%.",
+          "ts": "00:27:39",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": "La hora es 14:30, el audio está en curso y el uso de CPU es del 45%.",
+        "progress": null,
+        "error": null,
+        "t": 1788751659122,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751659123,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 146,
+        "draft_sha256": "8a43e33eb34765f71080f41fe74cf1c49fa45361ecc8f8da71347707588b2931",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 14.375,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":3,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:37.7580216\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":14.375,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora, revisa el estado del audio y dime el uso de CPU.\",\"observed\":{\"utc\":\"2026-09-07T03:27:37.7580216+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 00:27. El volumen de los altavoces (Realtek(R) Audio) está en 100 y no está silenciado. El uso actual de la CPU es del 14,375%."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 3,
+      "userMessageCount": 1,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora y el estado del audio.",
+    "injection": "none",
+    "turnId": "t2",
+    "terminal": "published_final",
+    "final": "La hora local es 00:27. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t2",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-4",
+          "src": "YOU",
+          "msg": "Dime la hora y el estado del audio.",
+          "ts": "00:27:39"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751659181,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": "La hora no está disponible, pero el audio está en progreso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751659719,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": "La hora no está disponible, pero el audio está en progreso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751659720,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": "La hora no está disponible, pero el audio está en progreso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751659748,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-5",
+          "src": "BAXY",
+          "msg": "La hora local es 00:27. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado.",
+          "ts": "00:27:40",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751660671,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "cf0130c2aa1e418e4e6cbb12abe05f13bf7ea6de7431fc337c47d27c808195a8",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y el estado del audio.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:39.7960366\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y el estado del audio.\",\"observed\":{\"utc\":\"2026-09-07T03:27:39.7960366+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 00:27. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 5,
+      "userMessageCount": 2,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Tell me the time and the volume.",
+    "injection": "none",
+    "turnId": "t3",
+    "terminal": "published_final",
+    "final": "The time is 00:27 on the local clock. The volume is at 100, and sound is not muted.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t3",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-6",
+          "src": "YOU",
+          "msg": "Tell me the time and the volume.",
+          "ts": "00:27:40"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751660724,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": "Still working.",
+        "progress": null,
+        "error": null,
+        "t": 1788751661366,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": "Still working.",
+        "progress": null,
+        "error": null,
+        "t": 1788751661368,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": "Still working.",
+        "progress": null,
+        "error": null,
+        "t": 1788751661389,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-7",
+          "src": "BAXY",
+          "msg": "The time is 00:27 on the local clock. The volume is at 100, and sound is not muted.",
+          "ts": "00:27:42",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751662059,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 83,
+        "draft_sha256": "7d1900b2f37da9c07cc9e0ab20a01df8e4eb9234d2e68b69375c343f8962aab1",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Tell me the time and the volume.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:41.4378716\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Tell me the time and the volume.\",\"observed\":{\"utc\":\"2026-09-07T03:27:41.4378716+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "The time is 00:27 on the local clock. The volume is at 100, and sound is not muted."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 7,
+      "userMessageCount": 3,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "What time is it y cómo está el audio?",
+    "injection": "none",
+    "turnId": "t4",
+    "terminal": "published_final",
+    "final": "Son las 00:27. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t4",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-8",
+          "src": "YOU",
+          "msg": "What time is it y cómo está el audio?",
+          "ts": "00:27:42"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751662111,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": "No sé la hora ni el estado del audio, sigue en progreso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751662870,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": "No sé la hora ni el estado del audio, sigue en progreso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751662871,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": "No sé la hora ni el estado del audio, sigue en progreso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751662891,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-9",
+          "src": "BAXY",
+          "msg": "Son las 00:27. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100.",
+          "ts": "00:27:43",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751663709,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 99,
+        "draft_sha256": "368e5fa3aaef91389f1cfcd7e45c7e212f7fde851499a2375a37be8d6231883e",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "What time is it y cómo está el audio?",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "endpointName": "Altavoces (Realtek(R) Audio)",
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:42.9409322\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false},\\\"endpointName\\\":\\\"Altavoces (Realtek(R) Audio)\\\"},\\\"readOnly\\\":true}\"],\"completedRequest\":\"What time is it y cómo está el audio?\",\"observed\":{\"utc\":\"2026-09-07T03:27:42.9409322+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "Son las 00:27. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 9,
+      "userMessageCount": 4,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora y no silencies el audio.",
+    "injection": "none",
+    "turnId": "t5",
+    "terminal": "published_final",
+    "final": "00:27",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t5",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-10",
+          "src": "YOU",
+          "msg": "Dime la hora y no silencies el audio.",
+          "ts": "00:27:43"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751663760,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751663945,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-11",
+          "src": "BAXY",
+          "msg": "00:27",
+          "ts": "00:27:44",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751664311,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 5,
+        "draft_sha256": "c99bd86400012b6a9db41fbd5d3efb1db6257d6076aa310bab4ae62aa8dd04b4",
+        "payload": {
+          "clock": "00:27"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-07T03:27:44.0578410+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "00:27"
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 11,
+      "userMessageCount": 5,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "Dime la hora y revisa la CPU",
+    "injection": "none",
+    "turnId": "t6",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t6",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-12",
+          "src": "YOU",
+          "msg": "Dime la hora y revisa la CPU",
+          "ts": "00:27:44"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751664362,
+        "v": 2
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": "Sigo, la CPU está en proceso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751664987,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "preparing_steps",
+        "phase": "active",
+        "label": "Sigo, la CPU está en proceso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751664989,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": "Sigo, la CPU está en proceso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751665011,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "working",
+        "phase": "active",
+        "label": "Sigo, la CPU está en proceso.",
+        "progress": null,
+        "error": null,
+        "t": 1788751666983,
+        "v": 2
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751666983,
+        "v": 2
+      },
+      {
+        "type": "composition_failed",
+        "cause": "reversed_result;recovery:reversed_result;retry_exhausted",
+        "controlsUsable": true,
+        "route": "mission-summary",
+        "injected": false
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-13",
+          "src": "SYSTEM",
+          "msg": "composition_failed",
+          "ts": "00:27:53",
+          "route": "mission-summary"
+        }
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "3f9133e197d0e537768c38106cf68b4fa2a8db3c94036412aa3e2e1e0a080623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y revisa la CPU",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 17.36111111111111,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:45.0667645\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":17.36111111111111,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y revisa la CPU\",\"observed\":{\"utc\":\"2026-09-07T03:27:45.0667645+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "La hora es 00:27. La CPU tiene un uso del 17,36 %, 16 procesadores lógicos y modelo AMD Ryzen 7 5800H con Radeon Graphics. No hay fallos reportados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "3f9133e197d0e537768c38106cf68b4fa2a8db3c94036412aa3e2e1e0a080623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y revisa la CPU",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 17.36111111111111,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:45.0667645\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":17.36111111111111,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y revisa la CPU\",\"observed\":{\"utc\":\"2026-09-07T03:27:45.0667645+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "La hora es 00:27. La CPU tiene un uso del 17,36 %, 16 procesadores lógicos y modelo AMD Ryzen 7 5800H con Radeon Graphics. No hay fallos reportados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "3f9133e197d0e537768c38106cf68b4fa2a8db3c94036412aa3e2e1e0a080623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y revisa la CPU",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 17.36111111111111,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:45.0667645\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":17.36111111111111,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y revisa la CPU\",\"observed\":{\"utc\":\"2026-09-07T03:27:45.0667645+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "La hora es 00:27. La CPU tiene un uso del 17,36 %, 16 procesadores lógicos y modelo AMD Ryzen 7 5800H con Radeon Graphics. No hay fallos reportados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "3f9133e197d0e537768c38106cf68b4fa2a8db3c94036412aa3e2e1e0a080623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y revisa la CPU",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 17.36111111111111,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:45.0667645\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":17.36111111111111,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y revisa la CPU\",\"observed\":{\"utc\":\"2026-09-07T03:27:45.0667645+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "La hora es 00:27. La CPU tiene un uso del 17,36 %, 16 procesadores lógicos y modelo AMD Ryzen 7 5800H con Radeon Graphics. No hay fallos reportados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "3f9133e197d0e537768c38106cf68b4fa2a8db3c94036412aa3e2e1e0a080623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y revisa la CPU",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 17.36111111111111,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:45.0667645\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":17.36111111111111,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y revisa la CPU\",\"observed\":{\"utc\":\"2026-09-07T03:27:45.0667645+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "La hora es 00:27. La CPU tiene un uso del 17,36 %, 16 procesadores lógicos y modelo AMD Ryzen 7 5800H con Radeon Graphics. No hay fallos reportados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 149,
+        "draft_sha256": "3f9133e197d0e537768c38106cf68b4fa2a8db3c94036412aa3e2e1e0a080623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y revisa la CPU",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "00:27"
+              }
+            },
+            {
+              "operation": "system.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "scope": "cpu",
+                  "cpu": {
+                    "usagePercent": 17.36111111111111,
+                    "logicalProcessorCount": 16,
+                    "model": "AMD Ryzen 7 5800H with Radeon Graphics"
+                  },
+                  "failures": []
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-07T03:27:45.0667645\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"scope\\\":\\\"cpu\\\",\\\"cpu\\\":{\\\"usagePercent\\\":17.36111111111111,\\\"logicalProcessorCount\\\":16,\\\"model\\\":\\\"AMD Ryzen 7 5800H with Radeon Graphics\\\"},\\\"failures\\\":[]},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y revisa la CPU\",\"observed\":{\"utc\":\"2026-09-07T03:27:45.0667645+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "La hora es 00:27. La CPU tiene un uso del 17,36 %, 16 procesadores lógicos y modelo AMD Ryzen 7 5800H con Radeon Graphics. No hay fallos reportados."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 12,
+      "userMessageCount": 6,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": "reversed_result;recovery:reversed_result;retry_exhausted",
+      "hasCompositionError": true,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  },
+  {
+    "request": "¿Cómo está el audio?",
+    "injection": "none",
+    "turnId": "t7",
+    "terminal": "published_final",
+    "final": "El audio está activo y el volumen está en 100.",
+    "publicEvents": [
+      {
+        "type": "admission",
+        "turnId": "t7",
+        "accepted": true,
+        "status": 200,
+        "error": null
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-14",
+          "src": "YOU",
+          "msg": "¿Cómo está el audio?",
+          "ts": "00:27:53"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": false
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "understanding",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751673346,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "thinking"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "acting",
+        "phase": "active",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751673405,
+        "v": 2
+      },
+      {
+        "type": "activity",
+        "entry": {
+          "id": "native-15",
+          "src": "BAXY",
+          "msg": "El audio está activo y el volumen está en 100.",
+          "ts": "00:27:53",
+          "route": "result"
+        }
+      },
+      {
+        "type": "agent",
+        "built": true,
+        "healthy": true,
+        "ready": true
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      },
+      {
+        "type": "boot_stage",
+        "stage": "ready",
+        "phase": "completed",
+        "label": null,
+        "progress": null,
+        "error": null,
+        "t": 1788751673789,
+        "v": 2
+      },
+      {
+        "type": "state",
+        "value": "idle"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 48,
+        "draft_sha256": "83903c6e89f5326c715c1ca7ddfcbef9f039dfd858faef22e944e895c2eb696e",
+        "payload": {
+          "seen": {
+            "endpointName": "Altavoces (Realtek(R) Audio)",
+            "muted": false,
+            "level": 100
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"audio.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"operation\":\"audio.status\",\"targetId\":\"default_output\",\"endpointIdHash\":\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\",\"state\":{\"volumePercent\":100,\"muted\":false},\"endpointName\":\"Altavoces (Realtek(R) Audio)\"}}",
+        "draft": "El audio está activo y el volumen está en 100."
+      }
+    ],
+    "posterior": {
+      "type": "posterior",
+      "messageCount": 14,
+      "userMessageCount": 7,
+      "isBusy": false,
+      "isInputEnabled": true,
+      "hasPendingPlan": false,
+      "pendingCompositionCount": 0,
+      "compositionFailure": null,
+      "hasCompositionError": false,
+      "statusDescription": "BAXY disponible",
+      "mindReplyRejection": null
+    }
+  }
+]

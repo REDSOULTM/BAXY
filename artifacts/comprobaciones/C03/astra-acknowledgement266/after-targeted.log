@@ -1,0 +1,24 @@
+............FFFF.........................                                [100%]
+================================== FAILURES ===================================
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Si, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-S\xed, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Yes, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Okay, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Si, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-S\xed, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Yes, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Okay, ]
+4 failed, 37 passed, 1624 deselected in 1.13s

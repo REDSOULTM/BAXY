@@ -1,0 +1,1 @@
+{"reason": "Repeated 4s composition cancellations in the partial-CPU model; stop this diagnostic rather than repeat remaining known failures. No success claim. Next hypothesis reuses CPU transport budgets.", "launcher": 17116, "utcUnix": 1788691327.4762962}

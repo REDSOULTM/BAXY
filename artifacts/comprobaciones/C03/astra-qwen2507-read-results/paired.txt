@@ -1,0 +1,10 @@
+n=8 published=7 other=1
+
+001	t1	published_final	¿Qué hora es?	¡Hola! ¿Cómo estás?
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 06:36. El volumen está en el nivel 100. El audio está muteado.
+003	t3	published_final	What time is it?	It's 06:36.
+004	t4	published_final	Tell me the time and the volume.	Local clock: 06:36. Volume level: 100. Mute state: muted.
+005	t5	published_final	Dime la hora, please, en spanglish	Son 06:36, six thirty-six.
+006	t6	composition_failed	What time is it y cómo está el audio?	composition_failed
+007	t7	published_final	Hello	Hey, welcome! How's it going?
+008	t8	published_final	no abras Paint	No abriré Paint.

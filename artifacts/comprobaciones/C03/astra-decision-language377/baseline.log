@@ -1,0 +1,142 @@
+..F.F.F..F.F.F                                                           [100%]
+================================== FAILURES ===================================
+_________ test_decision_verbs_supply_language_evidence[cancel-en-es] __________
+
+text = 'cancel', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+            ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+        ],
+    )
+    def test_decision_verbs_supply_language_evidence(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+>       assert read_request(text, conversation_language=previous_language).language == expected
+E       AssertionError: assert 'es' == 'en'
+E         
+E         - en
+E         + es
+
+tests\test_request_reading.py:84: AssertionError
+_________ test_decision_verbs_supply_language_evidence[confirm-en-es] _________
+
+text = 'confirm', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+            ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+        ],
+    )
+    def test_decision_verbs_supply_language_evidence(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+>       assert read_request(text, conversation_language=previous_language).language == expected
+E       AssertionError: assert 'es' == 'en'
+E         
+E         - en
+E         + es
+
+tests\test_request_reading.py:84: AssertionError
+________ test_decision_verbs_supply_language_evidence[continue-en-es] _________
+
+text = 'continue', expected = 'en', previous_language = 'es'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+            ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+        ],
+    )
+    def test_decision_verbs_supply_language_evidence(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+>       assert read_request(text, conversation_language=previous_language).language == expected
+E       AssertionError: assert 'es' == 'en'
+E         
+E         - en
+E         + es
+
+tests\test_request_reading.py:84: AssertionError
+________ test_decision_verbs_supply_language_evidence[cancelar-es-en] _________
+
+text = 'cancelar', expected = 'es', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+            ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+        ],
+    )
+    def test_decision_verbs_supply_language_evidence(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+>       assert read_request(text, conversation_language=previous_language).language == expected
+E       AssertionError: assert 'en' == 'es'
+E         
+E         - es
+E         + en
+
+tests\test_request_reading.py:84: AssertionError
+________ test_decision_verbs_supply_language_evidence[confirmar-es-en] ________
+
+text = 'confirmar', expected = 'es', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+            ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+        ],
+    )
+    def test_decision_verbs_supply_language_evidence(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+>       assert read_request(text, conversation_language=previous_language).language == expected
+E       AssertionError: assert 'en' == 'es'
+E         
+E         - es
+E         + en
+
+tests\test_request_reading.py:84: AssertionError
+________ test_decision_verbs_supply_language_evidence[continuar-es-en] ________
+
+text = 'continuar', expected = 'es', previous_language = 'en'
+
+    @pytest.mark.parametrize("previous_language", ["es", "en"])
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("cancel", "en"), ("confirm", "en"), ("continue", "en"),
+            ("cancelar", "es"), ("confirmar", "es"), ("continuar", "es"),
+        ],
+    )
+    def test_decision_verbs_supply_language_evidence(
+        text: str, expected: str, previous_language: str,
+    ) -> None:
+>       assert read_request(text, conversation_language=previous_language).language == expected
+E       AssertionError: assert 'en' == 'es'
+E         
+E         - es
+E         + en
+
+tests\test_request_reading.py:84: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_decision_verbs_supply_language_evidence[cancel-en-es]
+FAILED tests/test_request_reading.py::test_decision_verbs_supply_language_evidence[confirm-en-es]
+FAILED tests/test_request_reading.py::test_decision_verbs_supply_language_evidence[continue-en-es]
+FAILED tests/test_request_reading.py::test_decision_verbs_supply_language_evidence[cancelar-es-en]
+FAILED tests/test_request_reading.py::test_decision_verbs_supply_language_evidence[confirmar-es-en]
+FAILED tests/test_request_reading.py::test_decision_verbs_supply_language_evidence[continuar-es-en]
+6 failed, 8 passed, 212 deselected in 0.59s

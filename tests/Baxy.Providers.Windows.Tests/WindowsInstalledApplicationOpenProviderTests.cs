@@ -51,6 +51,88 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    [TestCase(true, false, true)]
+    [TestCase(false, true, true)]
+    [TestCase(true, true, false)]
+    [TestCase(true, null, false)]
+    [TestCase(null, false, false)]
+    [TestCase(false, false, false)]
+    public void DuplicateStartNamesNeedOneVerifiedTargetAndNoUnknownAlternative(
+        bool? firstExists, bool? secondExists, bool resolves)
+    {
+        InstalledApplicationEntry[] original =
+        [
+            new("Example Editor", "Example.Current", @"C:\Current\editor.exe"),
+            new("Example Editor", "Example.Previous", @"C:\Previous\editor.exe"),
+            new("Other App", "Other.Identity"),
+        ];
+        IReadOnlyList<InstalledApplicationEntry> filtered =
+            WindowsInstalledApplicationPlatform.ResolveMissingDuplicateTargets(
+                original, path => path == original[0].TargetPath ? firstExists : secondExists);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve("Example Editor", filtered);
+        InstalledApplicationCatalogSnapshot snapshot =
+            WindowsInstalledApplicationOpenProvider.CreateCatalogSnapshot(filtered);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Ambiguous, Is.EqualTo(!resolves));
+            Assert.That(snapshot.Names.Contains("Example Editor"), Is.EqualTo(resolves));
+            Assert.That(snapshot.Names, Does.Contain("Other App"));
+            Assert.That(filtered.Count, Is.EqualTo(resolves ? 2 : 3));
+            if (resolves)
+                Assert.That(resolution.Entry?.AppUserModelId,
+                    Is.EqualTo(firstExists == true ? "Example.Current" : "Example.Previous"));
+        });
+    }
+
+    [Test]
+    public void DuplicateShortcutsForOneIdentityDoNotProbeOrRemoveTargets()
+    {
+        InstalledApplicationEntry[] entries =
+        [new("Example", "Same.Identity"), new("Example", "Same.Identity")];
+        IReadOnlyList<InstalledApplicationEntry> filtered =
+            WindowsInstalledApplicationPlatform.ResolveMissingDuplicateTargets(
+                entries, _ => throw new InvalidOperationException("Unneeded target probe"));
+        Assert.That(InstalledApplicationResolver.Resolve("Example", filtered).Entry?.AppUserModelId,
+            Is.EqualTo("Same.Identity"));
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("relative.exe")]
+    [TestCase(@"\\server\share\program.exe")]
+    [TestCase(@"C:\some\installer.msi")]
+    [TestCase("C:\\invalid\0.exe")]
+    public void UnknownOrNonlocalTargetIsNotEvidenceOfAnAbsentApp(string? target)
+    {
+        Assert.That(WindowsInstalledApplicationPlatform.ReadLocalExecutableState(target), Is.Null);
+    }
+
+    [Test]
+    public void LocalExecutableObservationDistinguishesPresentMissingAndDirectory()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "baxy-target-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            string existing = Path.Combine(directory, "present.exe");
+            File.WriteAllBytes(existing, [0]);
+            string folder = Path.Combine(directory, "directory.exe");
+            Directory.CreateDirectory(folder);
+            Assert.Multiple(() =>
+            {
+                Assert.That(WindowsInstalledApplicationPlatform.ReadLocalExecutableState(existing), Is.True);
+                Assert.That(WindowsInstalledApplicationPlatform.ReadLocalExecutableState(
+                    Path.Combine(directory, "missing.exe")), Is.False);
+                Assert.That(WindowsInstalledApplicationPlatform.ReadLocalExecutableState(folder), Is.Null);
+            });
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     [Test]
     public void ReservedNotepadIdentityResolvesByWindowsAppIdNotUiLanguage()
     {

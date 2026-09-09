@@ -1,0 +1,16 @@
+{
+  "exit": 1,
+  "completion_http_attempts": 1,
+  "completed_generations": 0,
+  "error": "HTTP400 before any completion; prompt token count already matched captured494.",
+  "resources": {
+    "completed": false,
+    "violations": [],
+    "gpu_peak_mib": 1670.18359375,
+    "ram_peak_mib": 817.2109375,
+    "seconds": 3.625,
+    "manifest_unchanged": true
+  },
+  "cause_evidence": "Pinned server-schema.cpp291 expects numeric chat_format while generation_settings serializes its name;337 expects preserved token strings while output exposes IDs. Input/output settings are not directly replayable. Original HTTP body was not captured; this diagnosis is based on explicit schema mismatches, not a fabricated server message.",
+  "next": "496 converts token IDs to pieces with round-trip proof and omits output-only parser name, asserts effective sampler and preserved IDs. No model outcome from495."
+}

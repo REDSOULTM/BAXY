@@ -1,0 +1,21 @@
+{
+  "source": "Existing physical127 microphone/loopback; no playback",
+  "dll": "D:\\BAXYRuntime\\experiments\\voice\\speexdsp129\\build\\speexdsp.dll",
+  "dllSha256": "bb683ab3c50f66f777f0d2eb570b57c0ef5c71cb7e45535f9625a3f2ab56d9f1",
+  "frameSamples": 512,
+  "tailSamples": 3200,
+  "sampleRate": 16000,
+  "alignment": "Capture streamReadyUtc, approximate; no best-lag tuning",
+  "nearControl": "Known synthetic Piper ES greeting120, peak0.03, inserted1s after speaking; not human/physical acceptance",
+  "nearSha256": "0c5a73ee1acf166083baa517f54ef9b0dab4c3f066d02ca662e2eeec23d23f8d",
+  "cases": [
+    "physical_echo",
+    "near_only",
+    "physical_echo_plus_synthetic_near"
+  ],
+  "methods": [
+    "aec_residual"
+  ],
+  "preprocessor": "Echo state linked; Default denoise enabled as upstream testecho.c; AGC off; echo suppression defaults unchanged.129 disabled all spectral gain unintentionally.",
+  "criteria": "Diagnose remaining voiced/energetic echo and preserve near words; no runtime adoption from ERLE alone"
+}

@@ -1,0 +1,8 @@
+n=6 published=5 other=1
+
+001	t1	published_final	cierra aquello	¿Te refieres a cerrar algo específico, como una ventana, una aplicación o un documento?
+002	t2	published_final	cancelar	La clarificación fue cancelada.
+003	t3	composition_failed	¿Qué hora es?	composition_failed
+004	t4	published_final	close that	Close what?
+005	t5	published_final	cancel that	Cancelled the clarification.
+006	t6	published_final	What is fourteen times six?	84

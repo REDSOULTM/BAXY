@@ -1,0 +1,31 @@
+{
+  "scope": "Source58 and native59\u201362 evidence, before provider change; not C03 acceptance",
+  "files": {
+    "src/Baxy.App/PlannerExecutionSupport.cs": "9a28051f9ad8bf4fa32dd80cf3ce92c049ba824826a63aafcb58c007c03c7309",
+    "src/Baxy.App/UserMessagePolicy.cs": "6cda36bfa2dcb5b9f4cc125eb60e0fe1c650be74555b64ebe472792c48ebde7e",
+    "src/baxy_mind/__main__.py": "d11115f78954b5351556524a850bcbe43a187003c24d0dcc8f7e52993ba989d5",
+    "src/baxy_mind/llm.py": "646276725ba0ba2fd79daf559cb4c15b0406caed72d728943026a70427624951",
+    "artifacts/comprobaciones/C03/astra-files56-identity/RESULT.json": "4c3961049148512482ce3a0871a6d84855b7be2b54843618b4289fdb5046b823",
+    "artifacts/comprobaciones/C03/astra-files56-identity/PREREG.json": "c2fddd1b851e9be0e96939a4c14183df058c91f15f550b7c4f897e32726e53b9",
+    "artifacts/comprobaciones/C03/astra-files56-identity/paired.json": "91c9a93fd488425c09e40717ba6df2c1748e80fc4f39ddea393769cc9b2621ea",
+    "artifacts/comprobaciones/C03/astra-files57-cause/RESULT.json": "d810ae3fb6a784893b7593f9dc238fc59c779e5e43a8461347218da2907513dc",
+    "artifacts/comprobaciones/C03/astra-files57-cause/PREREG.json": "60b3212ee2f8024b0162745154fd577a5db68ccfb8bc9c9a7e429958ac0d8106",
+    "artifacts/comprobaciones/C03/astra-files57-cause/paired.json": "363fddb4497fdb6cc40d2aa8088bdcd7d13f5c13b17cb89904045a59cff198d5",
+    "artifacts/comprobaciones/C03/astra-files58-modal/RESULT.json": "977cb27fb01dee1b6c8a13d287884f8a1b5a3bb5e87e7d7ddeb3158b46593f91",
+    "artifacts/comprobaciones/C03/astra-files58-modal/PREREG.json": "b410d4cf16c412efe24c62bb6589cf3dfa78913c61b149edb59b4f33c405b017",
+    "artifacts/comprobaciones/C03/astra-files58-modal/paired.json": "c6e84fbcfe7a66fc8f3262acb6b76516388933bf7c63881b079c9b6f3ccefc7f",
+    "artifacts/comprobaciones/C03/astra-files-scope59/RESULT.json": "8a952849a57ba7654d69cd24418c0f9405a6e8ef1cb575d18883fca56dfe6394",
+    "artifacts/comprobaciones/C03/astra-files-scope59/PREREG.json": "f5dc2a8e9e836715ffba7ecd836517e106e7185d43685b228e72aaf93fb16d81",
+    "artifacts/comprobaciones/C03/astra-files-scope59/posts.jsonl": "505817f7d0e06defaf4c201b74e77344ada242ed6fd17c93860fad4bfc6e01d9",
+    "artifacts/comprobaciones/C03/astra-files-empty60/RESULT.json": "3597a8015e7a6cf0c9a40b1db783119b2a78d80cf046ff6a2ac1f6690ba4620b",
+    "artifacts/comprobaciones/C03/astra-files-empty60/PREREG.json": "a9bd2ca7e50e6b1fe44d48333d398ae3a472d818904d59179f3a831d16f22176",
+    "artifacts/comprobaciones/C03/astra-files-empty60/posts.jsonl": "461adcb5480b483688aa89c9dc872d2f31a526603529312193dd59e8f050dde5",
+    "artifacts/comprobaciones/C03/astra-files-sandbox61/RESULT.json": "dadcfc791697b3e4270cdf6795348e52527cafe91f661cc848c8077c683bc56d",
+    "artifacts/comprobaciones/C03/astra-files-sandbox61/PREREG.json": "eeadcf10b607393a86d971f0dd6fb7ec0a384678288d172c50fc51ad5300a742",
+    "artifacts/comprobaciones/C03/astra-files-sandbox61/posts.jsonl": "48462b39f0d6c891a4c81b76a43252bbf449e3b2c3c2b4f020ac0c24aa2b3acc",
+    "artifacts/comprobaciones/C03/astra-files-path62/RESULT.json": "d7e4b3c5f696d04a914bf7936de23888813c9f9a455dcf7024f3ac4edc6b90e0",
+    "artifacts/comprobaciones/C03/astra-files-path62/PREREG.json": "527268a88ac1815eff5b04f99fb51a8cdb12ab13c7605bb2319989cb27f932ef",
+    "artifacts/comprobaciones/C03/astra-files-path62/posts.jsonl": "99b5de5312b0430969b59f4ca1f893a63d18b8f7aebc767d183ddc1c459118e3",
+    "artifacts/comprobaciones/C03/PRUEBAS_ARCHIVOS56_62.md": "c63935e90334924c61a9586961018a144e3a7f87332a6b47af6cf32ab4299a15"
+  }
+}

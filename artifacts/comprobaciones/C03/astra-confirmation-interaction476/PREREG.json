@@ -1,0 +1,78 @@
+{
+  "utc": "2026-09-08T18:39:25.212445+00:00",
+  "method": "One interaction test, not a new prompt wording: combine exact task-duty replacement472 with exact native tool-role transfer474. Profile/fixtures/guards/source466 unchanged; first untransformed payload equals468; rendered protocol retained. 472 recovered some missing consequences but had voice defects;474 recovered activation/target but omitted consequences. Compared to474 only duty472 is changed. Same14compositions at seeds0/17. No effects, callable tools, UI/voice/reserved cases.",
+  "criteria": "Same465 useful/faithful/natural criteria and intact controls. Inspect every draft/final. If incomplete, abandon these composition-factor combinations; do not iterate wording or fields to chase this panel. No source/runtime promotion for partial coverage.",
+  "profile": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seeds": [
+      0,
+      17
+    ],
+    "max_tokens": 1024,
+    "enable_thinking": false,
+    "reasoning_budget_tokens": 0
+  },
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "actual437-t4",
+      "request": "What name have you saved in private memory?"
+    },
+    {
+      "id": "name-marta",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "compound-name",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "third-person",
+      "request": "¿Qué nombre de mi hermana tienes guardado?"
+    },
+    {
+      "id": "two-records",
+      "request": "¿Qué nombres tienes guardados en tu memoria privada?"
+    },
+    {
+      "id": "memory.enable",
+      "request": "confirm"
+    },
+    {
+      "id": "memory.save",
+      "request": "confirm"
+    },
+    {
+      "id": "redacted-es",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    },
+    {
+      "id": "redacted-en",
+      "request": "What is stored in private memory?"
+    },
+    {
+      "id": "mixed-es",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    }
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "server": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+  "limits": {
+    "composition_seconds": 55,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-confirmation-interaction476-private"
+}

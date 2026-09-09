@@ -134,4 +134,64 @@ public sealed class FieldProductHonestTerminalTests
         ready.SetValue(viewModel, true);
         return viewModel;
     }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CompositionFailureProjectsARecoverableStateWithoutInventingProse(
+        bool recoverWithNewTurn)
+    {
+        await using MainWindowViewModel viewModel = ReadyViewModel();
+        var sink = new CollectingFieldEventSink();
+        await using var telemetry = new FieldTelemetrySampler();
+        await using var channel = new FieldProductChannel(
+            viewModel, sink, telemetry, CancellationToken.None);
+        var pending = new PendingModelMessage(
+            new UserMessageDraft("{}", "status", null),
+            "What time is it?", new JsonObject(), "t0");
+
+        // Exercise the queue's exhaustion/publication callbacks at the actual
+        // view-model boundary. No server or invented failure activity is needed.
+        await InvokeCallbackAsync(viewModel, "PublishCompositionFailureAsync",
+            pending, "retry_exhausted");
+        Assert.Multiple(() =>
+        {
+            Assert.That(LastState(sink.Snapshot()), Is.EqualTo("error"));
+            Assert.That(LastState(channel.CreateSocketBootstrap()), Is.EqualTo("error"));
+            Assert.That(viewModel.IsInputEnabled, Is.True);
+            Assert.That(viewModel.HasCompositionError, Is.True);
+            Assert.That(sink.Snapshot().Any(item =>
+                (string?)item["type"] == "composition_failed"
+                && (string?)item["cause"] == "retry_exhausted"), Is.True);
+            Assert.That(sink.Snapshot().Any(item =>
+                (string?)item["type"] == "activity"), Is.False);
+        });
+
+        if (recoverWithNewTurn)
+        {
+            viewModel.BeginTurnPresentation("What time is it?", DateTimeOffset.UtcNow);
+            Assert.That(LastState(sink.Snapshot()), Is.EqualTo("thinking"));
+        }
+        else
+        {
+            await InvokeCallbackAsync(viewModel, "PublishComposedMessageAsync",
+                "The clock shows 06:39.", null, pending);
+            Assert.That(LastState(sink.Snapshot()), Is.EqualTo("idle"));
+            Assert.That(ProductConductor.LastPublishedBaxyText(sink.Snapshot()),
+                Is.EqualTo("The clock shows 06:39."));
+        }
+
+        Assert.That(viewModel.HasCompositionError, Is.False);
+        Assert.That(LastState(channel.CreateSocketBootstrap()), Is.Not.EqualTo("error"));
+    }
+
+    private static string? LastState(IReadOnlyList<JsonObject> events) =>
+        (string?)events.Last(item => (string?)item["type"] == "state")["value"];
+
+    private static async Task InvokeCallbackAsync(
+        MainWindowViewModel viewModel, string methodName, params object?[] arguments)
+    {
+        MethodInfo callback = typeof(MainWindowViewModel).GetMethod(
+            methodName, BindingFlags.Instance | BindingFlags.NonPublic)!;
+        await (Task)callback.Invoke(viewModel, arguments)!;
+    }
 }

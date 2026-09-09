@@ -1,0 +1,27 @@
+[
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\messages.jsonl",
+    "sha256": "8c21f4d42604556518916f7de800e1d583e082b22f6316f7df2ca0735727d015",
+    "bytes": 4964
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\stderr.log",
+    "sha256": "da2e500692ee60d91de8dc15d34b595847fd79d95a2e34e21bcc41a6672877ab",
+    "bytes": 57
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\stacks185.log",
+    "sha256": "49279ae9ad5ecc1cf6fc612aea1c8bea0ebd1a0936ca4c61ec2b749599e0b0a7",
+    "bytes": 20533
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\catalog.json",
+    "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b",
+    "bytes": 68679
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar185-private\\tts-state.jsonl",
+    "sha256": "815a48ee3407c8c982d450c6d114a37e4e5f31bb4df59b783a602fa81bb0219e",
+    "bytes": 1146
+  }
+]

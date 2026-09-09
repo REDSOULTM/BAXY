@@ -1,0 +1,1503 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "Son las 09:28.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "missing_name",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 27,
+        "draft_sha256": "a9f0423d2257c46cca270a860fe7a1fca2dc97c3812556c3181c4ded85e19513",
+        "payload": {
+          "clock": "09:28"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:28:37.1005539+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las nueve y veintiocho."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "dee90734f30d09cf8a025ed559ca44f3906c9dcf60e69741b705fb73e636d93c",
+        "payload": {
+          "clock": "09:28"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:28:37.1005539+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 09:28."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Dime la hora y el estado del audio.",
+    "terminal": "published_final",
+    "final": "La hora local es 09:28. El audio está muteado con nivel de volumen al 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 75,
+        "draft_sha256": "3f2e26ff59c631a10d10228dbeb3c3de1bfc96a7188743c8b4ccc92194f68651",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "09:28"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": true,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T12:28:39.9515203\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}},\\\"readOnly\\\":true}\"],\"observed\":{\"utc\":\"2026-09-06T12:28:39.9515203+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 09:28. El audio está muteado con nivel de volumen al 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 09:28.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "44d19faff399a5ea2afb4bd88bb3a34703379ba36761778bd2f5c230e0b5e826",
+        "payload": {
+          "clock": "09:28"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:28:41.1061424+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 09:28."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Tell me the time and the volume.",
+    "terminal": "published_final",
+    "final": "The local clock is 09:28. The volume is set to 100 and muted.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 61,
+        "draft_sha256": "2d5cd60b594952212347e7a4f926f8a224e441c01ecfd38b4f82b74e24e4d018",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "09:28"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": true,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T12:28:41.7073634\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}},\\\"readOnly\\\":true}\"],\"observed\":{\"utc\":\"2026-09-06T12:28:41.7073634+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "The local clock is 09:28. The volume is set to 100 and muted."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "It's 09:28. The clock shows 09:28.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 34,
+        "draft_sha256": "97bd613a933b0d9982e5a420e69ae8cfa34a5b8c95bdfa8ddbf38926b5232da7",
+        "payload": {
+          "clock": "09:28"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:28:42.7449124+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 09:28. The clock shows 09:28."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What time is it y cómo está el audio?",
+    "terminal": "published_final",
+    "final": "La hora local es 09:28. El audio está muteado con nivel de volumen 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 72,
+        "draft_sha256": "d85a8cf5a5a60d1e7080999bd5c51c78b9c5e02ac1799d3b4c10106e37e3d251",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "09:28"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": true,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T12:28:43.5659960\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":true}},\\\"readOnly\\\":true}\"],\"observed\":{\"utc\":\"2026-09-06T12:28:43.5659960+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":true,\"level\":100}}",
+        "draft": "La hora local es 09:28. El audio está muteado con nivel de volumen 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "Hey, ¿qué tal? Bien, ¿cómo estás?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "mixed_language_needs_review": false,
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 38,
+        "draft_sha256": "3230123821fdc78baeb2ad725796f560e55d786949eca6b2115406175a517c9d",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hey, ¿qué tal? Bien, ¿cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "published_final",
+    "final": "Encryption is like a secret code that protects your information. When you send something, it turns into a code only the right person can read. It's like a lock that keeps your data safe from others.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es como un duplicado de tus archivos o datos, en caso de que se pierdan o se dañen. Es como tener un segundo lugar donde guardar lo importante, por si algo pasa.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "Explain gravity, pero sin tecnicismos",
+    "terminal": "published_final",
+    "final": "Gravity es como una fuerza que nos mantiene pegados a la tierra, y que hace que los objetos caigan hacia el suelo. Es como si la tierra tuviera un \"pulso\" que atrae todo hacia su centro. Sin ella, todo flotaría y nos perderíamos en el espacio.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t11",
+    "request": "no abras Paint",
+    "terminal": "published_final",
+    "final": "No abriré Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 17,
+        "draft_sha256": "71ea952a0ab66f6e5bfefa424865bfb9fbb012012975edfd991e7a3c86c50b05",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No abriré Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "La capital de Perú es Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t13",
+    "request": "Explain photosynthesis in two sentences.",
+    "terminal": "published_final",
+    "final": "Photosynthesis is how plants make their food using sunlight, water, and carbon dioxide. It also gives off oxygen, which is important for animals and humans to breathe.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t14",
+    "request": "Explícame por qué el hielo flota.",
+    "terminal": "published_final",
+    "final": "El hielo flota porque es menos denso que el agua líquida. Cuando el agua se congela, su estructura se expande, haciendo que su masa sea menos densa que el agua en estado líquido.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t15",
+    "request": "¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.",
+    "terminal": "published_final",
+    "final": "Un archivo es un documento o dato específico, como una foto, un documento o un video. Una carpeta es un contenedor que tiene archivos y otras carpetas dentro, como una carpeta de documentos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t16",
+    "request": "What is on my to do list?",
+    "terminal": "published_final",
+    "final": "Tu lista de cosas por hacer incluye tareas que necesitas completar, como trabajar, estudiar, hacer compras o cuidar de alguien. Si quieres saber exactamente qué hay, dime cuál es el tema o el contexto.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t17",
+    "request": "cierra la ventana del proceso C03WindowFixture",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar o cancelar la acción de cerrar la ventana del proceso C03WindowFixture?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "awaiting_mission_resume",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 92,
+        "draft_sha256": "cdf70f9d712c8b59fc501ef8569c8e12e682a1b8adafdd824be8581990f2de47",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana del proceso C03WindowFixture",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana del proceso C03WindowFixture",
+            "arguments": {
+              "windowId": "win_00af4aafab29ea687635bc2c46df8cee"
+            }
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana del proceso C03WindowFixture\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana del proceso C03WindowFixture\",\"arguments\":{\"windowId\":\"win_00af4aafab29ea687635bc2c46df8cee\"}}}",
+        "draft": "¿Quieres confirmar o cancelar la acción de cerrar la ventana del proceso C03WindowFixture?"
+      }
+    ]
+  },
+  {
+    "turnId": "t18",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "La ventana C03WindowFixture está maximizada y se ha cancelado la acción restante.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedStepsInOrder",
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 173,
+        "draft_sha256": "a18bca75c9b59ccd1617ee239178e503fd5573d4a2d3a103419669c614e5b7bf",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "windowId": "win_00af4aafab29ea687635bc2c46df8cee",
+                      "processName": "C03WindowFixture",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1260,
+                      "height": 786
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "state": "remaining steps cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"remaining_steps_cancelled\",\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_00af4aafab29ea687635bc2c46df8cee\\\",\\\"processName\\\":\\\"C03WindowFixture\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1260,\\\"height\\\":786}],\\\"count\\\":1},\\\"readOnly\\\":true}\"]}",
+        "draft": "La solicitud fue cancelada. El paso \"window.resolve\" se completó, pero se cancelaron los pasos restantes. La ventana \"C03WindowFixture\" estaba maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedStepsInOrder",
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "5fcf4ea638e4adf0e0f0ededc5ef0c21220153679e240da7575fbb9b5d4f2d9c",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "windowId": "win_00af4aafab29ea687635bc2c46df8cee",
+                      "processName": "C03WindowFixture",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1260,
+                      "height": 786
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "state": "remaining steps cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"remaining_steps_cancelled\",\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_00af4aafab29ea687635bc2c46df8cee\\\",\\\"processName\\\":\\\"C03WindowFixture\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1260,\\\"height\\\":786}],\\\"count\\\":1},\\\"readOnly\\\":true}\"]}",
+        "draft": "La operación se completó, pero se cancelaron los pasos restantes."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedStepsInOrder",
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 83,
+        "draft_sha256": "65a715e6ec46431c613e035e3f8cf0a08746adf3c532b98b9214d91cfaa83fc2",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "windowId": "win_00af4aafab29ea687635bc2c46df8cee",
+                      "processName": "C03WindowFixture",
+                      "state": "maximized",
+                      "foreground": true,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1260,
+                      "height": 786
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "state": "remaining steps cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"remaining_steps_cancelled\",\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_00af4aafab29ea687635bc2c46df8cee\\\",\\\"processName\\\":\\\"C03WindowFixture\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":true,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1260,\\\"height\\\":786}],\\\"count\\\":1},\\\"readOnly\\\":true}\"]}",
+        "draft": "La ventana C03WindowFixture está maximizada y se ha cancelado la acción restante."
+      }
+    ]
+  },
+  {
+    "turnId": "t19",
+    "request": "cierra la ventana del proceso C03WindowFixture",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "18ddd37d5bf5c7cdbde6f49c5d493cd23fc4d074d60412c9745ea8172042be7f",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "¿Quieres que cierre la ventana de C03WindowFixture?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "763a858c288f59a94b2bc9bca477a64d98e47fd07c74910dce93a1a39f0ee130",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "763a858c288f59a94b2bc9bca477a64d98e47fd07c74910dce93a1a39f0ee130",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "18ddd37d5bf5c7cdbde6f49c5d493cd23fc4d074d60412c9745ea8172042be7f",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "¿Quieres que cierre la ventana de C03WindowFixture?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "763a858c288f59a94b2bc9bca477a64d98e47fd07c74910dce93a1a39f0ee130",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "9344577f82b50e422ab16f47266749da049f4ffbbd59f466cbe903269a48c0da",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana de C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 111,
+        "draft_sha256": "290f36879319f29e4fbfd43de6b5d542bbe7ee1b472de726618307dd15a6c435",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "No puedo cerrar la ventana del proceso C03WindowFixture. El sistema no tiene permiso para realizar esa acción."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 88,
+        "draft_sha256": "25b74b727db22940d7eb10f70615599c266204740e50be7c8f01a5199e8161c8",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "No puedo cerrar la ventana del proceso C03WindowFixture porque aún está en ejecución."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 88,
+        "draft_sha256": "25b74b727db22940d7eb10f70615599c266204740e50be7c8f01a5199e8161c8",
+        "payload": {
+          "kind": "status",
+          "state": "in progress"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "No puedo cerrar la ventana del proceso C03WindowFixture porque aún está en ejecución."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 58,
+        "draft_sha256": "076caaa47de74479195a32ea7d2625461a7c3991c08f577cf7b7409e985e1a83",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "¿Estás intentando cerrar la ventana de C03WindowFixture?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "763a858c288f59a94b2bc9bca477a64d98e47fd07c74910dce93a1a39f0ee130",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "9344577f82b50e422ab16f47266749da049f4ffbbd59f466cbe903269a48c0da",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana de C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "extra_claim",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "18ddd37d5bf5c7cdbde6f49c5d493cd23fc4d074d60412c9745ea8172042be7f",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "¿Quieres que cierre la ventana de C03WindowFixture?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "763a858c288f59a94b2bc9bca477a64d98e47fd07c74910dce93a1a39f0ee130",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "9344577f82b50e422ab16f47266749da049f4ffbbd59f466cbe903269a48c0da",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana de C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "c45711adeb03657df8bfde0cc7197fe859532e913f71ccb9609b84609818803f",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "Voy a cerrar la ventana del proceso C03WindowFixture."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 75,
+        "draft_sha256": "763a858c288f59a94b2bc9bca477a64d98e47fd07c74910dce93a1a39f0ee130",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está maximizada y en primer plano."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 46,
+        "draft_sha256": "652e5d53ae7d8a86d49ddadb5ce387f5f2113134360a2f4c0eed498f4a0027b7",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "No vi la ventana del proceso C03WindowFixture."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 47,
+        "draft_sha256": "21c94a74a20a7306ed11e9f59f2830810097142a713a7f1640debd8e36909c13",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "No veo la ventana del proceso C03WindowFixture."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "b03817ab0443ae7e5e003ca02ec045b690326e6dd28f959cc20a1fdd165ea622",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "La ventana del proceso C03WindowFixture está abierta y maximizada."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "missing_state",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 102,
+        "draft_sha256": "433f7652f21bbf59ab5886be8b7f1e8b51bd73a082ea6637f30a218a1ba452f9",
+        "payload": {
+          "seen": {
+            "windows": [
+              {
+                "windowId": "win_6dce41af648a86f58b5924433bde27e0",
+                "processName": "C03WindowFixture",
+                "state": "maximized",
+                "foreground": true,
+                "x": -8,
+                "y": -8,
+                "width": 1260,
+                "height": 786
+              }
+            ],
+            "count": 1
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"window.resolve\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"windows\":[{\"windowId\":\"win_6dce41af648a86f58b5924433bde27e0\",\"processName\":\"C03WindowFixture\",\"state\":\"maximized\",\"foreground\":true,\"x\":-8,\"y\":-8,\"width\":1260,\"height\":786}],\"count\":1}}",
+        "draft": "No he podido cerrar la ventana del proceso C03WindowFixture porque está maximizada y en primer plano."
+      }
+    ]
+  },
+  {
+    "turnId": "t20",
+    "request": "confirmar",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar algo?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 25,
+        "draft_sha256": "5112f237fd839362fc39348c92f4c5a6f0a09189df2382da2bbcb120e6745bf6",
+        "payload": {
+          "kind": "conversation"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "¿Quieres confirmar algo?"
+      }
+    ]
+  },
+  {
+    "turnId": "t21",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 09:29.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t21",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "9857444cc60dde0b021bb6a3d7232791797482c710e3e5cc347f7c76c244b9f2",
+        "payload": {
+          "clock": "09:29"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T12:29:29.4865241+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 09:29."
+      }
+    ]
+  }
+]

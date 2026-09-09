@@ -1,0 +1,33 @@
+{
+  "before": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "after": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "restoredExactly": true,
+  "errors": [],
+  "streams": [
+    {
+      "mode": "default",
+      "frames": 1020,
+      "sha256": "c53e7a3a79db7643d21ad9a8c728f4a42856595574dc4cea7f44af534ffb8efa"
+    },
+    {
+      "mode": "raw",
+      "frames": 1021,
+      "sha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a"
+    }
+  ],
+  "playback": {
+    "startMonotonic": 98906.562,
+    "streamTime": 98906.5938916,
+    "latency": 0.026485260770975058,
+    "endMonotonic": 98936.546
+  },
+  "loopbackError": null,
+  "loopbackStopped": true,
+  "workerStopped": true
+}

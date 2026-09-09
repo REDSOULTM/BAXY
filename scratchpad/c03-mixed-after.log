@@ -1,0 +1,139 @@
+........................................................................ [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+............F................ [ 65%]
+.................................. [ 74%]
+.................................................................................................                            [100%]
+================================== FAILURES ===================================
+_____ test_compose_visible_defect_rejects_polarity_codes_and_copied_names _____
+
+    def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> None:
+        fail = {"situation": '{"kind":"failure","cause":"timeout","polarity":"failure","target":"Chrome"}'}
+        assert compose_visible_defect(
+            "Listo, Chrome no respondi�.", "error", "cierra Chrome", fail
+        ) == "reversed_polarity"
+        assert compose_visible_defect(
+            "No pude: provider_down", "error", "abre Spotify", fail
+        ) == "internal_code"
+        assert compose_visible_defect(
+            "No pude: Spotify no responde.",
+            "error",
+            "cierra Chrome",
+            fail,
+        ) == "unmentioned_name"
+        assert compose_visible_defect(
+            "No pude: se agot� el tiempo.",
+            "error",
+            "cierra Chrome",
+            fail,
+        ) == ""
+        assert compose_visible_defect(
+            "Listo, hola.",
+            "welcome",
+            "hola",
+            {"situation": '{"kind":"welcome","polarity":"success"}'},
+        ) == "welcome_opener"
+        assert compose_visible_defect(
+            "Listo, confirmar.",
+            "confirmation",
+            "borra la nota",
+            {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+        ) == "confirmation_asserted"
+        assert compose_visible_defect(
+            "�Lo borro?",
+            "confirmation",
+            "borra la nota",
+            {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+        ) == "missing_confirmation_choice"
+        assert compose_visible_defect(
+            "No pude: Spotify no responde.",
+            "error",
+            "open Spotify",
+            {
+                "situation": (
+                    '{"kind":"failure","cause":"provider_down",'
+                    '"polarity":"failure","target":"Spotify"}'
+                )
+            },
+        ) == "wrong_language"
+        assert compose_visible_defect(
+            "I couldn't: the provider is down.",
+            "error",
+            "open Spotify",
+            {
+                "situation": (
+                    '{"kind":"failure","cause":"provider_down",'
+                    '"polarity":"failure","target":"Spotify"}'
+                )
+            },
+        ) == "internal_code"
+        assert compose_visible_defect(
+            "No pude: eso no lo hago.",
+            "error",
+            "order a pizza",
+            {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+        ) == "wrong_language"
+        # Fuera de cat�logo no hubo intento: �I couldn't� afirma uno que no ocurri�,
+        # y decir el l�mite ya no obliga a abrir con el marcador de fallo.
+        assert compose_visible_defect(
+            "I couldn't: I don't do that.",
+            "error",
+            "order a pizza",
+            {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+        ) == "extra_claim"
+        assert compose_visible_defect(
+            "I don't do that on this PC.",
+            "error",
+            "order a pizza",
+            {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+        ) == ""
+        assert compose_visible_defect(
+            "I don't do that.",
+            "error",
+            "don't open Steam",
+            {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+        ) == "reversed_result"
+        assert compose_visible_defect(
+            "Eso no lo hago.",
+            "error",
+            "no abras Steam",
+            {"situation": '{"kind":"failure","cause":"out_of_catalog","polarity":"failure"}'},
+        ) == "reversed_result"
+        assert compose_visible_defect(
+            "�Confirmas o cancelas borrar la nota?",
+            "confirmation",
+            "borra la nota",
+            {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirmar","cancelar"]}'},
+        ) == ""
+        assert compose_visible_defect(
+            "Do you confirm?",
+            "confirmation",
+            "delete the note Ideas",
+            {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirm","cancel"]}'},
+        ) == "missing_confirmation_choice"
+        assert compose_visible_defect(
+            "No la encontr�.",
+            "error",
+            "abre Firefox",
+            {"situation": '{"kind":"failure","cause":"app_not_found","polarity":"failure","target":"Firefox"}'},
+        ) == ""
+>       assert compose_visible_defect(
+            "Listo, Discord se silenci�.",
+            "status",
+            "open Discord y silencia",
+            {
+                "situation": (
+                    '{"kind":"operation","operation":"app.open",'
+                    '"polarity":"success","observed":{"app":"Discord"}}'
+                )
+            },
+        ) == "extra_claim"
+E       AssertionError: assert 'wrong_language' == 'extra_claim'
+E         
+E         - extra_claim
+E         + wrong_language
+
+tests\test_goal06_voice.py:785: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_goal06_voice.py::test_compose_visible_defect_rejects_polarity_codes_and_copied_names
+1 failed, 375 passed, 101 subtests passed in 5.41s

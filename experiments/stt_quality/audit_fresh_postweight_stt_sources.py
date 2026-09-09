@@ -52,8 +52,14 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # elíptico y una explicación no puede ser sólo otra pregunta. Corpus,
 # motores y hashes STT/TTS/wake del runtime registrado no cambian: esta
 # actualización no afirma una medida de voz nueva.
+# C03 2026-09-06 (Astra): pedido y contexto conservados en composicion;
+# se retiran el saludo literal y el retorno de borradores rechazados.
+# Cambia el arbol de programa esperado, no los corpus ni los motores
+# STT/TTS/wake. No acredita una nueva aceptacion de voz.
+# C03 Astra: hora AM/PM, tema y causa anidada conservados; lectura de explain.
+# Prosa: conocimiento separado de observaciones, sin saludo recortado ni intro fija.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "18da4c94105ddf317497f64521f98712d8f1808000aa68655e1a4627927d827d"
+    "1ca420662d30083f35b2d1cb51d243c593d0b339b17a3792f037609b4b4011ce"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

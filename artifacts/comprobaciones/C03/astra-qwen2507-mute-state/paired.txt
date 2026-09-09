@@ -1,0 +1,23 @@
+n=21 published=21 other=0
+
+001	t1	published_final	¿Qué hora es?	Son las 12 y 1.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora es 12:01. El audio está activo con volumen en 100.
+003	t3	published_final	What time is it?	It's 12:01.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 12:01. The volume level is 100. The mute state is unmuted.
+005	t5	published_final	Dime la hora, please, en spanglish	Es 12:01, man.
+006	t6	published_final	What time is it y cómo está el audio?	Es 12:01 y el audio está desactivado, nivel 100.
+007	t7	published_final	Hey, buenas	¡Buenos días! Welcome to the party, bro. 🚀
+008	t8	published_final	Explain encryption, pero en simple	Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: nadie más puede abrirlo sin la llave. Así se protege la privacidad en internet.
+009	t9	published_final	responde en spanglish: qué es una copia de seguridad	Una copia de seguridad es como tener un backup del archivo o datos en otro lugar, para que si se pierden o se borran, los puedas recuperar. Es como tener una copia en el otro cuarto en caso de que la primera se quede sin luz.
+010	t10	published_final	Explain gravity, pero sin tecnicismos	Gravity es como un poder invisible que mantiene todo unido: la Tierra nos mantiene pegados, las cosas caen cuando las soltas y los planetas giran alrededor del Sol. Es como si todo en el universo tuviera un pequeño hambre de estar juntos.
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima is the capital of Peru.
+013	t13	published_final	Explain photosynthesis in two sentences.	Photosynthesis is how plants use sunlight to turn carbon dioxide and water into food (sugar) and oxygen. It's like nature's way of making food and giving us fresh air.
+014	t14	published_final	Explícame por qué el hielo flota.	El hielo flota porque es menos denso que el agua. Cuando el agua se congela, sus moléculas se alejan y se organizan en una estructura más espaciosa, lo que la hace más ligera.
+015	t15	published_final	¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.	Un archivo es un archivo de datos, como un documento o una imagen, mientras que una carpeta es como un contenedor que guarda varios archivos organizados. Es como tener un libro (archivo) y una caja (carpeta) que contiene varios libros.
+016	t16	published_final	What is on my to do list?	Your to-do list is empty right now.
+017	t17	published_final	cierra la ventana titulada Ventana C03 de prueba	¿Quieres confirmar que cierro la ventana titulada "Ventana C03 de prueba"? Elige: confirmar, cancelar.
+018	t18	published_final	cancelar	Se canceló la solicitud de cerrar la ventana titulada "Ventana C03 de prueba". El sistema detectó la ventana correspondiente, pero la acción fue cancelada. No se realizó el cierre.
+019	t19	published_final	cierra la ventana titulada Ventana C03 de prueba	¿Quieres confirmar que cierro la ventana titulada "Ventana C03 de prueba"? Elige: confirmar, cancelar.
+020	t20	published_final	confirmar	Se confirmó que se cerró la ventana titulada "Ventana C03 de prueba". El proceso se completó correctamente.
+021	t21	published_final	What time is it?	It's 12:01.

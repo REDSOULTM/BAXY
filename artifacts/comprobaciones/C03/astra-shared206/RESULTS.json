@@ -1,0 +1,754 @@
+[
+  {
+    "index": 0,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.5460000000020955
+  },
+  {
+    "index": 0,
+    "method": "modified_beam_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7030000000086147
+  },
+  {
+    "index": 1,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.5309999999881256
+  },
+  {
+    "index": 1,
+    "method": "modified_beam_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7960000000020955
+  },
+  {
+    "index": 2,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.5779999999940628
+  },
+  {
+    "index": 2,
+    "method": "modified_beam_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "modified_beam_search",
+    "seconds": 0.75
+  },
+  {
+    "index": 3,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.7810000000026776
+  },
+  {
+    "index": 3,
+    "method": "modified_beam_search",
+    "text": "Hola.",
+    "expected": "Hola.",
+    "applied": "modified_beam_search",
+    "seconds": 1.125
+  },
+  {
+    "index": 4,
+    "method": "greedy_search",
+    "text": "It is ten fifty six.",
+    "expected": "It is ten fifty six.",
+    "applied": "greedy_search",
+    "seconds": 0.20299999999406282
+  },
+  {
+    "index": 4,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.3120000000053551
+  },
+  {
+    "index": 5,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "greedy_search",
+    "seconds": 0.1879999999946449
+  },
+  {
+    "index": 5,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "modified_beam_search",
+    "seconds": 0.2649999999994179
+  },
+  {
+    "index": 6,
+    "method": "greedy_search",
+    "text": "Dolar, aquí vaci",
+    "expected": "Dolar, aquí vaci",
+    "applied": "greedy_search",
+    "seconds": 0.21899999999732245
+  },
+  {
+    "index": 6,
+    "method": "modified_beam_search",
+    "text": "Hola, aquí vas.",
+    "expected": "Hola, aquí vas.",
+    "applied": "modified_beam_search",
+    "seconds": 0.28100000000267755
+  },
+  {
+    "index": 7,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.5629999999946449
+  },
+  {
+    "index": 7,
+    "method": "modified_beam_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7970000000059372
+  },
+  {
+    "index": 8,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.5620000000053551
+  },
+  {
+    "index": 8,
+    "method": "modified_beam_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7660000000032596
+  },
+  {
+    "index": 9,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.45300000000861473
+  },
+  {
+    "index": 9,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.48399999999674037
+  },
+  {
+    "index": 10,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.3909999999887077
+  },
+  {
+    "index": 10,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.625
+  },
+  {
+    "index": 11,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.34399999999732245
+  },
+  {
+    "index": 11,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.5780000000086147
+  },
+  {
+    "index": 12,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.5309999999881256
+  },
+  {
+    "index": 12,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.8279999999940628
+  },
+  {
+    "index": 13,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y cinco.",
+    "expected": "Son las diez cincuenta y cinco.",
+    "applied": "greedy_search",
+    "seconds": 0.17200000000593718
+  },
+  {
+    "index": 13,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y cinco.",
+    "expected": "Son las diez cincuenta y cinco.",
+    "applied": "modified_beam_search",
+    "seconds": 0.21899999999732245
+  },
+  {
+    "index": 14,
+    "method": "greedy_search",
+    "text": "It is ten fifty six.",
+    "expected": "It is ten fifty six.",
+    "applied": "greedy_search",
+    "seconds": 0.15600000000267755
+  },
+  {
+    "index": 14,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.20299999999406282
+  },
+  {
+    "index": 15,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "greedy_search",
+    "seconds": 0.15600000000267755
+  },
+  {
+    "index": 15,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "modified_beam_search",
+    "seconds": 0.2970000000059372
+  },
+  {
+    "index": 16,
+    "method": "greedy_search",
+    "text": "Hola, aquí vaci",
+    "expected": "Hola, aquí vaci",
+    "applied": "greedy_search",
+    "seconds": 0.17199999999138527
+  },
+  {
+    "index": 16,
+    "method": "modified_beam_search",
+    "text": "Hola, aquí vas.",
+    "expected": "Hola, aquí vas.",
+    "applied": "modified_beam_search",
+    "seconds": 0.32800000000861473
+  },
+  {
+    "index": 17,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.46800000000803266
+  },
+  {
+    "index": 17,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.6089999999967404
+  },
+  {
+    "index": 18,
+    "method": "greedy_search",
+    "text": "Son las diez y cuenta.",
+    "expected": "Son las diez y cuenta.",
+    "applied": "greedy_search",
+    "seconds": 0.14100000000325963
+  },
+  {
+    "index": 18,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.21899999999732245
+  },
+  {
+    "index": 19,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.375
+  },
+  {
+    "index": 19,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.5159999999887077
+  },
+  {
+    "index": 20,
+    "method": "greedy_search",
+    "text": "Son las 10.55.",
+    "expected": "Son las 10.55.",
+    "applied": "greedy_search",
+    "seconds": 0.1870000000053551
+  },
+  {
+    "index": 20,
+    "method": "modified_beam_search",
+    "text": "Son las diez.",
+    "expected": "Son las diez.",
+    "applied": "modified_beam_search",
+    "seconds": 0.25
+  },
+  {
+    "index": 21,
+    "method": "greedy_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "greedy_search",
+    "seconds": 0.42199999999138527
+  },
+  {
+    "index": 21,
+    "method": "modified_beam_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "modified_beam_search",
+    "seconds": 0.5929999999934807
+  },
+  {
+    "index": 22,
+    "method": "greedy_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "greedy_search",
+    "seconds": 0.4370000000053551
+  },
+  {
+    "index": 22,
+    "method": "modified_beam_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "modified_beam_search",
+    "seconds": 0.6090000000112923
+  },
+  {
+    "index": 23,
+    "method": "greedy_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "greedy_search",
+    "seconds": 0.4840000000112923
+  },
+  {
+    "index": 23,
+    "method": "modified_beam_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "modified_beam_search",
+    "seconds": 0.5780000000086147
+  },
+  {
+    "index": 24,
+    "method": "greedy_search",
+    "text": "However, the slow communication channels styles in the West could lag behind by twenty-five to thirty years.",
+    "expected": "However, the slow communication channels styles in the West could lag behind by twenty-five to thirty years.",
+    "applied": "greedy_search",
+    "seconds": 0.5469999999913853
+  },
+  {
+    "index": 24,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.7649999999994179
+  },
+  {
+    "index": 25,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y cinco.",
+    "expected": "Son las diez cincuenta y cinco.",
+    "applied": "greedy_search",
+    "seconds": 0.17200000000593718
+  },
+  {
+    "index": 25,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y cinco.",
+    "expected": "Son las diez cincuenta y cinco.",
+    "applied": "modified_beam_search",
+    "seconds": 0.21899999999732245
+  },
+  {
+    "index": 26,
+    "method": "greedy_search",
+    "text": "It is ten fifty six.",
+    "expected": "It is ten fifty six.",
+    "applied": "greedy_search",
+    "seconds": 0.14100000000325963
+  },
+  {
+    "index": 26,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.25
+  },
+  {
+    "index": 27,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "greedy_search",
+    "seconds": 0.17200000000593718
+  },
+  {
+    "index": 27,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "modified_beam_search",
+    "seconds": 0.25
+  },
+  {
+    "index": 28,
+    "method": "greedy_search",
+    "text": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "expected": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "applied": "greedy_search",
+    "seconds": 0.5629999999946449
+  },
+  {
+    "index": 28,
+    "method": "modified_beam_search",
+    "text": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "expected": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "applied": "modified_beam_search",
+    "seconds": 0.9219999999913853
+  },
+  {
+    "index": 29,
+    "method": "greedy_search",
+    "text": "Son las diez.",
+    "expected": "Son las diez.",
+    "applied": "greedy_search",
+    "seconds": 0.15600000000267755
+  },
+  {
+    "index": 29,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.21799999999348074
+  },
+  {
+    "index": 30,
+    "method": "greedy_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "greedy_search",
+    "seconds": 0.5
+  },
+  {
+    "index": 30,
+    "method": "modified_beam_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "modified_beam_search",
+    "seconds": 0.6710000000020955
+  },
+  {
+    "index": 31,
+    "method": "greedy_search",
+    "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.5629999999946449
+  },
+  {
+    "index": 31,
+    "method": "modified_beam_search",
+    "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "modified_beam_search",
+    "seconds": 0.6879999999946449
+  },
+  {
+    "index": 32,
+    "method": "greedy_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.5
+  },
+  {
+    "index": 32,
+    "method": "modified_beam_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "modified_beam_search",
+    "seconds": 0.6100000000005821
+  },
+  {
+    "index": 33,
+    "method": "greedy_search",
+    "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.5160000000032596
+  },
+  {
+    "index": 33,
+    "method": "modified_beam_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "modified_beam_search",
+    "seconds": 0.5939999999973224
+  },
+  {
+    "index": 34,
+    "method": "greedy_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.5469999999913853
+  },
+  {
+    "index": 34,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.6870000000053551
+  },
+  {
+    "index": 35,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y cinco.",
+    "expected": "Son las diez cincuenta y cinco.",
+    "applied": "greedy_search",
+    "seconds": 0.1879999999946449
+  },
+  {
+    "index": 35,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y cinco.",
+    "expected": "Son las diez cincuenta y cinco.",
+    "applied": "modified_beam_search",
+    "seconds": 0.28100000000267755
+  },
+  {
+    "index": 36,
+    "method": "greedy_search",
+    "text": "It is ten fifty six.",
+    "expected": "It is ten fifty six.",
+    "applied": "greedy_search",
+    "seconds": 0.17199999999138527
+  },
+  {
+    "index": 36,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.21899999999732245
+  },
+  {
+    "index": 37,
+    "method": "greedy_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "greedy_search",
+    "seconds": 0.1870000000053551
+  },
+  {
+    "index": 37,
+    "method": "modified_beam_search",
+    "text": "Son las diez cincuenta y seis.",
+    "expected": "Son las diez cincuenta y seis.",
+    "applied": "modified_beam_search",
+    "seconds": 0.26600000000325963
+  },
+  {
+    "index": 38,
+    "method": "greedy_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.5789999999979045
+  },
+  {
+    "index": 38,
+    "method": "modified_beam_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7189999999973224
+  },
+  {
+    "index": 39,
+    "method": "greedy_search",
+    "text": "Son of these one.",
+    "expected": "Son of these one.",
+    "applied": "greedy_search",
+    "seconds": 0.125
+  },
+  {
+    "index": 39,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.20299999999406282
+  },
+  {
+    "index": 40,
+    "method": "greedy_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.4370000000053551
+  },
+  {
+    "index": 40,
+    "method": "modified_beam_search",
+    "text": "",
+    "expected": "",
+    "applied": "modified_beam_search",
+    "seconds": 0.5930000000080327
+  },
+  {
+    "index": 41,
+    "method": "greedy_search",
+    "text": "S.",
+    "expected": "S.",
+    "applied": "greedy_search",
+    "seconds": 0.125
+  },
+  {
+    "index": 41,
+    "method": "modified_beam_search",
+    "text": "S.",
+    "expected": "S.",
+    "applied": "modified_beam_search",
+    "seconds": 0.1879999999946449
+  },
+  {
+    "index": 42,
+    "method": "greedy_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "applied": "greedy_search",
+    "seconds": 0.7649999999994179
+  },
+  {
+    "index": 42,
+    "method": "modified_beam_search",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "expected": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "applied": "modified_beam_search",
+    "seconds": 1.0160000000032596
+  },
+  {
+    "index": 43,
+    "method": "greedy_search",
+    "text": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "applied": "greedy_search",
+    "seconds": 0.6710000000020955
+  },
+  {
+    "index": 43,
+    "method": "modified_beam_search",
+    "text": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expected": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7180000000080327
+  },
+  {
+    "index": 44,
+    "method": "greedy_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "greedy_search",
+    "seconds": 0.6720000000059372
+  },
+  {
+    "index": 44,
+    "method": "modified_beam_search",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expected": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7969999999913853
+  },
+  {
+    "index": 45,
+    "method": "greedy_search",
+    "text": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+    "expected": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+    "applied": "greedy_search",
+    "seconds": 0.6399999999994179
+  },
+  {
+    "index": 45,
+    "method": "modified_beam_search",
+    "text": "All nouns alongside the world say for you always begin with a capital letter even in the middle of a sentence.",
+    "expected": "All nouns alongside the world say for you always begin with a capital letter even in the middle of a sentence.",
+    "applied": "modified_beam_search",
+    "seconds": 0.7339999999967404
+  },
+  {
+    "index": 46,
+    "method": "greedy_search",
+    "text": "",
+    "expected": "",
+    "applied": "greedy_search",
+    "seconds": 0.13999999999941792
+  },
+  {
+    "index": 46,
+    "method": "modified_beam_search",
+    "text": "Thank you.",
+    "expected": "Thank you.",
+    "applied": "modified_beam_search",
+    "seconds": 0.21899999999732245
+  }
+]

@@ -1,0 +1,9 @@
+# Borrador nativo381 — 4/5 útiles, diagnóstico
+
+Usa el último borrador nativo del mismo pedido, incluido el sondeo secundario; T10 Te llamas Álvaro. Misma población de cinco casos375, fuente379 y catálogo169. La respuesta nativa real pasa por chat y sus guardas/reintentos; sólo sustituye la primera decodificación redundante. No textos inventados ni omisión de validación. Todas las herramientas/efectos permanecen sin ejecutar. Proceso cerrado, exit completado, registro intacto.
+
+3/5→4/5 frente375. Jordan, Álvaro, tercero y conflicto humano/asistente útiles. Persistencia explícita sigue falsa denegación por catálogo privado oculto, no resuelta ni aceptada.381 y382 tienen dos sustituciones reales registradas en forwarded-native.jsonl; resto chat habitual. No UI,voz ni aceptación humana fresca.
+
+Comparación de mecanismo: el template oficial Qwen3.5-4B (bbaaae1) indica responder normalmente si no se llama una función; BAXY descartaba content y redescodificaba. Fuentes consultadas2026-09-08: https://huggingface.co/Qwen/Qwen3.5-4B/blob/main/chat_template.jinja y https://github.com/ggml-org/llama.cpp/blob/b9980/docs/function-calling.md. Esto orienta la conservación del borrador, no demuestra calidad por sí solo; las trazas375/381/382 la miden localmente.
+
+Adopción propuesta: metadata de borrador en resultado primario, separada de autoridad y retirada antes de validación de decisión; chat recibe borrador sólo si la decisión final sigue knowledge sin efectos y aplica sus guardas. Sin caché global ni flags de producto ni nuevo modelo. La caché speculative_chat_handoff existente contiene respuestas ya validadas; no insertar allí texto nativo sin validar. Ninguna fuente383 implementada al cerrar este diagnóstico.

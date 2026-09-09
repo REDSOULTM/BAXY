@@ -1,0 +1,27 @@
+{
+  "stage": 242,
+  "createdUtc": "2026-09-07T20:04:34.262598+00:00",
+  "previousTurn": "no progress: user status report only",
+  "purpose": "Integrate fixed DTLN512 candidate from 238-240, preserving measured algorithm; ASR and full C03 acceptance remain open",
+  "controls": "Bitwise clean/raw/reference comparison against frozen adapter182 on fixed recordings; owner tests and Fast; no Full during repair",
+  "dependencyPlan": {
+    "ai-edge-litert": "2.2.0",
+    "backports.strenum": "1.2.8",
+    "ml_dtypes": "0.5.4"
+  },
+  "files": [
+    "src/baxy_mind/speex_aec.py",
+    "src/baxy_mind/dtln_aec.py",
+    "src/baxy_mind/voice.py",
+    "src/baxy_mind/requirements-voice.txt",
+    "tests/test_speex_aec.py",
+    "tests/test_dtln_aec.py",
+    "tests/test_mind_voice_runtime.py",
+    "scripts/run_voice_system_gate.py",
+    "scripts/install_dtln_aec.py",
+    "assets.manifest.json",
+    "constraints-runtime-win-x64.txt",
+    "pylock.runtime-win-x64.toml",
+    "docs/AI_CONTEXT_MAP.md"
+  ]
+}

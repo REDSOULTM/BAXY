@@ -1,0 +1,33 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T10:29:22.435474+00:00",
+  "hypothesis": "Measure publication without the positive bilingual vocabulary veto. Original product prompts and all factual, authority, echo and structural checks retained; log every would-be language veto. Human adjudication remains strict and independent of publication count.",
+  "expected": "Less retry damage and useful answers preserved; language quality judged from actual outputs, not a forced green validator. Development only, no promotion.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "03d23cbf7ca2af7d05f88dcd42db6ae4bf2d329025769bf244fd1a7fb814d088",
+    "src/baxy_mind/__main__.py": "92df02b84fbda9aac8047b38a0ceca3caec0b8052eae1ab0e0fd8fa16ac4cbf9",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "b689bb910cfd7db689ce43d06432beb871ad76495d4d552c62c46c4fff14b9e1",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "9a93d81926d4f817218d6340814021b2b4a0084078cba3b0f62dea8f13619f66",
+    "artifacts/comprobaciones/C03/astra-qwen2507-mixed-advisory.turns.jsonl": "1c5e5fa8ea458ad305e3ab14458bbbdfbe550a39c911712f43bbcaf0482bebec",
+    "artifacts/comprobaciones/C03/astra-qwen2507-mixed-advisory/profile/sitecustomize.py": "263dd370dfa7cfce3bcadea5776132c86ebfaab29540a1ca6a77856fe9ee8748",
+    "scratchpad/c03-qwen2507-mixed-advisory.py": "cf7ef5b4a976b39007ba2d282b67ee8dd5670d201fc4c320bec31d250da0fb5a"
+  }
+}

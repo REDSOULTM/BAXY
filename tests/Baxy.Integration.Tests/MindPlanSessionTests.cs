@@ -8,8 +8,10 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MindPlanSessionTests
 {
-    [Test]
-    public async Task CancelWithoutAnUncertainEffectClearsThePendingPlan()
+    [TestCase(false, "cancelar")]
+    [TestCase(true, "cancelar")]
+    [TestCase(true, "cierra la calculadora")]
+    public async Task PendingRepliesPreserveUncertainEffects(bool uncertain, string text)
     {
         string root = Path.Combine(Path.GetTempPath(), "baxy-plan-session-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
@@ -39,19 +41,36 @@ public sealed class MindPlanSessionTests
                         [],
                         "literal",
                         new JsonObject { ["appId"] = "windows.notepad" }),
-                ]);
+                ])
+            { PendingEffectMayHaveOccurred = uncertain };
             session.Begin(execution);
             var registry = new RetryableOperationRegistry(Path.Combine(root, "outbox.bin"));
 
-            await session.HandlePendingAsync("cancelar", registry, CancellationToken.None);
+            await session.HandlePendingAsync(text, registry, CancellationToken.None);
 
             Assert.Multiple(() =>
             {
-                Assert.That(session.HasPending, Is.False);
+                Assert.That(session.HasPending, Is.EqualTo(uncertain));
                 Assert.That(published, Has.Count.EqualTo(1));
-                Assert.That(
-                    published[0].Body,
-                    Is.EqualTo(TurnVisibleFacts.Status("remaining_steps_cancelled")));
+                if (uncertain)
+                {
+                    var facts = JsonNode.Parse(published[0].Body)!;
+                    Assert.That((string?)facts["polarity"], Is.EqualTo("failure"));
+                    Assert.That((bool?)facts["effectUncertain"], Is.True);
+                    Assert.That((bool?)facts["pending"], Is.True);
+                    Assert.That((bool?)facts["canRepeat"], Is.False);
+                    Assert.That((bool?)facts["evidenceRetained"], Is.True);
+                    Assert.That((string?)facts["pendingRequest"], Is.EqualTo("abre notepad"));
+                    Assert.That(published[0].Event?.Type, Is.EqualTo(UserMessageEventType.Error));
+                }
+                else
+                {
+                    var facts = JsonNode.Parse(published[0].Body)!;
+                    Assert.That((string?)facts["cause"], Is.EqualTo("remaining_steps_cancelled"));
+                    Assert.That((string?)facts["cancelledRequest"], Is.EqualTo("abre notepad"));
+                    Assert.That((string?)facts["cancelledAction"]?["operation"], Is.EqualTo("app.open"));
+                    Assert.That(facts["pendingAction"], Is.Null);
+                }
             });
         }
         finally

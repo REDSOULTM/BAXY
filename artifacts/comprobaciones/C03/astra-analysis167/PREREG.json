@@ -1,0 +1,10 @@
+{
+  "method": "Local registered Parakeet CPU6/modified_beam8, raw and peak-normalized mic/loopback. Four output windows: voice.speak request minus0.5s through plus15s. No transcript hints, playback, new capture or source mutation. Trace clock anchored by three Core observations; approximate observer times, not runtime ADC.",
+  "traceOrigins": [
+    1788789173.2391725,
+    1788789173.240393,
+    1788789173.2409685
+  ],
+  "traceOriginUsed": 1788789173.2401779,
+  "source": 166
+}

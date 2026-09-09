@@ -1,0 +1,16 @@
+{
+  "session": 16948,
+  "exit": 0,
+  "native_calls": 3,
+  "raw_matches_parsed": 3,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 1694.18359375,
+    "ram_peak_mib": 1066.1171875,
+    "seconds": 17.532,
+    "manifest_unchanged": true
+  },
+  "findings": "Every extra call is literally in generated content, in exact parsed order;15/7/8calls,stop_typeeos,truncatedfalse. Output parser did not add calls in these cases. Native grammar still constrains generation, so this does not isolate weights alone.",
+  "adopted": false,
+  "next": "495/496 isolate grammar with same prompt and sampler at raw completion endpoint."
+}

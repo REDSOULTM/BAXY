@@ -1,0 +1,20 @@
+n=18 published=18 other=0
+
+001	t1	published_final	Buenas	Buenas, ¿en qué puedo ayudarte?
+002	t2	published_final	qué puedes hacer aquí en el PC	Puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, leer la hora y el estado del equipo, tomar notas y llevar tareas.
+003	t3	published_final	¿Qué hora es?	La hora es 03:53.
+004	t4	published_final	Dime la hora y el estado del audio.	La hora local es 03:53, el estado de audio está silenciado (muted), y el volumen está a nivel 100.
+005	t5	published_final	traduce good evening al español, nada más	Buenas noches.
+006	t6	published_final	cierra aquello	¿Qué es "aquello" que deseas que se cierre?
+007	t7	published_final	no abras Paint	No abriré Paint.
+008	t8	published_final	abre la aplicación C03ProgramaInexistente20260906	No se ha visto ninguna aplicación abierta.
+009	t9	published_final	Hello	Hello! How can I help you today?
+010	t10	published_final	What time is it?	The time is 03:53.
+011	t11	published_final	Tell me the time and the volume.	Local clock is 03:53, mute state is on, volume level is 100.
+012	t12	published_final	open that	Can you clarify what "open that" means?
+013	t13	published_final	Explain encryption, pero en simple	Encryption locks data so only someone with the key can open it, like putting a message in a sealed box.
+014	t14	published_final	Hey, buenas	Hey, good vibes! How’s your day going?
+015	t15	published_final	Dime la hora, please, en spanglish	¿Puedes decirme la hora en español o en español con un toque de inglés (spanglish)?
+016	t16	published_final	Solicitud de memoria sensible [contenido oculto / sensitive content hidden]	Se solicitó la memoria sensible, que contiene contenido oculto.
+017	t17	published_final	cancelar	¿Desea continuar con la solicitud de memoria sensible o desea cancelar?
+018	t18	published_final	what is the capital of Peru	The capital of Peru is Lima.

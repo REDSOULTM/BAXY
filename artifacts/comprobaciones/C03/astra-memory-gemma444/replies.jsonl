@@ -1,0 +1,11 @@
+{"id": "actual437-t7", "variant": "published-gemma", "answer": "Jordan es el nombre que tengo guardado en mi memoria privada.", "finish_reason": "stop", "seconds": 0.718}
+{"id": "actual437-t4", "variant": "published-gemma", "answer": "I recalled the name Jordan from private memory.", "finish_reason": "stop", "seconds": 0.219}
+{"id": "name-marta", "variant": "published-gemma", "answer": "Marta.", "finish_reason": "stop", "seconds": 0.172}
+{"id": "compound-name", "variant": "published-gemma", "answer": "El nombre que tengo guardado en mi memoria privada es Ana María.", "finish_reason": "stop", "seconds": 0.313}
+{"id": "third-person", "variant": "published-gemma", "answer": "Tu hermana se llama Nina.", "finish_reason": "stop", "seconds": 0.218}
+{"id": "two-records", "variant": "published-gemma", "answer": "Los nombres que tengo guardados son Jordan y Nina.", "finish_reason": "stop", "seconds": 0.266}
+{"id": "memory.enable", "variant": "published-gemma", "answer": "Memory configuration is now enabled.", "finish_reason": "stop", "seconds": 0.171}
+{"id": "memory.save", "variant": "published-gemma", "answer": "Memory was successfully saved.", "finish_reason": "stop", "seconds": 0.172}
+{"id": "redacted-es", "variant": "published-gemma", "answer": "<|tool_call>call:memory{operation: \"recall\",key: \"private_memory\"}<tool_call|><|tool_call>call:system{command: \"memory.recall\",key: \"private_memory\"}<tool_call|>Listo, estoy recuperando lo que quedó en la memoria privada.", "finish_reason": "stop", "seconds": 0.75}
+{"id": "redacted-en", "variant": "published-gemma", "answer": "The verified result is that the secret value was shown once and is no longer listed in your memories.", "finish_reason": "stop", "seconds": 0.328}
+{"id": "mixed-es", "variant": "published-gemma", "answer": "Listo, te paso lo que encontré en la memoria privada: tu color favorito es turquesa y el secreto está oculto.", "finish_reason": "stop", "seconds": 0.469}

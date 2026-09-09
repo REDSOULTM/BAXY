@@ -1,0 +1,46 @@
+{
+  "choices": [
+    {
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "type": "function",
+            "function": {
+              "name": "baxy_app__open",
+              "arguments": "{}"
+            },
+            "id": "j8ShatHw5fUzAPCiP3W6fQgd3MlTgYou"
+          }
+        ]
+      }
+    }
+  ],
+  "created": 1788824436,
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "system_fingerprint": "b9980-8014d2cf9",
+  "object": "chat.completion",
+  "usage": {
+    "completion_tokens": 17,
+    "prompt_tokens": 2311,
+    "total_tokens": 2328,
+    "prompt_tokens_details": {
+      "cached_tokens": 1
+    }
+  },
+  "id": "chatcmpl-ly439S6Bw3ytojfIptl48pKPBbdtK4xx",
+  "timings": {
+    "cache_n": 1,
+    "prompt_n": 2310,
+    "prompt_ms": 1237.276,
+    "prompt_per_token_ms": 0.535617316017316,
+    "prompt_per_second": 1867.0046133603173,
+    "predicted_n": 17,
+    "predicted_ms": 222.789,
+    "predicted_per_token_ms": 13.105235294117646,
+    "predicted_per_second": 76.30538312035155
+  }
+}

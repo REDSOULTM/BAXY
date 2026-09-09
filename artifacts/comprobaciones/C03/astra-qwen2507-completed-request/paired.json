@@ -1,0 +1,755 @@
+[
+  {
+    "turnId": "t1",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "Son las 11 y 52.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 16,
+        "draft_sha256": "894bed579795f1c0d6fda2244f3104d1d20e8c11a0e778886585542287a37cdb",
+        "payload": {
+          "clock": "11:52"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T14:52:41.4987918+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 11 y 52."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "Dime la hora y el estado del audio.",
+    "terminal": "published_final",
+    "final": "La hora local es 11:52. El audio está activo con un nivel de volumen de 100. El audio no está silenciado.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 107,
+        "draft_sha256": "f5db43adc40ff9b6e0bf33b878965881b7223f3b41df56516ba7ad456908c623",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Dime la hora y el estado del audio.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "11:52"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T14:52:43.0479189\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false}},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Dime la hora y el estado del audio.\",\"observed\":{\"utc\":\"2026-09-06T14:52:43.0479189+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "La hora local es 11:52. El audio está activo con un nivel de volumen de 100. El audio no está silenciado."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 11:52.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "0b9c7ddfe4de9e884fd821b63195e99afe05105dab01ebb6370d0084ccc4f8c0",
+        "payload": {
+          "clock": "11:52"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T14:52:43.9235614+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 11:52."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Tell me the time and the volume.",
+    "terminal": "published_final",
+    "final": "The local clock is 11:52. The volume is 100 and the audio is not muted.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 71,
+        "draft_sha256": "c4653c2e4be861f7404830261c82aa45c33d06693c5c35127810079df7cd71d4",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "Tell me the time and the volume.",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "11:52"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T14:52:44.3844927\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false}},\\\"readOnly\\\":true}\"],\"completedRequest\":\"Tell me the time and the volume.\",\"observed\":{\"utc\":\"2026-09-06T14:52:44.3844927+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "The local clock is 11:52. The volume is 100 and the audio is not muted."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "Dime la hora, please, en spanglish",
+    "terminal": "published_final",
+    "final": "It's 11:52, amigos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 19,
+        "draft_sha256": "69e14d22b3364b266e27a7b7fe147c6ec6e9c7198deb73b9192f9e20682efb89",
+        "payload": {
+          "clock": "11:52"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T14:52:45.1465926+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 11:52, amigos."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What time is it y cómo está el audio?",
+    "terminal": "published_final",
+    "final": "Es 11:52, el audio está desactivado, el volumen está en 100.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "status",
+        "language": "mixed",
+        "mixed_language_needs_review": true,
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 62,
+        "draft_sha256": "11b98c82811996f2de5e232bd094623b83e2f1d3d8fe6b7e005f42a59e251cd8",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "What time is it y cómo está el audio?",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "system.time",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "clock": "11:52"
+              }
+            },
+            {
+              "operation": "audio.status",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "muted": false,
+                  "level": 100
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"system.time\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"utc\\\":\\\"2026-09-06T14:52:45.6681160\\\\u002B00:00\\\",\\\"localUtcOffsetMinutes\\\":-180},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"audio.status\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"operation\\\":\\\"audio.status\\\",\\\"targetId\\\":\\\"default_output\\\",\\\"endpointIdHash\\\":\\\"88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922\\\",\\\"state\\\":{\\\"volumePercent\\\":100,\\\"muted\\\":false}},\\\"readOnly\\\":true}\"],\"completedRequest\":\"What time is it y cómo está el audio?\",\"observed\":{\"utc\":\"2026-09-06T14:52:45.6681160+00:00\",\"localUtcOffsetMinutes\":-180,\"muted\":false,\"level\":100}}",
+        "draft": "Es 11:52, el audio está desactivado, el volumen está en 100."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "Hey, buenas",
+    "terminal": "published_final",
+    "final": "¡Hey! Buenas, ¿cómo estás? ¿Listo para echar un vistazo a lo que hay por aquí?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t7",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "mixed",
+        "mixed_language_needs_review": false,
+        "greeting": "only",
+        "payload_keys": [
+          "kind"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 84,
+        "draft_sha256": "a0c856982d7f4f1e88478caae14b9d1d6c19ff4c950575d905c5e1335bf12de0",
+        "payload": {
+          "kind": "welcome"
+        },
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "¡Hey! Buenas, ¿cómo estás? ¿Listo para echar un vistazo a lo que hay por aquí?"
+      }
+    ]
+  },
+  {
+    "turnId": "t8",
+    "request": "Explain encryption, pero en simple",
+    "terminal": "published_final",
+    "final": "Encryption es como poner un código a los mensajes para que solo las personas con la clave puedan leerlos. Es como si escribieras un mensaje en un libro y lo guardaras en un lugar seguro, y solo tú y tu amigo con la clave podrían abrirlo. Así, nadie más puede entenderlo.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t9",
+    "request": "responde en spanglish: qué es una copia de seguridad",
+    "terminal": "published_final",
+    "final": "Una copia de seguridad es como tener un backup del archivo o datos en otro lugar, para que si se pierden o se borran, puedas recuperarlos fácilmente. Es como tener una copia del libro en otro lugar, en caso de que la original se pierda.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "Explain gravity, pero sin tecnicismos",
+    "terminal": "published_final",
+    "final": "Gravity es como si todo lo que está cerca de ti, como la Tierra, tuviera un pequeño \"pegamento\" que te mantiene pegado al suelo. Es lo que hace que las cosas caigan cuando las sueltes, y que no se vayan volando en el aire.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t11",
+    "request": "no abras Paint",
+    "terminal": "published_final",
+    "final": "No voy a abrir Paint.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "opening"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 21,
+        "draft_sha256": "9fe280fe46166af0f9c1db29f65fd4e332cc9034d89e3313081dd5032b2a1c85",
+        "payload": {
+          "kind": "conversation",
+          "opening": "none"
+        },
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "No voy a abrir Paint."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "Lima",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t13",
+    "request": "Explain photosynthesis in two sentences.",
+    "terminal": "published_final",
+    "final": "Photosynthesis is how plants use sunlight to turn carbon dioxide and water into food (sugar) and oxygen. It's like a natural factory where the plant \"eats\" sunlight and makes its own food while giving us oxygen to breathe.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t14",
+    "request": "Explícame por qué el hielo flota.",
+    "terminal": "published_final",
+    "final": "El hielo flota porque es menos denso que el agua líquida. Cuando el agua se congela, sus moléculas se organizan de forma que ocupan más espacio, haciendo que el hielo sea más ligero que el agua.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t15",
+    "request": "¿Qué diferencia hay entre un archivo y una carpeta? Reply in Spanglish.",
+    "terminal": "published_final",
+    "final": "Un archivo es un archivo de datos, como un documento o imagen, mientras que una carpeta es como un contenedor que organiza y guarda varios archivos juntos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t16",
+    "request": "What is on my to do list?",
+    "terminal": "published_final",
+    "final": "Your to-do list is empty right now.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "seen"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "a136255619847df5b3a8898fc94d7d7208228bba453a871ef8ff554ba2b0ee82",
+        "payload": {
+          "seen": {
+            "tasks": [],
+            "count": 0,
+            "mode": "tasks",
+            "limit": 20
+          }
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"tasks\",\"limit\":20}}",
+        "draft": "Your to-do list is empty right now."
+      }
+    ]
+  },
+  {
+    "turnId": "t17",
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar que cierro la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar, cancelar.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "awaiting_mission_resume",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t17",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 103,
+        "draft_sha256": "4881526c41319c74ab5a9a29676fb7e8e01a35ac213a047764caf183f7aee902",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_dec832794338b2274fba3b252938062b\"}}}",
+        "draft": "¿Quieres confirmar que cierro la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar, cancelar."
+      }
+    ]
+  },
+  {
+    "turnId": "t18",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana correspondiente, pero la acción fue cancelada. No se realizó el cierre.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t18",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "cancelledAction",
+          "cancelledRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 184,
+        "draft_sha256": "567e069aceebc9c25b0024b42b50f6be86676ca50a4183c9ffe66fc4d8fa8730",
+        "payload": {
+          "kind": "status",
+          "cancelledRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "cancelledAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "outcome": "cancelled",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "processName": "C03TitleFixture",
+                      "title": "Ventana C03 de prueba",
+                      "state": "maximized",
+                      "foreground": false,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1552,
+                      "height": 832
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            }
+          ],
+          "state": "remaining steps cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"remaining_steps_cancelled\",\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_dec832794338b2274fba3b252938062b\\\",\\\"processName\\\":\\\"C03TitleFixture\\\",\\\"title\\\":\\\"Ventana C03 de prueba\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":false,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1552,\\\"height\\\":832}],\\\"count\\\":1},\\\"readOnly\\\":true}\"],\"cancelledRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"cancelledAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_dec832794338b2274fba3b252938062b\"}}}",
+        "draft": "Se canceló la solicitud de cerrar la ventana titulada \"Ventana C03 de prueba\". El sistema detectó la ventana correspondiente, pero la acción fue cancelada. No se realizó el cierre."
+      }
+    ]
+  },
+  {
+    "turnId": "t19",
+    "request": "cierra la ventana titulada Ventana C03 de prueba",
+    "terminal": "published_final",
+    "final": "¿Quieres confirmar que cierro la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar, cancelar.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "awaiting_mission_resume",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t19",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "kind",
+          "pendingAction",
+          "pendingRequest",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 103,
+        "draft_sha256": "4881526c41319c74ab5a9a29676fb7e8e01a35ac213a047764caf183f7aee902",
+        "payload": {
+          "kind": "confirmation",
+          "pendingRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "pendingAction": {
+            "operation": "app.close",
+            "purpose": "cierra la ventana titulada Ventana C03 de prueba",
+            "arguments": {}
+          },
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2,\"pendingRequest\":\"cierra la ventana titulada Ventana C03 de prueba\",\"pendingAction\":{\"operation\":\"app.close\",\"purpose\":\"cierra la ventana titulada Ventana C03 de prueba\",\"arguments\":{\"windowId\":\"win_ba8c0e5611806d9ab187a7044347be3e\"}}}",
+        "draft": "¿Quieres confirmar que cierro la ventana titulada \"Ventana C03 de prueba\"? Elige: confirmar, cancelar."
+      }
+    ]
+  },
+  {
+    "turnId": "t20",
+    "request": "confirmar",
+    "terminal": "published_final",
+    "final": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t20",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "completedRequest",
+          "completedStepsInOrder",
+          "kind",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 110,
+        "draft_sha256": "e1df6f804076bcf628121035d32f53f3087a61e7a5b08c5bac28a0047693a795",
+        "payload": {
+          "kind": "status",
+          "completedRequest": "cierra la ventana titulada Ventana C03 de prueba",
+          "outcome": "completed",
+          "completedStepsInOrder": [
+            {
+              "operation": "window.resolve",
+              "resultAtThisStep": {
+                "readOnly": true,
+                "seen": {
+                  "windows": [
+                    {
+                      "processName": "C03TitleFixture",
+                      "title": "Ventana C03 de prueba",
+                      "state": "maximized",
+                      "foreground": false,
+                      "x": -8,
+                      "y": -8,
+                      "width": 1552,
+                      "height": 832
+                    }
+                  ],
+                  "count": 1
+                }
+              }
+            },
+            {
+              "operation": "app.close",
+              "resultAtThisStep": {
+                "readOnly": false,
+                "seen": {
+                  "windowClosed": true
+                }
+              }
+            }
+          ]
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"mission_completed\",\"stepCount\":2,\"steps\":[\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"window.resolve\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windows\\\":[{\\\"windowId\\\":\\\"win_ba8c0e5611806d9ab187a7044347be3e\\\",\\\"processName\\\":\\\"C03TitleFixture\\\",\\\"title\\\":\\\"Ventana C03 de prueba\\\",\\\"state\\\":\\\"maximized\\\",\\\"foreground\\\":false,\\\"x\\\":-8,\\\"y\\\":-8,\\\"width\\\":1552,\\\"height\\\":832}],\\\"count\\\":1},\\\"readOnly\\\":true}\",\"{\\\"kind\\\":\\\"operation\\\",\\\"operation\\\":\\\"app.close\\\",\\\"polarity\\\":\\\"success\\\",\\\"verified\\\":true,\\\"succeeded\\\":true,\\\"observed\\\":{\\\"version\\\":1,\\\"windowClosed\\\":true},\\\"readOnly\\\":false}\"],\"completedRequest\":\"cierra la ventana titulada Ventana C03 de prueba\"}",
+        "draft": "Se confirmó que se cerró la ventana titulada \"Ventana C03 de prueba\". El proceso se completó correctamente."
+      }
+    ]
+  },
+  {
+    "turnId": "t21",
+    "request": "What time is it?",
+    "terminal": "published_final",
+    "final": "It's 11:53.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t21",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 11,
+        "draft_sha256": "e91bea7653dbb601f14a0d38106fae598419004cfc060f5c6fe553f341cbb5d5",
+        "payload": {
+          "clock": "11:53"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T14:53:03.8023773+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "It's 11:53."
+      }
+    ]
+  }
+]

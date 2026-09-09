@@ -1,0 +1,15 @@
+...........................F...................                          [100%]
+================================== FAILURES ===================================
+____________ test_runtime_lock_matches_the_measured_product_graph _____________
+
+    def test_runtime_lock_matches_the_measured_product_graph() -> None:
+        locked = validate_lock_structure(LOCK, CONSTRAINTS)
+    
+>       assert len(locked) == 59
+E       AssertionError: assert 62 == 59
+E        +  where 62 = len({'ai-edge-litert': '2.2.0', 'annotated-doc': '0.0.4', 'anyio': '4.14.2', 'backports-strenum': '1.2.8', ...})
+
+tests\test_python_runtime_lock.py:27: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_python_runtime_lock.py::test_runtime_lock_matches_the_measured_product_graph
+1 failed, 46 passed in 11.65s

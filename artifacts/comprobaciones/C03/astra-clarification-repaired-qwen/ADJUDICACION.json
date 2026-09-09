@@ -1,0 +1,50 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t8": {
+    "verdict": "FALLO",
+    "reason": "Se conserva el objetivo pendiente, pero el dominio rechaza la coma tras volume; la continuación pregunta por descuento/tiempo y no aplica40%."
+  },
+  "t9": {
+    "verdict": "FALLO",
+    "reason": "Se conserva el objetivo pendiente, pero el dominio rechaza la coma tras volume; la continuación pregunta por descuento/tiempo y no aplica40%."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  }
+}

@@ -1,73 +1,49 @@
-# C03 — checkpoint 2026-09-06, traspaso a otro PC
+# C03: fuente512 validada; protocolo513 preparado
 
-**Punto único de reanudación.** El trabajo está publicado en la rama `Goal-c03`
-de `origin` (`main` intacto en `5f572ee`): el dueño sigue en otro PC. Ese PC
-**no tiene Granite descargado** — el GGUF no viaja por git ni lo encuentra
-`bootstrap.ps1`; hay que copiarlo y registrarlo a mano. La tabla con rutas,
-tamaños, hashes y el comando de registro está al final del handoff.
+Goal íntegro activo. Goal-c03/HEAD2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49. C03_ASTRA_AUTORIDAD.md, identidad y AGENTS mandan; preservar WIP/main/evidencia. Sin agentes ni Full durante reparación. BAXY manual cerrado; encuesta742/rev1248 y procesos101140/29800 preservados.
 
-Se puede trabajar sin Granite: pytest, .NET y el censo no lo necesitan. Lo que
-**no** se puede hacer sin él es panel, tramo D ni cierre.
+Sin runtime/prueba/build activo. Fuente effect_intent503,__main__506,llm512. Siete owners3406pass+121subtests/0skips53,88s (40969exit0);Fastverde/Release3,55s0warnings/errors(32963exit0);buildservers cerrados.512PREREG/RESULT/SOURCE.patch/PINS completos; fallos y estados anteriores preservados. Registro13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed intacto.
 
-## Reparado en esta sesión (2026-09-06)
+512 cita el historial de conocimiento como datos con roles/literales íntegros; misma representación/procedencia al reparar. Mantiene historial original para lectores/auditoría/otrasformas y aplica el acotado de tema antes de citar. Baseline6fallos/1pass→7focalpass; primera suite4expectativasviejas(3402pass+121subtests), actualizadas para probar roundtrip/noamputación; rerun4pass. No modelo/profile nuevo, nombre hardcoded ni decoder adicional.
 
-La prueba roja que dejó la sesión anterior está en verde. El veto era
-`ContainsInternalCode` en `UserMessagePolicy.cs`, entrada literal «keep talking»:
-miraba la respuesta y nunca el pedido, así que «I will keep talking without
-launching anything» —que es exactamente la respuesta correcta a «keep talking
-without launching anything»— moría por acertar. La mente ya tenía esa exención
-(`llm.py`, `prompt_echo`); el shell la ignoraba. Ahora las nueve frases de
-encargo y el prefijo `name the ` sólo vetan cuando la persona no las escribió, y
-una prueba nueva exige que sigan vetadas cuando nadie las pidió. Detalle y
-fingerprints en el handoff. **Falta medirla en panel.**
+Siguiente: ejecutar scratchpad/c03-audio-chat513.py.24casos consumidos:14audio,6conversación/nombres,4procedencia/referencia. Protocolo real sin hooks de tratamiento; actualregistroT0. Verificar respuestas una a una, bindings y recursos. Sólo después pasar al resto de las ocho rutas y producto físico; no reservar/aprobar100humanos con esta tanda.
 
-## Siguiente clase, diagnosticada y sin reparar
+Evidencia reciente:504audio13/14propuestas+11/11bindings;owner46/51correctos,sin efectos.505 prueba que initial_reply publicaba prosa del selector;506retira el atajo/propagación,3404pass+121subtests/Fast.507integrado18/20útiles+11/11bindings, fallaban definición y recuerdo Morgan(asistente) sobreJordan(usuario).
 
-El saludo mal formado («Good afternoon» → «Hello hi!», `panel-opus-13/001`,
-`/003`, `/004`). Es determinista, no es generación de C05/C06: el payload fija
-`greeting` al literal «hi»/«hola» sin mirar con qué saludó la persona, y el veto
-`welcome_question` perdona el «?» sólo si pedido y respuesta empiezan por
-`hola|hi|hey|hello|buenas`, lista que no incluye «good afternoon». El buen
-borrador se tira y el reintento pega el literal. El mecanismo, con las líneas y
-la hipótesis a probar, está en el handoff.
+508 perfilQwenoficialvsregistrado, semillas0/17:ambos5/7seed0y6/7seed17 (adjudicaciónv2, v1conservada por excesiva severidad ante un sentido válido de salida de audio).28/28generaciones/84stop; sólo sampling difiere, no mejoraperfil.509reglaprocedenciaconhistorial:original9/11+10/11,regla10/11+10/11;recall-enfalla4/4,otroscontrolesyapasaban. No adoptar regla sola ni más redacción.510misma regla/profile, cambia sólo representación íntegra dehistorial:original10/11+10/11,citado10/11+11/11;Jordancorrecto2/2yMorgancomoanteriorpalabra,peroother-personseed0 tieneaside.511cambia sóloT.7→0en22payloadspareados:22/22útiles,73stop,max85salida;RAM1766,328/GPU3497,559MiB63,984s. NoUI/voz/efectos/aceptación.512adopta representaciónenconocimientoconT0yaexistente, pendiente513.
 
-## Estado
+Fuentes: Qwen2507modelcard para perfil; paper2602.24287v2 para contaminación del historial (la representación citada es hipótesis local, no implementación atribuida al paper). previous_dialogue_for_references_only es una clave de datos en llm7171/fuente506, no una función. Carter memoryaudit13/54–63 priorizabaOS ante conflicto: no se hereda esa regla contraria a identidad.
 
-**EN_CURSO.** No hay 100/100 y no se declara nada cumplido. Cambiar de PC no
-cumple el goal.
+Cambios previos conservados:485 clíticos;487 prohibiciones independientes;498 pero/but positivos y protección de citas (3174pass/Fast);500 ponle, delimitador compartido y nivel faltante con PC/computer (3188pass/Fast). 499 documenta fallo del texto reanudado antes de500/501. La interfaz C# intenta una decisión independiente antes de reanudar, pero502 ya responde correctamente al fragmento sin caer en RecoveryFailureCode; aún falta probar el shell real.
 
-**El relevo está en [`HANDOFF_OPUS_METODO.md`](HANDOFF_OPUS_METODO.md)**: ahí
-viven el candidato con sus fingerprints, lo comprobado, lo provisional, las
-hipótesis descartadas, la validación recogida, los procesos, los activos que no
-viajan y la siguiente acción. Este checkpoint no repite esa lista para no tener
-dos que se contradigan.
+Modelos: Qwen2507Q4/b9980 registrado es candidato, no aceptación. Versiones y perfiles específicos documentados en INVESTIGACION_MODELO_C03. 489 recuperación de contexto sola no basta;490 sampler oficial tampoco.491/492 contratos/polaridad intercambian fallos.493 publicadoGemma repite;494 raw=parsed;495 HTTP400 antes de generar;496 quitar gramática elimina extras pero admite operación ajena y prosa de éxito.497 Gemma original evita extras en14nativas y3prompts idénticos, pero invierte silencio en3casos y viola interfaz sin argumentos en4; no promoción. RAM1030,965/GPU1681,988MiB sólo nativo. No reabrir variantes472–476,481Q8,4829B,484JSON ni barridos de gramática sin causa nueva.
 
-## Sesión anterior (2026-09-05/06), resumida — el detalle está en el handoff
+Ahorros:425 producto RAM5,18→3,03→2,75GiB con cacheRAM0/no-mmapGPU.462 Gemma lazy-on conserva respuestas y reduce RAM del compositor.464 Gemma producto por conductor7/8útiles, RAM2653,13/GPU1694,18MiB; confirmación de activación pendiente.437 Qwen3.5 7/8,RAM2,75GiB/GPU3,10GiB, confusión de sujeto/nombre. Ninguna cifra demuestra todo BAXY sólo en VRAM ni un mínimo universal.
 
-Causa que la gobernó: todo turno conversacional degradado llegaba al compositor
-con `{"kind":"conversation","polarity":"success"}` y nada más, así que un
-seguimiento elíptico sólo podía salir vacío. Evidencia en
-[`SEGUIMIENTOS.md`](SEGUIMIENTOS.md).
+Reserva:204 potenciales/192 canónicos/12gruposduplicados;475 semántica,477 fuente/contexto,483 exposición.176/204 completos contrastados;7fuentes originales ausentes,6textos cortados a100caracteres.0certificados, no congelada, no ejecutada. Faltan contexto/entrenamiento/splits y refrescar exposiciones posteriores a483. Autoría ya confirmada; no preguntar otra vez. Sesión264 es desarrollo expuesto, no reserva. Privado TRANSCRIPT282 SHA9658a77505564ec1384e58aba91ed75d03b078f865182f94b6ecc3b0ee839ef6.
 
-Reparado allí: censo de prosa visible a 0 (salta docstrings vía `ast`); elipsis
-leída donde se lee el pedido, con `priorRequests` desde el shell (de 0 de 9
-seguimientos en tema a 7–9 de 9); capacidades y límites leídos por forma y nunca
-convertidos en aclaración (`limites-22/`: 8 de 9); eco del encargo derivado de lo
-enviado; `compose-audit.jsonl` v2 con `situation` y `followup_subject`.
+Cierre completo pendiente: ocho rutas/generalizar742; confirmaciones útiles y veraces; incidentes264/apps/París/Steam/YouTube/Spotify/capacidades/cierre;100humanosfrescos con procedencia/contexto, congelados y100/100 ES/EN/mezcla natural; averías/recuperación; UIreal/voz/audiofísico/ASR/wake;≤4GiBVRAMconjunta; runtime/instalación/continuidadC04–C09; Full final íntegramente verde y publicación fuera de main. No porcentaje/ETA ni cierre parcial.
 
-Retiradas y no repetir: prohibir la definición en un seguimiento
-(`seguimiento-12` contra `-11`: de 9 en tema a 6); turno anterior como contexto;
-muestreo 0.2/0.9; forzar la ruta contextual. Regresión propia encontrada y
-corregida: `panel-opus-13/051`, «this» tomado por anáfora.
+Python-Xutf8; archivos utf-8-sig. exec_command se recoge con write_stdin. Privados %LOCALAPPDATA%/BAXY. No editar fuente durante pruebas/runtimes/builds. Estados anteriores preservados en astra-audio-mind502/*-before.md y498/*-before.md.
 
-Sigue aplazado y **no** marcado reparado: el seguimiento en tema que repite la
-definición, la persona impersonal y los agotamientos; los que tocan generación
-conversacional siguen apuntando a C05/C06. El saludo mal formado deja de estar
-sólo aplazado: arriba queda su mecanismo.
+513cerrado37979exit0:24/24útiles+11/11bindingsconregistroactualysintratamiento. RAM1788,973/GPU3497,559MiB53,812s.514script/hookdeobservación listos: ocho turnosproducto437/464, peroahoraregistroQwenactualyfuente512;sin overrides de composición/thinking/requiredFacts. PerfilC03-private-profile514nuevo;únicos efectosmemoriasintéticaaislada. ConductorC#real,noUI/voz;límitesGPU3800/RAMlibre768/tiempototal240s. Ejecutar scratchpad/c03-private-product514.py. Sinprocesosactivos.
 
-## Siguiente acción
+514cerrado39353exit0:7/8finalesútiles;guardado/lecturasprivadasJordan yconversaciónÁlvaro correctos. T2narra metadatosinternos. T1sí cumple decisión/target; no exigirretrospectivamenteallíretención noincluida. ProgresoHTTP12 otra frontera:afirmaausenciaderesultadosapartirdesupayloadsinresultados. RAM1803,270/GPU3497,559MiB28,093s.515PREREG/hooksscriptsbase/viewlistos,9casoscadaperfillimpio(+desactivar); sólo vista deéxitosprivadosquitaestado redundanteyfalse corrected/sensitive/replayed; conservaenabledfalse/trueflags. No fuente nueva. Ejecutarbaseyrecogerantesdeview; no dosGPUjuntas. Sinprocesosactivos.
 
-La del handoff: reparar el saludo por owner y fijarlo (no necesita Granite);
-después `panel-opus-14` sobre la misma población de `panel-opus-13`, que sí lo
-necesita, para medir juntas la exención de encargo copiado y el saludo; y sólo
-con el panel fiel congelar la población v19 y correr el tramo D.
+515 cerrado: ambos brazos 7/9 útiles; no adoptar filtro de metadatos. El control de deshabilitar no alcanza la operación privada: alias de configuración demasiado estrechos. 516 preparado para reparar esa primera pérdida con gramática acotada y controles de negación/otras memorias. Fuente512 sigue intacta, sin procesos de diagnóstico activos.
+
+518 cerrado, auditoría sin inferencia: tres corpus originales de FunctionGemma, 15510 filas estables, 0malformadas.92/204 candidatos coinciden en campos/lineas exactas o normalizadas;112 sin coincidencia,101 con original completo. Entre no coincidentes:107ES,1EN,4indeterminados,0mezcla. NO certifica frescura; quedan contexto, exposición >483 y otras fuentes. Detalle privado C03-training-audit518-private; no reserva ejecutada ni congelada.516 owners-final sigue en curso sesión31964;517 preparado para después de Fast.
+
+516 validado: focal36/36; primer owner1961pass1fail por expectativa obsoleta de destino localizado, contrastada y sustituida por hechos JSON más precisos, sin alterar exportador. Export1/1; owners-final1962pass/0skips3m47s, sesión31964exit0. Fast66617exit0, Release3,47s0warnings/errors; preflight inicial con intérprete equivocado preservado, entorno BAXYQuality correcto al repetir. Buildservers apagados. Fuente nueva sólo parser privado y tests dueños; llm512 intacto.517 listo para ejecución real9casos;518 auditoría de entrenamiento cerrada antes:92coincidencias/112sincoincidencia(101originales completos), ninguna reserva certificada. Siguiente número libre519.
+
+517 cerrado93796exit0: deshabilitación privada real verificada enabled=false;7/9 útiles porque T2 sigue interno y T9 añade ausencia de cambios no observada. RAM1912,047/GPU3497,559MiB48,828s, sin violaciones.519 preparado: mismo producto11casos (+hora/estado memoria), dos perfiles limpios; sólo quitar frase genérica de ausencia de cambios de la instrucción de forma. No filtro515 ni cambios de fuente. Ejecutar base, recoger y luego hint.518 ya cerrado; siguiente número libre520.
+
+519 cerrado: base8/11, quitar sólo segunda frase de instrucción9/11; T9 deja de inventar ausencia de cambios detectados. T2 metadatos/T11 confunde capacidad con activación siguen fallando.13 formas por brazo,0/6 cambios exactos; sesiones87936/81593exit0.520 preregistrado para eliminar esa sola frase en fuente, después siete owners/Fast y producto. Sin procesos activos ni cambio de modelo/config.
+
+520 validado: siete owners3406pass+121subtests/0skips52,67s(89617exit0);Fast75292exit0,Release2,90s0warnings/errors. Buildservers apagados. Fuente llm520 elimina sólo frase genérica; C#516 intacto.521 preparado sin tratamiento,11casos producto519.522 refresco upstream cerrado: estableb10809, nocturnab10867 añade dos cambios ARMNEON/lazyAUTOsinmmap; CUDA RTXdiscreta no debería activar esa diferencia, inferencia de código, no benchmark ni promoción. Siguiente número libre523.
+
+521 cerrado49802exit0: fuente520 real sintratamiento9/11 útiles, T9 verificado sin observación inventada; T2/T11 abiertos. RAM2013,480/GPU3497,559MiB30,579s.523 nativo en curso99282: nueve payloads exactos521 × registrado greedy/receta oficialQwen seed0/17, sólo muestreo; mismo backend/geometría, ninguna modificación de fuente. No ejecutar producto ni otro GPU hasta recoger523. Siguiente número libre524.
+
+523 cerrado99282script exit0:27nativeEOS, muestreo efectivo9greedy/18documentado acreditado. Guardado0/3 ycapacidad0/3 reparados; progreso/metanarraciónsiguen. No adopción. RAM720,629/GPU3497,559MiB10,921s sólo servidor.524 preparado: Qwen3.5-4B,b10865,11payloads521(nueve523+dosnombres del fallo437), greedy/recetaoficialno-thinking seeds0/17,presencia1,5. No source/registrocambiados; ejecutar unaGPU, comprobar sampler ycalidad de33salidas.
+
+524 cerrado78100exit0:33EOS, Qwen3.5greedy9/11 vsdocumentado8/11cada seed. Guardado/progreso mejoran; lecturaESnombreycapacidadfallan3/3;documentadoañadeprematuroenable(seed0)/reproduccióninventada(seed17). RAM1124,449/GPU3174,539MiB16,469s sólo servidor.525 preparado: treslecturasprivadasresueltas × mismos3perfiles, únicamenteomitirpreguntanatural redundante; conservarJSON/idioma/contratos. No borrarcuentas/bienvenidas/pedidosabiertos ni adoptarfuentetodavía.

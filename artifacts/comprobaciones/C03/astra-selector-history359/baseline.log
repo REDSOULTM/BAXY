@@ -1,0 +1,22 @@
+FF.                                                                      [100%]
+================================== FAILURES ===================================
+_ test_native_selector_keeps_the_human_context_before_multiple_assistant_results[Me llamo Lina.-quien soy] _
+tests\test_turn_policy.py:10261: in test_native_selector_keeps_the_human_context_before_multiple_assistant_results
+    assert sent["previous_dialogue_for_references_only"] == original[:-1]
+E   AssertionError: assert [{'role': 'us...: 'De nada.'}] == [{'role': 'us...'Hola.'}, ...]
+E     
+E     At index 0 diff: {'role': 'user', 'content': 'confirmar'} != {'role': 'user', 'content': 'Me llamo Lina.'}
+E     Right contains 2 more items, first extra item: {'role': 'user', 'content': 'Gracias.'}
+E     Use -v to get more diff
+_ test_native_selector_keeps_the_human_context_before_multiple_assistant_results[My name is Jordan.-Who am I?] _
+tests\test_turn_policy.py:10261: in test_native_selector_keeps_the_human_context_before_multiple_assistant_results
+    assert sent["previous_dialogue_for_references_only"] == original[:-1]
+E   AssertionError: assert [{'role': 'us...: 'De nada.'}] == [{'role': 'us...'Hola.'}, ...]
+E     
+E     At index 0 diff: {'role': 'user', 'content': 'confirmar'} != {'role': 'user', 'content': 'My name is Jordan.'}
+E     Right contains 2 more items, first extra item: {'role': 'user', 'content': 'Gracias.'}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_native_selector_keeps_the_human_context_before_multiple_assistant_results[Me llamo Lina.-quien soy]
+FAILED tests/test_turn_policy.py::test_native_selector_keeps_the_human_context_before_multiple_assistant_results[My name is Jordan.-Who am I?]
+2 failed, 1 passed, 948 deselected in 1.71s

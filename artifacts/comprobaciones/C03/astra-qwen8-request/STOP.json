@@ -1,0 +1,1 @@
+{"reason": "Owner regression exposed request loss on a later progress retry before diagnostic was useful. Stop owned launcher and descendants; keep monitor for honest RESULT.", "ownedLauncher": 12044}

@@ -1,0 +1,10 @@
+{"turnId": "t8", "seconds": 0.765}
+{"turnId": "t9", "seconds": 0.625}
+{"turnId": "t10", "seconds": 0.813}
+{"turnId": "t13", "seconds": 0.594}
+{"turnId": "t14", "seconds": 0.734}
+{"turnId": "t15", "seconds": 0.766}
+{"turnId": "t2", "seconds": 0.453}
+{"turnId": "t4", "seconds": 0.407}
+{"turnId": "t6", "seconds": 0.296}
+{"elapsedSeconds": 9.11, "gpuPeakMiB": 1689.56640625, "ramPeakMiB": 2201.90625, "error": null}

@@ -1,0 +1,137 @@
+FF.FF.F                                                                  [100%]
+================================== FAILURES ===================================
+_ test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Explain encryption, pero en simple-Encryption protects your data by making it unreadable without a key.-wrong_language] _
+
+user_text = 'Explain encryption, pero en simple'
+reply = 'Encryption protects your data by making it unreadable without a key.'
+expected = 'wrong_language'
+
+    @pytest.mark.parametrize("user_text, reply, expected", [
+        ("Explain encryption, pero en simple",
+         "Encryption protects your data by making it unreadable without a key.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos para que nadie los lea sin una clave.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos so only someone with the key can read them.", ""),
+        ("Hey, buenas", "Hello! How can I help you today?", "wrong_language"),
+        ("Hey, buenas", "�Buenas! What can I help you with?", ""),
+        ("What is 14 por 6", "84.", ""),
+    ])
+    def test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts(
+        user_text: str, reply: str, expected: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(reply, "conversation", user_text, {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == expected
+E       AssertionError: assert '' == 'wrong_language'
+E         
+E         - wrong_language
+
+tests\test_c03_request_preservation.py:37: AssertionError
+_ test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Explain encryption, pero en simple-El cifrado protege tus datos para que nadie los lea sin una clave.-wrong_language] _
+
+user_text = 'Explain encryption, pero en simple'
+reply = 'El cifrado protege tus datos para que nadie los lea sin una clave.'
+expected = 'wrong_language'
+
+    @pytest.mark.parametrize("user_text, reply, expected", [
+        ("Explain encryption, pero en simple",
+         "Encryption protects your data by making it unreadable without a key.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos para que nadie los lea sin una clave.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos so only someone with the key can read them.", ""),
+        ("Hey, buenas", "Hello! How can I help you today?", "wrong_language"),
+        ("Hey, buenas", "�Buenas! What can I help you with?", ""),
+        ("What is 14 por 6", "84.", ""),
+    ])
+    def test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts(
+        user_text: str, reply: str, expected: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(reply, "conversation", user_text, {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == expected
+E       AssertionError: assert '' == 'wrong_language'
+E         
+E         - wrong_language
+
+tests\test_c03_request_preservation.py:37: AssertionError
+_ test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Hey, buenas-Hello! How can I help you today?-wrong_language] _
+
+user_text = 'Hey, buenas', reply = 'Hello! How can I help you today?'
+expected = 'wrong_language'
+
+    @pytest.mark.parametrize("user_text, reply, expected", [
+        ("Explain encryption, pero en simple",
+         "Encryption protects your data by making it unreadable without a key.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos para que nadie los lea sin una clave.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos so only someone with the key can read them.", ""),
+        ("Hey, buenas", "Hello! How can I help you today?", "wrong_language"),
+        ("Hey, buenas", "�Buenas! What can I help you with?", ""),
+        ("What is 14 por 6", "84.", ""),
+    ])
+    def test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts(
+        user_text: str, reply: str, expected: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(reply, "conversation", user_text, {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == expected
+E       AssertionError: assert 'too_many_sentences' == 'wrong_language'
+E         
+E         - wrong_language
+E         + too_many_sentences
+
+tests\test_c03_request_preservation.py:37: AssertionError
+_ test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Hey, buenas-\xa1Buenas! What can I help you with?-] _
+
+user_text = 'Hey, buenas', reply = '�Buenas! What can I help you with?'
+expected = ''
+
+    @pytest.mark.parametrize("user_text, reply, expected", [
+        ("Explain encryption, pero en simple",
+         "Encryption protects your data by making it unreadable without a key.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos para que nadie los lea sin una clave.", "wrong_language"),
+        ("Explain encryption, pero en simple",
+         "El cifrado protege tus datos so only someone with the key can read them.", ""),
+        ("Hey, buenas", "Hello! How can I help you today?", "wrong_language"),
+        ("Hey, buenas", "�Buenas! What can I help you with?", ""),
+        ("What is 14 por 6", "84.", ""),
+    ])
+    def test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts(
+        user_text: str, reply: str, expected: str,
+    ) -> None:
+>       assert llm.compose_visible_defect(reply, "conversation", user_text, {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == expected
+E       AssertionError: assert 'too_many_sentences' == ''
+E         
+E         + too_many_sentences
+
+tests\test_c03_request_preservation.py:37: AssertionError
+_______ test_chat_retries_when_the_answer_drops_one_requested_language ________
+
+    def test_chat_retries_when_the_answer_drops_one_requested_language() -> None:
+        corrected = "El cifrado protege tus datos so only someone with the key can read them."
+        client = Recorder([
+            "Encryption protects your data by making it unreadable without a key.",
+            corrected,
+        ])
+        answer, calls = client.chat("Explain encryption, pero en simple",
+                                    conversation_kind="knowledge", response_language="mixed")
+>       assert answer == corrected
+E       AssertionError: assert 'Encryption p...ithout a key.' == 'El cifrado p...an read them.'
+E         
+E         - El cifrado protege tus datos so only someone with the key can read them.
+E         + Encryption protects your data by making it unreadable without a key.
+
+tests\test_c03_request_preservation.py:50: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Explain encryption, pero en simple-Encryption protects your data by making it unreadable without a key.-wrong_language]
+FAILED tests/test_c03_request_preservation.py::test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Explain encryption, pero en simple-El cifrado protege tus datos para que nadie los lea sin una clave.-wrong_language]
+FAILED tests/test_c03_request_preservation.py::test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Hey, buenas-Hello! How can I help you today?-wrong_language]
+FAILED tests/test_c03_request_preservation.py::test_mixed_output_keeps_both_languages_without_rejecting_neutral_facts[Hey, buenas-\xa1Buenas! What can I help you with?-]
+FAILED tests/test_c03_request_preservation.py::test_chat_retries_when_the_answer_drops_one_requested_language
+5 failed, 2 passed, 36 deselected in 0.94s

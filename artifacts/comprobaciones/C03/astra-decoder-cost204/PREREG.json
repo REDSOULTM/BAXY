@@ -1,0 +1,5 @@
+{
+  "method": "Measure CPU RSS and construction/warmup time for greedy primary and unchanged beam8 contextual recognizer in one process. Same registered int8 Parakeet, CPU6 each. No product/runtime mutation or hardware playback. One original human segment and silence on each; beam receives current wake aliases compiled by product.",
+  "runtimeSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "version": "1.13.4"
+}

@@ -1,0 +1,1798 @@
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- The C compiler identification is MSVC 19.44.35228.0
+-- The CXX compiler identification is MSVC 19.44.35228.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning (dev) at D:/BAXYRuntime/experiments/voice/webrtc255/pybind11/pybind11/share/cmake/pybind11/FindPythonLibsNew.cmake:101 (message):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning, or
+  preferably upgrade to using FindPython, either by calling it explicitly
+  before pybind11, or by setting PYBIND11_FINDPYTHON ON before pybind11.
+Call Stack (most recent call first):
+  D:/BAXYRuntime/experiments/voice/webrtc255/pybind11/pybind11/share/cmake/pybind11/pybind11Tools.cmake:44 (find_package)
+  D:/BAXYRuntime/experiments/voice/webrtc255/pybind11/pybind11/share/cmake/pybind11/pybind11Common.cmake:226 (include)
+  D:/BAXYRuntime/experiments/voice/webrtc255/pybind11/pybind11/share/cmake/pybind11/pybind11Config.cmake:257 (include)
+  CMakeLists.txt:10 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found PythonInterp: C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe (found suitable version "3.12.10", minimum required is "3.8")
+-- Found PythonLibs: C:/Users/usuario/AppData/Local/Programs/Python/Python312/libs/python312.lib
+-- Performing Test HAS_MSVC_GL_LTCG
+-- Performing Test HAS_MSVC_GL_LTCG - Success
+-- Found pybind11: D:/BAXYRuntime/experiments/voice/webrtc255/pybind11/pybind11/include (found version "3.0.1")
+-- Configuring done (6.3s)
+CMake Warning:
+-- Generating done (0.1s)
+  Manually-specified variables were not used by the project:
+
+    CMAKE_POLICY_DEFAULT_CMP0091
+
+
+-- Build files have been written to: D:/BAXYRuntime/experiments/voice/webrtc255/build
+Versión de MSBuild 17.14.51+25f168cee para .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/BAXYRuntime/experiments/voice/webrtc255/source/vendor/webrtc_audio/CMakeLists.txt
+  echo_canceller3_config.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/api/echo_canceller3_config.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/api/echo_canceller3_config.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  echo_canceller3_factory.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/api/echo_canceller3_factory.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/api/echo_canceller3_factory.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/api/echo_canceller3_factory.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  adaptive_fir_filter_erl.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/adaptive_fir_filter_erl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/adaptive_fir_filter_erl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/adaptive_fir_filter_erl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  adaptive_fir_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/adaptive_fir_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/adaptive_fir_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/adaptive_fir_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  aec_state.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec_state.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec_state.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec_state.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  aec3_common.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec3_common.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec3_common.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec3_common.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  aec3_fft.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec3_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec3_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/aec3_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  alignment_mixer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/alignment_mixer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/alignment_mixer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  api_call_jitter_metrics.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/api_call_jitter_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/api_call_jitter_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  block_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  block_delay_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_delay_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_delay_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  block_framer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_framer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_framer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  block_processor_metrics.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_processor_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_processor_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  block_processor.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_processor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_processor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/block_processor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  clockdrift_detector.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/clockdrift_detector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  comfort_noise_generator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/comfort_noise_generator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/comfort_noise_generator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/comfort_noise_generator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  decimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/decimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/decimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  dominant_nearend_detector.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/dominant_nearend_detector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/dominant_nearend_detector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  downsampled_render_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/downsampled_render_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/downsampled_render_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  echo_audibility.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_audibility.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_audibility.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_audibility.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  Generando código...
+  Compilando...
+  echo_canceller3.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_canceller3.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_canceller3.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_canceller3.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  echo_path_delay_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_path_delay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_path_delay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_path_delay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  echo_path_variability.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_path_variability.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  echo_remover_metrics.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_remover_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_remover_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_remover_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  echo_remover.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_remover.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_remover.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/echo_remover.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  erl_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/erl_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/erl_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  erle_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  fft_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/fft_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/fft_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/fft_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  filter_analyzer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/filter_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/filter_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/filter_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  frame_blocker.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/frame_blocker.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/frame_blocker.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  fullband_erle_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/fullband_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/fullband_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  main_filter_update_gain.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/main_filter_update_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/main_filter_update_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/main_filter_update_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  matched_filter_lag_aggregator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/matched_filter_lag_aggregator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/matched_filter_lag_aggregator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/matched_filter_lag_aggregator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  matched_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/matched_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/matched_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/matched_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  moving_average.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/moving_average.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/moving_average.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  render_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  render_delay_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  render_delay_controller_metrics.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_controller_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_controller_metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  render_delay_controller.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_controller.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_controller.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_delay_controller.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  render_signal_analyzer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_signal_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_signal_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/render_signal_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  Generando código...
+  Compilando...
+  residual_echo_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/residual_echo_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/residual_echo_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/residual_echo_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  reverb_decay_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_decay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_decay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  reverb_frequency_response.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_frequency_response.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_frequency_response.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  reverb_model_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_model_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_model_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  reverb_model.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_model.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/reverb_model.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  shadow_filter_update_gain.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/shadow_filter_update_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/shadow_filter_update_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/shadow_filter_update_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  signal_dependent_erle_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/signal_dependent_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/signal_dependent_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/signal_dependent_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  spectrum_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/spectrum_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/spectrum_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  stationarity_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/stationarity_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/stationarity_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  subband_erle_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subband_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subband_erle_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  subband_nearend_detector.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subband_nearend_detector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subband_nearend_detector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  subtractor_output_analyzer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor_output_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor_output_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor_output_analyzer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  subtractor_output.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor_output.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor_output.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor_output.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  subtractor.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/subtractor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  suppression_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/suppression_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/suppression_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/suppression_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  suppression_gain.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/suppression_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/suppression_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/aec3/suppression_gain.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  audio_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/audio_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/audio_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/audio_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  audio_frame.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/audio_frame.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/audio_frame.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  channel_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/channel_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/channel_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  channel_layout.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/channel_layout.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/channel_layout.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  Generando código...
+  Compilando...
+  high_pass_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/high_pass_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/high_pass_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  apm_data_dumper.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/apm_data_dumper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/apm_data_dumper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  wav_file.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/wav_file.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/wav_file.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/wav_file.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  wav_header.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/wav_header.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/wav_header.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/logging/wav_header.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  push_sinc_resampler.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/push_sinc_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/push_sinc_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/push_sinc_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  sinc_resampler.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/sinc_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/sinc_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/sinc_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  sparse_fir_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/sparse_fir_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/sparse_fir_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  splitting_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/splitting_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/splitting_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  three_band_filter_bank.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/three_band_filter_bank.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/three_band_filter_bank.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  cascaded_biquad_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/cascaded_biquad_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/cascaded_biquad_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  delay_estimator_wrapper.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/delay_estimator_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/delay_estimator_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  delay_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/delay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/delay_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  ooura_fft.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/ooura_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/ooura_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  fast_math.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/fast_math.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/fast_math.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  histograms.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/histograms.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/histograms.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  noise_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/noise_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/noise_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  noise_suppressor.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/noise_suppressor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/noise_suppressor.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  ns_fft.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/ns_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/ns_fft.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  prior_signal_model_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/prior_signal_model_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/prior_signal_model_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  prior_signal_model.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/prior_signal_model.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  Generando código...
+  Compilando...
+  quantile_noise_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/quantile_noise_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/quantile_noise_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  signal_model_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/signal_model_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/signal_model_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  signal_model.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/signal_model.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  speech_probability_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/speech_probability_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/speech_probability_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  suppression_params.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/suppression_params.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/suppression_params.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  wiener_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/wiener_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/ns/wiener_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  adaptive_digital_gain_controller.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/adaptive_digital_gain_controller.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/adaptive_digital_gain_controller.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  biquad_filter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/biquad_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/biquad_filter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  fixed_digital_level_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/fixed_digital_level_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/fixed_digital_level_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  gain_applier.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/gain_applier.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/gain_applier.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  interpolated_gain_curve.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/interpolated_gain_curve.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/interpolated_gain_curve.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  limiter.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/limiter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/limiter.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  limiter_db_gain_curve.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/limiter_db_gain_curve.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/limiter_db_gain_curve.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  noise_level_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/noise_level_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/noise_level_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  saturation_protector.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/saturation_protector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/saturation_protector.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  saturation_protector_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/saturation_protector_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/saturation_protector_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  speech_level_estimator.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_level_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_level_estimator.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  speech_level_estimator_impl.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_level_estimator_impl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_level_estimator_impl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  speech_level_estimator_experimental_impl.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_level_estimator_experimental_impl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_level_estimator_experimental_impl.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  speech_probability_buffer.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_probability_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/speech_probability_buffer.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  Generando código...
+  Compilando...
+  vad_wrapper.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/vad_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/vad_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/vad_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  auto_correlation.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/auto_correlation.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/auto_correlation.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  features_extraction.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/features_extraction.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/features_extraction.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244: '=': conversión de 'const _Ty' a 'float'; posible pérdida de datos [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         with [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         [ [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:             _Ty=int [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         ] [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/features_extraction.cc")
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24):
+      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
+          D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\audio_processing\agc2\rnn_vad\features_extraction.h(49,7):
+          Vea la referencia a la creación de una instancia de clase plantilla "webrtc::rnn_vad::SequenceBuffer<float,864,240,480>" que se está compilando
+          D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\audio_processing\agc2\rnn_vad\sequence_buffer.h(51,8):
+          al compilar la función del miembro clase plantilla "void webrtc::rnn_vad::SequenceBuffer<float,864,240,480>::Reset(void)"
+              D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\audio_processing\agc2\rnn_vad\features_extraction.cc(52,25):
+              vea la primera referencia a “webrtc::rnn_vad::SequenceBuffer<float,864,240,480>::Reset” en “webrtc::rnn_vad::FeaturesExtractor::Reset”
+          D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\audio_processing\agc2\rnn_vad\sequence_buffer.h(51,23):
+          Vea la referencia a la creación de una instancia de la función plantilla "void std::fill<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,int>(const _FwdIt,const _FwdIt,const int &)" que se está compilando
+          with
+          [
+              _Ty=float,
+              _FwdIt=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<float>>>
+          ]
+  
+  lp_residual.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/lp_residual.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/lp_residual.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244: '=': conversión de 'const _Ty' a 'T'; posible pérdida de datos [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         with [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         [ [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:             _Ty=int [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         ] [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         and [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         [ [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:             T=float [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24): warning C4244:         ] [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/lp_residual.cc")
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\xutility(5310,24):
+      el contexto de creación de instancias de la plantilla (el más antiguo primero) es
+          D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\audio_processing\agc2\rnn_vad\lp_residual.cc(97,10):
+          Vea la referencia a la creación de una instancia de la función plantilla "void std::fill<T*,int>(const _FwdIt,const _FwdIt,const _Ty &)" que se está compilando
+          with
+          [
+              T=float,
+              _FwdIt=float *,
+              _Ty=int
+          ]
+  
+  pitch_search.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/pitch_search.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/pitch_search.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  pitch_search_internal.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/pitch_search_internal.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/pitch_search_internal.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/pitch_search_internal.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  rnn.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  rnn_fc.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn_fc.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn_fc.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn_fc.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  rnn_gru.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn_gru.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn_gru.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/rnn_gru.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  spectral_features.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/spectral_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/spectral_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  spectral_features_internal.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/spectral_features_internal.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/spectral_features_internal.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  push_resampler.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/push_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/push_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/push_resampler.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  rnn_vad_weights.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/third_party/rnnoise/src/rnn_vad_weights.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  cpu_info.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/cpu_info.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/cpu_info.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/cpu_info.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  pffft_wrapper.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/pffft_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/pffft_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  fft4g.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/common_audio/third_party/ooura/fft_size_256/fft4g.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  checks.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/checks.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/checks.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  critical_section.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/critical_section.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/critical_section.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  logging.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/logging.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/logging.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  aligned_malloc.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/memory/aligned_malloc.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/memory/aligned_malloc.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  Generando código...
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\audio_processing\agc2\rnn_vad\rnn_fc.cc(70,1): warning C4715: 'webrtc::rnn_vad::`anonymous namespace'::GetActivationFunction': no todas las rutas de acceso de control devuelven un valor [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  Compilando...
+  platform_thread_types.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/platform_thread_types.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  race_checker.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/race_checker.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/race_checker.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  string_encode.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/string_encode.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/string_encode.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  string_to_number.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/string_to_number.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/string_to_number.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  string_utils.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/string_utils.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  string_builder.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/strings/string_builder.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/strings/string_builder.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  file_wrapper.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/system/file_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/system/file_wrapper.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  time_utils.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/time_utils.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/rtc_base/time_utils.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  field_trial.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/system_wrappers/source/field_trial.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/system_wrappers/source/field_trial.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  metrics.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/system_wrappers/source/metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/system_wrappers/source/metrics.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+  bad_optional_access.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/abseil/absl/types/bad_optional_access.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  sinc_resampler_sse.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/sinc_resampler_sse.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/resampler/sinc_resampler_sse.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  ooura_fft_sse2.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/ooura_fft_sse2.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/utility/ooura_fft_sse2.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  vector_math_avx2.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/vector_math_avx2.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/vector_math_avx2.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/rnn_vad/vector_math_avx2.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  Generando código...
+  splitting_filter_c.c
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/splitting_filter_c.c")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  pffft.c
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/third_party/pffft/src/pffft.c")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+  Generando código...
+  cpu_features.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/cpu_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9): warning C4005: 'RTC_DISABLE_CHECK_MSG': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/cpu_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\build_config.h(6,9):
+      'RTC_DISABLE_CHECK_MSG' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/audio_processing/agc2/cpu_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  cpu_features.cc
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9): warning C4005: 'NOMINMAX': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/system_wrappers/source/cpu_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\compat_includes.h(7,9):
+      'NOMINMAX' declarado previamente en la línea de comandos
+  
+D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9): warning C4005: 'WEBRTC_ARCH_X86_FAMILY': redefinición de macro [D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\webrtc_audio_static.vcxproj]
+  (compilando archivo de origen "../../../source/vendor/webrtc_audio/system_wrappers/source/cpu_features.cc")
+      D:\BAXYRuntime\experiments\voice\webrtc255\source\vendor\webrtc_audio\rtc_base\system\arch.h(22,9):
+      'WEBRTC_ARCH_X86_FAMILY' declarado previamente en la línea de comandos
+  
+  webrtc_audio_static.vcxproj -> D:\BAXYRuntime\experiments\voice\webrtc255\build\vendor\webrtc_audio\Release\webrtc_audio_static.lib
+  Building Custom Rule D:/BAXYRuntime/experiments/voice/webrtc255/source/CMakeLists.txt
+  webrtc_audio_bindings.cpp
+     Creando biblioteca D:/BAXYRuntime/experiments/voice/webrtc255/build/Release/_webrtc_audio.lib y objeto D:/BAXYRuntime/experiments/voice/webrtc255/build/Release/_webrtc_audio.exp
+  Generando código
+  Generación de código finalizada
+  _webrtc_audio.vcxproj -> D:\BAXYRuntime\experiments\voice\webrtc255\build\Release\_webrtc_audio.cp312-win_amd64.pyd
+{"wheel": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\runtime_wheels\\pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl", "sha256": "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb", "version": "0.2.0+baxy.1", "sourceUrl": "https://files.pythonhosted.org/packages/d8/b0/8d9e93083ac412cc758003d5e216d44f69b50619cdd0cfc7897e576eb90c/pywebrtc_audio-0.2.0.tar.gz", "sourceSha256": "cdc47c063439b033bdd6110d2e1119fd6e36c6e007ed824bc369c9a5e3cb307a", "upstreamWheelSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b", "pybind11Sha256": "aa8f0aa6e0a94d3b64adfc38f560f33f15e589be2175e103c0a33c6bce55ee89", "patchSha256": "548763188c319936ae00475b03885e75bf986d1917b8bba8b86ed1746f0fe020", "extensionSha256": "3679265e7761c1a77e51f598ebb33e819f11e9a6e53a4d0f95b0da6f83382ef2", "profile": {"python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]", "cmake": "cmake version 3.31.6-msvc6", "compiler": "Visual Studio 17 2022, x64, Release, static MSVC runtime (/MT)"}, "change": "Export the last linear AEC3 frame. Original DSP/configuration otherwise unchanged; no diagnostic metrics."}

@@ -1,0 +1,40 @@
+FFFFFF.........F                                                         [100%]
+================================== FAILURES ===================================
+_ test_adversative_independent_prohibition_keeps_only_requested_effects[Pon el volumen al 37 pero no quites el silencio-operations0] _
+tests\test_effect_intent.py:6896: in test_adversative_independent_prohibition_keeps_only_requested_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_adversative_independent_prohibition_keeps_only_requested_effects[Set the volume to 37 but do not unmute the audio-operations1] _
+tests\test_effect_intent.py:6896: in test_adversative_independent_prohibition_keeps_only_requested_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_adversative_independent_prohibition_keeps_only_requested_effects[Dime la hora pero no abras Steam-operations2] _
+tests\test_effect_intent.py:6896: in test_adversative_independent_prohibition_keeps_only_requested_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_adversative_independent_prohibition_keeps_only_requested_effects[Tell me the time but don't open Spotify-operations3] _
+tests\test_effect_intent.py:6896: in test_adversative_independent_prohibition_keeps_only_requested_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_adversative_independent_prohibition_keeps_only_requested_effects[Abre calculadora pero no silencies el audio-operations4] _
+tests\test_effect_intent.py:6896: in test_adversative_independent_prohibition_keeps_only_requested_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_adversative_independent_prohibition_keeps_only_requested_effects[Open Spotify but never mute the audio-operations5] _
+tests\test_effect_intent.py:6896: in test_adversative_independent_prohibition_keeps_only_requested_effects
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_adversative_split_does_not_discharge_retractions_or_object_corrections[Open Spotify, not Steam] _
+tests\test_effect_intent.py:6916: in test_adversative_split_does_not_discharge_retractions_or_object_corrections
+    assert unresolved_compound_contract(text, AVAILABLE, resolved_intent=None) is not None
+E   AssertionError: assert None is not None
+E    +  where None = unresolved_compound_contract('Open Spotify, not Steam', {'app.installed', 'app.open', 'audio.mute', 'audio.status', 'audio.volume', 'audio.volume.adjust', ...}, resolved_intent=None)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_adversative_independent_prohibition_keeps_only_requested_effects[Pon el volumen al 37 pero no quites el silencio-operations0]
+FAILED tests/test_effect_intent.py::test_adversative_independent_prohibition_keeps_only_requested_effects[Set the volume to 37 but do not unmute the audio-operations1]
+FAILED tests/test_effect_intent.py::test_adversative_independent_prohibition_keeps_only_requested_effects[Dime la hora pero no abras Steam-operations2]
+FAILED tests/test_effect_intent.py::test_adversative_independent_prohibition_keeps_only_requested_effects[Tell me the time but don't open Spotify-operations3]
+FAILED tests/test_effect_intent.py::test_adversative_independent_prohibition_keeps_only_requested_effects[Abre calculadora pero no silencies el audio-operations4]
+FAILED tests/test_effect_intent.py::test_adversative_independent_prohibition_keeps_only_requested_effects[Open Spotify but never mute the audio-operations5]
+FAILED tests/test_effect_intent.py::test_adversative_split_does_not_discharge_retractions_or_object_corrections[Open Spotify, not Steam]
+7 failed, 9 passed, 1735 deselected in 1.70s

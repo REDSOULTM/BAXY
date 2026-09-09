@@ -323,6 +323,9 @@ public sealed class MemoryHandlersTests
                 "secret",
                 StringComparison.Ordinal));
         string text = Encoding.UTF8.GetString(firstBytes);
+        Assert.That(projected, Is.True);
+        using JsonDocument projectedFacts = JsonDocument.Parse(projection!.Message);
+        JsonElement observed = projectedFacts.RootElement.GetProperty("observed");
 
         Assert.Multiple(() =>
         {
@@ -338,8 +341,14 @@ public sealed class MemoryHandlersTests
                 "^memory-export-[0-9a-f]{64}\\.json$"));
             Assert.That(firstHash, Is.EqualTo(
                 Convert.ToHexStringLower(SHA256.HashData(firstBytes))));
-            Assert.That(projected, Is.True);
-            Assert.That(projection!.Message, Does.Contain("Documentos/BAXY"));
+            Assert.That(projectedFacts.RootElement.GetProperty("operation").GetString(),
+                Is.EqualTo("memory.export"));
+            Assert.That(observed.GetProperty("destination").GetString(), Is.EqualTo("Documents/BAXY"));
+            Assert.That(observed.GetProperty("recordCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(observed.GetProperty("integrityVerified").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("integrityAlgorithm").GetString(), Is.EqualTo("SHA-256"));
+            Assert.That(observed.GetProperty("mayRedirectOrSync").GetBoolean(), Is.True);
+            Assert.That(observed.GetProperty("replayed").GetBoolean(), Is.False);
             Assert.That(projection.Message, Does.Not.Contain(path));
             Assert.That(projection.Message, Does.Not.Contain(firstHash));
             Assert.That(projection.Message, Does.Not.Contain(Canary));

@@ -1,0 +1,5 @@
+{
+  "method": "Full original sidecar module with actual current Core catalog169, Qwen3.5 override/profile and observed App voice env. Sequence hello/catalog/status/speak greeting/start wake. Single experimental difference from161: preload scipy.signal on main before runpy/control-plane reader; timed faulthandler and protocol observation; no App/UI/volume changes. Same existing uncalibrated wake seam, not acceptance.",
+  "capabilities": 169,
+  "criterion": "Locate first stalled operation and native/Python thread stack. Do not enlarge product timeouts or reinterpret uncalibrated wake as approved."
+}

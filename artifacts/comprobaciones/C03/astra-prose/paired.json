@@ -1,0 +1,948 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Good afternoon",
+    "terminal": "published_final",
+    "final": "Good afternoon.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 15,
+        "draft_sha256": "b2a872e9f53a0e3a6416aa8db9cde6cab4b53123e351ba0274615c5556b83bfc",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good afternoon."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "published_final",
+    "final": "DNS stands for Domain Name System, which translates domain names into IP addresses for easier internet access.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "Hi again",
+    "terminal": "published_final",
+    "final": "Hi again!",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 9,
+        "draft_sha256": "7825d92f67bdcdef149446243375cb193ea9d65d11e025c727a6926c81839f7b",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hi again!"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Good evening",
+    "terminal": "published_final",
+    "final": "Good evening.  \n\nHow can I help you tonight?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 44,
+        "draft_sha256": "f16be087f38b38fc2067ab7187adbdba5724d1d44b13f77df5b4df47fad9f9f2",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good evening.  \n\nHow can I help you tonight?"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda la señal en viajar de un lugar a otro en la red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 91,
+        "draft_sha256": "49afa5f2aeec39530e0f4f123674452d87955d18691c4860477a477f3379bab7",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red es el tiempo que tarda la señal en viajar de un lugar a otro en la red."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia de red importa porque afecta la reacción y la precisión de las aplicaciones en tiempo real, como videoconferencias, juegos o transmisiones en tiempo real, donde un retraso puede reducir la calidad de experiencia.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups, reducing the time needed to retrieve domain information.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because DNS caching can delay or change domain resolution, affecting how quickly and correctly a user’s device connects to a website.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "DNS caching",
+        "published": false,
+        "draft_bytes": 485,
+        "draft_sha256": "ac79c6aa9e49705e90fa397490c42fef5e674c336970af71398de0b3f69de5ed",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS caching matters because it affects how quickly and accurately domain names are resolved across a network. Without proper caching, every request may need to go through the full DNS resolution process, which can slow down access. Caching can improve performance by storing and returning previously resolved names, reducing latency and load. However, caching can also introduce inaccuracies if stale data is used, leading to incorrect or outdated information being delivered to users."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "DNS caching",
+        "published": true,
+        "draft_bytes": 146,
+        "draft_sha256": "fb4f1386a3462bd1d0fec55b3884440a8bef74383339be4246c62b14a5e5f4e0",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It matters because DNS caching can delay or change domain resolution, affecting how quickly and correctly a user’s device connects to a website."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote server, allowing you to browse the internet privately and access content as if you were on the same network.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding the reasons helps ensure the VPN works correctly and securely for your needs.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "answered_with_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "2e5edf0255069650fc1ac5b1f4ecd19bc90542b7b4c060fa71a2920553ae8fb3",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Why does it matter for a VPN?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": true,
+        "draft_bytes": 110,
+        "draft_sha256": "11a479f09171fdeb8a71136386ec33193409d31079bfdefb4fbf3bcde99fbbff",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It matters because understanding the reasons helps ensure the VPN works correctly and securely for your needs."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario que permite acceder a recursos remotos como si estuvieras directamente conectado a ellos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 124,
+        "draft_sha256": "ca16ca01b158f85ee02acdbc532816d733d484caaa3d5839f8efb9da569295c0",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy actúa como intermediario que permite acceder a recursos remotos como si estuvieras directamente conectado a ellos."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "¿y por qué se usa?",
+    "terminal": "published_final",
+    "final": "Se usa para acceder a información o recursos filtrados por medio de un proxy.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": false,
+        "draft_bytes": 260,
+        "draft_sha256": "26ba0ecc42b1072dc3341b0e96bc3197ae252a2d9c227712ee4acfd3c4327e93",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Se usa proxy para permitir que otra persona o sistema actúe en nombre de alguien, sin necesidad de proporcionar credenciales directamente. Esto se implementa para mejorar seguridad, gestionar accesos y cumplir con políticas sin exponer información sensible."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 78,
+        "draft_sha256": "37dba23bdc00d83cec72e2460d7ec6fec6d5b341b28f79d9a80d38d208bf4be7",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Se usa para acceder a información o recursos filtrados por medio de un proxy."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router direciona el flujo de datos entre dispositivos en una red y con el exterior.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 86,
+        "draft_sha256": "b8070785e091ba47bf813c858e9f314f97907b4c7d560034c69f902e15559f10",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router direciona el flujo de datos entre dispositivos en una red y con el exterior."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "¿Confirmar o cancelar?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "awaiting_mission_resume",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices",
+          "step"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 23,
+        "draft_sha256": "c3e3f7f8569c766ec3ec5fc35a64041ac3a0ab7a5ede46f2f1d8f220756ebaa1",
+        "payload": {
+          "cause": "step needs confirmation",
+          "step": 2,
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_needs_confirmation\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"],\"step\":2}",
+        "draft": "¿Confirmar o cancelar?"
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "¿Confirmar o cancelar?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "awaiting_mission_resume",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 23,
+        "draft_sha256": "c3e3f7f8569c766ec3ec5fc35a64041ac3a0ab7a5ede46f2f1d8f220756ebaa1",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirmar",
+            "cancelar"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "¿Confirmar o cancelar?"
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "what is the capital of Peru",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "awaiting_mission_resume",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 66,
+        "draft_sha256": "e3cf9062323ed66ca0097eff1b09c83cb433bf16b6558a4fad3c00133509b893",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "I can't answer that directly. Would you like to confirm or cancel?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "retry",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "third",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 6,
+        "draft_sha256": "2374d91794b79f4fb4ec9587d2cf00aecc4f9953fab3ed1dd12ab147a0b721f9",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "cancel"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 105,
+        "draft_sha256": "0eead0be07720405ca19729520770fc82c6572bdc8cef7ba65cb14d39e58717b",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "The capital of Peru is Lima.  \nYou can confirm or cancel this answer.  \nPlease choose: confirm or cancel."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "retry",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "third",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 6,
+        "draft_sha256": "2374d91794b79f4fb4ec9587d2cf00aecc4f9953fab3ed1dd12ab147a0b721f9",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "cancel"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "754a37c7363a6e8e613b3069b7c74a21c59da737a35adaa6d1319e7e0bd12d80",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "Please choose either confirm or cancel."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "retry",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "third",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 6,
+        "draft_sha256": "2374d91794b79f4fb4ec9587d2cf00aecc4f9953fab3ed1dd12ab147a0b721f9",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "cancel"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "85e21b1a813df7c7fa9d0921758c8515161b5541dbe00b576101231290dae27e",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "I can confirm or cancel. Please choose."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "retry",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "third",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 39,
+        "draft_sha256": "754a37c7363a6e8e613b3069b7c74a21c59da737a35adaa6d1319e7e0bd12d80",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "Please choose either confirm or cancel."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "retry",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "third",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 6,
+        "draft_sha256": "2374d91794b79f4fb4ec9587d2cf00aecc4f9953fab3ed1dd12ab147a0b721f9",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "cancel"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 28,
+        "draft_sha256": "b93d40d7ac6d8ea6f076788d6675cf5c2fa91b98264e5ae4f7bacd7a63a98b42",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "The capital of Peru is Lima."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "retry",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "third",
+        "intent": "confirmation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "choices"
+        ],
+        "reason": "confirmation_not_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 7,
+        "draft_sha256": "3f267c2ab422e502bad8e60ff9e55666ec59b725e561bf1629c48a1578a08c79",
+        "payload": {
+          "cause": "step confirm or cancel",
+          "choices": [
+            "confirm",
+            "cancel"
+          ]
+        },
+        "situation": "{\"kind\":\"confirmation\",\"polarity\":\"pending\",\"cause\":\"step_confirm_or_cancel\",\"choices\":[\"confirmar\",\"confirm\",\"cancelar\",\"cancel\"]}",
+        "draft": "confirm"
+      }
+    ]
+  }
+]

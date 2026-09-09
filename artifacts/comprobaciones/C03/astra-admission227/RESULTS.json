@@ -1,0 +1,159 @@
+[
+  {
+    "human": 0,
+    "admissions": [
+      {
+        "frame": 96,
+        "speaking": true,
+        "barge_frames": 1,
+        "noise_floor": 0.0014361707874923175,
+        "speech": true,
+        "energy": 0.009401220316081182,
+        "probability": 0.9249746203422546
+      },
+      {
+        "frame": 181,
+        "speaking": true,
+        "barge_frames": 1,
+        "noise_floor": 0.0007465390512068652,
+        "speech": true,
+        "energy": 0.028802725693863288,
+        "probability": 0.9996621012687683
+      }
+    ],
+    "segments": [
+      {
+        "firstSample": 45056,
+        "lastSample": 81408,
+        "pcmSha256": "44206130a3755df8c5dcf7dfcfdfca500ee8c8cfb44bc20ef1df5f8afeb5a37f"
+      },
+      {
+        "firstSample": 88576,
+        "lastSample": 262144,
+        "pcmSha256": "352c87b930cf7293af32a5821c93577b7560a82b57a84fd4d85775d14192d408"
+      }
+    ],
+    "cancellations": [
+      194,
+      307,
+      321,
+      337,
+      355,
+      368
+    ],
+    "matches226": true,
+    "humanInsertionSample": 59109
+  },
+  {
+    "human": 1,
+    "admissions": [
+      {
+        "frame": 96,
+        "speaking": true,
+        "barge_frames": 1,
+        "noise_floor": 0.0014361707874923175,
+        "speech": true,
+        "energy": 0.009401220316081182,
+        "probability": 0.9249746203422546
+      },
+      {
+        "frame": 191,
+        "speaking": true,
+        "barge_frames": 1,
+        "noise_floor": 0.0006616562417403959,
+        "speech": true,
+        "energy": 0.0245125710667602,
+        "probability": 0.8153331279754639
+      }
+    ],
+    "segments": [
+      {
+        "firstSample": 45056,
+        "lastSample": 81408,
+        "pcmSha256": "ef73ed30513bf28e7f10ce19b931df45f021d0391e926f16463efddea4b01ce8"
+      },
+      {
+        "firstSample": 93696,
+        "lastSample": 213504,
+        "pcmSha256": "3d8438efa46c9468e5d1a4e89722c0e5e235095fa030e67497cf57de56b1815e"
+      }
+    ],
+    "cancellations": [
+      193,
+      199,
+      306,
+      318,
+      334,
+      358,
+      366
+    ],
+    "matches226": true,
+    "humanInsertionSample": 59109
+  },
+  {
+    "human": 2,
+    "admissions": [
+      {
+        "frame": 96,
+        "speaking": true,
+        "barge_frames": 1,
+        "noise_floor": 0.0014361707874923175,
+        "speech": true,
+        "energy": 0.009401220316081182,
+        "probability": 0.9249746203422546
+      }
+    ],
+    "segments": [
+      {
+        "firstSample": 45056,
+        "lastSample": 210432,
+        "pcmSha256": "181aa56ecb8d6dfde6c3c151a594c0f061b51409606faac7dcc52986967713ef"
+      }
+    ],
+    "cancellations": [
+      152,
+      189,
+      306,
+      319,
+      324,
+      328,
+      341,
+      351,
+      360
+    ],
+    "matches226": true,
+    "humanInsertionSample": 59109
+  },
+  {
+    "human": 3,
+    "admissions": [
+      {
+        "frame": 96,
+        "speaking": true,
+        "barge_frames": 1,
+        "noise_floor": 0.0014361707874923175,
+        "speech": true,
+        "energy": 0.009401220316081182,
+        "probability": 0.9249746203422546
+      }
+    ],
+    "segments": [
+      {
+        "firstSample": 45056,
+        "lastSample": 201728,
+        "pcmSha256": "dd939e8f791efda1f854c3afefcf25f857159a2f3284d9ec8b5aa5bfaceb29df"
+      }
+    ],
+    "cancellations": [
+      129,
+      160,
+      177,
+      198,
+      313,
+      345,
+      365
+    ],
+    "matches226": true,
+    "humanInsertionSample": 59109
+  }
+]

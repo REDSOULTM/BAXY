@@ -1,0 +1,29 @@
+{
+  "status": "ahead",
+  "ahead_by": 2,
+  "behind_by": 0,
+  "commits": [
+    {
+      "sha": "9113cc1880763bf590774490f51a661bf22403a4",
+      "message": "ggml : fix msvc+clang ggml_vld1q_u32 (#28284)"
+    },
+    {
+      "sha": "f3f1a8f2760f28325a5ec20c05b171e5b7c83a29",
+      "message": "llama: disable lazy tensor loading by default on iGPUs (#28326)"
+    }
+  ],
+  "files": [
+    {
+      "name": "ggml/src/ggml-cpu/ggml-cpu-impl.h",
+      "status": "modified",
+      "changes": 2
+    },
+    {
+      "name": "src/llama-model.cpp",
+      "status": "modified",
+      "changes": 12
+    }
+  ],
+  "raw_sha256": "6fdf69f132f816476b70e2e1a95ad77217fbe2c24d4bb70987505a7f7edfb9ad",
+  "url": "https://api.github.com/repos/ggml-org/llama.cpp/compare/d4389a4dd920d24c9592f1dc3badbd69be23bd09...f3f1a8f2760f28325a5ec20c05b171e5b7c83a29"
+}

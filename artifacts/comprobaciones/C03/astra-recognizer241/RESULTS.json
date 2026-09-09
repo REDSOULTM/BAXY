@@ -1,0 +1,182 @@
+[
+  {
+    "case": "h0-near",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "nemotron": "Se recomienda enfáticamente a los viajeros quen sobre cualquier riesgo del clima extremo en el área que visitan, dado quello puede afectar sus planes de viaje",
+    "seconds": 2.0965645000105724
+  },
+  {
+    "case": "h0-near",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "nemotron": "Se recomie enfáticamente a los viajeros que informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus de viaje",
+    "seconds": 3.459004099990125
+  },
+  {
+    "case": "h0-raw",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "nemotron": "Se recomienda enfáticamente a los viajeros que informen sobre cualquier riesgo del clima extremo en el área que visitan, dado queda afectar sus de viaje.",
+    "seconds": 2.4169848000019556
+  },
+  {
+    "case": "h0-raw",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "nemotron": "Se recomienda enfáticamente a los viajeros que informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "seconds": 3.0780119999981252
+  },
+  {
+    "case": "h1-near",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "nemotron": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al en la plaza de San Pedro",
+    "seconds": 1.5475212999881478
+  },
+  {
+    "case": "h1-near",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "nemotron": "Fue tanta la cantidad de gente queró que no todos pudieron acceder al funeral en laza de San Pedro",
+    "seconds": 2.433901299998979
+  },
+  {
+    "case": "h1-raw",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "nemotron": "Pueta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la Plaza de San Ped",
+    "seconds": 1.5187376999965636
+  },
+  {
+    "case": "h1-raw",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "nemotron": "Fue tanta la cantidad de gente que se concentró que nos pudieron acceder al funeral en laza de San Pedro",
+    "seconds": 2.4267948000051547
+  },
+  {
+    "case": "h2-near",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "nemotron": "However, due to the slow communic channels styles in the West could lag behind by twenty five to thirty years",
+    "seconds": 1.8254407999920659
+  },
+  {
+    "case": "h2-near",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "nemotron": "However, due to the slow communication channels, styles in theg behind by twenty five to thirty years",
+    "seconds": 2.6004814999905648
+  },
+  {
+    "case": "h2-raw",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "However, due to the slow communication channels, styles in the West can lag behind by 25 to 30 years.",
+    "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "nemotron": "However, people with a slow communication channels styles in the West could lag behind by twenty five to thirty year",
+    "seconds": 1.799597699995502
+  },
+  {
+    "case": "h2-raw",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "nemotron": "However due to the slow communication channels, styles in the West could lag behin  twenty five to thirty year",
+    "seconds": 2.5889876000001095
+  },
+  {
+    "case": "h3-near",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "nemotron": "All nouns alongside the world safe for you always begin with a capila letter even in the middle of a sentence",
+    "seconds": 1.7461687000031816
+  },
+  {
+    "case": "h3-near",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "nemotron": "All nouns alongside the world safe for you always begin with a capital letter even in the middle of a sentence",
+    "seconds": 2.335777100000996
+  },
+  {
+    "case": "h3-raw",
+    "kind": "segment",
+    "index": 0,
+    "parakeet": "All nouns alongside the world say for you. Always begin with a capital letter, even in the middle of a sentence.",
+    "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "nemotron": "All nouns alongside the worth alway begin with a capil letter even in the middle of sentence",
+    "seconds": 1.7773687000008067
+  },
+  {
+    "case": "h3-raw",
+    "kind": "window",
+    "index": 0,
+    "parakeet": "All nouns alongside the world say for you. Always begin with a capital letter, even in the middle of a sentence.",
+    "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "nemotron": "Roll nouns alongside the world safe for you always begin with a capital letter even in the middle of sentence",
+    "seconds": 2.2634688999969512
+  },
+  {
+    "case": "h0-original",
+    "kind": "original",
+    "index": 0,
+    "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "nemotron": "Se recomie enfáticamente a los viajeros que informen sobre cualquier riesgo del clima extremo en el área que visitan dado que ello puede afectar sus planes de viaje.",
+    "seconds": 3.21950319998723
+  },
+  {
+    "case": "h1-original",
+    "kind": "original",
+    "index": 0,
+    "parakeet": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "nemotron": "Fue tanta la cantidad de gente queró que no todos pudieron acceder al funeral en laza de San Pedro",
+    "seconds": 2.344895700007328
+  },
+  {
+    "case": "h2-original",
+    "kind": "original",
+    "index": 0,
+    "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "nemotron": "However, due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years",
+    "seconds": 2.558903900004225
+  },
+  {
+    "case": "h3-original",
+    "kind": "original",
+    "index": 0,
+    "parakeet": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+    "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "nemotron": "All nouns alongside the world say for you always begin with a capital letter even in the middle of a sentence",
+    "seconds": 2.261571199996979
+  }
+]

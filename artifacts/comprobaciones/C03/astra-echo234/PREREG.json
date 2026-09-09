@@ -1,0 +1,7 @@
+{
+  "method": "Fresh exact product Speex replay of every221/232 recorded microphone/reference frame; compare every cleaned sample to physical trace. At fixed actual232 barge windows133–135 and440–442, measure the existing512-frame centered guard score and lag, plus longer1024/2048/4096 evidence windows within the same250ms lag range. Longer windows are diagnostics only, no proposed thresholds or product edits.",
+  "criterion": "Determine whether scheduling/DSP nondeterminism changed the signal and whether short-frame reference correlation explains the physical guard decisions. No repeated physical capture or parameter sweep.",
+  "scriptSha256": "4f631171c8d8bbd5484638098895e373202df6ee7717ab0f5cb7cf9f36b21b64",
+  "speexSourceSha256": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+  "voiceSourceSha256": "d615692af02a4b79c7287a53b60310cc4eaf46c46dfdb9d26aba0bbb89891f3a"
+}

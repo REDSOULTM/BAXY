@@ -1,0 +1,13 @@
+{
+  "kind": "focused-development",
+  "utc": "2026-09-06T08:12:05.419435+00:00",
+  "hypothesis": "Contextual answers cannot bypass mixed-language validation; preserve meaning and subsequent ordinary questions.",
+  "expected": "Three useful faithful replies, first two in mixed language, no unnecessary clarification.",
+  "files": {
+    "src/baxy_mind/llm.py": "d7f270a385c35f6ad61c0c4cef743359ffc02ad556328f615ecf16f386656efe",
+    "src/baxy_mind/__main__.py": "811e6385450a5004e4f86a5a4231045986ff683bef443624c1a146c5295af533",
+    "src/baxy_mind/request_reading.py": "d33c96657ba27182531f9f5c3120386d90434ee2619cb490e1a2f0024b9462e5",
+    "src/Baxy.App/MainWindowViewModel.cs": "a3e3f36c3e01f82db6d7b6bb8bfd7e1afa6fde15c7278f36f78738d5ff6c42f5",
+    "artifacts/comprobaciones/C03/astra-contextual-guard.turns.jsonl": "5c8daed3c19a9c4b5a37287c64835fe7e066995f05adef5db866f32e5dc10865"
+  }
+}

@@ -1,0 +1,78 @@
+FFFFFFFFFF..F                                                            [100%]
+================================== FAILURES ===================================
+_ test_final_question_scope_does_not_swallow_prior_content[Hola Emmanuel \U0001f60e \xbfC\xf3mo est\xe1s?-False] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[Se llama Nimbo, \xbfquieres otro ejemplo?-False] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[It is a cipher. Would you like an example?-False] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[\xbfPara qu\xe9 necesita el PC ejecutar tareas espec\xedficas?-True] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[\xbfQui\xe9n eres? \xbfC\xf3mo te llamas?-True] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[\U0001f60e \xbfC\xf3mo est\xe1s?-True] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[Who are you?-True] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[How does it work? Why?-True] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_final_question_scope_does_not_swallow_prior_content[La respuesta es cuatro-False] _
+tests\test_turn_policy.py:11193: in test_final_question_scope_does_not_swallow_prior_content
+    assert llm_module.visible_reply_is_only_questions(reply) is question_only
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'baxy_mind.llm' has no attribute 'visible_reply_is_only_questions'
+_ test_complete_turn_retains_answer_before_final_question[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel \U0001f60e \xbfC\xf3mo est\xe1s?-False] _
+tests\test_turn_policy.py:11233: in test_complete_turn_retains_answer_before_final_question
+    result = prepare()
+             ^^^^^^^^^
+tests\test_turn_policy.py:11221: in prepare
+    return _prepare_turn_result(
+src\baxy_mind\__main__.py:6459: in _prepare_turn_result
+    raise PlannerContractError("una explicaci�n no puede ser s�lo una pregunta")
+E   baxy_mind.planner.PlannerContractError: una explicaci�n no puede ser s�lo una pregunta
+_ test_complete_turn_retains_answer_before_final_question[Expl\xedcame los eclipses-Un cuerpo oculta a otro, \xbfquieres un ejemplo?-False] _
+tests\test_turn_policy.py:11233: in test_complete_turn_retains_answer_before_final_question
+    result = prepare()
+             ^^^^^^^^^
+tests\test_turn_policy.py:11221: in prepare
+    return _prepare_turn_result(
+src\baxy_mind\__main__.py:6459: in _prepare_turn_result
+    raise PlannerContractError("una explicaci�n no puede ser s�lo una pregunta")
+E   baxy_mind.planner.PlannerContractError: una explicaci�n no puede ser s�lo una pregunta
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[Hola Emmanuel \U0001f60e \xbfC\xf3mo est\xe1s?-False]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[Se llama Nimbo, \xbfquieres otro ejemplo?-False]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[It is a cipher. Would you like an example?-False]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[\xbfPara qu\xe9 necesita el PC ejecutar tareas espec\xedficas?-True]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[\xbfQui\xe9n eres? \xbfC\xf3mo te llamas?-True]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[\U0001f60e \xbfC\xf3mo est\xe1s?-True]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[Who are you?-True]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[How does it work? Why?-True]
+FAILED tests/test_turn_policy.py::test_final_question_scope_does_not_swallow_prior_content[La respuesta es cuatro-False]
+FAILED tests/test_turn_policy.py::test_complete_turn_retains_answer_before_final_question[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel \U0001f60e \xbfC\xf3mo est\xe1s?-False]
+FAILED tests/test_turn_policy.py::test_complete_turn_retains_answer_before_final_question[Expl\xedcame los eclipses-Un cuerpo oculta a otro, \xbfquieres un ejemplo?-False]
+11 failed, 2 passed, 935 deselected in 3.84s

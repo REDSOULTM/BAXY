@@ -1,0 +1,38 @@
+[
+  {
+    "id": "owner46-seed0",
+    "seed": 0,
+    "effective_differences": [
+      "grammar",
+      "grammar_lazy",
+      "grammar_triggers"
+    ]
+  },
+  {
+    "id": "owner51-seed0",
+    "seed": 0,
+    "effective_differences": [
+      "grammar",
+      "grammar_lazy",
+      "grammar_triggers"
+    ]
+  },
+  {
+    "id": "owner51-seed0",
+    "seed": 17,
+    "effective_differences": [
+      "grammar",
+      "grammar_lazy",
+      "grammar_triggers"
+    ]
+  },
+  {
+    "id": "volume-unmute",
+    "seed": 0,
+    "effective_differences": [
+      "grammar",
+      "grammar_lazy",
+      "grammar_triggers"
+    ]
+  }
+]

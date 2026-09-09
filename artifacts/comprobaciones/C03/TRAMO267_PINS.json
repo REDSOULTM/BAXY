@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-07T23:06:46.900994+00:00",
+  "publicFiles": {
+    "src/baxy_mind/llm.py": "657fef891f3cc80acde818149e6889da46de8315e50219a5745fd4937d13285a",
+    "tests/test_compose_contract.py": "3d5143c1af37898036ad3d0300f51e1477309af1e5b54b5bd582863df89a77fa",
+    "scratchpad/c03-inspect267.py": "fac19f722e5ca8597cbb7b9689768d6d319a197b76a10823bdb8693db5618e63",
+    "scratchpad/c03-prepare267.py": "432dc1faa53068bb88f2816d6019cd767dbfc651f9d72bdd58612dcfd3dab2b5",
+    "scratchpad/c03-payload267.py": "7052474f20cc857e4b3c3a32cb2b4ed5bc20ed397e8021a8b6f9524a0e51ad53",
+    "scratchpad/c03-finish267.py": "6a552148cd326d790c24e1ccf61d703456b17a7851b5efcb7c80a9032b890eba",
+    "artifacts/comprobaciones/C03/PROCEDENCIA_COMPOSITOR267.md": "721225a1c5ef0fe829809147acc3a02a910b228f965190505ef17f51c7414968",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/PREREG.json": "b3808ef06d288f84efa0c55834c89acbfed3e6c48fe729d50cd722489d5a507b",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/PAYLOAD_COMPARISON.json": "03d6172b835b44c3d161779805eb5709fdc12c93593000eec4a15095812c5edd",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/baseline.log": "4afa2c6c30289896a0e85348d5fdb6f89b35dba0686756811e79ffc3300abcb1",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/compose-suite.log": "7aad2474525f76266a45e7c537467ddc4aaa388bdc54e4577f51aaf6c8323ff2",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/owner-suites.log": "664d278f0879047816af1319d73651819f9e5398caf2d2b16717e4ad1b1c8dd9",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/before/llm.py": "79ea1c186830da43bd94cd459e11811f7f881992e2308fb048a7991b23fd8b17",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/before/test_compose_contract.py": "2bc761c5e601c77965b1fcd2fe712fb820849470e976d22602dd2b8186fae682",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/after/llm.py": "657fef891f3cc80acde818149e6889da46de8315e50219a5745fd4937d13285a",
+    "artifacts/comprobaciones/C03/astra-compose-provenance267/after/test_compose_contract.py": "3d5143c1af37898036ad3d0300f51e1477309af1e5b54b5bd582863df89a77fa"
+  },
+  "runtimeSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "nativeInference": false,
+  "ownerProcessRunning": true
+}

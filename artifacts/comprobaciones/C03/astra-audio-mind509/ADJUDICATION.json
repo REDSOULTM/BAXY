@@ -1,0 +1,854 @@
+[
+  {
+    "id": "definition-es-original_policy-0",
+    "seconds": 4.625,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que alguien que estaba en modo de silencio (o desactivado) vuelva a participar en una conversación o en una actividad, como hablar o enviar mensajes. Por ejemplo, si estás en una reunión virtual y alguien se desmuta, eso quiere decir que comienza a hablar de nuevo.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Unmuting permits speech; the example incorrectly equates it with actually starting to speak."
+  },
+  {
+    "id": "definition-en-original_policy-0",
+    "seconds": 0.672,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard during a call or video chat.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "ram-new-topic-original_policy-0",
+    "seconds": 1.75,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is Random Access Memory, a type of volatile memory that temporarily stores data and instructions for quick access by the CPU while a computer is running.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-es-original_policy-0",
+    "seconds": 2.453,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Tu nombre es Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-en-original_policy-0",
+    "seconds": 2.016,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-es-original_policy-0",
+    "seconds": 2.156,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-en-original_policy-0",
+    "seconds": 0.422,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Repeats assistant Morgan over user Jordan."
+  },
+  {
+    "id": "recall-es-conflict-original_policy-0",
+    "seconds": 1.828,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-conflict-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "human-correction-original_policy-0",
+    "seconds": 0.125,
+    "reply": {
+      "type": "turn.result",
+      "id": "human-correction-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Casey.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "other-person-original_policy-0",
+    "seconds": 1.938,
+    "reply": {
+      "type": "turn.result",
+      "id": "other-person-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your sister is Olivia.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "assistant-reference-original_policy-0",
+    "seconds": 2.0,
+    "reply": {
+      "type": "turn.result",
+      "id": "assistant-reference-original_policy-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "definition-es-provenance-0",
+    "seconds": 3.718,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa volver a activar un canal de comunicación (como un chat o un grupo en redes sociales) que estaba silenciado o desactivado. Es decir, dejar de no escuchar o ver los mensajes en ese espacio.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "definition-en-provenance-0",
+    "seconds": 0.375,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard in a conversation, meeting, or audio session.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "ram-new-topic-provenance-0",
+    "seconds": 0.672,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is random access memory, the temporary storage where your computer holds data that's currently in use, like open files or running apps. It's fast and allows quick access to information, but it clears out when you turn off the device.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-es-provenance-0",
+    "seconds": 1.797,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-en-provenance-0",
+    "seconds": 1.578,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-es-provenance-0",
+    "seconds": 1.672,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-en-provenance-0",
+    "seconds": 0.125,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Repeats assistant Morgan over user Jordan."
+  },
+  {
+    "id": "recall-es-conflict-provenance-0",
+    "seconds": 1.734,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-conflict-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Te llamas Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "human-correction-provenance-0",
+    "seconds": 0.109,
+    "reply": {
+      "type": "turn.result",
+      "id": "human-correction-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Casey.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "other-person-provenance-0",
+    "seconds": 1.469,
+    "reply": {
+      "type": "turn.result",
+      "id": "other-person-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your sister is Olivia.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "assistant-reference-provenance-0",
+    "seconds": 1.594,
+    "reply": {
+      "type": "turn.result",
+      "id": "assistant-reference-provenance-0",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "definition-es-original_policy-17",
+    "seconds": 3.687,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que un dispositivo o canal de comunicación (como un chat o una llamada) vuelva a emitir sonido o se active nuevamente, después de que había estado en modo silencioso o muteado.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "definition-en-original_policy-17",
+    "seconds": 0.422,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard in a conversation, like in a video call or online meeting.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "ram-new-topic-original_policy-17",
+    "seconds": 1.375,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is Random Access Memory, a type of volatile memory that temporarily stores data and programs currently in use by the CPU, allowing for fast access and retrieval.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-es-original_policy-17",
+    "seconds": 1.86,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Tu nombre es Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-en-original_policy-17",
+    "seconds": 1.578,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-es-original_policy-17",
+    "seconds": 1.719,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-en-original_policy-17",
+    "seconds": 0.156,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Repeats assistant Morgan over user Jordan."
+  },
+  {
+    "id": "recall-es-conflict-original_policy-17",
+    "seconds": 1.781,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-conflict-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "human-correction-original_policy-17",
+    "seconds": 0.109,
+    "reply": {
+      "type": "turn.result",
+      "id": "human-correction-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Casey.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "other-person-original_policy-17",
+    "seconds": 1.469,
+    "reply": {
+      "type": "turn.result",
+      "id": "other-person-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your sister is Olivia.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "assistant-reference-original_policy-17",
+    "seconds": 1.547,
+    "reply": {
+      "type": "turn.result",
+      "id": "assistant-reference-original_policy-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "definition-es-provenance-17",
+    "seconds": 4.0,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-es-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Desmutear significa hacer que una persona o un dispositivo vuelva a escuchar o recibir mensajes, sonidos o señales que antes estaban silenciados o desactivados. En redes sociales, por ejemplo, desmutear un usuario te permite volver a ver sus publicaciones o mensajes sin que estén ocultos.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "definition-en-provenance-17",
+    "seconds": 0.391,
+    "reply": {
+      "type": "turn.result",
+      "id": "definition-en-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Unmute means to turn on the microphone so you can speak or be heard in a conversation, meeting, or video call.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "ram-new-topic-provenance-17",
+    "seconds": 0.672,
+    "reply": {
+      "type": "turn.result",
+      "id": "ram-new-topic-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "RAM is random access memory, the temporary storage where your computer holds data that's currently in use, like open files or running apps. It's fast and allows quick access to information, but it loses everything when the power is off.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-es-provenance-17",
+    "seconds": 1.812,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-es-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "name-en-provenance-17",
+    "seconds": 1.625,
+    "reply": {
+      "type": "turn.result",
+      "id": "name-en-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Jordan. 😎",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-es-provenance-17",
+    "seconds": 1.688,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "recall-en-provenance-17",
+    "seconds": 0.125,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-en-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your name is Morgan.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": false,
+    "reason": "Repeats assistant Morgan over user Jordan."
+  },
+  {
+    "id": "recall-es-conflict-provenance-17",
+    "seconds": 1.703,
+    "reply": {
+      "type": "turn.result",
+      "id": "recall-es-conflict-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Álvaro.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "es",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "human-correction-provenance-17",
+    "seconds": 0.109,
+    "reply": {
+      "type": "turn.result",
+      "id": "human-correction-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Casey.",
+      "conversationKind": "knowledge",
+      "preserveObjective": false,
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "other-person-provenance-17",
+    "seconds": 1.469,
+    "reply": {
+      "type": "turn.result",
+      "id": "other-person-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Your sister is Olivia.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  },
+  {
+    "id": "assistant-reference-provenance-17",
+    "seconds": 1.625,
+    "reply": {
+      "type": "turn.result",
+      "id": "assistant-reference-provenance-17",
+      "kind": "conversation",
+      "operation": null,
+      "intentOperations": [],
+      "effectOperations": [],
+      "question": "",
+      "reply": "Morgan.",
+      "conversationKind": "knowledge",
+      "responseLanguage": "en",
+      "turn_attempts": 1
+    },
+    "useful": true,
+    "reason": "Useful factual answer; definitions may cover a valid sense without being exhaustive. Assistant-reference correctly recalls Morgan as what was said, not as a fact about the user."
+  }
+]

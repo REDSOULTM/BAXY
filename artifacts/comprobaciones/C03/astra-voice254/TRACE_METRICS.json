@@ -1,0 +1,15 @@
+{
+  "frames": 1316,
+  "speakingFrames": 426,
+  "microphoneRms": 0.006108802987246193,
+  "referenceRmsPcm": 902.8132955067741,
+  "linearRms": 0.00247684923668831,
+  "confirmationRms": 0.0008080189232268723,
+  "dspMs": {
+    "mean": 0.5735522036573009,
+    "p99": 0.7661699986783788,
+    "max": 1.6967000119620934
+  },
+  "maximumLinearVad": 0.9811302423477173,
+  "maximumConfirmationVad": 0.20906439423561096
+}

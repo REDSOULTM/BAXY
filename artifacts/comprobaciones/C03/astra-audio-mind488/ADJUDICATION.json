@@ -1,0 +1,42 @@
+[
+  {
+    "id": "owner44",
+    "status": "selection_correct",
+    "reason": "audio.volume conservado. turn.decide no acredita argumentos ni efecto físico."
+  },
+  {
+    "id": "owner46",
+    "status": "failed",
+    "reason": "Catálogo incluye audio.mute y su descripción de reactivar. El modelo afirma sin herramienta que reactivó sonido; la guarda rechaza correctamente. La recuperación introduce una ambigüedad inexistente."
+  },
+  {
+    "id": "owner51",
+    "status": "failed",
+    "reason": "La recuperación de candidatos omite audio.volume pese al contexto de la pregunta previa. La respuesta confunde desmutear con apagar el sonido. Requiere conservar objetivo contextual."
+  },
+  {
+    "id": "clitic-alone",
+    "status": "selection_correct",
+    "reason": "audio.mute conservado; falta vincular y verificar muted=false en etapa de argumentos."
+  },
+  {
+    "id": "volume-unmute",
+    "status": "selection_correct",
+    "reason": "Se conservan audio.volume y audio.mute en orden; sólo propuesta."
+  },
+  {
+    "id": "unmute-volume",
+    "status": "selection_correct",
+    "reason": "Se conservan audio.mute y audio.volume en orden; sólo propuesta."
+  },
+  {
+    "id": "negative-unmute",
+    "status": "selection_correct",
+    "reason": "Fuente487 conserva audio.volume y omite audio.mute como se pide; un intento, sin veto. No efectos ni verificación de argumentos."
+  },
+  {
+    "id": "word-meaning",
+    "status": "meaning_correct_voice_failed",
+    "reason": "Definición correcta y sin efectos, pero antecedida por prosa interna sobre no requerir acción."
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "method": "Non-thinking role-sampler comparison against exact87 six data-activity packets and original progress instruction. Same GGUF/backend/flags/max_tokens, no source change. Use official Qwen3.5 general non-thinking profile temperature0.7/top_p0.8/top_k20/min_p0/presence1.5/repeat1 with seeds0,1,2 fixed before execution; all18 drafts count, never select only a favourable sample. Baseline87 greedy already recorded. Judge truthful current interpretation, natural language and no execution/actor inversion. No functions/publication/UI/audio/reserve or runtime promotion.",
+  "sourceSha256": "353f467616747e5cf4c031052aa6ff376cb78f71b6f02101a896e7418bad5fb4",
+  "model": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

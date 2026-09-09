@@ -1,0 +1,105 @@
+{
+  "utc": "2026-09-08T00:20:28.711148+00:00",
+  "reason": "Owner finished264 and authorized continued goal/PC management. Complete UI transcript282 preserved and hash verified. Free old build/backend for integrated Fast and controlled registered-model comparison; questionnaire excluded.",
+  "processes": [
+    {
+      "pid": 84328,
+      "created": 1788820609.3516054,
+      "name": "Baxy.exe",
+      "ppid": 33548
+    },
+    {
+      "pid": 85268,
+      "created": 1788820610.3238344,
+      "name": "baxy-core.exe",
+      "ppid": 84328
+    },
+    {
+      "pid": 102484,
+      "created": 1788820610.412227,
+      "name": "msedgewebview2.exe",
+      "ppid": 84328
+    },
+    {
+      "pid": 45060,
+      "created": 1788820618.9074657,
+      "name": "python.exe",
+      "ppid": 84328
+    },
+    {
+      "pid": 100176,
+      "created": 1788820618.9208205,
+      "name": "conhost.exe",
+      "ppid": 45060
+    },
+    {
+      "pid": 78160,
+      "created": 1788820618.9441612,
+      "name": "python.exe",
+      "ppid": 45060
+    },
+    {
+      "pid": 89232,
+      "created": 1788820621.7334836,
+      "name": "llama-server.exe",
+      "ppid": 78160
+    },
+    {
+      "pid": 100736,
+      "created": 1788820624.7032971,
+      "name": "python.exe",
+      "ppid": 78160
+    },
+    {
+      "pid": 45392,
+      "created": 1788820624.7471476,
+      "name": "conhost.exe",
+      "ppid": 100736
+    },
+    {
+      "pid": 73852,
+      "created": 1788820624.8228943,
+      "name": "python.exe",
+      "ppid": 100736
+    },
+    {
+      "pid": 44476,
+      "created": 1788820610.4742289,
+      "name": "msedgewebview2.exe",
+      "ppid": 102484
+    },
+    {
+      "pid": 79080,
+      "created": 1788820610.8996189,
+      "name": "msedgewebview2.exe",
+      "ppid": 102484
+    },
+    {
+      "pid": 62948,
+      "created": 1788820610.9256465,
+      "name": "msedgewebview2.exe",
+      "ppid": 102484
+    },
+    {
+      "pid": 103848,
+      "created": 1788820610.9716597,
+      "name": "msedgewebview2.exe",
+      "ppid": 102484
+    },
+    {
+      "pid": 40080,
+      "created": 1788820611.1182208,
+      "name": "msedgewebview2.exe",
+      "ppid": 102484
+    },
+    {
+      "pid": 64776,
+      "created": 1788820610.345608,
+      "name": "conhost.exe",
+      "ppid": 85268
+    }
+  ],
+  "remaining": [],
+  "questionnaireAlive": true,
+  "ramAvailableMiB": 2708.15234375
+}

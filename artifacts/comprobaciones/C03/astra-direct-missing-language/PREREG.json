@@ -1,0 +1,438 @@
+{
+  "cases": [
+    {
+      "id": "6035be9b29286fdcded5d2ec9cbc3495be921c7449d13fdfab08aa2f2cf3e141",
+      "text": "baja el volumen",
+      "source_references": [
+        {
+          "message_id": "msg_be85f2d246541f79b8bd",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:61614",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T01:43:58-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:61614",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T01:43:58-0400",
+          "turn_id": "20260626_014358_b3836c7c",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "id": "a59b4669cbf4ce8033348da3f360a6572fc986a1da03f725a9b6be545f8f786f",
+      "text": "turn up the volume",
+      "source_references": [
+        {
+          "message_id": "msg_1e98390827b073e0291a",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:40396",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T23:24:57-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_085efe0faf698c26a09c",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:50975",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:15-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_214a7e0601378584b74d",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:51555",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:48-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_edaf0be3844c71b57900",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:56004",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:58:43-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_379b54a9511ae48b57db",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:56693",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T20:01:21-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:40396",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T23:24:57-0400",
+          "turn_id": "20260624_232457_a8cf23cf",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:50975",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:15-0400",
+          "turn_id": "20260625_194815_2bfa40e5",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:51555",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:48-0400",
+          "turn_id": "20260625_194848_163a1245",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:56004",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:58:43-0400",
+          "turn_id": "20260625_195843_177d6343",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:56693",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T20:01:21-0400",
+          "turn_id": "20260625_200120_34292eda",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "language": "en"
+    },
+    {
+      "id": "c6408d0b4d392f78b39df486c1e3fe799925dbfaa5f7d431fc2c736684e45c2f",
+      "text": "sube el volumen",
+      "source_references": [
+        {
+          "message_id": "msg_37bc6c7ec5c7260a762b",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34726",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T04:32:13-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_51d91c7a2efa1c8e522d",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:47950",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T18:54:32-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_58b82f217be6d261128b",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:50504",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:46:41-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_45f2e9e335dbe06691f9",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:50897",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:10-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_de11e163073fe6bd8c7b",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:51477",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:44-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_49b0042855b7073f3ecc",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:55926",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:58:38-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_4457cb2afad3b124ca38",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:56615",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T20:01:16-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_bdb50e890790fb9c9fb9",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:60091",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T00:18:46-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_c868deaa16e032dd5bb2",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:61569",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T01:43:50-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_2bcb44158cfdf3dcd92e",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:64485",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T15:50:16-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "message_id": "msg_96cda28de42a6731a260",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:65098",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T16:10:30-0400",
+          "redacted": false,
+          "class": "user_mission",
+          "operations": [
+            "audio.volume"
+          ]
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34726",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T04:32:13-0400",
+          "turn_id": "20260624_043213_37da80f8",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:47950",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T18:54:32-0400",
+          "turn_id": "20260625_185432_40a057b5",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:50504",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:46:41-0400",
+          "turn_id": "20260625_194641_f044d7c6",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:50897",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:10-0400",
+          "turn_id": "20260625_194810_c8c91b03",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:51477",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:48:44-0400",
+          "turn_id": "20260625_194844_d5514ec6",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:55926",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T19:58:38-0400",
+          "turn_id": "20260625_195838_43233fcd",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:56615",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-25T20:01:16-0400",
+          "turn_id": "20260625_200116_abd724ac",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:60091",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T00:18:46-0400",
+          "turn_id": "20260626_001846_23fffda6",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:61569",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T01:43:50-0400",
+          "turn_id": "20260626_014350_882239c1",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:64485",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T15:50:16-0400",
+          "turn_id": "20260626_155016_a1da59db",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:65098",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-26T16:10:30-0400",
+          "turn_id": "20260626_161030_f59d9621",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "language": "es"
+    },
+    {
+      "id": "synthetic-complete-up",
+      "text": "turn up the volume by 10%",
+      "language": "en",
+      "source_references": []
+    },
+    {
+      "id": "synthetic-complete-down",
+      "text": "baja el volumen en 5 puntos",
+      "language": "es",
+      "source_references": []
+    }
+  ],
+  "stages": [
+    "missing_only"
+  ],
+  "prompt": {
+    "inherited": "extract_direct_arguments",
+    "change": {
+      "old": "Formula fallback_question como una pregunta natural y breve para obtener estos campos: ",
+      "new": "Formula fallback_question como una pregunta natural y breve para obtener sólo los datos requeridos que falten o sean ambiguos. No vuelvas a preguntar datos explícitos en el pedido. Campos requeridos de la operación: ",
+      "language_style": "_clarification_style_messages(user_text)"
+    },
+    "tool": {
+      "type": "function",
+      "function": {
+        "name": "audio_volume_adjust",
+        "canonical_name": "audio.volume.adjust",
+        "description": "Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "down",
+                "up"
+              ]
+            }
+          },
+          "required": [
+            "amount",
+            "direction"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "method": "Five direct extraction calls, three consumed literal corpus inputs plus two explicitly synthetic complete-argument controls. Add the existing clarification language/style policy to the prior missing-only variant; baseline and prior variant retained in astra-direct-missing-fields. Same schema and sampling, registered assets; no effects or model/runtime promotion.",
+  "sourceSha256": "0abd502508a97c5e4022b7d1260909359389f5d303c95aa0a5a60a62777213d3",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

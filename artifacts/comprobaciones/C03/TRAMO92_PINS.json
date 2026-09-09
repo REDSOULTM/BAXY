@@ -1,0 +1,12 @@
+{
+  "scope": "Source92 four-case integrated recovery, not final acceptance",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_CONTEXTO92.md": "860c11c14be7dfe3cfe1c1cfb2e0d4a22fdf745446eec8241c34dcf0cbcf721a",
+    "artifacts/comprobaciones/C03/astra-files92-context/PREREG.json": "92a1e634c8964b0c0ab7020e945e0d2dbfa090885b66b135569213a5748c664d",
+    "artifacts/comprobaciones/C03/astra-files92-context/RESULT.json": "cedd56b82ad358860a92609bc9406f6e8a1cf9c6fba9779e80b09517ece0c107",
+    "artifacts/comprobaciones/C03/astra-files92-context/paired.json": "2fd2e3c5806e600890ed1a538fa3f69b23c552014dc96dc1cae8880d0067875c",
+    "artifacts/comprobaciones/C03/astra-files92-context/compose-audit.jsonl": "9e3368a52bb9227446034f4266998a19b841eee980f5db28a28e770a71fd85da",
+    "artifacts/comprobaciones/C03/astra-files92-context/turn-audit.jsonl": "36aa8475c41f465d61df248ee9eb45b8c9a966e5b69cec304abd36863d1f65ce",
+    "artifacts/comprobaciones/C03/ASTRA-TRAMO-92.md": "0ff68eb387b9d270f1df724d202d78573ce6b0ea922f1c7776404976dccb11ff"
+  }
+}

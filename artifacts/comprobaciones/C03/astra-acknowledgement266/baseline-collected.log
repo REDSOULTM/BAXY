@@ -1,0 +1,114 @@
+FFFFFFFFFFFFFFFFFFFFF....................                                [100%]
+================================== FAILURES ===================================
+_ test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-Si, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-S\xed, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-Yes, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-Okay, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-Si, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-S\xed, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-Yes, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-Okay, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-Si, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-S\xed, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-Yes, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-Okay, ] _
+tests\test_effect_intent.py:49: in test_affirmative_preface_preserves_the_independent_request
+    assert observed is not None and observed.operations == expected.operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Si, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-S\xed, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Yes, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+_ test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Okay, ] _
+tests\test_effect_intent.py:48: in test_affirmative_preface_preserves_the_independent_request
+    assert expected is not None and expected.operations == operations
+E   assert (None is not None)
+___ test_authenticated_app_argument_uses_the_shared_request_envelope[Si, ] ____
+tests\test_effect_intent.py:58: in test_authenticated_app_argument_uses_the_shared_request_envelope
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ("Orion",)) == "Orion"
+E   AssertionError: assert None == 'Orion'
+E    +  where None = resolve_application_catalog_app_id(('Si, ' + 'open Orion'), ('Orion',))
+__ test_authenticated_app_argument_uses_the_shared_request_envelope[S\xed, ] __
+tests\test_effect_intent.py:58: in test_authenticated_app_argument_uses_the_shared_request_envelope
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ("Orion",)) == "Orion"
+E   AssertionError: assert None == 'Orion'
+E    +  where None = resolve_application_catalog_app_id(('S�, ' + 'open Orion'), ('Orion',))
+___ test_authenticated_app_argument_uses_the_shared_request_envelope[Yes, ] ___
+tests\test_effect_intent.py:58: in test_authenticated_app_argument_uses_the_shared_request_envelope
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ("Orion",)) == "Orion"
+E   AssertionError: assert None == 'Orion'
+E    +  where None = resolve_application_catalog_app_id(('Yes, ' + 'open Orion'), ('Orion',))
+__ test_authenticated_app_argument_uses_the_shared_request_envelope[Okay, ] ___
+tests\test_effect_intent.py:58: in test_authenticated_app_argument_uses_the_shared_request_envelope
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ("Orion",)) == "Orion"
+E   AssertionError: assert None == 'Orion'
+E    +  where None = resolve_application_catalog_app_id(('Okay, ' + 'open Orion'), ('Orion',))
+__ test_authenticated_app_argument_uses_the_shared_request_envelope[Hola, ] ___
+tests\test_effect_intent.py:58: in test_authenticated_app_argument_uses_the_shared_request_envelope
+    assert resolve_application_catalog_app_id(prefix + "open Orion", ("Orion",)) == "Orion"
+E   AssertionError: assert None == 'Orion'
+E    +  where None = resolve_application_catalog_app_id(('Hola, ' + 'open Orion'), ('Orion',))
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-Si, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-S\xed, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-Yes, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[abre steam-operations0-Okay, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-Si, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-S\xed, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-Yes, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[open Orion-operations1-Okay, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-Si, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-S\xed, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-Yes, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[dime la hora-operations2-Okay, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Si, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-S\xed, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Yes, ]
+FAILED tests/test_effect_intent.py::test_affirmative_preface_preserves_the_independent_request[no abras Steam y abre Orion-operations3-Okay, ]
+FAILED tests/test_effect_intent.py::test_authenticated_app_argument_uses_the_shared_request_envelope[Si, ]
+FAILED tests/test_effect_intent.py::test_authenticated_app_argument_uses_the_shared_request_envelope[S\xed, ]
+FAILED tests/test_effect_intent.py::test_authenticated_app_argument_uses_the_shared_request_envelope[Yes, ]
+FAILED tests/test_effect_intent.py::test_authenticated_app_argument_uses_the_shared_request_envelope[Okay, ]
+FAILED tests/test_effect_intent.py::test_authenticated_app_argument_uses_the_shared_request_envelope[Hola, ]
+21 failed, 20 passed, 1624 deselected in 2.43s

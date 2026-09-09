@@ -1,0 +1,70 @@
+[
+  {
+    "units": 128,
+    "case": "native_echo149",
+    "samples": 135168,
+    "pcmIdentical": true,
+    "guardPairDelaySamples": 384,
+    "mean512Ms": 1.4123185609963858,
+    "p99512Ms": 2.0683489984367043,
+    "max512Ms": 2.1262000082060695,
+    "outputPeak": 0.0004977420903742313
+  },
+  {
+    "units": 128,
+    "case": "near_only",
+    "samples": 508928,
+    "pcmIdentical": true,
+    "guardPairDelaySamples": 384,
+    "mean512Ms": 1.6007294767072202,
+    "p99512Ms": 4.109789993090088,
+    "max512Ms": 6.358200000249781,
+    "outputPeak": 0.029888421297073364,
+    "observedLagSamples": 384
+  },
+  {
+    "units": 128,
+    "case": "physical_echo_plus_synthetic_near",
+    "samples": 508928,
+    "pcmIdentical": true,
+    "guardPairDelaySamples": 384,
+    "mean512Ms": 1.2208617706532483,
+    "p99512Ms": 2.1321400110900854,
+    "max512Ms": 5.455099992104806,
+    "outputPeak": 0.030161555856466293
+  },
+  {
+    "units": 512,
+    "case": "native_echo149",
+    "samples": 135168,
+    "pcmIdentical": true,
+    "guardPairDelaySamples": 384,
+    "mean512Ms": 11.713250757703932,
+    "p99512Ms": 22.217759002087412,
+    "max512Ms": 28.935300011653453,
+    "outputPeak": 0.001325831632129848
+  },
+  {
+    "units": 512,
+    "case": "near_only",
+    "samples": 508928,
+    "pcmIdentical": true,
+    "guardPairDelaySamples": 384,
+    "mean512Ms": 10.4488331991405,
+    "p99512Ms": 17.950147000374255,
+    "max512Ms": 22.90859998902306,
+    "outputPeak": 0.029961762949824333,
+    "observedLagSamples": 384
+  },
+  {
+    "units": 512,
+    "case": "physical_echo_plus_synthetic_near",
+    "samples": 508928,
+    "pcmIdentical": true,
+    "guardPairDelaySamples": 384,
+    "mean512Ms": 10.58586458737343,
+    "p99512Ms": 16.684760995558463,
+    "max512Ms": 21.98330000101123,
+    "outputPeak": 0.03425253555178642
+  }
+]

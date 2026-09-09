@@ -1,0 +1,73 @@
+{
+  "summary": [
+    {
+      "model": "qwen35-4b",
+      "seed": 0,
+      "useful": 5,
+      "total": 11,
+      "seconds": 4.859,
+      "max_output_tokens": 46
+    },
+    {
+      "model": "qwen35-4b",
+      "seed": 17,
+      "useful": 5,
+      "total": 11,
+      "seconds": 4.782,
+      "max_output_tokens": 42
+    },
+    {
+      "model": "qwen2507",
+      "seed": 0,
+      "useful": 8,
+      "total": 11,
+      "seconds": 2.75,
+      "max_output_tokens": 24
+    },
+    {
+      "model": "qwen2507",
+      "seed": 17,
+      "useful": 11,
+      "total": 11,
+      "seconds": 2.469,
+      "max_output_tokens": 22
+    },
+    {
+      "model": "gemma-base",
+      "seed": 0,
+      "useful": 5,
+      "total": 11,
+      "seconds": 2.703,
+      "max_output_tokens": 19
+    },
+    {
+      "model": "gemma-base",
+      "seed": 17,
+      "useful": 5,
+      "total": 11,
+      "seconds": 2.266,
+      "max_output_tokens": 19
+    },
+    {
+      "model": "gemma-published",
+      "seed": 0,
+      "useful": 5,
+      "total": 11,
+      "seconds": 3.531,
+      "max_output_tokens": 48
+    },
+    {
+      "model": "gemma-published",
+      "seed": 17,
+      "useful": 9,
+      "total": 11,
+      "seconds": 2.376,
+      "max_output_tokens": 43
+    }
+  ],
+  "decision": "No candidate meets all eleven under both fixed seeds.2507 seed17 is not selectable as best-of.452 compares documented thinking without forced intermediate cutoff on three supported candidates. No family-wide rejection or promotion.",
+  "all_natural_stops": true,
+  "effective_profiles_confirmed": true,
+  "source_unchanged": true,
+  "runtime_promoted": false
+}

@@ -1,0 +1,355 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_ test_missing_referent_question_need_not_name_a_generic_action_word[cierra aquello-\xbfQu\xe9 quieres cerrar?] _
+
+text = 'cierra aquello', question = '¿Qué quieres cerrar?'
+
+    @pytest.mark.parametrize("text, question", [
+        ("cierra aquello", "¿Qué quieres cerrar?"),
+        ("close that", "Which window should I close?"),
+        ("open it", "Which item should I open?"),
+    ])
+    def test_missing_referent_question_need_not_name_a_generic_action_word(
+        text: str, question: str,
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._post = lambda *_args, **_kwargs: {  # type: ignore[method-assign]
+            "choices": [{"message": {"content": json.dumps({"question": question})}}],
+        }
+>       assert runtime.clarify_missing_referent(text) == question
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_turn_policy.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <baxy_mind.llm.LlmRuntime object at 0x0000026871187380>
+text = 'cierra aquello', timeout = 2.5
+
+    def clarify_missing_referent(
+        self,
+        text: str,
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """Ask for the absent target of a closed bare-deictic request."""
+    
+        current = str(text).strip()[:2_048]
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "El pedido usa una referencia sin identificar su objeto. "
+                        "Formula una sola pregunta breve por el referente que falta. "
+                        "Conserva la acción si ya está indicada; no vuelvas a "
+                        "preguntarla. No adivines, no repitas el pedido, no uses "
+                        "historial y no menciones modelos, herramientas ni reglas. "
+                        "Devuelve sólo el JSON."
+                    ),
+                },
+                # El idioma y el trato no se dejan al criterio del modelo:
+                # «close that» se contestaba en español (panel-opus-2/016).
+                *_clarification_style_messages(current),
+                {"role": "user", "content": current},
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_missing_referent_clarification",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 512,
+                            }
+                        },
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        maximum_timeout = (
+            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+        )
+        response = self._post(
+            payload,
+            timeout=min(
+                maximum_timeout,
+                self._normalize_request_budget(timeout),
+            ),
+        )
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+            raw = json.loads(content)
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+            raise ValueError("aclaración de referente con JSON inválido") from error
+        if not isinstance(raw, dict) or set(raw) != {"question"}:
+            raise ValueError("aclaración de referente con forma inválida")
+        question = raw.get("question")
+        folded_question = _policy_guard_text(question)
+        if (
+            not isinstance(question, str)
+            or question != question.strip()
+            or not 1 <= len(question) <= 512
+            or "\n" in question
+            or "\r" in question
+            or question.count("?") != 1
+            or not question.endswith("?")
+            or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+            or visible_text_leaks_internal_vocabulary(question)
+            or re.search(
+                r"\b(?:accion|tarea|resultado|hacer|haga|realice|"
+                r"action|task|result|do)\b",
+                folded_question,
+            )
+            is None
+        ):
+>           raise ValueError("aclaración de referente inválida")
+E           ValueError: aclaración de referente inválida
+
+src\baxy_mind\llm.py:7583: ValueError
+_ test_missing_referent_question_need_not_name_a_generic_action_word[close that-Which window should I close?] _
+
+text = 'close that', question = 'Which window should I close?'
+
+    @pytest.mark.parametrize("text, question", [
+        ("cierra aquello", "¿Qué quieres cerrar?"),
+        ("close that", "Which window should I close?"),
+        ("open it", "Which item should I open?"),
+    ])
+    def test_missing_referent_question_need_not_name_a_generic_action_word(
+        text: str, question: str,
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._post = lambda *_args, **_kwargs: {  # type: ignore[method-assign]
+            "choices": [{"message": {"content": json.dumps({"question": question})}}],
+        }
+>       assert runtime.clarify_missing_referent(text) == question
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_turn_policy.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <baxy_mind.llm.LlmRuntime object at 0x0000026870ABBA70>
+text = 'close that', timeout = 2.5
+
+    def clarify_missing_referent(
+        self,
+        text: str,
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """Ask for the absent target of a closed bare-deictic request."""
+    
+        current = str(text).strip()[:2_048]
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "El pedido usa una referencia sin identificar su objeto. "
+                        "Formula una sola pregunta breve por el referente que falta. "
+                        "Conserva la acción si ya está indicada; no vuelvas a "
+                        "preguntarla. No adivines, no repitas el pedido, no uses "
+                        "historial y no menciones modelos, herramientas ni reglas. "
+                        "Devuelve sólo el JSON."
+                    ),
+                },
+                # El idioma y el trato no se dejan al criterio del modelo:
+                # «close that» se contestaba en español (panel-opus-2/016).
+                *_clarification_style_messages(current),
+                {"role": "user", "content": current},
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_missing_referent_clarification",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 512,
+                            }
+                        },
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        maximum_timeout = (
+            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+        )
+        response = self._post(
+            payload,
+            timeout=min(
+                maximum_timeout,
+                self._normalize_request_budget(timeout),
+            ),
+        )
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+            raw = json.loads(content)
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+            raise ValueError("aclaración de referente con JSON inválido") from error
+        if not isinstance(raw, dict) or set(raw) != {"question"}:
+            raise ValueError("aclaración de referente con forma inválida")
+        question = raw.get("question")
+        folded_question = _policy_guard_text(question)
+        if (
+            not isinstance(question, str)
+            or question != question.strip()
+            or not 1 <= len(question) <= 512
+            or "\n" in question
+            or "\r" in question
+            or question.count("?") != 1
+            or not question.endswith("?")
+            or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+            or visible_text_leaks_internal_vocabulary(question)
+            or re.search(
+                r"\b(?:accion|tarea|resultado|hacer|haga|realice|"
+                r"action|task|result|do)\b",
+                folded_question,
+            )
+            is None
+        ):
+>           raise ValueError("aclaración de referente inválida")
+E           ValueError: aclaración de referente inválida
+
+src\baxy_mind\llm.py:7583: ValueError
+_ test_missing_referent_question_need_not_name_a_generic_action_word[open it-Which item should I open?] _
+
+text = 'open it', question = 'Which item should I open?'
+
+    @pytest.mark.parametrize("text, question", [
+        ("cierra aquello", "¿Qué quieres cerrar?"),
+        ("close that", "Which window should I close?"),
+        ("open it", "Which item should I open?"),
+    ])
+    def test_missing_referent_question_need_not_name_a_generic_action_word(
+        text: str, question: str,
+    ) -> None:
+        runtime = object.__new__(LlmRuntime)
+        runtime._post = lambda *_args, **_kwargs: {  # type: ignore[method-assign]
+            "choices": [{"message": {"content": json.dumps({"question": question})}}],
+        }
+>       assert runtime.clarify_missing_referent(text) == question
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_turn_policy.py:191: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <baxy_mind.llm.LlmRuntime object at 0x0000026870B2EEA0>, text = 'open it'
+timeout = 2.5
+
+    def clarify_missing_referent(
+        self,
+        text: str,
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """Ask for the absent target of a closed bare-deictic request."""
+    
+        current = str(text).strip()[:2_048]
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "El pedido usa una referencia sin identificar su objeto. "
+                        "Formula una sola pregunta breve por el referente que falta. "
+                        "Conserva la acción si ya está indicada; no vuelvas a "
+                        "preguntarla. No adivines, no repitas el pedido, no uses "
+                        "historial y no menciones modelos, herramientas ni reglas. "
+                        "Devuelve sólo el JSON."
+                    ),
+                },
+                # El idioma y el trato no se dejan al criterio del modelo:
+                # «close that» se contestaba en español (panel-opus-2/016).
+                *_clarification_style_messages(current),
+                {"role": "user", "content": current},
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_missing_referent_clarification",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 512,
+                            }
+                        },
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        maximum_timeout = (
+            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+        )
+        response = self._post(
+            payload,
+            timeout=min(
+                maximum_timeout,
+                self._normalize_request_budget(timeout),
+            ),
+        )
+        try:
+            content = response["choices"][0]["message"].get("content") or ""
+            raw = json.loads(content)
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+            raise ValueError("aclaración de referente con JSON inválido") from error
+        if not isinstance(raw, dict) or set(raw) != {"question"}:
+            raise ValueError("aclaración de referente con forma inválida")
+        question = raw.get("question")
+        folded_question = _policy_guard_text(question)
+        if (
+            not isinstance(question, str)
+            or question != question.strip()
+            or not 1 <= len(question) <= 512
+            or "\n" in question
+            or "\r" in question
+            or question.count("?") != 1
+            or not question.endswith("?")
+            or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+            or visible_text_leaks_internal_vocabulary(question)
+            or re.search(
+                r"\b(?:accion|tarea|resultado|hacer|haga|realice|"
+                r"action|task|result|do)\b",
+                folded_question,
+            )
+            is None
+        ):
+>           raise ValueError("aclaración de referente inválida")
+E           ValueError: aclaración de referente inválida
+
+src\baxy_mind\llm.py:7583: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_missing_referent_question_need_not_name_a_generic_action_word[cierra aquello-\xbfQu\xe9 quieres cerrar?]
+FAILED tests/test_turn_policy.py::test_missing_referent_question_need_not_name_a_generic_action_word[close that-Which window should I close?]
+FAILED tests/test_turn_policy.py::test_missing_referent_question_need_not_name_a_generic_action_word[open it-Which item should I open?]
+3 failed, 853 deselected in 4.77s

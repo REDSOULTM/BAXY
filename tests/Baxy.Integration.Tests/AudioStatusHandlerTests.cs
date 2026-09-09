@@ -53,7 +53,10 @@ public sealed class AudioStatusHandlerTests
         string expectedMuteState)
     {
         OperationInvocation invocation = Invocation("{}");
-        var receipt = Success(invocation.InvocationId, volumePercent, muted);
+        var receipt = Success(invocation.InvocationId, volumePercent, muted) with
+        {
+            EndpointName = "Altavoces (Salida USB)",
+        };
         var provider = new StubProvider(status: _ => receipt);
         var handler = new AudioStatusHandler(provider);
 
@@ -81,6 +84,8 @@ public sealed class AudioStatusHandlerTests
                 Is.EqualTo(AudioTargetIds.DefaultOutput));
             Assert.That(result.GetProperty("endpointIdHash").GetString(),
                 Is.EqualTo(EndpointHash));
+            Assert.That(result.GetProperty("endpointName").GetString(),
+                Is.EqualTo("Altavoces (Salida USB)"));
             Assert.That(result.GetProperty("state").GetProperty("volumePercent").GetInt32(),
                 Is.EqualTo(volumePercent));
             Assert.That(result.GetProperty("state").GetProperty("muted").GetBoolean(),

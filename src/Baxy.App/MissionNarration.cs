@@ -1,5 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.App;
 
@@ -9,7 +11,8 @@ namespace Baxy.App;
 internal static class MissionNarration
 {
     internal static string CreateCompletionMessage(
-        IReadOnlyList<string> completedMessages)
+        IReadOnlyList<string> completedMessages,
+        string? completedRequest = null)
     {
         ArgumentNullException.ThrowIfNull(completedMessages);
         if (completedMessages.Count == 0)
@@ -30,6 +33,10 @@ internal static class MissionNarration
             ["stepCount"] = completedMessages.Count,
             ["steps"] = steps,
         };
+        if (!string.IsNullOrWhiteSpace(completedRequest))
+        {
+            extra["completedRequest"] = completedRequest;
+        }
         JsonObject? observed = MergeObserved(completedMessages);
         if (observed is not null)
         {
@@ -45,6 +52,19 @@ internal static class MissionNarration
     {
         ArgumentNullException.ThrowIfNull(completedMessages);
         ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+        JsonNode failureReason = JsonValue.Create(reason.Trim())!;
+        try
+        {
+            if (JsonNode.Parse(reason) is JsonObject structuredReason)
+            {
+                failureReason = structuredReason;
+            }
+        }
+        catch (JsonException)
+        {
+            // Legacy prose remains a value; structured facts retain their tree.
+        }
+
         var steps = new JsonArray();
         foreach (string message in completedMessages)
         {
@@ -57,7 +77,7 @@ internal static class MissionNarration
             {
                 ["stepCount"] = completedMessages.Count,
                 ["steps"] = steps,
-                ["reason"] = reason.Trim(),
+                ["reason"] = failureReason,
             });
     }
 
@@ -66,20 +86,75 @@ internal static class MissionNarration
         ArgumentNullException.ThrowIfNull(execution);
         if (MindPlanBoundary.CanRefreshConfirmationChallenge(execution))
         {
-            return TurnVisibleFacts.Confirmation(
+            return CreateConfirmationMessage(execution,
                 "mission_recovery_uncertain_step",
                 TurnVisibleFacts.ConfirmCancel);
         }
 
         if (execution.PendingEffectMayHaveOccurred)
         {
-            return TurnVisibleFacts.Status("mission_recovery_uncertain_effect");
+            return CreateUncertainEffectMessage(execution);
         }
 
-        return TurnVisibleFacts.Confirmation(
+        return CreateConfirmationMessage(execution,
             "mission_recovery_resume",
             TurnVisibleFacts.ContinueCancel);
     }
+
+    internal static string CreateCancellationMessage(PendingMindPlanExecution execution)
+    {
+        ArgumentNullException.ThrowIfNull(execution);
+        var steps = new JsonArray();
+        foreach (string message in execution.CompletedMessages)
+        {
+            steps.Add(NormalizeOutcome(message));
+        }
+
+        return TurnVisibleFacts.Status("remaining_steps_cancelled", new JsonObject
+        {
+            ["steps"] = steps,
+            ["cancelledRequest"] = execution.Objective,
+            ["cancelledAction"] = DescribeCurrentAction(execution),
+        });
+    }
+
+    internal static string CreateConfirmationMessage(
+        PendingMindPlanExecution execution,
+        string cause,
+        IReadOnlyList<string> choices)
+    {
+        return TurnVisibleFacts.Confirmation(cause, choices, new JsonObject
+        {
+            ["step"] = execution.NextIndex + 1,
+            ["pendingRequest"] = execution.Objective,
+            ["pendingAction"] = DescribeCurrentAction(execution),
+        });
+    }
+
+    private static JsonObject DescribeCurrentAction(PendingMindPlanExecution execution)
+    {
+        PreparedOperation? prepared = execution.Confirmation?.Prepared ?? execution.PendingOperation;
+        return new JsonObject
+        {
+            ["operation"] = prepared?.OperationName ?? execution.CurrentStep.Operation,
+            ["purpose"] = execution.CurrentStep.Purpose,
+            ["arguments"] = prepared is null
+                ? execution.CurrentStep.Arguments?.DeepClone()
+                : JsonNode.Parse(prepared.Arguments.GetRawText()),
+        };
+    }
+
+    internal static string CreateUncertainEffectMessage(PendingMindPlanExecution execution) =>
+        TurnVisibleFacts.Failure("result_unverified", new JsonObject
+        {
+            ["step"] = execution.NextIndex + 1,
+            ["pendingRequest"] = execution.Objective,
+            ["effectUncertain"] = true,
+            ["verified"] = false,
+            ["pending"] = true,
+            ["canRepeat"] = false,
+            ["evidenceRetained"] = true,
+        });
 
     private static JsonObject? MergeObserved(IReadOnlyList<string> messages)
     {
@@ -144,10 +219,27 @@ internal static class MissionNarration
             return TurnVisibleFacts.Status("step_verified");
         }
 
-        return string.Join(
+        string normalized = string.Join(
             ' ',
             message.Split(
                 ['\r', '\n'],
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+        try
+        {
+            if (JsonNode.Parse(normalized) is JsonObject result
+                && result["operation"] is JsonValue operationValue
+                && operationValue.TryGetValue(out string? operation)
+                && ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor))
+            {
+                result["readOnly"] = descriptor.Risk == OperationRisks.ReadOnly;
+                return result.ToJsonString();
+            }
+        }
+        catch (JsonException)
+        {
+            // Legacy prose is not a typed operation result.
+        }
+
+        return normalized;
     }
 }

@@ -1,0 +1,46 @@
+FFFFFF..F                                                                [100%]
+================================== FAILURES ===================================
+_ test_positive_adversative_preserves_each_explicit_action[Pon el volumen al 37 pero desmut\xe9alo-operations0] _
+tests\test_effect_intent.py:6931: in test_positive_adversative_preserves_each_explicit_action
+    assert result is not None and result.operations == operations
+E   AssertionError: assert (EffectIntent(operations=('audio.volume',), evidence=('pon el volumen al 37 pero desmutealo',)) is not None and ('audio.volume',) == ('audio.volume', 'audio.mute')
+E     
+E     Right contains one more item: 'audio.mute'
+E     Use -v to get more diff)
+_ test_positive_adversative_preserves_each_explicit_action[Set the volume to 37 but unmute the audio-operations1] _
+tests\test_effect_intent.py:6931: in test_positive_adversative_preserves_each_explicit_action
+    assert result is not None and result.operations == operations
+E   AssertionError: assert (EffectIntent(operations=('audio.volume',), evidence=('set the volume to 37 but unmute the audio',)) is not None and ('audio.volume',) == ('audio.volume', 'audio.mute')
+E     
+E     Right contains one more item: 'audio.mute'
+E     Use -v to get more diff)
+_ test_positive_adversative_preserves_each_explicit_action[Desmut\xe9alo pero pon el volumen al 37-operations2] _
+tests\test_effect_intent.py:6931: in test_positive_adversative_preserves_each_explicit_action
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_positive_adversative_preserves_each_explicit_action[Dime la hora pero abre calculadora-operations3] _
+tests\test_effect_intent.py:6931: in test_positive_adversative_preserves_each_explicit_action
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_positive_adversative_preserves_each_explicit_action[Open Spotify but tell me the time-operations4] _
+tests\test_effect_intent.py:6931: in test_positive_adversative_preserves_each_explicit_action
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_ test_positive_adversative_preserves_each_explicit_action[Abre calculadora pero desmutealo-operations5] _
+tests\test_effect_intent.py:6931: in test_positive_adversative_preserves_each_explicit_action
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+_____ test_positive_adversative_cannot_drop_an_unavailable_second_effect ______
+tests\test_effect_intent.py:6946: in test_positive_adversative_cannot_drop_an_unavailable_second_effect
+    assert resolve_explicit_effects(text, ("audio.volume",)) is None
+E   AssertionError: assert EffectIntent(operations=('audio.volume',), evidence=('pon el volumen al 37 pero desmutealo',)) is None
+E    +  where EffectIntent(operations=('audio.volume',), evidence=('pon el volumen al 37 pero desmutealo',)) = resolve_explicit_effects('Pon el volumen al 37 pero desmutéalo', ('audio.volume',))
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_positive_adversative_preserves_each_explicit_action[Pon el volumen al 37 pero desmut\xe9alo-operations0]
+FAILED tests/test_effect_intent.py::test_positive_adversative_preserves_each_explicit_action[Set the volume to 37 but unmute the audio-operations1]
+FAILED tests/test_effect_intent.py::test_positive_adversative_preserves_each_explicit_action[Desmut\xe9alo pero pon el volumen al 37-operations2]
+FAILED tests/test_effect_intent.py::test_positive_adversative_preserves_each_explicit_action[Dime la hora pero abre calculadora-operations3]
+FAILED tests/test_effect_intent.py::test_positive_adversative_preserves_each_explicit_action[Open Spotify but tell me the time-operations4]
+FAILED tests/test_effect_intent.py::test_positive_adversative_preserves_each_explicit_action[Abre calculadora pero desmutealo-operations5]
+FAILED tests/test_effect_intent.py::test_positive_adversative_cannot_drop_an_unavailable_second_effect
+7 failed, 2 passed, 1751 deselected in 1.60s

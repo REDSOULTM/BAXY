@@ -1,0 +1,7 @@
+{
+  "utc": "2026-09-08T16:41:58.494313+00:00",
+  "question": "Do nightly commits after the stable-linked b10809 and through b10865 observed448 address the measured candidates or their CUDA/chat path? Read-only audit; no backend promotion or runtime change.",
+  "compare_url": "https://api.github.com/repos/ggml-org/llama.cpp/compare/b10809...b10865?per_page=100",
+  "total_commits": 56,
+  "head_sha": "d4389a4dd920d24c9592f1dc3badbd69be23bd09"
+}

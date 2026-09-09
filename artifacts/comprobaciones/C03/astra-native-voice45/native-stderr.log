@@ -1,0 +1,38 @@
+Timeout (0:00:50)!
+Thread 0x00008048 (most recent call first):
+  File "C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Lib\site-packages\sounddevice.py", line 1213 in _raw_read
+  File "C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Lib\site-packages\sounddevice.py", line 1492 in read
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\voice.py", line 2337 in _capture_loop
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012 in run
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x0000936c (most recent call first):
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 359 in wait
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\queue.py", line 180 in get
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\voice.py", line 1831 in _acoustic_wake_loop
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012 in run
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00007a10 (most recent call first):
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 359 in wait
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\queue.py", line 180 in get
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\voice.py", line 2537 in _decode_loop
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012 in run
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00005fc8 (most recent call first):
+  <no Python frame>
+
+Thread 0x00009564 (most recent call first):
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 359 in wait
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\queue.py", line 180 in get
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\voice_output.py", line 640 in _run
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1012 in run
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1075 in _bootstrap_inner
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\threading.py", line 1032 in _bootstrap
+
+Thread 0x00003ae8 (most recent call first):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-native-voice45.py", line 33 in <module>

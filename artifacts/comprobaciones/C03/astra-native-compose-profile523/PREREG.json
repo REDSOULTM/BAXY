@@ -1,0 +1,133 @@
+{
+  "utc": "2026-09-09T00:31:43.818837+00:00",
+  "method": "Nine exact captured writer inputs from product521: error, confirmation, enabled/save/disable receipts, clarification, progress, clock, and disabled-memory capability. Native HTTP only, no Core effects or full product. Compare registered greedy payload plus explicit seed0 with official Qwen2507 sampling at seeds0/17. Do not change data, prompt, max_tokens, templates, backend, quantization, hardware configuration or output after generation. Native baseline versus documented profile first; no wording sweep.",
+  "source": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices",
+  "profile_rationale": "Qwen model card recommends temperature0.7,top_p0.8,top_k20,min_p0; optional presence0–2 can affect language/performance, so use0, with neutral repetition1. Registered greedy already validated for knowledge512/513; this tests the distinct public writer task rather than assuming that result transfers. Max256 is unchanged for brief writer outputs; any length finish is a failure, not silent truncation.",
+  "profiles": [
+    [
+      "registered-seed0",
+      {
+        "seed": 0
+      }
+    ],
+    [
+      "documented-seed0",
+      {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      }
+    ],
+    [
+      "documented-seed17",
+      {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      }
+    ]
+  ],
+  "cases": [
+    {
+      "id": 1,
+      "case": "disabled-save-error",
+      "payload_sha256": "259c798d2ee67f437c8021768a2f11dcc5a1c64700530f4cd8e8b88c1464f85f"
+    },
+    {
+      "id": 2,
+      "case": "enable-confirmation",
+      "payload_sha256": "1b79645598ce8c25058af736d0c357a48508f65a8783c832822e4da8e296760b"
+    },
+    {
+      "id": 3,
+      "case": "enable-result",
+      "payload_sha256": "6179f2192fb640a99a8c7ea4a7b4a32c59a1448a2cb426624101580d4feb71f5"
+    },
+    {
+      "id": 4,
+      "case": "save-result",
+      "payload_sha256": "3348c6f81c3b9d5e0250c775e1abb23791c369cd7ef8a19f52442fd1838e5910"
+    },
+    {
+      "id": 6,
+      "case": "app-clarification",
+      "payload_sha256": "a0cbc761eacaa75763b4332a3515a5db7c92b620f1f1c3fe22c82a564e3c24af"
+    },
+    {
+      "id": 12,
+      "case": "progress",
+      "payload_sha256": "3828a3cc902f12a5d09032c27d4aa6105c6007d1a283761ef63f8947af473339"
+    },
+    {
+      "id": 17,
+      "case": "disable-result",
+      "payload_sha256": "e37d69683b8b97937ad359977d9eabae1c34cc922b3bb0a22341db8b8c83e4ce"
+    },
+    {
+      "id": 18,
+      "case": "clock-result",
+      "payload_sha256": "540033ea21ee48663d89b3bbf884b60f33dafe122fd9aca42e11d1a95256a174"
+    },
+    {
+      "id": 19,
+      "case": "memory-capability-disabled",
+      "payload_sha256": "b56e949673440a38ccb25c6899f0a61ade45f16da197726ce595a42df0d8c598"
+    }
+  ],
+  "criteria": "Review every native output for facts/cause, decision scope, language, natural BAXY voice and no invented observations/effects. Critical existing faults are internal save narration and denial of memory capability when disabled. Preserve correct disable without PC-change invention and factual clock. No success solely fromHTTP200 or one fluent sample. A promising profile still needs the actual whole writer/guard/product path and regression before adoption.",
+  "server_command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "56920",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-compose-profile523-private\\server.log"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "capture_sha256": "216cd5344e501020f5cc4f8d4d927c73ea546175ae737231154bebc1986d074b",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 360,
+    "request_seconds": 60
+  },
+  "exclusions": "Synthetic consumed development captures; no fresh acceptance, real user data, UI/audio or global model ranking. Same product server geometry intentionally held fixed to isolate sampling, not claimed to minimize native-only memory."
+}

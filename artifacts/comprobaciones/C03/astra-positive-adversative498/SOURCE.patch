@@ -1,0 +1,33 @@
+--- source487/effect_intent.py
++++ source498/effect_intent.py
+@@ -11159,13 +11159,29 @@
+             r"don'?t|do\s+not)\b)|"
+             r"\b(?:y|and)\b\s*(?=[¿?¡!\s]*(?:gracias|thanks|thank you|"
+             r"por favor|please|que tengas (?:un )?buen dia)\b)|"
++            rf"\b(?:pero|but)\b\s*{next_action_head}|"
+             rf"\b(?:y|and)\b\s*{next_effect_head})\s*"
+         ),
+         re.IGNORECASE,
+     )
++    # A conjunction inside quoted payload is not a boundary between requests.
++    # Mask only for locating separators; slice the original so literal content
++    # and evidence survive unchanged. Word boundaries keep don't/it's from
++    # opening a single-quoted payload.
++    boundary_text = re.sub(
++        r'«[^»]*»|“[^”]*”|‘[^’]*’|"[^\"]*"|(?<!\w)\'[^\']*\'(?!\w)',
++        lambda match: "x" * len(match.group(0)),
++        text,
++    )
++    parts = []
++    start = 0
++    for boundary in separator.finditer(boundary_text):
++        parts.append(text[start:boundary.start()])
++        start = boundary.end()
++    parts.append(text[start:])
+     clauses = tuple(
+         clause
+-        for clause in (part.strip() for part in separator.split(text))
++        for clause in (part.strip() for part in parts)
+         if clause and re.search(r"\w", clause, re.UNICODE) is not None
+     )
+     return _normalize_dependent_clauses(clauses)

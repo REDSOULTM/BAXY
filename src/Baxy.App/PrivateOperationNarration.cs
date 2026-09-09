@@ -18,7 +18,10 @@ internal static class PrivateOperationNarration
                 : result.MustNotInvent
                     ? "memory_recall_needs_query"
                     : "memory_request_underspecified";
-        return TurnVisibleFacts.Clarification(cause);
+        JsonObject? extra = result.MissingSaveSubject == MemorySaveSubject.Name
+            ? new JsonObject { ["missingValue"] = "the person's name", ["saved"] = false }
+            : null;
+        return TurnVisibleFacts.Clarification(cause, extra);
     }
 
     internal static string CreateMemoryConfirmationPrompt(
@@ -29,7 +32,8 @@ internal static class PrivateOperationNarration
         {
             return TurnVisibleFacts.Confirmation(
                 "memory_reconcile_same_attempt",
-                ["confirmar", "confirm"]);
+                ["confirmar", "confirm"],
+                PendingMemoryAction(prepared));
         }
 
         string cause = prepared.OperationName switch
@@ -40,13 +44,12 @@ internal static class PrivateOperationNarration
             "memory.export" => "memory_export_privacy",
             _ => "memory_needs_confirmation",
         };
-        JsonObject? extra = string.Equals(cause, "memory_export_privacy", StringComparison.Ordinal)
-            ? new JsonObject
-            {
-                ["destination"] = "Documents/BAXY",
-                ["mayRedirectOrSync"] = true,
-            }
-            : null;
+        JsonObject extra = PendingMemoryAction(prepared);
+        if (string.Equals(cause, "memory_export_privacy", StringComparison.Ordinal))
+        {
+            extra["destination"] = "Documents/BAXY";
+            extra["mayRedirectOrSync"] = true;
+        }
         return TurnVisibleFacts.Confirmation(cause, TurnVisibleFacts.ConfirmCancel, extra);
     }
 
@@ -80,21 +83,27 @@ internal static class PrivateOperationNarration
 
     internal static string CreateMemoryRecoveryPrompt(PreparedOperation prepared)
     {
-        string category = prepared.OperationName switch
-        {
-            "memory.enable" or "memory.disable" => "memory_config",
-            "memory.save" or "memory.sensitive.save" or "memory.correct" =>
-                "memory_update",
-            "memory.forget" or "memory.session.clear" => "memory_erase",
-            "memory.recall" or "memory.list" or "memory.status" => "memory_query",
-            "memory.export" => "memory_export",
-            _ => "memory_request",
-        };
         return TurnVisibleFacts.Confirmation(
             "memory_recovery_pending",
             TurnVisibleFacts.ContinueCancel,
-            new JsonObject { ["category"] = category });
+            PendingMemoryAction(prepared));
     }
+
+    internal static JsonObject PendingMemoryAction(PreparedOperation prepared) => new()
+    {
+        ["pendingAction"] = MemoryAction(prepared),
+    };
+
+    internal static string CreateMemoryCancellationMessage(PreparedOperation prepared) =>
+        TurnVisibleFacts.Status(
+            "memory_cancelled",
+            new JsonObject { ["cancelledAction"] = MemoryAction(prepared) });
+
+    private static JsonObject MemoryAction(PreparedOperation prepared) => new()
+    {
+        ["operation"] = prepared.OperationName,
+        ["target"] = "private local memory",
+    };
 
     internal static string CreateAudioRecoveryPrompt(PreparedOperation operation)
     {

@@ -1,0 +1,84 @@
+[
+  {
+    "turnId": "t1",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router dirige el tráfico de red entre dispositivos y permite el acceso a internet.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 86,
+        "draft_sha256": "c9de0321ddff888ece409d2f669a46bbfc22949f5905dac1506a496b38f28f69",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router dirige el tráfico de red entre dispositivos y permite el acceso a internet."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Un router sirve para conectar diferentes dispositivos (como computadoras, teléfonos o consolas) dentro de una red local y permitir que accedan a internet o comunícense entre sí.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "Doce por ocho es 96.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:operacion",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 20,
+        "draft_sha256": "d8c179b680293eace7166ffec894bb3dee1d4ccd93bd475f731ba68482e9ccbd",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Doce por ocho es 96."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

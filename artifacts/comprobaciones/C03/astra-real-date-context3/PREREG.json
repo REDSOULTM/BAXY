@@ -1,0 +1,33 @@
+{
+  "kind": "qwen-base-integrated-diagnostic-not-acceptance",
+  "utc": "2026-09-06T21:04:22.838794+00:00",
+  "method": "Three consumed real-log requests. Inherited conductor and registered runtime, no model or sampling overrides. Inherit a nominal date followup only from the immediately previous independently resolved user clock request; absent or unrelated context stays unresolved; calendar composition derives local date from UTC and offset and validates the requested fields. Current actual time/date only, no mutation or fixture. Not UI or fresh acceptance.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "modelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "files": {
+    "tests/data/turn_evidence_runtime.v1.jsonl": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+    "src/baxy_mind/data/turn_evidence_abstention_policy.v1.json": "7768fe1a5d13349f590d7a6f24d4fe0b4769e56cd76967807d0fb2239aec06c2",
+    "src/baxy_mind/planner.py": "1291081aa86021972c74195cff7dc492e44b5084a7a723d13e48b899d1df79bb",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "93eab6c7278cdb90ff14b5f8e62050e42177a5f83f508e948fba2a989fb75040",
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "4c6380372f565a39c9e14a2d74d3450ef3d46e9a253a5354c41e3473dfb0dc99",
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "9ebeab789bfa601f040a92e7126e9fa6d5458f0caacc81c20ebc75457e6ccc9c",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "9ea578c16c4d9a85f689d19a3f596e972d68e1b891a229ae83a9c001c5e16867",
+    "src/Baxy.Core/bin/Release/net10.0-windows10.0.19041.0/win-x64/publish/baxy-core.exe": "8f28163ee582d35f3ab203b36c61f349d222302aaaa6ecdd356a6898ff03cb39",
+    "src/baxy_mind/llm.py": "6af9bb3726082bc8e35b220fd77763912c1a6cffecffe38ea3671d79c2bcc5df",
+    "src/baxy_mind/__main__.py": "ed78bf0e8c034d6f69cc58310a4ecd20ba4e98928ae07bac28c135b991eaf8f4",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "90f70a0403eca273c49fbcc9aac51315997039d5bb9388d078ac3c28b4b8f2c8",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "e9f765824ec44bd9672303a16c64b5acea6068ba69533ffed05b44e240ba336b",
+    "src/Baxy.App/MainWindowViewModel.cs": "30e1f0798fc2971e49dd95241fa903023347300747ebf81e11534e0537bfe447",
+    "src/Baxy.App/MissionNarration.cs": "9049517ea737be382dec6e2d4eac1e007c131030a774ffffddad45e6a80e49c6",
+    "src/Baxy.App/MindPlanSession.cs": "f6c77be7b508b3f86d032d53028019aea9d488572d612a3ca56cb9c159289b51",
+    "src/Baxy.App/UserMessagePolicy.cs": "e7ca44b3acab51dc051b038fdecb144b9ea33624dbb6576ebf337433dc93525e",
+    "artifacts/comprobaciones/C03/astra-real-date-context3.turns.jsonl": "15b885e474e874d733cabbd12088db95e2815419923c8ce88537a8d59c08fd4d",
+    "scratchpad/c03-real-date-context3.py": "7958c9df62954ec47c8080fb97f6b7b2a9114f2bdfe36b3c670cd5dc412e7657",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "4f034c42d1887fd2330497760efaa949c511f65f9dc52c34f014686dc9ebeebf",
+    "artifacts/comprobaciones/C03/astra-real-date-context3/CASES.json": "3c5da00a4252ed9b6b36d9b5b83abbd788ded53004ffaa201500a9d4fc1778c5"
+  },
+  "preparation": "Hold stdin for 50 seconds to allow normal warmup, no readiness instrumentation or runtime overrides. Warm development and recovery, not cold-start latency or fresh acceptance."
+}

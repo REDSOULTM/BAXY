@@ -1,0 +1,36 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_ test_native_selector_keeps_the_human_context_before_multiple_assistant_results[Me llamo Lina.-quien soy] _
+tests\test_turn_policy.py:10261: in test_native_selector_keeps_the_human_context_before_multiple_assistant_results
+    assert sent[1:-1] == original[:-1]
+E   AssertionError: assert [] == [{'role': 'us...'Hola.'}, ...]
+E     
+E     Right contains 8 more items, first extra item: {'role': 'user', 'content': 'Me llamo Lina.'}
+E     Use -v to get more diff
+_ test_native_selector_keeps_the_human_context_before_multiple_assistant_results[My name is Jordan.-Who am I?] _
+tests\test_turn_policy.py:10261: in test_native_selector_keeps_the_human_context_before_multiple_assistant_results
+    assert sent[1:-1] == original[:-1]
+E   AssertionError: assert [] == [{'role': 'us...'Hola.'}, ...]
+E     
+E     Right contains 8 more items, first extra item: {'role': 'user', 'content': 'My name is Jordan.'}
+E     Use -v to get more diff
+__ test_native_selector_history_stays_private_bounded_and_non_authoritative ___
+tests\test_turn_policy.py:10289: in test_native_selector_history_stays_private_bounded_and_non_authoritative
+    assert 0 < len(sent) <= 12
+E   assert 0 < 0
+E    +  where 0 = len([])
+____ test_native_tool_selection_accepts_only_declared_parameterless_calls _____
+tests\test_turn_policy.py:10334: in test_native_tool_selection_accepts_only_declared_parameterless_calls
+    assert payloads[0]["messages"][-1] == {"role": "user", "content": "Dime la hora"}
+E   assert {'role': 'use...me la hora"}'} == {'role': 'use...Dime la hora'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Differing items:
+E     {'content': '{"previous_dialogue_for_references_only": [], "current_request_to_interpret": "Dime la hora"}'} != {'content': 'Dime la hora'}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_native_selector_keeps_the_human_context_before_multiple_assistant_results[Me llamo Lina.-quien soy]
+FAILED tests/test_turn_policy.py::test_native_selector_keeps_the_human_context_before_multiple_assistant_results[My name is Jordan.-Who am I?]
+FAILED tests/test_turn_policy.py::test_native_selector_history_stays_private_bounded_and_non_authoritative
+FAILED tests/test_turn_policy.py::test_native_tool_selection_accepts_only_declared_parameterless_calls
+4 failed, 947 deselected in 1.96s

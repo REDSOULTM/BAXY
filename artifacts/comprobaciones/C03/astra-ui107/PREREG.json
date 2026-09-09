@@ -1,0 +1,43 @@
+{
+  "utc": "2026-09-07T09:35:25.184478+00:00",
+  "method": "Source103 real desktop via py main.py, Qwen3.5 override, wake0. Healthy clock, then suspend only the verified llama-server descendant of this App and request the same clock. Capture the failure state before resuming the same server and requesting the same clock again. Suspension helper resumes on sentinel or within 300s even if observation is interrupted. No fake drafts, composition injection mode, runtime changes or parallel models/builds. Then close/cancel/close/confirm an owned empty window fixture using the same four technical requests as tranche46. Observe exact confirmation and actual fixture lifetime. No human reserve or audio acceptance.",
+  "cases": [
+    "Dime la hora.",
+    "Dime la hora.",
+    "Dime la hora.",
+    "cierra la ventana titulada Ventana C03 de prueba",
+    "cancelar",
+    "cierra la ventana titulada Ventana C03 de prueba",
+    "confirmar"
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "modelSha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "profile": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\dev-mente-v2",
+  "fixture": {
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\C03TitleFixture.exe",
+    "sha256": "93e67d7c6b8e31ae8ea8981bd4b92416bb9d580e8a4f2c2998fa7e03071cf500"
+  },
+  "files": {
+    "src/baxy_mind/llm.py": "e414ced302b7ba1e2191aaff6b5994f4c562a8a69ffb6ba5b686591d79e7213d",
+    "src/baxy_mind/__main__.py": "fe254d2d87fb3b52e471719508d4751196750acd62e60c3b45bd19b3a063a244",
+    "src/Baxy.App/MainWindowViewModel.cs": "27bfcdf32aa9f7ef2f6df988e2ec9661515f07eea7092c4250fe085dedf97e4f",
+    "src/Baxy.App/MindSidecarClient.cs": "4dcef3872f842a02c8b5deb0aa48114311d92772e5bb0afb971b878500ab10a8",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "e37b9bce06098e62207135238fb56b103b22a2e7a3a225e0455c69b08d0cae68",
+    "src/Baxy.FieldUi/src/components/FieldCenter.tsx": "c0219bc8087885b79bdd68100366413f21f119c9d6a3adccddf7c0c132f61e17",
+    "src/Baxy.FieldUi/src/styles/prototype.css": "760d8370ffde0ea1334dafcf4d2d34f168dbf0a58bc6a9012afcab25607b2986",
+    "src/Baxy.FieldUi/src/hooks/useEventStream.ts": "dd855753ae0b001a4fe9d499aeb09a83b048dacd32054d4c1456642811683b45",
+    "src/Baxy.FieldUi/ORIGIN.md": "55b44bacdd83f446f13f42eb1e18102e946adb7c237de85519d5f9f8d5b7c99a",
+    "src/Baxy.FieldUi/dist/index.html": "86272a3e53398f2c061659d7ce0acaa5f8a3c902ce9e334e096c8b0d8b63f742",
+    "src/Baxy.FieldUi/dist/assets/index-BdsTtBhL.js": "775c33943717459934d9ce5e55cc0de5735f30bd6907914fa24ce31f4fafc5bc",
+    "src/Baxy.FieldUi/dist/assets/index-Bvtbe9rc.css": "d681cf835b0fc96c38a9f3e53f7e3bf31dca80d1d0fb4a1dff8117e9b8e85df9"
+  },
+  "heritage": [
+    "PRUEBAS_RECUPERACION106.md",
+    "PRUEBAS_RUTAS_C03_TRAMO46.md",
+    "PRUEBAS_UI104.md",
+    "ADR-0008"
+  ],
+  "primary_source": "https://psutil.io/api/#psutil.Process.suspend",
+  "source_consulted": "2026-09-07; Windows suspend/resume affect all process threads; PID identity checked"
+}

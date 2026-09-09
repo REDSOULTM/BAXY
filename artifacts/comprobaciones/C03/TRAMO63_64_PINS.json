@@ -1,0 +1,16 @@
+{
+  "scope": "Provider63 candidate and failing product captures, not acceptance",
+  "files": {
+    "src/Baxy.Providers.Windows/Filesystem/LocalFilesystemProvider.cs": "3a41f7f11fc6aab28d9474441c9dab111f8f74db5364b39c5d986d254fa9852b",
+    "tests/Baxy.Providers.Windows.Tests/LocalFilesystemProviderTests.cs": "9301e694b157a0cf659cecb586028e4844d1703d3a2cd339480129a79605e430",
+    "tests/Baxy.Integration.Tests/MvpLocalStatefulHandlerMatrixTests.cs": "0ee1bd29f044eb4340846f3e81a97a49a8e3cc16971821ad91993abe016bda96",
+    "artifacts/comprobaciones/C03/astra-files63-absolute/RESULT.json": "ce6eeb9fc23635beb5d228e97480b528ec3d792335f5a6ca3313787d5cf3de81",
+    "artifacts/comprobaciones/C03/astra-files63-absolute/PREREG.json": "2bdfb1bca2c93c30d225131ae72f45693af20e9a77baf05aabff0642e0a3285f",
+    "artifacts/comprobaciones/C03/astra-files63-absolute/paired.json": "a67b5f7f326ddedce28ef923427dc9f108e776689f7586370e9f2f48a974e2e8",
+    "artifacts/comprobaciones/C03/astra-files64-wire/RESULT.json": "a1e004aa7056454d0c759146f49c325cef58dd0a3ba79ecacdb659bd7b83d872",
+    "artifacts/comprobaciones/C03/astra-files64-wire/PREREG.json": "a5f167cf2c97c8e0e6e63c7f87180cf60876a6975f7d678fab10b6297803e0f1",
+    "artifacts/comprobaciones/C03/astra-files64-wire/paired.json": "1523936ba088e5e2699ca610930c715b458aca1b83a38af11ceb9f2b053c2810",
+    "artifacts/comprobaciones/C03/astra-files64-wire/wire-29264.jsonl": "baf5a5537560425caf27636e83565bd321a94b1292ed9234a920f87435d634ba",
+    "artifacts/comprobaciones/C03/PRUEBAS_ARCHIVOS63_64.md": "06eb046867e401797fd10e6a4a38eb9527c6b2c2760b198bdc572f1950b2bad8"
+  }
+}

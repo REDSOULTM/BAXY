@@ -1,0 +1,45 @@
+{
+  "adjudication": [
+    {
+      "request": "me llamo emmanuel, dime hola emmanuel",
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Hola Emmanuel, ¿cómo estás? 😎",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "useful": true
+    },
+    {
+      "request": "me llamo Albeda",
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¡Hola Albeda! ¿En qué puedo ayudarte hoy? 😎",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "useful": true
+    },
+    {
+      "request": "my favorite city is Lima",
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Lima",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "useful": false
+    }
+  ],
+  "limitation": "Complete shared product with native inference, not a graphical UI observation or physical audio test. Third final is unhelpful; its raw candidate invents visits to Lima, so it must not be counted as a good response merely rejected by a guard.",
+  "journal_operations": [
+    {
+      "phase": "started",
+      "operation": "memory.status"
+    },
+    {
+      "phase": "completed",
+      "operation": "memory.status"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "method": "Same physical four outputs173, full JSONL/LLM sidecar/environment, state-only observer. Experimental replacement of EchoCanceller binding with DTLN128 streaming182; status resolver points to experimental model directory, SHA covers both weights. Product source/thresholds/wake unchanged. No synthetic near injection here; this tests false interruption, not positive double-talk or final acceptance.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "sourceFiles": {
+    "src/baxy_mind/__main__.py": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/voice.py": "bdbfcc088fe023232ad37df4c75d95b6d699f7c7e8fe1b395cbeca14081ed06a",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  },
+  "reason": "182 exact PCM parity and384sample alignment on3cases for both128/512.128 has p99 up to4.11ms per32ms,512 up to22.22ms; choose128 for bounded physical diagnostic, not accepted runtime.",
+  "experimentSha256": "245715cb0cf4163742323ac8d974153b257bcaeb89e4821b2462541d3ba8780e"
+}

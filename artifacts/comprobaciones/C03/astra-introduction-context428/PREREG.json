@@ -1,0 +1,39 @@
+{
+  "utc": "2026-09-08T14:30:52.642053+00:00",
+  "cases": [
+    {
+      "id": "actual426-t5",
+      "request": "Me llamo Álvaro.",
+      "origin": "synthetic development426T5; captured wrong Windows-account composition"
+    },
+    {
+      "id": "name-en",
+      "request": "My name is Nina.",
+      "origin": "synthetic standalone declaration under existing declared-name grammar"
+    },
+    {
+      "id": "compound-name",
+      "request": "Mi nombre es Ana María.",
+      "origin": "synthetic standalone declaration under existing declared-name grammar"
+    },
+    {
+      "id": "hyphenated-name",
+      "request": "My name is Jean-Luc.",
+      "origin": "synthetic standalone declaration under existing declared-name grammar"
+    }
+  ],
+  "method": "Existing guarded composition: wrong426 Windows-account facts vs existing session_context_only status for four standalone synthetic declarations. Actual baseline must equal captured426 payload offline and live. Only situation changes; no prompt/weights/sampler/source change. Proposed state assumes the existing typed parser proves an entire standalone declaration; this assumption requires boundary tests before implementation. No product effects or persistence.",
+  "criteria": "Acknowledge the human name/current conversation, no Windows account, no claim to change persistent memory or rename BAXY. All four variants useful before source; baseline errors remain preserved. No fresh human acceptance/UI/voice.",
+  "inheritance": "DeclaredNameInputPattern and public-clause split/TryBindSaveInput already exist; SessionContextOnly already emits this fact in MainWindow. No new name pattern or response.427 blanket semantic guard rejected9/13,413/414earlyread also rejected; neither reintroduced.",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "request_seconds": 40
+  },
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "source_sha256": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-introduction-context428-private"
+}

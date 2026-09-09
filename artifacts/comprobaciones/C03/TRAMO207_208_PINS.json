@@ -1,0 +1,216 @@
+{
+  "public": [
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/src/baxy_mind/voice.py",
+      "sha256": "87f3e491d909515d592d190b82d5262e4fecd1d5d03e5a1b91c00d480a4450d1",
+      "bytes": 123629
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/src/baxy_mind/requirements-voice.txt",
+      "sha256": "54f3b1e542c784f20fc48d922fae7062ad2837876254ba92d70f95371f0bf9ff",
+      "bytes": 295
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/scripts/build_sherpa_runtime.py",
+      "sha256": "c69344c53d5cdc9b767cc5009541fd0a2d7e449ca1f236b05c5386d50d73549f",
+      "bytes": 7642
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/scripts/verify_python_runtime_lock.py",
+      "sha256": "43a9eb2b4f98094e9c5df4d00041708141c47305957be4b2cf999d6b7656ea46",
+      "bytes": 9365
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/scripts/lock_python_dependencies.ps1",
+      "sha256": "c187c4a9135c256ee710141a32b4f701b49364deaa3c1bb3518be2125a9e0baa",
+      "bytes": 5666
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/constraints-runtime-win-x64.txt",
+      "sha256": "fc0db42ae39301e277626d49216916da9f824d1af0e407e8b7075d7835fe37eb",
+      "bytes": 1252
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/pylock.runtime-win-x64.toml",
+      "sha256": "400677e69c886fa5774a38feeb478ef1179ee0d65631c0e3245102e7bb59312e",
+      "bytes": 22027
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/tests/test_mind_voice_runtime.py",
+      "sha256": "f104d71658637f70ac768dfd8daf2312025a7a074688ea178c467b1989742384",
+      "bytes": 87357
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/tests/test_python_runtime_lock.py",
+      "sha256": "e6a3d076944f2734f0cab62cafdcb6f60f1cb6435a3eb31f5cd6a13677742532",
+      "bytes": 5163
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/tests/test_sherpa_runtime_package.py",
+      "sha256": "aab4989aec97e68234c4afdbff467f2da22680f5fdcfbc235e657c61120cf23e",
+      "bytes": 2107
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/runtime_wheels/sherpa-nemo-stream-decoder.patch",
+      "sha256": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163",
+      "bytes": 2957
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/runtime_wheels/README.md",
+      "sha256": "40bd455c4874acff4b775bd64d720992629e4965b754f3e72656551d49687398",
+      "bytes": 2490
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/docs/AI_CONTEXT_MAP.md",
+      "sha256": "49a18a6ffdd15e80c6462c0f11bb3350d9525d45e92bfce5f6888c75ffbfc570",
+      "bytes": 7762
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/FILES.json",
+      "sha256": "92318c62c3029f46001a0053355842ac1c68e3423d86f4c3bd5d3fe73cc2df0f",
+      "bytes": 1394
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-wheel207-build.log",
+      "sha256": "b9d40b4885f9960025c4ae21ef10226b6961f723aa2da62a583429496e9ab809",
+      "bytes": 12011
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-wheel207-build-retry.log",
+      "sha256": "dadd2f4aee1b7f84add9fdbba8cc67c482eebdab0cff26d856aaa7075bdc9db4",
+      "bytes": 11906
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-lock207.log",
+      "sha256": "dc0f2ca408999eea4b12558cbc15f85cf1c1730de91489c0de3c305cedfa9e04",
+      "bytes": 3927
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-lock207-retry.log",
+      "sha256": "80466cbb4582fb57552f789cb976220f26ad32fe1a271618059d7178a906d333",
+      "bytes": 13935
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-lock207-inspect.log",
+      "sha256": "d6bb4c39b4eff2e73e85af745cf05f9c246dafe7890336f690a5097d9008f5e2",
+      "bytes": 11235
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-lock207-portable.log",
+      "sha256": "5e88c3a819dbabb8e45ef9a55c4c17f0b0683ff1402ccb334958a46793e5afac",
+      "bytes": 13984
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-lock207-check.log",
+      "sha256": "b416cf5fe67afa5b253b25dbced490e102bb67f25a942d7a46d590dac28a6d9f",
+      "bytes": 13984
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-source207-owner.log",
+      "sha256": "db949ed39ba2199ed9903902ad9bad11370681def22a39120eb77517d55e858e",
+      "bytes": 182
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-source207-tests.log",
+      "sha256": "a1fb5af4888bf3129679614bc9ce477974b2bc1fd696c8bbefa049e9a42019e1",
+      "bytes": 183
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-lock207-tests-final.log",
+      "sha256": "c849d3e34f587710e2fbd48580b4a3fad416163c8bedc2e78e274285a125694c",
+      "bytes": 101
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-source207-fast.log",
+      "sha256": "9a1d3d7b9dc0f7fd85bf604090d3016210b2f24cd343517d491214f20ed49b02",
+      "bytes": 2913
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-install207.log",
+      "sha256": "4a9b6a6e91fd31aa8ecd6a363589f2a9fa403862d51cd375254c102664af9f8a",
+      "bytes": 14042
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-source207-snapshot/logs/c03-product208.log",
+      "sha256": "7769a404093417395b677bc58437f2db1ebd4ad9e6c7b9995bf3cc07f9bd342c",
+      "bytes": 292
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/PRUEBAS_RUNTIME207_208.md",
+      "sha256": "e6c964a8542989a611d1b3b583b1419e99394e3040ad1f73d9e7efa5f8bd9efa",
+      "bytes": 4535
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-install207/AFTER.json",
+      "sha256": "2e2323a602e5aad2bac803721c6a1bf67734dfb30f684934b62564e2363f77d8",
+      "bytes": 1999
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-install207/COMPLETE.json",
+      "sha256": "93032ed690b54916f84dff8a1961ee84bf1ce4bb9654cee6365e31a0ee8ee470",
+      "bytes": 57
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-install207/PIP_REPORT.json",
+      "sha256": "d28a6cf901089398980e8adfa1566ee7dbc304d4e929a0cb2ad74eb9188a2600",
+      "bytes": 53730
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-install207/PREREG.json",
+      "sha256": "589ce5fc47f06f2388e8ca8f8d9f494dc48f26865cb60b7033513fd91cb0e9f3",
+      "bytes": 3872
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-product208/COMPLETE.json",
+      "sha256": "a93072e83d99126e9ad4ca5fc9247db695a7780d0ca31da97488385e41525f0d",
+      "bytes": 325
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-product208/DIRECT.json",
+      "sha256": "ba6e3caed1f0ca8d65414f2708685818d322ecee8ff32117411e2b60ec2aa168",
+      "bytes": 702
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-product208/PREREG.json",
+      "sha256": "99cf1490562ead3b4631430521bfcef3494cd6d1d47c7110f44211e004fd3413",
+      "bytes": 21834
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-product208/RESULTS.json",
+      "sha256": "66f627c038382c4242c4c37b61e5aab7676df96ed5854c8abea1c95548fc53eb",
+      "bytes": 12564
+    },
+    {
+      "path": "scratchpad/c03-install207.py",
+      "sha256": "101bce6a62c769bba877a0ce8f0650c78536110a19bd91178d0e8f2e6f76df33",
+      "bytes": 2452
+    },
+    {
+      "path": "scratchpad/c03-product208.py",
+      "sha256": "3709b4bb8cd764599e64a512fe0bd8176a3f4beae5ced387331b8616e1200baf",
+      "bytes": 4282
+    },
+    {
+      "path": "scratchpad/c03-seal208.py",
+      "sha256": "f4cf558f581fe68d3d1452d21cb76abd9a434211fadcd3ff06ff6ea902552bd8",
+      "bytes": 9423
+    },
+    {
+      "path": "runtime_wheels/sherpa_onnx-1.13.4+baxy.1-cp312-cp312-win_amd64.whl",
+      "sha256": "2ee49c501c97ad69be14449ecc739b37d856e33f9065ddf7565ffa6b626d7ee0",
+      "bytes": 2235727
+    }
+  ],
+  "private": [
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\sherpa205\\wheel207-invalid-metadata.whl",
+      "sha256": "78b80ecb72a449d444215498ac0a2249c702c3679a665bb966b2823bc32e6ba1",
+      "bytes": 2235717
+    },
+    {
+      "privatePath": "D:\\BAXYRuntime\\experiments\\voice\\sherpa205\\sherpa_onnx-1.13.4-cp312-cp312-win_amd64.whl",
+      "sha256": "b8436ffe2763b3fd522fbac8fe53f47d611721c84819c241acfb65d122403d7d",
+      "bytes": 2244142
+    }
+  ]
+}

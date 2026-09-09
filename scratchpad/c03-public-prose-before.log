@@ -1,0 +1,96 @@
+F...........................FF                                           [100%]
+================================== FAILURES ===================================
+_ test_a_social_greeting_survives_without_rewriting[-Hola, \xbfen qu\xe9 puedo ayudarte hoy?] _
+
+user_text = '', reply = 'Hola, �en qu� puedo ayudarte hoy?'
+
+    @pytest.mark.parametrize("user_text, reply", [
+        ("", "Hola, �en qu� puedo ayudarte hoy?"),
+        ("Good afternoon", "Hi! How can I help you today?"),
+        ("Good evening", "Good evening! What can I help you with?"),
+        ("Buenos d�as", "�Buenos d�as! �En qu� te ayudo?"),
+    ])
+    def test_a_social_greeting_survives_without_rewriting(user_text: str, reply: str) -> None:
+        client = Recorder([reply])
+>       assert client.compose_user_message(user_text, "welcome", {
+            "situation": '{"kind":"welcome","polarity":"success"}',
+        }) == reply
+E       AssertionError: assert 'Hola,.' == 'Hola, �en qu...ayudarte hoy?'
+E         
+E         - Hola, �en qu� puedo ayudarte hoy?
+E         + Hola,.
+
+tests\test_c03_request_preservation.py:31: AssertionError
+_ test_verified_mission_prose_is_not_a_prescribed_sentence[Ya [[A1]] los [[COUNT]] pasos.] _
+
+intro = 'Ya [[A1]] los [[COUNT]] pasos.'
+
+    @pytest.mark.parametrize("intro", [
+        "Ya [[A1]] los [[COUNT]] pasos.",
+        "Los [[COUNT]] pasos quedaron completos y los [[A1]].",
+    ])
+    def test_verified_mission_prose_is_not_a_prescribed_sentence(intro: str) -> None:
+        client = Recorder([intro])
+        facts = ["La hora local es 16:12.", "El volumen observado es 35 %."]
+>       reply = client.compose_user_message("dime la hora y el volumen", "status", {
+            "situation": '{"kind":"status","cause":"mission_completed","polarity":"success"}',
+            "requiredActions": ["verifiqu�"], "requiredFacts": facts,
+        })
+
+tests\test_c03_request_preservation.py:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9073: in compose_user_message
+    scaffold_response = self._post(retry_scaffold_payload)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000023A6363B080>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero, un �l. Tuteas. Redacta UNA frase en el idioma de...abla en primera persona; no escribas �BAXY� como sujeto.'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 192, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:19: StopIteration
+_ test_verified_mission_prose_is_not_a_prescribed_sentence[Los [[COUNT]] pasos quedaron completos y los [[A1]].] _
+
+intro = 'Los [[COUNT]] pasos quedaron completos y los [[A1]].'
+
+    @pytest.mark.parametrize("intro", [
+        "Ya [[A1]] los [[COUNT]] pasos.",
+        "Los [[COUNT]] pasos quedaron completos y los [[A1]].",
+    ])
+    def test_verified_mission_prose_is_not_a_prescribed_sentence(intro: str) -> None:
+        client = Recorder([intro])
+        facts = ["La hora local es 16:12.", "El volumen observado es 35 %."]
+>       reply = client.compose_user_message("dime la hora y el volumen", "status", {
+            "situation": '{"kind":"status","cause":"mission_completed","polarity":"success"}',
+            "requiredActions": ["verifiqu�"], "requiredFacts": facts,
+        })
+
+tests\test_c03_request_preservation.py:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9073: in compose_user_message
+    scaffold_response = self._post(retry_scaffold_payload)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000023A63690740>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero, un �l. Tuteas. Redacta UNA frase en el idioma de...abla en primera persona; no escribas �BAXY� como sujeto.'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 192, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:19: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_a_social_greeting_survives_without_rewriting[-Hola, \xbfen qu\xe9 puedo ayudarte hoy?]
+FAILED tests/test_c03_request_preservation.py::test_verified_mission_prose_is_not_a_prescribed_sentence[Ya [[A1]] los [[COUNT]] pasos.]
+FAILED tests/test_c03_request_preservation.py::test_verified_mission_prose_is_not_a_prescribed_sentence[Los [[COUNT]] pasos quedaron completos y los [[A1]].]
+3 failed, 27 passed in 1.23s

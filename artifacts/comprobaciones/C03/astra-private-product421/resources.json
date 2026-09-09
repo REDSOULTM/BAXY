@@ -1,0 +1,9 @@
+{
+  "violations": [
+    "system_free_ram_bound"
+  ],
+  "gpu_peak_mib": 3177.5625,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 4629.90234375,
+  "seconds": 36.172
+}

@@ -1,0 +1,19 @@
+{
+  "session": 95573,
+  "exit": 0,
+  "intervention": "Previous literal user request plus current query, no product edits.",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1777.1640625,
+    "seconds": 44.844,
+    "manifest_unchanged": true
+  },
+  "correct_operation_selections": 5,
+  "failed_action_requests": 2,
+  "knowledge_meaning_correct_voice_failed": 1,
+  "native_owner51": "tool_calls audio.volume only; audio.mute omitted; operation compatibility then false with history absent.",
+  "adopted": false,
+  "next": "490 published Qwen2507 native sampling only, keeping489 retrieval intervention. Do not promote unrestricted history concatenation; no factual-guard relaxation."
+}

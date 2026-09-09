@@ -1,0 +1,12 @@
+{
+  "scope": "Template repair integrated; source hashes in PREREG; C03 open",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_TEMPLATE77.md": "ff2983dc7c21034be84e94db5c27e0e9d11fa7daf6aac67f2ea942d3e0cab621",
+    "artifacts/comprobaciones/C03/astra-files77-template/PREREG.json": "15948b1f2717c0bc1deec4522e5c5820a481cf10a48308ded2ca3e5399f66c64",
+    "artifacts/comprobaciones/C03/astra-files77-template/RESULT.json": "2a0fd650d543f4a9535cccb7ec9996fd8d04708708f50dedac582213b7af4c08",
+    "artifacts/comprobaciones/C03/astra-files77-template/paired.json": "41587657385e9ebeb65ca6d225a3b64c9f5df1fa52240a5b88e303ea8189d94b",
+    "artifacts/comprobaciones/C03/astra-files77-template/wire-31624.jsonl": "9a112bbf9308e60d08f90fb653e577bb83518f05b445ce58439cb71a2b034b66",
+    "artifacts/comprobaciones/C03/astra-files77-template/c03-template77-pytest.log": "ff03d28508640e5147554f64490b1e6158789a0214c216f29d1be3d847987c1b",
+    "artifacts/comprobaciones/C03/astra-files77-template/c03-template77-fast.log": "ebc702efec1bf288a7a3b34b094e87a7082680253dd0948476cfa5c2f69b6d1e"
+  }
+}

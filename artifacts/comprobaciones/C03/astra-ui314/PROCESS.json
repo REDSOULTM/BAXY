@@ -1,0 +1,11 @@
+{
+  "launcher": 56308,
+  "command": [
+    "py",
+    "main.py",
+    "--ui-probe",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui314-private\\turns.jsonl",
+    "--ui-capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui314-private\\ui.jsonl"
+  ]
+}

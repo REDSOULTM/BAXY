@@ -1,0 +1,30 @@
+{
+  "state": "progress narration adopted; C03 ongoing",
+  "files": {
+    "src/baxy_mind/effect_intent.py": "48a37645cc2d75744f5aedb456654e9feb4b390d0138956cbcb6f1e1c2cc37bc",
+    "tests/test_effect_intent.py": "934b23d8f4b5b904756177f45e5888755aa9215950557a3c5d11cebbf75c7fae",
+    "src/Baxy.App/MainWindowViewModel.cs": "92984b4b28c50f75c5c5e4fe1f8c13a7eb935646d3124b03942ad955154c5f1e",
+    "src/Baxy.App/UserMessagePolicy.cs": "b013e8b43130d18d6ab4158988074fe280fd0eb9450954b4d23c97a8dd795d11",
+    "src/baxy_mind/llm.py": "902b32ddcf1bc62f89b1a0e9c7a7dde0b5a35a7cd018cba282fcde62b076dbb1",
+    "src/baxy_mind/request_reading.py": "5a6c3868f16e2af6aa1a6c1ce5e6861bc7d516a7526225cbadcc6f3a59b31d45",
+    "src/baxy_mind/voice_output.py": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+    "artifacts/comprobaciones/C03/astra-progress51/PREREG.json": "702e17cb95447ab75c8a5981cf757ba29876826f1d7fd4c694447ebaf0b88475",
+    "artifacts/comprobaciones/C03/astra-progress51/RESULT.json": "62a67a6d8fd666ce9860f956e14167bdf6107509e8db96afeae96c836c3044fc",
+    "artifacts/comprobaciones/C03/astra-progress51/paired.json": "38a39dd087ba78581244b48e26aa578fb3fd09fd8521ba1aa18266e28f06894b",
+    "tests/test_c03_request_preservation.py": "e4134d958ca1e69d975f33ed535dee9bc03b55277bbd1d6b1621dd054def9855"
+  },
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "validation": {
+    "pytest": {
+      "passed": 3123,
+      "subtests": 115,
+      "skips": 0,
+      "seconds": 46.52
+    },
+    "sourceQuality": "Fast passed",
+    "releaseBuildSeconds": 2.85,
+    "warnings": 0,
+    "errors": 0,
+    "Full": "not run during repair"
+  }
+}

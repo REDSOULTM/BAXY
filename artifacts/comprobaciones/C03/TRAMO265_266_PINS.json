@@ -1,0 +1,31 @@
+{
+  "utc": "2026-09-07T22:56:01.046498+00:00",
+  "publicFiles": {
+    "src/baxy_mind/effect_intent.py": "9e41d80b74d6bccd7f8c3e1b3425a0a9efca283533bf2cdb14b04dcf247144a7",
+    "tests/test_effect_intent.py": "cfc92b9d9862ee6ed7f81a5ee6c06c5c92b2719ca88d8e85a26f94f1f1daf992",
+    "scratchpad/c03-boundaries265.py": "f5a355dfbbb4f2947dadef161849705bcc0c45f4cf0ad3c98b8c56aa2ebbde4f",
+    "scratchpad/c03-prepare266.py": "75fa6f2816fb5648410c7426e0235b38d73a631c7e7d4b206d1ef6decc854c8b",
+    "scratchpad/c03-baseline266.py": "71e9d12f0df9b89f38dd7ef8548b966151b6111a07f1469a21bbbc3412877457",
+    "scratchpad/c03-verify266.py": "180f1b9fe0fddc277a42f276cc7f55df86735bb03fc8bcb1aac6fe3a2e5cea41",
+    "scratchpad/c03-finish266.py": "dfd4b29f5d69d3126d14b4be0ca15bd42c3851cd09c92fd8673fdfce5a03dd36",
+    "artifacts/comprobaciones/C03/LECTURA_AFIRMACION265_266.md": "45c4f684e5045517e306c253e3a90915ecff5baff81d86dd0c0b8d380dbd2fb9",
+    "artifacts/comprobaciones/C03/astra-boundaries265/PREREG.json": "0436b7fadfc956c6a71974d2afe4cab4d19e4ccf85ff65d75b46aef27383ac7b",
+    "artifacts/comprobaciones/C03/astra-boundaries265/RESULT.json": "03c48e980a769d73a2e34459fdcb3b9022e4f7e1d626873d548de19df9f07b00",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/PREREG.json": "7a1c443c1cbbd40a095111f55a407acc28a60c8147960a8555b44da3436461c5",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/REPLAY.json": "d19795ed5a9e851afa7028f6ea6608e76448c42f13f4ed08cbe8713ab51543c6",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/REPLAY_FINAL.json": "362455268384115d4ba997c59db8096d285555dcc44dde7c22a398ee4ecd6a0f",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/baseline.log": "5f85e976b48b98e029aa6ecae0998f5937314a08de7eea7487f540948f487b2d",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/baseline-collected.log": "66292cc96ac182d3159207cde7412427b58cad8072c62ad627c356816200fb67",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/baseline-matched.log": "db81e4719155069326a7caae4d54d25e2b88c2f17dc24598a771b68cd6476735",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/after-targeted.log": "14c26709e0a802fc8415962cdf3cf1d1bfd10a433938a22a7c6b71aa8a3fe5fa",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/after-bounded.log": "9338c5701fb48ca05e9b3578186e603a7f59a9dc5ae4164fb3448abd19419250",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/owner-suites.log": "6f63bcf225868b78bf8cb80250085cd8bd86eb806bef4eb86d894edaeb3d01cd",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/owner-suites-final.log": "6f195a3986c252a9599b1016b8b3bd4956de01203cbbc42f94801cc7886a3049",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/after/effect_intent.py": "9e41d80b74d6bccd7f8c3e1b3425a0a9efca283533bf2cdb14b04dcf247144a7",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/after/test_effect_intent.py": "cfc92b9d9862ee6ed7f81a5ee6c06c5c92b2719ca88d8e85a26f94f1f1daf992",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/before/effect_intent.py": "0f12d86e856b8840fd57015e7b79fd0f2fd4656fdfd2db1894e866da2e91366c",
+    "artifacts/comprobaciones/C03/astra-acknowledgement266/before/test_effect_intent.py": "5dc87ff9f00e0c39d3b73b7f17b5d60bf9d4723e2ca066548580eeb61fcca47e"
+  },
+  "ownerProcessRevalidated": 84328,
+  "acceptance": "boundary only; no UI/model acceptance"
+}

@@ -1,0 +1,70 @@
+{
+  "reason": "operator_finished",
+  "seconds": 36.41,
+  "before": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "after": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "restoredExactly": true,
+  "streams": {
+    "microphone": {
+      "kind": "microphone",
+      "startedUtc": "2026-09-07T12:03:31.592842+00:00",
+      "frames": 576512,
+      "overflows": 0,
+      "peak": 0.05517578125,
+      "sumSquares": 2.3968145279213786,
+      "device": {
+        "name": "Varios micrófonos (Realtek(R) A",
+        "index": 1,
+        "hostapi": 0,
+        "max_input_channels": 2,
+        "max_output_channels": 0,
+        "default_low_input_latency": 0.09,
+        "default_low_output_latency": 0.09,
+        "default_high_input_latency": 0.18,
+        "default_high_output_latency": 0.18,
+        "default_samplerate": 44100.0
+      },
+      "rate": 16000,
+      "channels": 1,
+      "streamReadyUtc": "2026-09-07T12:03:31.748974+00:00",
+      "sha256": "5c49c19fc55f4626e775ce6730b44b90a687410960c81c5fd9ff6f8c7b5c2291",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice134-private\\microphone.wav",
+      "finishedUtc": "2026-09-07T12:04:07.856289+00:00"
+    },
+    "loopback": {
+      "kind": "loopback",
+      "startedUtc": "2026-09-07T12:03:31.592842+00:00",
+      "frames": 1735680,
+      "overflows": 0,
+      "peak": 0.1241455078125,
+      "sumSquares": 219.9502667998895,
+      "device": {
+        "index": 13,
+        "structVersion": 2,
+        "name": "Altavoces (Realtek(R) Audio) [Loopback]",
+        "hostApi": 2,
+        "maxInputChannels": 2,
+        "maxOutputChannels": 0,
+        "defaultLowInputLatency": 0.003,
+        "defaultLowOutputLatency": 0.0,
+        "defaultHighInputLatency": 0.0106667,
+        "defaultHighOutputLatency": 0.0,
+        "defaultSampleRate": 48000.0,
+        "isLoopbackDevice": true
+      },
+      "rate": 48000,
+      "channels": 2,
+      "streamReadyUtc": "2026-09-07T12:03:31.652534+00:00",
+      "sha256": "7f7637959ee4b22c083e74baf2c5deea103729bafd8fc064cf928e9766ba1601",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice134-private\\loopback.wav",
+      "finishedUtc": "2026-09-07T12:04:07.832857+00:00"
+    }
+  },
+  "threadsStopped": true
+}

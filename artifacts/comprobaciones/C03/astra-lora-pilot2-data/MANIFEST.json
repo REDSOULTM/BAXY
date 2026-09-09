@@ -1,0 +1,12 @@
+{
+  "kind": "second-synthetic-development-pilot-not-acceptance",
+  "trainCount": 84,
+  "holdoutCount": 18,
+  "hypothesis": "Pilot1 improves single audio observations but fails compound outcomes and history. Add those input structures, preserving typed facts and varied user languages. Do not train on heldout answers or the nine previous failure questions.",
+  "unchanged": "Same base, LoRA rank, sampling at evaluation and training hyperparameters. The data coverage is the experimental change.",
+  "origin": "48 original authored examples + 24 history variants + 12 synthetic compound-state examples. 12 prior holdout remain untrained; six new compound holdout frozen before training.",
+  "files": {
+    "TRAIN.jsonl": "40a8af2d593d58d7e293ed2820229ed525020399bcb9ad084d552c3433a5037b",
+    "HOLDOUT.jsonl": "d1079d293f08b531f2e68696a900789b77746c1fe92d769a4de71508cf53e053"
+  }
+}

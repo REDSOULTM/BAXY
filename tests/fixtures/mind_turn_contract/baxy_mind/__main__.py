@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,7 @@ def _trace(message: dict[str, Any]) -> None:
         "objective",
         "purpose",
         "expectedOperations",
+        "pendingClarification",
     ):
         if key in message:
             selected[key] = message[key]
@@ -47,11 +49,35 @@ def _trace(message: dict[str, Any]) -> None:
 
 def _turn(message: dict[str, Any]) -> dict[str, Any]:
     request_id = message.get("id")
+    forced = os.environ.get("BAXY_MIND_CONTRACT_TURN_RESULT")
+    if forced:
+        return {**json.loads(forced), "type": "turn.result", "id": request_id}
     text = str(message.get("text") or "").strip()
     history = message.get("history")
     if not isinstance(history, list):
         history = []
 
+    if text == "What is on my to do list?":
+        return {
+            "type": "turn.result", "id": request_id, "kind": "clarify",
+            "operation": None, "effectOperations": [], "intentOperations": [],
+            "preserveObjective": False, "question": "What is on your to do list?",
+            "reply": "", "failure_code": "turn_runtime_failure",
+        }
+    if text == "What is in my task list?":
+        return {
+            "type": "turn.result", "id": request_id, "kind": "action",
+            "operation": "task.list", "effectOperations": ["task.list"],
+            "question": "", "reply": "", "responseLanguage": "en",
+        }
+
+    if text == "abre la aplicación C03ProgramaInexistente20260906":
+        return {
+            "type": "turn.result", "id": request_id,
+            "kind": "conversation", "conversationKind": "unsupported",
+            "operation": None, "effectOperations": [], "question": "",
+            "reply": "No pude abrir la aplicación.",
+        }
     if text == "Hola":
         return {
             "type": "turn.result",
@@ -146,12 +172,29 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
             "kind": "conversation" if remembered else "clarify",
             "operation": None,
             "effectOperations": [],
+            # Match the real sidecar's standalone knowledge decision. This is
+            # a new recall question, not a value for an older pending action.
+            "preserveObjective": False,
             "question": "" if remembered else "¿Qué palabra quieres que recuerde?",
             "reply": (
                 f"La palabra temporal que presentaste fue {remembered}."
                 if remembered
                 else ""
             ),
+        }
+    if text in {"Ajusta el volumen, por favor.", "Set the speaker volume, please."}:
+        return {
+            "type": "turn.result", "id": request_id,
+            "kind": "plan" if text.startswith("Ajusta") else "action",
+            "operation": None if text.startswith("Ajusta") else "audio.volume",
+            "effectOperations": ["audio.volume"], "question": "", "reply": "",
+        }
+    if text == "Set the volume, por favor.":
+        return {
+            "type": "turn.result", "id": request_id, "kind": "clarify",
+            "operation": None, "effectOperations": [], "preserveObjective": True,
+            "question": "¿Quieres que ajuste el volumen de la salida a un nivel específico?",
+            "reply": "", "responseLanguage": "mixed",
         }
     if text == "Haz eso":
         return {
@@ -163,7 +206,7 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
             "question": "¿Qué acción concreta quieres que haga?",
             "reply": "",
         }
-    if text == "Dime la hora actual":
+    if text in {"Dime la hora actual", "y la fecha?", "and the date?"}:
         return {
             "type": "turn.result",
             "id": request_id,
@@ -215,6 +258,12 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
 
 
 def _plan(message: dict[str, Any]) -> dict[str, Any]:
+    if message.get("text") == "Ajusta el volumen, por favor." or message.get("objective") == "Ajusta el volumen, por favor.":
+        return {
+            "type": "plan.result", "id": message.get("id"), "version": 1,
+            "kind": "clarify", "steps": [],
+            "question": "¿Quieres que ajuste el volumen de la salida a un nivel específico?",
+        }
     return {
         "type": "plan.result",
         "id": message.get("id"),
@@ -276,12 +325,22 @@ def main() -> int:
             count = len(capabilities) if isinstance(capabilities, list) else 0
             _write({"type": "catalog.ready", "id": request_id, "count": count})
         elif kind == "turn.decide":
-            _write(_turn(message))
+            if os.environ.get("BAXY_MIND_CONTRACT_DECISION_UNAVAILABLE") == "1":
+                _write({"type": "error", "id": request_id, "code": "fixture_unavailable"})
+            else:
+                _write(_turn(message))
         elif kind == "arguments":
+            if message.get("text") == "Set the speaker volume, please.":
+                _write({
+                    "type": "arguments.result", "id": request_id, "arguments": None,
+                    "operation": message.get("operation"), "ok": False,
+                    "question": "¿Quieres que ajuste el volumen de la salida a un nivel específico?",
+                })
+                continue
             operation = message.get("operation")
             arguments = (
                 {}
-                if operation == "system.time"
+                if operation in {"system.time", "task.list"}
                 else {
                     "browser": "opera",
                     "url": "https://example.com/",
@@ -322,6 +381,11 @@ def main() -> int:
             )
         elif kind == "message.compose":
             facts = message.get("facts")
+            if isinstance(facts, dict) and facts.get("fixtureTurnSignals"):
+                for signal_id in ("retired-request", request_id):
+                    _write({"type": "turn.signal", "id": signal_id, "text": signal_id})
+            if isinstance(facts, dict) and facts.get("fixtureDelayMilliseconds"):
+                time.sleep(float(facts["fixtureDelayMilliseconds"]) / 1000)
             situation = (
                 str(facts.get("situation") or "")
                 if isinstance(facts, dict)

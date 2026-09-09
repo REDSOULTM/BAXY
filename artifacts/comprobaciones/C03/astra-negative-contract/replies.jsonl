@@ -1,0 +1,11 @@
+{"text": "no me molesta, dime la hora", "shape": ["no_effect", "zero"], "compatible": false, "expected": true}
+{"text": "I don't mind, tell me the time", "shape": ["complete", "one"], "compatible": true, "expected": true}
+{"text": "no abras Steam, dime la hora", "shape": ["no_effect", "zero"], "compatible": false, "expected": true}
+{"text": "no me digas la hora", "shape": ["no_effect", "zero"], "compatible": false, "expected": false}
+{"text": "don't tell me the time", "shape": ["no_effect", "zero"], "compatible": false, "expected": false}
+{"text": "no uses herramientas, dime la hora", "shape": ["complete", "one"], "compatible": false, "expected": false}
+{"text": "traduce: no me molesta, dime la hora", "shape": ["no_effect", "zero"], "compatible": false, "expected": false}
+{"text": "no me digas la hora, dime la hora", "shape": ["no_effect", "zero"], "compatible": false, "expected": false}
+{"text": "dime la hora y baja el volumen", "shape": ["complete", "one"], "compatible": false, "expected": false}
+{"text": "ayer me dijiste la hora", "shape": ["no_effect", "zero"], "compatible": false, "expected": false}
+{"text": "El aire es h20?", "shape": ["complete", "one"], "compatible": false, "expected": false}

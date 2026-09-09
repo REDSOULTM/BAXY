@@ -1,0 +1,5 @@
+n=3 published=3 other=0
+
+001	t1	published_final	Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio	¿Cuál es el nombre exacto del archivo que debe ser borrado?
+002	t2	published_final	cancelar	¿Debería realmente borrar el archivo C03-Prueba-Respuesta-20260906.txt del escritorio?
+003	t3	published_final	what is the capital of Peru	The capital of Peru is Lima.

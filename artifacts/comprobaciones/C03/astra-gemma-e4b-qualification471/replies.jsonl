@@ -1,0 +1,8 @@
+{"id": "actual437-t7", "variant": "baseline", "seed": 0, "thinking": false, "answer": "Tengo guardado el nombre Jordan.", "attempts": 1, "seconds": 0.828}
+{"id": "redacted-en", "variant": "baseline", "seed": 0, "thinking": false, "answer": "The private memory stores a secret value.", "attempts": 1, "seconds": 0.328}
+{"id": "enable-es", "variant": "confirmation", "seed": 0, "thinking": false, "answer": "Marta, hay una acción pendiente para activar la memoria local privada. ¿Quieres confirmar o cancelar?", "attempts": 1, "seconds": 0.609}
+{"id": "export-es", "variant": "confirmation", "seed": 0, "thinking": false, "answer": "¿Quieres confirmar o cancelar la exportación de tus recuerdos guardados a la carpeta Documentos/BAXY?", "attempts": 1, "seconds": 0.594}
+{"id": "actual437-t7", "variant": "baseline", "seed": 0, "thinking": true, "answer": "El nombre guardado en tu memoria privada es Jordan.", "attempts": 1, "seconds": 8.391}
+{"id": "redacted-en", "variant": "baseline", "seed": 0, "thinking": true, "answer": "I saw a record labeled \"secret,\" but the value was redacted.", "attempts": 3, "seconds": 23.156}
+{"id": "enable-es", "variant": "confirmation", "seed": 0, "thinking": true, "answer": "¿Quieres que confirme o cancele la activación de tu memoria local privada? Puedes elegir entre confirmar o cancelar.", "attempts": 1, "seconds": 10.109}
+{"id": "export-es", "variant": "confirmation", "seed": 0, "thinking": true, "answer": "Para exportar tus recuerdos de tu memoria privada local a la carpeta Documents/BAXY, por motivos de privacidad, ¿quieres confirmar o cancelar?", "attempts": 1, "seconds": 11.531}

@@ -569,20 +569,6 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["injected"] = FieldCompositionInjection.Resolve()
                 != FieldCompositionInjectionMode.None,
         });
-        Publish(new JsonObject
-        {
-            ["type"] = "activity",
-            ["entry"] = new JsonObject
-            {
-                ["id"] = $"native-{Interlocked.Increment(ref _activitySequence)}",
-                ["src"] = "SYSTEM",
-                ["msg"] = "composition_failed",
-                ["ts"] = DateTimeOffset.Now.ToString(
-                    "HH:mm:ss",
-                    CultureInfo.InvariantCulture),
-                ["route"] = route,
-            },
-        });
     }
 
     internal static string NormalizeActivitySource(string? source) => source switch
@@ -793,6 +779,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         if (eventArgs.PropertyName is nameof(MainWindowViewModel.IsBusy)
+            or nameof(MainWindowViewModel.HasCompositionError)
+            or nameof(MainWindowViewModel.PendingModelMessageCount)
             or nameof(MainWindowViewModel.IsListening)
             or nameof(MainWindowViewModel.IsVoiceSpeaking)
             or nameof(MainWindowViewModel.StatusDescription))
@@ -911,6 +899,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private string CurrentConversationState()
     {
+        if (_viewModel.HasCompositionError)
+        {
+            return "error";
+        }
+
         if (_viewModel.IsVoiceSpeaking)
         {
             return "speaking";
@@ -922,7 +915,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return "listening";
         }
 
-        return _viewModel.IsBusy ? "thinking" : "idle";
+        return _viewModel.IsBusy || _viewModel.PendingModelMessageCount > 0
+            ? "thinking" : "idle";
     }
 
     private void PostActivity(string source, string text)

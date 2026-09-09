@@ -1,0 +1,64 @@
+FFF.                                                                     [100%]
+================================== FAILURES ===================================
+_ test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader[Explain encryption, pero en simple] _
+
+text = 'Explain encryption, pero en simple'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple",
+        "Hey, buenas",
+        "Dime la hora, please, en spanglish",
+        "responde en spanglish: qu� es el cifrado",
+    ])
+    def test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader(
+        text: str,
+    ) -> None:
+>       assert mind_main._decisive_request_language(text) == "mixed"
+E       AssertionError: assert None == 'mixed'
+E        +  where None = <function _decisive_request_language at 0x0000021817209260>('Explain encryption, pero en simple')
+E        +    where <function _decisive_request_language at 0x0000021817209260> = mind_main._decisive_request_language
+
+tests\test_turn_policy.py:106: AssertionError
+_ test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader[Hey, buenas] _
+
+text = 'Hey, buenas'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple",
+        "Hey, buenas",
+        "Dime la hora, please, en spanglish",
+        "responde en spanglish: qu� es el cifrado",
+    ])
+    def test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader(
+        text: str,
+    ) -> None:
+>       assert mind_main._decisive_request_language(text) == "mixed"
+E       AssertionError: assert None == 'mixed'
+E        +  where None = <function _decisive_request_language at 0x0000021817209260>('Hey, buenas')
+E        +    where <function _decisive_request_language at 0x0000021817209260> = mind_main._decisive_request_language
+
+tests\test_turn_policy.py:106: AssertionError
+_ test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader[Dime la hora, please, en spanglish] _
+
+text = 'Dime la hora, please, en spanglish'
+
+    @pytest.mark.parametrize("text", [
+        "Explain encryption, pero en simple",
+        "Hey, buenas",
+        "Dime la hora, please, en spanglish",
+        "responde en spanglish: qu� es el cifrado",
+    ])
+    def test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader(
+        text: str,
+    ) -> None:
+>       assert mind_main._decisive_request_language(text) == "mixed"
+E       AssertionError: assert None == 'mixed'
+E        +  where None = <function _decisive_request_language at 0x0000021817209260>('Dime la hora, please, en spanglish')
+E        +    where <function _decisive_request_language at 0x0000021817209260> = mind_main._decisive_request_language
+
+tests\test_turn_policy.py:106: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader[Explain encryption, pero en simple]
+FAILED tests/test_turn_policy.py::test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader[Hey, buenas]
+FAILED tests/test_turn_policy.py::test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reader[Dime la hora, please, en spanglish]
+3 failed, 1 passed, 834 deselected in 3.55s

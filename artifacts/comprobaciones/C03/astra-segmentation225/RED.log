@@ -1,0 +1,40 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_______ test_barge_energy_threshold_does_not_split_an_active_utterance ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000208109EA660>
+
+    def test_barge_energy_threshold_does_not_split_an_active_utterance(monkeypatch):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        amplitudes = [0.0] * 8 + [0.02] * 3 + [0.001] * 24 + [0.02] * 3 + [0.0] * 32
+        engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 30 + [0.0] * 32)  # noqa: SLF001
+        stop = threading.Event()
+    
+        class Stream(_FiniteInputStream):
+            def read(self, samples):
+                frame, overflow = super().read(samples)
+                frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
+                return frame, overflow
+    
+        stream = Stream(stop, len(amplitudes))
+        requests = queue.Queue()
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
+        monkeypatch.setattr(engine, "cancel_speech", lambda: None)
+        monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+            )
+>           assert requests.qsize() == 1
+E           assert 2 == 1
+E            +  where 2 = qsize()
+E            +    where qsize = <queue.Queue object at 0x00000208109EA0F0>.qsize
+
+tests\test_mind_voice_runtime.py:2094: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_barge_energy_threshold_does_not_split_an_active_utterance
+1 failed, 94 deselected in 0.81s

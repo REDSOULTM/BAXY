@@ -1,0 +1,174 @@
+[
+  {
+    "turnId": "t1",
+    "caseId": "98c059da76bf5e7c9848d4a9ce59c003bdf10f8db9e697a2f3e915e898bc18ba",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t2",
+    "caseId": "0da72197e898ebe1814471a76048ed137a089f595c1e7038f2b70e98645e7652",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t3",
+    "caseId": "002054cfe5d3304f488e1f5f18b0ccde054d0f45f0ea292169f136b564bec307",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t4",
+    "caseId": "c1462d73e8235964a0ee3211585afbc4e44375a76b0810aa350140d450cd8b29",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t5",
+    "caseId": "c773877cafeef7aa4dc25eb6e61efc90a6eccc7c5426490eccf970b92f80cd5d",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t6",
+    "caseId": "93617357913a0ea6d4e872cd678164debc36fcef08da79daedb3e5d75c0cfee1",
+    "verdict": "APROBADO",
+    "reason": "Explica la función principal de Steam de forma útil. Llamar aplicación a Workshop es una imprecisión secundaria anotada; no se exige exhaustividad técnica.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t7",
+    "caseId": "fb76695707f5c912d07bcec0a43b24bec5ac354f27059113ceaff56b2131a8b1",
+    "verdict": "APROBADO",
+    "reason": "Hora17:12 observada y conservada. La regresión capturada17:04 también está fijada con pruebas de frontera.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t8",
+    "caseId": "62f9c6512803bdae2964f2a4ebc1a1ade6c70fc92c7a21690f42cd13130a241e",
+    "verdict": "NO APROBADO",
+    "reason": "El modelo eligió system.time, pero domain_grounding retiró la lectura y produjo una aclaración innecesaria. Sigue fallando.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t9",
+    "caseId": "482bbb9128050f734a2e44f15c0bb1066848c6b18444a90c771061c030ff2534",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t10",
+    "caseId": "19d586f4f40fcc654e5d199954f278852efb32b7c1a309e087877617d9241985",
+    "verdict": "APROBADO",
+    "reason": "Identifica RTX3060 desde adapters de scope gpu_identity verificado, no desde el nombre del CPU.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t11",
+    "caseId": "b5a155050f4f58891710cc0b02043f466897e297259a9a064f126157ce8dc126",
+    "verdict": "APROBADO",
+    "reason": "Reconoce que no subirá el volumen. Mezcla breve entendible; sin efecto propuesto.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t12",
+    "caseId": "a05566639e402d487490acfcad2cc80e5233541d507818dd76d51eed9605372d",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t13",
+    "caseId": "16485ae7910a5e59f87a8233ac50e941375f07e8f96330c4b42b90fe5e3f4618",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t14",
+    "caseId": "acff43c4b843b390b60c3f56daf2f02a187cc4b0ccd383a5b8886ba133f2bbd1",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t15",
+    "caseId": "a59b4669cbf4ce8033348da3f360a6572fc986a1da03f725a9b6be545f8f786f",
+    "verdict": "APROBADO",
+    "reason": "Aceptada con observación: solicita una cantidad que no se especificó. Preguntar además la dirección es redundante, porque up ya la indica; no se convierte esa torpeza aislada en un bloqueo.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t16",
+    "caseId": "80d5cfc93603cfedda1c26aeda30ef97586041b005af6f6f09c1a45c14d45189",
+    "verdict": "APROBADO",
+    "reason": "Responde de manera útil y fiel a lo pedido.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t17",
+    "caseId": "950bf158bb9ed1512d7d1bbbeca87078b7a47901077c5ea5b8547a1fe348abb9",
+    "verdict": "NO APROBADO",
+    "reason": "Sigue rechazando la referencia al volumen. El selector propone ajuste relativo y el contador adicional interpreta varios efectos. No se completó la petición.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t18",
+    "caseId": "f7390173d73af32343ebbdb2be8eee94ed90c4ff7add6fc60416af0ae9313b82",
+    "verdict": "APROBADO",
+    "reason": "Ahora responde quién es BAXY, conservando la pregunta después del saludo.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t19",
+    "caseId": "6cb550776b93b4cef257099d46dda820f576d6455d7cb5fd1c4dca28093fa69d",
+    "verdict": "APROBADO",
+    "reason": "Aclaración aceptable: dispositivo de audio puede referirse a salida o micrófono. No se penaliza una ambigüedad razonable.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t20",
+    "caseId": "adcfc708d00cf2d8af02b81dc2eb1c94400363dc0241de12f6ea8cc897da012c",
+    "verdict": "NO APROBADO",
+    "reason": "Ya no arrastra la aclaración anterior, pero SIEMPRE y la pregunta posterior no expresan claramente que respetará la restricción. Sigue sin aprobar.",
+    "freshAcceptance": false,
+    "review": "manual-practical-owner-rubric"
+  },
+  {
+    "turnId": "t21",
+    "verdict": "APROBADO",
+    "reason": "Restauración100 aplicada y verificada (t21); lectura independiente100/no silenciado (t22).",
+    "freshAcceptance": false
+  },
+  {
+    "turnId": "t22",
+    "verdict": "APROBADO",
+    "reason": "Restauración100 aplicada y verificada (t21); lectura independiente100/no silenciado (t22).",
+    "freshAcceptance": false
+  }
+]

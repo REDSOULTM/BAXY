@@ -1,0 +1,160 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Haz eso",
+    "terminal": "published_final",
+    "final": "¿Qué acción específica deseas realizar ahora?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "El proceso se canceló debido a que se aclaró.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 47,
+        "draft_sha256": "24b22de465abb30e9af4b347a494ffebeb5713d9ceb868185d986174da4fe8d6",
+        "payload": {
+          "outcome": "completed",
+          "cause": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "El proceso se canceló debido a que se aclaró."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 21,
+        "draft_sha256": "ad500b0c49a76ec9484fa973766c85b8d5ee77b6e3c3ded56da1fa9d23d080cd",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hola, ¿cómo estás?"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "open that",
+    "terminal": "published_final",
+    "final": "Which file or window should I open?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "clarification",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "c0e5019b8ac815d4af095e7b35dba6a5db73f36d043bf0bb36298ddd2f4e69cc",
+        "payload": {
+          "cause": "unclear request"
+        },
+        "situation": "{\"kind\":\"clarification\",\"polarity\":\"pending\",\"cause\":\"ambiguous_request\"}",
+        "draft": "Which file or window should I open?"
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "cancel that",
+    "terminal": "published_final",
+    "final": "The cancellation has been completed.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 36,
+        "draft_sha256": "71e7296247f612c04bf7b19cd21442b7a7679ffb7aa6abf08c134a6ae874014a",
+        "payload": {
+          "outcome": "completed",
+          "cause": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "The cancellation has been completed."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "What is fourteen times six?",
+    "terminal": "published_final",
+    "final": "Fourteen times six is 84.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

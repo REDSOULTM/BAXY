@@ -20,7 +20,7 @@ dice tu goal.
 | Cambiar un **efecto real** sobre Windows | `src/Baxy.Providers.Windows/<Audio\|Applications\|Filesystem\|Capture\|Network\|Windows\|…>/` | `tests/Baxy.Providers.Windows.Tests` |
 | Cambiar **lo que lee la persona** | Nunca con texto fijo en la App. Ver invariante 5: lo formula el modelo, en `src/baxy_mind/` | `src/Baxy.App/` sólo transporta |
 | Cambiar la **GUI** | `src/Baxy.FieldUi/src/` | `src/Baxy.FieldUi/dist/` es un sello histórico (ADR-0008): **no se regenera de paso** |
-| Cambiar **voz / wake / STT / TTS** | `src/baxy_mind/asr_fusion.py`, `phonetic_es.py`, `scripts/setup_mind_voice.ps1` | `documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md` |
+| Cambiar **voz / wake / STT / TTS** | `src/baxy_mind/voice.py`; AEC en `webrtc_aec.py` (paquete: `scripts/build_webrtc_runtime.py`), captura en `voice_capture.py`, loopback/ducking en `voice_aec.py`, salida en `voice_output.py`/`piper_tts.py`; `scripts/setup_mind_voice.ps1`; extensión ASR y receta en `runtime_wheels/README.md` y `scripts/build_sherpa_runtime.py` | `documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md` |
 | Cambiar **instalación o empaquetado** | `src/Baxy.Setup/` | `scripts/build_product.ps1`, `scripts/package_product.ps1`, `tests/Baxy.Setup.Tests` |
 | Cambiar la **evidencia de un turno** | `src/baxy_mind/turn_evidence*.py` | `tests/data/turn_evidence_public_holdout.v1.jsonl` (3 MB — nunca entero) |
 

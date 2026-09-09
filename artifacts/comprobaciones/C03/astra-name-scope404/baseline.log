@@ -1,0 +1,169 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\Baxy.App.csproj (en 185 ms).
+  1 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead("Me llamo Lina.","¿Cómo me llamo?",True) [6 s]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(decisions.Length, Is.EqualTo(decisionsBefore + 1))
+  Expected: 2
+  But was:  1
+
+  2)   Assert.That(result, Is.EqualTo(reply))
+  Expected string length 15 but was 93. Strings differ at index 0.
+  Expected: "Te llamas Lina."
+  But was:  "{"kind":"failure","polarity":"failure","cause":"memory_disabl..."
+  -----------^
+
+  3)   The current human name stays in conversation; no persistent read or write.
+Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before))
+  Expected: 2367
+  But was:  4051
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 930
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 930
+   at Baxy.Integration.Tests.MindShellEndToEndTests.CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead(String declaration, String recall, Boolean usesConversation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 132
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 144
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+2)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 145
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+3)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 146
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+
+  Con error CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead("My name is Priya.","What is my name?",True) [4 s]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(decisions.Length, Is.EqualTo(decisionsBefore + 1))
+  Expected: 2
+  But was:  1
+
+  2)   Assert.That(result, Is.EqualTo(reply))
+  Expected string length 19 but was 93. Strings differ at index 0.
+  Expected: "Your name is Priya."
+  But was:  "{"kind":"failure","polarity":"failure","cause":"memory_disabl..."
+  -----------^
+
+  3)   The current human name stays in conversation; no persistent read or write.
+Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before))
+  Expected: 2341
+  But was:  4025
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 930
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 930
+   at Baxy.Integration.Tests.MindShellEndToEndTests.CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead(String declaration, String recall, Boolean usesConversation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 132
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 144
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+2)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 145
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+3)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 146
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+
+  Con error CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead("Me llamo Renata.","¿Cómo me llamo?",True) [4 s]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(decisions.Length, Is.EqualTo(decisionsBefore + 1))
+  Expected: 2
+  But was:  1
+
+  2)   Assert.That(result, Is.EqualTo(reply))
+  Expected string length 15 but was 93. Strings differ at index 0.
+  Expected: "Te llamas Lina."
+  But was:  "{"kind":"failure","polarity":"failure","cause":"memory_disabl..."
+  -----------^
+
+  3)   The current human name stays in conversation; no persistent read or write.
+Assert.That(new FileInfo(journalPath).Length, Is.EqualTo(before))
+  Expected: 2352
+  But was:  4036
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 930
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 930
+   at Baxy.Integration.Tests.MindShellEndToEndTests.CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead(String declaration, String recall, Boolean usesConversation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 132
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 144
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+2)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 145
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+3)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_1.<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__3() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 146
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass7_0.<<CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 142
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+
+
+Con error! - Con error:     3, Superado:     3, Omitido:     0, Total:     6, Duración: 27 s - Baxy.Integration.Tests.dll (net10.0)

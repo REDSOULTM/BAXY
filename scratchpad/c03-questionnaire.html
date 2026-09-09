@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BAXY · Revisión de mensajes históricos</title>
+<style>
+:root{color-scheme:light dark;font-family:system-ui,sans-serif;background:light-dark(#f4f5f7,#15181d);color:light-dark(#202936,#e8edf5)}
+*{box-sizing:border-box}body{margin:0}main{max-width:1160px;margin:auto;padding:32px 24px 70px}h1{font-size:28px;margin:5px 0 12px}h2{font-size:17px}p{line-height:1.5}.eyebrow{font-size:12px;letter-spacing:.12em;color:light-dark(#53677b,#a2b6ca)}.intro{max-width:850px;margin:0 0 22px}.muted{color:light-dark(#617082,#abb9c8);font-size:13px}.toolbar{position:sticky;top:0;z-index:2;background:light-dark(#f4f5f7f5,#15181df5);padding:14px 0;border-bottom:1px solid light-dark(#dce1e7,#39414c);backdrop-filter:blur(8px)}.controls,.statusline,.paging{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.statusline{justify-content:space-between;margin-top:12px;font-size:13px}input,select,textarea,button,.download{font:inherit;border:1px solid light-dark(#bdc8d5,#526171);border-radius:8px;background:light-dark(white,#222934);color:inherit;padding:9px 12px}button,.download{cursor:pointer;text-decoration:none}button:hover,.download:hover{border-color:light-dark(#215a8e,#8ec5f8)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #6ea8dc;outline-offset:2px}button:disabled{opacity:.45;cursor:default}input[type=search]{flex:1;min-width:220px}#save-status{font-weight:600}#save-status.error{color:light-dark(#ac251e,#ff9e96)}.record{background:light-dark(#fff,#202630);border:1px solid light-dark(#dbe1e9,#3b4551);border-radius:12px;padding:20px;margin:14px 0}.record-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.case-id{font-weight:700;font-size:13px}.message{white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px;line-height:1.55;margin:14px 0}.full-message{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere}.questions{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:18px 0 12px}.question-title{font-weight:650;font-size:14px;display:block;margin-bottom:8px}.choices{display:flex;gap:6px}.choices button{min-width:76px}.choices .yes[aria-pressed=true]{background:#176044;color:white;border-color:#176044}.choices .no[aria-pressed=true]{background:#963c36;color:white;border-color:#963c36}.choices .empty[aria-pressed=true]{background:light-dark(#e9eef4,#465262)}.note-label{font-size:13px;display:block;margin-top:14px}.note{width:100%;min-height:44px;margin-top:6px;resize:vertical}details{margin-top:12px}summary{cursor:pointer;font-size:13px;color:light-dark(#315b80,#9fc8ec)}.sources{list-style:none;padding:0;font-size:12px;overflow-wrap:anywhere}.sources li{padding:8px 0;border-bottom:1px solid light-dark(#eef0f4,#35404e)}.source-time{display:block;font-weight:600;margin-bottom:4px}.paging{justify-content:space-between;margin:20px 0}.paging button{min-width:120px}.empty-state{text-align:center;padding:60px 20px}#load-error{padding:20px;border:1px solid #c95549;border-radius:10px;white-space:pre-wrap}.qa{background:#ffeeba;color:#503600;padding:10px;border-radius:8px;margin:10px 0}.footnote{max-width:900px;margin-top:24px;font-size:13px;line-height:1.5}a{color:light-dark(#245e93,#a7d2fa)}
+@media(max-width:640px){main{padding:20px 12px}.questions{grid-template-columns:1fr;gap:15px}.record{padding:16px}.controls>*{width:100%}h1{font-size:24px}.paging button{min-width:0}}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">BAXY · REVISIÓN DEL DUEÑO</div>
+<h1>¿Cuáles mensajes son tuyos?</h1>
+<p class="intro">Marca cada pregunta por separado: <strong>✓ Sí</strong>, <strong>✕ No</strong> o <strong>— Sin marcar</strong> si no recuerdas. «BAXY debería responderlo bien» puede incluir actuar, explicar, preguntar lo que falta o dar una negativa verdadera.</p>
+<div id="qa-banner" class="qa" hidden>PRUEBA TÉCNICA · Estas respuestas no son una revisión del dueño.</div>
+<div id="load-error" hidden></div>
+<section id="app" hidden>
+<div class="toolbar">
+<div class="controls">
+<input id="search" type="search" placeholder="Buscar un mensaje, origen o número…" aria-label="Buscar mensajes">
+<select id="filter" aria-label="Filtrar revisión"><option value="all">Todos los mensajes</option><option value="pending">Falta alguna marca</option><option value="authorship">Falta «lo envié yo»</option><option value="capability">Falta «debería responderlo»</option><option value="marked">Con alguna marca</option></select>
+<button id="export" type="button">Descargar mis marcas</button>
+</div>
+<div class="statusline"><span id="counts"></span><span id="save-status" role="status">Cargando…</span><button id="retry" hidden>Reintentar guardado</button></div>
+</div>
+<div class="paging"><button id="prev-top">← Anteriores</button><span id="page-top"></span><button id="next-top">Siguientes →</button></div>
+<div id="records"></div>
+<div class="paging"><button id="prev-bottom">← Anteriores</button><span id="page-bottom"></span><button id="next-bottom">Siguientes →</button></div>
+<p class="footnote">Se conserva el texto recuperado sin traducirlo. Un mismo texto puede aparecer en varios registros: «lo envié yo» confirma que recuerdas haberlo enviado, sin atribuirte automáticamente todas sus apariciones. Estas marcas no acreditan por sí solas que un caso sea fresco para la prueba final.</p>
+<p class="muted"><a href="/data.json" download="c03-mensajes-historicos.json">Descargar todos los mensajes y sus referencias</a> · <a href="/messages.txt" download="c03-mensajes-historicos.txt">Versión completa en texto</a></p>
+</section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  let dataset, answers = {}, page = 0, pending = {}, saving = false, cacheKey;
+  const pageSize = 25;
+  const emptyAnswer = () => ({authorship:null, capability:null, note:''});
+  const answerFor = id => answers[id] || emptyAnswer();
+  function cachePending(){try{localStorage.setItem(cacheKey,JSON.stringify(pending));}catch(_){}}
+  function saveStatus(error=false){const n=Object.keys(pending).length;$('save-status').textContent=error?'Hay marcas sin guardar':n?'Guardando…':'Guardado en este PC';$('save-status').classList.toggle('error',error);$('retry').hidden=!error;}
+  async function drain(){
+    if(saving)return;saving=true;
+    try{
+      while(Object.keys(pending).length){
+        const id=Object.keys(pending)[0],patch={...pending[id]},signature=JSON.stringify(patch);
+        const response=await fetch('/review',{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':dataset.reviewToken},body:JSON.stringify({datasetId:dataset.datasetId,id,patch})});
+        if(!response.ok)throw new Error('No se pudo guardar');
+        await response.json();
+        if(JSON.stringify(pending[id])===signature)delete pending[id];
+        cachePending();
+      }
+      saveStatus();
+    }catch(_){saveStatus(true);}finally{saving=false;}
+  }
+  function setAnswer(id,key,value){
+    answers[id]={...answerFor(id),[key]:value};
+    pending[id]={...(pending[id]||{}),[key]:value};cachePending();saveStatus();updateCounts();void drain();
+  }
+  function updateCounts(){
+    let own=0,expected=0;
+    for(const row of dataset.records){const a=answerFor(row.id);if(a.authorship!==null)own++;if(a.capability!==null)expected++;}
+    $('counts').textContent=`${dataset.records.length} mensajes · Autoría: ${own} marcados · Respuesta esperada: ${expected} marcados`;
+  }
+  function filtered(){
+    const query=$('search').value.trim().toLocaleLowerCase(),filter=$('filter').value;
+    return dataset.records.filter(row=>{
+      const a=answerFor(row.id);
+      if(filter==='pending'&&a.authorship!==null&&a.capability!==null)return false;
+      if(filter==='authorship'&&a.authorship!==null)return false;
+      if(filter==='capability'&&a.capability!==null)return false;
+      if(filter==='marked'&&a.authorship===null&&a.capability===null)return false;
+      return !query||row.searchText.includes(query);
+    });
+  }
+  function el(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
+  function choices(row,key,title){
+    const group=el('div');group.append(el('span','question-title',title));
+    const buttons=el('div','choices');buttons.setAttribute('role','group');buttons.setAttribute('aria-label',`${title} · ${row.displayId}`);
+    for(const [label,value,className] of [['✓ Sí',true,'yes'],['✕ No',false,'no'],['—',null,'empty']]){
+      const button=el('button',className,label);button.type='button';button.setAttribute('aria-label',`${label==='—'?'Sin marcar':label} · ${title} · ${row.displayId}`);
+      button.setAttribute('aria-pressed',String(answerFor(row.id)[key]===value));
+      button.addEventListener('click',()=>{setAnswer(row.id,key,value);for(const peer of buttons.children)peer.setAttribute('aria-pressed',String(peer===button));});
+      buttons.append(button);
+    }group.append(buttons);return group;
+  }
+  function render(){
+    const rows=filtered(),pages=Math.max(1,Math.ceil(rows.length/pageSize));page=Math.min(page,pages-1);
+    const first=page*pageSize,last=Math.min(first+pageSize,rows.length);
+    for(const pos of ['top','bottom']){$(`page-${pos}`).textContent=rows.length?`${first+1}–${last} de ${rows.length} · Página ${page+1}/${pages}`:'Sin resultados';$(`prev-${pos}`).disabled=page===0;$(`next-${pos}`).disabled=page>=pages-1;}
+    const container=$('records');container.replaceChildren();
+    if(!rows.length){container.append(el('p','empty-state','No hay mensajes con este filtro.'));return;}
+    for(const row of rows.slice(first,last)){
+      const card=el('article','record');card.dataset.id=row.id;
+      const head=el('div','record-head');head.append(el('span','case-id',row.displayId),el('span','muted',`${row.sources.length} registros de origen`));card.append(head);
+      if(row.text.length>700){card.append(el('p','message',row.text.slice(0,400)+'…'));const full=el('details');full.append(el('summary','',`Ver texto completo (${row.text.length} caracteres)`),el('pre','full-message',row.text));card.append(full);}else card.append(el('p','message',row.text));
+      const questions=el('div','questions');questions.append(choices(row,'authorship','Lo envié yo'),choices(row,'capability','BAXY debería responderlo bien'));card.append(questions);
+      const noteLabel=el('label','note-label','Comentario opcional');const note=el('textarea','note');note.rows=1;note.maxLength=2000;note.value=answerFor(row.id).note||'';note.setAttribute('aria-label',`Comentario · ${row.displayId}`);note.addEventListener('input',()=>setAnswer(row.id,'note',note.value));noteLabel.append(note);card.append(noteLabel);
+      const details=el('details');details.append(el('summary','','Ver referencias de origen'));
+      const sources=el('ul','sources');for(const source of row.sources){const item=el('li');item.append(el('span','source-time',source.timestamp||'Fecha no disponible'),el('span','',`${source.source||'Origen no disponible'} · ${source.source_location||''}`));sources.append(item);}details.append(sources);card.append(details);
+      container.append(card);
+    }
+  }
+  function go(delta){page+=delta;render();window.scrollTo({top:0,behavior:'smooth'});}
+  for(const pos of ['top','bottom']){$(`prev-${pos}`).addEventListener('click',()=>go(-1));$(`next-${pos}`).addEventListener('click',()=>go(1));}
+  $('search').addEventListener('input',()=>{page=0;render();});$('filter').addEventListener('change',()=>{page=0;render();});$('retry').addEventListener('click',()=>void drain());
+  $('export').addEventListener('click',()=>{
+    const report={schema:'baxy.owner-questionnaire.v1',datasetId:dataset.datasetId,exportedAt:new Date().toISOString(),pendingSave:Object.keys(pending).length,answers};
+    const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=el('a');link.href=url;link.download='c03-mis-marcas.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+  async function boot(){
+    const [dataResponse,reviewResponse]=await Promise.all([fetch('/data.json'),fetch('/review')]);if(!dataResponse.ok||!reviewResponse.ok)throw new Error('No se pudo abrir el cuestionario.');
+    dataset=await dataResponse.json();const review=await reviewResponse.json();if(review.datasetId!==dataset.datasetId)throw new Error('La revisión no corresponde a estos mensajes.');answers=review.answers;
+    cacheKey='baxy-review-pending-'+dataset.datasetId;
+    try{pending=JSON.parse(localStorage.getItem(cacheKey)||'{}');}catch(_){pending={};}
+    const ids=new Set(dataset.records.map(row=>row.id));for(const [id,patch] of Object.entries(pending)){if(!ids.has(id)){delete pending[id];continue;}answers[id]={...answerFor(id),...patch};}
+    for(const row of dataset.records)row.searchText=(row.displayId+' '+row.text+' '+row.sources.map(s=>s.source||'').join(' ')).toLocaleLowerCase();
+    $('qa-banner').hidden=!dataset.qa;$('app').hidden=false;updateCounts();render();saveStatus();void drain();
+  }
+  boot().catch(error=>{$('load-error').hidden=false;$('load-error').textContent=error.message;});
+})();
+</script>
+</body></html>

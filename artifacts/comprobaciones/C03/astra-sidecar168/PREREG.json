@@ -1,0 +1,16 @@
+{
+  "method": "Full original JSONL sidecar164, actual catalog169 and same observed App environment/Qwen override. Four consumed published166 outputs. Greeting then wake startup as App; wait10s after start and after each remaining speak. Physical capture and exact volume restore. Only diagnostic addition logs output last_error/time on each speaking state (not per frame; calls original unchanged). No playback/DSP/VAD/OutputStream wrappers. Determine barge_in versus TTS failure; not acceptance.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "sourceFiles": {
+    "src/baxy_mind/__main__.py": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/voice.py": "7e94dd63b24d97dcd805e2d462339c2ad157b2cf0a9fa6eee2928e2e086b35d4",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  }
+}

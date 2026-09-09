@@ -1,0 +1,16 @@
+[
+  {
+    "filename": "pywebrtc_audio-0.2.0-cp312-cp312-win_amd64.whl",
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\webrtc174\\pywebrtc_audio-0.2.0-cp312-cp312-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/33/3e/1b9dee1fa750e744a128289c9d8fa991fffc8a2ff89b3285b238b275eb3c/pywebrtc_audio-0.2.0-cp312-cp312-win_amd64.whl",
+    "bytes": 513391,
+    "sha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b"
+  },
+  {
+    "filename": "pywebrtc_audio-0.2.0.tar.gz",
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\webrtc174\\pywebrtc_audio-0.2.0.tar.gz",
+    "url": "https://files.pythonhosted.org/packages/d8/b0/8d9e93083ac412cc758003d5e216d44f69b50619cdd0cfc7897e576eb90c/pywebrtc_audio-0.2.0.tar.gz",
+    "bytes": 1748548,
+    "sha256": "cdc47c063439b033bdd6110d2e1119fd6e36c6e007ed824bc369c9a5e3cb307a"
+  }
+]

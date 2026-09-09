@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-08T16:43:57.725851+00:00",
+  "purpose": "454 identified post-stable GDN normalization correction28068 for qwen35, CUDA fixes and checkpoint eviction28302. Download the exact observed official nightly b10865 side by side. Do not promote runtime. Concurrent453 inference durations are diagnostic, not clean benchmarks, because audit/download may overlap.",
+  "target": "D:\\BAXYRuntime\\assets\\llama-b10865-cuda12.4",
+  "assets": [
+    {
+      "name": "llama-b10865-bin-win-cuda-12.4-x64.zip",
+      "size": 254078511,
+      "digest": "sha256:8dcefa3736a411443b2895ff8be53973bc41d196b290c73b6c01491e4f863df1",
+      "browser_download_url": "https://github.com/ggml-org/llama.cpp/releases/download/b10865/llama-b10865-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "name": "cudart-llama-bin-win-cuda-12.4-x64.zip",
+      "size": 391443627,
+      "digest": "sha256:8c79a9b226de4b3cacfd1f83d24f962d0773be79f1e7b75c6af4ded7e32ae1d6",
+      "browser_download_url": "https://github.com/ggml-org/llama.cpp/releases/download/b10865/cudart-llama-bin-win-cuda-12.4-x64.zip"
+    }
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

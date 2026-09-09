@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-08T04:16:46.494694+00:00",
+  "method": "py main.py --conductor, default registered2507, actual source321/324/326/330/333/336 and current Release; full shared product admission/classification/chat/publication. Six exact human requests from owner264 transcript282 indices99,101,103,105,107,109 in their original order, one continuous session. Old assistant failures are not injected; current product generates replies. Dedicated private profile. No classifier/model injection or sampling override. The inherited human request explicitly asks to remember the name; any persistence stays in a dedicated private test profile, never owner data. This is development replay, not fresh acceptance. Conductor is not graphical UI or physical voice evidence.",
+  "profile_inheritance": "Same isolation as319/322: dedicated direct child of LOCALAPPDATA/BAXY. Compared with334, only source336 connects an explicitly requested missing name to its subsequent declared value through the protected memory channel; the new profile remains memory-disabled by default and no activation is injected; registered model/configuration unchanged.",
+  "criteria": "Honor the explicit request to remember a name, preserve Emmanuel as the person supplied it, distinguish BAXY from the person on the final two questions, and never claim a memory write without verified persistence. The fresh who-am-I Windows account criterion from314 is not the criterion for this context. Read every terminal/progress response; do not equate publication with correctness.",
+  "cases": [
+    "Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte",
+    "mhhhhhh amigo deberias poder",
+    "me llamo emmanuel, dime hola emmanuel",
+    "Yo soy el",
+    "quien soy",
+    "nono, te pregunte quien soy yo, no tu, dime quien eres tu y quien soy yo"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "sources": {
+    "src/baxy_mind/__main__.py": "967cb8e3a5684cad3da62a9970c941cec8eacb41ee4444b03d94efea40c0c8d0",
+    "src/baxy_mind/request_reading.py": "89ed6e5c5c11a4da5eaefd93db3fe11291e41fd16e5db081064616fac376dea9",
+    "src/baxy_mind/effect_intent.py": "7219d1200cb8b46efb86664e2a28152c75f0d3a9a83aee6f5ad54f1ec496b773",
+    "src/baxy_mind/llm.py": "f1e93cd10d205c8f995845e845c1a0beb49d93c2ce348abbec2da7a94d28b98e",
+    "src/Baxy.App/MainWindowViewModel.cs": "23175656e71cae1a46ca823f781a05ccb0eb3e4dc6e9a8b621ebc862d0451f3d",
+    "src/Baxy.App/UserMessagePolicy.cs": "c49dd596dc8f55fbba8baa9755fc1163134f04da1ff6def19e998dddac78caaa",
+    "src/Baxy.App/MemoryTurnSession.cs": "d0552c9f12b6969aab2ed98409432ed3495dd0fc64333df8ed528de6c0b66297",
+    "src/Baxy.App/NaturalMemoryRequestParser.cs": "c2e562761acd03977d905030bf9f2e86e539f417ad558a22984ebd2b3070621d",
+    "src/Baxy.App/PrivateOperationNarration.cs": "ede7c6020de7d77fee1a4cdb8a67e191aadce1ca36fd798f83b32bf1787f4e96",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "ffb771157103e46d758ff84d0f81dacc1a552528e7e88c0fc23cf6281447c05e"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory-product337-private"
+}

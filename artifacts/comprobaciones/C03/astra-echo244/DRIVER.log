@@ -1,0 +1,2 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Physical243 and original182 exactly reproduced; frames 1317 cancellations [143]

@@ -1,0 +1,154 @@
+{
+  "wheelSha256": "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb",
+  "scriptSha256": "8cf61409b5d5d995aed4c91463b35fb484ad9d19c905ad3ac4b21dd890e7e19c",
+  "adapterSha256": "ce484df4630cb74fd8ca0b74ffdc3d80acd2ec9709028b54824343b89ab5edfd",
+  "criterion": "Exact float32 equality, every512sample block, both output views and raw echo guard. 11 frozen253 inputs plus physical254. No tolerance/gain/config change. No ASR rerun needed only if both inputs are exact.",
+  "cases": [
+    {
+      "id": "echo221",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice221-private\\tap221.npz",
+      "sourceSha256": "c6c6e6d8d07727731a749ecfa34b27c4e828e674062749539a4406c3fd789f3d",
+      "human": null,
+      "referenceText": null
+    },
+    {
+      "id": "echo232",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice232-private\\tap232.npz",
+      "sourceSha256": "f3f22d7ba30f8b44a0dd83661151164b11f9539b9d60b7639fad6dad930f8b74",
+      "human": null,
+      "referenceText": null
+    },
+    {
+      "id": "h0-near",
+      "human": 0,
+      "referenceText": "Se recomienda enf\u00e1ticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el \u00e1rea que visitan, dado que ello puede afectar sus planes de viaje.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1001146817223348054.wav",
+      "originalSha256": "861ceedc4d50fbe52fc89b6d0c0fa740b9cd6fa668388e754064847386af0faf",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    {
+      "id": "h0-raw",
+      "human": 0,
+      "referenceText": "Se recomienda enf\u00e1ticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el \u00e1rea que visitan, dado que ello puede afectar sus planes de viaje.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1001146817223348054.wav",
+      "originalSha256": "861ceedc4d50fbe52fc89b6d0c0fa740b9cd6fa668388e754064847386af0faf",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    {
+      "id": "h1-near",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentr\u00f3, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1008205615316519958.wav",
+      "originalSha256": "0576e73da35ef17b6ce6396d31b32830b7ab19cea98f9f5db68de3756dc3d4fc",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    {
+      "id": "h1-raw",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentr\u00f3, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\es_419-1008205615316519958.wav",
+      "originalSha256": "0576e73da35ef17b6ce6396d31b32830b7ab19cea98f9f5db68de3756dc3d4fc",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    {
+      "id": "h2-near",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-1003119935936341070.wav",
+      "originalSha256": "33aca50159ec2e3cbcc894eb26faa916d6badb1b49fb75994973561540a7f012",
+      "gain": 2.685755280268361,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    {
+      "id": "h2-raw",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-1003119935936341070.wav",
+      "originalSha256": "33aca50159ec2e3cbcc894eb26faa916d6badb1b49fb75994973561540a7f012",
+      "gain": 2.685755280268361,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    {
+      "id": "h3-near",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-10052240106321793346.wav",
+      "originalSha256": "7603cae3294309ef70d234180cefccc3b13865ee525262228a636069b9b62841",
+      "gain": 0.11946231772179287,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    {
+      "id": "h3-raw",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-raw-capture211-private\\raw.npz",
+      "sourceSha256": "e95f9531c8506d38c99df16d37561f609b6495fc6fe31de49673e60861915f6a",
+      "originalPath": "D:\\BAXYRuntime\\experiments\\voice\\fleurs195\\en_us-10052240106321793346.wav",
+      "originalSha256": "7603cae3294309ef70d234180cefccc3b13865ee525262228a636069b9b62841",
+      "gain": 0.11946231772179287,
+      "onset": 59109,
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    {
+      "id": "echo243",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice243-private\\tap243.npz",
+      "sourceSha256": "4f3641dd69e19259c37348660ba200c2aa47fdbc5d159a737f12de709c24e9d0",
+      "human": null
+    },
+    {
+      "id": "echo254",
+      "sourcePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\tap254.npz",
+      "sourceSha256": "53728aa6fe52ed00ba113f78cf82e5706a91961cc0d4b192bf75605b61c74436",
+      "human": null
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "terminals": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 1,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Memory saved successfully. No corrections made. Status confirmed as completed.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 2,
+      "useful": false,
+      "reason": "Internal metadata narration persists."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿De qué aplicación te refieres?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 3,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 4,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¡Hola Álvaro! ¿Cómo va tu día? 😎",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 5,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿De qué aplicación te refieres?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 6,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 7,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Álvaro.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 8,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "La memoria privada ha sido desactivada. El estado actual indica que está deshabilitada.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 9,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "21:24",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 10,
+      "useful": true,
+      "reason": "Useful grounded final; T9 disabled state has no unsupported PC observation; clock agrees with current provider result."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "No, no tengo memoria local. El estado actual indica que la memoria local está deshabilitada.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 11,
+      "useful": false,
+      "reason": "Denies having local memory while its existing store is merely disabled."
+    }
+  ]
+}

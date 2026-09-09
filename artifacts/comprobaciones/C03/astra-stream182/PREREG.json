@@ -1,0 +1,8 @@
+{
+  "method": "Same native149 and synthetic near-only/mix129. Stream exactly four128hops per512input; three zero warmup hops at init matches author padding; no percall padding/final normalization. Compare saved PCM179/180 bit-for-bit; verify raw echo guard pair delayed384samples independently by index, wrong-thread/closed/invalid-frame behavior. p99 per512 includes both models/FFT; no physical/UI/acceptance.",
+  "units": [
+    128,
+    512
+  ],
+  "sourceSha256": "245715cb0cf4163742323ac8d974153b257bcaeb89e4821b2462541d3ba8780e"
+}

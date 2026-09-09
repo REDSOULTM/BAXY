@@ -1,0 +1,11 @@
+n=9 published=2 other=7
+
+001	t1	composition_failed	¿Qué hora es?	composition_failed
+002	t2	composition_failed	Dime la hora y el estado del audio.	composition_failed
+003	t3	published_final	What time is it?	It is 07:38.
+004	t4	composition_failed	Tell me the time and the volume.	composition_failed
+005	t5	filtered	Dime la hora, please, en spanglish	
+006	t6	composition_failed	What time is it y cómo está el audio?	composition_failed
+007	t7	published_final	Hey, buenas	Hey, ¿qué tal? Bienvenido, ¿te gustaría un café?
+008	t8	composition_failed	Explain encryption, pero en simple	composition_failed
+009	t9	composition_failed	responde en spanglish: qué es una copia de seguridad	composition_failed

@@ -1,0 +1,16 @@
+{
+  "launcher": 103176,
+  "command": [
+    "py",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-private-profile419",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-private-product419-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-private-product419-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

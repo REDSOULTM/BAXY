@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-07T11:31:43.057717+00:00",
+  "method": "Source119 unchanged. Actual VoiceEngine/Piper and physical speakers, default mic+loopback privately captured. Same consumed English response in off-before, direct, off-after phases, one VoiceEngine with normal start/stop. No App/LLM/Core effects; transcripts only stored privately and never routed. Compare speaking duration and actual emitted barge_in events. Do not disable/change guards; mode difference is diagnostic isolation, not acceptance with voice off.",
+  "text": "The file read failed because the content is invalid UTF-8.",
+  "phases": [
+    "off-before",
+    "direct",
+    "off-after"
+  ],
+  "hypothesis": "PCM120 correct but physical121 incomplete: own echo may trigger barge-in or playback may fail independently. Observe before changing either.",
+  "heritage": "biblioteca/gemma4-agent/documentacion/01_arquitectura/design/barge_in.md:1-80, 2026-06-04 design-only, not measured solution. Current voice.py:2348-2360 cancels after3 voiced/non-echo frames; echo test samples delays at128frame steps.",
+  "sources": {
+    "src/baxy_mind/voice.py": "8ef5458467d91688705151152670f65ce7956cb3ebbe89c47c06f87501e04881",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e",
+    "src/baxy_mind/voice_aec.py": "400d9db8ef27b65711470f229c64a25531343a056965a774d2371ae73e07e166"
+  }
+}

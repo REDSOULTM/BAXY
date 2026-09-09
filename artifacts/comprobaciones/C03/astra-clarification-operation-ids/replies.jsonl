@@ -1,0 +1,6 @@
+{"stage": "current_clarifier", "id": "6035be9b29286fdcded5d2ec9cbc3495be921c7449d13fdfab08aa2f2cf3e141", "text": "baja el volumen", "answer": "¿Cuánto deseas bajar el volumen?", "error": null}
+{"stage": "current_clarifier", "id": "a59b4669cbf4ce8033348da3f360a6572fc986a1da03f725a9b6be545f8f786f", "text": "turn up the volume", "answer": "By how much should I increase the volume?", "error": null}
+{"stage": "current_clarifier", "id": "c6408d0b4d392f78b39df486c1e3fe799925dbfaa5f7d431fc2c736684e45c2f", "text": "sube el volumen", "answer": "¿Cuánto quieres aumentar el volumen?", "error": null}
+{"stage": "without_operation_ids", "id": "6035be9b29286fdcded5d2ec9cbc3495be921c7449d13fdfab08aa2f2cf3e141", "text": "baja el volumen", "answer": "¿Cuánto deseas bajar el volumen?", "error": null}
+{"stage": "without_operation_ids", "id": "a59b4669cbf4ce8033348da3f360a6572fc986a1da03f725a9b6be545f8f786f", "text": "turn up the volume", "answer": "By how much should I turn up the volume?", "error": null}
+{"stage": "without_operation_ids", "id": "c6408d0b4d392f78b39df486c1e3fe799925dbfaa5f7d431fc2c736684e45c2f", "text": "sube el volumen", "answer": "¿Cuánto quieres aumentar el volumen?", "error": null}

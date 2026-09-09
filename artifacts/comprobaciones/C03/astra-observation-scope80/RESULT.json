@@ -1,0 +1,101 @@
+[
+  {
+    "request": "Dime la hora, el audio y el uso de CPU.",
+    "intent": {
+      "operations": [
+        "audio.status"
+      ],
+      "evidence": [
+        "dime la hora, el audio y el uso de cpu"
+      ]
+    },
+    "resolver": {
+      "clauses": [
+        "dime la hora, el audio y el uso de cpu."
+      ],
+      "records": null,
+      "shared_domain_minimum": null,
+      "spoken_report_minimum": null,
+      "return_line": 12722
+    },
+    "unresolved": "None"
+  },
+  {
+    "request": "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "intent": {
+      "operations": [
+        "system.time",
+        "audio.status",
+        "system.status"
+      ],
+      "evidence": [
+        "hora",
+        "revisa el estado del audio",
+        "cpu."
+      ]
+    },
+    "resolver": {
+      "clauses": [
+        "dime la hora",
+        "revisa el estado del audio",
+        "dime el uso de cpu."
+      ],
+      "records": [
+        {
+          "operation": "system.time",
+          "evidence": "hora",
+          "application": null
+        },
+        {
+          "operation": "audio.status",
+          "evidence": "revisa el estado del audio",
+          "application": null
+        },
+        {
+          "operation": "system.status",
+          "evidence": "cpu.",
+          "application": null
+        }
+      ],
+      "shared_domain_minimum": null,
+      "spoken_report_minimum": null,
+      "return_line": 13173
+    },
+    "unresolved": "None"
+  },
+  {
+    "request": "Dime la hora y el estado del audio.",
+    "intent": {
+      "operations": [
+        "system.time",
+        "audio.status"
+      ],
+      "evidence": [
+        "hora",
+        "dime el estado del audio"
+      ]
+    },
+    "resolver": {
+      "clauses": [
+        "dime la hora",
+        "dime el estado del audio."
+      ],
+      "records": [
+        {
+          "operation": "system.time",
+          "evidence": "hora",
+          "application": null
+        },
+        {
+          "operation": "audio.status",
+          "evidence": "dime el estado del audio",
+          "application": null
+        }
+      ],
+      "shared_domain_minimum": null,
+      "spoken_report_minimum": null,
+      "return_line": 13173
+    },
+    "unresolved": "None"
+  }
+]

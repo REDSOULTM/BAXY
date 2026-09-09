@@ -1,0 +1,15 @@
+{
+  "method": "Read-only diagnostic of explicit_effects before the LLM. 77/t9 selects only audio.status; inherited52 repeated-verbs control works. No new rules/model calls/effects, UI/audio/human reserve. Capture actual clause/record state at resolver return and unresolved compound verdict.",
+  "sourceSha256": "48a37645cc2d75744f5aedb456654e9feb4b390d0138956cbcb6f1e1c2cc37bc",
+  "availabilityScope": "Three catalogued observation leaves isolated; not a whole-catalog replay.",
+  "cases": [
+    "Dime la hora, el audio y el uso de CPU.",
+    "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "Dime la hora y el estado del audio."
+  ],
+  "available": [
+    "system.time",
+    "audio.status",
+    "system.status"
+  ]
+}

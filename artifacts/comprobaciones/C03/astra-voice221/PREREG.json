@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-07T18:50:20.807903+00:00",
+  "scriptSha256": "a0a416f68119e1e17ccdbd733cf4678c314a7efcfd025d3ef6c911543e706dcf",
+  "method": "Actual VoiceEngine direct session with production RAW capture/Speex/Silero/Piper/installed baxy.2; four fixed187 TTS texts, one per10seconds after2s warmup. No LLM/App/UI/wake seam, no alternative decoder or thresholds. Record exact microphone/reference/clean with bounded observer after actual Speex process, and VAD/guard decisions.",
+  "criterion": "Actual WASAPI client no adaptive AEC/NS, ready capture, four TTS generation/admission results, actual barge_in/transcript/error counts, exact volume restoration and stopped workers. Zero false interruptions alone is not voice acceptance.",
+  "limitation": "Pure speaker playback echo; no controlled simultaneous physical human speech. Direct mode is an existing product mode; this does not validate wake. Per-frame observer affects scheduling.",
+  "texts": [
+    "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "Son las 10:55.",
+    "It is 10:56.",
+    "Son las 10:56."
+  ],
+  "maximumCaptureSeconds": 60,
+  "levelScalar": 0.3,
+  "sourceFiles": {
+    "src/baxy_mind/voice.py": "87f3e491d909515d592d190b82d5262e4fecd1d5d03e5a1b91c00d480a4450d1",
+    "src/baxy_mind/voice_capture.py": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+    "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "src/baxy_mind/voice_output.py": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+    "src/baxy_mind/piper_tts.py": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e"
+  },
+  "probeSha256": "95ec923fcfd15cb8a4dec8de7c2051e9ad77779dc83c3851e26cc311d21e0575"
+}

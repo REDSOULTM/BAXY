@@ -1,0 +1,16 @@
+{"id": "stored-en", "variant": "baseline", "request": "What name have you saved in private memory?", "answer": "I don't have any private memories saved.", "error": null, "seconds": 0.407}
+{"id": "stored-en", "variant": "retain-value", "request": "What name have you saved in private memory?", "answer": "I saved the name Jordan in private memory.", "error": null, "seconds": 0.422}
+{"id": "stored-es", "variant": "baseline", "request": "¿Qué nombre tienes guardado en tu memoria privada?", "answer": "Mi nombre es Jordan.", "error": null, "seconds": 0.406}
+{"id": "stored-es", "variant": "retain-value", "request": "¿Qué nombre tienes guardado en tu memoria privada?", "answer": "Mi nombre es Jordan.", "error": null, "seconds": 0.344}
+{"id": "new-name-en", "variant": "baseline", "request": "What name have you saved in private memory?", "answer": "I don't have any private memories saved.", "error": null, "seconds": 0.5}
+{"id": "new-name-en", "variant": "retain-value", "request": "What name have you saved in private memory?", "answer": "I saved the name Priya in private memory.", "error": null, "seconds": 0.421}
+{"id": "new-name-es", "variant": "baseline", "request": "¿Qué nombre tienes guardado en tu memoria privada?", "answer": "Mi nombre es Renata.", "error": null, "seconds": 0.422}
+{"id": "new-name-es", "variant": "retain-value", "request": "¿Qué nombre tienes guardado en tu memoria privada?", "answer": "Mi nombre es Renata.", "error": null, "seconds": 0.375}
+{"id": "preference-en", "variant": "baseline", "request": "What is my saved favorite color?", "answer": "Your saved favorite color is indigo.", "error": null, "seconds": 0.438}
+{"id": "preference-en", "variant": "retain-value", "request": "What is my saved favorite color?", "answer": "Your saved favorite color is indigo.", "error": null, "seconds": 0.406}
+{"id": "preference-es", "variant": "baseline", "request": "¿Qué color favorito tengo guardado?", "answer": "Tu color favorito guardado es el turquesa.", "error": null, "seconds": 0.516}
+{"id": "preference-es", "variant": "retain-value", "request": "¿Qué color favorito tengo guardado?", "answer": "Tu color favorito guardado es turquesa.", "error": null, "seconds": 0.406}
+{"id": "empty-en", "variant": "baseline", "request": "What name have you saved in private memory?", "answer": "I don't have any private memories saved.", "error": null, "seconds": 0.453}
+{"id": "empty-en", "variant": "retain-value", "request": "What name have you saved in private memory?", "answer": "I don't have any private memories saved.", "error": null, "seconds": 0.359}
+{"id": "redacted-es", "variant": "baseline", "request": "¿Qué tienes guardado en la memoria privada?", "answer": "", "error": null, "seconds": 1.657}
+{"id": "redacted-es", "variant": "retain-value", "request": "¿Qué tienes guardado en la memoria privada?", "answer": "", "error": null, "seconds": 1.781}

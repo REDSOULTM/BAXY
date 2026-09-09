@@ -1,0 +1,22 @@
+{"id": "actual-personal-who", "variant": "reference", "operations": [], "text": "Hola Emmanuel. ¿En qué puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "actual-personal-who", "variant": "native", "operations": [], "text": "Eres Emmanuel.", "finish": "stop", "matches_expected": true}
+{"id": "explicit-windows-with-personal-history", "variant": "reference", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "explicit-windows-with-personal-history", "variant": "native", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "fresh-who-inherited-criterion", "variant": "reference", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "fresh-who-inherited-criterion", "variant": "native", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "assistant-identity", "variant": "reference", "operations": [], "text": "Soy BAXY, tu asistente virtual. ¿En qué puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "assistant-identity", "variant": "native", "operations": [], "text": "Soy BAXY, tu asistente virtual. ¿En qué puedo ayudarte?", "finish": "stop", "matches_expected": true}
+{"id": "both-identities", "variant": "reference", "operations": [], "text": "Hola Emmanuel. Soy BAXY, tu asistente virtual. Y tú eres Emmanuel. ¿En qué puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "both-identities", "variant": "native", "operations": [], "text": "Soy BAXY, un asistente virtual diseñado para ayudarte con tareas locales en tu dispositivo.\n\nEres Emmanuel, el usuario que está interactuando conmigo.", "finish": "stop", "matches_expected": true}
+{"id": "english-personal", "variant": "reference", "operations": [], "text": "You are Jordan.", "finish": "stop", "matches_expected": true}
+{"id": "english-personal", "variant": "native", "operations": [], "text": "You are Jordan.", "finish": "stop", "matches_expected": true}
+{"id": "third-person-reference", "variant": "reference", "operations": [], "text": "Your sister's name is Olivia.", "finish": "stop", "matches_expected": true}
+{"id": "third-person-reference", "variant": "native", "operations": [], "text": "Your sister's name is Olivia.", "finish": "stop", "matches_expected": true}
+{"id": "real-read-preserved", "variant": "reference", "operations": ["baxy_window__active"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "real-read-preserved", "variant": "native", "operations": ["baxy_window__active"], "text": "", "finish": "tool_calls", "matches_expected": true}
+{"id": "actual360-first-divergence", "variant": "reference", "operations": ["baxy_filesystem__write__text"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "actual360-first-divergence", "variant": "native", "operations": [], "text": "Hola Emmanuel. ¿En qué puedo ayudarte hoy?", "finish": "stop", "matches_expected": true}
+{"id": "actual360-both-primary", "variant": "reference", "operations": [], "text": "Hola Emmanuel. Soy BAXY, tu asistente virtual.\n\nSobre tu pregunta:\n- **Quién soy yo**: Soy un asistente de inteligencia artificial diseñado para ayudarte con tareas, información y acciones en tu dispositivo.\n- **Quién eres tú**: Eres Emmanuel, el usuario que está interactuando conmigo.\n\n¿Hay algo más en lo que pueda ayudarte?", "finish": "stop", "matches_expected": true}
+{"id": "actual360-both-primary", "variant": "native", "operations": [], "text": "Soy BAXY, tu asistente virtual. Tú eres Emmanuel.", "finish": "stop", "matches_expected": true}
+{"id": "actual360-both-second-probe", "variant": "reference", "operations": ["baxy_system__identity"], "text": "", "finish": "tool_calls", "matches_expected": false}
+{"id": "actual360-both-second-probe", "variant": "native", "operations": [], "text": "Soy BAXY, un asistente virtual. Tú eres Emmanuel.", "finish": "stop", "matches_expected": true}

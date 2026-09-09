@@ -41,16 +41,49 @@ def test_early_signal_production_path_uses_compose_not_snippet_template() -> Non
     assert '"cause": "acting"' in MAIN
 
 
+def test_early_signal_preserves_phase_and_is_optional_when_composition_fails() -> None:
+    from baxy_mind.__main__ import _emit_early_turn_signal
+    from baxy_mind.first_signal import PATH_MODEL
+
+    captured = []
+    signals = []
+    signaled = []
+
+    class Composer:
+        fail = True
+
+        def compose_user_message(self, request, intent, facts, *, timeout):
+            captured.append((request, intent, facts, timeout))
+            if self.fail:
+                raise TimeoutError("optional inference failed")
+            return "Estoy preparando los pasos de la solicitud."
+
+    composer = Composer()
+    kwargs = dict(path=PATH_MODEL, objective="Lee el archivo.", request_id="p1",
+                  on_signal=signals.append, already_signaled=signaled,
+                  llm=composer, phase="preparing_steps")
+    _emit_early_turn_signal(**kwargs)
+    assert signals == [] and signaled == []
+    composer.fail = False
+    _emit_early_turn_signal(**kwargs)
+    _emit_early_turn_signal(**kwargs)
+    assert len(captured) == 2
+    assert captured[1][0:2] == ("Lee el archivo.", "status")
+    assert json.loads(captured[1][2]["situation"])["phase"] == "preparing_steps"
+    assert captured[1][2]["traceId"] == "p1"
+    assert captured[1][3] == 2.5
+    assert len(signals) == 1 and signals[0]["id"] == "p1"
+    assert signals[0]["text"] == "Estoy preparando los pasos de la solicitud."
+
+
 def test_personality_lives_in_the_editable_prompt() -> None:
     prompt = USER_MESSAGE_PROMPT + "\n" + SYSTEM_PROMPT + "\n" + CPU_USER_MESSAGE_PROMPT
     assert "compañero" in prompt
     assert "un él" in prompt
     assert "Tuteas" in prompt
-    assert "Listo," in USER_MESSAGE_PROMPT
-    assert "No pude:" in USER_MESSAGE_PROMPT
-    assert "estado observable" in USER_MESSAGE_PROMPT
-    assert "eso no lo hago" in USER_MESSAGE_PROMPT
-    assert "UNA frase" in USER_MESSAGE_PROMPT or "Una frase" in CPU_USER_MESSAGE_PROMPT
+    # Personality belongs to the prompt; visible sentences belong to the model.
+    assert "«Listo,»" not in USER_MESSAGE_PROMPT
+    assert "«No pude:»" not in USER_MESSAGE_PROMPT
     assert "idioma del pedido" in prompt
     assert "fine-tun" not in prompt.casefold()
     assert NARRATOR_PROMPT == USER_MESSAGE_PROMPT
@@ -119,7 +152,8 @@ def test_public_compose_profile_follows_gguf() -> None:
     )
     define_extra = captured[-1]["messages"][1]["content"]
     assert "Do not configure" in define_extra
-    assert "Explain the concept" in define_extra
+    assert "define huso horario, una frase" in define_extra
+    assert "Answer the person's actual question directly" in define_extra
     captured.clear()
     granite_client.compose_user_message(
         "qué puedes hacer en este equipo",
@@ -320,8 +354,8 @@ def test_public_compose_profile_follows_gguf() -> None:
     )
     hi_extra = captured[0]["messages"][1]["content"]
     assert captured[0]["messages"][0]["content"] == GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT
-    assert '"greeting": "hi"' in hi_extra
-    assert "Texto original de la persona" not in hi_extra
+    assert '"greeting":' not in hi_extra
+    assert hi_extra.startswith("Hi there\n")
     assert "Greet briefly" not in hi_extra
     assert "English only" not in hi_extra
     captured.clear()
@@ -510,7 +544,7 @@ def test_compose_payload_does_not_contain_published_sentences() -> None:
         "welcome",
         "",
         {"situation": '{"kind":"welcome","polarity":"success"}'},
-    ) == "welcome_question"
+    ) == ""
     assert compose_visible_defect(
         "Listo, Steam está abierto.",
         "status",
@@ -613,7 +647,13 @@ def test_compose_payload_does_not_contain_published_sentences() -> None:
         # La corrección de un reintento se añade al sistema, nunca a los hechos.
         assert system.startswith(CPU_USER_MESSAGE_PROMPT)
         assert "estado observable" not in system
-        assert "abre Steam" not in user
+        # Source98: progress describes the current state. The requested future
+        # effect still determines language but must not prime a claimed action.
+        assert "Texto original de la persona:" not in user
+        assert "Steam" not in user
+        assert "Idioma obligatorio: español" in system + user
+        assert '"state": "in progress"' in user
+        assert '"outcome": "completed"' not in user
     captured.clear()
     client.compose_user_message(
         "open Word and wipe the disk",
@@ -1219,7 +1259,6 @@ def test_system_time_contract_is_utc_and_offset_not_localtime() -> None:
         "are you connected?",
     )
     assert net_payload["seen"] == {"online": True}
-    assert "si seen.time" in USER_MESSAGE_PROMPT
 
     captured: list[dict] = []
 

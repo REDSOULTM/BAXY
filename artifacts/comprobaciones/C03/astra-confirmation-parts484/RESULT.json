@@ -1,0 +1,32 @@
+{
+  "completed": true,
+  "compositions": 16,
+  "resources": [
+    {
+      "completed": true,
+      "violations": [],
+      "gpu_peak_mib": 3496.15625,
+      "ram_peak_mib": 763.3125,
+      "seconds": 12.656,
+      "manifest_unchanged": true
+    }
+  ],
+  "source_unchanged": true,
+  "manifest_unchanged": true,
+  "needs_semantic_adjudication": false,
+  "native_calls": 16,
+  "finish_reasons": {
+    "stop": 16
+  },
+  "structured_json_valid": 12,
+  "confirmation_content_scores": {
+    "0": "3/6",
+    "17": "3/6"
+  },
+  "confirmation_useful_natural_scores": {
+    "0": "1/6",
+    "17": "1/6"
+  },
+  "memory_controls": "4/4",
+  "decision": "No adoptar. La estructura conserva irreversibilidad pero cambia propietario y omite sync; duplica preguntas. No barrido de nombres/campos ni texto fijo para reparar valores."
+}

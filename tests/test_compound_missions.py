@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
+from baxy_mind.planner import PlannerContractError
+
 from baxy_mind.__main__ import (
     _explicit_arguments_from_evidence,
     _explicit_plan_skeleton,
@@ -94,18 +98,17 @@ def test_unrecognized_second_clause_does_not_run_as_silent_subset() -> None:
     contract = unresolved_compound_contract(text, AVAILABLE, application_names=APPS)
     assert contract is not None
     assert contract.minimum_effects >= 2
-    vetoed = apply_compound_effect_conservation_veto(
-        {
-            "mode": "plan",
-            "operation": "app.open",
-            "effect_operations": ["app.open"],
-            "effect_count": "one",
-            "effect_verification": "pending",
-        },
-        contract,
-    )
-    assert vetoed["mode"] == "conversation"
-    assert vetoed["effect_operations"] == []
+    with pytest.raises(PlannerContractError, match="unresolved_compound_effects"):
+        apply_compound_effect_conservation_veto(
+            {
+                "mode": "plan",
+                "operation": "app.open",
+                "effect_operations": ["app.open"],
+                "effect_count": "one",
+                "effect_verification": "pending",
+            },
+            contract,
+        )
 
 
 def test_click_domain_accepts_go_to_after_an_open_and_rejects_a_coat_button() -> None:

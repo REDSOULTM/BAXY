@@ -1,0 +1,11 @@
+{
+  "url": "https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-4B-Instruct-2507/cdbee75f17c01a7cc42f958dc650907174af0554/tokenizer_config.json?%2FQwen%2FQwen3-4B-Instruct-2507%2Fresolve%2Fmain%2Ftokenizer_config.json=&etag=%2251c1be0d9192e7f6e6596de71d0f07d58fbc32ac%22",
+  "etag": "\"51c1be0d9192e7f6e6596de71d0f07d58fbc32ac\"",
+  "downloadSha256": "a62ff0a2472a0fa1b8eaabcb57c59b58afa42a22831dc141400b6e0cf2b65ce3",
+  "templateMatchesOfficialExactly": false,
+  "effectiveTemplateSha256": "c979e0e71a3e21b8f208e6ab120d5cb29327885f29d2a8b18fda67a723798e18",
+  "renderedComparisons": {
+    "user_only_512": true,
+    "baxy_messages_512": true
+  }
+}

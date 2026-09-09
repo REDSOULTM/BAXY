@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-08T20:06:17.201052+00:00",
+  "baseline": {
+    "failed": 7,
+    "passed": 9,
+    "seconds": 1.7,
+    "note": "Six true independent prohibitions fail; seventh was an incorrectly chosen English control: Open Spotify, not Steam specifies an excluded object rather than retracting the requested opening. Replaced with genuine correction Open Spotify, no, open Steam. Original failed log preserved; no source guard relaxed for this control."
+  },
+  "focal": {
+    "passed": 16,
+    "skips": 0,
+    "seconds": 1.18
+  },
+  "owners": {
+    "passed": 3155,
+    "skips": 0,
+    "seconds": 46.61
+  },
+  "fast": "source_quality_gate_passed: mode=Fast",
+  "release_seconds": 3.31,
+  "warnings": 0,
+  "errors": 0,
+  "session": 20414,
+  "exit": 0,
+  "source_sha256": "29be609fc50ea37788483422c62a5cccf5fe7d409f17c831d1c57fbdb35923d8",
+  "tests_sha256": "8321e88e22983c8ae1c2b9e2b0a7b24c6dccdebbe862b2f6cd90d9deb06828e2",
+  "change": "One negative-clause separator branch adds pero/but to y/and; no positive adversative splitting, authorization, provider, sampler or prompt changes.",
+  "next": "Exact full-mind486 comparison as488. No physical effects/full acceptance yet."
+}

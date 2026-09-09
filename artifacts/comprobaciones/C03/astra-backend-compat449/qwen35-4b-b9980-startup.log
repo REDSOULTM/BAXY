@@ -1,0 +1,6 @@
+0.00.149.195 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.282.764 I srv    load_model: loading model 'D:\BAXYRuntime\experiments\models\qwen35-4b-e87f1764\Qwen3.5-4B-Q4_K_M.gguf'
+0.05.380.184 I srv    load_model: initializing, n_slots = 3, n_ctx_slot = 4096, kv_unified = 'false'
+0.05.381.797 W srv          init: --cache-idle-slots requires --cache-ram, disabling
+0.05.424.186 I srv  llama_server: model loaded
+0.05.424.198 I srv  llama_server: listening on http://127.0.0.1:53975

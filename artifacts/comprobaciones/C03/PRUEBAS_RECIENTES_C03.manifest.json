@@ -1,0 +1,9 @@
+{
+  "responses": 25,
+  "verbatimChecked": true,
+  "reportSha256": "ff5361e610e0b03fc4c1e05de75a10f173510a47810a93e84ded1cd98f9cf3af",
+  "sources": {
+    "artifacts/comprobaciones/C03/astra-lora-pilot2-product/paired.json": "79d5ea09bd23a3f0f6aa641ba46ee8e1ba2cc3cbe1e76cfbf190ebe1585b2fee",
+    "artifacts/comprobaciones/C03/astra-word-clock-replay/replies.jsonl": "72f41e72e9891def0b8a50d2e17a2647a3ccd882dd221a6ff2941cba55799604"
+  }
+}

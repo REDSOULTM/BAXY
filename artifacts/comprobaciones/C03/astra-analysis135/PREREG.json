@@ -1,0 +1,9 @@
+{
+  "purpose": "Offline content and alignment comparison of physical candidate134 capture",
+  "sources": [
+    134
+  ],
+  "newPlayback": false,
+  "sourceMutation": false,
+  "method": "Registered Parakeet CPU, raw and peak-normalized; no text hints. Windows from speaking events +/-0.5s; capture start is approximate, not ADC timestamps."
+}

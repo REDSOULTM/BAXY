@@ -1,0 +1,373 @@
+{
+  "cases": [
+    {
+      "text": "Explain encryption, pero en simple",
+      "history": {
+        "old": [
+          {
+            "role": "user",
+            "content": "What time is it?"
+          },
+          {
+            "role": "assistant",
+            "content": "It's 23:21."
+          },
+          {
+            "role": "user",
+            "content": "Tell me the time and the volume."
+          },
+          {
+            "role": "assistant",
+            "content": "The time is 23:21 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+          },
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:21."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:21. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          }
+        ],
+        "new": [
+          {
+            "role": "user",
+            "content": "What time is it?"
+          },
+          {
+            "role": "assistant",
+            "content": "It's 23:34."
+          },
+          {
+            "role": "user",
+            "content": "Tell me the time and the volume."
+          },
+          {
+            "role": "assistant",
+            "content": "The time is 23:34 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+          },
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:34."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:34. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          }
+        ]
+      },
+      "language": "mixed"
+    },
+    {
+      "text": "Explain gravity, pero sin tecnicismos",
+      "history": {
+        "old": [
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:21."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:21. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          },
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          },
+          {
+            "role": "assistant",
+            "content": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así, los datos se protegen de que otros los vean o usen."
+          },
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener una copia de tu libro en otro lugar, en caso de que lo pierdas."
+          }
+        ],
+        "new": [
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:34."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:34. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          },
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          },
+          {
+            "role": "assistant",
+            "content": "La criptografía es como un código que convierte información en algo que solo las personas con la clave pueden entender. Así, si alguien quiere leer un mensaje, necesita tener la clave para descifrarlo. Es como un secreto que solo tú y tu amigo conocéis."
+          },
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como un backup: es una copia del dato importante que se guarda en otro lugar para que, si se pierde o se daña el original, se pueda recuperar fácilmente."
+          }
+        ]
+      },
+      "language": "mixed"
+    },
+    {
+      "text": "Explain photosynthesis in two sentences.",
+      "history": {
+        "old": [
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          },
+          {
+            "role": "assistant",
+            "content": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así, los datos se protegen de que otros los vean o usen."
+          },
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener una copia de tu libro en otro lugar, en caso de que lo pierdas."
+          },
+          {
+            "role": "user",
+            "content": "Explain gravity, pero sin tecnicismos"
+          },
+          {
+            "role": "assistant",
+            "content": "La gravedad es esa fuerza que mantiene todo lo que está cerca de la Tierra, como los objetos que caen al suelo o las cosas que no se van volando. Es como si todo lo que está cerca de la Tierra tuviera un pequeño hilo que la une, y por eso no se va volando al espacio."
+          },
+          {
+            "role": "user",
+            "content": "no abras Paint"
+          },
+          {
+            "role": "assistant",
+            "content": "Entendido, no abriré Paint."
+          },
+          {
+            "role": "user",
+            "content": "what is the capital of Peru"
+          },
+          {
+            "role": "assistant",
+            "content": "The capital of Peru is Lima."
+          }
+        ],
+        "new": [
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          },
+          {
+            "role": "assistant",
+            "content": "La criptografía es como un código que convierte información en algo que solo las personas con la clave pueden entender. Así, si alguien quiere leer un mensaje, necesita tener la clave para descifrarlo. Es como un secreto que solo tú y tu amigo conocéis."
+          },
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como un backup: es una copia del dato importante que se guarda en otro lugar para que, si se pierde o se daña el original, se pueda recuperar fácilmente."
+          },
+          {
+            "role": "user",
+            "content": "Explain gravity, pero sin tecnicismos"
+          },
+          {
+            "role": "assistant",
+            "content": "La gravedad es esa fuerza que mantiene a las cosas en el suelo, como cuando caes de una silla o cuando la Luna mantiene a la Tierra en su órbita. Es como si todo lo que está cerca de la Tierra tuviera un \"pegamento\" que la mantiene unida."
+          },
+          {
+            "role": "user",
+            "content": "no abras Paint"
+          },
+          {
+            "role": "assistant",
+            "content": "Entendido, no abriré Paint."
+          },
+          {
+            "role": "user",
+            "content": "what is the capital of Peru"
+          },
+          {
+            "role": "assistant",
+            "content": "The capital of Peru is Lima."
+          }
+        ]
+      },
+      "language": "en"
+    },
+    {
+      "text": "Explícame por qué el hielo flota.",
+      "history": {
+        "old": [
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener una copia de tu libro en otro lugar, en caso de que lo pierdas."
+          },
+          {
+            "role": "user",
+            "content": "Explain gravity, pero sin tecnicismos"
+          },
+          {
+            "role": "assistant",
+            "content": "La gravedad es esa fuerza que mantiene todo lo que está cerca de la Tierra, como los objetos que caen al suelo o las cosas que no se van volando. Es como si todo lo que está cerca de la Tierra tuviera un pequeño hilo que la une, y por eso no se va volando al espacio."
+          },
+          {
+            "role": "user",
+            "content": "no abras Paint"
+          },
+          {
+            "role": "assistant",
+            "content": "Entendido, no abriré Paint."
+          },
+          {
+            "role": "user",
+            "content": "what is the capital of Peru"
+          },
+          {
+            "role": "assistant",
+            "content": "The capital of Peru is Lima."
+          },
+          {
+            "role": "user",
+            "content": "Explain photosynthesis in two sentences."
+          },
+          {
+            "role": "assistant",
+            "content": "Photosynthesis is the process by which green plants use sunlight, carbon dioxide, and water to produce glucose and oxygen. It's basically nature's way of turning solar energy into food for the plant."
+          }
+        ],
+        "new": [
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como un backup: es una copia del dato importante que se guarda en otro lugar para que, si se pierde o se daña el original, se pueda recuperar fácilmente."
+          },
+          {
+            "role": "user",
+            "content": "Explain gravity, pero sin tecnicismos"
+          },
+          {
+            "role": "assistant",
+            "content": "La gravedad es esa fuerza que mantiene a las cosas en el suelo, como cuando caes de una silla o cuando la Luna mantiene a la Tierra en su órbita. Es como si todo lo que está cerca de la Tierra tuviera un \"pegamento\" que la mantiene unida."
+          },
+          {
+            "role": "user",
+            "content": "no abras Paint"
+          },
+          {
+            "role": "assistant",
+            "content": "Entendido, no abriré Paint."
+          },
+          {
+            "role": "user",
+            "content": "what is the capital of Peru"
+          },
+          {
+            "role": "assistant",
+            "content": "The capital of Peru is Lima."
+          },
+          {
+            "role": "user",
+            "content": "Explain photosynthesis in two sentences."
+          },
+          {
+            "role": "assistant",
+            "content": "Photosynthesis is the process by which green plants use sunlight, carbon dioxide, and water to produce glucose and oxygen. It's basically nature's way of turning solar energy into food for the plant."
+          }
+        ]
+      },
+      "language": "es"
+    }
+  ],
+  "stages": [
+    "product_old",
+    "product_new",
+    "bare_old",
+    "bare_new"
+  ],
+  "method": "Four consumed technical knowledge controls, each with last five public pairs reconstructed from baseline46 and source46 replay. Cross context old/new with current system policies present/absent. Reuses knowledge-history-factorial instrument; capture first raw completion before validation/retry. Temperature0 seed0 max_tokens256 and registered native template. Bare removes only system messages from the captured chat payload; same token budget/template, not unbounded plain inference. No live effects, no acceptance reserve, no source/model promotion. Public history is reconstruction, not original wire capture. New gravity example is first visible in raw pre_veto, before any answer validation.",
+  "sourceSha256": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

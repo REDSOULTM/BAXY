@@ -1,0 +1,11 @@
+{
+  "monitor": 16492,
+  "before": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "testLevelScalar": 0.3,
+  "privateDirectory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio158-private",
+  "maximumSeconds": 300,
+  "startedUtc": "2026-09-07T13:22:22.689617+00:00"
+}

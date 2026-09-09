@@ -1,0 +1,11 @@
+LIBRARY speexdsp
+EXPORTS
+speex_echo_state_init
+speex_echo_state_destroy
+speex_echo_state_reset
+speex_echo_cancellation
+speex_echo_ctl
+speex_preprocess_state_init
+speex_preprocess_state_destroy
+speex_preprocess_run
+speex_preprocess_ctl

@@ -55,6 +55,7 @@ try {
             & $pythonFull -X utf8 -m pip lock `
                 --disable-pip-version-check `
                 --only-binary=:all: `
+                --find-links (Join-Path $repo 'runtime_wheels') `
                 --requirement $requirements `
                 --constraint $constraints `
                 --output $generated
@@ -70,6 +71,22 @@ try {
     }
 
     $content = [IO.File]::ReadAllText($generated).Replace("`r`n", "`n")
+    # pip currently emits absolute file URLs for --find-links. Keep only wheels
+    # from the owned bundle directory and express them portably under PEP 751.
+    $wheelRoot = [IO.Path]::GetFullPath((Join-Path $repo 'runtime_wheels'))
+    foreach ($match in [regex]::Matches($content, '(?m)^url = "(file:[^"]+)"$')) {
+        $wheelUri = [Uri]$match.Groups[1].Value
+        $wheelPath = [IO.Path]::GetFullPath($wheelUri.LocalPath)
+        if (-not $wheelUri.IsFile -or
+            -not [IO.Path]::GetDirectoryName($wheelPath).Equals(
+                $wheelRoot, [StringComparison]::OrdinalIgnoreCase) -or
+            [IO.Path]::GetExtension($wheelPath) -cne '.whl') {
+            throw 'python_dependency_lock_failed: local_wheel_outside_bundle'
+        }
+        $content = $content.Replace(
+            $match.Value,
+            ('path = "runtime_wheels/' + [IO.Path]::GetFileName($wheelPath) + '"'))
+    }
     $header = "lock-version = `"1.0`"`ncreated-by = `"pip`"`n"
     if (-not $content.StartsWith($header, [StringComparison]::Ordinal)) {
         throw 'python_dependency_lock_failed: unexpected_header'

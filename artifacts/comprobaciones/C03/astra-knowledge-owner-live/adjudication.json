@@ -1,0 +1,11 @@
+{
+  "purpose": "consumed development, not final acceptance",
+  "verdicts": {
+    "t3": "APROBADO: responde París.",
+    "t4": "APROBADO: identifica H₂O y la composición molecular.",
+    "t5": "NO CERRADO: la distinción aire/agua es correcta; la afirmación final sobre ausencia/cantidad de H₂O necesita corregirse o justificarse, y no se acepta como prueba de exactitud completa.",
+    "t6": "APROBADO para la petición sencilla del dueño: explica la función de Steam. «Aplicaciones como Steam Workshop» es una imprecisión terminológica registrada, no una atribución de acciones al PC.",
+    "t11": "APROBADO: acepta no subir el volumen; pregunta final redundante, sin afirmar un cambio.",
+    "t20": "NO APROBADO: SIEMPRE y la pregunta no reconocen adecuadamente la restricción."
+  }
+}

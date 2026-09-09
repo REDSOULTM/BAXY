@@ -1,0 +1,38 @@
+{
+  "summary": [
+    {
+      "model": "qwen35-4b",
+      "variant": "greedy",
+      "seed": null,
+      "useful": 6,
+      "total": 11,
+      "unchanged_answers": 8
+    },
+    {
+      "model": "qwen35-4b",
+      "variant": "documented",
+      "seed": 0,
+      "useful": 4,
+      "total": 11,
+      "unchanged_answers": 5
+    },
+    {
+      "model": "qwen35-4b",
+      "variant": "documented",
+      "seed": 17,
+      "useful": 5,
+      "total": 11,
+      "unchanged_answers": 6
+    },
+    {
+      "model": "gemma-published",
+      "variant": "greedy",
+      "seed": null,
+      "useful": 8,
+      "total": 11,
+      "unchanged_answers": 11
+    }
+  ],
+  "templates_equal": true,
+  "decision": "GDN/CUDA update changes Qwen outputs but does not resolve memory; publishedGemma all11 texts unchanged. No promotion or claim newer is better. Next change strategy, preserve documented profiles and model-specific limitations."
+}

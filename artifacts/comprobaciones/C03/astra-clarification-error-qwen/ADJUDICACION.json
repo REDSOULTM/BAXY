@@ -1,0 +1,50 @@
+{
+  "t1": {
+    "verdict": "REVISAR CONTINUIDAD",
+    "reason": "Solicita precisar volumen. Falta probar la respuesta con un nivel y la ejecución posterior; esta captura cancela la aclaración. t7 además usa composición conversacional."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Límite de capacidad sin afirmar ausencia. Misma clasificación unsupported que el caso inglés; difiere la reparación/presentación, no la decisión principal."
+  },
+  "t4": {
+    "verdict": "REVISAR CONTINUIDAD",
+    "reason": "Solicita precisar volumen. Falta probar la respuesta con un nivel y la ejecución posterior; esta captura cancela la aclaración. t7 además usa composición conversacional."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t6": {
+    "verdict": "FALLO",
+    "reason": "Afirma inexistencia sin lectura del PC: ruta explicit_conversation/unsupported, cero operaciones. No es un app_not_found verificado."
+  },
+  "t7": {
+    "verdict": "REVISAR CONTINUIDAD",
+    "reason": "Solicita precisar volumen. Falta probar la respuesta con un nivel y la ejecución posterior; esta captura cancela la aclaración. t7 además usa composición conversacional."
+  },
+  "t8": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t9": {
+    "verdict": "ÚTIL",
+    "reason": "Límite de capacidad sin afirmar ausencia. Misma clasificación unsupported que el caso inglés; difiere la reparación/presentación, no la decisión principal."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Revisión individual: responde al pedido y conserva los hechos disponibles; simplificación y puntuación menores no bloquean."
+  }
+}

@@ -1,0 +1,12 @@
+lingua/__init__.py,sha256=1jQbQwAQLMPA7Y__sqdo15IcospRd878AjZUuUk79OE,107
+lingua/__init__.pyi,sha256=p1nXXNEMtql-KBNh75A4Z3TjmOLhrxtufIVWsaxsUKE,28495
+lingua/__pycache__/__init__.cpython-312.pyc,,
+lingua/lingua.cp312-win_amd64.pyd,sha256=LLrdcKrLsdUozEEYI6jn-J42aKqfcGiX_0kOTvMT7n0,304667648
+lingua/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+lingua_language_detector-2.2.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+lingua_language_detector-2.2.0.dist-info/METADATA,sha256=FKcyS2s8kw_mggMAAfbRxkAZJmU_k9tw9Pu1LP4g23g,32557
+lingua_language_detector-2.2.0.dist-info/RECORD,,
+lingua_language_detector-2.2.0.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+lingua_language_detector-2.2.0.dist-info/WHEEL,sha256=IerCNAQpy9eepfUjoenIR-EbFm_XEgG9BeNfw_zQQO0,97
+lingua_language_detector-2.2.0.dist-info/licenses/LICENSE,sha256=HrhfyXIkWY2tGFK11kg7vPCqhgh5DcxleloqdhrpyMY,11558
+lingua_language_detector-2.2.0.dist-info/sboms/lingua.cyclonedx.json,sha256=gKxFvbx7hQkMv9scTXLsWPJt0It02MTvXneZ8Po1aac,168183

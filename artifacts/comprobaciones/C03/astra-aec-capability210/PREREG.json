@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-07T17:57:03.304617+00:00",
+  "purpose": "Same six initialized streams as 209, changing only props.Options to RAW; compare effect list and HRESULTs",
+  "roles": [
+    "console",
+    "multimedia",
+    "communications"
+  ],
+  "categories": [
+    "other",
+    "communications"
+  ],
+  "rawRequested": true,
+  "audioStarted": false,
+  "recording": false,
+  "globalSettingsChanged": false,
+  "sourceSha256": "313ee9ece2033acc4e9f71b6887ce1fb9f22d584b90b8c9311c8b85ea6238b0d",
+  "driverSha256": "e12c251f294fd72ded88ac480ae93904ec704041ff456e130b307dcb28a53b27",
+  "source": "https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/AcousticEchoCancellation/cpp/AECCapture.cpp",
+  "productSourceSha256": "1005f17b4358940dada0421019e25f2d97d4d656c236d6dbd4f84f22fcaacdff",
+  "interpretation": "Services/effects describe initialized endpoint streams, not physical cancellation performance. Missing services preclude this integration route on that endpoint."
+}

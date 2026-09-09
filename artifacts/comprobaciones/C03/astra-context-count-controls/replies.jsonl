@@ -1,0 +1,16 @@
+{"stage": "count_current", "id": "control-1", "text": "Ponlo a 100 ahora", "answer": {"role": "assistant", "content": "{\n  \"effect_count\": \"multiple\"\n}"}, "error": null}
+{"stage": "count_current", "id": "control-2", "text": "Set it to 45", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"one\" }"}, "error": null}
+{"stage": "count_current", "id": "control-3", "text": "Pon el volumen al 40 y silencia el microfono", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"multiple\" }"}, "error": null}
+{"stage": "count_current", "id": "control-4", "text": "Set the volume to 45 and tell me the time", "answer": {"role": "assistant", "content": "{\n  \"effect_count\": \"one\"\n}"}, "error": null}
+{"stage": "count_current", "id": "control-5", "text": "Sube el volumen en 10 puntos", "answer": {"role": "assistant", "content": "{\"effect_count\": \"multiple\"}"}, "error": null}
+{"stage": "count_current", "id": "control-6", "text": "Pon el volumen al 40 sin silenciarlo", "answer": {"role": "assistant", "content": "{\n  \"effect_count\": \"multiple\"\n}"}, "error": null}
+{"stage": "count_current", "id": "control-7", "text": "No cambies el volumen", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"multiple\" }"}, "error": null}
+{"stage": "count_current", "id": "control-8", "text": "Dime la hora y el nivel de volumen", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"multiple\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-1", "text": "Ponlo a 100 ahora", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"one\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-2", "text": "Set it to 45", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"one\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-3", "text": "Pon el volumen al 40 y silencia el microfono", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"multiple\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-4", "text": "Set the volume to 45 and tell me the time", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"multiple\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-5", "text": "Sube el volumen en 10 puntos", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"one\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-6", "text": "Pon el volumen al 40 sin silenciarlo", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"one\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-7", "text": "No cambies el volumen", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"one\" }"}, "error": null}
+{"stage": "count_scoped_context", "id": "control-8", "text": "Dime la hora y el nivel de volumen", "answer": {"role": "assistant", "content": "{ \"effect_count\": \"multiple\" }"}, "error": null}

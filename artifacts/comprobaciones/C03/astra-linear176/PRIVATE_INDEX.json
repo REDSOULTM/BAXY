@@ -1,0 +1,47 @@
+[
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\native_echo149-final.wav",
+    "bytes": 270124,
+    "sha256": "ff7be4f43bbf0993cd8f89e86642f25205ad82d63d0f1fb1429d6be3276ddf51"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\native_echo149-linear.wav",
+    "bytes": 270124,
+    "sha256": "39ca68abddea658f95f233cbcdbc91d6cf11df3103657c8c2a7984f50291ed1e"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\native_echo149-metrics.json",
+    "bytes": 13887,
+    "sha256": "34f1ca5ee1a4ac1f4f87de51c6d76f80076370f30bcdc98c39a48d917756c49d"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\near_only-final.wav",
+    "bytes": 1017644,
+    "sha256": "8b69b65b011dee666ca7312c769492c47e49bb4a2fd6fe056a4f008d5407f7cf"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\near_only-linear.wav",
+    "bytes": 1017644,
+    "sha256": "6f6c8beac55c7d3f65316611ed689c64987597933d9efcf6f5ca9e07e573f49a"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\near_only-metrics.json",
+    "bytes": 51739,
+    "sha256": "226a17cab4dc91cbf142d25a93d973abb7ddbd502366990c691b3d2d6f905ac9"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\physical_echo_plus_synthetic_near-final.wav",
+    "bytes": 1017644,
+    "sha256": "e44d7bde96d12d02d88070232dd8831acfe48e96f91abcffd32e2c088db801de"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\physical_echo_plus_synthetic_near-linear.wav",
+    "bytes": 1017644,
+    "sha256": "c24f8f0ba12a03fe0929dd99d120e7db6bfee8416b5c2b9a45c1bb7d1a482014"
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear176-private\\physical_echo_plus_synthetic_near-metrics.json",
+    "bytes": 52239,
+    "sha256": "33f64e7b2b127873465d4b0d2a9dc758a90b17cf22c44cf0b7aff09772efc6bc"
+  }
+]

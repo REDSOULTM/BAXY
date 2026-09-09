@@ -1,0 +1,122 @@
+[
+  {
+    "stage": 240,
+    "clip": 1,
+    "generatorToLoopback": {
+      "trainingSamples": 15872,
+      "heldoutSamples": 14709,
+      "heldoutR2": 0.9502532008262491,
+      "residualRms": 0.008423190844540306,
+      "targetRms": 0.03776540040540228,
+      "correlation": 0.9792554890544031
+    },
+    "loopbackToMicrophone": {
+      "trainingSamples": 15872,
+      "heldoutSamples": 14709,
+      "heldoutR2": 0.25632736361489483,
+      "residualRms": 0.006945508965942621,
+      "targetRms": 0.008056046606901998,
+      "correlation": 0.5068292561948037
+    }
+  },
+  {
+    "stage": 240,
+    "clip": 2,
+    "generatorToLoopback": {
+      "trainingSamples": 11872,
+      "heldoutSamples": 11835,
+      "heldoutR2": 0.9414258422985705,
+      "residualRms": 0.0044038209863498335,
+      "targetRms": 0.01819603419391926,
+      "correlation": 0.9760093419429386
+    },
+    "loopbackToMicrophone": {
+      "trainingSamples": 11872,
+      "heldoutSamples": 11835,
+      "heldoutR2": 0.5426416441393073,
+      "residualRms": 0.00403120802141063,
+      "targetRms": 0.005977912243102538,
+      "correlation": 0.7405899762276468
+    }
+  },
+  {
+    "stage": 240,
+    "clip": 3,
+    "generatorToLoopback": {
+      "trainingSamples": 15423,
+      "heldoutSamples": 12000,
+      "heldoutR2": 0.9409808143244656,
+      "residualRms": 0.009711648639802414,
+      "targetRms": 0.039975950508432424,
+      "correlation": 0.9703574601373851
+    },
+    "loopbackToMicrophone": {
+      "trainingSamples": 15423,
+      "heldoutSamples": 12000,
+      "heldoutR2": 0.4565934129299922,
+      "residualRms": 0.005632697916867535,
+      "targetRms": 0.007647670350223334,
+      "correlation": 0.6814298759677553
+    }
+  },
+  {
+    "stage": 243,
+    "clip": 1,
+    "generatorToLoopback": {
+      "trainingSamples": 15872,
+      "heldoutSamples": 14151,
+      "heldoutR2": 0.966325380368208,
+      "residualRms": 0.007040102889562648,
+      "targetRms": 0.03836434322243943,
+      "correlation": 0.9845685594531445
+    },
+    "loopbackToMicrophone": {
+      "trainingSamples": 15872,
+      "heldoutSamples": 14151,
+      "heldoutR2": 0.5769406849963836,
+      "residualRms": 0.0036685464871718514,
+      "targetRms": 0.005642953461193835,
+      "correlation": 0.7606641464630054
+    }
+  },
+  {
+    "stage": 243,
+    "clip": 2,
+    "generatorToLoopback": {
+      "trainingSamples": 13751,
+      "heldoutSamples": 12000,
+      "heldoutR2": 0.919133182571903,
+      "residualRms": 0.007410971227949494,
+      "targetRms": 0.02606093321362126,
+      "correlation": 0.9589587036342588
+    },
+    "loopbackToMicrophone": {
+      "trainingSamples": 13751,
+      "heldoutSamples": 12000,
+      "heldoutR2": 0.72580449303006,
+      "residualRms": 0.003303909747782476,
+      "targetRms": 0.006315623621913355,
+      "correlation": 0.8525950985347739
+    }
+  },
+  {
+    "stage": 243,
+    "clip": 3,
+    "generatorToLoopback": {
+      "trainingSamples": 15872,
+      "heldoutSamples": 12108,
+      "heldoutR2": 0.9506321223179396,
+      "residualRms": 0.009172243603425062,
+      "targetRms": 0.04128135848531422,
+      "correlation": 0.9752567302495851
+    },
+    "loopbackToMicrophone": {
+      "trainingSamples": 15872,
+      "heldoutSamples": 12108,
+      "heldoutR2": 0.8170465419854267,
+      "residualRms": 0.002574061131684943,
+      "targetRms": 0.006018015424992401,
+      "correlation": 0.9041653842806466
+    }
+  }
+]

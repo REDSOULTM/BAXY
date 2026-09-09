@@ -1,0 +1,6 @@
+n=4 published=4 other=0
+
+001	t1	published_final	What is fourteen times six?	14 times 6 is 84.
+002	t2	published_final	define DNS in one sentence	DNS stands for Domain Name System, which translates domain names into IP addresses so computers can communicate using readable names instead of numerical addresses.
+003	t3	published_final	cuánto es doce por ocho	Doce por ocho es 96.
+004	t4	published_final	what is the capital of Peru	The capital of Peru is Lima.

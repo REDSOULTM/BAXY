@@ -1,0 +1,1 @@
+Primera preparación detenida antes de inferencia: campo reconstruido requiredWords no existe en el contrato. Corregido a requiredResponseWords, según llm.py9219 y ModelMessageComposer.cs72. Comparación offline se repite antes de PREREG/runtime; mismatch original conservado en privado. No fuente de producto cambiada.

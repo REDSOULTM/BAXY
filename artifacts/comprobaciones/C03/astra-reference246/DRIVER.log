@@ -1,0 +1,10 @@
+240 overlap True
+0 reference {'index': 69939, 'correlation': 0.727950048365051, 'gain': 0.10080817866549507} mic {'index': 70271, 'correlation': 0.46344054698769155, 'gain': -0.015885058584568363} lag 332
+1 reference {'index': 228983, 'correlation': 0.8039733195124308, 'gain': -0.14255210443426253} mic {'index': 229306, 'correlation': 0.3545488647620307, 'gain': 0.010904721243823128} lag 323
+2 reference {'index': 387718, 'correlation': 0.5248443448330548, 'gain': 0.08814292345548685} mic {'index': 388065, 'correlation': 0.3732590383719131, 'gain': 0.01646686244911027} lag 347
+3 reference {'index': 547872, 'correlation': 0.7920516379971866, 'gain': -0.1432962213485844} mic {'index': 548109, 'correlation': 0.2879980158784316, 'gain': 0.009925880453081385} lag 237
+243 overlap True
+0 reference {'index': 68975, 'correlation': 0.7373100505464006, 'gain': 0.10656903702955402} mic {'index': 69292, 'correlation': 0.2664475677587985, 'gain': -0.014732997474671553} lag 317
+1 reference {'index': 227849, 'correlation': 0.8000871039094923, 'gain': -0.13838491126862543} mic {'index': 228156, 'correlation': 0.3491252583417867, 'gain': 0.009153431034189577} lag 307
+2 reference {'index': 386096, 'correlation': 0.5342955065640094, 'gain': -0.08489806578306432} mic {'index': 386391, 'correlation': 0.32120786199633466, 'gain': -0.01169425320409215} lag 295
+3 reference {'index': 548615, 'correlation': 0.7887134054977711, 'gain': -0.15387113686313103} mic {'index': 548922, 'correlation': 0.4006244802711611, 'gain': 0.010478298893425093} lag 307

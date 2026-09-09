@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-07T14:43:00.636702+00:00",
+  "hypothesis": "Locate loss before or after residual suppression in failed mixed control174. No tuning: export upstream linear output and metrics from the same native call.",
+  "method": "Local source build of downloaded0.2.0; set export_linear_aec_output=true solely for observation; same16k10ms defaultAEC. Compare final output to wheel174 before attributing stages; record build differences and preserve source.",
+  "originalSourceSha256": "0552de46203def0aecee263e495ab63c0c94d8f652a5f0ca22a2767cac904658",
+  "diagnosticSourceSha256": "d733b76132015d3769b068ee220b405acf107ed583dd9dcfa4dfa702d37aa5f1",
+  "source": "D:\\BAXYRuntime\\experiments\\voice\\webrtc176\\source",
+  "controls": "Same174 native echo, synthetic near-only and mix; ASR raw/normalized on the same window. No physical playback, no product or runtime changes.",
+  "rejectedOption": "conservative_initial_phase=true extends initial active-render duration from2.5s to5s and audibility confidence from0.8s to1.5s; not evidence of improved near speech. Do not tune by name."
+}

@@ -1,0 +1,12 @@
+{
+  "reportSha256": "6371392e37050440fabea0d1accb1d2da21b885b06c005293b07c9ed479df6f1",
+  "acceptance": false,
+  "finalTurnCount": 12,
+  "allFinalsPublished": true,
+  "sourceHashes": {
+    "src/baxy_mind/llm.py": "e80013c982f275df6b06d59a55e439f05dbb1a62932bd1ba87717a7fc3c39fc9",
+    "src/baxy_mind/__main__.py": "d151ddab1174436dee4ed1950e81dff807501755b6ff09d4ab22913c5b7decfa",
+    "src/baxy_mind/effect_intent.py": "ef51fcfd870987dbb0cdb2e212687a61993afc6e0167ef3a27660346c042b0d6",
+    "src/Baxy.App/MainWindowViewModel.cs": "a43aa675303d2b9e381c5d9b08e36f39e32fe048338dcfbd7a0b986a8c250507"
+  }
+}

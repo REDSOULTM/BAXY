@@ -1,0 +1,8 @@
+n=6 published=6 other=0
+
+001	t1	published_final	Hello	Hey, welcome! How can I help you today?
+002	t2	published_final	cuánto es doce por ocho	96
+003	t3	published_final	What is fourteen times six?	84
+004	t4	published_final	Explain encryption, pero en simple	¿Te refieres a la criptografía en general o a un tipo específico de encriptación, como AES o RSA?
+005	t5	published_final	responde en spanglish: qué es el cifrado	El cifrado es un proceso que convierte información en texto que solo puede leerse con una clave. Es como encriptar un mensaje para que nadie más lo entienda, salvo quien tiene la clave. It's like turning a message into code so only someone with the key can read it.
+006	t6	published_final	what is the capital of Peru	The capital of Peru is Lima.

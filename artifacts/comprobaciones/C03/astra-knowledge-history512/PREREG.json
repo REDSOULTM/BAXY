@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-08T22:58:21.170891+00:00",
+  "source_before": {
+    "src/baxy_mind/llm.py": "4fc9090845bb2b565ca875710d451ac7afcf89541eb52cdb57ebe81ed4c7b34f",
+    "tests/test_turn_policy.py": "8be328f2a5b9cc6e43a88986c469f5cfc8ffba15c28d48cbab37f3edaad9843b"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-knowledge-history512-private",
+  "method": "Reuse existing chat presentation/repair; direct knowledge only, quote its already scoped prior messages as JSON data preserving all literals/roles/order, current user request unchanged. Add the exact511 provenance rule to the knowledge system, and preserve the same data/authority during repair. Do not alter semantic readers, stored history, audits, other presentation shapes, model or runtime. No extra decoder or name-specific extraction. Update owner tests to require literal roundtrip and topic/shape isolation; focal baseline, owners andFast then real protocol.",
+  "criteria": "Every user/assistant word survives where relevant; no metadata is published or grants effect authority. Repair cannot restore wrong role-based self-conditioning or excluded topics. Source matches511 knowledge payload and current registeredT0 is verified in actual mind before claiming quality."
+}

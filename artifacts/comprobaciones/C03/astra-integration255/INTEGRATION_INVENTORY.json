@@ -1,0 +1,31 @@
+{
+  "lockedPackages": 62,
+  "dtlnDependencyParents": [
+    {
+      "parent": "ai-edge-litert",
+      "requirement": "backports.strenum",
+      "active": true
+    },
+    {
+      "parent": "ai-edge-litert",
+      "requirement": "ml_dtypes",
+      "active": true
+    },
+    {
+      "parent": "onnxruntime",
+      "requirement": "ml_dtypes; extra == \"quantization\"",
+      "active": false
+    }
+  ],
+  "overridePath": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\assets.local.json",
+  "overrideExists": false,
+  "overrideKeys": [],
+  "hasEchoOverride": false,
+  "overrideSha256": null,
+  "nativeDependencies": [
+    "python312.dll",
+    "WINMM.dll",
+    "KERNEL32.dll"
+  ],
+  "productionUnchanged": true
+}

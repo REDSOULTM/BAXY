@@ -1,0 +1,162 @@
+{
+  "cases": [
+    {
+      "text": "¿y para qué sirve?",
+      "history": [
+        {
+          "role": "user",
+          "content": "What is an SSID?"
+        },
+        {
+          "role": "assistant",
+          "content": "An SSID is the name of a Wi-Fi network."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "text": "What is an SSID?",
+      "history": [],
+      "expected": []
+    },
+    {
+      "text": "no me molesta, dime la hora",
+      "history": [
+        {
+          "role": "user",
+          "content": "What is an SSID?"
+        },
+        {
+          "role": "assistant",
+          "content": "An SSID is the name of a Wi-Fi network."
+        }
+      ],
+      "expected": [
+        "system.time"
+      ]
+    },
+    {
+      "text": "I don't mind, tell me the time",
+      "history": [
+        {
+          "role": "user",
+          "content": "dime la hora"
+        },
+        {
+          "role": "assistant",
+          "content": "20:54"
+        }
+      ],
+      "expected": [
+        "system.time"
+      ]
+    },
+    {
+      "text": "no abras Steam, dime la hora",
+      "history": [
+        {
+          "role": "user",
+          "content": "dime la hora"
+        },
+        {
+          "role": "assistant",
+          "content": "20:54"
+        }
+      ],
+      "expected": [
+        "system.time"
+      ]
+    },
+    {
+      "text": "no uses herramientas, dime la hora",
+      "history": [
+        {
+          "role": "user",
+          "content": "dime la hora"
+        },
+        {
+          "role": "assistant",
+          "content": "20:54"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "text": "¿Qué volumen tiene el audio ahora?",
+      "history": [
+        {
+          "role": "user",
+          "content": "What is an SSID?"
+        },
+        {
+          "role": "assistant",
+          "content": "An SSID is the name of a Wi-Fi network."
+        }
+      ],
+      "expected": [
+        "audio.status"
+      ]
+    },
+    {
+      "text": "no me digas la hora",
+      "history": [
+        {
+          "role": "user",
+          "content": "dime la hora"
+        },
+        {
+          "role": "assistant",
+          "content": "20:54"
+        }
+      ],
+      "expected": []
+    }
+  ],
+  "candidates": [
+    {
+      "name": "system.time",
+      "description": "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "audio.status",
+      "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "web.search",
+      "description": "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados.",
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "query": {
+            "type": "string",
+            "x-maxUtf8Bytes": 2000,
+            "x-nonWhitespace": true
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "method": "Eight consumed or synthetic controls; no fresh acceptance. Compare per-candidate operation_is_the_requested_effect without context (current recovery probe) with existing native AUTO selection with supplied dialogue. Same catalog subset, model, backend, template and temperature. No execution. This compares interpretation mechanisms as used, not a claim that token budget or context alone causes a difference. Existing identity verifier rejects only21/84 wrong proposals in its historical measurement; here it can wrongly turn knowledge into a clarification.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

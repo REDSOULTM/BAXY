@@ -1,0 +1,80 @@
+.......................................FFFFFFFFFFF...................... [ 61%]
+.........................................FF..                            [100%]
+================================== FAILURES ===================================
+_ test_standalone_social_act_is_deterministic_conversation[Me llamo \xc1lvaro.-es] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[My name is Nina.-en] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[Me llamo Ana Mar\xeda.-es] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[My name is Jean-Luc.-en] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[Mi nombre es Mar\xeda Jos\xe9.-es] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[Yo me llamo No\xe9.-es] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[Me llamo Lee.-es] __
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[My name is Lee Min Ho.-en] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[Me llamo Mar\xeda del Carmen Garc\xeda.-es] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[me llamo luc\xeda gonz\xe1lez-es] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_standalone_social_act_is_deterministic_conversation[My name is O'Connor.-en] _
+tests\test_turn_policy.py:1208: in test_standalone_social_act_is_deterministic_conversation
+    assert decision is not None
+E   assert None is not None
+_ test_explicit_social_turn_does_not_compute_unused_semantic_candidates[Me llamo \xc1lvaro.-Encantado, \xc1lvaro.-es] _
+tests\test_turn_policy.py:4337: in test_explicit_social_turn_does_not_compute_unused_semantic_candidates
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:5918: in _prepare_turn_result
+    shortlist = planner_catalog.shortlist(routing_objective)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_turn_policy.py:4309: in shortlist
+    raise AssertionError("social turns do not rank an E5 shortlist")
+E   AssertionError: social turns do not rank an E5 shortlist
+_ test_explicit_social_turn_does_not_compute_unused_semantic_candidates[My name is Nina.-Nice to meet you, Nina.-en] _
+tests\test_turn_policy.py:4337: in test_explicit_social_turn_does_not_compute_unused_semantic_candidates
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:5918: in _prepare_turn_result
+    shortlist = planner_catalog.shortlist(routing_objective)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_turn_policy.py:4309: in shortlist
+    raise AssertionError("social turns do not rank an E5 shortlist")
+E   AssertionError: social turns do not rank an E5 shortlist
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[Me llamo \xc1lvaro.-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[My name is Nina.-en]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[Me llamo Ana Mar\xeda.-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[My name is Jean-Luc.-en]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[Mi nombre es Mar\xeda Jos\xe9.-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[Yo me llamo No\xe9.-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[Me llamo Lee.-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[My name is Lee Min Ho.-en]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[Me llamo Mar\xeda del Carmen Garc\xeda.-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[me llamo luc\xeda gonz\xe1lez-es]
+FAILED tests/test_turn_policy.py::test_standalone_social_act_is_deterministic_conversation[My name is O'Connor.-en]
+FAILED tests/test_turn_policy.py::test_explicit_social_turn_does_not_compute_unused_semantic_candidates[Me llamo \xc1lvaro.-Encantado, \xc1lvaro.-es]
+FAILED tests/test_turn_policy.py::test_explicit_social_turn_does_not_compute_unused_semantic_candidates[My name is Nina.-Nice to meet you, Nina.-en]
+13 failed, 104 passed, 888 deselected in 3.73s

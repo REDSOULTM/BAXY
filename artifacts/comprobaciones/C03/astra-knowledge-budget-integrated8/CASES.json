@@ -1,0 +1,346 @@
+{
+  "development": [
+    {
+      "id": "c1462d73e8235964a0ee3211585afbc4e44375a76b0810aa350140d450cd8b29",
+      "text_literal": "El agua es h2o?",
+      "source_references": [
+        {
+          "message_id": "msg_cbdeecee1bd9c34246e1",
+          "source": "gemma4_local/sessions/b9ed21dbb103.json",
+          "source_location": "turns/10",
+          "source_sha256": "a1fde529f658d0eb934cee67a48a102d03483efc9d77a2b7a39cee8cdda2d4f6",
+          "timestamp": "2026-05-14T21:06:44",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        }
+      ],
+      "expected": "Water is H2O, explain simply.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "c773877cafeef7aa4dc25eb6e61efc90a6eccc7c5426490eccf970b92f80cd5d",
+      "text_literal": "El aire es h20?",
+      "source_references": [
+        {
+          "message_id": "msg_02076eda3d1494e0afc1",
+          "source": "gemma4_local/sessions/b9ed21dbb103.json",
+          "source_location": "turns/12",
+          "source_sha256": "a1fde529f658d0eb934cee67a48a102d03483efc9d77a2b7a39cee8cdda2d4f6",
+          "timestamp": "2026-05-14T21:06:55",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        }
+      ],
+      "expected": "Air is a mixture mainly nitrogen and oxygen, not H2O.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "id": "93617357913a0ea6d4e872cd678164debc36fcef08da79daedb3e5d75c0cfee1",
+      "text_literal": "ahora explicame que es Steam",
+      "source_references": [
+        {
+          "message_id": "msg_f31110d3c897880a0146",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34124",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:40:03-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "message_id": "msg_30caa4f67327daa63903",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34238",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:41:29-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "message_id": "msg_42983dd24e52fe478223",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34314",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:43:23-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "message_id": "msg_f4e1589ca027c14c32a9",
+          "source": "probando_gemma4/gemma4_agent/data/traces.jsonl",
+          "source_location": "line:34423",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:45:08-0400",
+          "redacted": false,
+          "class": "conversation_question",
+          "operations": []
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34124",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:40:03-0400",
+          "turn_id": "20260624_034002_823449f7",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34238",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:41:29-0400",
+          "turn_id": "20260624_034128_68bb0e4f",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34314",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:43:23-0400",
+          "turn_id": "20260624_034323_732fc26e",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+          "source_location": "line:34423",
+          "source_sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+          "timestamp": "2026-06-24T03:45:08-0400",
+          "turn_id": "20260624_034508_246cbf8c",
+          "input_provenance": "runtime_request_start",
+          "preview_only": true
+        }
+      ],
+      "expected": "Explain Steam as game distribution platform, do not open it.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "text_literal": "Explica con detalle de qué gases se compone el aire y qué papel tiene la humedad.",
+      "source_references": [],
+      "kind": "synthetic-detail-control"
+    },
+    {
+      "text_literal": "What is an SSID?",
+      "source_references": [],
+      "kind": "synthetic-en-definition"
+    },
+    {
+      "id": "6cb550776b93b4cef257099d46dda820f576d6455d7cb5fd1c4dca28093fa69d",
+      "text_literal": "Dime qué dispositivo de audio está activo",
+      "source_references": [
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:22254",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:23318",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:24888",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:30681",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:30851",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:31500",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:31603",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:32319",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:32594",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:32789",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:33128",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:33308",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:34082",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:34338",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:34653",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:35805",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:36375",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:36743",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:38187",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:38299",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:38547",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39050",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39326",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39543",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39571",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:39759",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        },
+        {
+          "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+          "source_location": "line:40187",
+          "source_sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+          "timestamp": null,
+          "input_provenance": "runtime_task_start; human_vs_automated_unverified"
+        }
+      ],
+      "expected": "Name actual default output device from observed facts.",
+      "fresh_acceptance": false,
+      "selection": "literal real-log development; no forced language prompt"
+    },
+    {
+      "text_literal": "no me molesta, dime la hora",
+      "source_references": [],
+      "kind": "synthetic-known-negative-social-control"
+    },
+    {
+      "text_literal": "dime la hora",
+      "source_references": [],
+      "kind": "synthetic-recovery-control"
+    }
+  ],
+  "method": "Consumed historical inputs and explicitly synthetic regression controls; no fresh acceptance."
+}

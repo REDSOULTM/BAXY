@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-08T23:58:28.787665+00:00",
+  "cases": [
+    "My name is Jordan. Remember my name.",
+    "confirm",
+    "Abre una aplicación.",
+    "What name have you saved in private memory?",
+    "Me llamo Álvaro.",
+    "Abre una aplicación.",
+    "¿Qué nombre tienes guardado en tu memoria privada?",
+    "¿Cómo me llamo?",
+    "Desactiva la memoria privada."
+  ],
+  "source": "Source516 must pass owner memory tests and Fast before execution. Only source difference from515 baseline is private memory configuration parsing. No status view filter.",
+  "criteria": "T9 actually disables the isolated private memory with enabled=false; never infer disable from prose alone. T1-T8 retain prior binding/confirmation and recall/conversation distinction; internal prose atT2 is still not an acceptable final. Record every visible activity/progress, truthful useful final, resource peak and manifest hash.",
+  "bounds": "Same registered runtime, one hidden conductor, new private synthetic profile, no owner memory or physical voice. GPU3800MiB/freeRAM768MiB/240s, owned-tree cleanup. No source edits during run. Not acceptance reserve."
+}

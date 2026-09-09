@@ -1,0 +1,11 @@
+{
+  "texts": [
+    "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "Dime la hora y el estado del audio.",
+    "Tell me the time and the volume.",
+    "What time is it y cómo está el audio?",
+    "Dime la hora y revisa la CPU"
+  ],
+  "method": "Five direct native completions from exact first payloads captured by progress-purpose50. Append one system instruction specifying the current task as first-person progress narration with no results yet. Preserve original user request and situation unchanged; same model/template/sampler/budget, no guards or retries. This restores the scoped narration responsibility present in historical44b7c45 without prescribing Sigo/Still working or an output template. Two prior data-representation variants failed; this tests task instruction instead. No source promotion, PC effects, human reserve or UI/audio acceptance.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

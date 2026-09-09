@@ -1,0 +1,10 @@
+{
+  "status": "INTERRUPTED_HARNESS_TIMEOUT",
+  "completed_payloads": 3,
+  "successful_responses": 1,
+  "timeouts": 2,
+  "cause": "begin_request120 did not override _post per-attempt transport timeout19s; max_attempts2 produced38s failures. Stopped owned Python63688 and server77820 after verifying command/parent. Source llm.py1348,5699,5722 confirms caps.",
+  "decision": "Do not infer model failure from censored attempts.453 keeps same intended model/mode/sampler/input/output budget but uses direct loopback urllib POST with120s read timeout and no transport retry. No source edit or promotion.",
+  "resource_measurement": "No final peak record because run interrupted; do not invent resources.451 bounds/watchdog were active during run.",
+  "manifest_unchanged": true
+}

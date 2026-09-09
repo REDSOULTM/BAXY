@@ -1,0 +1,8 @@
+{"stage": 179, "units": 128, "case": "near_only", "normalized": false, "text": "¿En qué te pue", "seconds": 1.468899400002556}
+{"stage": 179, "units": 128, "case": "near_only", "normalized": true, "text": "¿En qué te puedo ayudar hoy?", "seconds": 1.4086973999947077}
+{"stage": 179, "units": 128, "case": "physical_echo_plus_synthetic_near", "normalized": false, "text": "PAXY.  ¿en qué se puedo ayudar hoy", "seconds": 1.6104041999933543}
+{"stage": 179, "units": 128, "case": "physical_echo_plus_synthetic_near", "normalized": true, "text": "Ola, a kibapsi, ¿en qué te puedo ayudar hoy", "seconds": 1.5374978000036208}
+{"stage": 180, "units": 512, "case": "near_only", "normalized": false, "text": "Vaxir.  ¿En qué te pue", "seconds": 1.5553736999863759}
+{"stage": 180, "units": 512, "case": "near_only", "normalized": true, "text": "¿En qué te puedo ayudar hoy?", "seconds": 1.5232468999893172}
+{"stage": 180, "units": 512, "case": "physical_echo_plus_synthetic_near", "normalized": false, "text": "¿En qué te pue", "seconds": 1.5732100999885006}
+{"stage": 180, "units": 512, "case": "physical_echo_plus_synthetic_near", "normalized": true, "text": "Ola! ATBAC, ¿en qué te puedo ayudar hoy?", "seconds": 1.6991774000052828}

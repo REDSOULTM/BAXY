@@ -1,0 +1,67 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 204 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 204 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 204 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 204 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 204 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\Baxy.App.csproj (en 204 ms).
+  1 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error RecoveredPersistentMemoryCanBeCancelledWithoutExecuting [13 s]
+  Mensaje de error:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Seguimiento de la pila:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.<>c__DisplayClass25_0.<RecoveredPersistentMemoryCanBeCancelledWithoutExecuting>b__1() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 1037
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.RecoveredPersistentMemoryCanBeCancelledWithoutExecuting() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 1031
+   at Baxy.Integration.Tests.MemoryAppFlowTests.RecoveredPersistentMemoryCanBeCancelledWithoutExecuting() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 1046
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error ViewModelRunsProtectedMemoryConfirmationProjectionAndCancellationEndToEnd [12 s]
+  Mensaje de error:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Seguimiento de la pila:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.<>c__DisplayClass22_0.<ViewModelRunsProtectedMemoryConfirmationProjectionAndCancellationEndToEnd>b__7() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 822
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.ViewModelRunsProtectedMemoryConfirmationProjectionAndCancellationEndToEnd() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 818
+   at Baxy.Integration.Tests.MemoryAppFlowTests.ViewModelRunsProtectedMemoryConfirmationProjectionAndCancellationEndToEnd() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 836
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+
+Con error! - Con error:     2, Superado:     0, Omitido:     0, Total:     2, Duración: 25 s - Baxy.Integration.Tests.dll (net10.0)

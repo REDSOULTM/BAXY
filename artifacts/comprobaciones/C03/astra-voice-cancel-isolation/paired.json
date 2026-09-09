@@ -1,0 +1,35 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio",
+    "terminal": "published_final",
+    "final": "¿Cuál es el nombre exacto del archivo que debe ser borrado?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "¿Debería realmente borrar el archivo C03-Prueba-Respuesta-20260906.txt del escritorio?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t3",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

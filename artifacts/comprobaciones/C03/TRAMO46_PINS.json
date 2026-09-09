@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-07T02:38:47.637010+00:00",
+  "status": "EN_CURSO",
+  "adopted": "Incomplete absolute audio level clarification; existing pending context now completes80/60/40.",
+  "validation": {
+    "ownerPass": 2525,
+    "relatedPass": 402,
+    "subtests": 115,
+    "skips": 0,
+    "fast": "green; build4.73s; zero warnings/errors; no Full"
+  },
+  "product": {
+    "normal": 33,
+    "useful": 32,
+    "failed": [
+      "t10 gravity factual example"
+    ],
+    "path": "astra-routes-volume46"
+  },
+  "files": {
+    "src/baxy_mind/effect_intent.py": "38a6d3ab7cce7aefe89bf7451d747efa9f8d8794ede6e1eabe2a1c4a34ab462e",
+    "src/baxy_mind/llm.py": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+    "src/baxy_mind/__main__.py": "aa290163fbf9ff44bc5e3a1de5bfa32e155168fc4ff21e9e524d9b222958ad56",
+    "src/baxy_mind/request_reading.py": "0b358b495f89e3d3ddb24c6b556631470b13fb4d45dac5149d2e808b72690cb2",
+    "src/baxy_mind/voice_output.py": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+    "tests/test_effect_intent.py": "cb5c734fa07fb62136ad70e8060c0da3c9b890d4dbc18c6af5d9c432f410d86b",
+    "tests/test_turn_policy.py": "638f8b98496e6d7036bcd003df7bfc032ca2ba003062d66cadf12a3f30eecccb"
+  }
+}

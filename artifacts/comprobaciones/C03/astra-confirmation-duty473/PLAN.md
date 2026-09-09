@@ -1,0 +1,1 @@
+473 aplica exactamente la sustitución de472 al perfil GemmaE2B publicado/documentado thinking0/17, doce confirmaciones. No otra variante de prompt. Fuente466, corpus, guardas y demás mensajes intactos; referencia de payload465/467 igual antes de sustitución. No promoción por completar cobertura parcial. Ver PLAN/RESULT472 y receta465, ahorroPLE462.

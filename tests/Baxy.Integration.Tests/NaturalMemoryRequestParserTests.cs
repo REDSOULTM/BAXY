@@ -9,6 +9,114 @@ namespace Baxy.Integration.Tests;
 
 public sealed class NaturalMemoryRequestParserTests
 {
+    [TestCase("What name have you saved in private memory?")]
+    [TestCase("Which name have you stored in your local memory?")]
+    [TestCase("What name do you have saved?")]
+    [TestCase("What is my stored name?")]
+    [TestCase("¿Qué nombre tienes guardado en tu memoria privada?")]
+    [TestCase("¿Qué nombre has guardado en la memoria?")]
+    [TestCase("¿Cuál es mi nombre guardado?")]
+    [TestCase("¿Qué nombre tienes almacenado en la memoria local privada?")]
+    public void StoredNameQuestionsReadTheExactPrivateName(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.recall"));
+            Assert.That(result.Operation?.PrivateArguments["scope"]?.GetValue<string>(), Is.EqualTo("exact"));
+            Assert.That(result.Operation?.PrivateArguments["selector"]?.GetValue<string>(), Is.EqualTo("name"));
+        });
+    }
+
+    [TestCase("What name should you save in private memory?")]
+    [TestCase("Do not read my saved name.")]
+    [TestCase("What name has my coworker saved?")]
+    [TestCase("What name have you saved and open Steam?")]
+    [TestCase("Traduce: What name have you saved in private memory?")]
+    [TestCase("¿Qué nombre tiene guardado mi hermano?")]
+    [TestCase("¿Qué nombre guardarás en tu memoria?")]
+    [TestCase("What name have you saved in the clipboard?")]
+    [TestCase("What name have you saved if I ask next week?")]
+    public void OtherNameLanguageDoesNotAuthorizeAStoredNameRead(string text)
+    {
+        Assert.That(NaturalMemoryRequestParser.Classify(text).Operation, Is.Null);
+    }
+
+    [TestCase("My name is Jordan. Remember my name.", "Jordan")]
+    [TestCase("Me llamo Álvaro y quiero que guardes mi nombre.", "Álvaro")]
+    [TestCase("My name is José Luis; save my name.", "José Luis")]
+    [TestCase("Mi nombre es Zoë; recuerda mi nombre.", "Zoë")]
+    [TestCase("Remember my name. My name is Morgan.", "Morgan")]
+    public void DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(string text, string name)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+        Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+        Assert.That(result.Operation!.Name, Is.EqualTo("memory.save"));
+        Assert.That(result.Operation.PrivateArguments["selector"]!.GetValue<string>(), Is.EqualTo("name"));
+        Assert.That(result.Operation.PrivateArguments["value"]!.GetValue<string>(), Is.EqualTo(name));
+        Assert.That(result.Operation.PrivateArguments["sensitivity"]!.GetValue<string>(), Is.EqualTo("personal"));
+        Assert.That(result.Operation.PrivateArguments["retention"]!.GetValue<string>(), Is.EqualTo("persistent"));
+    }
+
+    [TestCase("Me llamo Lina.")]
+    [TestCase("Me llamo Lina y no quiero que guardes mi nombre.")]
+    [TestCase("Si me llamo Lina, guarda mi nombre.")]
+    [TestCase("Mi hermana se llama Lina. Recuerda mi nombre.")]
+    [TestCase("My name is Jordan. Can you remember names?")]
+    [TestCase("Me llamo Lina y abre Steam.")]
+    public void ADeclarationAloneOrAnUnrelatedClauseDoesNotAuthorizeNamePersistence(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+        Assert.That(result.Outcome, Is.Not.EqualTo(MemoryParseOutcome.Route));
+        Assert.That(result.Operation, Is.Null);
+    }
+
+    [TestCase("Recuerda mi nombre")]
+    [TestCase("Quiero que recuerdes mi nombre cuando te lo pregunte")]
+    [TestCase("Remember my name when I ask again")]
+    [TestCase("I want you to save my name")]
+    [TestCase("I will tell you my name and I want you to remember it")]
+    [TestCase("Tienes memoria, puedes guardar mi nombr?, quiero decirte mi nombre y quiero que lo recuerdes cuando te lo pregunte")]
+    public void ExplicitSaveRequestCanAwaitItsNameWithoutCreatingAnOperation(string text)
+    {
+        MemoryParseResult parsed = NaturalMemoryRequestParser.Classify(text);
+        Assert.Multiple(() =>
+        {
+            Assert.That(parsed.Outcome, Is.EqualTo(MemoryParseOutcome.Clarify));
+            Assert.That(parsed.MissingSaveSubject, Is.EqualTo(MemorySaveSubject.Name));
+            Assert.That(parsed.Operation, Is.Null);
+            Assert.That(parsed.MustNotPersist, Is.True);
+        });
+    }
+
+    [TestCase("¿Puedes recordar nombres?")]
+    [TestCase("No quiero que recuerdes mi nombre")]
+    [TestCase("Cuando abra Steam, recuerda mi nombre")]
+    [TestCase("Mañana recuerda mi nombre")]
+    [TestCase("me llamo Lina")]
+    [TestCase("Remember my name is Lina")]
+    public void OtherMemoryLanguageDoesNotCreateAMissingNameAuthority(string text)
+    {
+        Assert.That(NaturalMemoryRequestParser.Classify(text).MissingSaveSubject, Is.Null);
+    }
+
+    [TestCase("Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio", false)]
+    [TestCase("open Quarterly-customer-report-20260830-final.pdf", false)]
+    [TestCase("move configuration-production-20260830-backup.json", false)]
+    [TestCase("open sk_test_1234567890abcdefghijklmnop.txt", true)]
+    [TestCase("remember gldt-0123456789abcdefghij", true)]
+    [TestCase("save eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.signature1", true)]
+    [TestCase("mi password es Quarterly-customer-report-20260830-final.pdf", true)]
+    public void PublicProjectionDistinguishesDocumentNamesFromCredentialTokens(
+        string text,
+        bool expectedSensitive)
+    {
+        Assert.That(
+            NaturalMemoryRequestParser.ContainsSensitiveMaterial(text),
+            Is.EqualTo(expectedSensitive));
+    }
+
     [Test]
     public void AmbiguousAudioDeviceRequestFlowsToTheMindPlanner()
     {
@@ -386,6 +494,58 @@ public sealed class NaturalMemoryRequestParserTests
                     Is.EqualTo(expectedValue));
             }
         });
+    }
+
+    [TestCase("Desactiva la memoria privada.", false)]
+    [TestCase("Deshabilita tu memoria personal local.", false)]
+    [TestCase("Activa la memoria privada local de BAXY.", true)]
+    [TestCase("Habilita tu memoria local.", true)]
+    [TestCase("Disable your private local memory.", false)]
+    [TestCase("Enable BAXY's personal memory.", true)]
+    [TestCase("Turn the private memory off.", false)]
+    [TestCase("Turn your local memory on.", true)]
+    [TestCase("Baxy, please, disable your private memory.", false)]
+    [TestCase("Baxy, por favor, activa tu memoria privada.", true)]
+    [TestCase("disable memory", false)]
+    [TestCase("habilita la memoria", true)]
+    [TestCase("turn memory on", true)]
+    [TestCase("turn memory off", false)]
+    [TestCase("desactiva la memoria local de baxy", false)]
+    [TestCase("enable baxy's private local memory", true)]
+    public void ConfigurationRecognizesItsOwnQualifiedMemoryTarget(string text, bool enabled)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route));
+            Assert.That(result.Operation?.Name, Is.EqualTo("memory.configure"));
+            Assert.That(result.Operation?.PrivateArguments["enabled"]?.GetValue<bool>(), Is.EqualTo(enabled));
+        });
+    }
+
+    [TestCase("No desactives la memoria privada.")]
+    [TestCase("No desactiva la memoria privada.")]
+    [TestCase("Do not disable your private memory.")]
+    [TestCase("Never enable private memory.")]
+    [TestCase("¿Qué significa desactiva la memoria privada?")]
+    [TestCase("Explain how to disable private memory.")]
+    [TestCase("Is your private memory enabled?")]
+    [TestCase("Dime si la memoria privada está activa.")]
+    [TestCase("If I asked you to disable memory, what would happen?")]
+    [TestCase("Repite: desactiva la memoria privada.")]
+    [TestCase("\"Disable your private memory\"")]
+    [TestCase("Desactiva la memoria privada de Chrome.")]
+    [TestCase("Disable Windows virtual memory.")]
+    [TestCase("Desactiva la memoria RAM.")]
+    [TestCase("Activa la memoria privada y abre Steam.")]
+    [TestCase("Disable your memory and erase all my files.")]
+    public void ConfigurationDoesNotTreatOtherMemoryMentionsAsConsent(string text)
+    {
+        MemoryParseResult result = NaturalMemoryRequestParser.Classify(text);
+
+        Assert.That(result.Operation?.Name,
+            Is.Not.EqualTo("memory.configure").And.Not.EqualTo("memory.enable").And.Not.EqualTo("memory.disable"));
     }
 
     [TestCase("activa la memoria", "memory.configure", "enabled", true)]

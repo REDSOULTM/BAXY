@@ -1,0 +1,2 @@
+{"requestId": "17", "user": "Mensaje actual:\nconfirmar", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "25", "user": "Mensaje actual:\nWhat is on my to do list?", "response": {"role": "assistant", "content": "{\"request_type\":\"external_read\",\"effect_count\":\"one\"}"}}

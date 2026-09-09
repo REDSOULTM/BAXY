@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-08T15:07:35.893280+00:00",
+  "hypothesis": "Extend the existing standalone social-act reader with a whole self-introduction grammar inherited from NaturalMemoryRequestParser.DeclaredNameInputPattern, rather than sending a closed declarative social turn to PC-operation retrieval. Reuse conversation composition already4/4 in429. No stored name cache, fixed reply, new classifier or kernel effect.",
+  "boundary": "First-person declarative name only, Unicode letters/apostrophe/hyphen/space with bounded length. Entire input must match. Decline added action heads using existing effect_intent._COVERAGE_ACTION_HEAD and question words using request_reading._INTERROGATIVE. Name remains raw user text passed to composer, never authorization or assistant identity. Pending clarification remains with ordinary interpretation. Third-person/saving/negation/quoted/hypothetical/PC queries stay outside this shortcut.",
+  "evidence": "426/427 native self-introduction selects Windows;430 wire alias fails;427 global guard9/13 rejected.429 proper conversation event4/4 vs428 task status2/4.432 T5 still goes to irrelevant PC clarification and contaminates T6. C# AskToSave cannot directly close because its name pattern alone accepts arbitrary trailing letter sequences; do not add that shortcut.",
+  "validation": "Positive and negative standalone/pending regressions before source; owner turn_policy/request_reading and related composition suites, Fast. Then same8turn product432 replay with one source change. No fresh acceptance, no Full during repair.",
+  "sources_before": {
+    "src/baxy_mind/__main__.py": "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3",
+    "src/baxy_mind/request_reading.py": "992719a876529fabc94ea2fa100ea9a2809d108b843f7d10d41d8a0a3c8f9d41",
+    "src/baxy_mind/effect_intent.py": "c20457459bdc76430df3353c18b3b00f41701a8e3075fe65390c594038f5c893",
+    "src/baxy_mind/llm.py": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+    "tests/test_turn_policy.py": "41d37b6d59b7a69cb71dd393e2ab1395a4e7ec1f661c4d39ea0bf8d7db00108d"
+  }
+}

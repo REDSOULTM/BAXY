@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-08T22:21:26.168981+00:00",
+  "process_session": 98221,
+  "exit": 0,
+  "proposals_correct": 13,
+  "turns": 14,
+  "bindings_correct": 11,
+  "bindings": 11,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1778.21875,
+    "seconds": 38.813,
+    "manifest_unchanged": true
+  },
+  "source": "effect_intent503, __main__501, llm466",
+  "limits": "Development mind/plan/arguments only. No provider effect, shell, physical audio, voice or C03 acceptance."
+}

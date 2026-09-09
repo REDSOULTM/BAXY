@@ -1,0 +1,6 @@
+{
+  "method": "Native capacity/profile contrast after85/87 data and88/90 instruction/framing failures. Same six87 factual-activity packets, original progress instruction, same Qwen3.5 GGUF and greedy sampler. Only thinking profile enabled: server reasoning on, budget-1, deepseek separation; request enable_thinking true, max_tokens2048 to separate reasoning from premature truncation. Official Qwen3.5 supports thinking by default; b9980 documents these flags. This does not adopt general sampling recommendations or promote a runtime. Preserve full raw response privately, adjudicate final content and latency/resource cost. No source, functions/UI/audio/reserve change. A length-finished answer is not accepted.",
+  "sourceSha256": "353f467616747e5cf4c031052aa6ff376cb78f71b6f02101a896e7418bad5fb4",
+  "model": "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

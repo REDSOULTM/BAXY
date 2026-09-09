@@ -1,0 +1,468 @@
+{
+  "rows": [
+    {
+      "case": "disabled-save-error",
+      "profile": "production-greedy-seed0",
+      "text": "Jordan, I remember your name. The memory save operation failed because memory was disabled.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 18,
+      "seconds": 0.5310000000172295
+    },
+    {
+      "case": "disabled-save-error",
+      "profile": "documented-seed0",
+      "text": "Jordan, I've got your name. The save operation failed because memory was disabled.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 18,
+      "seconds": 0.42199999999138527
+    },
+    {
+      "case": "disabled-save-error",
+      "profile": "documented-seed17",
+      "text": "Jordan, I've got your name. Unfortunately, I couldn't save it because memory was disabled.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 21,
+      "seconds": 0.46900000001187436
+    },
+    {
+      "case": "enable-confirmation",
+      "profile": "documented-seed0",
+      "text": "Jordan, I've enabled your private local memory as requested. Would you like to confirm or cancel this action? Please choose either \"confirm\" or \"cancel\".",
+      "useful_native": false,
+      "issue": "Claims already enabled before asking the pending confirmation.",
+      "finish_reason": "stop",
+      "completion_tokens": 33,
+      "seconds": 0.7339999999967404
+    },
+    {
+      "case": "enable-confirmation",
+      "profile": "documented-seed17",
+      "text": "Jordan, I remember your name. You are about to enable private local memory on this PC. Do you want to confirm or cancel this action?",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 30,
+      "seconds": 0.7339999999967404
+    },
+    {
+      "case": "enable-confirmation",
+      "profile": "production-greedy-seed0",
+      "text": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 24,
+      "seconds": 0.625
+    },
+    {
+      "case": "enable-result",
+      "profile": "documented-seed17",
+      "text": "Memory is now enabled.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 6,
+      "seconds": 0.26600000000325963
+    },
+    {
+      "case": "enable-result",
+      "profile": "production-greedy-seed0",
+      "text": "Memory configuration enabled.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 5,
+      "seconds": 0.23399999999674037
+    },
+    {
+      "case": "enable-result",
+      "profile": "documented-seed0",
+      "text": "Memory is now enabled.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 6,
+      "seconds": 0.25
+    },
+    {
+      "case": "save-result",
+      "profile": "production-greedy-seed0",
+      "text": "The memory has been saved successfully.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 8,
+      "seconds": 0.28099999998812564
+    },
+    {
+      "case": "save-result",
+      "profile": "documented-seed0",
+      "text": "Memory has been successfully saved.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 7,
+      "seconds": 0.26600000000325963
+    },
+    {
+      "case": "save-result",
+      "profile": "documented-seed17",
+      "text": "The memory was saved successfully.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 7,
+      "seconds": 0.26600000000325963
+    },
+    {
+      "case": "app-clarification",
+      "profile": "documented-seed0",
+      "text": "¿Qué aplicación necesitas abrir?",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 7,
+      "seconds": 0.25
+    },
+    {
+      "case": "app-clarification",
+      "profile": "documented-seed17",
+      "text": "¿Qué aplicación necesitas abrir?",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 7,
+      "seconds": 0.26500000001396984
+    },
+    {
+      "case": "app-clarification",
+      "profile": "production-greedy-seed0",
+      "text": "¿Qué aplicación quieres abrir?",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 7,
+      "seconds": 0.25
+    },
+    {
+      "case": "stored-name-en",
+      "profile": "documented-seed17",
+      "text": "I have saved the name \"Jordan\" in my private memory.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 14,
+      "seconds": 0.42199999999138527
+    },
+    {
+      "case": "stored-name-en",
+      "profile": "production-greedy-seed0",
+      "text": "I saved the name Jordan in private memory.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 10,
+      "seconds": 0.35899999999674037
+    },
+    {
+      "case": "stored-name-en",
+      "profile": "documented-seed0",
+      "text": "The name saved in private memory is Jordan.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 10,
+      "seconds": 0.35999999998603016
+    },
+    {
+      "case": "stored-name-es",
+      "profile": "production-greedy-seed0",
+      "text": "Mi nombre es Jordan.",
+      "useful_native": false,
+      "issue": "Answers as the assistant identity instead of reporting the stored entry; documented seed0 also replaces Jordan with BAXY.",
+      "finish_reason": "stop",
+      "completion_tokens": 6,
+      "seconds": 0.3120000000053551
+    },
+    {
+      "case": "stored-name-es",
+      "profile": "documented-seed0",
+      "text": "Me llamo BAXY.",
+      "useful_native": false,
+      "issue": "Answers as the assistant identity instead of reporting the stored entry; documented seed0 also replaces Jordan with BAXY.",
+      "finish_reason": "stop",
+      "completion_tokens": 8,
+      "seconds": 0.32800000000861473
+    },
+    {
+      "case": "stored-name-es",
+      "profile": "documented-seed17",
+      "text": "Mi nombre guardado es Jordan.",
+      "useful_native": false,
+      "issue": "Answers as the assistant identity instead of reporting the stored entry; documented seed0 also replaces Jordan with BAXY.",
+      "finish_reason": "stop",
+      "completion_tokens": 8,
+      "seconds": 0.34400000001187436
+    },
+    {
+      "case": "progress",
+      "profile": "documented-seed0",
+      "text": "Estoy revisando tu solicitud para ver qué necesitas.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 12,
+      "seconds": 0.3279999999795109
+    },
+    {
+      "case": "progress",
+      "profile": "documented-seed17",
+      "text": "Estoy revisando tu solicitud para ver cómo puedo ayudarte mejor.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 14,
+      "seconds": 0.360000000015134
+    },
+    {
+      "case": "progress",
+      "profile": "production-greedy-seed0",
+      "text": "Estoy revisando tu solicitud para ver qué necesitas.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 12,
+      "seconds": 0.3120000000053551
+    },
+    {
+      "case": "disable-result",
+      "profile": "documented-seed17",
+      "text": "He desactivado la memoria privada. El sistema ya no está habilitado ni reproduciendo datos privados.",
+      "useful_native": false,
+      "issue": "Adds private-data playback claim not observed; replayed=false is protocol metadata, not playback.",
+      "finish_reason": "stop",
+      "completion_tokens": 23,
+      "seconds": 0.48499999998603016
+    },
+    {
+      "case": "disable-result",
+      "profile": "production-greedy-seed0",
+      "text": "He desactivado la memoria privada.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 9,
+      "seconds": 0.28099999998812564
+    },
+    {
+      "case": "disable-result",
+      "profile": "documented-seed0",
+      "text": "He desactivado la memoria privada.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 9,
+      "seconds": 0.32800000000861473
+    },
+    {
+      "case": "clock-result",
+      "profile": "production-greedy-seed0",
+      "text": "Son las 21:24.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 10,
+      "seconds": 0.32800000000861473
+    },
+    {
+      "case": "clock-result",
+      "profile": "documented-seed0",
+      "text": "Son las 21:24.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 10,
+      "seconds": 0.3129999999946449
+    },
+    {
+      "case": "clock-result",
+      "profile": "documented-seed17",
+      "text": "Son las 21:24.",
+      "useful_native": true,
+      "issue": null,
+      "finish_reason": "stop",
+      "completion_tokens": 10,
+      "seconds": 0.3120000000053551
+    },
+    {
+      "case": "memory-capability-disabled",
+      "profile": "documented-seed0",
+      "text": "No tengo memoria local en el sentido de guardar datos entre sesiones; mi contexto se reinicia con cada nueva conversación.",
+      "useful_native": false,
+      "issue": "Denies local memory capability despite an existing disabled store; documented replies invent broader reset/no-persistence claims.",
+      "finish_reason": "stop",
+      "completion_tokens": 24,
+      "seconds": 0.5
+    },
+    {
+      "case": "memory-capability-disabled",
+      "profile": "documented-seed17",
+      "text": "No tengo memoria local. Solo recuerdo lo que me cuentas en esta conversación actual.",
+      "useful_native": false,
+      "issue": "Denies local memory capability despite an existing disabled store; documented replies invent broader reset/no-persistence claims.",
+      "finish_reason": "stop",
+      "completion_tokens": 17,
+      "seconds": 0.42199999999138527
+    },
+    {
+      "case": "memory-capability-disabled",
+      "profile": "production-greedy-seed0",
+      "text": "No tengo memoria local.",
+      "useful_native": false,
+      "issue": "Denies local memory capability despite an existing disabled store; documented replies invent broader reset/no-persistence claims.",
+      "finish_reason": "stop",
+      "completion_tokens": 6,
+      "seconds": 0.26600000000325963
+    }
+  ],
+  "effective_samplers": [
+    {
+      "line": 252,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 281,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 312,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 343,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 376,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 410,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 444,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 476,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 507,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 538,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 569,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 600,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 631,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 662,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 693,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 724,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 757,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 791,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 825,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 859,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 893,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 927,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 959,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 990,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 1021,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 1052,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 1083,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 1114,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    },
+    {
+      "line": 1145,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 1176,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 1207,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 1238,
+      "parameters": "top_k = 20, top_p = 0.800, min_p = 0.000, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.700"
+    },
+    {
+      "line": 1269,
+      "parameters": "top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000"
+    }
+  ]
+}

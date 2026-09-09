@@ -1,0 +1,4 @@
+{"cmd": "turn", "text": "Lee el archivo \"c03-ausente.txt\" del sandbox."}
+{"cmd": "turn", "text": "Why couldn't you read that file?"}
+{"cmd": "turn", "text": "Lee el contenido del archivo \"c03-lectura.txt\" del sandbox."}
+{"cmd": "turn", "text": "Dime la hora."}

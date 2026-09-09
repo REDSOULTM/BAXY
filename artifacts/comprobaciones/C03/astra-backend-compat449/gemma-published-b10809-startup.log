@@ -1,0 +1,15 @@
+0.00.183.480 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.184.303 W srv  llama_server: -----------------
+0.00.184.314 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.184.315 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.184.318 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.184.319 W srv  llama_server: -----------------
+0.00.187.449 I srv    load_model: loading model 'D:\BAXYRuntime\experiments\models\baxy-gemma4-e2b-published-f9b84ecd\gemma-4-E2B-it-Q4_K_M.gguf'
+0.02.078.741 W load: control-looking token:     50 '<|tool_response>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.02.079.571 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.02.150.616 W load: special_eog_ids contains '<|tool_response>', removing '</s>' token from EOG list
+0.05.227.520 I cmn          init: llama threadpool init, n_threads = 8
+0.05.503.581 I srv    load_model: initializing, n_slots = 3, n_ctx_slot = 4096, kv_unified = 'false'
+0.05.504.758 W srv          init: --cache-idle-slots requires --cache-ram, disabling
+0.05.521.861 I srv  llama_server: model loaded
+0.05.521.868 I srv  llama_server: listening on http://127.0.0.1:53553

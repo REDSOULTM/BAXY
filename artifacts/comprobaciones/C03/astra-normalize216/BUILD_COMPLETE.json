@@ -1,0 +1,13 @@
+{
+  "exitCode": 0,
+  "binaries": [
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\sherpa205\\bundle-normalize216\\onnxruntime.dll",
+      "sha256": "daa77083a45bf525da0dde9e87f85d8eb146f58f9c9aa7124ca84545e1c0f148"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\experiments\\voice\\sherpa205\\bundle-normalize216\\_sherpa_onnx.cp312-win_amd64.pyd",
+      "sha256": "f639a80674b16b2127c9fc46fdf2889540f2d52daa27efa2c858a18246a23646"
+    }
+  ]
+}

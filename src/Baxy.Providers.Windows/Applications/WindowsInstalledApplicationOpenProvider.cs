@@ -625,7 +625,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 }
 
-internal sealed record InstalledApplicationEntry(string Name, string AppUserModelId);
+internal sealed record InstalledApplicationEntry(
+    string Name,
+    string AppUserModelId,
+    string? TargetPath = null);
 
 internal sealed record InstalledApplicationObservation(
     int ProcessId,
@@ -804,11 +807,38 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 {
     private static readonly Encoding StrictUtf8 =
         new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
-    private const string CatalogScript =
-        "$ErrorActionPreference='Stop'; " +
-        "$utf8=[System.Text.UTF8Encoding]::new($false); " +
-        "[Console]::OutputEncoding=$utf8; $OutputEncoding=$utf8; " +
-        "Get-StartApps | Select-Object Name,AppID | ConvertTo-Json -Compress";
+    private const string CatalogScript = """
+        $ErrorActionPreference='Stop'
+        $utf8=[System.Text.UTF8Encoding]::new($false)
+        [Console]::OutputEncoding=$utf8; $OutputEncoding=$utf8
+        $apps=@(Get-StartApps)
+        $duplicateIds=@{}
+        $apps | Group-Object Name | Where-Object Count -GT 1 | ForEach-Object {
+            $_.Group | ForEach-Object { $duplicateIds[$_.AppID]=$true }
+        }
+        $targets=@{}
+        if ($duplicateIds.Count -gt 0) {
+            $shell=$null; $folder=$null
+            try {
+                $shell=New-Object -ComObject Shell.Application
+                $folder=$shell.NameSpace('shell:AppsFolder')
+                foreach ($item in $folder.Items()) {
+                    if ($duplicateIds.ContainsKey($item.Path)) {
+                        $targets[$item.Path]=$item.ExtendedProperty('System.Link.TargetParsingPath')
+                    }
+                }
+            } catch {
+                # Missing Shell metadata preserves the original ambiguity.
+                $targets=@{}
+            } finally {
+                if ($null -ne $folder) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($folder) }
+                if ($null -ne $shell) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($shell) }
+            }
+        }
+        @($apps | ForEach-Object {
+            [pscustomobject]@{ Name=$_.Name; AppID=$_.AppID; TargetPath=$targets[$_.AppID] }
+        }) | ConvertTo-Json -Compress
+        """;
 
     public async ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
         CancellationToken cancellationToken)
@@ -901,11 +931,81 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             string? appId = appIdElement.GetString();
             if (name is not null && appId is not null)
             {
-                entries.Add(new InstalledApplicationEntry(name, appId));
+                string? targetPath = item.TryGetProperty("TargetPath", out JsonElement targetElement)
+                    && targetElement.ValueKind == JsonValueKind.String
+                    ? targetElement.GetString()
+                    : null;
+                entries.Add(new InstalledApplicationEntry(name, appId, targetPath));
             }
         }
 
-        return entries;
+        return ResolveMissingDuplicateTargets(entries, ReadLocalExecutableState);
+    }
+
+    internal static IReadOnlyList<InstalledApplicationEntry> ResolveMissingDuplicateTargets(
+        IReadOnlyList<InstalledApplicationEntry> entries,
+        Func<string?, bool?> targetExists)
+    {
+        var retained = new List<InstalledApplicationEntry>();
+        foreach (IGrouping<string, InstalledApplicationEntry> group in entries
+            .GroupBy(static entry => InstalledApplicationResolver.Normalize(entry.Name), StringComparer.Ordinal))
+        {
+            InstalledApplicationEntry[] candidates = group.ToArray();
+            if (candidates.Select(static entry => entry.AppUserModelId)
+                .Distinct(StringComparer.Ordinal).Count() <= 1)
+            {
+                retained.AddRange(candidates);
+                continue;
+            }
+
+            var observed = candidates.Select(entry => (Entry: entry, Exists: targetExists(entry.TargetPath)))
+                .ToArray();
+            string[] existingIdentities = observed.Where(static item => item.Exists == true)
+                .Select(static item => item.Entry.AppUserModelId).Distinct(StringComparer.Ordinal).ToArray();
+            if (existingIdentities.Length == 1 && observed.All(item =>
+                item.Entry.AppUserModelId == existingIdentities[0] || item.Exists == false))
+            {
+                retained.AddRange(candidates.Where(entry => entry.AppUserModelId == existingIdentities[0]));
+            }
+            else
+            {
+                retained.AddRange(candidates);
+            }
+        }
+
+        return retained;
+    }
+
+    internal static bool? ReadLocalExecutableState(string? targetPath)
+    {
+        // A missing file is evidence; an unreadable, remote or unspecified target is not.
+        try
+        {
+            if (string.IsNullOrWhiteSpace(targetPath)
+                || !Path.IsPathFullyQualified(targetPath)
+                || Path.GetPathRoot(targetPath)?.Length != 3
+                || !string.Equals(Path.GetExtension(targetPath), ".exe", StringComparison.OrdinalIgnoreCase)
+                || !Directory.Exists(Path.GetPathRoot(targetPath)))
+            {
+                return null;
+            }
+
+            FileAttributes attributes = File.GetAttributes(targetPath);
+            return (attributes & FileAttributes.Directory) == 0 ? true : null;
+        }
+        catch (FileNotFoundException)
+        {
+            return false;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return false;
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+        {
+            return null;
+        }
     }
 
     public IReadOnlyList<InstalledApplicationObservation> Inventory(

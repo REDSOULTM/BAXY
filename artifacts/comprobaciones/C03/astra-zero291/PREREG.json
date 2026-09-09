@@ -1,0 +1,27 @@
+{
+  "utc": "2026-09-08T00:33:13.883625+00:00",
+  "hypothesis": "The prior descriptor lists negated requests without scoping no-effect to the entire request; scope3 loses an allowed clock clause and scope7 wrongly executes quoted translation content. Replace only that descriptor with a whole-request zero-effect predicate.",
+  "method": "All18 controls289/290. Identical payload except the no_effect_decision description. Same backend, settings, functions/order and required selector. No source edit or effects. No further descriptor sweep if this fails.",
+  "criteria": "Recover scope3 and scope7 with no loss of prior correct controls; preserve finished Paris abstention. Existing app05/compound failures remain visible, no acceptance.",
+  "description": "Internal classification outcome only: the entire current request requires zero computer actions and zero external reads. Select this alone only if no requested effect remains. Otherwise select the functions for the remaining requested effects. This grants no operation authority and does not answer the person.",
+  "cases": [
+    "owner-paris288",
+    "owner-identity288",
+    "owner-2",
+    "win-07",
+    "med-04",
+    "app-05",
+    "cmp-01",
+    "scope-1",
+    "scope-2",
+    "scope-3",
+    "scope-4",
+    "scope-5",
+    "scope-6",
+    "scope-7",
+    "scope-8",
+    "scope-9",
+    "scope-10",
+    "scope-11"
+  ]
+}

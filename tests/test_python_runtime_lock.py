@@ -24,11 +24,14 @@ TEST_CONSTRAINTS = ROOT / "constraints-test-win-x64.txt"
 def test_runtime_lock_matches_the_measured_product_graph() -> None:
     locked = validate_lock_structure(LOCK, CONSTRAINTS)
 
-    assert len(locked) == 59
+    assert len(locked) == 60
+    assert locked["pywebrtc-audio"] == "0.2.0+baxy.1"
+    assert not {"ai-edge-litert", "backports-strenum", "ml-dtypes"} & locked.keys()
     assert locked == load_constraints(CONSTRAINTS)
     assert locked["numpy"] == "1.26.4"
     assert locked["torch"] == "2.13.0"
-    assert locked["sherpa-onnx"] == "1.13.4"
+    assert locked["sherpa-onnx"] == "1.13.4+baxy.2"
+    assert locked["sherpa-onnx-core"] == "1.13.4"
     assert "pytest" not in locked
     assert "pip" not in locked
 
@@ -120,4 +123,31 @@ def test_runtime_lock_rejects_unreviewed_top_level_behavior(
     candidate.write_text(extended, encoding="utf-8")
 
     with pytest.raises(RuntimeLockError, match="^lock_fields$"):
+        validate_lock_structure(candidate, CONSTRAINTS)
+
+
+@pytest.mark.parametrize("prefix", ["../runtime_wheels/", "D:/runtime_wheels/", "other/"])
+def test_runtime_lock_rejects_local_wheels_outside_the_bundle(
+    tmp_path: Path, prefix: str,
+) -> None:
+    content = LOCK.read_text(encoding="utf-8")
+    assert 'path = "runtime_wheels/' in content
+    candidate = tmp_path / "pylock.runtime-win-x64.toml"
+    candidate.write_text(content.replace('path = "runtime_wheels/', f'path = "{prefix}'), encoding="utf-8")
+
+    with pytest.raises(RuntimeLockError, match="^lock_wheel_source$"):
+        validate_lock_structure(candidate, CONSTRAINTS)
+
+
+def test_runtime_lock_rejects_a_path_disguised_as_a_wheel_name(tmp_path: Path) -> None:
+    original = LOCK.read_text(encoding="utf-8")
+    content = original.replace(
+        'name = "sherpa_onnx-',
+        'name = "../sherpa_onnx-',
+    )
+    assert content != original
+    candidate = tmp_path / "pylock.runtime-win-x64.toml"
+    candidate.write_text(content, encoding="utf-8")
+
+    with pytest.raises(RuntimeLockError, match="^lock_wheel_identity$"):
         validate_lock_structure(candidate, CONSTRAINTS)

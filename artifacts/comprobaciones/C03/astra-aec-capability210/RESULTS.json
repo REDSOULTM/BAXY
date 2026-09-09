@@ -1,0 +1,79 @@
+{
+  "rows": [
+    {
+      "role": 0,
+      "category": 0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 0,
+      "category": 3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 1,
+      "category": 0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 1,
+      "category": 3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 2,
+      "category": 0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 2,
+      "category": 3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    }
+  ],
+  "processExitCode": 0,
+  "exeSha256": "2a024bea8dd0fcb72b07f72a20a014a0d9514eddf7eb7e692cbf2a632a3b8566",
+  "privateStdoutSha256": "62796625249bc66848a6e5a945659d1c0fc9409d2394f77a05bdc94f1a787c56"
+}

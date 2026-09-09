@@ -1,0 +1,126 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index f3c2f08..fe5b7ca 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -301,19 +301,21 @@ GRANITE_OOC_EN_CPU_USER_MESSAGE_PROMPT = (
+ )
+ 
+ GRANITE_WELCOME_USER_MESSAGE_PROMPT = (
+-    "Una frase con situation.greeting. Nada más. Devuelve sólo el mensaje."
++    "Saluda brevemente en español con voz propia, atendiendo al saludo de la "
++    "persona si lo hay. Devuelve sólo el mensaje."
+ )
+ 
+ GRANITE_WELCOME_CPU_USER_MESSAGE_PROMPT = (
+-    "Una frase con situation.greeting. Nada más."
++    "Saluda brevemente en español con voz propia. Devuelve sólo el mensaje."
+ )
+ 
+ GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT = (
+-    "One sentence with situation.greeting. Nothing else. Return only the message."
++    "Greet briefly in English in your own voice, responding to the person's "
++    "greeting if present. Return only the message."
+ )
+ 
+ GRANITE_WELCOME_EN_CPU_USER_MESSAGE_PROMPT = (
+-    "One sentence with situation.greeting. Nothing else."
++    "Greet briefly in English in your own voice. Return only the message."
+ )
+ 
+ 
+@@ -3093,10 +3095,6 @@ def _compose_situation_payload(
+     # modelo intente leerlo (panel-opus-9/062).
+     if reason and not reason.lstrip().startswith(("{", "[")):
+         payload["reason"] = reason
+-    # Un turno de bienvenida es un saludo aunque no haya pedido que leer: sin
+-    # esto el arranque componía sobre un `situation.greeting` inexistente.
+-    if reading.greets or str(situation.get("kind") or "").strip().lower() == "welcome":
+-        payload["greeting"] = "hi" if language == "en" else "hola"
+     if reading.has(INTENT_CONTINUE_CONSTRAINT):
+         payload["opening"] = "none"
+     if reading.has(INTENT_NEGATIVE_CONSTRAINT):
+@@ -3173,9 +3171,6 @@ def _compose_user_content(
+     can you do» perdían el pedido antes de llegar al modelo.
+     """
+ 
+-    reading = reading or read_request(user_text)
+-    if reading.greeting_only:
+-        return _continue_facts_user_content(prompt_facts=prompt_facts)
+     parts = [f"Texto original de la persona: {user_text}"]
+     visible = _visible_compose_facts(prompt_facts)
+     if visible:
+@@ -3943,11 +3938,9 @@ def compose_visible_defect(
+         if re.search(r"abiert|\bis open\b|\bdoor\b|\bdevice\b|\bcall\b", folded):
+             return "extra_claim"
+         if "?" in stripped or "¿" in stripped:
+-            user_lead = (user_text or "").casefold().lstrip("¡¿\"' ")
+-            reply_lead = stripped.casefold().lstrip("¡¿\"' ")
+             if not (
+-                user_lead.startswith(("hola", "hi", "hey", "hello", "buenas"))
+-                and reply_lead.startswith(("hola", "hi", "hey", "hello", "buenas"))
++                read_request(user_text).greeting_only
++                and read_request(stripped).greets
+             ):
+                 return "welcome_question"
+         if _looks_like_knowledge_question(user_text) and (
+@@ -3997,6 +3990,13 @@ def compose_visible_defect(
+     if (
+         re.search(r"[.!][\"']?\s+[A-Z¿]", stripped)
+         and not _looks_like_capability_question(user_text)
++        and not (
++            (intent == "welcome" or kind == "welcome")
++            and read_request(user_text).greeting_only
++            and read_request(stripped).greets
++            and stripped.count("?") == 1
++            and len(re.findall(r"[.!][\"']?\s+[A-Z¿]", stripped)) == 1
++        )
+     ):
+         return "too_many_sentences"
+     if intent == "confirmation" or kind == "confirmation":
+@@ -8722,6 +8722,10 @@ class LlmRuntime:
+                     "sentence. Do not greet. Do not refuse. Do not mention "
+                     "JSON."
+                 )
++            elif subject is not None:
++                # El tema ya está resuelto; la pregunta conserva su propósito.
++                # Pedir además «Explain the concept» convertía utilidad en definición.
++                pass
+             elif _looks_like_knowledge_question(user_text):
+                 instruct(
+                     "\nExplain the concept in one short sentence. "
+@@ -9299,6 +9303,9 @@ class LlmRuntime:
+             message_prompt = cpu_prompt
+             payload["messages"][0]["content"] = message_prompt
+             payload["messages"][-1]["content"] = acting_facts
++        # Congelar las instrucciones del turno antes de añadir correcciones.
++        # Reconstruir sólo los hechos en los reintentos perdía el tema resuelto.
++        turn_instructions = "".join(sent_instructions[2:]) if cause != "acting" else ""
+         response = self._post(payload)
+         first_raw = (
+             response["choices"][0]["message"].get("content") or ""
+@@ -9324,16 +9331,6 @@ class LlmRuntime:
+             required_actions=required_actions,
+             required_words=required_words,
+         )
+-        if (
+-            not required_actions
+-            and not required_words
+-            and not required_facts
+-            and not (intent == "status" and _starts_with_request_imperative(text))
+-            and text
+-            and not blocked(text)
+-        ):
+-            return text
+-
+         retry_payload = dict(payload)
+         defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
+ 
+@@ -9470,7 +9467,7 @@ class LlmRuntime:
+             cpu_prompt
+             if cause == "acting" or defect == "internal_code"
+             else message_prompt
+-        )
++        ) + turn_instructions
+         correction = " ".join(
+             part
+             for part in (

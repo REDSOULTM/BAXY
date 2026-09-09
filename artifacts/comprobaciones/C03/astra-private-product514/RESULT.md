@@ -1,0 +1,9 @@
+# Producto real: memoria y confirmación en perfil aislado
+
+7/8 finales útiles. La confirmación nombra la memoria privada local pendiente y ofrececonfirm/cancel; no demuestra un guardado prematuro al reconocer el nombre recién declarado. Trasconfirmar se habilita la memoria y se guarda el dato sintético; las lecturasES/EN devuelvenJordan y la conversación conservaÁlvaro. El perfil del dueño no se utiliza. Hay ficheros cifrados del almacén aislado, preservados y con huellas; no se afirma todavía una prueba de reinicio.
+
+El segundo turno falla en presentación: Memory saved successfully. No corrections made. System state updated to "memory updated". HTTP4 recibe saved=true junto a corrected=false/sensitive=false/replayed=false y el estado redundante memory updated. HTTP3 también narra configuración. El próximo diagnóstico515 conservará los hechos y guardas originales, pero quitará sólo metadatos redundantes de la vista enviada al modelo para esos éxitos privados. Se añade un control real de deshabilitación para garantizar que enabled=false nunca desaparezca.
+
+Progreso se revisa aparte: HTTP12 recibe state=reviewing the person's request, mientras su sistema afirma que los resultados aún no están disponibles. El label público habla de la solicitud del usuario y repite esa ausencia. La falta de resultados en el payload no acredita su ausencia en el producto. Es otra frontera; no se modifica junto con515.
+
+Sesión39353exit0;28,093s;RAM1803,270MiB/GPU3497,559MiB,sinviolaciones y registrointacto. Es la carga alcanzada por el conductor, sinUIvisible/vozfísica; no mínimo universal ni aceptaciónC03. La explicación más amplia de retención enT1 puede estudiarse si hace falta, pero no se convierte retrospectivamente en fallo del modelo cuando el dato no se incluyó y la decisión pendiente sí era clara.

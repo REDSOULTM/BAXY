@@ -1,0 +1,234 @@
+{
+  "terminals": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 1,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Memory saved successfully. No corrections made. System state updated to \"memory updated\".",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 2,
+      "useful": false,
+      "reason": "Verified enable/save effects, but final prose repeats internal corrected/system-state metadata; not an acceptable public explanation."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿De qué aplicación te refieres?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 3,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 4,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¡Hola Álvaro! ¿Cómo va tu día? 😎",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 5,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿De qué aplicación te refieres?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 6,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 7,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Álvaro.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 8,
+      "useful": true,
+      "reason": "Useful truthful confirmation, clarification, memory recall or conversational name. T1 names pending local memory and asks confirm/cancel; remembering the just-declared name is not a claim of durable save."
+    }
+  ],
+  "activities": [
+    {
+      "id": "native-2",
+      "src": "YOU",
+      "msg": "My name is Jordan. Remember my name.",
+      "ts": "20:15:28"
+    },
+    {
+      "id": "native-3",
+      "src": "BAXY",
+      "msg": "The memory save operation failed because memory was disabled.",
+      "ts": "20:15:29",
+      "route": "error"
+    },
+    {
+      "id": "native-4",
+      "src": "BAXY",
+      "msg": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+      "ts": "20:15:30",
+      "route": "confirmation"
+    },
+    {
+      "id": "native-5",
+      "src": "YOU",
+      "msg": "confirm",
+      "ts": "20:15:30"
+    },
+    {
+      "id": "native-6",
+      "src": "BAXY",
+      "msg": "Memory configuration enabled successfully. Operation completed.",
+      "ts": "20:15:31",
+      "route": "result"
+    },
+    {
+      "id": "native-7",
+      "src": "BAXY",
+      "msg": "Memory saved successfully. No corrections made. System state updated to \"memory updated\".",
+      "ts": "20:15:32",
+      "route": "result"
+    },
+    {
+      "id": "native-8",
+      "src": "YOU",
+      "msg": "Abre una aplicación.",
+      "ts": "20:15:32"
+    },
+    {
+      "id": "native-9",
+      "src": "BAXY",
+      "msg": "¿De qué aplicación te refieres?",
+      "ts": "20:15:33",
+      "route": "clarification"
+    },
+    {
+      "id": "native-10",
+      "src": "YOU",
+      "msg": "What name have you saved in private memory?",
+      "ts": "20:15:33"
+    },
+    {
+      "id": "native-11",
+      "src": "BAXY",
+      "msg": "Jordan",
+      "ts": "20:15:34",
+      "route": "result"
+    },
+    {
+      "id": "native-12",
+      "src": "YOU",
+      "msg": "Me llamo Álvaro.",
+      "ts": "20:15:34"
+    },
+    {
+      "id": "native-13",
+      "src": "BAXY",
+      "msg": "¡Hola Álvaro! ¿Cómo va tu día? 😎",
+      "ts": "20:15:34",
+      "route": "conversation"
+    },
+    {
+      "id": "native-14",
+      "src": "YOU",
+      "msg": "Abre una aplicación.",
+      "ts": "20:15:34"
+    },
+    {
+      "id": "native-15",
+      "src": "BAXY",
+      "msg": "¿De qué aplicación te refieres?",
+      "ts": "20:15:35",
+      "route": "clarification"
+    },
+    {
+      "id": "native-16",
+      "src": "YOU",
+      "msg": "¿Qué nombre tienes guardado en tu memoria privada?",
+      "ts": "20:15:35"
+    },
+    {
+      "id": "native-17",
+      "src": "BAXY",
+      "msg": "Jordan",
+      "ts": "20:15:36",
+      "route": "result"
+    },
+    {
+      "id": "native-18",
+      "src": "YOU",
+      "msg": "¿Cómo me llamo?",
+      "ts": "20:15:36"
+    },
+    {
+      "id": "native-19",
+      "src": "BAXY",
+      "msg": "Álvaro.",
+      "ts": "20:15:39",
+      "route": "conversation"
+    }
+  ],
+  "progress": [
+    {
+      "type": "boot_stage",
+      "stage": "understanding",
+      "phase": "active",
+      "label": "Estoy revisando la solicitud del usuario. Aún no se han obtenido los resultados solicitados.",
+      "progress": null,
+      "error": null,
+      "t": 1788909336891,
+      "v": 2
+    },
+    {
+      "type": "boot_stage",
+      "stage": "understanding",
+      "phase": "active",
+      "label": "Estoy revisando la solicitud del usuario. Aún no se han obtenido los resultados solicitados.",
+      "progress": null,
+      "error": null,
+      "t": 1788909338892,
+      "v": 2
+    }
+  ]
+}

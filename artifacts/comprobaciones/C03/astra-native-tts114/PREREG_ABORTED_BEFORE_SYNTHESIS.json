@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-07T10:36:10.671298+00:00",
+  "method": "Same source112 engine/PAD, configured en-us phonemizer, CPU/default inference scales. Replace Spanish ONNX/config with English john medium ONNX/config; comparison is trained voice package, not weights alone. Same three consumed English responses as native113, no human reserve. Same registered Parakeet CPU, no hints/prompt. ASR errors require inspection; no physical audio, classifier or promotion.",
+  "cases": [
+    "It is 07:14.",
+    "The file read failed because the content is invalid UTF-8.",
+    "I couldn't read the file because it wasn't found in the sandbox."
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\voice\\c03-john114\\en_US-john-medium.onnx",
+  "modelSha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
+  "configSha256": "af60f177b6b550f3d7a302720c0fb89e7f94a82b5dca464775ef63b1c69ba09a",
+  "sourceSha256": "979ed2bd0cad5d8762633bf85c6591fbf66ffdd99bf49f71ca3737a7dd61aeaa",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

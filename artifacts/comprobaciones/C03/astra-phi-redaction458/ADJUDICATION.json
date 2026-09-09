@@ -1,0 +1,128 @@
+[
+  {
+    "id": "actual437-t7",
+    "variant": "documented",
+    "answer": "El nombre guardado en mi memoria privada es Jordan.",
+    "finish_reason": "stop",
+    "seconds": 0.281,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "actual437-t4",
+    "variant": "documented",
+    "answer": "The name saved in private memory is Jordan.",
+    "finish_reason": "stop",
+    "seconds": 0.219,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "name-marta",
+    "variant": "documented",
+    "answer": "El nombre guardado en mi memoria privada es Marta.",
+    "finish_reason": "stop",
+    "seconds": 0.25,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "compound-name",
+    "variant": "documented",
+    "answer": "El nombre guardado en mi memoria privada es Ana María.",
+    "finish_reason": "stop",
+    "seconds": 0.281,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "third-person",
+    "variant": "documented",
+    "answer": "El nombre de tu hermana es Nina.",
+    "finish_reason": "stop",
+    "seconds": 0.203,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "two-records",
+    "variant": "documented",
+    "answer": "Jordan, Nina",
+    "finish_reason": "stop",
+    "seconds": 0.157,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "memory.enable",
+    "variant": "documented",
+    "answer": "The memory configuration has been successfully enabled on the PC.",
+    "finish_reason": "stop",
+    "seconds": 0.234,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "memory.save",
+    "variant": "documented",
+    "answer": "The memory save operation was completed successfully. No sensitive data was saved, and no corrections were made. The PC's state was updated accordingly.",
+    "finish_reason": "stop",
+    "seconds": 0.453,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "redacted-es",
+    "variant": "documented",
+    "answer": "No tengo acceso ni capacidad para almacenar o recuperar información personal, como lo indica el dato de situación proporcionado.",
+    "finish_reason": "stop",
+    "seconds": 0.391,
+    "useful": false,
+    "reason": "Niega información/acceso pese a existir metadatos de un registro protegido."
+  },
+  {
+    "id": "redacted-en",
+    "variant": "documented",
+    "answer": "Private memory stores sensitive information, such as passwords, personal data, and confidential communications.",
+    "finish_reason": "stop",
+    "seconds": 0.328,
+    "useful": false,
+    "reason": "Explicación general de tipos de datos; no informa la lectura concreta."
+  },
+  {
+    "id": "mixed-es",
+    "variant": "documented",
+    "answer": "En la memoria privada, se ha guardado el color favorito del usuario, que es el turquesa, y un secreto que no se ha revelado.",
+    "finish_reason": "stop",
+    "seconds": 0.531,
+    "useful": true,
+    "reason": "Conserva el dato o resultado solicitado."
+  },
+  {
+    "id": "redacted-es",
+    "variant": "typed-redaction",
+    "answer": "No tengo información sobre la memoria privada del usuario, ya que se ha redactado.",
+    "finish_reason": "stop",
+    "seconds": 0.344,
+    "useful": false,
+    "reason": "Niega información/acceso pese a existir metadatos de un registro protegido."
+  },
+  {
+    "id": "redacted-en",
+    "variant": "typed-redaction",
+    "answer": "Private memory contains sensitive information that has been redacted for privacy.",
+    "finish_reason": "stop",
+    "seconds": 0.25,
+    "useful": true,
+    "reason": "Describe información presente y protegida; menos preciso que conservar también la etiqueta secret, pero no inventa ausencia ni acceso."
+  },
+  {
+    "id": "mixed-es",
+    "variant": "typed-redaction",
+    "answer": "En la memoria privada, se ha guardado el color favorito del usuario, que es el turquesa. La información sobre el secreto ha sido redactada y no se puede proporcionar. No se ha repetido esta memoria.",
+    "finish_reason": "stop",
+    "seconds": 0.687,
+    "useful": true,
+    "reason": "Conserva color y explica que el secreto no puede proporcionarse; añade un detalle de replay innecesario."
+  }
+]

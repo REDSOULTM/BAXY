@@ -1,0 +1,6 @@
+{
+  "input": "abre steam",
+  "provenance": "Literal owner development control reused by agent through UI",
+  "utc": "2026-09-07T22:31:31.9368315Z",
+  "reason": "Capabilities turn ended in visible Response error, no final prose, input available. Add same-session recovery control before closing."
+}

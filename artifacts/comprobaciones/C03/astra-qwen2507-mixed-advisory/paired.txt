@@ -1,0 +1,14 @@
+n=12 published=12 other=0
+
+001	t1	published_final	¿Qué hora es?	Son las 07:29.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 07:30. El volumen está en el nivel 100. El audio está mutado.
+003	t3	published_final	What time is it?	It's 7:30.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 07:30. The volume level is 100. The audio is muted.
+005	t5	published_final	Dime la hora, please, en spanglish	It's 7:30, amigos.
+006	t6	published_final	What time is it y cómo está el audio?	Es 07:30 local. El audio está mutado, nivel 100.
+007	t7	published_final	Hey, buenas	¡Hola! ¿Qué onda, compañero? Bienvenido a este lado, ¿listo para meterse en el rollo?
+008	t8	published_final	Explain encryption, pero en simple	Encryption es como poner un código a los mensajes para que solo las personas con la clave puedan leerlos. Es como si escribieras un mensaje en un libro y lo guardaras con un candado: nadie más puede abrirlo sin la llave. Así se protege la información en internet.
+009	t9	published_final	responde en spanglish: qué es una copia de seguridad	Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, en caso de que se pierdan o se dañen. Es como tener un respaldo del libro en caso de que lo pierdas o lo destruyan.
+010	t10	published_final	Explain gravity, pero sin tecnicismos	Gravity es como si todo lo que está cerca de ti, como la Tierra, tuviera un poder para tirar todo lo que está cerca hacia abajo. Es por eso que cuando caes, no vuelves a subir, y las cosas caen al suelo.
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima

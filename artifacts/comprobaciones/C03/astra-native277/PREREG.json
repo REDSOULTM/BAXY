@@ -1,0 +1,7 @@
+{
+  "utc": "2026-09-07T23:43:25.941532+00:00",
+  "method": "Use real native selector implementation with typed_entity shortlists276, original literal and full saved history. Only retrieval candidates/order differ from prior tests; no operations executed.",
+  "criteria": "Only app.open for all three known development requests.",
+  "source": "astra-entity276/RESULT.json",
+  "backendPid": 89232
+}

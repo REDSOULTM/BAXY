@@ -1,0 +1,187 @@
+warning: in the working copy of 'sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h', LF will be replaced by CRLF the next time Git touches it
+-- CMake version: 3.31.6-msvc6
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- No CMAKE_BUILD_TYPE given, default to Release
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_INSTALL_PREFIX: C:/Program Files/sherpa-onnx
+-- BUILD_SHARED_LIBS ON
+-- SHERPA_ONNX_ENABLE_PYTHON ON
+-- SHERPA_ONNX_ENABLE_TESTS OFF
+-- SHERPA_ONNX_ENABLE_CHECK OFF
+-- SHERPA_ONNX_ENABLE_PORTAUDIO OFF
+-- SHERPA_ONNX_ENABLE_JNI OFF
+-- SHERPA_ONNX_ENABLE_C_API OFF
+-- SHERPA_ONNX_ENABLE_WEBSOCKET OFF
+-- SHERPA_ONNX_ENABLE_GPU OFF
+-- SHERPA_ONNX_ENABLE_WASM OFF
+-- SHERPA_ONNX_ENABLE_WASM_SPEAKER_DIARIZATION OFF
+-- SHERPA_ONNX_ENABLE_WASM_TTS OFF
+-- SHERPA_ONNX_ENABLE_WASM_ASR OFF
+-- SHERPA_ONNX_ENABLE_WASM_KWS OFF
+-- SHERPA_ONNX_ENABLE_WASM_VAD OFF
+-- SHERPA_ONNX_ENABLE_WASM_VAD_ASR OFF
+-- SHERPA_ONNX_ENABLE_WASM_NODEJS OFF
+-- SHERPA_ONNX_ENABLE_WASM_SPEECH_ENHANCEMENT OFF
+-- SHERPA_ONNX_ENABLE_BINARY OFF
+-- SHERPA_ONNX_ENABLE_TTS ON
+-- SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION ON
+-- SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY ON
+-- SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE OFF
+-- SHERPA_ONNX_ENABLE_SANITIZER: OFF
+-- SHERPA_ONNX_BUILD_C_API_EXAMPLES: OFF
+-- SHERPA_ONNX_ENABLE_RKNN: OFF
+-- SHERPA_ONNX_ENABLE_AXERA: OFF
+-- SHERPA_ONNX_ENABLE_AXCL: OFF
+-- SHERPA_ONNX_ENABLE_ASCEND_NPU: OFF
+-- SHERPA_ONNX_ENABLE_QNN: OFF
+-- SHERPA_ONNX_ENABLE_SPACEMIT: OFF
+-- SHERPA_ONNX_LINK_D3D: OFF
+-- SHERPA_ONNX_USE_STATIC_CRT: ON
+-- CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>
+-- IPO is enabled
+-- TTS is enabled
+-- speaker diarization is enabled
+-- DirectML is disabled
+-- C++ Standard version: 17
+-- Disabled warnings: /wd4244;/wd4267;/wd4305;/wd4334;/wd4800;/wd4996
+-- CMAKE_SOURCE_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/source
+-- CMAKE_BINARY_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build
+-- PROJECT_SOURCE_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/source
+-- PROJECT_BINARY_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build
+-- CMake version: 3.31.6-msvc6
+-- CMAKE_SYSTEM: Windows-10.0.26200
+-- CMAKE_SYSTEM_NAME: Windows
+-- CMAKE_SYSTEM_VERSION: 10.0.26200
+-- CMAKE_SYSTEM_PROCESSOR: AMD64
+-- sherpa-onnx git sha1: 142807252687d81b40d6315f23470a1512a00de3
+-- sherpa-onnx git date: Tue Jul 7 07:21:34 2026
+-- OS used to build sherpa-onnx: Microsoft Windows 11 Home Single Language 10.0.26200
+-- C++ compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+-- C++ compiler ID: MSVC
+-- C++ compiler version: 19.44.35228.0
+-- C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe
+-- C compiler ID: MSVC
+-- C compiler version: 19.44.35228.0
+-- Downloading pybind11 from https://github.com/pybind/pybind11/archive/refs/tags/v3.0.0.tar.gz
+-- pybind11 is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/pybind11-src
+-- pybind11 v3.0.0 
+-- Downloading kaldi-native-fbank from https://github.com/csukuangfj/kaldi-native-fbank/archive/refs/tags/v1.22.3.tar.gz
+-- kaldi-native-fbank is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_native_fbank-src
+-- kaldi-native-fbank's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_native_fbank-build
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_EXPORT_COMPILE_COMMANDS: ON
+-- BUILD_SHARED_LIBS: OFF
+-- KALDI_NATIVE_FBANK_BUILD_TESTS: OFF
+-- KALDI_NATIVE_FBANK_BUILD_PYTHON: OFF
+-- KALDI_NATIVE_FBANK_ENABLE_CHECK: OFF
+-- KALDI_NATIVE_FBANK_ENABLE_CHECK: OFF
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996 
+-- CMAKE_INSTALL_PREFIX: C:/Program Files/sherpa-onnx
+-- Disabled warnings: /wd4244;/wd4267;/wd4624
+-- Downloading kissfft from https://github.com/mborgerding/kissfft/archive/febd4caeed32e33ad8b2e0bb5ea77542c40f18ec.zip
+-- kissfft is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kissfft-src
+-- kissfft's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kissfft-build
+-- Building KissFFT with datatype: float
+-- Building static library
+-- PKGINCLUDEDIR is include/kissfft
+-- Disable building Python
+-- Downloading kaldi-decoder from https://github.com/k2-fsa/kaldi-decoder/archive/refs/tags/v0.3.0.tar.gz
+-- kaldi-decoder is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_decoder-src
+-- kaldi-decoder's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldi_decoder-build
+-- CMAKE_BUILD_TYPE: Release
+-- Downloading kaldifst from https://github.com/k2-fsa/kaldifst/archive/refs/tags/v1.8.0.tar.gz
+-- kaldifst is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldifst-src
+-- kaldifst's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/kaldifst-build
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_BUILD_TYPE: Release
+-- CMAKE_INSTALL_PREFIX: C:/Program Files/sherpa-onnx
+-- C++ Standard version: 17
+-- Disabled warnings: /wd4018;/wd4244;/wd4267;/wd4291;/wd4305;/wd4996
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996  /wd4018  /wd4244  /wd4267  /wd4291  /wd4305  /wd4996 
+-- Downloading openfst from https://github.com/csukuangfj/openfst/archive/refs/tags/v1.8.5-2026-04-11.tar.gz
+-- openfst is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/openfst-src
+-- BUILD_SHARED_LIBS: OFF
+-- BUILD_TESTING: OFF
+-- HAVE_BIN: OFF
+-- HAVE_SCRIPT: OFF
+-- HAVE_COMPACT: OFF
+-- HAVE_COMPRESS: OFF
+-- HAVE_CONST: OFF
+-- HAVE_FAR: ON
+-- HAVE_FSTS: OFF
+-- HAVE_GRM: OFF
+-- HAVE_LINEAR: OFF
+-- HAVE_LOOKAHEAD: OFF
+-- HAVE_MPDT: OFF
+-- HAVE_NGRAM: OFF
+-- HAVE_PDT: OFF
+-- HAVE_SPECIAL: OFF
+-- OPENFST_USE_ABSL: OFF
+-- Downloading eigen from https://gitlab.com/libeigen/eigen/-/archive/5.0.1/eigen-5.0.1.tar.gz
+-- eigen is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/eigen-src
+-- eigen's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/eigen-build
+-- 
+-- Configured Eigen 5.0.1-dev+14280725
+-- 
+-- Downloading pre-compiled onnxruntime
+-- CMAKE_SYSTEM_NAME: Windows
+-- CMAKE_SYSTEM_PROCESSOR: AMD64
+-- CMAKE_VS_PLATFORM_NAME: x64
+-- Use dynamic onnxruntime libraries
+-- CMAKE_SYSTEM_NAME: Windows
+-- CMAKE_SYSTEM_PROCESSOR: AMD64
+-- CMAKE_VS_PLATFORM_NAME: x64
+-- Use MSVC CRT: MT
+-- Downloading onnxruntime from https://github.com/csukuangfj/onnxruntime-libs/releases/download/v1.27.0/onnxruntime-win-x64-MT-Release-1.27.0.tar.bz2
+-- onnxruntime is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src
+-- location_onnxruntime: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src/lib/onnxruntime.lib
+-- onnxruntime lib files: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src/lib/onnxruntime.dll;D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src/lib/onnxruntime_providers_shared.dll
+-- Downloading simple-sentencepiece https://github.com/pkufool/simple-sentencepiece/archive/refs/tags/v0.7.tar.gz
+-- simple-sentencepiece is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/simple-sentencepiece-src
+-- C++ Standard version: 17
+-- Disabled warnings: /wd4244;/wd4267
+-- ONNXRUNTIME_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/onnxruntime-src
+-- Downloading json from https://github.com/nlohmann/json/archive/refs/tags/v3.12.0.tar.gz
+-- json is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/json-src
+-- json's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/json-build
+-- Using the multi-header code from D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/json-src/include/
+-- Downloading espeak-ng from https://github.com/csukuangfj/espeak-ng/archive/ed530aa113046142eb5115cf2fc9157854d0ffe1.zip
+-- espeak-ng is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/espeak_ng-src
+-- espeak-ng binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/espeak_ng-build
+-- Configuration:
+--   shared: OFF
+--   mbrola: OFF (MBROLA_BIN-NOTFOUND)
+--   libsonic: OFF (SONIC_LIB-NOTFOUND SONIC_INC-NOTFOUND)
+--   libpcaudio: OFF (PCAUDIO_LIB-NOTFOUND PCAUDIO_INC-NOTFOUND)
+--   klatt: OFF
+--   speech-player: OFF
+--   async: OFF
+-- ESPEAK_NG_DIR: D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/espeak_ng-src
+-- Downloading piper-phonemize from https://github.com/csukuangfj/piper-phonemize/archive/f3ff95afc03640bc1399e113e83361192a2fafb4.zip
+-- piper-phonemize is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/piper_phonemize-src
+-- piper-phonemize binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/piper_phonemize-build
+-- hclust_cpp is downloaded to D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/hclust_cpp-src
+-- hclust_cpp's binary dir is D:/BAXYRuntime/experiments/voice/sherpa205/build/_deps/hclust_cpp-build
+-- PYTHON_EXECUTABLE: 
+-- PYTHON_VERSION: 
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996 
+-- CMAKE_CXX_FLAGS: /DWIN32 /D_WINDOWS /GR /EHsc /wd4244  /wd4267  /wd4305  /wd4334  /wd4800  /wd4996 
+-- Configuring done (14.3s)
+-- Generating done (1.5s)
+-- Build files have been written to: D:/BAXYRuntime/experiments/voice/sherpa205/build
+Versión de MSBuild 17.14.51+25f168cee para .NET Framework
+
+  kissfft.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kissfft-float.lib
+  fst.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fst.lib
+  ucd.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ucd.lib
+  ssentencepiece_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ssentencepiece_core.lib
+  espeak-ng.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\espeak-ng.lib
+  kaldi-native-fbank-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-native-fbank-core.lib
+  kaldifst_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-kaldifst-core.lib
+  piper_phonemize.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\piper_phonemize.lib
+  fstfar.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fstfar.lib
+  kaldi-decoder-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-decoder-core.lib
+  sherpa-onnx-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-core.lib
+  _sherpa_onnx.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\_sherpa_onnx.cp312-win_amd64.pyd
+{"wheel": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\runtime_wheels\\sherpa_onnx-1.13.4+baxy.1-cp312-cp312-win_amd64.whl", "sha256": "2ee49c501c97ad69be14449ecc739b37d856e33f9065ddf7565ffa6b626d7ee0", "upstreamCommit": "142807252687d81b40d6315f23470a1512a00de3", "upstreamWheelSha256": "b8436ffe2763b3fd522fbac8fe53f47d611721c84819c241acfb65d122403d7d", "patchSha256": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163", "extensionSha256": "49c696327587214eda554b9d621cb95f4aec259f817373bbd684ae654ad343b8", "change": "NeMo per-stream greedy decoder shares the configured model; contextual beam stays unchanged.", "profile": "Windows x64, CPython3.12, VS2022 Release, ONNX Runtime1.27.0 CPU"}

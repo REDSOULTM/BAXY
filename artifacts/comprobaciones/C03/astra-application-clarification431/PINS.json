@@ -1,0 +1,14 @@
+{
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\PREREG.json": "b88add8d95bd6b714823af08eeb9744cbda5ab3d7460b0360c8a9868f763880d",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\RESULT.md": "beb2e956fb0a4db02a688ef3213a72929d5319c057e5643589754945b6bcde0c",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\baseline.log": "9c4ebf526f87b6061d1167f402621148919647d93d318fdd9b6dc16151ae8644",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\focused.log": "122d52ce5d55598e6e426c4108d36ce008ac749aea1221a82290da3d2579fa70",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\focused-final.log": "db895ab98faeb42a190196d3b16af4b7f12295eea4a62792889f09ef717fc220",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\owners.log": "ece70521a228d77260fc3e304254ad7f84a165d37c00605018495536081c5871",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-application-clarification431\\fast.log": "6adef387b7e0246f6cf156e1960c5a116e7ed093393bb4564c17d0c9c0ded721",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\effect_intent.py": "c20457459bdc76430df3353c18b3b00f41701a8e3075fe65390c594038f5c893",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\llm.py": "10e7e580a5aa039992003c9358a93857ac01c5690640ae024677c83688fe5627",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\__main__.py": "6632507da4e1afe7765205ff675fb9ff9f0fff2eb0b0322f33ae2fd343530ed3",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\test_effect_intent.py": "a9ddf1eaeb1459e8aaecc97b77ed9fc4157d4aed3d5d763f9788d8cfac3d7c55",
+  "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\test_turn_policy.py": "41d37b6d59b7a69cb71dd393e2ab1395a4e7ec1f661c4d39ea0bf8d7db00108d"
+}

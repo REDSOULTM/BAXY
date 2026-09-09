@@ -1,0 +1,10 @@
+{"stage": "guarded", "id": "welcome-es", "error": null}
+{"stage": "guarded", "id": "welcome-en", "error": null}
+{"stage": "guarded", "id": "welcome-mixed", "error": null}
+{"stage": "guarded", "id": "confirmation-es", "error": null}
+{"stage": "guarded", "id": "confirmation-en", "error": null}
+{"stage": "guarded", "id": "confirmation-mixed", "error": null}
+{"stage": "guarded", "id": "progress-es", "error": null}
+{"stage": "guarded", "id": "progress-en", "error": null}
+{"stage": "guarded", "id": "progress-mixed", "error": null}
+{"seconds": 6.69, "gpuPeakMiB": 3497.55859375, "ramPeakMiB": 2889.703125, "error": null, "registrationUnchanged": true}

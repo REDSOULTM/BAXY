@@ -1,0 +1,8 @@
+{
+  "method": "All1316 exact221 cleaned frames through real product capture segmentation and fresh SileroVad. Recorded speaking state; echo guard receives the recorded delayed raw microphone/reference pair, as in Speex. Inert device/output/ducker only, no physical effects. Decode actual queued segments with installed baxy.2. Compare actual VAD and guard to221; keep mismatches honest.",
+  "hypothesis": "After source223 sets speech=False in the existing energy rejection branch, replay every exact221 frame and report all segments/decisions. Do not change thresholds or filter recognized text. Compare to baseline222.",
+  "sourceSha256": "cc24919c2bfe5e1ee19a9466155957d53617ed3ea131a2be3379d20eff0f704d",
+  "scriptSha256": "5a7a5aae9c50da9306c47d3caf9c44285a70d46b5b70b69c5a34ac0ad26ba101",
+  "inputSha256": "c6c6e6d8d07727731a749ecfa34b27c4e828e674062749539a4406c3fd789f3d",
+  "thresholdsChanged": false
+}

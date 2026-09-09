@@ -1,0 +1,11 @@
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+echo221 1316 exact
+echo232 1316 exact
+h0-near 1021 exact
+h0-raw 1021 exact
+h1-near 1021 exact
+h1-raw 1021 exact
+h2-near 1021 exact
+h2-raw 1021 exact
+h3-near 1021 exact
+h3-raw 1021 exact

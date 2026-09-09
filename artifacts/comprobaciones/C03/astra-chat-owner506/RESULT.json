@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-08T22:31:28.451221+00:00",
+  "baseline": {
+    "failed": 2,
+    "passed": 7,
+    "seconds": 1.95
+  },
+  "focal": {
+    "passed": 9,
+    "seconds": 0.83
+  },
+  "owners": {
+    "passed": 3404,
+    "subtests_passed": 121,
+    "skips": 0,
+    "seconds": 53.88,
+    "session": 38298,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.32,
+    "warnings": 0,
+    "errors": 0,
+    "session": 16397,
+    "exit": 0
+  },
+  "source_sha256": {
+    "src/baxy_mind/llm.py": "4fc9090845bb2b565ca875710d451ac7afcf89541eb52cdb57ebe81ed4c7b34f",
+    "src/baxy_mind/__main__.py": "b6d23414d607e221ecc721cbc95770785236ee190263c617893614c2fefddb3d",
+    "tests/test_turn_policy.py": "8be328f2a5b9cc6e43a88986c469f5cfc8ffba15c28d48cbab37f3edaad9843b"
+  },
+  "change": "Remove native conversation_reply production/propagation and initial_reply chat bypass. Existing proper chat generation and speculative chat cache remain; guards and context scoping unchanged. No prompts, sampler or model changed.",
+  "limits": "505 two quality failures remain; integrated protocol507 next. No Full, UI, effects or acceptance."
+}

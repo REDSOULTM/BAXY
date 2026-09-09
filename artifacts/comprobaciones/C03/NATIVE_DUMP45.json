@@ -1,0 +1,152 @@
+[
+  {
+    "pid": 23360,
+    "dumpPath": "C:\\Users\\usuario\\AppData\\Local\\CrashDumps\\python.exe.23360.dmp",
+    "dumpSha256": "b46983aca26e75ee1a62f958f0da858cb021f3549d9e8a4c67868583c6f5d6b8",
+    "threadId": 35440,
+    "exceptionCode": "ExceptionCode.EXCEPTION_ACCESS_VIOLATION",
+    "exceptionAddress": "0x24525f60700",
+    "exceptionInformation": [
+      8,
+      2496012879616
+    ],
+    "stackModulePointers": [
+      {
+        "stackOffset": "0x0",
+        "module": "libportaudio64bit.dll",
+        "moduleOffset": "0xd492"
+      },
+      {
+        "stackOffset": "0x20",
+        "module": "KERNELBASE.dll",
+        "moduleOffset": "0x6730"
+      },
+      {
+        "stackOffset": "0x40",
+        "module": "libportaudio64bit.dll",
+        "moduleOffset": "0x29387"
+      },
+      {
+        "stackOffset": "0xf0",
+        "module": "libportaudio64bit.dll",
+        "moduleOffset": "0x26de3"
+      },
+      {
+        "stackOffset": "0x120",
+        "module": "kernel32.dll",
+        "moduleOffset": "0x2ccb7"
+      },
+      {
+        "stackOffset": "0x150",
+        "module": "ntdll.dll",
+        "moduleOffset": "0xacaec"
+      },
+      {
+        "stackOffset": "0x180",
+        "module": "KERNELBASE.dll",
+        "moduleOffset": "0x10e8c0"
+      }
+    ],
+    "interpretationLimit": "Pointers in captured exception stack, not a symbolic unwinding. Initial PID23360 returns to libportaudio64bit.dll+0xd492 from execution of unmapped callback address. PID2740 fault occurs while faulthandler is already reporting access violation."
+  },
+  {
+    "pid": 2740,
+    "dumpPath": "C:\\Users\\usuario\\AppData\\Local\\CrashDumps\\python.exe.2740.dmp",
+    "dumpSha256": "00622f07085c2f28623609070d601089632f58117e74cf85263fb7beca9a8405",
+    "threadId": 7732,
+    "exceptionCode": "ExceptionCode.EXCEPTION_ACCESS_VIOLATION",
+    "exceptionAddress": "0x7ffa25ed7aec",
+    "exceptionInformation": [
+      0,
+      68
+    ],
+    "stackModulePointers": [
+      {
+        "stackOffset": "0x18",
+        "module": "python312.dll",
+        "moduleOffset": "0x5bfeb8"
+      },
+      {
+        "stackOffset": "0x40",
+        "module": "python312.dll",
+        "moduleOffset": "0x49effc"
+      },
+      {
+        "stackOffset": "0x48",
+        "module": "python312.dll",
+        "moduleOffset": "0x5153c0"
+      },
+      {
+        "stackOffset": "0x58",
+        "module": "python312.dll",
+        "moduleOffset": "0x27e9f9"
+      },
+      {
+        "stackOffset": "0x68",
+        "module": "python312.dll",
+        "moduleOffset": "0x49effc"
+      },
+      {
+        "stackOffset": "0x70",
+        "module": "python312.dll",
+        "moduleOffset": "0x1a2680"
+      },
+      {
+        "stackOffset": "0x98",
+        "module": "python312.dll",
+        "moduleOffset": "0x27eb2c"
+      },
+      {
+        "stackOffset": "0xc8",
+        "module": "python312.dll",
+        "moduleOffset": "0x27e66e"
+      },
+      {
+        "stackOffset": "0xe0",
+        "module": "python312.dll",
+        "moduleOffset": "0x1a2680"
+      },
+      {
+        "stackOffset": "0xf0",
+        "module": "ntdll.dll",
+        "moduleOffset": "0x1ea580"
+      },
+      {
+        "stackOffset": "0xf8",
+        "module": "python312.dll",
+        "moduleOffset": "0x222617"
+      },
+      {
+        "stackOffset": "0x128",
+        "module": "python312.dll",
+        "moduleOffset": "0x222c8d"
+      },
+      {
+        "stackOffset": "0x138",
+        "module": "python312.dll",
+        "moduleOffset": "0x4998d8"
+      },
+      {
+        "stackOffset": "0x150",
+        "module": "ntdll.dll",
+        "moduleOffset": "0x1ea578"
+      },
+      {
+        "stackOffset": "0x158",
+        "module": "ntdll.dll",
+        "moduleOffset": "0xcc196"
+      },
+      {
+        "stackOffset": "0x1e8",
+        "module": "ntdll.dll",
+        "moduleOffset": "0xcb935"
+      },
+      {
+        "stackOffset": "0x208",
+        "module": "python312.dll",
+        "moduleOffset": "0x222b24"
+      }
+    ],
+    "interpretationLimit": "Pointers in captured exception stack, not a symbolic unwinding. Initial PID23360 returns to libportaudio64bit.dll+0xd492 from execution of unmapped callback address. PID2740 fault occurs while faulthandler is already reporting access violation."
+  }
+]

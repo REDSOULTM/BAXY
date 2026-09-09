@@ -103,6 +103,7 @@ public sealed class SystemStatusHandlerTests
             Assert.That(result.GetProperty("battery").GetProperty("isPresent").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("os").GetProperty("buildNumber").GetInt32(), Is.EqualTo(26100));
             Assert.That(result.GetProperty("os").GetProperty("isWorkstation").GetBoolean(), Is.True);
+            Assert.That(result.GetProperty("os").GetProperty("caption").GetString(), Is.EqualTo("Microsoft Windows 11 Pro"));
             Assert.That(result.GetProperty("uptimeSeconds").GetInt64(), Is.EqualTo(5400));
             Assert.That(result.GetProperty("failures").GetArrayLength(), Is.Zero);
             Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
@@ -115,7 +116,7 @@ public sealed class SystemStatusHandlerTests
     {
         SystemStatusSnapshot snapshot = Complete(SystemStatusScope.OperatingSystem) with
         {
-            OperatingSystem = new OperatingSystemStatus(10, 0, 26100, "x64", false),
+            OperatingSystem = new OperatingSystemStatus(10, 0, 26100, "x64", false, "Microsoft Windows Server 2025 Standard"),
         };
         var handler = Handler(new StubProvider(snapshot));
 
@@ -130,6 +131,31 @@ public sealed class SystemStatusHandlerTests
                 outcome.Result?.GetProperty("os").GetProperty("isWorkstation").GetBoolean(),
                 Is.False);
             Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+            Assert.That(outcome.Result?.GetProperty("os").GetProperty("caption").GetString(),
+                Is.EqualTo("Microsoft Windows Server 2025 Standard"));
+        });
+    }
+
+    [TestCase("")]
+    [TestCase(" ")]
+    [TestCase("Windows\n11")]
+    [TestCase(null)]
+    public async Task MissingOrInvalidOsCaptionCannotPassVerification(string? caption)
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.OperatingSystem);
+        snapshot = snapshot with
+        {
+            OperatingSystem = snapshot.OperatingSystem! with { Caption = caption! },
+        };
+
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"os\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.Verified, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
         });
     }
 
@@ -336,7 +362,7 @@ public sealed class SystemStatusHandlerTests
             ? new BatteryStatus(true, 73, false, false)
             : null,
         scope.HasFlag(SystemStatusScope.OperatingSystem)
-            ? new OperatingSystemStatus(10, 0, 26100, "x64", true)
+            ? new OperatingSystemStatus(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro")
             : null,
         scope.HasFlag(SystemStatusScope.Uptime) ? 5400 : null,
         []);
@@ -417,7 +443,7 @@ public sealed class SystemStatusHandlerTests
                 }),
             "os_major" => ("{\"scope\":\"os\"}", Complete(SystemStatusScope.OperatingSystem) with
             {
-                OperatingSystem = new OperatingSystemStatus(0, 0, 26100, "x64", true),
+                OperatingSystem = new OperatingSystemStatus(0, 0, 26100, "x64", true, "Microsoft Windows 11 Pro"),
             }),
             "uptime" => ("{}", Complete(SystemStatusScope.All) with { UptimeSeconds = -1 }),
             _ => throw new AssertionException($"Unknown contradiction: {defect}"),

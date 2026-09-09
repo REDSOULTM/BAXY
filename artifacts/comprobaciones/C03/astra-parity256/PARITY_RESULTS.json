@@ -1,0 +1,12 @@
+[
+  {
+    "case": "echo254",
+    "frames": 1316,
+    "linearExact": true,
+    "finalExact": true,
+    "guardExact": true,
+    "observedGuardsCompared": 60,
+    "dspMeanMs": 0.3752958967399431,
+    "dspP99Ms": 0.5804149986943218
+  }
+]

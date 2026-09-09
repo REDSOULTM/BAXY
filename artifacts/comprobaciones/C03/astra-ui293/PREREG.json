@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-08T00:40:53.0713167Z",
+  "criteria": "Useful visible Paris reply with stable knowledge, no interpretation failure; preserve verified account identity. Record failure and intermediate logs if not met.",
+  "inputs": [
+    "Hola hablame de paris, donde podria ir?",
+    "quien soy"
+  ],
+  "method": "Actual desktop after native292, registered2507 without model override. Same source284/Fast287, no algorithm hooks. Agent-entered development controls, not fresh human acceptance."
+}

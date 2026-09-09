@@ -1,0 +1,14 @@
+n=12 published=10 other=2
+
+001	t1	published_final	¿Qué hora es?	Son las 07:47.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 07:48. El audio está muteado. El volumen es 100.
+003	t3	published_final	What time is it?	It is 07:49.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 07:49. The volume level is 100. The mute state is on.
+005	t5	published_final	Dime la hora, please, en spanglish	La hora es 07:49, please.
+006	t6	published_final	What time is it y cómo está el audio?	La hora local es 07:49. El audio está muteado. El volumen es 100.
+007	t7	published_final	Hey, buenas	Hey, good to see you! How's it going?
+008	t8	published_final	Explain encryption, pero en simple	Encryption is like a secret code that makes your data safe. When you send info, it turns into something unreadable. Only people with the key can read it again. It's like locking a box. You need the right key to open it. That's how it works. Simple, right?
+009	t9	silence	responde en spanglish: qué es una copia de seguridad	
+010	t10	composition_failed	Explain gravity, pero sin tecnicismos	composition_failed
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima.

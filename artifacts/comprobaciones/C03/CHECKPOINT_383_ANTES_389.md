@@ -1,0 +1,20 @@
+# C03 — checkpoint383/384 — EN_CURSO
+
+Goal íntegro activo. Goal-c03/HEAD2bf3d4c; conservar WIP/main/evidencia.
+Sin agentes/commit/push/Full durante reparación. BAXY manual cerrado.
+16mensajes directos/encuesta742rev1248 consolidados, automáticos excluidos; encuesta original y servidor101140 intactos. Historia CHECKPOINT_377_ANTES_383 / CHECKPOINT_374_ANTES_378 y RESULT/PINS por tramo.
+
+Última.NET379 comparte MemoryAction seguro {operation,target} entre pendientes/cancelados. Sólo publica cancelación tras retiro seguro; incertidumbre no se cambia. Tests ausencia de efecto y privacidad. Baseline2fail25s; dueñas1977pass0skip2m18s. Python379 extiende transporte cancelledAction/outcome para memory_cancelled, no prosa fija; baseline4fail1pass0,56s;dueñas1335pass6,02s/Fast17,86s.
+378prepfalló igualdad antes de inferencia, único sufijo English only faltante en referencia377.378b corrige referencia:4/4 identidadcancelada frente0/4 específica; sólo variaba cancelledAction/outcome. Preservado todo.
+Producto380 mismo10sintéticos370:6/10útiles+1parcial+1silencio, antes4/10. Idioma/scope cancelados corregidos; T5silencio sigueforcedrecall;T7pregunta eco parcial;T9soyBAXY responde persona errónea;T10no puedodecirnombrepor memoriaoff. Journalstatuscompleted+2savefail+2recallfail, ningún enable/savecompletado. Cerrado exit0, handle6856 recogido. RESULT/PINS380 con todosmensajesvisibles.
+
+381diagnóstico conserva último borrador nativo y cruza guardaschat:3/5→4/5(T10Te llamasÁlvaro).382restringe a primaria decide_turn:4/5(T10EresÁlvaro), sin efecto; handles91694/53088cerrados. Persistencia explícita sigue falsa denegación. RESULT/PINS381/382.
+Fuente383 adopta borrador primario como metadata conversation_reply, retirado antes de validar decisión; chat initial_reply sólo knowledge sin efectos/forma especial, guarda/reintento intactos. No cache entre turnos ni respuesta sin validar en speculative_chat_handoff. Sin cambio deprompt/modelo/muestreo. Baseline5fail3pass;preparación testhunkmalubicado+messageunbound reparados. Control idiomaTe llamasJordan no activa guarda existente: cambiado a español claro sólo para comprobar guardas. No parcheidioma corto. Focal9pass;dueñas1342pass0skip6,01s;Fast1,52sverde0warn/error. Pins V8 actuales actualizados, evidencia histórica intacta. Última.NET379 no cambiada.
+**384 mente completa actual fuente383, mismos5casos375/382, sin sustitución de respuesta. Handle79326 activo**; driverlog astra-recall-policy384-driver.log. Recoger antes de otro modelo. Script384 ya preparado/lanzado.
+
+Siguiente: generalizar conservación de borrador, comparando chat previo que descarta initial_reply vs fuente383 en población fija (17casos prevista, aún no creada385/386). No adoptar despacho privado diferente por sólo4/5.382conserva primaria; variante381sondeo no producción. ModeloQwen3.5/manifest intactos, modo diagnóstico. No cambiar nativeprompt ni visibilidad de memoria de paso.
+
+Fallas abiertas memoria: App fuerza recall antes de mente para preguntasgenéricas de nombre (NaturalMemoryRequestParser765/900/MainWindow750). Mente desconoce memory.* porque PlannerCatalog302 lo filtra por frontera de plan;376quitarlo sólohook3/5, selecciona memory.list y action_grounding lo vuelve clarify eco. No adoptar eliminación global; Kernel/App exigen memoria sellada fuera del plan público. Necesita diseño que muestre capacidades y conserve ejecución sellada, no permiso extra.371/372error+historial fallaron2/5: no repetir.
+380T9primariaHTTP33 ya niega identidad y diceSoyasistente; sondeo35 igual; chat36SoyBAXY. No atribuir T9 sólo a segunda redacción.375T10 sí era primerarespuesta correcta cambiada porchat. Retries chat llm~6700pierden historial, aún no arreglado.
+
+Pendiente íntegro: ocho rutas/fallos264/base742(0aceptadosindividuales),100humanosfresh(0certificados/congelados),averías,UI escritorio,vozfísica/ASR/recursosconjuntos≤4GB, runtime/instalación/contratosC04–C09sin susgoals,Fullfinalenteroverde/publicaciónfuera main. Ningún bloqueexterno ni cierre. No afirmar mínimo ni todoVRAM desde históricos.

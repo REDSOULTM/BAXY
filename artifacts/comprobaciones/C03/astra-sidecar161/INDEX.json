@@ -1,0 +1,22 @@
+[
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\messages.jsonl",
+    "sha256": "9a54bbc8552a938a6c25eebafd11882d43f1fb0f2a112f4caaeea378f69f8160",
+    "bytes": 1456
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\stderr.log",
+    "sha256": "eb2589da2c228bbc316eca78d064ce3824a247796f2d028893632942d606cf41",
+    "bytes": 120
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\stacks161.log",
+    "sha256": "fe6e392a259c879e4c6d800b6991aa608c2a5444ef416216567d8c15e487ec90",
+    "bytes": 37404
+  },
+  {
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\catalog.json",
+    "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b",
+    "bytes": 68679
+  }
+]

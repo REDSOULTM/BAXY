@@ -1,0 +1,18 @@
+n=16 published=16 other=0
+
+001	t1	published_final	Good afternoon	Good afternoon. How can I help you today?
+002	t2	published_final	define DNS in one sentence	DNS stands for Domain Name System, a system that translates domain names into IP addresses.
+003	t3	published_final	Hi again	Hi again! How can I help you today?
+004	t4	published_final	Good evening	Good evening! How can I help you tonight?
+005	t5	published_final	explícame qué es la latencia de red en una frase	La latencia de red es el tiempo que tarda la señal en viajar de un punto a otro en la red.
+006	t6	published_final	¿por qué importa?	La latencia de red importa porque afecta el tiempo de respuesta y la calidad de la experiencia en aplicaciones que requieren comunicación rápida.
+007	t7	published_final	explain what DNS caching is in one sentence	DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.
+008	t8	published_final	why does it matter?	DNS caching matters because it affects how quickly users can access domain name information, which in turn impacts the speed and reliability of online services.
+009	t9	published_final	explain what a VPN is in one sentence	A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote server, allowing you to browse the internet privately and securely from any location.
+010	t10	published_final	why does it matter?	I don't know why it matters based on the information provided.
+011	t11	published_final	explícame qué es un proxy en una frase	Un proxy es un intermediario que enruta tu tráfico a través de un servidor, permitiendo el acceso a contenido o servicios que podrían estar bloqueados o ser más seguros en tu ubicación actual.
+012	t12	published_final	¿y por qué se usa?	Por qué se usa el proxy es para enrutarse la comunicación entre diferentes sistemas o usuarios, sin exponer directamente los recursos internos.
+013	t13	published_final	explícame qué es un router en una frase	Un router enruta la información entre tu dispositivo y Internet.
+014	t14	published_final	¿y para qué sirve?	Router sirve para enrutar el tráfico entre nodos en una red.
+015	t15	published_final	cuánto es doce por ocho	¿Cuánto es doce multiplicado por ocho?
+016	t16	published_final	what is the capital of Peru	The capital of Peru is Lima.

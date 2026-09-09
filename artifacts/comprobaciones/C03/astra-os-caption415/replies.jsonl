@@ -1,0 +1,8 @@
+{"id": "actual411-windows11-en", "variant": "baseline", "request": "Which Windows version am I running?", "answer": "You're running Windows 10 version 26200 on an x64 workstation.", "error": null, "seconds": 0.719}
+{"id": "actual411-windows11-en", "variant": "caption", "request": "Which Windows version am I running?", "answer": "You are running Microsoft Windows 11 Home Single Language (build 26200).", "error": null, "seconds": 0.594}
+{"id": "windows11-es", "variant": "baseline", "request": "¿Qué versión de Windows tengo?", "answer": "Tienes Windows 10 versión 26200 en 64 bits.", "error": null, "seconds": 0.625}
+{"id": "windows11-es", "variant": "caption", "request": "¿Qué versión de Windows tengo?", "answer": "Tienes Windows 11 Home Single Language en versión 26200.", "error": null, "seconds": 0.5}
+{"id": "windows10-en", "variant": "baseline", "request": "Which version of Windows is this?", "answer": "This is Windows 10 version 19045 (Build 19045) running on x64 architecture.", "error": null, "seconds": 0.734}
+{"id": "windows10-en", "variant": "caption", "request": "Which version of Windows is this?", "answer": "This is Windows 10 Enterprise (version 19045).", "error": null, "seconds": 0.5}
+{"id": "server2022-es", "variant": "baseline", "request": "¿Qué Windows tiene este servidor?", "answer": "Este servidor tiene Windows 10 versión 20348 en formato x64.", "error": null, "seconds": 0.656}
+{"id": "server2022-es", "variant": "caption", "request": "¿Qué Windows tiene este servidor?", "answer": "Este servidor tiene Windows Server 2022 Standard.", "error": null, "seconds": 0.422}

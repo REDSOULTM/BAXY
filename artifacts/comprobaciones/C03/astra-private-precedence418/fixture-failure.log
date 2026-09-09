@@ -1,0 +1,187 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error ExplicitPrivateMemoryRequestSupersedesMindClarification("What name have you saved in private memory?","memory.recall") [5 s]
+  Mensaje de error:
+   System.IO.IOException : The process cannot access the file 'C:\Users\usuario\AppData\Local\BAXY\mind-shell-contract-fd4e82c090474f57be80b06263aecae7\journal\missions.jsonl' because it is being used by another process.
+  Seguimiento de la pila:
+     at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_1.<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__2() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 536
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_0.<<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 531
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.ExplicitPrivateMemoryRequestSupersedesMindClarification(String request, String operation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 521
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error ExplicitPrivateMemoryRequestSupersedesMindClarification("¿Qué nombre tienes guardado en tu memoria privada?","memory.recall") [4 s]
+  Mensaje de error:
+   System.IO.IOException : The process cannot access the file 'C:\Users\usuario\AppData\Local\BAXY\mind-shell-contract-c7ce58ca9f8641e190cbc02b00480c61\journal\missions.jsonl' because it is being used by another process.
+  Seguimiento de la pila:
+     at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_1.<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__2() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 536
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_0.<<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 531
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.ExplicitPrivateMemoryRequestSupersedesMindClarification(String request, String operation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 521
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error ExplicitPrivateMemoryRequestSupersedesMindClarification("do you have memory","memory.status") [4 s]
+  Mensaje de error:
+   System.IO.IOException : The process cannot access the file 'C:\Users\usuario\AppData\Local\BAXY\mind-shell-contract-5d2cd69d65a940dc86dac4d9e8ce32b9\journal\missions.jsonl' because it is being used by another process.
+  Seguimiento de la pila:
+     at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_1.<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__2() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 536
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_0.<<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 531
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.ExplicitPrivateMemoryRequestSupersedesMindClarification(String request, String operation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 521
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error ExplicitPrivateMemoryRequestSupersedesMindClarification("tienes memoria","memory.status") [4 s]
+  Mensaje de error:
+   System.IO.IOException : The process cannot access the file 'C:\Users\usuario\AppData\Local\BAXY\mind-shell-contract-0b1b7478545e4b64b640493b87f31307\journal\missions.jsonl' because it is being used by another process.
+  Seguimiento de la pila:
+     at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_1.<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__2() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 536
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass21_0.<<ExplicitPrivateMemoryRequestSupersedesMindClarification>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 531
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.ExplicitPrivateMemoryRequestSupersedesMindClarification(String request, String operation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 521
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error PrivateMissingValueReplacesPublicClarificationWithoutInventingIt("Recuerda mi nombre") [4 s]
+  Mensaje de error:
+   System.IO.FileNotFoundException : Could not find file 'C:\Users\usuario\AppData\Local\BAXY\mind-shell-contract-49d8a52794704ff0a8859d9206ca5837\shell\retry-outbox.v1.json'.
+  Seguimiento de la pila:
+     at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.AssertOutboxEmpty(String dataRoot) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1118
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass22_0.<<PrivateMissingValueReplacesPublicClarificationWithoutInventingIt>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 568
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.PrivateMissingValueReplacesPublicClarificationWithoutInventingIt(String request) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 550
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error PrivateMissingValueReplacesPublicClarificationWithoutInventingIt("I want you to save my name") [3 s]
+  Mensaje de error:
+   System.IO.FileNotFoundException : Could not find file 'C:\Users\usuario\AppData\Local\BAXY\mind-shell-contract-7b5817d8a4834e94b7cfeaf4e13d363c\shell\retry-outbox.v1.json'.
+  Seguimiento de la pila:
+     at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.AssertOutboxEmpty(String dataRoot) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1118
+   at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass22_0.<<PrivateMissingValueReplacesPublicClarificationWithoutInventingIt>b__0>d.MoveNext() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 568
+--- End of stack trace from previous location ---
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 989
+   at Baxy.Integration.Tests.MindShellEndToEndTests.PrivateMissingValueReplacesPublicClarificationWithoutInventingIt(String request) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 550
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await(Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.RunTestMethod(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.<>c__DisplayClass3_0.<PerformWork>b__0()
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated(ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.ContextUtils.DoIsolated[T](Func`1 func)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+
+Con error! - Con error:     6, Superado:     0, Omitido:     0, Total:     6, Duración: 26 s - Baxy.Integration.Tests.dll (net10.0)

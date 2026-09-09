@@ -1,0 +1,12 @@
+{
+  "speakingFrames": 423,
+  "microphoneRmsWhileSpeaking": 0.006853233918646929,
+  "referenceRmsPcmWhileSpeaking": 896.6982508178129,
+  "cleanRmsWhileSpeaking": 0.0007344143156199355,
+  "vadMaximumWhileSpeaking": 0.8628191947937012,
+  "dspMs": {
+    "mean": 10.799725227857007,
+    "p99": 16.586665002250754,
+    "max": 31.783300000824966
+  }
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "turn": 1,
+    "request": "My name is Jordan. Remember my name.",
+    "final": "Got it, Jordan. I'll remember your name. Which choice do you want: confirm or cancel?",
+    "kind": "published_final",
+    "useful": false,
+    "reason": "Does not explain pending enabling of private memory. Exact authorization choice unclear, despite preceding truthful disabled-memory failure."
+  },
+  {
+    "turn": 2,
+    "request": "confirm",
+    "final": "Confirmed, the memory was saved.",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Authorized enable then save verified; final accurately reports save."
+  },
+  {
+    "turn": 3,
+    "request": "Abre una aplicación.",
+    "final": "¿Qué aplicación deseas abrir?",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Asks missing application."
+  },
+  {
+    "turn": 4,
+    "request": "What name have you saved in private memory?",
+    "final": "I found Jordan.",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Saved Jordan returned, correct subject."
+  },
+  {
+    "turn": 5,
+    "request": "Me llamo Álvaro.",
+    "final": "Qué onda, Álvaro. ¿En qué te puedo ayudar hoy?",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Greets Alvaro, no unauthorized persistence."
+  },
+  {
+    "turn": 6,
+    "request": "Abre una aplicación.",
+    "final": "¿Qué aplicación deseas abrir?",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Asks missing application."
+  },
+  {
+    "turn": 7,
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "final": "El nombre que tengo guardado es Jordan.",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Saved Jordan returned in Spanish, correct subject."
+  },
+  {
+    "turn": 8,
+    "request": "¿Cómo me llamo?",
+    "final": "Me dijiste que te llamas Álvaro.",
+    "kind": "published_final",
+    "useful": true,
+    "reason": "Conversational Alvaro retained and returned in Spanish."
+  }
+]

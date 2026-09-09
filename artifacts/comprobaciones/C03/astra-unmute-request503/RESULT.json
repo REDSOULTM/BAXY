@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-08T22:10:33.499782+00:00",
+  "baseline": {
+    "failed": 13,
+    "passed": 12,
+    "seconds": 2.04
+  },
+  "focal_final": {
+    "passed": 52,
+    "seconds": 1.51
+  },
+  "regressions_preserved": "First broad run6failed/3398pass/121subtests. Global desire stripping changed six notes/music/incomplete-request routes. Moving normalization only into effect readers and preserving legacy non-action heads restores them; six-failure rerun passes. Intermediate logs remain.",
+  "owners": {
+    "passed": 3404,
+    "subtests_passed": 121,
+    "skips": 0,
+    "seconds": 52.86,
+    "session": 7688,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.25,
+    "warnings": 0,
+    "errors": 0,
+    "session": 60961,
+    "exit": 0
+  },
+  "source_sha256": "efe4545df50a755ccdd55ff80b70d26e925d33b918af1ba437177e85991bee90",
+  "change": "Shared unmute family includes desilenciar/dessilenciar and subjunctive forms. Acknowledgement can precede a proved explicit need/desire request. Its body is normalized only within strict/single effect readers; conversation and clarification retain the original frame. Bare unmute accepts courteous pls/plz/porfa. The shared request-prefix regex is compiled once. Final edit after owners only moved comments before Fast.",
+  "limits": "Source/owner validation; exact full mind/arguments504 still required. No model/runtime or visible-response template changes."
+}

@@ -148,7 +148,7 @@ SHA-256: `c20d609655c58c1a031395b8faf44012b89015e50b9459c5a57a344192eeceff`.
 | G04.03 / 305 | Los dos modos funcionan, y el *bypass* no relaja ni el cero de efectos no pedidos ni el de éxitos no verificados. | C04 | PENDIENTE | — |
 | G04.04 / 307 | La puerta de dominio ya no rechaza operaciones correctas por ausencia de lista — o está retirada y sustituida por algo que no herede el defecto. | C06 | PENDIENTE | — |
 | G04.05 / 309 | Ninguna capa nueva sin retirar la que sustituye. | C03 | CUMPLIDO | Retirado `CreateRecoveryDraft` / `composition_lost_verified_facts`; reintento de los mismos hechos. [HERENCIA.md](../../../artifacts/comprobaciones/C03/HERENCIA.md) |
-| G04.06 / 310 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C03 | CUMPLIDO | `e7a8ba0` en `origin/main` |
+| G04.06 / 310 | **Publicado.** Candidato propio validado y publicado en la rama de trabajo fuera de main, con HEAD igual a su rama remota y sin cambios propios pendientes. El encargo `C03_ASTRA_AUTORIDAD.md` sustituye para C03 la obligación de integrar en main. | C03 | PENDIENTE | Histórico: `e7a8ba0` en `origin/main`. No acredita el candidato Astra en `Goal-c03`, aún sin commit/push. |
 
 
 ## G05
@@ -178,7 +178,7 @@ SHA-256: `3fc2e9c96110e204f6a5fae55f9f2b75ee095dfa6f510b1eb3bb60cfd2aae1b0`.
 | G06.03 / 300 | Cero constantes en pantalla, incluidos los caminos feos y el degradado. | C03 | CONTRADICHO | Histórico: `Sigo con` fuera de producción. Posterior: progreso «BAXY Sigo.» en cien-31/33 events. Historia conservada. |
 | G06.04 / 301 | La narración de accesibilidad sale por la misma ruta de prosa, sin subsistema propio. | C08 | PENDIENTE | — |
 | G06.05 / 303 | La personalidad está en el prompt y se puede cambiar editando un texto. | C03 | CUMPLIDO | `USER_MESSAGE_PROMPT` en `src/baxy_mind/llm.py`; seguridad en otro bloque |
-| G06.06 / 304 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C03 | CUMPLIDO | `e7a8ba0` en `origin/main` |
+| G06.06 / 304 | **Publicado.** Candidato propio validado y publicado en la rama de trabajo fuera de main, con HEAD igual a su rama remota y sin cambios propios pendientes. El encargo `C03_ASTRA_AUTORIDAD.md` sustituye para C03 la obligación de integrar en main. | C03 | PENDIENTE | Histórico: `e7a8ba0` en `origin/main`. No acredita el candidato Astra en `Goal-c03`, aún sin commit/push. |
 
 ## G07
 

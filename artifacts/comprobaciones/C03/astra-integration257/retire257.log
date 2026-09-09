@@ -1,0 +1,12 @@
+{"removedVersions": {"ai-edge-litert": "2.2.0", "backports-strenum": "1.2.8", "ml-dtypes": "0.5.4"}, "otherActiveParents": []}
+Found existing installation: ai-edge-litert 2.2.0
+Uninstalling ai-edge-litert-2.2.0:
+  Successfully uninstalled ai-edge-litert-2.2.0
+Found existing installation: backports.strenum 1.2.8
+Uninstalling backports.strenum-1.2.8:
+  Successfully uninstalled backports.strenum-1.2.8
+Found existing installation: ml_dtypes 0.5.4
+Uninstalling ml_dtypes-0.5.4:
+  Successfully uninstalled ml_dtypes-0.5.4
+No broken requirements found.
+obsolete_dtln_dependencies_removed_and_pip_check_passed

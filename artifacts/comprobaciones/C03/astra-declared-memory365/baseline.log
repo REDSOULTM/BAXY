@@ -1,0 +1,89 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 198 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\Baxy.App.csproj (en 198 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 198 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 198 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 198 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 198 ms).
+  1 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error DeclarationAndExplicitNameSaveBindTheSamePrivateDatum("My name is Jordan. Remember my name.","Jordan") [27 ms]
+  Mensaje de error:
+     Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  AskToSave
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+
+
+  Con error DeclarationAndExplicitNameSaveBindTheSamePrivateDatum("Me llamo Álvaro y quiero que guardes mi nombre.","Álvaro") [< 1 ms]
+  Mensaje de error:
+     Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  AskToSave
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+
+  Con error DeclarationAndExplicitNameSaveBindTheSamePrivateDatum("My name is José Luis; save my name.","José Luis") [< 1 ms]
+  Mensaje de error:
+     Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  AskToSave
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+
+  Con error DeclarationAndExplicitNameSaveBindTheSamePrivateDatum("Mi nombre es Zoë; recuerda mi nombre.","Zoë") [< 1 ms]
+  Mensaje de error:
+     Assert.That(result.Outcome, Is.EqualTo(MemoryParseOutcome.Route))
+  Expected: Route
+  But was:  AskToSave
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 19
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+
+  Con error DeclarationAndExplicitNameSaveBindTheSamePrivateDatum("Remember my name. My name is Morgan.","Morgan") [75 ms]
+  Mensaje de error:
+     Assert.That(result.Operation.PrivateArguments["selector"]!.GetValue<string>(), Is.EqualTo("name"))
+  Expected string length 4 but was 32. Strings differ at index 0.
+  Expected: "name"
+  But was:  "historical_fact_dbce18a9c4d43966"
+  -----------^
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 22
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(String text, String name) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\NaturalMemoryRequestParserTests.cs:line 22
+   at InvokeStub_NaturalMemoryRequestParserTests.DeclarationAndExplicitNameSaveBindTheSamePrivateDatum(Object, Span`1)
+
+
+
+Con error! - Con error:     5, Superado:     6, Omitido:     0, Total:    11, Duración: 582 ms - Baxy.Integration.Tests.dll (net10.0)

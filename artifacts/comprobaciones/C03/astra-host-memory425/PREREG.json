@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-08T14:13:10.923360+00:00",
+  "method": "Adopt only native host-memory settings supported by exact b9980 and measured423/424: cache-ram0, no-mmap only with GPU. No weights/prompt/sampling/context/slot change. Source418 behavior fixes preserved. CPU-only still uses mmap; its optional host cache disabled too, no CPU physical certification claimed.",
+  "evidence": [
+    "astra-private-product420",
+    "astra-private-product421",
+    "astra-private-product422",
+    "astra-private-product423",
+    "astra-private-product424"
+  ],
+  "sources_before": {
+    "src/baxy_mind/llm.py": "5c3db6952201a8099cf13992adb09e55cd895ed2db5a1f26041629d0b067e7fa",
+    "tests/test_planner.py": "3c17b8d2ce6cdae45c03a2498181c0eec115a2cb88a981830a851c05edf7be8d"
+  },
+  "validation": "Extend existing GPU/CPU profile tests; focused then owner suites, Fast. Product confirmation uses production command observer without flag injection. Full only on final C03 candidate."
+}

@@ -1,0 +1,19 @@
+{
+  "development": [
+    {
+      "text_literal": "What is an SSID?",
+      "source_references": [],
+      "kind": "synthetic-en-definition"
+    },
+    {
+      "text_literal": "define DNS",
+      "source_references": [],
+      "kind": "synthetic-context-regression-control"
+    },
+    {
+      "text_literal": "explain what DNS does",
+      "source_references": [],
+      "kind": "synthetic-context-regression-control"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "owner46-seed0",
+    "variant": "typed",
+    "status": "wrong_operation",
+    "reason": "Requested unmute; returns audio.volume level100, repeating preceding action instead."
+  },
+  {
+    "id": "owner46-seed17",
+    "variant": "typed",
+    "status": "wrong_operation",
+    "reason": "Requested unmute; returns audio.volume level100, repeating preceding action instead."
+  },
+  {
+    "id": "owner51-seed0",
+    "variant": "typed",
+    "status": "right_operations_wrong_polarity",
+    "reason": "Both effects in correct order, but state=true mutes output, contrary to requested unmute. Must be state=false."
+  },
+  {
+    "id": "owner51-seed17",
+    "variant": "typed",
+    "status": "right_operations_wrong_polarity",
+    "reason": "Both effects in correct order, but state=true mutes output, contrary to requested unmute. Must be state=false."
+  },
+  {
+    "id": "clitic-alone",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Expected effect set/order or no tools; zero interface does not prove arguments."
+  },
+  {
+    "id": "clitic-alone",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operation/arguments/order or correct definition; no execution demonstrated."
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Expected effect set/order or no tools; zero interface does not prove arguments."
+  },
+  {
+    "id": "volume-unmute",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operation/arguments/order or correct definition; no execution demonstrated."
+  },
+  {
+    "id": "unmute-volume",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Expected effect set/order or no tools; zero interface does not prove arguments."
+  },
+  {
+    "id": "unmute-volume",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operation/arguments/order or correct definition; no execution demonstrated."
+  },
+  {
+    "id": "negative-unmute",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Expected effect set/order or no tools; zero interface does not prove arguments."
+  },
+  {
+    "id": "negative-unmute",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operation/arguments/order or correct definition; no execution demonstrated."
+  },
+  {
+    "id": "word-meaning",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Expected effect set/order or no tools; zero interface does not prove arguments."
+  },
+  {
+    "id": "word-meaning",
+    "variant": "typed",
+    "status": "native_correct",
+    "reason": "Expected operation/arguments/order or correct definition; no execution demonstrated."
+  },
+  {
+    "id": "negative-only",
+    "variant": "zero",
+    "status": "selection_correct",
+    "reason": "Expected effect set/order or no tools; zero interface does not prove arguments."
+  },
+  {
+    "id": "negative-only",
+    "variant": "typed",
+    "status": "no_effect_but_unsupported_state",
+    "reason": "No tool calls, but claims audio will remain muted without evidence of current state. Native prose not safe to publish directly."
+  }
+]

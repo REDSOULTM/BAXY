@@ -1,0 +1,1685 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent[cierra aquello-\xbfQu\xe9 quieres cerrar? \xbfUna ventana o un programa?-\xbfQu\xe9 quieres cerrar?] _
+
+text = 'cierra aquello'
+question = '¿Qué quieres cerrar? ¿Una ventana o un programa?'
+repaired = '¿Qué quieres cerrar?'
+
+    @pytest.mark.parametrize("text, question, repaired", [
+        ("cierra aquello", "¿Qué quieres cerrar? ¿Una ventana o un programa?", "¿Qué quieres cerrar?"),
+        ("close that", "What should I close? A window or a program?", "What should I close?"),
+    ])
+    def test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent(
+        text: str, question: str, repaired: str,
+    ) -> None:
+        tool = _goal03c_catalog_tool("app.close")
+        calls: list[str] = []
+    
+        class Runtime:
+            @staticmethod
+            def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
+                calls.append("decide")
+                return {
+                    "mode": "clarify", "operation": None, "question": question,
+                    "conversation_kind": "", "effect_count": "zero", "effect_operations": [],
+                    "effect_verification": "not_applicable",
+                    "response_language": "en" if text == "close that" else "es",
+                }
+    
+            @staticmethod
+            def clarify_after_turn_failure(objective: str, **_kwargs: object) -> str:
+                assert objective == text
+                calls.append("reword")
+                return repaired
+    
+>       result = _prepare_turn_result(
+            {"id": "clarification-wording", "text": text}, llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=SimpleNamespace(candidate_families=lambda *_args: (), retrieve=lambda *_args: []),
+            encoder=lambda _texts: (), tool_by_name={"app.close": tool},
+        )
+
+tests\test_turn_policy.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = {'id': 'clarification-wording', 'text': 'cierra aquello'}
+llm = <test_turn_policy.test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<locals>.Runtime object at 0x000002A7EAA32210>
+planner_catalog = <baxy_mind.planner.PlannerCatalog object at 0x000002A7EAA321E0>
+turn_evidence = namespace(candidate_families=<function test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<loc...on test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<locals>.<lambda> at 0x000002A7EA9F1A80>)
+encoder = <function test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<locals>.<lambda> at 0x000002A7EA9F1D00>
+tool_by_name = {'app.close': {'type': 'function', 'function': {'name': 'app_close', 'canonical_name': 'app.close', 'description': 'Authenticated catalog leaf app.close.', 'risk': 'read_only', ...}}}
+application_names = (), game_catalog = GameCatalogIndex(entries=())
+on_signal = None
+
+    def _prepare_turn_result(
+        message: dict[str, Any],
+        *,
+        llm: Any,
+        planner_catalog: PlannerCatalog,
+        turn_evidence: TurnEvidenceService,
+        encoder: Callable[[Any], Any],
+        tool_by_name: dict[str, dict],
+        application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+        game_catalog: GameCatalogIndex = GameCatalogIndex(),
+        on_signal: Callable[[dict[str, Any]], None] | None = None,
+    ) -> dict[str, Any]:
+        """Prepare one side-effect-free turn result from the current request."""
+        already_signaled: list[bool] = []
+    
+        objective = str(message.get("text", ""))
+        routing_objective = effect_intent._strip_request_envelope(objective).strip()
+        if not routing_objective:
+            routing_objective = objective
+        history = message.get("history") or []
+        available_operations = tuple(tool.name for tool in planner_catalog.tools)
+        authenticated_operations = tuple(tool_by_name)
+        non_target_language = confident_non_target_language(objective)
+        explicit_non_action = effect_intent.explicit_non_action_frame(objective)
+        content_drafting = conversation_only_content_request(objective)
+        # Preguntar por lo que hace o por lo que no hace el producto se contesta con
+        # el catálogo, y pedir que siga la conversación sin abrir nada es un
+        # encargo completo: en ninguno de los dos casos hay algo que aclarar.
+        # Cuando salían por aquí, la persona recibía su propia pregunta de vuelta
+        # —«¿Qué específicamente no puedes hacer en este PC?»—, vocabulario del
+        # planificador, o una pregunta sobre el turno anterior —«Would you like to
+        # hear a fun fact about Peru?»— (limites-14/003..006, limites-20/009,
+        # panel-opus-13/038, /052).
+        nothing_to_clarify = bool(
+            read_request(objective).intents
+            & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+        )
+        explicit_clarification = (
+            None
+            if non_target_language is not None
+            or content_drafting
+            or explicit_non_action
+            or nothing_to_clarify
+            else resolve_explicit_clarification_intent(
+                objective,
+                authenticated_operations,
+            )
+        )
+        if explicit_clarification is not None:
+            question = llm.formulate_explicit_clarification_question(
+                objective,
+                explicit_clarification.operations,
+                explicit_clarification.missing_fields,
+            )
+            result = {
+                "type": "turn.result",
+                "id": message.get("id"),
+                "kind": "clarify",
+                "operation": None,
+                "intentOperations": list(explicit_clarification.operations),
+                "effectOperations": [],
+                "question": question,
+                "reply": "",
+            }
+            _append_turn_audit(
+                {
+                    "schema": "baxy.mind-turn-audit.v1",
+                    "request_id": message.get("id"),
+                    "phase": "final",
+                    "decision_path": "explicit_clarification",
+                    "candidate_operations": [],
+                    "raw_decision": None,
+                    "stages": [
+                        {
+                            "name": "explicit_clarification",
+                            "mode": "clarify",
+                            "operation": None,
+                            "effect_operations": [],
+                            "effect_verification": "not_applicable",
+                        }
+                    ],
+                    "final": {
+                        "kind": result["kind"],
+                        "intent_operations": result["intentOperations"],
+                        "effect_operations": result["effectOperations"],
+                    },
+                }
+            )
+            return result
+        recalled_literal = _literal_recall_reference(history, objective)
+        literal_recall_decision = (
+            {
+                "mode": "conversation",
+                "operation": None,
+                "question": "",
+                "conversation_kind": "followup",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": _explicit_response_language(objective),
+            }
+            if recalled_literal is not None
+            else None
+        )
+        stable_no_effect_decision = (
+            literal_recall_decision
+            or _explicit_stable_no_effect_turn_decision(
+                objective,
+                history,
+            )
+        )
+        stable_no_effect_is_closed = (
+            explicit_non_action
+            or literal_recall_decision is not None
+            or (
+                stable_no_effect_decision is not None
+                and (
+                    _assistant_capability_aspiration(objective)
+                    or _general_factoid_prompt(objective)
+                    or _personal_checkin_statement(objective)
+                    or _closed_unsupported_request(objective)
+                )
+            )
+        )
+        live_public_intent = (
+            EffectIntent(("web.search",), (objective,))
+            if "web.search" in available_operations
+            and effect_intent._public_live_lookup_request(
+                effect_intent._strip_request_envelope(effect_intent._fold(objective))
+            )
+            else None
+        )
+        explicit_intent = (
+            None
+            if non_target_language is not None or stable_no_effect_is_closed
+            else live_public_intent
+            or resolve_explicit_effects(
+                objective,
+                available_operations,
+                application_names,
+                game_catalog,
+            )
+        )
+        # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
+        # (app.open, note.create, task.create) after the grammar already named
+        # them, and only one false sister (audio.status for a volume request).
+        # Domain grounding still vetoes ungrounded families. Keep the recogniser.
+        recogniser_declined: list[str] = []
+        catalog_unavailable_decision = _catalog_unavailable_turn_decision(
+            objective,
+            explicit_intent,
+            application_names,
+            game_catalog,
+        )
+        unresolved_compound_effects = unresolved_compound_contract(
+            objective,
+            available_operations,
+            application_names,
+            game_catalog,
+            resolved_intent=explicit_intent,
+        )
+        explicit_conversation_decision = (
+            _explicit_unsupported_turn_decision(objective)
+            if non_target_language is not None
+            or (
+                unresolved_compound_effects is not None
+                and (
+                    effect_request_is_authoritative(objective)
+                    or unsupported_effect_demonstration_request(objective)
+                )
+            )
+            or (
+                effect_request_is_authoritative(objective)
+                and known_unsupported_effect_request(
+                    objective,
+                    available_operations,
+                )
+            )
+            else catalog_unavailable_decision
+            or _explicit_social_turn_decision(objective, history)
+            or _explicit_nonunderstanding_turn_decision(objective, history)
+            or stable_no_effect_decision
+        )
+        withdrawn_closed_refusal = ""
+        if (
+            explicit_conversation_decision is not None
+            and non_target_language is None
+            and explicit_conversation_decision.get("conversation_kind")
+            in {"unsupported", "knowledge"}
+        ):
+            # This is still interpretation, not an execution milestone. Composing
+            # progress here spent the same deadline needed to decide and answer.
+            withdrawn_closed_refusal = _catalog_answers_the_request(
+                routing_objective,
+                objective,
+                planner_catalog,
+                tool_by_name,
+                llm,
+                application_names,
+            )
+            if withdrawn_closed_refusal:
+                explicit_conversation_decision = None
+        if explicit_intent is not None:
+            _emit_early_turn_signal(
+                path=PATH_RECOGNIZER
+                if len(explicit_intent.operations) <= 1
+                else PATH_MODEL,
+                objective=objective,
+                request_id=message.get("id"),
+                on_signal=on_signal,
+                already_signaled=already_signaled,
+                step_count=len(explicit_intent.operations),
+                llm=llm,
+            )
+            shortlist = _shortlist_with_required_effects(
+                (),
+                explicit_intent.operations,
+                planner_catalog,
+            )
+        elif explicit_conversation_decision is not None:
+            # Neither deterministic conversation variant consumes candidates,
+            # evidence or semantic scores. Avoid crossing the E5 process for data
+            # that cannot influence the already-closed decision.
+            shortlist = ()
+        else:
+            evidence_query = _turn_evidence_query(routing_objective, history)
+            # Retrieval ranks operations, not families. Ranking families and then
+            # handing out a window inside the winner is a coarser question than the
+            # one being asked, and the leaf the person meant lost its place to
+            # siblings of a family that merely scored well. Measured end to end on
+            # the fresh paraphrase corpus of goal 03 with the same decider, the
+            # expected operation reached the decider in 73 turns of 124 that way and
+            # in 102 this way. The compound contract still forces its own proved
+            # identities in below.
+            shortlist = planner_catalog.shortlist(routing_objective)
+            if unresolved_compound_effects is not None:
+                required = tuple(
+                    operation
+                    for sequence in unresolved_compound_effects.required_clause_sequences
+                    for operation in sequence
+                )
+                shortlist = _shortlist_with_required_effects(
+                    shortlist,
+                    required,
+                    planner_catalog,
+                )
+            clause_shortlist = _compound_clause_shortlist(
+                routing_objective,
+                planner_catalog,
+            )
+            if clause_shortlist:
+                clauses = compound_retrieval_clauses(routing_objective)
+                advisory_operations = compound_retrieval_operation_hints(
+                    routing_objective,
+                    available_operations,
+                    application_names,
+                )
+                advisory_tools = tuple(
+                    tool
+                    for operation in advisory_operations
+                    if (tool := planner_catalog.get(operation)) is not None
+                )
+                if len(advisory_tools) == len(clauses) and len(clauses) >= 2:
+                    # Every isolated clause has exactly one closed-catalog match.
+                    # Keep only those advisory identities so unrelated leaves
+                    # cannot tempt the semantic selector to add an extra effect.
+                    # This remains retrieval-only: conservation and grounding
+                    # still decide whether the proposal can retain authority.
+                    shortlist = advisory_tools
+                else:
+                    shortlist = tuple(
+                        {
+                            tool.name: tool
+                            for tool in (
+                                *advisory_tools,
+                                *clause_shortlist,
+                                *shortlist,
+                            )
+                        }.values()
+                    )[:MAX_SHORTLIST_OPERATIONS]
+                if unresolved_compound_effects is not None:
+                    required = tuple(
+                        operation
+                        for sequence in unresolved_compound_effects.required_clause_sequences
+                        for operation in sequence
+                    )
+                    shortlist = _shortlist_with_required_effects(
+                        shortlist,
+                        required,
+                        planner_catalog,
+                    )
+            if recogniser_declined:
+                # The identity verifier may withdraw a true colloquial leaf that
+                # E5 never ranked. Keep that leaf visible to the model path so a
+                # decline cannot become a retrieval hole.
+                shortlist = _shortlist_with_required_effects(
+                    shortlist,
+                    tuple(recogniser_declined),
+                    planner_catalog,
+                )
+        candidates = [
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "arguments_schema": tool.schema,
+            }
+            for tool in shortlist
+        ]
+        evidence = (
+            []
+            if explicit_intent is not None or explicit_conversation_decision is not None
+            else turn_evidence.retrieve(
+                evidence_query,
+                encoder,
+                [tool.name for tool in shortlist],
+            )
+        )
+        raw_decision = (
+            explicit_conversation_decision
+            if explicit_conversation_decision is not None
+            else _explicit_turn_decision(explicit_intent, objective)
+            if explicit_intent is not None
+            else llm.decide_turn(
+                routing_objective,
+                candidates,
+                history=history,
+                evidence=evidence,
+            )
+        )
+        # Which of the three producers owned this decision. Without it a split by
+        # cause cannot tell a recogniser hit from a retrieval hit: both publish a
+        # candidate list that already contains the answer.
+        decision_path = (
+            "explicit_effects"
+            if explicit_intent is not None
+            else "explicit_conversation"
+            if explicit_conversation_decision is not None
+            else "model"
+        )
+        turn_audit: dict[str, Any] = {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": decision_path,
+            "retrieval": (
+                "semantic" if planner_catalog.ranks_semantically else "lexical"
+            ),
+            "candidate_operations": [tool.name for tool in shortlist],
+            "raw_decision": raw_decision,
+            "stages": [
+                stage
+                for stage in (
+                    {
+                        "name": "recogniser_declined",
+                        "mode": "",
+                        "operation": None,
+                        "effect_operations": list(recogniser_declined),
+                        "effect_verification": "not_applicable",
+                    }
+                    if recogniser_declined
+                    else None,
+                    {
+                        "name": "closed_refusal_withdrawn",
+                        "mode": "",
+                        "operation": None,
+                        "effect_operations": [withdrawn_closed_refusal],
+                        "effect_verification": "not_applicable",
+                    }
+                    if withdrawn_closed_refusal
+                    else None,
+                )
+                if stage is not None
+            ],
+        }
+        _append_turn_audit(
+            {
+                "schema": "baxy.mind-turn-audit.v1",
+                "request_id": message.get("id"),
+                "phase": "raw_attempt",
+                "decision_path": decision_path,
+                "retrieval": turn_audit["retrieval"],
+                "candidate_operations": list(turn_audit["candidate_operations"]),
+                "raw_decision": raw_decision,
+                "stages": [],
+            }
+        )
+        raw_intent_operations: object = None
+        if isinstance(raw_decision, dict) and "intent_operations" in raw_decision:
+            raw_decision = dict(raw_decision)
+            raw_intent_operations = raw_decision.pop("intent_operations")
+        decision = validate_turn_decision(
+            raw_decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("validated_raw", decision))
+        if raw_intent_operations is None:
+            intent_operations = list(decision["effect_operations"])
+        elif (
+            isinstance(raw_intent_operations, list)
+            and len(raw_intent_operations) <= 8
+            and all(
+                isinstance(value, str) and value in {tool.name for tool in shortlist}
+                for value in raw_intent_operations
+            )
+        ):
+            intent_operations = (
+                []
+                if decision["mode"] == "conversation"
+                and not effect_request_is_authoritative(objective)
+                else list(raw_intent_operations)
+            )
+        else:
+            raise PlannerContractError("lista de intenciones inválida")
+        decision = apply_explicit_effect_contract(decision, explicit_intent)
+        if explicit_intent is not None:
+            # The explicit contract is the final operation-level interpretation,
+            # even when an advisory no-effect classifier also noticed a tense word
+            # inside payload text (for example “I will arrive” in a message). Keep
+            # the diagnostic intent identity aligned with the effect contract that
+            # actually owns the turn.
+            intent_operations = list(explicit_intent.operations)
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("explicit_contract", decision))
+        effects_before_information_veto = tuple(decision["effect_operations"])
+        decision = apply_information_question_effect_veto(
+            decision,
+            objective,
+            planner_catalog,
+            explicit_intent,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("information_question", decision))
+        effects_before_domain_grounding = tuple(decision["effect_operations"])
+        decision = apply_operation_domain_grounding_veto(
+            decision,
+            objective,
+            explicit_intent,
+            application_names,
+            unresolved_compound_effects,
+            game_catalog,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("domain_grounding", decision))
+        withdrawn_effects = (
+            effects_before_information_veto or effects_before_domain_grounding
+        )
+        if (
+            withdrawn_effects
+            and not decision["effect_operations"]
+            and decision["mode"] == "conversation"
+        ):
+            # Two stages withdraw an effect the model proposed, and both of them
+            # publish the withdrawal as a *conversation* -- which the presentation
+            # then words as "no puedo". Neither stage is entitled to that claim.
+            # The curated gate is one-sided and lexical: it can only tell that the
+            # request does not *name* the domain this operation consumes. The
+            # information-question veto only knows that the sentence was phrased as
+            # a question. Publishing either as an inability is how "No puedo apagar
+            # el bluetooth" and "No puedo proporcionar tu dirección IP" reached the
+            # screen about capabilities that are in the catalogue -- 24 of the 27
+            # rows these stages cost on the goal 03 corpus, and the identity's
+            # inverse fault: BAXY says no only to what he cannot do. It is also why
+            # the turn kept dying: the presentation contract for ``unsupported``
+            # demands a sentence the model will not write about something it can do,
+            # and 22 of 160 turns fell through to total recovery that way.
+            #
+            # So the verdict stops being binary. A second, independent opinion is
+            # asked -- does this operation *identify* the effect the person named --
+            # and when it does, the authority is not deleted, it is withheld until
+            # the person confirms the exact invocation. No effect is dispatched
+            # either way, so the invariant these stages exist for is untouched; what
+            # changes is that BAXY asks instead of lying.
+            confirmable = _withheld_invocation_operations(
+                withdrawn_effects,
+                objective,
+                tool_by_name,
+                llm,
+                application_names,
+            )
+            question = (
+                _domain_confirmation_question(objective, confirmable, tool_by_name, llm)
+                if confirmable
+                else ""
+            )
+            if question:
+                decision = {
+                    "mode": "clarify",
+                    "operation": None,
+                    "question": question,
+                    "conversation_kind": "",
+                    "effect_count": "zero",
+                    "effect_operations": [],
+                    "effect_verification": "not_applicable",
+                    "response_language": decision["response_language"],
+                }
+                decision = validate_turn_decision(
+                    decision,
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(confirmable)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("domain_confirmation", decision)
+                )
+            else:
+                # Both one-sided guards refused. Now "unsupported" is the honest
+                # word, and the raw proposal stays only in the opt-in audit: nobody
+                # is asked for fields of an unrelated capability (for example
+                # scheduling a notification for a taxi order).
+                intent_operations = []
+        decision = apply_compound_effect_conservation_veto(
+            decision,
+            unresolved_compound_effects,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("compound_conservation", decision))
+        decision = apply_turn_action_relevance_veto(
+            decision,
+            objective,
+            planner_catalog,
+        )
+        turn_audit["stages"].append(_turn_audit_stage("action_relevance", decision))
+        decision = apply_turn_action_grounding_gate(
+            decision,
+            objective,
+            tool_by_name,
+            llm,
+            ground_recovered=explicit_intent is None,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("action_grounding", decision))
+        decision = apply_conversation_effect_presentation(
+            decision,
+            objective,
+            llm,
+            explicit_conversation_contract=(explicit_conversation_decision is not None),
+        )
+        decision = apply_non_effect_conversation_classification(
+            decision,
+            objective,
+            retired_catalog_effect=bool(
+                (effects_before_information_veto or effects_before_domain_grounding)
+                and not decision["effect_operations"]
+            ),
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(
+            _turn_audit_stage("conversation_presentation", decision)
+        )
+        # Extending the same rule to every ``unsupported`` conversation was measured
+        # and rejected. When the *decider itself* answers "conversation,
+        # unsupported" -- "No puedo dar enter" with ``input.key.press`` sitting in
+        # the shortlist it was handed -- asking the catalogue again there looks like
+        # the same repair. It is not: the candidates at that point are this
+        # request's own retrieval, and for an out-of-catalogue request they are its
+        # nearest plausible neighbours. On the goal 03 corpus it turned 8 of 36
+        # honest abstentions into questions (28 -> 20) and recovered nothing in
+        # catalogue (85 -> 84).
+        #
+        # A verdict that answers from what the model knows -- ``knowledge`` or
+        # ``social`` -- is the one place where it is not optional, and it is not
+        # about accuracy. Answering a question about the current state of *this
+        # machine* from what the model knows is an invented observation presented as
+        # an observed one: "con que usuario estoy entrado" came back as a social
+        # reply asserting the account name, and "what does this page actually say"
+        # as knowledge asserting the page contents, both with the operation that
+        # would have observed it sitting in the shortlist. Goal 03 found three of
+        # these and closed them with the retired-effect guard; these two are the
+        # shape that guard cannot see, because no effect was ever proposed. Nothing
+        # out of catalogue reaches this branch -- an out-of-catalogue request is
+        # refused as ``unsupported``, never answered as knowledge -- so the
+        # abstention it could cost is not on this path.
+        if (
+            decision["mode"] == "conversation"
+            and decision["conversation_kind"] in {"knowledge", "social"}
+            and not decision["effect_operations"]
+            and shortlist
+        ):
+            observing = _catalog_answers_the_request(
+                routing_objective,
+                objective,
+                planner_catalog,
+                tool_by_name,
+                llm,
+                application_names,
+            )
+            question = (
+                _domain_confirmation_question(objective, (observing,), tool_by_name, llm)
+                if observing
+                else ""
+            )
+            if question:
+                decision = validate_turn_decision(
+                    {
+                        "mode": "clarify",
+                        "operation": None,
+                        "question": question,
+                        "conversation_kind": "",
+                        "effect_count": "zero",
+                        "effect_operations": [],
+                        "effect_verification": "not_applicable",
+                        "response_language": decision["response_language"],
+                    },
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = [observing]
+                turn_audit["stages"].append(
+                    _turn_audit_stage("observation_not_recital", decision)
+                )
+        if (
+            raw_intent_operations is not None
+            and intent_operations
+            and not decision["effect_operations"]
+            and decision["mode"] == "conversation"
+        ):
+            question = llm.clarify_after_turn_failure(
+                objective,
+                history=history,
+                timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
+            )
+            if not _recovery_question_is_valid(question, objective, history):
+                raise PlannerContractError("aclaración de intención inválida")
+            decision = {
+                "mode": "clarify",
+                "operation": None,
+                "question": question,
+                "conversation_kind": "",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": decision["response_language"],
+            }
+        if _standalone_deictic_conversation_needs_clarification(objective, decision):
+            question = llm.clarify_missing_referent(
+                objective,
+                timeout=(
+                    DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+                    if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+                    else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+                ),
+            )
+            if not _recovery_question_is_valid(question):
+                raise PlannerContractError("aclaración de referente inválida")
+            decision = {
+                "mode": "clarify",
+                "operation": None,
+                "question": question,
+                "conversation_kind": "",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": decision["response_language"],
+            }
+            intent_operations = []
+            turn_audit["stages"].append(
+                _turn_audit_stage("deictic_referent_clarification", decision)
+            )
+    
+        reply_text = ""
+        # El idioma con el que se redacta la respuesta viaja con ella: el shell no
+        # vuelve a adivinarlo para vetarla.
+        response_language: str | None = None
+        if decision["mode"] == "conversation":
+            presentation_conversation_kind = (
+                "unsupported_language"
+                if non_target_language is not None
+                else str(decision["conversation_kind"])
+            )
+            if explicit_conversation_decision is not None:
+                # These closed ES/EN patterns already own a deterministic language
+                # result. Calling the independent detector cannot change routing
+                # and only repeats work before the same social/follow-up response.
+                response_language = str(decision["response_language"])
+            else:
+                response_language = _decisive_request_language(objective)
+                if response_language is not None:
+                    # La lectura decide: la inferencia especulativa se retira sin
+                    # consumirse, igual que en una ruta sin conversación.
+                    retire_decided = getattr(
+                        llm,
+                        "retire_deferred_response_language",
+                        None,
+                    )
+                    if callable(retire_decided):
+                        retire_decided(objective)
+                else:
+                    consumed_deferred_language = False
+                    consume_deferred = getattr(
+                        llm,
+                        "consume_deferred_response_language",
+                        None,
+                    )
+                    if callable(consume_deferred):
+                        (
+                            consumed_deferred_language,
+                            response_language,
+                        ) = consume_deferred(objective)
+                    if not consumed_deferred_language or response_language is None:
+                        try:
+                            response_language = llm.detect_response_language(objective)
+                        except ValueError:
+                            response_language = None
+            reply_text, _ = llm.chat(
+                objective,
+                history=history,
+                tools=None,
+                temperature=0.0,
+                conversation_kind=presentation_conversation_kind,
+                authenticated_operations=tuple(intent_operations),
+                # Language is independently constrained from the current message.
+                # The routing field cannot force the wrong response language.
+                response_language=response_language,
+            )
+            reply_text = reply_text.strip()
+            if not reply_text:
+                raise PlannerContractError(
+                    "no se pudo preparar una respuesta conversacional"
+                )
+            # Una explicación que sólo devuelve otra pregunta no contesta nada:
+            # «para qué lo necesita el PC» salió como «¿Para qué necesita el PC
+            # para ejecutar tareas específicas?» (seguimiento-13/020), y «cuáles
+            # son tus límites aquí» como «¿Cuáles son los límites de esta PC?»
+            # (limites-14/003). Un turno social sí puede terminar preguntando; uno
+            # que se contesta con el catálogo, no.
+            if (
+                (
+                    presentation_conversation_kind in {"knowledge", "followup"}
+                    or read_request(objective).intents
+                    & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+                )
+                and reply_text.rstrip().endswith(("?", "？"))
+                and re.search(r"[.!][\"'»]?\s", reply_text) is None
+            ):
+                raise PlannerContractError(
+                    "una explicación no puede ser sólo una pregunta"
+                )
+        else:
+            # P may finish before the independent language inference.  Keep L alive
+            # through every outer veto, then cancel it only once the final result is
+            # known to be non-conversational.  Cancellation closes the local HTTP
+            # request and deliberately does not join the discarded decode.
+            retire_deferred = getattr(
+                llm,
+                "retire_deferred_response_language",
+                None,
+            )
+            if callable(retire_deferred):
+                retire_deferred(objective)
+        # Preguntar por lo que hace o por lo que no hace el producto se contesta
+        # con el catálogo; no hay nada que aclarar. Cuando salía por aquí, la
+        # pregunta devuelta se construía con vocabulario del planificador: «¿Cuáles
+        # son los campos necesarios para crear un recordatorio futuro local y
+        # duradero?» ante «cuáles son tus límites aquí» (panel-opus-13/052, /038).
+        if decision["mode"] == "clarify" and nothing_to_clarify:
+            raise PlannerContractError(
+                "una pregunta por las capacidades o los límites no se aclara"
+            )
+        if decision["mode"] == "clarify" and not _recovery_question_is_valid(
+            decision["question"],
+            objective,
+            history,
+        ):
+            # Devolver la petición anterior como pregunta no aclara nada: se trata
+            # como un turno fallido para que la recuperación formule una de verdad.
+>           raise PlannerContractError("aclaración que repite un turno anterior")
+E           baxy_mind.planner.PlannerContractError: aclaración que repite un turno anterior
+
+src\baxy_mind\__main__.py:6328: PlannerContractError
+_ test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent[close that-What should I close? A window or a program?-What should I close?] _
+
+text = 'close that', question = 'What should I close? A window or a program?'
+repaired = 'What should I close?'
+
+    @pytest.mark.parametrize("text, question, repaired", [
+        ("cierra aquello", "¿Qué quieres cerrar? ¿Una ventana o un programa?", "¿Qué quieres cerrar?"),
+        ("close that", "What should I close? A window or a program?", "What should I close?"),
+    ])
+    def test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent(
+        text: str, question: str, repaired: str,
+    ) -> None:
+        tool = _goal03c_catalog_tool("app.close")
+        calls: list[str] = []
+    
+        class Runtime:
+            @staticmethod
+            def decide_turn(*_args: object, **_kwargs: object) -> dict[str, object]:
+                calls.append("decide")
+                return {
+                    "mode": "clarify", "operation": None, "question": question,
+                    "conversation_kind": "", "effect_count": "zero", "effect_operations": [],
+                    "effect_verification": "not_applicable",
+                    "response_language": "en" if text == "close that" else "es",
+                }
+    
+            @staticmethod
+            def clarify_after_turn_failure(objective: str, **_kwargs: object) -> str:
+                assert objective == text
+                calls.append("reword")
+                return repaired
+    
+>       result = _prepare_turn_result(
+            {"id": "clarification-wording", "text": text}, llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=SimpleNamespace(candidate_families=lambda *_args: (), retrieve=lambda *_args: []),
+            encoder=lambda _texts: (), tool_by_name={"app.close": tool},
+        )
+
+tests\test_turn_policy.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+message = {'id': 'clarification-wording', 'text': 'close that'}
+llm = <test_turn_policy.test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<locals>.Runtime object at 0x000002A7EAACD040>
+planner_catalog = <baxy_mind.planner.PlannerCatalog object at 0x000002A7EAACD520>
+turn_evidence = namespace(candidate_families=<function test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<loc...on test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<locals>.<lambda> at 0x000002A7EAAFE340>)
+encoder = <function test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent.<locals>.<lambda> at 0x000002A7EAAFE160>
+tool_by_name = {'app.close': {'type': 'function', 'function': {'name': 'app_close', 'canonical_name': 'app.close', 'description': 'Authenticated catalog leaf app.close.', 'risk': 'read_only', ...}}}
+application_names = (), game_catalog = GameCatalogIndex(entries=())
+on_signal = None
+
+    def _prepare_turn_result(
+        message: dict[str, Any],
+        *,
+        llm: Any,
+        planner_catalog: PlannerCatalog,
+        turn_evidence: TurnEvidenceService,
+        encoder: Callable[[Any], Any],
+        tool_by_name: dict[str, dict],
+        application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+        game_catalog: GameCatalogIndex = GameCatalogIndex(),
+        on_signal: Callable[[dict[str, Any]], None] | None = None,
+    ) -> dict[str, Any]:
+        """Prepare one side-effect-free turn result from the current request."""
+        already_signaled: list[bool] = []
+    
+        objective = str(message.get("text", ""))
+        routing_objective = effect_intent._strip_request_envelope(objective).strip()
+        if not routing_objective:
+            routing_objective = objective
+        history = message.get("history") or []
+        available_operations = tuple(tool.name for tool in planner_catalog.tools)
+        authenticated_operations = tuple(tool_by_name)
+        non_target_language = confident_non_target_language(objective)
+        explicit_non_action = effect_intent.explicit_non_action_frame(objective)
+        content_drafting = conversation_only_content_request(objective)
+        # Preguntar por lo que hace o por lo que no hace el producto se contesta con
+        # el catálogo, y pedir que siga la conversación sin abrir nada es un
+        # encargo completo: en ninguno de los dos casos hay algo que aclarar.
+        # Cuando salían por aquí, la persona recibía su propia pregunta de vuelta
+        # —«¿Qué específicamente no puedes hacer en este PC?»—, vocabulario del
+        # planificador, o una pregunta sobre el turno anterior —«Would you like to
+        # hear a fun fact about Peru?»— (limites-14/003..006, limites-20/009,
+        # panel-opus-13/038, /052).
+        nothing_to_clarify = bool(
+            read_request(objective).intents
+            & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+        )
+        explicit_clarification = (
+            None
+            if non_target_language is not None
+            or content_drafting
+            or explicit_non_action
+            or nothing_to_clarify
+            else resolve_explicit_clarification_intent(
+                objective,
+                authenticated_operations,
+            )
+        )
+        if explicit_clarification is not None:
+            question = llm.formulate_explicit_clarification_question(
+                objective,
+                explicit_clarification.operations,
+                explicit_clarification.missing_fields,
+            )
+            result = {
+                "type": "turn.result",
+                "id": message.get("id"),
+                "kind": "clarify",
+                "operation": None,
+                "intentOperations": list(explicit_clarification.operations),
+                "effectOperations": [],
+                "question": question,
+                "reply": "",
+            }
+            _append_turn_audit(
+                {
+                    "schema": "baxy.mind-turn-audit.v1",
+                    "request_id": message.get("id"),
+                    "phase": "final",
+                    "decision_path": "explicit_clarification",
+                    "candidate_operations": [],
+                    "raw_decision": None,
+                    "stages": [
+                        {
+                            "name": "explicit_clarification",
+                            "mode": "clarify",
+                            "operation": None,
+                            "effect_operations": [],
+                            "effect_verification": "not_applicable",
+                        }
+                    ],
+                    "final": {
+                        "kind": result["kind"],
+                        "intent_operations": result["intentOperations"],
+                        "effect_operations": result["effectOperations"],
+                    },
+                }
+            )
+            return result
+        recalled_literal = _literal_recall_reference(history, objective)
+        literal_recall_decision = (
+            {
+                "mode": "conversation",
+                "operation": None,
+                "question": "",
+                "conversation_kind": "followup",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": _explicit_response_language(objective),
+            }
+            if recalled_literal is not None
+            else None
+        )
+        stable_no_effect_decision = (
+            literal_recall_decision
+            or _explicit_stable_no_effect_turn_decision(
+                objective,
+                history,
+            )
+        )
+        stable_no_effect_is_closed = (
+            explicit_non_action
+            or literal_recall_decision is not None
+            or (
+                stable_no_effect_decision is not None
+                and (
+                    _assistant_capability_aspiration(objective)
+                    or _general_factoid_prompt(objective)
+                    or _personal_checkin_statement(objective)
+                    or _closed_unsupported_request(objective)
+                )
+            )
+        )
+        live_public_intent = (
+            EffectIntent(("web.search",), (objective,))
+            if "web.search" in available_operations
+            and effect_intent._public_live_lookup_request(
+                effect_intent._strip_request_envelope(effect_intent._fold(objective))
+            )
+            else None
+        )
+        explicit_intent = (
+            None
+            if non_target_language is not None or stable_no_effect_is_closed
+            else live_public_intent
+            or resolve_explicit_effects(
+                objective,
+                available_operations,
+                application_names,
+                game_catalog,
+            )
+        )
+        # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
+        # (app.open, note.create, task.create) after the grammar already named
+        # them, and only one false sister (audio.status for a volume request).
+        # Domain grounding still vetoes ungrounded families. Keep the recogniser.
+        recogniser_declined: list[str] = []
+        catalog_unavailable_decision = _catalog_unavailable_turn_decision(
+            objective,
+            explicit_intent,
+            application_names,
+            game_catalog,
+        )
+        unresolved_compound_effects = unresolved_compound_contract(
+            objective,
+            available_operations,
+            application_names,
+            game_catalog,
+            resolved_intent=explicit_intent,
+        )
+        explicit_conversation_decision = (
+            _explicit_unsupported_turn_decision(objective)
+            if non_target_language is not None
+            or (
+                unresolved_compound_effects is not None
+                and (
+                    effect_request_is_authoritative(objective)
+                    or unsupported_effect_demonstration_request(objective)
+                )
+            )
+            or (
+                effect_request_is_authoritative(objective)
+                and known_unsupported_effect_request(
+                    objective,
+                    available_operations,
+                )
+            )
+            else catalog_unavailable_decision
+            or _explicit_social_turn_decision(objective, history)
+            or _explicit_nonunderstanding_turn_decision(objective, history)
+            or stable_no_effect_decision
+        )
+        withdrawn_closed_refusal = ""
+        if (
+            explicit_conversation_decision is not None
+            and non_target_language is None
+            and explicit_conversation_decision.get("conversation_kind")
+            in {"unsupported", "knowledge"}
+        ):
+            # This is still interpretation, not an execution milestone. Composing
+            # progress here spent the same deadline needed to decide and answer.
+            withdrawn_closed_refusal = _catalog_answers_the_request(
+                routing_objective,
+                objective,
+                planner_catalog,
+                tool_by_name,
+                llm,
+                application_names,
+            )
+            if withdrawn_closed_refusal:
+                explicit_conversation_decision = None
+        if explicit_intent is not None:
+            _emit_early_turn_signal(
+                path=PATH_RECOGNIZER
+                if len(explicit_intent.operations) <= 1
+                else PATH_MODEL,
+                objective=objective,
+                request_id=message.get("id"),
+                on_signal=on_signal,
+                already_signaled=already_signaled,
+                step_count=len(explicit_intent.operations),
+                llm=llm,
+            )
+            shortlist = _shortlist_with_required_effects(
+                (),
+                explicit_intent.operations,
+                planner_catalog,
+            )
+        elif explicit_conversation_decision is not None:
+            # Neither deterministic conversation variant consumes candidates,
+            # evidence or semantic scores. Avoid crossing the E5 process for data
+            # that cannot influence the already-closed decision.
+            shortlist = ()
+        else:
+            evidence_query = _turn_evidence_query(routing_objective, history)
+            # Retrieval ranks operations, not families. Ranking families and then
+            # handing out a window inside the winner is a coarser question than the
+            # one being asked, and the leaf the person meant lost its place to
+            # siblings of a family that merely scored well. Measured end to end on
+            # the fresh paraphrase corpus of goal 03 with the same decider, the
+            # expected operation reached the decider in 73 turns of 124 that way and
+            # in 102 this way. The compound contract still forces its own proved
+            # identities in below.
+            shortlist = planner_catalog.shortlist(routing_objective)
+            if unresolved_compound_effects is not None:
+                required = tuple(
+                    operation
+                    for sequence in unresolved_compound_effects.required_clause_sequences
+                    for operation in sequence
+                )
+                shortlist = _shortlist_with_required_effects(
+                    shortlist,
+                    required,
+                    planner_catalog,
+                )
+            clause_shortlist = _compound_clause_shortlist(
+                routing_objective,
+                planner_catalog,
+            )
+            if clause_shortlist:
+                clauses = compound_retrieval_clauses(routing_objective)
+                advisory_operations = compound_retrieval_operation_hints(
+                    routing_objective,
+                    available_operations,
+                    application_names,
+                )
+                advisory_tools = tuple(
+                    tool
+                    for operation in advisory_operations
+                    if (tool := planner_catalog.get(operation)) is not None
+                )
+                if len(advisory_tools) == len(clauses) and len(clauses) >= 2:
+                    # Every isolated clause has exactly one closed-catalog match.
+                    # Keep only those advisory identities so unrelated leaves
+                    # cannot tempt the semantic selector to add an extra effect.
+                    # This remains retrieval-only: conservation and grounding
+                    # still decide whether the proposal can retain authority.
+                    shortlist = advisory_tools
+                else:
+                    shortlist = tuple(
+                        {
+                            tool.name: tool
+                            for tool in (
+                                *advisory_tools,
+                                *clause_shortlist,
+                                *shortlist,
+                            )
+                        }.values()
+                    )[:MAX_SHORTLIST_OPERATIONS]
+                if unresolved_compound_effects is not None:
+                    required = tuple(
+                        operation
+                        for sequence in unresolved_compound_effects.required_clause_sequences
+                        for operation in sequence
+                    )
+                    shortlist = _shortlist_with_required_effects(
+                        shortlist,
+                        required,
+                        planner_catalog,
+                    )
+            if recogniser_declined:
+                # The identity verifier may withdraw a true colloquial leaf that
+                # E5 never ranked. Keep that leaf visible to the model path so a
+                # decline cannot become a retrieval hole.
+                shortlist = _shortlist_with_required_effects(
+                    shortlist,
+                    tuple(recogniser_declined),
+                    planner_catalog,
+                )
+        candidates = [
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "arguments_schema": tool.schema,
+            }
+            for tool in shortlist
+        ]
+        evidence = (
+            []
+            if explicit_intent is not None or explicit_conversation_decision is not None
+            else turn_evidence.retrieve(
+                evidence_query,
+                encoder,
+                [tool.name for tool in shortlist],
+            )
+        )
+        raw_decision = (
+            explicit_conversation_decision
+            if explicit_conversation_decision is not None
+            else _explicit_turn_decision(explicit_intent, objective)
+            if explicit_intent is not None
+            else llm.decide_turn(
+                routing_objective,
+                candidates,
+                history=history,
+                evidence=evidence,
+            )
+        )
+        # Which of the three producers owned this decision. Without it a split by
+        # cause cannot tell a recogniser hit from a retrieval hit: both publish a
+        # candidate list that already contains the answer.
+        decision_path = (
+            "explicit_effects"
+            if explicit_intent is not None
+            else "explicit_conversation"
+            if explicit_conversation_decision is not None
+            else "model"
+        )
+        turn_audit: dict[str, Any] = {
+            "schema": "baxy.mind-turn-audit.v1",
+            "request_id": message.get("id"),
+            "phase": "final",
+            "decision_path": decision_path,
+            "retrieval": (
+                "semantic" if planner_catalog.ranks_semantically else "lexical"
+            ),
+            "candidate_operations": [tool.name for tool in shortlist],
+            "raw_decision": raw_decision,
+            "stages": [
+                stage
+                for stage in (
+                    {
+                        "name": "recogniser_declined",
+                        "mode": "",
+                        "operation": None,
+                        "effect_operations": list(recogniser_declined),
+                        "effect_verification": "not_applicable",
+                    }
+                    if recogniser_declined
+                    else None,
+                    {
+                        "name": "closed_refusal_withdrawn",
+                        "mode": "",
+                        "operation": None,
+                        "effect_operations": [withdrawn_closed_refusal],
+                        "effect_verification": "not_applicable",
+                    }
+                    if withdrawn_closed_refusal
+                    else None,
+                )
+                if stage is not None
+            ],
+        }
+        _append_turn_audit(
+            {
+                "schema": "baxy.mind-turn-audit.v1",
+                "request_id": message.get("id"),
+                "phase": "raw_attempt",
+                "decision_path": decision_path,
+                "retrieval": turn_audit["retrieval"],
+                "candidate_operations": list(turn_audit["candidate_operations"]),
+                "raw_decision": raw_decision,
+                "stages": [],
+            }
+        )
+        raw_intent_operations: object = None
+        if isinstance(raw_decision, dict) and "intent_operations" in raw_decision:
+            raw_decision = dict(raw_decision)
+            raw_intent_operations = raw_decision.pop("intent_operations")
+        decision = validate_turn_decision(
+            raw_decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("validated_raw", decision))
+        if raw_intent_operations is None:
+            intent_operations = list(decision["effect_operations"])
+        elif (
+            isinstance(raw_intent_operations, list)
+            and len(raw_intent_operations) <= 8
+            and all(
+                isinstance(value, str) and value in {tool.name for tool in shortlist}
+                for value in raw_intent_operations
+            )
+        ):
+            intent_operations = (
+                []
+                if decision["mode"] == "conversation"
+                and not effect_request_is_authoritative(objective)
+                else list(raw_intent_operations)
+            )
+        else:
+            raise PlannerContractError("lista de intenciones inválida")
+        decision = apply_explicit_effect_contract(decision, explicit_intent)
+        if explicit_intent is not None:
+            # The explicit contract is the final operation-level interpretation,
+            # even when an advisory no-effect classifier also noticed a tense word
+            # inside payload text (for example “I will arrive” in a message). Keep
+            # the diagnostic intent identity aligned with the effect contract that
+            # actually owns the turn.
+            intent_operations = list(explicit_intent.operations)
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("explicit_contract", decision))
+        effects_before_information_veto = tuple(decision["effect_operations"])
+        decision = apply_information_question_effect_veto(
+            decision,
+            objective,
+            planner_catalog,
+            explicit_intent,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("information_question", decision))
+        effects_before_domain_grounding = tuple(decision["effect_operations"])
+        decision = apply_operation_domain_grounding_veto(
+            decision,
+            objective,
+            explicit_intent,
+            application_names,
+            unresolved_compound_effects,
+            game_catalog,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("domain_grounding", decision))
+        withdrawn_effects = (
+            effects_before_information_veto or effects_before_domain_grounding
+        )
+        if (
+            withdrawn_effects
+            and not decision["effect_operations"]
+            and decision["mode"] == "conversation"
+        ):
+            # Two stages withdraw an effect the model proposed, and both of them
+            # publish the withdrawal as a *conversation* -- which the presentation
+            # then words as "no puedo". Neither stage is entitled to that claim.
+            # The curated gate is one-sided and lexical: it can only tell that the
+            # request does not *name* the domain this operation consumes. The
+            # information-question veto only knows that the sentence was phrased as
+            # a question. Publishing either as an inability is how "No puedo apagar
+            # el bluetooth" and "No puedo proporcionar tu dirección IP" reached the
+            # screen about capabilities that are in the catalogue -- 24 of the 27
+            # rows these stages cost on the goal 03 corpus, and the identity's
+            # inverse fault: BAXY says no only to what he cannot do. It is also why
+            # the turn kept dying: the presentation contract for ``unsupported``
+            # demands a sentence the model will not write about something it can do,
+            # and 22 of 160 turns fell through to total recovery that way.
+            #
+            # So the verdict stops being binary. A second, independent opinion is
+            # asked -- does this operation *identify* the effect the person named --
+            # and when it does, the authority is not deleted, it is withheld until
+            # the person confirms the exact invocation. No effect is dispatched
+            # either way, so the invariant these stages exist for is untouched; what
+            # changes is that BAXY asks instead of lying.
+            confirmable = _withheld_invocation_operations(
+                withdrawn_effects,
+                objective,
+                tool_by_name,
+                llm,
+                application_names,
+            )
+            question = (
+                _domain_confirmation_question(objective, confirmable, tool_by_name, llm)
+                if confirmable
+                else ""
+            )
+            if question:
+                decision = {
+                    "mode": "clarify",
+                    "operation": None,
+                    "question": question,
+                    "conversation_kind": "",
+                    "effect_count": "zero",
+                    "effect_operations": [],
+                    "effect_verification": "not_applicable",
+                    "response_language": decision["response_language"],
+                }
+                decision = validate_turn_decision(
+                    decision,
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = list(confirmable)
+                turn_audit["stages"].append(
+                    _turn_audit_stage("domain_confirmation", decision)
+                )
+            else:
+                # Both one-sided guards refused. Now "unsupported" is the honest
+                # word, and the raw proposal stays only in the opt-in audit: nobody
+                # is asked for fields of an unrelated capability (for example
+                # scheduling a notification for a taxi order).
+                intent_operations = []
+        decision = apply_compound_effect_conservation_veto(
+            decision,
+            unresolved_compound_effects,
+            tool_by_name,
+            llm,
+            application_names,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("compound_conservation", decision))
+        decision = apply_turn_action_relevance_veto(
+            decision,
+            objective,
+            planner_catalog,
+        )
+        turn_audit["stages"].append(_turn_audit_stage("action_relevance", decision))
+        decision = apply_turn_action_grounding_gate(
+            decision,
+            objective,
+            tool_by_name,
+            llm,
+            ground_recovered=explicit_intent is None,
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(_turn_audit_stage("action_grounding", decision))
+        decision = apply_conversation_effect_presentation(
+            decision,
+            objective,
+            llm,
+            explicit_conversation_contract=(explicit_conversation_decision is not None),
+        )
+        decision = apply_non_effect_conversation_classification(
+            decision,
+            objective,
+            retired_catalog_effect=bool(
+                (effects_before_information_veto or effects_before_domain_grounding)
+                and not decision["effect_operations"]
+            ),
+        )
+        decision = validate_turn_decision(
+            decision,
+            {tool.name for tool in shortlist},
+        )
+        turn_audit["stages"].append(
+            _turn_audit_stage("conversation_presentation", decision)
+        )
+        # Extending the same rule to every ``unsupported`` conversation was measured
+        # and rejected. When the *decider itself* answers "conversation,
+        # unsupported" -- "No puedo dar enter" with ``input.key.press`` sitting in
+        # the shortlist it was handed -- asking the catalogue again there looks like
+        # the same repair. It is not: the candidates at that point are this
+        # request's own retrieval, and for an out-of-catalogue request they are its
+        # nearest plausible neighbours. On the goal 03 corpus it turned 8 of 36
+        # honest abstentions into questions (28 -> 20) and recovered nothing in
+        # catalogue (85 -> 84).
+        #
+        # A verdict that answers from what the model knows -- ``knowledge`` or
+        # ``social`` -- is the one place where it is not optional, and it is not
+        # about accuracy. Answering a question about the current state of *this
+        # machine* from what the model knows is an invented observation presented as
+        # an observed one: "con que usuario estoy entrado" came back as a social
+        # reply asserting the account name, and "what does this page actually say"
+        # as knowledge asserting the page contents, both with the operation that
+        # would have observed it sitting in the shortlist. Goal 03 found three of
+        # these and closed them with the retired-effect guard; these two are the
+        # shape that guard cannot see, because no effect was ever proposed. Nothing
+        # out of catalogue reaches this branch -- an out-of-catalogue request is
+        # refused as ``unsupported``, never answered as knowledge -- so the
+        # abstention it could cost is not on this path.
+        if (
+            decision["mode"] == "conversation"
+            and decision["conversation_kind"] in {"knowledge", "social"}
+            and not decision["effect_operations"]
+            and shortlist
+        ):
+            observing = _catalog_answers_the_request(
+                routing_objective,
+                objective,
+                planner_catalog,
+                tool_by_name,
+                llm,
+                application_names,
+            )
+            question = (
+                _domain_confirmation_question(objective, (observing,), tool_by_name, llm)
+                if observing
+                else ""
+            )
+            if question:
+                decision = validate_turn_decision(
+                    {
+                        "mode": "clarify",
+                        "operation": None,
+                        "question": question,
+                        "conversation_kind": "",
+                        "effect_count": "zero",
+                        "effect_operations": [],
+                        "effect_verification": "not_applicable",
+                        "response_language": decision["response_language"],
+                    },
+                    {tool.name for tool in shortlist},
+                )
+                intent_operations = [observing]
+                turn_audit["stages"].append(
+                    _turn_audit_stage("observation_not_recital", decision)
+                )
+        if (
+            raw_intent_operations is not None
+            and intent_operations
+            and not decision["effect_operations"]
+            and decision["mode"] == "conversation"
+        ):
+            question = llm.clarify_after_turn_failure(
+                objective,
+                history=history,
+                timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
+            )
+            if not _recovery_question_is_valid(question, objective, history):
+                raise PlannerContractError("aclaración de intención inválida")
+            decision = {
+                "mode": "clarify",
+                "operation": None,
+                "question": question,
+                "conversation_kind": "",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": decision["response_language"],
+            }
+        if _standalone_deictic_conversation_needs_clarification(objective, decision):
+            question = llm.clarify_missing_referent(
+                objective,
+                timeout=(
+                    DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+                    if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+                    else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+                ),
+            )
+            if not _recovery_question_is_valid(question):
+                raise PlannerContractError("aclaración de referente inválida")
+            decision = {
+                "mode": "clarify",
+                "operation": None,
+                "question": question,
+                "conversation_kind": "",
+                "effect_count": "zero",
+                "effect_operations": [],
+                "effect_verification": "not_applicable",
+                "response_language": decision["response_language"],
+            }
+            intent_operations = []
+            turn_audit["stages"].append(
+                _turn_audit_stage("deictic_referent_clarification", decision)
+            )
+    
+        reply_text = ""
+        # El idioma con el que se redacta la respuesta viaja con ella: el shell no
+        # vuelve a adivinarlo para vetarla.
+        response_language: str | None = None
+        if decision["mode"] == "conversation":
+            presentation_conversation_kind = (
+                "unsupported_language"
+                if non_target_language is not None
+                else str(decision["conversation_kind"])
+            )
+            if explicit_conversation_decision is not None:
+                # These closed ES/EN patterns already own a deterministic language
+                # result. Calling the independent detector cannot change routing
+                # and only repeats work before the same social/follow-up response.
+                response_language = str(decision["response_language"])
+            else:
+                response_language = _decisive_request_language(objective)
+                if response_language is not None:
+                    # La lectura decide: la inferencia especulativa se retira sin
+                    # consumirse, igual que en una ruta sin conversación.
+                    retire_decided = getattr(
+                        llm,
+                        "retire_deferred_response_language",
+                        None,
+                    )
+                    if callable(retire_decided):
+                        retire_decided(objective)
+                else:
+                    consumed_deferred_language = False
+                    consume_deferred = getattr(
+                        llm,
+                        "consume_deferred_response_language",
+                        None,
+                    )
+                    if callable(consume_deferred):
+                        (
+                            consumed_deferred_language,
+                            response_language,
+                        ) = consume_deferred(objective)
+                    if not consumed_deferred_language or response_language is None:
+                        try:
+                            response_language = llm.detect_response_language(objective)
+                        except ValueError:
+                            response_language = None
+            reply_text, _ = llm.chat(
+                objective,
+                history=history,
+                tools=None,
+                temperature=0.0,
+                conversation_kind=presentation_conversation_kind,
+                authenticated_operations=tuple(intent_operations),
+                # Language is independently constrained from the current message.
+                # The routing field cannot force the wrong response language.
+                response_language=response_language,
+            )
+            reply_text = reply_text.strip()
+            if not reply_text:
+                raise PlannerContractError(
+                    "no se pudo preparar una respuesta conversacional"
+                )
+            # Una explicación que sólo devuelve otra pregunta no contesta nada:
+            # «para qué lo necesita el PC» salió como «¿Para qué necesita el PC
+            # para ejecutar tareas específicas?» (seguimiento-13/020), y «cuáles
+            # son tus límites aquí» como «¿Cuáles son los límites de esta PC?»
+            # (limites-14/003). Un turno social sí puede terminar preguntando; uno
+            # que se contesta con el catálogo, no.
+            if (
+                (
+                    presentation_conversation_kind in {"knowledge", "followup"}
+                    or read_request(objective).intents
+                    & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+                )
+                and reply_text.rstrip().endswith(("?", "？"))
+                and re.search(r"[.!][\"'»]?\s", reply_text) is None
+            ):
+                raise PlannerContractError(
+                    "una explicación no puede ser sólo una pregunta"
+                )
+        else:
+            # P may finish before the independent language inference.  Keep L alive
+            # through every outer veto, then cancel it only once the final result is
+            # known to be non-conversational.  Cancellation closes the local HTTP
+            # request and deliberately does not join the discarded decode.
+            retire_deferred = getattr(
+                llm,
+                "retire_deferred_response_language",
+                None,
+            )
+            if callable(retire_deferred):
+                retire_deferred(objective)
+        # Preguntar por lo que hace o por lo que no hace el producto se contesta
+        # con el catálogo; no hay nada que aclarar. Cuando salía por aquí, la
+        # pregunta devuelta se construía con vocabulario del planificador: «¿Cuáles
+        # son los campos necesarios para crear un recordatorio futuro local y
+        # duradero?» ante «cuáles son tus límites aquí» (panel-opus-13/052, /038).
+        if decision["mode"] == "clarify" and nothing_to_clarify:
+            raise PlannerContractError(
+                "una pregunta por las capacidades o los límites no se aclara"
+            )
+        if decision["mode"] == "clarify" and not _recovery_question_is_valid(
+            decision["question"],
+            objective,
+            history,
+        ):
+            # Devolver la petición anterior como pregunta no aclara nada: se trata
+            # como un turno fallido para que la recuperación formule una de verdad.
+>           raise PlannerContractError("aclaración que repite un turno anterior")
+E           baxy_mind.planner.PlannerContractError: aclaración que repite un turno anterior
+
+src\baxy_mind\__main__.py:6328: PlannerContractError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent[cierra aquello-\xbfQu\xe9 quieres cerrar? \xbfUna ventana o un programa?-\xbfQu\xe9 quieres cerrar?]
+FAILED tests/test_turn_policy.py::test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent[close that-What should I close? A window or a program?-What should I close?]
+2 failed, 844 deselected in 4.20s

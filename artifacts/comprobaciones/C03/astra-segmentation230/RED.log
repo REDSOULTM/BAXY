@@ -1,0 +1,122 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_________ test_barge_candidate_preserves_prefix_until_admitted[False] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000025B46A13410>
+output_finishes = False
+
+    @pytest.mark.parametrize("output_finishes", [False, True])
+    def test_barge_candidate_preserves_prefix_until_admitted(monkeypatch, output_finishes):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        amplitudes = [0.0] * 8 + [0.02] + [0.001] * 10 + [0.02] * 3 + [0.0] * 32
+        engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 14 + [0.0] * 32)  # noqa: SLF001
+        stop = threading.Event()
+    
+        class Stream(_FiniteInputStream):
+            def read(self, samples):
+                frame, overflow = super().read(samples)
+                frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
+                return frame, overflow
+    
+        stream = Stream(stop, len(amplitudes))
+        requests = queue.Queue()
+        streaming, ducked_at = [], []
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads < 20))
+        monkeypatch.setattr(engine, "cancel_speech", lambda: None)
+        monkeypatch.setattr(engine._ducker, "duck", lambda: ducked_at.append(stream.reads))  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+            )
+            assert requests.qsize() == 1
+            assert not any(item["event"] == "error" for item in events)
+            audio = requests.get_nowait().audio
+            expected = np.repeat(np.asarray(amplitudes[8:22], dtype=np.float32), 512)
+>           np.testing.assert_array_equal(audio[audio != 0], expected)
+
+tests\test_mind_voice_runtime.py:2133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([0.001, 0.001, 0.001, ..., 0.02 , 0.02 , 0.02 ], dtype=float32), array([0.02, 0.02, 0.02, ..., 0.02, 0.02, 0.02], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           (shapes (4608,), (7168,) mismatch)
+E            x: array([0.001, 0.001, 0.001, ..., 0.02 , 0.02 , 0.02 ], dtype=float32)
+E            y: array([0.02, 0.02, 0.02, ..., 0.02, 0.02, 0.02], dtype=float32)
+
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:81: AssertionError
+_________ test_barge_candidate_preserves_prefix_until_admitted[True] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000025B46A10BC0>
+output_finishes = True
+
+    @pytest.mark.parametrize("output_finishes", [False, True])
+    def test_barge_candidate_preserves_prefix_until_admitted(monkeypatch, output_finishes):
+        events = []
+        engine = _prepare_voice_engine(monkeypatch, events)
+        engine._mode = "direct"  # noqa: SLF001
+        amplitudes = [0.0] * 8 + [0.02] + [0.001] * 10 + [0.02] * 3 + [0.0] * 32
+        engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 14 + [0.0] * 32)  # noqa: SLF001
+        stop = threading.Event()
+    
+        class Stream(_FiniteInputStream):
+            def read(self, samples):
+                frame, overflow = super().read(samples)
+                frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
+                return frame, overflow
+    
+        stream = Stream(stop, len(amplitudes))
+        requests = queue.Queue()
+        streaming, ducked_at = [], []
+        monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads < 20))
+        monkeypatch.setattr(engine, "cancel_speech", lambda: None)
+        monkeypatch.setattr(engine._ducker, "duck", lambda: ducked_at.append(stream.reads))  # noqa: SLF001
+        monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
+        monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
+        _install_sounddevice(monkeypatch, lambda **_: stream)
+        try:
+            engine._capture_loop(  # noqa: SLF001
+                stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
+            )
+            assert requests.qsize() == 1
+            assert not any(item["event"] == "error" for item in events)
+            audio = requests.get_nowait().audio
+            expected = np.repeat(np.asarray(amplitudes[8:22], dtype=np.float32), 512)
+>           np.testing.assert_array_equal(audio[audio != 0], expected)
+
+tests\test_mind_voice_runtime.py:2133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+args = (<built-in function eq>, array([0.001, 0.001, 0.001, ..., 0.02 , 0.02 , 0.02 ], dtype=float32), array([0.02, 0.02, 0.02, ..., 0.02, 0.02, 0.02], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           (shapes (5632,), (7168,) mismatch)
+E            x: array([0.001, 0.001, 0.001, ..., 0.02 , 0.02 , 0.02 ], dtype=float32)
+E            y: array([0.02, 0.02, 0.02, ..., 0.02, 0.02, 0.02], dtype=float32)
+
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:81: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_barge_candidate_preserves_prefix_until_admitted[False]
+FAILED tests/test_mind_voice_runtime.py::test_barge_candidate_preserves_prefix_until_admitted[True]
+2 failed, 97 deselected in 0.95s

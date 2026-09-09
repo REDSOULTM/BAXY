@@ -1,0 +1,40 @@
+[
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\dtln_aec_128_1.tflite",
+    "bytes": 1996600,
+    "sha256": "8d241b3a732af8ca140b2e30043e56a6c3c7800c46e22c26f4eea2f70974ad1e",
+    "gitBlob": "5d39fff209ca7d5532023ae9a7404614973a5061",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_128_1.tflite"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\dtln_aec_128_2.tflite",
+    "bytes": 5277012,
+    "sha256": "350bb01a1152ae3cabe09fe5e868ef2f7d8b988a9f22aae44f140195f6493126",
+    "gitBlob": "1e94471399329a9b8d60c322b9b939d7024b05ae",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/pretrained_models/dtln_aec_128_2.tflite"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\LICENSE",
+    "bytes": 1075,
+    "sha256": "aa95acd8c8a7341bfcdb2823694dcbb27a2a4143e860bb52db1ff0f29c85e5a1",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/LICENSE"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\README.md",
+    "bytes": 2446,
+    "sha256": "54ccc6bc7761f47a8b2ca68bc846f44b0009593715fdde90501147c2ebeaef37",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/README.md"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\run_aec.py",
+    "bytes": 8687,
+    "sha256": "99e4c179b8a2838bb0f257308e24a28a8565d1f93f40546bbdf585f4305dc317",
+    "url": "https://raw.githubusercontent.com/breizhn/DTLN-aec/9d24e128b4f409db18227b8babb343016625921f/run_aec.py"
+  },
+  {
+    "path": "D:\\BAXYRuntime\\experiments\\voice\\dtln179\\ai_edge_litert-2.2.0-cp312-cp312-win_amd64.whl",
+    "bytes": 17914562,
+    "sha256": "86815ff3378ac9fa4bb5548bcede1be7d050bd59a8ebaf1c056b7aef69fedcee",
+    "url": "https://files.pythonhosted.org/packages/32/81/818bc82bad14f176c2ac6a42e28750a87aa7b3732ebcc2c94a617de2f26b/ai_edge_litert-2.2.0-cp312-cp312-win_amd64.whl"
+  }
+]

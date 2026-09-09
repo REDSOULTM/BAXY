@@ -1,0 +1,4 @@
+{
+  "gemma4.cpp": "https://raw.githubusercontent.com/ggml-org/llama.cpp/5266f24da/src/models/gemma4.cpp",
+  "llama-model.cpp": "https://raw.githubusercontent.com/ggml-org/llama.cpp/5266f24da/src/llama-model.cpp"
+}

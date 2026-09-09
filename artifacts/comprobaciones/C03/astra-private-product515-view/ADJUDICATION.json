@@ -1,0 +1,164 @@
+{
+  "useful": 7,
+  "total": 9,
+  "terminals": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 1,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The memory save operation was completed successfully. The data was saved as confirmed by the system.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 2,
+      "useful": false,
+      "reason": "Internal operation/system narration remains instead of BAXY explaining the saved result naturally."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿De qué aplicación te refieres?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 3,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 4,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¡Hola Álvaro! ¿Cómo va tu día? 😎",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 5,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿De qué aplicación te refieres?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 6,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 7,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Álvaro.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 8,
+      "useful": true,
+      "reason": "Useful and grounded final; existing confirmation and stored/conversational names preserved."
+    },
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "No puedo desactivar la memoria privada.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200,
+      "turn": 9,
+      "useful": false,
+      "reason": "Wrong unsupported-operation rejection: private parser does not recognize the qualified memory target."
+    }
+  ],
+  "changes": [
+    [
+      {
+        "original_view": {
+          "kind": "status",
+          "outcome": "completed",
+          "seen": {
+            "enabled": true,
+            "replayed": false
+          },
+          "state": "memory configuration",
+          "operation": "memory.enable"
+        },
+        "effective_view": {
+          "kind": "status",
+          "outcome": "completed",
+          "seen": {
+            "enabled": true
+          },
+          "operation": "memory.enable"
+        }
+      }
+    ],
+    [
+      {
+        "original_view": {
+          "kind": "status",
+          "outcome": "completed",
+          "seen": {
+            "saved": true,
+            "corrected": false,
+            "sensitive": false,
+            "replayed": false
+          },
+          "state": "memory updated",
+          "operation": "memory.save"
+        },
+        "effective_view": {
+          "kind": "status",
+          "outcome": "completed",
+          "seen": {
+            "saved": true
+          },
+          "operation": "memory.save"
+        }
+      }
+    ]
+  ],
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1859.4609375,
+    "seconds": 31.813
+  },
+  "exit": {
+    "exitCode": 0,
+    "manifest_unchanged": true
+  }
+}

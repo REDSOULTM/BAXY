@@ -1,0 +1,1164 @@
+[
+  {
+    "turnId": "t1",
+    "request": "Good afternoon",
+    "terminal": "published_final",
+    "final": "Good afternoon.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 15,
+        "draft_sha256": "b2a872e9f53a0e3a6416aa8db9cde6cab4b53123e351ba0274615c5556b83bfc",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good afternoon."
+      }
+    ]
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "published_final",
+    "final": "DNS is a system that maps domain names to IP addresses.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "f9ce84cfa42e8b18e093e798d579b55e82651451375342bcc6ef75f279d58c38",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS is a system that maps domain names to IP addresses."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "Hi again",
+    "terminal": "published_final",
+    "final": "Hi again! How can I help you today?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 60,
+        "draft_sha256": "56f19bc9f81d7a50c4ee130776ea43d6ea20fb66b0256ef049aa252e3ae62387",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hello! It's nice to see you again. How can I help you today?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "retry",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 35,
+        "draft_sha256": "6bed584f4a5bf271da41bc7260dcdaa236a885d7c81f01a934a8ac3a73feb9f7",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Hi again! How can I help you today?"
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "Good evening",
+    "terminal": "published_final",
+    "final": "Good evening.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t4",
+        "stage": "first",
+        "intent": "welcome",
+        "language": "en",
+        "greeting": "only",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 13,
+        "draft_sha256": "da545bd154e7c63011ee605a38eaddd90e1474e602837ff6e6f01a5da34b060a",
+        "payload": {},
+        "situation": "{\"kind\":\"welcome\",\"polarity\":\"success\"}",
+        "draft": "Good evening."
+      }
+    ]
+  },
+  {
+    "turnId": "t5",
+    "request": "explícame qué es la latencia de red en una frase",
+    "terminal": "published_final",
+    "final": "La latencia de red es el tiempo que tarda el dato en viajar de un punto a otro en la red.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t5",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 89,
+        "draft_sha256": "21f318adf79760b99b7cd6e93ef3a2a4e4ab5a7951ef56870a4d134256a9456a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red es el tiempo que tarda el dato en viajar de un punto a otro en la red."
+      }
+    ]
+  },
+  {
+    "turnId": "t6",
+    "request": "¿por qué importa?",
+    "terminal": "published_final",
+    "final": "La latencia de red importa porque afecta la calidad de la comunicación en entornos donde la retraso puede dificultar la toma de decisiones y reduce la eficiencia operativa.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t6",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "latencia de red",
+        "published": true,
+        "draft_bytes": 173,
+        "draft_sha256": "33ae3e4af246eb869e22d019f689c33870bdc259bafb3caed74cd72c1327b94c",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "La latencia de red importa porque afecta la calidad de la comunicación en entornos donde la retraso puede dificultar la toma de decisiones y reduce la eficiencia operativa."
+      }
+    ]
+  },
+  {
+    "turnId": "t7",
+    "request": "explain what DNS caching is in one sentence",
+    "terminal": "published_final",
+    "final": "DNS caching stores previously resolved domain names and their IP addresses to speed up future lookups.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t8",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "DNS caching matters because it reduces latency and improves performance by temporarily storing domain name resolution results, so subsequent lookups are faster without requiring repeated network queries.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "no_reply_for_kind:action",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "answered_with_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "DNS caching",
+        "published": false,
+        "draft_bytes": 49,
+        "draft_sha256": "b9ad265ab2814577067cc0515f96d6007de5c644a4b9cfca5b3f6714e1bd1a7e",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Why does it matter in the context of DNS caching?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t8",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "DNS caching",
+        "published": true,
+        "draft_bytes": 203,
+        "draft_sha256": "1a290bb791fb785940714be3096cc10dc33a3db675bc103e478279ab6de06f0a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS caching matters because it reduces latency and improves performance by temporarily storing domain name resolution results, so subsequent lookups are faster without requiring repeated network queries."
+      }
+    ]
+  },
+  {
+    "turnId": "t9",
+    "request": "explain what a VPN is in one sentence",
+    "terminal": "published_final",
+    "final": "A VPN (Virtual Private Network) creates a secure, encrypted connection between your device and a remote server, allowing you to browse the internet privately and securely.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t10",
+    "request": "why does it matter?",
+    "terminal": "published_final",
+    "final": "It matters because understanding why it matters helps you make informed decisions and improves your overall situation.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "answered_with_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 37,
+        "draft_sha256": "42d704b1f173ae9bff99e1dc47fd9743e4f5065237ff9e0332bdde5a880acd5c",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Why does it matter for the VPN topic?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 133,
+        "draft_sha256": "2bdfff27f43db3bee0339d1b39db5a413aad5b6dcf57f28ca873334990f417f7",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don't know why it matters, but I'm here to help you explore the topic. Could you clarify what specific aspect you're interested in?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 270,
+        "draft_sha256": "53095ffe1cf7b0e090b261d3895d26a9337222033ce7168b55a5679c2f8af7e4",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don’t know the full context, but I can help if you tell me more about what you’re asking. Can you give me a clearer version of the question?  \nIf you’re referring to VPN, I can explain why it might matter in simple terms. Let me know how you’d like to proceed."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "answered_with_a_question",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 29,
+        "draft_sha256": "cea9ff5eafb68d948e07050a3c28d0164bf2aa1414db28a5b381d7284bba7a9f",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Why does it matter about VPN?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 99,
+        "draft_sha256": "5fc835c31d6532709e09a8ac1c9c5ac3142473adf31a5710fe58ceb68790e694",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don't know why it matters based on the information provided. Please clarify the topic or context."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 167,
+        "draft_sha256": "cb163438ffa9c7754324c57d0dfef95495e47c41a944835ad0ce22f6d3c66da9",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don't know the context, but I can help answer based on what you've provided. Please tell me more about the VPN topic so I can give a clear, simple answer in English."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "copied_instruction",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 188,
+        "draft_sha256": "6b29cb67221107d3778ad64d4bb41677731a4f9ce55e96cb2bff5ea40dd1f3c1",
+        "payload": {},
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Sure! I'm BAXY, here to help you. Please give me a clear English instruction, and I'll respond in English without any Spanish words like «Listo» or «encontré». I'm ready when you are."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 202,
+        "draft_sha256": "1d8dbc5b5011e88d9b9fc1725fa5719769896fe11a69b4bbbd81319609defff1",
+        "payload": {},
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "I understand you asked for a brief phrase in English based on this turn, without codes, extra text, or internal labels. Please provide the specific instruction or phrase you’d like me to respond with."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "third",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 50,
+        "draft_sha256": "5c869d1da83585db97e3b36bd5fe177a0138cdf8cd181e1144bcb16b1667ed8d",
+        "payload": {},
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Sure, I'm here to help. What would you like to do?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": false,
+        "draft_bytes": 114,
+        "draft_sha256": "972bba46f308de694bdf8460be97a1a98ca0ea8ab48b07a714f0f012a8e825e1",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "I don’t understand why it matters for the VPN topic. Please explain or provide more context about your question."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t10",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "VPN",
+        "published": true,
+        "draft_bytes": 118,
+        "draft_sha256": "e8daf4aa592070fa8c98e662986b337cf6042f3d7c2826ce3f991fed2f22913b",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "It matters because understanding why it matters helps you make informed decisions and improves your overall situation."
+      }
+    ]
+  },
+  {
+    "turnId": "t11",
+    "request": "explícame qué es un proxy en una frase",
+    "terminal": "published_final",
+    "final": "Un proxy actúa como intermediario entre ti y el recurso, facilitando el acceso y gestionando el tráfico.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t11",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 106,
+        "draft_sha256": "2e80490253ec6c95fd3844c21e0603766f3896f40310f84f2acf65436d12130a",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un proxy actúa como intermediario entre ti y el recurso, facilitando el acceso y gestionando el tráfico."
+      }
+    ]
+  },
+  {
+    "turnId": "t12",
+    "request": "¿y por qué se usa?",
+    "terminal": "published_final",
+    "final": "Se usa para filtrar el acceso a datos directamente desde el origen.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t12",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "proxy",
+        "published": true,
+        "draft_bytes": 67,
+        "draft_sha256": "c89ed6aa289d030ce75d38175e8bbbad0044c9308670b4e05d9ed3b041815194",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Se usa para filtrar el acceso a datos directamente desde el origen."
+      }
+    ]
+  },
+  {
+    "turnId": "t13",
+    "request": "explícame qué es un router en una frase",
+    "terminal": "published_final",
+    "final": "Un router enruta el tráfico de red entre dispositivos.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t13",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 55,
+        "draft_sha256": "d4fa51ddf9d6d43f2e10017ba5dccfce4e74f42943aefbd8a2a584cef371e5d9",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Un router enruta el tráfico de red entre dispositivos."
+      }
+    ]
+  },
+  {
+    "turnId": "t14",
+    "request": "¿y para qué sirve?",
+    "terminal": "published_final",
+    "final": "Porque sirve para ayudar a encontrar la mejor ruta en el camino que necesitas.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "router",
+        "published": false,
+        "draft_bytes": 87,
+        "draft_sha256": "eea8339fc4067a018afe8fd57f1a416ee5846ed614a9d830f6051f3f383e0d26",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué sirve el router, es para enrutamiento de datos entre dispositivos en una red."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "router",
+        "published": true,
+        "draft_bytes": 156,
+        "draft_sha256": "cd91419c77227474e4cc3ce178720388f020ec9fd1cc277eb5a23aa8eb7a17e1",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué sirve es entender el propósito de lo que se está discutiendo, lo que implica reconocer y explicar el motivo detrás de cada acción o decisión."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "router",
+        "published": false,
+        "draft_bytes": 81,
+        "draft_sha256": "ed25d7e6e8372858d4dfa2084fb879b5fa7a3b840ddbdf455bbe2f98e0106514",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Router sirve para enrutar el tráfico de datos entre diferentes puntos en la red."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "retry",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "forbidden_term",
+        "finish_reason": "stop",
+        "followup_subject": "router",
+        "published": false,
+        "draft_bytes": 141,
+        "draft_sha256": "dc87644453720830a971417007c1913a6a232598920156f00fad3658db021525",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Para qué sirve el router es enrutar el tráfico de datos entre dispositivos, permitiendo que los equipos se comuniquen dentro o entre redes."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t14",
+        "stage": "third",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "router",
+        "published": true,
+        "draft_bytes": 78,
+        "draft_sha256": "5f639825eaacaba1daaaa33a4d7540bd0e66db3586e3343c8859f9fd5667812c",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Porque sirve para ayudar a encontrar la mejor ruta en el camino que necesitas."
+      }
+    ]
+  },
+  {
+    "turnId": "t15",
+    "request": "cuánto es doce por ocho",
+    "terminal": "composition_failed",
+    "final": "composition_failed",
+    "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+    "compositionFailure": "no_response;recovery:no_response;retry_exhausted",
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 52,
+        "draft_sha256": "b0e24a0824253bd1471c42ed25fb76cfd18e02d8b42b3c60179f78986f9ee650",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolverlo ahora, pero doce por ocho es 48."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 79,
+        "draft_sha256": "bc65be90e1199bd69dde36dd6e43f4ca33264c7cd7865fe6f8a50ce1ddc7cbef",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolver la pregunta \"cuánto es doce por ocho\" porque el paso falló."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 42,
+        "draft_sha256": "195cc5c61aa73afc890e9e4bbadd5e80a7e575da12716f78de2ef96893aa54f4",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolverlo porque el paso falló."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 35,
+        "draft_sha256": "d5804999e8c1e672e6f5190a5c7e03a926e71fae48629d64a1865eede16100ce",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo ayudarte con esa pregunta."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 35,
+        "draft_sha256": "d8ae18157a7716e59318595e65c76682e24a980e539351d04b6578c53c9f701d",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo ayudar con esa situación."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 101,
+        "draft_sha256": "31ee6a9302a570372a7b97cbe0d9ef2943b9378535154f6f405a1f2e3ee006bd",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No sé la respuesta exacta, pero puedes calcularlo tú mismo: doce dividido por ocho es igual a 1,75."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "too_many_sentences",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 72,
+        "draft_sha256": "31bceb556c2e93bc3d1203d3b88d5801a1ded8cccae30c4728bf491f1974f337",
+        "payload": {},
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "BAXY aquí, lista para ayudar. ¿En qué puedo ayudarte hoy en español?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 43,
+        "draft_sha256": "194e7331acb0a84fed473bdde3ae51bbe40bebce2be0fd57bc09bdcc8e560a5f",
+        "payload": {},
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "BAXY, ¿cómo puedo ayudarte en este turno?"
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "acting_asserted",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 56,
+        "draft_sha256": "c330a669d8720903e77469ca825b19a748c25bfd46f7991eaebe1cf18f0397a9",
+        "payload": {},
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"acting\"}",
+        "draft": "Claro, dime qué frase quieres que diga y en qué turno."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 72,
+        "draft_sha256": "4d13e95649f1252b646a95f0f674ca9471337911d96d2470ee223131470a29c2",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo proporcionar la respuesta porque la situación marcó un fallo."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 67,
+        "draft_sha256": "89ea5c5bf10f1193b65ef64fabfe7b0ac6d00eb90f2d029667c18afa319cb04d",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolver la ecuación doce por ocho porque el paso falló."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 48,
+        "draft_sha256": "8916dae6bf1c0a638b5b45a403062ebcd8f3af5f77e279fa15bec447c87c86fe",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolverlo porque la situación falló."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 86,
+        "draft_sha256": "1ab89052de56303af6309e10dbace58766cd2126900b44d9da1cd118c565cceb",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo ayudarte con la pregunta, pero puedo decirte que doce por ocho es igual a 64."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 65,
+        "draft_sha256": "e95409a0b26dd2109c103ed570fb34f1526a286def805aed1c3403919a674b0a",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolver cuánto es doce por ocho porque el paso falló."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 42,
+        "draft_sha256": "195cc5c61aa73afc890e9e4bbadd5e80a7e575da12716f78de2ef96893aa54f4",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolverlo porque el paso falló."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 65,
+        "draft_sha256": "c1df00133da6626db905e9e3fdb3f14fcc4f237e62d08c9328f4d438f1ea7dd5",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "Cuánto es doce por ocho es igual a ocho veinte o setenta y ocho."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_failure",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 53,
+        "draft_sha256": "f989e09c607c69d1129bf05d7b00032a9f897a1017b83c0a33c69f1c199a92e1",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "El cálculo de doce por ocho ha fallado en el paso 1."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 154,
+        "draft_sha256": "542abe9c816268439aa6eccdd3d17dd2f45b8a2a7383206582dffc0675df95a8",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "Tengo dificultad para resolver la pregunta \"cuánto es doce por ocho\" como está planteada; por lo tanto, no puedo proporcionar la respuesta directamente."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 88,
+        "draft_sha256": "246620e630781fffbe4e3e7b8d94e323e2ad7f5cfc466759fcaea94742bf2040",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo ayudarte con la situación, pero puedo decirte que doce por ocho es igual a 96."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "retry",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "internal_code",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 120,
+        "draft_sha256": "6872f5fab49eac2488bd4a185d246fc970b09a267a143f79f122fbf2add86b10",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo ayudar con la pregunta sobre cuánto es doce por ocho, ya que el proceso ha fallado según el contrato literal."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t15",
+        "stage": "third",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome"
+        ],
+        "reason": "missing_fact",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": false,
+        "draft_bytes": 42,
+        "draft_sha256": "195cc5c61aa73afc890e9e4bbadd5e80a7e575da12716f78de2ef96893aa54f4",
+        "payload": {
+          "outcome": "failed"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":\"{\\\"kind\\\":\\\"failure\\\",\\\"polarity\\\":\\\"failure\\\",\\\"cause\\\":\\\"step_failed\\\",\\\"step\\\":1}\"}",
+        "draft": "No puedo resolverlo porque el paso falló."
+      }
+    ]
+  },
+  {
+    "turnId": "t16",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "person_metadiscourse",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t16",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 28,
+        "draft_sha256": "b93d40d7ac6d8ea6f076788d6675cf5c2fa91b98264e5ae4f7bacd7a63a98b42",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "The capital of Peru is Lima."
+      }
+    ]
+  }
+]

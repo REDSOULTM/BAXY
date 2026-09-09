@@ -1,0 +1,31 @@
+{
+  "cases": [
+    {
+      "id": "t3",
+      "text": "cuál es la capital de francia"
+    },
+    {
+      "id": "t4",
+      "text": "El agua es h2o?"
+    },
+    {
+      "id": "t5",
+      "text": "El aire es h20?"
+    },
+    {
+      "id": "t6",
+      "text": "ahora explicame que es Steam"
+    },
+    {
+      "id": "t11",
+      "text": "no subas el volumen"
+    },
+    {
+      "id": "t20",
+      "text": "no silencies el audio"
+    }
+  ],
+  "method": "Same six consumed literal requests, normal standalone knowledge chat, source sampler unchanged at temperature 0, all wrapper checks/retries. Change: a knowledge turn no longer becomes observation_ack because of an adverb/noun prefix. No PC effects, no fresh acceptance.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "sourceSha256": "e341940983cbf3ca898da89ad5bf43b1babbb0ba77dd393fe03dd498bec23ea2"
+}

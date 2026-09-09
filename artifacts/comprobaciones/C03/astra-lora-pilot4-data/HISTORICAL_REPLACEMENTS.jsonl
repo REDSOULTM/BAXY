@@ -1,0 +1,37 @@
+{"line": 1252, "request": "buenos días", "originalExplanation": "Buenos dias, en que te ayudo?", "trainingTarget": "Ya está."}
+{"line": 1253, "request": "buenas tardes", "originalExplanation": "Buenas tardes, decime que necesitas.", "trainingTarget": "Ya está."}
+{"line": 1254, "request": "buenas noches", "originalExplanation": "Buenas noches, en que te puedo ayudar?", "trainingTarget": "Listo."}
+{"line": 1255, "request": "hi", "originalExplanation": "Hi! What can I do for you?", "trainingTarget": "All set."}
+{"line": 1256, "request": "hello", "originalExplanation": "Hello! How can I help?", "trainingTarget": "All set."}
+{"line": 1257, "request": "hey", "originalExplanation": "Hey! What do you need?", "trainingTarget": "Done."}
+{"line": 1258, "request": "sup", "originalExplanation": "Hey! What can I help with?", "trainingTarget": "All set."}
+{"line": 1263, "request": "ok", "originalExplanation": "Perfecto. Avisame si necesitas algo.", "trainingTarget": "Ya está."}
+{"line": 1264, "request": "vale", "originalExplanation": "Genial. Cuando quieras seguimos.", "trainingTarget": "Listo."}
+{"line": 1265, "request": "ajá", "originalExplanation": "Te escucho, decime.", "trainingTarget": "Listo."}
+{"line": 1266, "request": "uhm", "originalExplanation": "Tomate tu tiempo, cuando quieras seguimos.", "trainingTarget": "Ya está."}
+{"line": 1267, "request": "sí", "originalExplanation": "Perfecto. En que puedo ayudarte?", "trainingTarget": "Hecho."}
+{"line": 1268, "request": "no", "originalExplanation": "Bien, avisame si necesitas algo.", "trainingTarget": "Ya está."}
+{"line": 1269, "request": "tal vez", "originalExplanation": "Cuando lo decidas, aca estoy.", "trainingTarget": "Ya está."}
+{"line": 1270, "request": "puede ser", "originalExplanation": "Sin problema, decime cuando quieras seguir.", "trainingTarget": "Ya está."}
+{"line": 1276, "request": "ajaja", "originalExplanation": "Jaja, decime que necesitas.", "trainingTarget": "Listo."}
+{"line": 1277, "request": "jeje", "originalExplanation": "Jeje, en que te ayudo?", "trainingTarget": "Listo."}
+{"line": 1305, "request": "explain Big O notation", "originalExplanation": "Big O describes how an algorithm's time or space grows as input size grows, in the worst case.", "trainingTarget": "All set."}
+{"line": 1306, "request": "what's a closure in JavaScript", "originalExplanation": "A closure is a function that remembers and can access variables from the scope where it was created, even after that scope has finished.", "trainingTarget": "All set."}
+{"line": 1307, "request": "explica list comprehension", "originalExplanation": "Es una forma compacta de crear listas en una sola línea, por ejemplo [x*2 for x in rango].", "trainingTarget": "Ya está."}
+{"line": 1308, "request": "diferencia entre proceso y hilo", "originalExplanation": "Un proceso tiene su propia memoria aislada; un hilo vive dentro de un proceso y comparte su memoria con otros hilos, por eso es más liviano.", "trainingTarget": "Listo."}
+{"line": 1310, "request": "explica HTTP/2", "originalExplanation": "HTTP/2 es la versión que multiplexa varias peticiones por una sola conexión, comprime cabeceras y reduce la latencia frente a HTTP/1.1.", "trainingTarget": "Hecho."}
+{"line": 1311, "request": "diferencia entre SQL y NoSQL", "originalExplanation": "SQL usa tablas con esquema fijo y relaciones; NoSQL es más flexible (documentos, clave-valor, grafos) y escala mejor horizontalmente.", "trainingTarget": "Hecho."}
+{"line": 1312, "request": "explica MVC", "originalExplanation": "MVC separa la app en tres partes: Modelo (datos), Vista (interfaz) y Controlador (lógica que las conecta).", "trainingTarget": "Ya está."}
+{"line": 1313, "request": "what's TDD", "originalExplanation": "TDD, test-driven development, means writing the test first, then the code to make it pass, then refactoring.", "trainingTarget": "All set."}
+{"line": 1314, "request": "diferencia entre GET y POST", "originalExplanation": "GET pide datos y manda los parámetros en la URL; POST envía datos en el cuerpo, ideal para crear o modificar recursos.", "trainingTarget": "Hecho."}
+{"line": 1315, "request": "explica idempotencia", "originalExplanation": "Una operación es idempotente si repetirla da el mismo resultado que hacerla una sola vez, como un PUT o borrar algo ya borrado. ¿Te doy un ejemplo?", "trainingTarget": "Listo."}
+{"line": 1632, "request": "huh", "originalExplanation": "What can I help you with?", "trainingTarget": "All set."}
+{"line": 1633, "request": "i don't know", "originalExplanation": "No worries, tell me what you'd like and I'll take it from there.", "trainingTarget": "Done."}
+{"line": 1638, "request": "skip", "originalExplanation": "Okay, skipping that. What's next?", "trainingTarget": "All set."}
+{"line": 1639, "request": "next", "originalExplanation": "Next what? There's nothing queued, tell me what you'd like.", "trainingTarget": "All set."}
+{"line": 1647, "request": "dime hola", "originalExplanation": "¡Hola!", "trainingTarget": "Listo."}
+{"line": 1648, "request": "y ahora", "originalExplanation": "No hay nada pendiente. ¿Qué querés hacer?", "trainingTarget": "Ya está."}
+{"line": 1649, "request": "y luego", "originalExplanation": "¿Luego de qué? No tengo nada en curso, decime qué necesitás.", "trainingTarget": "Listo."}
+{"line": 1650, "request": "no, eso no", "originalExplanation": "Entendido. ¿Qué preferís entonces?", "trainingTarget": "Hecho."}
+{"line": 1651, "request": "sí, así", "originalExplanation": "Perfecto. ¿Algo más?", "trainingTarget": "Listo."}
+{"line": 4502, "request": "Write a Python program to find the second largest number in a list.", "originalExplanation": "def second_largest(lst):\n    sorted_list = sorted(lst, reverse=True)\n    return sorted_list[1]\n\nnumbers = [10, 20, 4, 45, 99]\nprint(second_largest(numbers))  # Output: 45", "trainingTarget": "All set."}

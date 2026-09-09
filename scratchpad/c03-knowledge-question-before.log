@@ -1,0 +1,104 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_ test_knowledge_composition_preserves_the_kind_of_answer_requested[What is fourteen times six?-Eighty-four.] _
+
+question = 'What is fourteen times six?', answer = 'Eighty-four.'
+
+    @pytest.mark.parametrize("question, answer", [
+        ("What is fourteen times six?", "Eighty-four."),
+        ("What is the capital of Peru?", "Lima."),
+        ("define DNS in one sentence", "DNS translates domain names into IP addresses."),
+    ])
+    def test_knowledge_composition_preserves_the_kind_of_answer_requested(
+        question: str, answer: str,
+    ) -> None:
+        client = Recorder([answer])
+        assert client.compose_user_message(question, "conversation", {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == answer
+        content = client.payloads[0]["messages"][-1]["content"]
+        assert question in content
+        # INTENT_KNOWLEDGE includes quantities and entities, not only definitions.
+        # The previous instruction made the real model define multiplication
+        # instead of answering the requested calculation.
+>       assert "Explain the concept" not in content
+E       AssertionError: assert 'Explain the concept' not in 'Texto origi...nglish only.'
+E         
+E         'Explain the concept' is contained here:
+E           ncontré».
+E         ? ^
+E           Explain the concept in one short sentence. Do not greet. Do not configure or set. Do not restate the request.
+E         ? ^^^^^  +++++++++++++++
+E           English only.
+
+tests\test_c03_request_preservation.py:40: AssertionError
+_ test_knowledge_composition_preserves_the_kind_of_answer_requested[What is the capital of Peru?-Lima.] _
+
+question = 'What is the capital of Peru?', answer = 'Lima.'
+
+    @pytest.mark.parametrize("question, answer", [
+        ("What is fourteen times six?", "Eighty-four."),
+        ("What is the capital of Peru?", "Lima."),
+        ("define DNS in one sentence", "DNS translates domain names into IP addresses."),
+    ])
+    def test_knowledge_composition_preserves_the_kind_of_answer_requested(
+        question: str, answer: str,
+    ) -> None:
+        client = Recorder([answer])
+        assert client.compose_user_message(question, "conversation", {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == answer
+        content = client.payloads[0]["messages"][-1]["content"]
+        assert question in content
+        # INTENT_KNOWLEDGE includes quantities and entities, not only definitions.
+        # The previous instruction made the real model define multiplication
+        # instead of answering the requested calculation.
+>       assert "Explain the concept" not in content
+E       AssertionError: assert 'Explain the concept' not in 'Texto origi...nglish only.'
+E         
+E         'Explain the concept' is contained here:
+E           ncontré».
+E         ? ^
+E           Explain the concept in one short sentence. Do not greet. Do not configure or set. Do not restate the request.
+E         ? ^^^^^  +++++++++++++++
+E           English only.
+
+tests\test_c03_request_preservation.py:40: AssertionError
+_ test_knowledge_composition_preserves_the_kind_of_answer_requested[define DNS in one sentence-DNS translates domain names into IP addresses.] _
+
+question = 'define DNS in one sentence'
+answer = 'DNS translates domain names into IP addresses.'
+
+    @pytest.mark.parametrize("question, answer", [
+        ("What is fourteen times six?", "Eighty-four."),
+        ("What is the capital of Peru?", "Lima."),
+        ("define DNS in one sentence", "DNS translates domain names into IP addresses."),
+    ])
+    def test_knowledge_composition_preserves_the_kind_of_answer_requested(
+        question: str, answer: str,
+    ) -> None:
+        client = Recorder([answer])
+        assert client.compose_user_message(question, "conversation", {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+        }) == answer
+        content = client.payloads[0]["messages"][-1]["content"]
+        assert question in content
+        # INTENT_KNOWLEDGE includes quantities and entities, not only definitions.
+        # The previous instruction made the real model define multiplication
+        # instead of answering the requested calculation.
+>       assert "Explain the concept" not in content
+E       AssertionError: assert 'Explain the concept' not in 'Texto origi...nglish only.'
+E         
+E         'Explain the concept' is contained here:
+E           ncontré».
+E         ? ^
+E           Explain the concept in one short sentence. Do not greet. Do not configure or set. Do not restate the request.
+E         ? ^^^^^  +++++++++++++++
+E           English only.
+
+tests\test_c03_request_preservation.py:40: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_knowledge_composition_preserves_the_kind_of_answer_requested[What is fourteen times six?-Eighty-four.]
+FAILED tests/test_c03_request_preservation.py::test_knowledge_composition_preserves_the_kind_of_answer_requested[What is the capital of Peru?-Lima.]
+FAILED tests/test_c03_request_preservation.py::test_knowledge_composition_preserves_the_kind_of_answer_requested[define DNS in one sentence-DNS translates domain names into IP addresses.]
+3 failed, 30 deselected in 0.72s

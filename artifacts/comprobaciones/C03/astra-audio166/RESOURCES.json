@@ -1,0 +1,9 @@
+{
+  "reason": "operator_finished",
+  "seconds": 246.77,
+  "gpuPeakMiB": 3499.50390625,
+  "gpuAttributionAvailable": true,
+  "ramPeakMiB": 5964.53125,
+  "launcherExit": 0,
+  "cleanupExit": 0
+}

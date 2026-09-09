@@ -1,0 +1,29 @@
+[
+  {
+    "index": 0,
+    "text": "It is 07:14.",
+    "phonemes": "ɪt ɪz sˈɛvən fˈɔːtiːn.",
+    "seconds": 1.4396371882086167,
+    "generationSeconds": 0.07799999999406282,
+    "transcript": "It is seven fourteen.",
+    "wavSha256": "55e0cdd028651bc94f2e7425b61858cdd2179722714778c0043efcc23e6799d2"
+  },
+  {
+    "index": 1,
+    "text": "The file read failed because the content is invalid UTF-8.",
+    "phonemes": "ðə fˈa‍ɪl ɹˈiːd fˈe‍ɪld bɪkˈɒz ðə kˈɒntɛnt ɪz ɪnvˈalɪd jˌuːtˌiːˈɛf ˈe‍ɪt.",
+    "seconds": 4.063492063492063,
+    "generationSeconds": 0.20299999999406282,
+    "transcript": "The file read failed because the content is invalid UTF-8.",
+    "wavSha256": "b83b457e9218bc84503659d0985d6eff6f53c0d6d43f79547c66d3ee9e7dd294"
+  },
+  {
+    "index": 2,
+    "text": "I couldn't read the file because it wasn't found in the sandbox.",
+    "phonemes": "a‍ɪ kˌʊdənt ɹˈiːd ðə fˈa‍ɪl bɪkˈɒz ɪt wˌɒzn̩t fˈa‍ʊnd ɪnðə sˈandbɒks.",
+    "seconds": 4.133151927437642,
+    "generationSeconds": 0.21899999999732245,
+    "transcript": "I couldn't read the file because it wasn't found in the sandbox.",
+    "wavSha256": "805a6fa658425fe6051b1be5448cafde2b71c60c4be1cc1c5fdb8386b1973357"
+  }
+]

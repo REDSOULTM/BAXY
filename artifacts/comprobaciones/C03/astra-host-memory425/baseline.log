@@ -1,0 +1,10 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ PlannerLlmBoundaryTests.test_llm_uses_three_batched_gpu_slots_with_full_context_each _
+tests\test_planner.py:2690: in test_llm_uses_three_batched_gpu_slots_with_full_context_each
+    self.assertEqual(command[command.index("--cache-ram") + 1], "0")
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ValueError: '--cache-ram' is not in list
+=========================== short test summary info ===========================
+FAILED tests/test_planner.py::PlannerLlmBoundaryTests::test_llm_uses_three_batched_gpu_slots_with_full_context_each
+1 failed, 147 deselected in 0.88s

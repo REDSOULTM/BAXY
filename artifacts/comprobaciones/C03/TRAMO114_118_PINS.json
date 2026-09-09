@@ -1,0 +1,27 @@
+{
+  "utc": "2026-09-07T10:52:06.877963+00:00",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_TTS114_118.md": "1daa1efd9d2796d6a759c5188b5069ee755adcf07af48580709504871b132db4",
+    "artifacts/comprobaciones/C03/astra-native-tts114/DOWNLOAD.json": "f361adc4a8afaadd59eed1527625f4982be80c6f549afa10db75a6164c109a75",
+    "artifacts/comprobaciones/C03/astra-native-tts114/PREREG_ABORTED_BEFORE_SYNTHESIS.json": "00bf71e3d671a838a34ce5d1e621c86a7f1c25a0bb65a8508aab8b080d5264fc",
+    "artifacts/comprobaciones/C03/astra-native-tts114/SETUP_ABORT.log": "56173c58e6608a1fe91974471d7b074cc5e940e58b99461e8e2e8fb86d89ada5",
+    "artifacts/comprobaciones/C03/astra-native-tts114/CONSOLE_ABORT.log": "38254bce2f832b4b585ed7b7fddb223d46b62cb934051fc1f6f3d80cc8535b89",
+    "artifacts/comprobaciones/C03/astra-native-tts114/PREREG.json": "587fdd496a0a9251482dc2789252bf138206a9d5955a7abc0a456d63448c6311",
+    "artifacts/comprobaciones/C03/astra-native-tts114/RESULTS.json": "df5179cb3ff51f3c13ab2c04869d9c41909a6c4d3180355897a22700449bdd04",
+    "artifacts/comprobaciones/C03/astra-observe-tts115/PREREG.json": "78f362a3ca02d62b058547058368d3100068b127fb2d8c505e6a47034eebfde5",
+    "artifacts/comprobaciones/C03/astra-observe-tts115/RESULTS.json": "c6186ad755de97d6fd6b26dcef12fc33298846ef029a8fa52b3ef439ebc32879",
+    "artifacts/comprobaciones/C03/astra-observe-tts116/PREREG.json": "4828fe63c4ac43512441050b232ea22ae70166ea1ef96a0cbb3a1a482c1468b2",
+    "artifacts/comprobaciones/C03/astra-observe-tts116/RESULTS.json": "74887af39471d20480bd3c260e689517115d98ed9f00049a40c2e6735350ee59",
+    "artifacts/comprobaciones/C03/astra-native-tts117/PREREG.json": "8c3c18c949b83f2b55f1390bfdcbc6eb166d5117b749c6e9c31d0e12e2d85918",
+    "artifacts/comprobaciones/C03/astra-native-tts117/RESULTS.json": "1a5eed4d70a840a0722f3d4364701a959a0e025057fbf14d80e5debbf344a8c7",
+    "artifacts/comprobaciones/C03/astra-reference-tts118/PREREG.json": "f6debaad62cca625c9fb61f3b81534b1eec0171f29a8f00db0c2fe84764b6f5a",
+    "artifacts/comprobaciones/C03/astra-reference-tts118/RESULTS.json": "96569c7809f293857360fc8b89c5fb91da18027354654b75061710ec389bb15b",
+    "src/baxy_mind/voice_output.py": "979ed2bd0cad5d8762633bf85c6591fbf66ffdd99bf49f71ca3737a7dd61aeaa",
+    "scratchpad/c03-prepare-tts114.py": "3bb901d065d3e8facdec732e2e231e94843bec28f472774553bc832f518d3aaf",
+    "scratchpad/c03-native-tts114.py": "7cbfe7162efba60402d2c9e9648cf01276738112748980cfbf7bc4da78ea9de9",
+    "scratchpad/c03-observe-tts115.py": "c415f53149789ea6395a005a259d6aafa35967dd2d1bd9d8242faf613bc214f4",
+    "scratchpad/c03-native-tts117.py": "dd2d02afa6da144991079ed600fb4c9041127c21fa99e5a08e514df6c21e6fd9",
+    "scratchpad/c03-reference-tts118.py": "4f02ab027a046f04a43f9e4f799c21123a3aef23fd0be786557abbdf0510c552"
+  },
+  "note": "WAV hashes are in the pinned RESULTS; downloaded assets in pinned DOWNLOAD/PREREG."
+}

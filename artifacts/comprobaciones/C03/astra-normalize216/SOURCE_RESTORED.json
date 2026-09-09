@@ -1,0 +1,6 @@
+{
+  "sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h": "74369caf9afe59bd8e09c4eaee3cbb70722a1aa167aecf0e3a200901181daa7e",
+  "sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc": "510359cd31d9563c5d5c0b6d036b5e81b54ef8eb7626957910fcd06ccb9aaa36",
+  "sherpa-onnx/csrc/math.cc": "9ae17d9e0c6015077d493804a28cc1a9b64452fad68cd2d435220b54390b81d6",
+  "sherpa-onnx/csrc/math-test.cc": "77262f1236bfaebbe044e4e0cd22c52827e33f82e21eb4bef5aa945abe62b065"
+}

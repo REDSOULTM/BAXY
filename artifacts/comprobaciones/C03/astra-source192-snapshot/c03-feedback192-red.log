@@ -1,0 +1,54 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______________ test_acoustic_bare_wake_arms_exactly_one_followup ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000014A388FBAA0>
+
+    def test_acoustic_bare_wake_arms_exactly_one_followup(monkeypatch) -> None:
+        transcripts: list[str] = []
+        events: list[dict] = []
+        engine = _engine("Baxy", transcripts, events)
+        engine._mode = "wake"  # noqa: SLF001
+        spoken: list[str] = []
+        monkeypatch.setattr(engine, "speak", lambda text: not spoken.append(text))
+    
+        engine._decode_utterance(  # noqa: SLF001
+            np.zeros(SAMPLE_RATE, dtype=np.float32),
+            False,
+            "acoustic_wake",
+        )
+>       assert spoken == []
+E       AssertionError: assert ['S�.'] == []
+E         
+E         Left contains one more item: 'S�.'
+E         Use -v to get more diff
+
+tests\test_mind_voice_runtime.py:2403: AssertionError
+______ test_doubtful_voice_requests_model_feedback_without_fixed_speech _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000014A391DA330>
+
+    def test_doubtful_voice_requests_model_feedback_without_fixed_speech(monkeypatch) -> None:
+        transcripts: list[str] = []
+        events: list[dict] = []
+        engine = _engine("123", transcripts, events)
+        engine._mode = "direct"  # noqa: SLF001
+        spoken: list[str] = []
+        monkeypatch.setattr(engine, "speak", lambda text: not spoken.append(text))
+    
+        engine._decode_utterance(  # noqa: SLF001
+            np.zeros(SAMPLE_RATE, dtype=np.float32), False,
+        )
+    
+        assert transcripts == []
+>       assert spoken == []
+E       AssertionError: assert ['�Puedes repetirlo?'] == []
+E         
+E         Left contains one more item: '�Puedes repetirlo?'
+E         Use -v to get more diff
+
+tests\test_mind_voice_runtime.py:2430: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_mind_voice_runtime.py::test_acoustic_bare_wake_arms_exactly_one_followup
+FAILED tests/test_mind_voice_runtime.py::test_doubtful_voice_requests_model_feedback_without_fixed_speech
+2 failed, 85 deselected in 1.15s

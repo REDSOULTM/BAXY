@@ -1,0 +1,23 @@
+{
+  "changesSincePreregistration": {},
+  "files": {
+    "src/baxy_mind/llm.py": "e414ced302b7ba1e2191aaff6b5994f4c562a8a69ffb6ba5b686591d79e7213d",
+    "src/baxy_mind/__main__.py": "fe254d2d87fb3b52e471719508d4751196750acd62e60c3b45bd19b3a063a244",
+    "src/Baxy.App/MainWindowViewModel.cs": "4818e9de57df8fd6268122c40ccdeb0369fd993eba9e651fddb3ea3cabc45e46",
+    "src/Baxy.App/FieldProductChannel.cs": "28e4663a6cc3959c3a315a34deade1361ec4d42a2d93c0c054a8af1b2950cd7f",
+    "src/Baxy.App/MindSidecarClient.cs": "4dcef3872f842a02c8b5deb0aa48114311d92772e5bb0afb971b878500ab10a8",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "073911d52e5c5b48865c6de2d1c693a522b59103465a2e9b7efead35abda3d61",
+    "src/Baxy.FieldUi/src/types.ts": "3f48fb8fdcfde8cb5d4ef09858f1e4422d277ae0443c30ecfbad6de959b10bb1",
+    "src/Baxy.FieldUi/src/components/NeuralGraph.tsx": "86b9b2e1d40929a016c5224f0c68f40749503b8884a43267143312ce12b850d7",
+    "src/Baxy.FieldUi/src/components/FieldCenter.tsx": "a65371dc5c5afc57b2eb375c7105d1de3134c112b7293f17cc12b30d5ed4461b",
+    "src/Baxy.FieldUi/src/components/LogoMark.tsx": "39b70aa8195f79bb5cad2c28f5efe3e44d0a63e8ead9daf04a8d7d1649512f59",
+    "src/Baxy.FieldUi/src/App.tsx": "f729c4ed3af86fe48d19f1a0d201a001348eba5ae7e468b6051b1da5a1eb7313",
+    "src/Baxy.FieldUi/src/styles/prototype.css": "56cb6012613d9e9cf2f348bc49634ef44b35cc775020caee4d09280ba29f727c",
+    "src/Baxy.FieldUi/src/hooks/useEventStream.ts": "dd855753ae0b001a4fe9d499aeb09a83b048dacd32054d4c1456642811683b45",
+    "src/Baxy.FieldUi/ORIGIN.md": "07b58df55b68b38d9d61429f2b0e68bf01827eb39c7ac782dd848e6144cd6da8",
+    "src/Baxy.FieldUi/dist/index.html": "01d05090c87b6100703765f2a80051ebe6747ca260b0f6362b25826cd6a9320a",
+    "src/Baxy.FieldUi/dist/assets/index-Dh8gdcnz.js": "3526427606d8fd7395a0b55b1c2ab270c3282d65ab124568205570e50cbc9d0f",
+    "src/Baxy.FieldUi/dist/assets/index-B7EBy9jN.css": "a5262cad74ec68e7c2836b2ada0dd53a06dd016f58f89793657a88b1887561c1"
+  },
+  "registrationUnchanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "utc": "2026-09-08T18:28:13.397022+00:00",
+  "method": "Same task-duty replacement472 applied to publishedGemmaE2B actual guarded composer/source466. No new wording variant. Exact baseline first payload compared to465 (467 for export) before replacement; two documented thinking seeds0/17,6confirmation cases each. Sources/method model-specific in465/470, lazy462 and explicit globalbudget-1 inherited correctly. No effects/voice/UI/fresh credit.",
+  "criteria": "Same465 decision facts and naturalness; compare to465/467 by seed, preserve failures. No source/runtime promotion by partial coverage. Baseline transport must match exactly.",
+  "profile": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 64,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seeds": [
+      0,
+      17
+    ],
+    "max_tokens": 3072,
+    "thinking": true
+  },
+  "model": "D:\\BAXYRuntime\\experiments\\models\\baxy-gemma4-e2b-published-f9b84ecd\\gemma-4-E2B-it-Q4_K_M.gguf",
+  "model_sha256": "9d4a5a653f2733a5faeb5f58a0e30bc064dfd569b0059cabb2547dbc4ba0f4b7",
+  "server": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+  "limits": {
+    "composition_seconds": 55,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-confirmation-duty473-private"
+}

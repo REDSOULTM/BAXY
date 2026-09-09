@@ -1,0 +1,238 @@
+--- 225/src/baxy_mind/voice.py
++++ 230/src/baxy_mind/voice.py
+@@ -2154,6 +2154,7 @@
+         speech_started = False
+         speech_started_at = 0.0
+         barge_frames = 0
++        barge_pending = False
+         noise_floor = 0.002
+         live_stream_id: int | None = None
+         active_origin = "direct"
+@@ -2171,6 +2172,21 @@
+                     self._armed_until = 0.0
+                 return self._mode, self._armed_until >= now, self._wake_backend
+ 
++        def admit_utterance(cached_audio: tuple[np.ndarray, ...]) -> None:
++            nonlocal live_stream_id
++            self._ducker.duck()
++            self._streaming_session += 1
++            candidate_stream_id = self._streaming_session
++            if self._enqueue_streaming(
++                ("start", candidate_stream_id, cached_audio, speech_started_at),
++                streaming_queue=streaming_owner,
++                session_epoch=session_epoch,
++                stop_event=event,
++            ):
++                live_stream_id = candidate_stream_id
++            else:
++                live_stream_id = None
++
+         def begin_utterance(
+             origin: str,
+             cached: tuple[np.ndarray, ...],
+@@ -2178,16 +2194,17 @@
+             wake_verification_start_sample: int = 0,
+             *,
+             authorized: bool = True,
++            barge_candidate: bool = False,
+             retain_acoustic_history: bool = False,
+         ) -> None:
+             nonlocal speech_started, speech_started_at, silence_frames
+             nonlocal live_stream_id, active_origin, active_wake_confidence
+             nonlocal active_wake_verification_start_sample
+             nonlocal active_wake_detection
++            nonlocal barge_pending
+             if speech_started:
+                 return
+-            if authorized:
+-                self._ducker.duck()
++            barge_pending = barge_candidate
+             speech_started = True
+             active_origin = origin
+             active_wake_confidence = (
+@@ -2199,17 +2216,7 @@
+             cached_audio = cached
+             active_wake_detection = wake_detection
+             if authorized:
+-                self._streaming_session += 1
+-                candidate_stream_id = self._streaming_session
+-                if self._enqueue_streaming(
+-                    ("start", candidate_stream_id, cached_audio, speech_started_at),
+-                    streaming_queue=streaming_owner,
+-                    session_epoch=session_epoch,
+-                    stop_event=event,
+-                ):
+-                    live_stream_id = candidate_stream_id
+-                else:
+-                    live_stream_id = None
++                admit_utterance(cached_audio)
+             else:
+                 live_stream_id = None
+             utterance.extend(cached)
+@@ -2227,27 +2234,11 @@
+             nonlocal active_wake_detection
+             if not speech_started or active_origin != "endpoint_wake_candidate":
+                 return False
+-            self._ducker.duck()
+             active_origin = "acoustic_wake"
+             active_wake_confidence = wake_detection.confidence
+             active_wake_verification_start_sample = wake_verification_start_sample
+             active_wake_detection = wake_detection
+-            self._streaming_session += 1
+-            candidate_stream_id = self._streaming_session
+-            if self._enqueue_streaming(
+-                (
+-                    "start",
+-                    candidate_stream_id,
+-                    tuple(utterance),
+-                    speech_started_at,
+-                ),
+-                streaming_queue=streaming_owner,
+-                session_epoch=session_epoch,
+-                stop_event=event,
+-            ):
+-                live_stream_id = candidate_stream_id
+-            else:
+-                live_stream_id = None
++            admit_utterance(tuple(utterance))
+             acoustic_pre_roll.clear()
+             acoustic_activity.clear()
+             return True
+@@ -2258,7 +2249,9 @@
+             nonlocal active_wake_confidence
+             nonlocal active_wake_verification_start_sample
+             nonlocal active_wake_detection
++            nonlocal barge_pending
+             audio = np.concatenate(utterance) if utterance else np.empty(0, np.float32)
++            unconfirmed_barge = barge_pending
+             origin = active_origin
+             wake_confidence = active_wake_confidence
+             wake_verification_start_sample = active_wake_verification_start_sample
+@@ -2270,6 +2263,7 @@
+             speech_started = False
+             speech_started_at = 0.0
+             barge_frames = 0
++            barge_pending = False
+             active_origin = "direct"
+             active_wake_confidence = None
+             active_wake_verification_start_sample = 0
+@@ -2285,7 +2279,7 @@
+             vad.reset()
+             if origin in {"acoustic_wake", "endpoint_wake_candidate"}:
+                 self._reset_acoustic_wake(session_epoch=session_epoch)
+-            if audio.size < MIN_UTTERANCE_S * SAMPLE_RATE:
++            if unconfirmed_barge or audio.size < MIN_UTTERANCE_S * SAMPLE_RATE:
+                 self._ducker.restore()
+                 return
+             try:
+@@ -2412,6 +2406,12 @@
+                             barge_frames = 0
+                     else:
+                         barge_frames = 0
++
++                    if barge_pending and speech and (
++                        barge_frames >= 3 or not self.speaking
++                    ):
++                        barge_pending = False
++                        admit_utterance(tuple(utterance))
+ 
+                     mode, armed, backend = wake_state()
+                     acoustic_monitoring = (
+@@ -2527,7 +2527,13 @@
+                                 )
+                                 frame_already_captured = bool(cached)
+                             else:
+-                                begin_utterance(origin, tuple(vad_pre_roll))
++                                # Keep the full onset in the existing utterance
++                                # buffer; publish only after interruption is valid.
++                                pending = self.speaking and barge_frames < 3
++                                begin_utterance(
++                                    origin, tuple(vad_pre_roll),
++                                    authorized=not pending, barge_candidate=pending,
++                                )
+                         silence_frames = 0
+                         if not frame_already_captured:
+                             utterance.append(mono)
+--- 225/tests/test_mind_voice_runtime.py
++++ 230/tests/test_mind_voice_runtime.py
+@@ -2066,6 +2066,80 @@
+         engine.shutdown()
+ 
+ 
++@pytest.mark.parametrize("speech_blocks", [1, 2])
++def test_unconfirmed_barge_candidate_does_not_open_a_transcription(monkeypatch, speech_blocks):
++    events = []
++    engine = _prepare_voice_engine(monkeypatch, events)
++    engine._mode = "direct"  # noqa: SLF001
++    probabilities = [0.0] * 8 + [0.9] * speech_blocks + [0.0] * 32
++    engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
++    stop = threading.Event()
++    stream = _FiniteInputStream(stop, len(probabilities))
++    requests = queue.Queue()
++    cancellations = []
++    streaming = []
++    ducked_at = []
++    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
++    monkeypatch.setattr(engine, "cancel_speech", lambda: cancellations.append(stream.reads))
++    monkeypatch.setattr(engine._ducker, "duck", lambda: ducked_at.append(stream.reads))  # noqa: SLF001
++    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
++    monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
++    _install_sounddevice(monkeypatch, lambda **_: stream)
++    try:
++        engine._capture_loop(  # noqa: SLF001
++            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
++        )
++        assert requests.empty()
++        assert cancellations == []
++        assert streaming == []
++        assert ducked_at == []
++        assert not any(item["event"] == "error" for item in events)
++    finally:
++        engine.shutdown()
++
++
++@pytest.mark.parametrize("output_finishes", [False, True])
++def test_barge_candidate_preserves_prefix_until_admitted(monkeypatch, output_finishes):
++    events = []
++    engine = _prepare_voice_engine(monkeypatch, events)
++    engine._mode = "direct"  # noqa: SLF001
++    amplitudes = [0.0] * 8 + [0.02] + [0.001] * 10 + [0.02] * 3 + [0.0] * 32
++    engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 14 + [0.0] * 32)  # noqa: SLF001
++    stop = threading.Event()
++
++    class Stream(_FiniteInputStream):
++        def read(self, samples):
++            frame, overflow = super().read(samples)
++            frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
++            return frame, overflow
++
++    stream = Stream(stop, len(amplitudes))
++    requests = queue.Queue()
++    streaming, ducked_at = [], []
++    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: not output_finishes or stream.reads < 20))
++    monkeypatch.setattr(engine, "cancel_speech", lambda: None)
++    monkeypatch.setattr(engine._ducker, "duck", lambda: ducked_at.append(stream.reads))  # noqa: SLF001
++    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
++    monkeypatch.setattr(engine, "_enqueue_streaming", lambda item, **_: streaming.append(item) or True)
++    _install_sounddevice(monkeypatch, lambda **_: stream)
++    try:
++        engine._capture_loop(  # noqa: SLF001
++            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
++        )
++        assert requests.qsize() == 1
++        assert not any(item["event"] == "error" for item in events)
++        audio = requests.get_nowait().audio
++        expected = np.repeat(np.asarray(amplitudes[8:22], dtype=np.float32), 512)
++        np.testing.assert_array_equal(audio[audio != 0], expected)
++        assert ducked_at == [20 if output_finishes else 22]
++        starts = [item for item in streaming if item[0] == "start"]
++        assert len(starts) == 1
++        prefix = np.concatenate(starts[0][2])
++        np.testing.assert_array_equal(prefix[prefix != 0], expected[:len(prefix[prefix != 0])])
++    finally:
++        engine.shutdown()
++
++
+ def test_barge_energy_threshold_does_not_split_an_active_utterance(monkeypatch):
+     events = []
+     engine = _prepare_voice_engine(monkeypatch, events)

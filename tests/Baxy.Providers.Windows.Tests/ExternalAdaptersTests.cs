@@ -2766,6 +2766,7 @@ public sealed class ExternalAdaptersTests
         private bool _muted = muted;
         private float _volume = volume;
         public string EndpointId { get; } = endpointId;
+        public string? ReadDisplayName() => "Test audio endpoint";
         public float ReadVolumeScalar() => _volume;
         public bool ReadMuted() => _muted;
         public void SetVolumeScalar(float scalar, Guid eventContext) => _volume = scalar;
@@ -2778,6 +2779,7 @@ public sealed class ExternalAdaptersTests
         private bool _setCalled;
 
         public string EndpointId => "post-dispatch-failure";
+        public string? ReadDisplayName() => "Test failing endpoint";
         internal int SetCalls { get; private set; }
 
         public float ReadVolumeScalar()

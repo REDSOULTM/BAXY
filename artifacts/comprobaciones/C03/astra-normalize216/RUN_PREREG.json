@@ -1,0 +1,6 @@
+{
+  "scriptSha256": "f051e56e423b01f7ffe31da79510b9dc0cb05cd0d28e0993120f10f0c6cfd1c0",
+  "nativeSha256": "f639a80674b16b2127c9fc46fdf2889540f2d52daa27efa2c858a18246a23646",
+  "method": "Four214 exact windows, isolated native trace, same beam8 model with per-stream greedy option. Check native greedy acknowledgement, normalized bounded features and nonempty outputs; retain exact previous texts for comparison. No product or recording.",
+  "runtimeSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

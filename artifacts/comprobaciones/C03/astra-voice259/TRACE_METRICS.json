@@ -1,0 +1,15 @@
+{
+  "frames": 1315,
+  "speakingFrames": 432,
+  "audioSeconds": 42.08,
+  "dspMeanMs": 0.6727489732876916,
+  "dspP99Ms": 1.1050359928049145,
+  "dspMaxMs": 1.5841999993426725,
+  "linearVadMax": 0.7178360223770142,
+  "confirmationVadMax": 0.38989773392677307,
+  "note": "DSP timing excludes VAD/UI/LLM. Speaking signal proves nonzero input/reference, not simultaneous human speech or full C03 resource acceptance.",
+  "microphoneRmsDuringOutput": 0.0068858651190488495,
+  "referenceRmsDuringOutput": 910.9367070059888,
+  "cleanRmsDuringOutput": 0.0024119544679673563,
+  "confirmationRmsDuringOutput": 0.0009352752171641539
+}

@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-07T14:57:39.861325+00:00",
+  "candidate": "Official DTLN-AEC128 (1.8M parameters), only smallest model; fixed author revision9d24e128b4f409db18227b8babb343016625921f",
+  "purpose": "Change strategy after Speex physical failure and default/low-gainAEC3 mixed-speech failure. Existing identical174 controls; local CPU only, no private upload, source/runtime unchanged.",
+  "referenceImplementation": "run_aec.py at pinned author revision;16k mono,512window/128hop,two states,original FFT/mask/IFFT/overlap-add. Preserve startup and delay contract before integrating512frames.",
+  "runtime": "ai-edge-litert2.2.0 CPython312 Windows x64; isolated extraction, no installation in registered environment; interpreter compatibility must be verified.",
+  "criteria": "Near-only/mix content, silence and echo rejection with unchanged BAXY thresholds, CPU cost; native synthetic controls are not physical/human acceptance."
+}

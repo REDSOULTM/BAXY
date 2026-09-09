@@ -1,0 +1,17 @@
+......................FF.                                                [100%]
+================================== FAILURES ===================================
+_ test_positive_adversative_inside_note_content_does_not_authorize_actions[Crea una nota llamada Sol con el texto "abre calculadora pero desmutealo"] _
+tests\test_effect_intent.py:6941: in test_positive_adversative_inside_note_content_does_not_authorize_actions
+    assert result is not None and result.operations == ("note.create",)
+E   assert (None is not None)
+_ test_positive_adversative_inside_note_content_does_not_authorize_actions[Create a note called Sol with text "open Spotify but unmute the audio"] _
+tests\test_effect_intent.py:6941: in test_positive_adversative_inside_note_content_does_not_authorize_actions
+    assert result is not None and result.operations == ("note.create",)
+E   assert (EffectIntent(operations=('note.create', 'audio.mute'), evidence=('create a note called sol with text "open spotify', 'unmute the audio"')) is not None and ('note.create', 'audio.mute') == ('note.create',)
+E     
+E     Left contains one more item: 'audio.mute'
+E     Use -v to get more diff)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_positive_adversative_inside_note_content_does_not_authorize_actions[Crea una nota llamada Sol con el texto "abre calculadora pero desmutealo"]
+FAILED tests/test_effect_intent.py::test_positive_adversative_inside_note_content_does_not_authorize_actions[Create a note called Sol with text "open Spotify but unmute the audio"]
+2 failed, 23 passed, 1735 deselected in 1.11s

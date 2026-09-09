@@ -1,0 +1,21 @@
+Versión de MSBuild 17.14.51+25f168cee para .NET Framework
+
+  fst.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fst.lib
+  ucd.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ucd.lib
+  espeak-ng.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\espeak-ng.lib
+  kaldifst_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-kaldifst-core.lib
+  fstfar.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-fstfar.lib
+  kissfft.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kissfft-float.lib
+  kaldi-decoder-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-decoder-core.lib
+  kaldi-native-fbank-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\kaldi-native-fbank-core.lib
+  piper_phonemize.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\piper_phonemize.lib
+  ssentencepiece_core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\ssentencepiece_core.lib
+  math.cc
+  offline-recognizer-impl.cc
+  offline-transducer-greedy-search-nemo-decoder.cc
+  sherpa-onnx-core.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\sherpa-onnx-core.lib
+     Creando biblioteca D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/_sherpa_onnx.lib y objeto D:/BAXYRuntime/experiments/voice/sherpa205/build/lib/Release/_sherpa_onnx.exp
+  Generando código
+  Not all modules are compiled with -Gy (function comdat), build without incremental LTCG.
+  Generación de código finalizada
+  _sherpa_onnx.vcxproj -> D:\BAXYRuntime\experiments\voice\sherpa205\build\lib\Release\_sherpa_onnx.cp312-win_amd64.pyd

@@ -1,0 +1,11 @@
+{
+  "rows": 9,
+  "verbatimChecked": true,
+  "hashes": {
+    "PREREG.json": "94b0712667af1e6aba3619a9d4f72b8f1512f2123244d8e8055b4e885b8da6e3",
+    "posts.jsonl": "be8afa788dd1e7983192a46d691c7f71fe4b3a6561d7a8ecdc37c6f334e33077",
+    "replies.jsonl": "0a0c8593cf56a4f42a91ed926ea69c1acd782f44666fa275ad1272f6e68e927c",
+    "RESULT.json": "6c23c8f90b94377325847033c3dc6ae957ddc6c3ca411cab3c8d8d868e4ab395",
+    "RESPUESTAS.md": "76067dfe92c4b69c5d8791757cbe830f322aef63c036fb6cc9bdaebec57a6400"
+  }
+}

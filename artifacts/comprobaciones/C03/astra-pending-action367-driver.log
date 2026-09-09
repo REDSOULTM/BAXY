@@ -1,0 +1,9 @@
+Could not find platform independent libraries <prefix>
+{"id": "t1", "variant": "baseline", "answer": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?", "finish_reason": "stop", "payload_unchanged": true}
+{"id": "t1", "variant": "pending-action", "answer": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?", "finish_reason": "stop", "payload_unchanged": true}
+{"id": "t2", "variant": "baseline", "answer": "What would you like to confirm or cancel? Please choose either confirm or cancel.", "finish_reason": "stop", "payload_unchanged": true}
+{"id": "t2", "variant": "pending-action", "answer": "I need your decision on enabling private local memory. Do you want to confirm or cancel this action?", "finish_reason": "stop", "payload_unchanged": false}
+{"id": "t6", "variant": "baseline", "answer": "Hola \u00c1lvaro, \u00bfte gustar\u00eda que active mi memoria privada para guardarte tu nombre? Por favor, dime si quieres confirmar o cancelar.", "finish_reason": "stop", "payload_unchanged": true}
+{"id": "t6", "variant": "pending-action", "answer": "Hola \u00c1lvaro, \u00bfte gustar\u00eda que active mi memoria privada para guardarte tu nombre? Por favor, dime si quieres confirmar o cancelar.", "finish_reason": "stop", "payload_unchanged": true}
+{"id": "t7", "variant": "baseline", "answer": "\u00bfQu\u00e9 vas a activar? \u00bfConfirmar o cancelar?", "finish_reason": "stop", "payload_unchanged": true}
+{"id": "t7", "variant": "pending-action", "answer": "\u00bfQu\u00e9 vas a activar? \u00bfConfirmar o cancelar la activaci\u00f3n de la memoria privada local?", "finish_reason": "stop", "payload_unchanged": false}

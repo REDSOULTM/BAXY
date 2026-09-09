@@ -1,0 +1,199 @@
+[
+  {
+    "case": "echo221",
+    "backend": "aec3",
+    "human": null,
+    "referenceText": null,
+    "frames": 1316,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo221-aec3.npz",
+    "sha256": "ad3bfc26c878958c446555e10499bcdd39f3f0639736e0de1c41cf64ff33ad99",
+    "dspMs": {
+      "mean": 0.3610958206261392,
+      "p99": 0.5889300067792641,
+      "max": 1.1789999989559874
+    }
+  },
+  {
+    "case": "echo232",
+    "backend": "aec3",
+    "human": null,
+    "referenceText": null,
+    "frames": 1316,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo232-aec3.npz",
+    "sha256": "7e19a07d155120b11469d5b0edcf62d7381d0020ee77265abf9fb8a582aa1386",
+    "dspMs": {
+      "mean": 0.3482399694988678,
+      "p99": 0.46395000535994685,
+      "max": 0.705700003891252
+    }
+  },
+  {
+    "case": "h0-near",
+    "backend": "aec3",
+    "human": 0,
+    "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h0-near-aec3.npz",
+    "sha256": "2880369122595756f41c2ec198ac6d26b0f8919c88c1e1ff03378c9e634370b3",
+    "dspMs": {
+      "mean": 0.3352639569993743,
+      "p99": 0.5648399965139101,
+      "max": 1.9717000104719773
+    },
+    "humanWindowSamples": [
+      43109,
+      280549
+    ]
+  },
+  {
+    "case": "h0-raw",
+    "backend": "aec3",
+    "human": 0,
+    "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h0-raw-aec3.npz",
+    "sha256": "6ce7b5ebf4f9d0c95967828be14a99a11f1e2aebe35da687f58de610b6b4df1a",
+    "dspMs": {
+      "mean": 0.3466691480207017,
+      "p99": 0.4553800041321665,
+      "max": 0.8280000038212165
+    },
+    "humanWindowSamples": [
+      43109,
+      280549
+    ]
+  },
+  {
+    "case": "h1-near",
+    "backend": "aec3",
+    "human": 1,
+    "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h1-near-aec3.npz",
+    "sha256": "8ca9947fa67ddaaa17311b315e0e14035b3c6d2c6e2ceebae54027785a758c59",
+    "dspMs": {
+      "mean": 0.33860225270932814,
+      "p99": 0.47271999355871225,
+      "max": 1.039199996739626
+    },
+    "humanWindowSamples": [
+      43109,
+      230629
+    ]
+  },
+  {
+    "case": "h1-raw",
+    "backend": "aec3",
+    "human": 1,
+    "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h1-raw-aec3.npz",
+    "sha256": "5caffb3a32f0a47db6f06f35ebb8c2f5fa1b2fae2abcf7d621ab0dc5ca44ea4c",
+    "dspMs": {
+      "mean": 0.35057649342537045,
+      "p99": 0.4770399944391098,
+      "max": 0.6562999915331602
+    },
+    "humanWindowSamples": [
+      43109,
+      230629
+    ]
+  },
+  {
+    "case": "h2-near",
+    "backend": "aec3",
+    "human": 2,
+    "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h2-near-aec3.npz",
+    "sha256": "bfe903b9d81d2a7972be47989198ba846fb10183b2ca26f7a59bb6f4c0e0393e",
+    "dspMs": {
+      "mean": 0.3305320274465636,
+      "p99": 0.43675999331753657,
+      "max": 0.6239999929675832
+    },
+    "humanWindowSamples": [
+      43109,
+      244069
+    ]
+  },
+  {
+    "case": "h2-raw",
+    "backend": "aec3",
+    "human": 2,
+    "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h2-raw-aec3.npz",
+    "sha256": "cbfa3f5d55f3e806496d89b9b95b9fe1d6902a16cd45568b66086a70e93254ad",
+    "dspMs": {
+      "mean": 0.3536585699437354,
+      "p99": 0.4803200077731161,
+      "max": 1.5276000049198046
+    },
+    "humanWindowSamples": [
+      43109,
+      244069
+    ]
+  },
+  {
+    "case": "h3-near",
+    "backend": "aec3",
+    "human": 3,
+    "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h3-near-aec3.npz",
+    "sha256": "1699acec0e2a69b8eacf37ef58f89c728ffe25dcf54e1463a1a71a7a57ce50d9",
+    "dspMs": {
+      "mean": 0.33185288925649714,
+      "p99": 0.4544800118310377,
+      "max": 0.5741000059060752
+    },
+    "humanWindowSamples": [
+      43109,
+      215269
+    ]
+  },
+  {
+    "case": "h3-raw",
+    "backend": "aec3",
+    "human": 3,
+    "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "frames": 1021,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h3-raw-aec3.npz",
+    "sha256": "84aa0a507c902af9a38d845e6306c5e9d47a0f35b30e00de5ea0a07889df9ab8",
+    "dspMs": {
+      "mean": 0.3591694416409636,
+      "p99": 0.5094000021927055,
+      "max": 3.2256999984383583
+    },
+    "humanWindowSamples": [
+      43109,
+      215269
+    ]
+  },
+  {
+    "case": "echo243",
+    "backend": "aec3",
+    "human": null,
+    "referenceText": null,
+    "frames": 1317,
+    "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo243-aec3.npz",
+    "sha256": "049688f41486cb4d24120f392cdd3139565cde559b6c6a92df27ef8beb41e3fd",
+    "dspMs": {
+      "mean": 0.35539263484024725,
+      "p99": 0.48054400598630215,
+      "max": 1.5352000045822933
+    }
+  }
+]

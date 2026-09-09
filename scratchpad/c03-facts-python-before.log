@@ -1,0 +1,184 @@
+............FFFFFFF...                                                   [100%]
+================================== FAILURES ===================================
+_ test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 4:12 AM.-False] _
+
+reply = 'The time is 4:12 AM.', expected = False
+
+    @pytest.mark.parametrize("reply, expected", [
+        ("The time is 4:12 PM.", True),
+        ("The time is 04:12 p. m.", True),
+        ("Son las 16:12.", True),
+        ("The time is 4:12 AM.", False),
+        ("The time is 4:12.", False),
+        ("The time is 16:12 AM.", False),
+        ("The time is 16:12, or 4:12 AM.", False),
+    ])
+    def test_clock_equivalence_preserves_the_actual_half_of_the_day(
+        reply: str, expected: bool,
+    ) -> None:
+        payload = llm._compose_situation_payload({
+            "kind": "status", "polarity": "success", "operation": "system.time",
+            "observed": {"utc": "2026-09-06T20:12:00Z", "localUtcOffsetMinutes": -240},
+        }, "en")
+>       assert (not llm._payload_fact_defect(reply, payload)) is expected
+E       AssertionError: assert not '' is False
+E        +  where '' = <function _payload_fact_defect at 0x0000027A46F75F80>('The time is 4:12 AM.', {'clock': '16:12'})
+E        +    where <function _payload_fact_defect at 0x0000027A46F75F80> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:97: AssertionError
+_ test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 4:12.-False] _
+
+reply = 'The time is 4:12.', expected = False
+
+    @pytest.mark.parametrize("reply, expected", [
+        ("The time is 4:12 PM.", True),
+        ("The time is 04:12 p. m.", True),
+        ("Son las 16:12.", True),
+        ("The time is 4:12 AM.", False),
+        ("The time is 4:12.", False),
+        ("The time is 16:12 AM.", False),
+        ("The time is 16:12, or 4:12 AM.", False),
+    ])
+    def test_clock_equivalence_preserves_the_actual_half_of_the_day(
+        reply: str, expected: bool,
+    ) -> None:
+        payload = llm._compose_situation_payload({
+            "kind": "status", "polarity": "success", "operation": "system.time",
+            "observed": {"utc": "2026-09-06T20:12:00Z", "localUtcOffsetMinutes": -240},
+        }, "en")
+>       assert (not llm._payload_fact_defect(reply, payload)) is expected
+E       AssertionError: assert not '' is False
+E        +  where '' = <function _payload_fact_defect at 0x0000027A46F75F80>('The time is 4:12.', {'clock': '16:12'})
+E        +    where <function _payload_fact_defect at 0x0000027A46F75F80> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:97: AssertionError
+_ test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 16:12 AM.-False] _
+
+reply = 'The time is 16:12 AM.', expected = False
+
+    @pytest.mark.parametrize("reply, expected", [
+        ("The time is 4:12 PM.", True),
+        ("The time is 04:12 p. m.", True),
+        ("Son las 16:12.", True),
+        ("The time is 4:12 AM.", False),
+        ("The time is 4:12.", False),
+        ("The time is 16:12 AM.", False),
+        ("The time is 16:12, or 4:12 AM.", False),
+    ])
+    def test_clock_equivalence_preserves_the_actual_half_of_the_day(
+        reply: str, expected: bool,
+    ) -> None:
+        payload = llm._compose_situation_payload({
+            "kind": "status", "polarity": "success", "operation": "system.time",
+            "observed": {"utc": "2026-09-06T20:12:00Z", "localUtcOffsetMinutes": -240},
+        }, "en")
+>       assert (not llm._payload_fact_defect(reply, payload)) is expected
+E       AssertionError: assert not '' is False
+E        +  where '' = <function _payload_fact_defect at 0x0000027A46F75F80>('The time is 16:12 AM.', {'clock': '16:12'})
+E        +    where <function _payload_fact_defect at 0x0000027A46F75F80> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:97: AssertionError
+_ test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 16:12, or 4:12 AM.-False] _
+
+reply = 'The time is 16:12, or 4:12 AM.', expected = False
+
+    @pytest.mark.parametrize("reply, expected", [
+        ("The time is 4:12 PM.", True),
+        ("The time is 04:12 p. m.", True),
+        ("Son las 16:12.", True),
+        ("The time is 4:12 AM.", False),
+        ("The time is 4:12.", False),
+        ("The time is 16:12 AM.", False),
+        ("The time is 16:12, or 4:12 AM.", False),
+    ])
+    def test_clock_equivalence_preserves_the_actual_half_of_the_day(
+        reply: str, expected: bool,
+    ) -> None:
+        payload = llm._compose_situation_payload({
+            "kind": "status", "polarity": "success", "operation": "system.time",
+            "observed": {"utc": "2026-09-06T20:12:00Z", "localUtcOffsetMinutes": -240},
+        }, "en")
+>       assert (not llm._payload_fact_defect(reply, payload)) is expected
+E       AssertionError: assert not '' is False
+E        +  where '' = <function _payload_fact_defect at 0x0000027A46F75F80>('The time is 16:12, or 4:12 AM.', {'clock': '16:12'})
+E        +    where <function _payload_fact_defect at 0x0000027A46F75F80> = llm._payload_fact_defect
+
+tests\test_c03_request_preservation.py:97: AssertionError
+_ test_a_followup_can_name_the_topic_without_exempting_unrelated_internal_terms _
+
+    def test_a_followup_can_name_the_topic_without_exempting_unrelated_internal_terms() -> None:
+        client = Recorder([
+            "El planner elige una tool para el router.",
+            "El router permite comunicar tu red con otras redes.",
+        ])
+>       reply = client.compose_user_message("�para qu� sirve?", "conversation", {
+            "situation": '{"kind":"conversation","polarity":"success"}',
+            "priorRequests": ["expl�came qu� es un router"],
+            "forbiddenResponseTerms": ["router", "planner", "tool"],
+        })
+
+tests\test_c03_request_preservation.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:9523: in compose_user_message
+    third = self._post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_request_preservation.Recorder object at 0x0000027A46F91D00>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compa�ero, un �l. Tuteas. Redacta UNA frase en el idioma de...ontent': 'Texto original de la persona: �para qu� sirve?'}], 'temperature': 1.0, 'top_p': 0.95, 'max_tokens': 256, ...}
+
+    def _post(self, payload: dict) -> dict:
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)},
+                                                    ^^^^^^^^^^^^^^^^^^
+                             "finish_reason": "stop"}]}
+E       StopIteration
+
+tests\test_c03_request_preservation.py:17: StopIteration
+_ test_instruction_verbs_are_language_evidence[Explain encryption, pero en simple-mixed] _
+
+user_text = 'Explain encryption, pero en simple', expected = 'mixed'
+
+    @pytest.mark.parametrize("user_text, expected", [
+        ("Explain encryption, pero en simple", "mixed"),
+        ("Explain encryption", "en"),
+        ("Explain encryption in simple terms", "en"),
+        ("Explica el cifrado", "es"),
+        ("Explica el cifrado, but keep it simple", "mixed"),
+    ])
+    def test_instruction_verbs_are_language_evidence(user_text: str, expected: str) -> None:
+>       assert read_request(user_text).language == expected
+E       AssertionError: assert 'es' == 'mixed'
+E         
+E         - mixed
+E         + es
+
+tests\test_c03_request_preservation.py:122: AssertionError
+_____ test_instruction_verbs_are_language_evidence[Explain encryption-en] _____
+
+user_text = 'Explain encryption', expected = 'en'
+
+    @pytest.mark.parametrize("user_text, expected", [
+        ("Explain encryption, pero en simple", "mixed"),
+        ("Explain encryption", "en"),
+        ("Explain encryption in simple terms", "en"),
+        ("Explica el cifrado", "es"),
+        ("Explica el cifrado, but keep it simple", "mixed"),
+    ])
+    def test_instruction_verbs_are_language_evidence(user_text: str, expected: str) -> None:
+>       assert read_request(user_text).language == expected
+E       AssertionError: assert 'es' == 'en'
+E         
+E         - en
+E         + es
+
+tests\test_c03_request_preservation.py:122: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 4:12 AM.-False]
+FAILED tests/test_c03_request_preservation.py::test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 4:12.-False]
+FAILED tests/test_c03_request_preservation.py::test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 16:12 AM.-False]
+FAILED tests/test_c03_request_preservation.py::test_clock_equivalence_preserves_the_actual_half_of_the_day[The time is 16:12, or 4:12 AM.-False]
+FAILED tests/test_c03_request_preservation.py::test_a_followup_can_name_the_topic_without_exempting_unrelated_internal_terms
+FAILED tests/test_c03_request_preservation.py::test_instruction_verbs_are_language_evidence[Explain encryption, pero en simple-mixed]
+FAILED tests/test_c03_request_preservation.py::test_instruction_verbs_are_language_evidence[Explain encryption-en]
+7 failed, 15 passed in 0.90s

@@ -1,0 +1,29 @@
+D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\artifacts\comprobaciones\C03\astra-reference-tts118\03-reference.wav
+
+[2026-09-07 07:46:07.448] [piper] [debug] Loading voice from D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx (config=D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx.json)
+[2026-09-07 07:46:07.449] [piper] [debug] Parsing voice config at D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx.json
+[2026-09-07 07:46:07.449] [piper] [debug] Voice contains 1 speaker(s)
+[2026-09-07 07:46:07.449] [piper] [debug] Loading onnx model from D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx
+[2026-09-07 07:46:08.224] [piper] [debug] Loaded onnx model in 0.774693 second(s)
+[2026-09-07 07:46:08.224] [piper] [info] Loaded voice in 0.7752931 second(s)
+[2026-09-07 07:46:08.224] [piper] [debug] Voice uses eSpeak phonemes (es-419)
+[2026-09-07 07:46:08.224] [piper] [debug] Initializing eSpeak
+[2026-09-07 07:46:08.259] [piper] [debug] Initialized eSpeak
+[2026-09-07 07:46:08.259] [piper] [info] Initialized piper
+[2026-09-07 07:46:08.259] [piper] [debug] Phonemizing text: ¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?
+[2026-09-07 07:46:08.285] [piper] [debug] Converting 5 phoneme(s) to ids: ˈola!
+[2026-09-07 07:46:08.285] [piper] [debug] Converted 5 phoneme(s) to 13 phoneme id(s): 1, 0, 120, 0, 27, 0, 24, 0, 14, 0, 4, 0, 2, 
+[2026-09-07 07:46:08.285] [piper] [debug] Synthesizing audio for 13 phoneme id(s)
+[2026-09-07 07:46:08.334] [piper] [debug] Synthesized 0.5572789115646258 second(s) of audio in 0.0487738 second(s)
+[2026-09-07 07:46:08.334] [piper] [debug] Converting 12 phoneme(s) to ids: akˈi βˈaksi.
+[2026-09-07 07:46:08.334] [piper] [debug] Converted 12 phoneme(s) to 27 phoneme id(s): 1, 0, 14, 0, 23, 0, 120, 0, 21, 0, 3, 0, 125, 0, 120, 0, 14, 0, 23, 0, 31, 0, 21, 0, 10, 0, 2, 
+[2026-09-07 07:46:08.334] [piper] [debug] Synthesizing audio for 27 phoneme id(s)
+[2026-09-07 07:46:08.402] [piper] [debug] Synthesized 0.9404081632653061 second(s) of audio in 0.067923 second(s)
+[2026-09-07 07:46:08.403] [piper] [debug] Converting 30 phoneme(s) to ids: en kˈe te pwˈeðo ˌaʝuðˈaɾ ˈoɪ?
+[2026-09-07 07:46:08.403] [piper] [debug] Converted 30 phoneme(s) to 63 phoneme id(s): 1, 0, 18, 0, 26, 0, 3, 0, 23, 0, 120, 0, 18, 0, 3, 0, 32, 0, 18, 0, 3, 0, 28, 0, 35, 0, 120, 0, 18, 0, 41, 0, 27, 0, 3, 0, 121, 0, 14, 0, 115, 0, 33, 0, 41, 0, 120, 0, 14, 0, 92, 0, 3, 0, 120, 0, 27, 0, 74, 0, 13, 0, 2, 
+[2026-09-07 07:46:08.403] [piper] [debug] Synthesizing audio for 63 phoneme id(s)
+[2026-09-07 07:46:08.520] [piper] [debug] Synthesized 1.6718367346938776 second(s) of audio in 0.1169155 second(s)
+[2026-09-07 07:46:08.520] [piper] [info] Real-time factor: 0.07370580378605769 (infer=0.2336123 sec, audio=3.1695238095238096 sec)
+[2026-09-07 07:46:08.520] [piper] [debug] Terminating eSpeak
+[2026-09-07 07:46:08.520] [piper] [debug] Terminated eSpeak
+[2026-09-07 07:46:08.520] [piper] [info] Terminated piper

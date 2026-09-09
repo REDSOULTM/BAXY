@@ -1,0 +1,7 @@
+mdf.c
+fftwrap.c
+smallft.c
+preprocess.c
+filterbank.c
+Generando código...
+   Creando biblioteca mdf.lib y objeto mdf.exp

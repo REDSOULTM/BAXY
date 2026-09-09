@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-07T23:00:16.047702+00:00",
+  "hypothesis": "A previous assistant utterance is dialogue context, not a verified observation. UI263 HTTP9 put Steam ya está abierto inside situation while the existing system message designates situation as evidence. Separate the same literal context outside situation without changing the system instructions, sampler, or verified facts.",
+  "method": "Inspect exact saved UI263 packets and generation/audit. Test actual compose serialization on first/retry/third attempts, keeping historical reference context and typed current results distinct. No inference against the owner264 process, no UI inputs, no reading its new messages.",
+  "criteria": "Previous prose cannot enter visible situation; current verified observations remain identical with/without previous prose. Context remains available as escaped JSON data on the appropriate conversation path in every attempt. No replayed assistant role, fixed response, new validator phrase, or new system prompt.",
+  "limits": "Packet/unit evidence does not prove native generation or public acceptance; remaining retrieval and publication guard failures stay open. Native before/after and final UI must follow when they can run without disturbing owner testing.",
+  "sourceBefore": {
+    "src/baxy_mind/llm.py": "79ea1c186830da43bd94cd459e11811f7f881992e2308fb048a7991b23fd8b17",
+    "tests/test_compose_contract.py": "2bc761c5e601c77965b1fcd2fe712fb820849470e976d22602dd2b8186fae682"
+  },
+  "wireSha256": "3cf84b699dc30eb8a828bdc534db4e155bf92c4df1612c3bbc553af48ea77812",
+  "primarySource": "https://qwen.readthedocs.io/en/latest/framework/function_call.html",
+  "inheritance": [
+    "INVESTIGACION_MODELO_C03.md",
+    "INVESTIGACION_FORMATO_Y_CLASIFICACION_C03.md",
+    "PRUEBAS_UI263.md"
+  ]
+}

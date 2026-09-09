@@ -1,0 +1,19 @@
+{
+  "src/baxy_mind/voice.py": "d615692af02a4b79c7287a53b60310cc4eaf46c46dfdb9d26aba0bbb89891f3a",
+  "src/baxy_mind/voice_capture.py": "517f105f9d56c4aae6cd0ed71b0d8fafed84db78aab0dfed959b60f1782768e3",
+  "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+  "src/baxy_mind/requirements-voice.txt": "2dc4c33303fe0411556bd4bce045754119829663ecb6834d9db2b24358318e15",
+  "scripts/build_sherpa_runtime.py": "66dc09466f29e6032459a03534c8462e4ba1bb1de77c6dbbabfea381a595874f",
+  "scripts/verify_python_runtime_lock.py": "43a9eb2b4f98094e9c5df4d00041708141c47305957be4b2cf999d6b7656ea46",
+  "scripts/lock_python_dependencies.ps1": "c187c4a9135c256ee710141a32b4f701b49364deaa3c1bb3518be2125a9e0baa",
+  "constraints-runtime-win-x64.txt": "f5f78b60be0203e06eb9a12ab58cc1a2ef8f472271270393628ac036ba26d734",
+  "pylock.runtime-win-x64.toml": "c3e8c469f57113a336ac71ee475c2843675048f4414fa05a3283cf076275c10f",
+  "tests/test_mind_voice_runtime.py": "cf3c644b058e697040c19245940ed09cb93ab500060ef44a0c4a7a434e163d81",
+  "tests/test_python_runtime_lock.py": "a3ecdefd8292640176d52e5b26c7b34d659ea728e83cf4aba153a3d896ac661f",
+  "tests/test_sherpa_runtime_package.py": "7a3032514588868b42f3d8fc100a9e6376f4e03fcbc4b9056e0743b2d6ab93ff",
+  "runtime_wheels/sherpa-nemo-stream-decoder.patch": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163",
+  "runtime_wheels/sherpa-nemo-normalization.patch": "79cb34698cf0fb6083d8f66ab194970e5fddef9e26422f469183822412e87c48",
+  "runtime_wheels/README.md": "0e8818f013f1aae6382a63f90c5bb8c2b7846ad5d820aac9e50da1c1e3a5b39f",
+  "docs/AI_CONTEXT_MAP.md": "49a18a6ffdd15e80c6462c0f11bb3350d9525d45e92bfce5f6888c75ffbfc570",
+  "tests/test_voice_capture_clock.py": "1317aae21d1f56fa2bfbace4be4ee7913b52c69dc89528f60fc453cd884f880c"
+}

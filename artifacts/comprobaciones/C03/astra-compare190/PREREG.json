@@ -1,0 +1,91 @@
+{
+  "method": "Use exact generated187 PCM, correlate complete resampled waveform with unchanged189 loopback window. Compare full waveform and200ms active blocks, then Parakeet CPU6beam8 without hints on original and fitted loopback-gain source with1s zero padding. No synthesis/playback/source edit.",
+  "reason": "189 English not recovered beyond It is ten despite zero cancellation events. Separate source pronunciation, playback truncation and ASR sensitivity using frozen exact waveform.",
+  "inputs": [
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\messages.jsonl",
+      "sha256": "86d24cd000619cb898bf52821a30cafc64bc23f2cd4bf7afce6e5f274f003cb9",
+      "bytes": 4970
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\stderr.log",
+      "sha256": "da2e500692ee60d91de8dc15d34b595847fd79d95a2e34e21bcc41a6672877ab",
+      "bytes": 57
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\stacks187.log",
+      "sha256": "618d5fd7b27d6c7e2833fa56e734697304cd2295116fad243512c31496c037af",
+      "bytes": 19208
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\catalog.json",
+      "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b",
+      "bytes": 68679
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\tts-state.jsonl",
+      "sha256": "105784cf52a3213257b9db6c644c209793bdc28ee9945eea03fbb87bf011b11c",
+      "bytes": 1146
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\tap187.npz",
+      "sha256": "40ef4756216c7add36bb28f22d6dcb742fa8649366c17898e0a8aef7363b452f",
+      "bytes": 16447854
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\tap187.json",
+      "sha256": "2e8dd5f8c8695d348de7f4a757f2a8428d22f3f67e542dea2126975d5fbdfee3",
+      "bytes": 425
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\generated187.npz",
+      "sha256": "d072466450c409a3d74b61ff8c0a21dce39d68b709947da622c66907fda95f1a",
+      "bytes": 848214
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar187-private\\generated187.json",
+      "sha256": "05654eb65fa9be2e869e3fea65106d5d8ffa6ea00393cb500ddcd5b1ceef7806",
+      "bytes": 723
+    }
+  ],
+  "loopbackSha256": "0173115dc7714af72b6710ceb65c6152477e8500ff049ace189f32238deb1d24",
+  "windows": [
+    {
+      "output": 1,
+      "channel": "loopback",
+      "samples": [
+        534381,
+        643393
+      ],
+      "speakingSeconds": 4.813256025314331
+    },
+    {
+      "output": 2,
+      "channel": "loopback",
+      "samples": [
+        726100,
+        810031
+      ],
+      "speakingSeconds": 3.2456979751586914
+    },
+    {
+      "output": 3,
+      "channel": "loopback",
+      "samples": [
+        874814,
+        951430
+      ],
+      "speakingSeconds": 2.7884469032287598
+    },
+    {
+      "output": 4,
+      "channel": "loopback",
+      "samples": [
+        1033707,
+        1113815
+      ],
+      "speakingSeconds": 3.006775140762329
+    }
+  ],
+  "limitation": "Digital loopback proves device signal only, not human audibility. Correlation/gain do not prove semantic fidelity or perfect resampling; ASR remains an observer."
+}

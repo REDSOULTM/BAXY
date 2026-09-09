@@ -1,0 +1,56 @@
+[
+  {
+    "tranche": 113,
+    "index": 0,
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-native-tts113\\00-en-us.wav",
+    "sha256": "d1644f8c8b785b4716599f855c37ee5de96bd1288ff7bc0bd29d3cc0a60b39ec",
+    "priorTranscript": "It is seven fourteen.",
+    "transcript": "",
+    "decodeSeconds": 0.3732519000041066
+  },
+  {
+    "tranche": 113,
+    "index": 1,
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-native-tts113\\01-en-us.wav",
+    "sha256": "54151f1562e5f9bd23e82737bddbd5915ad6d3e412004be95d13a41bff9661be",
+    "priorTranscript": "The file leader failed because the content is invalid, you'll be the fake.",
+    "transcript": "lieder fehlen Becaute in Valer UT",
+    "decodeSeconds": 0.9842967000004137
+  },
+  {
+    "tranche": 113,
+    "index": 2,
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-native-tts113\\02-en-us.wav",
+    "sha256": "84a85259696d79031d8ee6f9dae12b290cd88f1c47b3ef41114dbfc3db4d4de1",
+    "priorTranscript": "I couldn't heal the file because it wasn't found in the sandbox.",
+    "transcript": "Couldn't yield the file because it wasn't found in the sandba",
+    "decodeSeconds": 0.9919011000019964
+  },
+  {
+    "tranche": 114,
+    "index": 0,
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-native-tts114\\00-en-us.wav",
+    "sha256": "e81ae46afc1e6b8c8c6a48faf6093bdcf1fd9fdc4c24ef5c10d62092eda37d51",
+    "priorTranscript": "It is 714.",
+    "transcript": "It is seven fourteen",
+    "decodeSeconds": 0.41866229999868665
+  },
+  {
+    "tranche": 114,
+    "index": 1,
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-native-tts114\\01-en-us.wav",
+    "sha256": "4bd02cd774ba269589c0ae317149714cba9496b3b3e1a71586147462f05b4ab5",
+    "priorTranscript": "The file read failed because the content is invalid to TF8.",
+    "transcript": "File read failed because the content is inval UTF eight",
+    "decodeSeconds": 1.0412301999895135
+  },
+  {
+    "tranche": 114,
+    "index": 2,
+    "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-native-tts114\\02-en-us.wav",
+    "sha256": "d651476d34104e232e07280c707124d680b97229531dffe89a23e3123664dfda",
+    "priorTranscript": "I couldn't read the file because it wasn't found in the sandbox.",
+    "transcript": "I couldn't read the file because it wasn't found in the sandbox",
+    "decodeSeconds": 1.298590399994282
+  }
+]

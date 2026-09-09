@@ -1,0 +1,12 @@
+{
+  "texts": [
+    "Dime la hora, revisa el estado del audio y dime el uso de CPU.",
+    "Dime la hora y el estado del audio.",
+    "Tell me the time and the volume.",
+    "What time is it y cómo está el audio?",
+    "Dime la hora y revisa la CPU"
+  ],
+  "method": "Five consumed readonly requests. Call the exact early-turn compose API with status/acting/success and no context, recording every native payload and response before validation. Then replay each captured first payload directly to the same native server, changing only situation.kind from status to progress. No guards or retries on this latter comparison. Same actual system messages, user text, sampler, template, token budget. No source/model promotion, no human reserve, no UI/voice claim. A native variant passes only if it reports ongoing work without invented observations or unavailable-clock claims.",
+  "sourceSha256": "5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

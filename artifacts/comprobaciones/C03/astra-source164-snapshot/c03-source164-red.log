@@ -1,0 +1,124 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_cold_voice_dsp_responds_while_redirected_stdin_remains_open _______
+
+    def test_cold_voice_dsp_responds_while_redirected_stdin_remains_open() -> None:
+        """Native SciPy initialization must not race a blocking Windows pipe read."""
+        source_root = Path(__file__).resolve().parents[1] / "src"
+        script = """
+    import sys
+    from baxy_mind import __main__ as sidecar
+    from baxy_mind.voice_aec import _resample
+    import numpy as np
+    
+    def probe_dispatch(lifecycle, *, read_message, write_message, request_finished):
+        write_message({"type": "hello", "protocol": "test"})
+        assert read_message()["type"] == "probe"
+        # This is intentionally the first DSP request in a fresh process. Require
+        # SciPy itself so a missing dependency cannot pass through interpolation.
+        from scipy.signal import resample_poly
+        assert callable(resample_poly)
+        audio = _resample(np.zeros(1536, dtype=np.int16), 48000)
+        assert audio.shape == (512,)
+        write_message({"type": "probe.done"})
+        return 0
+    
+    sidecar._run_sidecar = probe_dispatch
+    sys.exit(sidecar.main())
+    """
+        environment = os.environ.copy()
+        environment["PYTHONPATH"] = str(source_root)
+        process = subprocess.Popen(
+            [sys.executable, "-c", script],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=environment,
+        )
+        try:
+            assert process.stdin is not None
+            process.stdin.write(b'{"type":"probe"}\n')
+            process.stdin.flush()
+            # Keep stdin open: communicate() would send EOF and hide the deadlock.
+>           return_code = process.wait(timeout=10.0)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_sidecar_lifecycle.py:251: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\subprocess.py:1264: in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: 1 args: ['C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\...>
+timeout = 10.0
+
+    def _wait(self, timeout):
+        """Internal implementation of wait() on Windows."""
+        if timeout is None:
+            timeout_millis = _winapi.INFINITE
+        elif timeout <= 0:
+            timeout_millis = 0
+        else:
+            timeout_millis = int(timeout * 1000)
+        if self.returncode is None:
+            # API note: Returns immediately if timeout_millis == 0.
+            result = _winapi.WaitForSingleObject(self._handle,
+                                                 timeout_millis)
+            if result == _winapi.WAIT_TIMEOUT:
+>               raise TimeoutExpired(self.args, timeout)
+E               subprocess.TimeoutExpired: Command '['C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe', '-c', '\nimport sys\nfrom baxy_mind import __main__ as sidecar\nfrom baxy_mind.voice_aec import _resample\nimport numpy as np\n\ndef probe_dispatch(lifecycle, *, read_message, write_message, request_finished):\n    write_message({"type": "hello", "protocol": "test"})\n    assert read_message()["type"] == "probe"\n    # This is intentionally the first DSP request in a fresh process. Require\n    # SciPy itself so a missing dependency cannot pass through interpolation.\n    from scipy.signal import resample_poly\n    assert callable(resample_poly)\n    audio = _resample(np.zeros(1536, dtype=np.int16), 48000)\n    assert audio.shape == (512,)\n    write_message({"type": "probe.done"})\n    return 0\n\nsidecar._run_sidecar = probe_dispatch\nsys.exit(sidecar.main())\n']' timed out after 10.0 seconds
+
+C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\subprocess.py:1593: TimeoutExpired
+
+During handling of the above exception, another exception occurred:
+
+    def test_cold_voice_dsp_responds_while_redirected_stdin_remains_open() -> None:
+        """Native SciPy initialization must not race a blocking Windows pipe read."""
+        source_root = Path(__file__).resolve().parents[1] / "src"
+        script = """
+    import sys
+    from baxy_mind import __main__ as sidecar
+    from baxy_mind.voice_aec import _resample
+    import numpy as np
+    
+    def probe_dispatch(lifecycle, *, read_message, write_message, request_finished):
+        write_message({"type": "hello", "protocol": "test"})
+        assert read_message()["type"] == "probe"
+        # This is intentionally the first DSP request in a fresh process. Require
+        # SciPy itself so a missing dependency cannot pass through interpolation.
+        from scipy.signal import resample_poly
+        assert callable(resample_poly)
+        audio = _resample(np.zeros(1536, dtype=np.int16), 48000)
+        assert audio.shape == (512,)
+        write_message({"type": "probe.done"})
+        return 0
+    
+    sidecar._run_sidecar = probe_dispatch
+    sys.exit(sidecar.main())
+    """
+        environment = os.environ.copy()
+        environment["PYTHONPATH"] = str(source_root)
+        process = subprocess.Popen(
+            [sys.executable, "-c", script],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=environment,
+        )
+        try:
+            assert process.stdin is not None
+            process.stdin.write(b'{"type":"probe"}\n')
+            process.stdin.flush()
+            # Keep stdin open: communicate() would send EOF and hide the deadlock.
+            return_code = process.wait(timeout=10.0)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=3.0)
+>           pytest.fail("cold voice DSP stalled with the protocol input still open")
+E           Failed: cold voice DSP stalled with the protocol input still open
+
+tests\test_sidecar_lifecycle.py:255: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_sidecar_lifecycle.py::test_cold_voice_dsp_responds_while_redirected_stdin_remains_open
+1 failed in 11.03s

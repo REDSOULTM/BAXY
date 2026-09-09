@@ -1,0 +1,175 @@
+{
+  "rows": [
+    {
+      "role": 0,
+      "category": 0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [
+        {
+          "id": "{6F64ADBF-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADC1-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 0,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADBE-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        }
+      ],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 0,
+      "category": 3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [
+        {
+          "id": "{6F64ADBF-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADC1-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 0,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADBE-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        }
+      ],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 1,
+      "category": 0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [
+        {
+          "id": "{6F64ADBF-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADC1-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 0,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADBE-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        }
+      ],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 1,
+      "category": 3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [
+        {
+          "id": "{6F64ADBF-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADC1-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 0,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADBE-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        }
+      ],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 2,
+      "category": 0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [
+        {
+          "id": "{6F64ADBF-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADC1-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 0,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADBE-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        }
+      ],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    },
+    {
+      "role": 2,
+      "category": 3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "effectsServiceHr": "00000000",
+      "effects": [
+        {
+          "id": "{6F64ADBF-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADC1-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 0,
+          "canSetState": false
+        },
+        {
+          "id": "{6F64ADBE-8211-11E2-8C70-2C27D7F001FA}",
+          "state": 1,
+          "canSetState": false
+        }
+      ],
+      "aecControlServiceHr": "80004002",
+      "initialized": true,
+      "started": false,
+      "endpointIdSha256": "acfe9b279283fd946a84af49e5f78886d9c128be4405aa0f155dcb78afc3c7bf"
+    }
+  ],
+  "processExitCode": 0,
+  "exeSha256": "ef7996cace418482700a47b2a0390ca0c830de4749fec3a2a0b711fafdd72631",
+  "privateStdoutSha256": "8a7e5b0d959d9cf3f96c3991ec51518e8c1ab16eff83cdcf3ea9f6afbe2125bb"
+}

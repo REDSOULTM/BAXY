@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-06T19:04:55.755377+00:00",
+  "command": [
+    "py",
+    "main.py"
+  ],
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "method": "Normal real-window launch, registered model/KV/voice/Python defaults. Manual Windows skill input and inspection. First cancel the pre-existing memory recovery rather than authorizing erasure; then request clock/audio and ES/EN/mixed conversation. Development only, not fresh acceptance. Existing audit sinks only; resource sampler attaches exclusively to the newly launched exact Baxy.exe."
+}

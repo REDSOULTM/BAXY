@@ -1,0 +1,16 @@
+{"id": "memory.recall", "variant": "facts-reference", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "memory.recall", "variant": "native-dialogue", "answer": "Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "variant": "facts-reference", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-lina", "variant": "native-dialogue", "answer": "Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "variant": "facts-reference", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-accent", "variant": "native-dialogue", "answer": "Álvaro.", "finish_reason": "stop"}
+{"id": "name-english", "variant": "facts-reference", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "name-english", "variant": "native-dialogue", "answer": "Tu nombre es Taylor.", "finish_reason": "stop"}
+{"id": "sister", "variant": "facts-reference", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "sister", "variant": "native-dialogue", "answer": "Olivia.", "finish_reason": "stop"}
+{"id": "assistant-es", "variant": "facts-reference", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "assistant-es", "variant": "native-dialogue", "answer": "Me llamo BAXY.", "finish_reason": "stop"}
+{"id": "both-es", "variant": "facts-reference", "answer": "Yo soy BAXY, tu compañero. Tú eres Emmanuel.", "finish_reason": "stop"}
+{"id": "both-es", "variant": "native-dialogue", "answer": "Hola Emmanuel. Yo soy BAXY, tu compañero. Y tú eres Emmanuel, el que me habla.", "finish_reason": "stop"}
+{"id": "assistant-en", "variant": "facts-reference", "answer": "My name is Taylor.", "finish_reason": "stop"}
+{"id": "assistant-en", "variant": "native-dialogue", "answer": "I'm BAXY.", "finish_reason": "stop"}

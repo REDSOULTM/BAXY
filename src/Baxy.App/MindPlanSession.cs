@@ -104,6 +104,12 @@ internal sealed class MindPlanSession
                     return;
                 }
 
+                if (PlanObservationProjector.IsVerifiedEmptyFileSearch(step, groundingObservations))
+                {
+                    FinishWithFailure(execution, TurnVisibleFacts.Failure("file_search_no_matches"));
+                    return;
+                }
+
                 if (PlanObservationProjector.TryGroundIdentityArguments(
                         step,
                         groundingObservations,
@@ -218,7 +224,7 @@ internal sealed class MindPlanSession
                 _pending = execution;
                 Persist(execution);
                 _host.Publish(
-                    $"El paso {execution.NextIndex + 1} no pudo verificarse y el efecto puede haber ocurrido. Conservé su identidad durable; no continuaré, replanearé ni lo repetiré hasta reconciliarlo.",
+                    MissionNarration.CreateUncertainEffectMessage(execution),
                     UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
                 return;
             }
@@ -266,9 +272,7 @@ internal sealed class MindPlanSession
 
             FinishWithFailure(
                 execution,
-                TurnVisibleFacts.Failure(
-                    "step_failed",
-                    new JsonObject { ["step"] = execution.NextIndex + 1 }));
+                response.Message);
             return;
         }
 
@@ -282,7 +286,7 @@ internal sealed class MindPlanSession
         }
 
         _host.Publish(
-            MissionNarration.CreateCompletionMessage(execution.CompletedMessages),
+            MissionNarration.CreateCompletionMessage(execution.CompletedMessages, execution.Objective),
             null);
     }
 
@@ -302,10 +306,10 @@ internal sealed class MindPlanSession
                 case ConfirmationReplyKind.Invalid:
                     _host.Publish(
                         confirmation.ReconciliationRequired
-                            ? TurnVisibleFacts.Confirmation(
+                            ? MissionNarration.CreateConfirmationMessage(execution,
                                 "step_started_needs_check",
                                 TurnVisibleFacts.ConfirmCancel)
-                            : TurnVisibleFacts.Confirmation(
+                            : MissionNarration.CreateConfirmationMessage(execution,
                                 "step_confirm_or_cancel",
                                 TurnVisibleFacts.ConfirmCancel),
                         UserMessageEvent.Confirmation);
@@ -315,7 +319,7 @@ internal sealed class MindPlanSession
                     {
                         Persist(execution);
                         _host.Publish(
-                            TurnVisibleFacts.Confirmation(
+                            MissionNarration.CreateConfirmationMessage(execution,
                                 "cannot_cancel_started_step",
                                 TurnVisibleFacts.ConfirmCancel),
                             UserMessageEvent.Confirmation);
@@ -325,13 +329,7 @@ internal sealed class MindPlanSession
                     registry.MarkResolved(confirmation.Prepared);
                     Clear();
                     _host.Publish(
-                        TurnVisibleFacts.Status(
-                            "mission_cancelled_partial",
-                            new JsonObject
-                            {
-                                ["step"] = execution.NextIndex + 1,
-                                ["completed"] = execution.CompletedMessages.Count,
-                            }),
+                        MissionNarration.CreateCancellationMessage(execution),
                         null);
                     return;
                 case ConfirmationReplyKind.Confirm:
@@ -375,8 +373,8 @@ internal sealed class MindPlanSession
                         Persist(execution);
                         _host.Publish(
                             response.EffectMayHaveOccurred
-                                ? TurnVisibleFacts.Status("confirmed_uncertain")
-                                : TurnVisibleFacts.Confirmation(
+                                ? MissionNarration.CreateUncertainEffectMessage(execution)
+                                : MissionNarration.CreateConfirmationMessage(execution,
                                     "confirmed_pending",
                                     TurnVisibleFacts.ContinueCancel),
                             null);
@@ -400,7 +398,9 @@ internal sealed class MindPlanSession
             if (execution.PendingEffectMayHaveOccurred)
             {
                 Persist(execution);
-                _host.Publish(TurnVisibleFacts.Status("stopped_keeping_evidence"), null);
+                _host.Publish(
+                    MissionNarration.CreateUncertainEffectMessage(execution),
+                    UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
             }
             else
             {
@@ -410,7 +410,7 @@ internal sealed class MindPlanSession
                 }
 
                 Clear();
-                _host.Publish(TurnVisibleFacts.Status("remaining_steps_cancelled"), null);
+                _host.Publish(MissionNarration.CreateCancellationMessage(execution), null);
             }
 
             return;
@@ -435,11 +435,13 @@ internal sealed class MindPlanSession
 
             _host.Publish(
                 MindPlanBoundary.CanRefreshConfirmationChallenge(execution)
-                    ? TurnVisibleFacts.Confirmation(
-                        "keep_recovery_evidence",
+                    ? MissionNarration.CreateConfirmationMessage(execution,
+                                "keep_recovery_evidence",
                         TurnVisibleFacts.ConfirmCancel)
-                    : "No repetiré este paso porque el efecto anterior puede haber ocurrido. Debe reconciliarse con el estado real antes de continuar.",
-                null);
+                    : MissionNarration.CreateUncertainEffectMessage(execution),
+                MindPlanBoundary.CanRefreshConfirmationChallenge(execution)
+                    ? UserMessageEvent.Confirmation
+                    : UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
             return;
         }
 
@@ -448,7 +450,8 @@ internal sealed class MindPlanSession
             && !string.Equals(text.Trim(), "continue", StringComparison.OrdinalIgnoreCase))
         {
             _host.Publish(
-                "Di «continuar» para reintentar el paso pendiente o «cancelar» para detener el resto del plan.",
+                MissionNarration.CreateConfirmationMessage(execution,
+                    "confirmed_pending", TurnVisibleFacts.ContinueCancel),
                 UserMessageEvent.Confirmation);
             return;
         }
@@ -464,15 +467,11 @@ internal sealed class MindPlanSession
         _pending = execution;
         Persist(execution);
         _host.Publish(
-            confirmation.ReconciliationRequired
-                ? TurnVisibleFacts.Confirmation(
-                    "step_interrupted_uncertain",
-                    TurnVisibleFacts.ConfirmCancel,
-                    new JsonObject { ["step"] = execution.NextIndex + 1 })
-                : TurnVisibleFacts.Confirmation(
-                    "step_needs_confirmation",
-                    TurnVisibleFacts.ConfirmCancel,
-                    new JsonObject { ["step"] = execution.NextIndex + 1 }),
+            MissionNarration.CreateConfirmationMessage(execution,
+                confirmation.ReconciliationRequired
+                    ? "step_interrupted_uncertain"
+                    : "step_needs_confirmation",
+                TurnVisibleFacts.ConfirmCancel),
             UserMessageEvent.Confirmation);
     }
 

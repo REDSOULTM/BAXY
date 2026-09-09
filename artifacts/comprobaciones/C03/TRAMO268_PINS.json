@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-07T23:27:43.269315+00:00",
+  "publicFiles": {
+    "scratchpad/c03-questionnaire.html": "0e783fbf3169d5a7ef3dee67d0d53e6164c4cd8882de4574f850e8f983614323",
+    "scratchpad/c03-questionnaire-server.py": "9470a1b6717acb53ea67addef27ce804683d87cc0c0b3baa0e5ac695c7f1c09c",
+    "scratchpad/c03-build-questionnaire268.py": "eaaafa52081eda6a07c5658833e3f175a85269df77e80a97737fe8bb7331d716",
+    "scratchpad/c03-finish268.py": "89e05cdb9e583273febfc34f04dd19ad7f81aa5d3610e25a161695e906695294",
+    "artifacts/comprobaciones/C03/CUESTIONARIO_DUENO268.md": "1e68055e32de8d0c4719cfeec054ef560b57a3cd21a2362b8a8333778fcd16a3",
+    "artifacts/comprobaciones/C03/astra-questionnaire268/MANIFEST.json": "f5fe48b0d794f55944a3fbcef13a11d782a9d80f195e2c55f77a81766067083c",
+    "artifacts/comprobaciones/C03/astra-questionnaire268/QA.json": "14e3dc5c3f71abd6143ead53dbe962f75cc730a18a3bc6a6948180c9e03c47b8",
+    "artifacts/comprobaciones/C03/astra-questionnaire268/SESSION_SNAPSHOT.json": "2aa2087a5ecd362844a38a7dd7d0e1dcf381eebc6043c373be179d7d7c3c7f9e",
+    "artifacts/comprobaciones/C03/astra-questionnaire268/CHECKPOINT267.md": "b47960f1e5843121793b86e07c53fb37151ab6583678c0419d5633e8f586a593"
+  },
+  "productSourceChanged": false,
+  "goalStatus": "active"
+}

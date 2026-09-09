@@ -1,0 +1,116 @@
+{
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3177.5625,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 3173.4296875,
+    "seconds": 56.0
+  },
+  "minimum_free_ram_mib": 2747.62109375,
+  "peak_sample": {
+    "elapsed": 50.937,
+    "available_mib": 2878.69921875,
+    "processes": [
+      {
+        "pid": 101184,
+        "parent": 79264,
+        "name": "py.exe",
+        "rss_mib": 8.8828125,
+        "private_mib": 1.64453125
+      },
+      {
+        "pid": 36404,
+        "parent": 101184,
+        "name": "conhost.exe",
+        "rss_mib": 7.1640625,
+        "private_mib": 1.390625
+      },
+      {
+        "pid": 74864,
+        "parent": 101184,
+        "name": "python.exe",
+        "rss_mib": 19.9765625,
+        "private_mib": 13.17578125
+      },
+      {
+        "pid": 63720,
+        "parent": 74864,
+        "name": "powershell.exe",
+        "rss_mib": 80.37890625,
+        "private_mib": 64.296875
+      },
+      {
+        "pid": 37076,
+        "parent": 63720,
+        "name": "Baxy.exe",
+        "rss_mib": 241.546875,
+        "private_mib": 193.26171875
+      },
+      {
+        "pid": 50924,
+        "parent": 37076,
+        "name": "baxy-core.exe",
+        "rss_mib": 31.1171875,
+        "private_mib": 16.51171875
+      },
+      {
+        "pid": 72188,
+        "parent": 37076,
+        "name": "python.exe",
+        "rss_mib": 4.09765625,
+        "private_mib": 0.8046875
+      },
+      {
+        "pid": 94360,
+        "parent": 72188,
+        "name": "conhost.exe",
+        "rss_mib": 6.98828125,
+        "private_mib": 1.23828125
+      },
+      {
+        "pid": 86144,
+        "parent": 72188,
+        "name": "python.exe",
+        "rss_mib": 348.44921875,
+        "private_mib": 620.9375
+      },
+      {
+        "pid": 113656,
+        "parent": 86144,
+        "name": "llama-server.exe",
+        "rss_mib": 1522.22265625,
+        "private_mib": 4964.89453125
+      },
+      {
+        "pid": 39272,
+        "parent": 86144,
+        "name": "python.exe",
+        "rss_mib": 4.09765625,
+        "private_mib": 0.80078125
+      },
+      {
+        "pid": 108300,
+        "parent": 39272,
+        "name": "conhost.exe",
+        "rss_mib": 7.0,
+        "private_mib": 1.26953125
+      },
+      {
+        "pid": 114292,
+        "parent": 39272,
+        "name": "python.exe",
+        "rss_mib": 818.2578125,
+        "private_mib": 1347.1171875
+      },
+      {
+        "pid": 69424,
+        "parent": 50924,
+        "name": "conhost.exe",
+        "rss_mib": 6.81640625,
+        "private_mib": 1.19921875
+      }
+    ]
+  },
+  "router_worker_confirmed": true,
+  "same_first_seven_finals": true
+}

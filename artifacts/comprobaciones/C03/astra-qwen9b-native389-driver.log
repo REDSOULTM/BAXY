@@ -1,0 +1,18 @@
+{"ready_seconds": 4.906, "gpu_peak_mib": 2865.57421875, "ram_peak_mib": 5607.60546875}
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-qwen9b-native389.py", line 84, in <module>
+    response = client._post(payload)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 5745, in _post
+    return post_chat_completion(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm_transport.py", line 580, in post_chat_completion
+    endpoint = endpoint_for_attempt()
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 5739, in endpoint_for_attempt
+    self._ensure_started()
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 5158, in _ensure_started
+    self._raise_if_closed()
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 5352, in _raise_if_closed
+    raise RuntimeError("llama-server runtime is closed")
+RuntimeError: llama-server runtime is closed

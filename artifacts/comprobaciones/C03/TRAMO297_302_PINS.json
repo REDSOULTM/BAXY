@@ -1,0 +1,11 @@
+{
+  "src/baxy_mind/llm.py": "d50254d5b969a337f1a0ecf7efeb98b6151d257ac714a30c8ef43fdf4b12ed9c",
+  "src/Baxy.App/MainWindowViewModel.cs": "67887e9c474f0a096e53b3a2af15ac9e4e8222c65a75e27094792eabcd6861de",
+  "tests/test_turn_policy.py": "41c1b1fdf4e9f96fb92c9907ca2172d8177525ee91e48f3be28685b76fd1b47c",
+  "tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs": "d9dea6ede343eb79801bde92b721c9c0e110101281f0c8743c3d902a26315175",
+  "tests/fixtures/mind_turn_contract/baxy_mind/__main__.py": "5f98c82ddf626c28b3835012b1b32ca6b8c986613b32d0c41cbbca7fe87555e2",
+  "artifacts/comprobaciones/C03/astra-question-scope298/NATIVE_RESULT.json": "0a39b809203697e49345f72bdec7e989c84633ae5ca2edd5b6d4927d565dbff5",
+  "artifacts/comprobaciones/C03/astra-memory-route299/owners-corrected.log": "aeeaf508639c5d35e905371860d9041f68daeb9eab4c3074dc64765766a000f7",
+  "artifacts/comprobaciones/C03/astra-memory-route299/fast.log": "eccf0667aac5f1b49bf136cad000bc98624c45cee1258dabf6c7448463485192",
+  "artifacts/comprobaciones/C03/astra-memory-product301/RESULT.json": "370c2587888459c9534a82a9cca3b8b9e9157b7dd07c15bcea4d2e0802ac7612"
+}

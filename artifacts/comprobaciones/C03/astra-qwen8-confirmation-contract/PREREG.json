@@ -1,0 +1,37 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T12:28:10.723439+00:00",
+  "hypothesis": "Second causal repair: replace confirmation instruction that requested only choices with action/target authorization; mark readOnly using typed catalogue in ordered mission results; exempt exact observed names from generic glued-window token veto. Other prompts and sampler unchanged.",
+  "expected": "Same21 inputs and own empty C03WindowFixture process as step-order. Confirmations name pending action/target; no invented maximize action; exact observed process name accepted; successful cancellation and close verified in journal. No acceptance claim for mixed-language failures.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-8b-iq3-xxs-0b69f75b\\Qwen_Qwen3-8B-IQ3_XXS.gguf",
+    "sha256": "11a2ba2a7970f621c03e05bce111df2cb7c04880ffec2cdd03445d7b5e8b8514",
+    "ngl": 99,
+    "kv": "q4_0",
+    "hostCompositionBudgetProfile": "unchanged GPU 5/10s",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "22c60ecad7c76f92342b165e58419dce0c1219b44931b5493ca5c35d829b8d42",
+    "src/baxy_mind/__main__.py": "6836411fe1429ef8d7b38830408506828c5b5ac9ac3ce25447ed8d6f6f8b2558",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "b689bb910cfd7db689ce43d06432beb871ad76495d4d552c62c46c4fff14b9e1",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "5881c61a37573e0d746fe740710ec814bf2c3ab6c3c107c1f8ea686b75ff1eb4",
+    "src/Baxy.App/MainWindowViewModel.cs": "164e7b865e2763295a08f215b6c0098058964946a1a46b058e8cfa662920b616",
+    "src/Baxy.App/MissionNarration.cs": "552cc6d5e2f780faf0e73b37f8539776e17c7afe2656a3432991978e77b48670",
+    "src/Baxy.App/MindPlanSession.cs": "e0ff6db0cc26e5f149c403bb38fe986e4b8ba19a13ac6075ff04e9a7bd73c022",
+    "src/Baxy.App/UserMessagePolicy.cs": "360b4f260b186d7ff83f16398c5e71adad22fa4363aadd385f00931ef338d97b",
+    "artifacts/comprobaciones/C03/astra-qwen8-confirmation-contract.turns.jsonl": "6e404ef8e5bc64a73d4e231618b47f7f9764cc98c11a839ccc19d227db1666a4",
+    "artifacts/comprobaciones/C03/astra-qwen8-confirmation-contract/profile/sitecustomize.py": "1fdda85d643c7d9ba2b4ac70ec0bc435793807c9ac9f8d15142b9394281c89c6",
+    "scratchpad/c03-qwen8-confirmation-contract.py": "bf6eb5aedf697dc7c7f33bbc7c9be78b4dcc615acd1e6822c585faf94031b8d0"
+  }
+}

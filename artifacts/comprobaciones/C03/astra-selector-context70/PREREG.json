@@ -1,0 +1,58 @@
+{
+  "method": "Four consumed file requests with captured prior dialogue and six synthetic reference controls68. One bounded no-tools context-dependence decision sees only the literal current request, then the unchanged native selector sees either its full original dialogue or none. No rewrite, catalogue change, operation authorization or visible response. Compare original69 selection to already captured64/68, not another uncontrolled model. Same registered model/template/sampler. No UI/audio/human reserve or source promotion.",
+  "difference70": "Remove only response_format from the context-dependence request. Preserve the entire69 instruction, literal input, seed, temperature and32-token limit. No production change; distinguish format-induced boolean collapse from semantic inability.",
+  "contextPrompt": "Decide whether interpreting the current message requires earlier conversation. Return needs_dialogue=true only when earlier utterances are needed to identify what is being requested or referred to, including acceptance, correction, ellipsis or a reference to prior results. A fully stated new request does not need earlier dialogue. Needing to inspect computer state or obtain a tool argument is not itself a need for dialogue. Do not answer the message or select an operation. Return only the JSON decision.",
+  "cases": [
+    {
+      "id": "file1",
+      "needsDialogue": false,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "file2",
+      "needsDialogue": false,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "file3",
+      "needsDialogue": false,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "file4",
+      "needsDialogue": false,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "reft1",
+      "needsDialogue": true,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "reft2",
+      "needsDialogue": true,
+      "operation": "filesystem.search"
+    },
+    {
+      "id": "reft3",
+      "needsDialogue": true,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "reft4",
+      "needsDialogue": true,
+      "operation": "filesystem.read.text"
+    },
+    {
+      "id": "reft5",
+      "needsDialogue": true,
+      "operation": "filesystem.search"
+    },
+    {
+      "id": "reft6",
+      "needsDialogue": true,
+      "operation": null
+    }
+  ],
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

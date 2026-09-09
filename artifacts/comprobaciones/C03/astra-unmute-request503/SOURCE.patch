@@ -1,0 +1,131 @@
+--- source501/effect_intent.py
++++ source503/effect_intent.py
+@@ -4134,6 +4134,16 @@
+     r"a ver)\s+)?"
+     rf"baxy\s*[,;:.!?\-\u2013\u2014]?{_PREFIX_GAP})?)"
+ )
++# The shared prefix is large; compile it once for the repeated head reads.
++_EXPLICIT_DESIRE_REQUEST = re.compile(
++    rf"^[¿?¡!\s]*{_REQUEST_PREFIX}"
++    r"(?:(?:i|we)\s+(?:need|want|would\s+like)\s+(?:you\s+)?to|"
++    r"i['’]?d\s+like\s+to|(?:yo\s+)?(?:quiero|quisiera|necesito)"
++    r"(?:\s+que)?)\s+(?:(?:lo|la|me)\s+)?"
++    r"(?P<body>(?P<head>[a-z]+)\b.*)$",
++    re.IGNORECASE,
++)
++
+ # Una cola de cierre social no cambia el acto de habla: sólo anuncia que el
+ # pedido terminó. La gramática es acotada y simétrica con la del parser privado
+ # de memoria en `Baxy.App`; ambas fronteras deben quitar exactamente la misma
+@@ -4197,11 +4207,11 @@
+         # such as "sí, sí, te oigo" or treating a conditional as a preface.
+         found = _match(
+             current,
+-            r"^[¿?¡!\s]*(?:s[ií]|yes|ok(?:ay)?)\s*[,;:.!]+\s*"
++            r"^[¿?¡!\s]*(?:s[ií]|yes|ok(?:ay)?|perfecto|perfect)\s*[,;:.!]+\s*"
+             r"(?P<body>.+)$",
+         )
+         if found is not None and not (
+-            _has(found.group("body"), rf"^[¿?¡!\s]*{_COVERAGE_ACTION_HEAD}\b")
++            _head_is(_request_head(found.group("body")), _COVERAGE_ACTION_HEAD)
+             or _negative_action_forms(found.group("body"))
+         ):
+             found = None
+@@ -4243,8 +4253,24 @@
+     return explicit_non_action_body(text) is not None
+ 
+ 
++def _explicit_desire_request(text: str) -> re.Match[str] | None:
++    # A need/desire introduces a request only when its next head is an
++    # explicit effect verb. Inspect it before the literal first word so a
++    # Spanish "quiero/necesito" cannot hide that verb. A denial, condition or
++    # noun remains opaque; the frame never removes words from literal payloads.
++    desired = _EXPLICIT_DESIRE_REQUEST.match(text)
++    return (
++        desired
++        if desired is not None and _head_is(desired.group("head"), _COVERAGE_ACTION_HEAD)
++        else None
++    )
++
++
+ def _request_head(text: str) -> str:
+     text = _negative_state_question_body(text) or text
++    desired = _explicit_desire_request(text)
++    if desired is not None:
++        return desired.group("head")
+     found = _match(
+         text,
+         rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?P<head>[a-z]+)",
+@@ -4253,18 +4279,15 @@
+         head = found.group("head")
+         if head not in {"i", "yo"}:
+             return head
+-    # Desire framing is transparent only when the next token is itself the
+-    # action head. Keep it out of ``_REQUEST_PREFIX`` so anchored parsers do
+-    # not strip the same words from literal payloads.
+-    desired = _match(
++    # Preserve the original non-action heads (for example "write" in a note
++    # request) for readers whose vocabulary is broader than clause boundaries.
++    legacy_desire = _match(
+         text,
+-        (
+-            r"^[¿?¡!\s]*(?:i\s+(?:want|would\s+like)\s+to|"
+-            r"i['’]?d\s+like\s+to|yo\s+quiero|quiero|quisiera)\s+"
+-            r"(?P<head>[a-z]+)"
+-        ),
+-    )
+-    return desired.group("head") if desired is not None else ""
++        r"^[¿?¡!\s]*(?:i\s+(?:want|would\s+like)\s+to|"
++        r"i['’]?d\s+like\s+to|yo\s+quiero|quiero|quisiera)\s+"
++        r"(?P<head>[a-z]+)",
++    )
++    return legacy_desire.group("head") if legacy_desire is not None else ""
+ 
+ 
+ def _head_is(head: str, pattern: str) -> bool:
+@@ -4859,7 +4882,10 @@
+ # Verbos que ponen o quitan el silencio global. «apaga» y «activa» solo
+ # cuentan con un objeto de audio explícito, porque también gobiernan el equipo
+ # y otros dispositivos.
+-_UNMUTE_VERB = r"(?:unmute|desmutea(?:me|lo|la)?|desmutear(?:lo|la)?)"
++_UNMUTE_VERB = (
++    r"(?:unmute|desmutea(?:me|lo|la)?|desmutear(?:lo|la)?|desmutees|"
++    r"des(?:s)?ilenci(?:a(?:r(?:lo|la)?|me|lo|la)?|es))"
++)
+ _MUTE_VERB = (
+     r"(?:silencia|silenciar|silenciame|silencialo|silenciala|mutea|mutear|muteame|"
+     rf"mute|{_UNMUTE_VERB}|reactiva|reactivar|reactivalo|"
+@@ -4908,7 +4934,7 @@
+             r"\bturn\s+(?:the\s+)?(?:audio|sound|volume)\s+back\s+on\b|"
+             # Órdenes elípticas inequívocas: sólo existe un silencio global.
+             rf"^[¿?¡!\s]*{_UNMUTE_VERB}"
+-            r"(?:\s+(?:it|please|por favor|todo|everything|el audio|"
++            r"(?:\s+(?:it|please|pls|plz|por favor|porfa|todo|everything|el audio|"
+             r"the audio))?[\s?!.]*$"
+         ),
+     )
+@@ -7304,6 +7330,11 @@
+     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
+     # at most one remaining non-semantic layer for surface invariance.
+     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
++    desired = _explicit_desire_request(text)
++    if desired is not None:
++        # A need for an explicit action is not a noun-only request to observe
++        # the mentioned domain. Restrict this normalization to effect readers.
++        text = desired.group("body")
+     text = re.sub(
+         r"^(?:primero|first)\s*[,;:]?\s+",
+         "",
+@@ -10967,6 +10998,12 @@
+     """Resolve effects inside one request clause with bounded prior context."""
+ 
+     folded = _fold(text)
++    desired = _explicit_desire_request(folded)
++    if desired is not None:
++        # This clause is now being read for effects. Keep the original need
++        # frame visible to the earlier conversation/clarification readers;
++        # only anchored operation matchers consume the explicit action body.
++        folded = desired.group("body")
+     available = frozenset(available_operations)
+     authenticated_request = _authenticated_application_request(
+         folded,

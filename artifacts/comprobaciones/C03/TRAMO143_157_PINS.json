@@ -1,0 +1,547 @@
+{
+  "state": "EN_CURSO",
+  "source": 147,
+  "privateFilesVerified": 32,
+  "files": [
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\src\\baxy_mind\\voice.py",
+      "sha256": "7e94dd63b24d97dcd805e2d462339c2ad157b2cf0a9fa6eee2928e2e086b35d4",
+      "bytes": 123418
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\src\\baxy_mind\\voice_output.py",
+      "sha256": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+      "bytes": 21468
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\src\\baxy_mind\\piper_tts.py",
+      "sha256": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e",
+      "bytes": 5036
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\src\\baxy_mind\\voice_aec.py",
+      "sha256": "3732660fae67ce7a546152392699758fd59f55e8ce0b97235bffaadc00ce5f11",
+      "bytes": 11111
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\src\\baxy_mind\\speex_aec.py",
+      "sha256": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+      "bytes": 5905
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\assets.manifest.json",
+      "sha256": "d1f9891f670928f8cb30dcd8ad747c80d364dad06f320fc10e40e7d4efd599ba",
+      "bytes": 9474
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source143-snapshot\\src\\baxy_mind\\voice_capture.py",
+      "sha256": "69c9b0285449cfa66cfa34450889405b83960694aa84053d5d6cd4d20e137dd2",
+      "bytes": 3173
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\ASTRA-TRAMO-143.md",
+      "sha256": "30c4bb3f27581d439584437cc218da13b4e898891ff1da7daef4ee6653f9a2e4",
+      "bytes": 943
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\ASTRA-TRAMO-147.md",
+      "sha256": "92b25f9559d50f9c4b413d94894336845427b43d932c93752a087013495add9e",
+      "bytes": 4506
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_CAPTURA143_157.md",
+      "sha256": "436ce6462d3c930191d326eb9a8373f168874570afa6ada534fca904f8ebe1d2",
+      "bytes": 5603
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\RESERVA_PREVIEW155.md",
+      "sha256": "d4137ff5e72b27da6cdebc6edbc9c4ebda65703e53eb75cff96f8b5ff4d9d911",
+      "bytes": 2029
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\INDEX.json",
+      "sha256": "26781f911e3eebc726b048df03d682529b7103fabb809bcb995c35e8f26f18a0",
+      "bytes": 3859
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\src\\baxy_mind\\voice.py",
+      "sha256": "7e94dd63b24d97dcd805e2d462339c2ad157b2cf0a9fa6eee2928e2e086b35d4",
+      "bytes": 123418
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\src\\baxy_mind\\voice_output.py",
+      "sha256": "7a5a1ba6c18afaeb14914fd9f420697f65ae9c6f52c47b7709e9c08d84b95915",
+      "bytes": 21468
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\src\\baxy_mind\\piper_tts.py",
+      "sha256": "a75b06ec2a981e5c390bd004f3e28ebab3e499ffa5ba090af2db2ce29627fa7e",
+      "bytes": 5036
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\src\\baxy_mind\\voice_aec.py",
+      "sha256": "3732660fae67ce7a546152392699758fd59f55e8ce0b97235bffaadc00ce5f11",
+      "bytes": 11111
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\src\\baxy_mind\\speex_aec.py",
+      "sha256": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+      "bytes": 5905
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\assets.manifest.json",
+      "sha256": "d1f9891f670928f8cb30dcd8ad747c80d364dad06f320fc10e40e7d4efd599ba",
+      "bytes": 9474
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\src\\baxy_mind\\voice_capture.py",
+      "sha256": "1005f17b4358940dada0421019e25f2d97d4d656c236d6dbd4f84f22fcaacdff",
+      "bytes": 3696
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\tests\\test_voice_capture_clock.py",
+      "sha256": "7fb0342e10fe38024b604fa2e5b0f3c73772255d9db465cd5af2c2cfd43dcad3",
+      "bytes": 8072
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\tests\\test_mind_voice_runtime.py",
+      "sha256": "e34a64cd642e9722bb9c9ea17c0c2f9069a653df2bbf7818385f883383ce2e4d",
+      "bytes": 82986
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\docs\\AI_CONTEXT_MAP.md",
+      "sha256": "13a1528b7139bf2252a07507607f0a959e7b9ed735bcc65df6a553306c709bd4",
+      "bytes": 7671
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\c03-source143-owner-final.log",
+      "sha256": "b95e4f3ce3830b01098ab26895406c4c40b324127d13711d9cb43aa05e40db77",
+      "bytes": 265
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\c03-source143-fast.log",
+      "sha256": "c61e1a6f4b84ae5a5910d1d6e3bc3e0bfa3ac7a085a58a73ed57a3f91e6019d3",
+      "bytes": 2913
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\c03-source147-owner.log",
+      "sha256": "87e245f7c57ce474b96e5252561461a143688dac15670d92dba88cf38282c1b0",
+      "bytes": 265
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source147-snapshot\\c03-source147-fast.log",
+      "sha256": "a5dc0beada742f519de074e3b94f52cbc3ca7b44a068a29177762dc90188fd07",
+      "bytes": 2913
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice144\\PREREG.json",
+      "sha256": "6324dcc435135a1c993a6ca1a9eeb813ca6f2aef8f56f29c1049dfb934865d22",
+      "bytes": 1513
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice144\\AUDIO_SETUP.json",
+      "sha256": "ec6591a96a24b4afcbf2b92d8db4eba04eb6d90e3f56883b11ed833b84ba4aba",
+      "bytes": 281
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice144\\AUDIO_READY.json",
+      "sha256": "f02b8c0be5339877972ab31bbfbbfe3e696ef81736932c9a3992067c5349c85e",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice144\\AUDIO_RESULT.json",
+      "sha256": "be05698f046d80190cfb58341ae4243c8c54c95597c8cbc6f686f28b8b21a7de",
+      "bytes": 2321
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice144\\EVENTS.jsonl",
+      "sha256": "8971a058cb2980bf6798f049654a5893ed53b131352a4d63cc7c4d91cbc30cac",
+      "bytes": 467
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice148\\PREREG.json",
+      "sha256": "fa32e8cd634564731122b01c87d8df3483ac888b2c1ecae5916e62997e1df210",
+      "bytes": 1513
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice148\\AUDIO_SETUP.json",
+      "sha256": "cbeb350ec0dbdcb802be3a8a0055b6f95f1fb4a498ee6336b2187136b5ad01f9",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice148\\AUDIO_READY.json",
+      "sha256": "718eebfe4d8993c7eb76893f13f5580e8e4399e54f882cb05b42b988abfd0fae",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice148\\AUDIO_RESULT.json",
+      "sha256": "5c99139735f1ec1df3964e0c19e8ac3ea93526c938823911b7c139a8b99b6936",
+      "bytes": 2314
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice148\\EVENTS.jsonl",
+      "sha256": "e9e7a4de6a6be560f0bd4b96a3bc6716fca16df1faf9dad6dcaeac4dcaaf65b5",
+      "bytes": 1834
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice148\\RESULTS.json",
+      "sha256": "f83393102317a9caeb161bd2b470635cea7c3002be5f359647deb7116c464768",
+      "bytes": 1582
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\PREREG.json",
+      "sha256": "815ab623b109982090fa9c8f206c77b518d75d7ef9bc49cda06561100cbab65f",
+      "bytes": 1372
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\AUDIO_SETUP.json",
+      "sha256": "c254ec4709833c1ff4a675d91a1bc7a1f926cdc93ba88e9a0d92a0295b86d706",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\AUDIO_READY.json",
+      "sha256": "ac938c712934f3727428fd209e3cb7522e6d29e5f7897664e1258eee28a72af4",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\AUDIO_RESULT.json",
+      "sha256": "47d64ce144c64838ea061cd47aca6a66e306d3096829a4c22725baf8b4e035bb",
+      "bytes": 2311
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\EVENTS.jsonl",
+      "sha256": "2c96715142694b6fec8ad1a326fbcc35a44056f446ef2c7847e853c9213584c9",
+      "bytes": 1942
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\RESULTS.json",
+      "sha256": "e91440b57827309e0cd8fcf3431c1c26205dcb8732d0f4d5b3c5dbe3fe18bb8b",
+      "bytes": 1579
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice149\\OBSERVATION_INDEX.json",
+      "sha256": "18a9ccfe8abcc1ca6a8254365fabc5e176481f950da043b1e6e75c7b2dd93593",
+      "bytes": 382
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\PREREG.json",
+      "sha256": "92de85c212d22a5d2d4e79e883fe71ab8b6f6c558e9dbdbb831f4cc251057871",
+      "bytes": 1476
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\AUDIO_SETUP.json",
+      "sha256": "c6f739a065d5fb7b47451e2ce3ac2855dd971acddcc2889ac192a37fb32093a1",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\AUDIO_READY.json",
+      "sha256": "3c2706debf9aba16a782e16365d2a19e96329731476a483552faf50bcd0e5e4a",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\AUDIO_RESULT.json",
+      "sha256": "6026bd921fba88eec668dfad0042f0682d325e853f9e00ecf19350bb95002f11",
+      "bytes": 2305
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\EVENTS.jsonl",
+      "sha256": "a40cb31db08ba9179e761e7b8a1d4b65553f3d24d023274e952e4757eef28890",
+      "bytes": 6242
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\RESULTS.json",
+      "sha256": "9eafaf21aebab72282b2637b63cc82a3e9eadcc5273408576f38c8324ab76078",
+      "bytes": 4742
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\OBSERVATION_INDEX.json",
+      "sha256": "cbed491e6cdf5aa56e329d99e89218ce0a1371209a038283b6badf84a08dc62a",
+      "bytes": 382
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice152\\GENERATED_INDEX.json",
+      "sha256": "c6b1dd03b27e0cb03b36690fd8ff3434c4c51a58cb1448ee8a55e64d31ae0294",
+      "bytes": 934
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\PREREG.json",
+      "sha256": "f01a5edcd450229779aca0e3595df5e52de812c4bbd3a9932b1bf8b9f8bf0f30",
+      "bytes": 1480
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\AUDIO_SETUP.json",
+      "sha256": "76b3448a3af7df52106efd97e7517b28dc62653e3b84e17a5f1d77c5aa279b7e",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\AUDIO_READY.json",
+      "sha256": "ee70ff7c7e9e04725c1d53624ff3200e1ed98a1db44f867fe6a1d37f8e31ab5e",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\AUDIO_RESULT.json",
+      "sha256": "fb6f357ff1df2426ca02ddfec8118052ef1802dc6e82b877873a0ee6b4747f69",
+      "bytes": 2312
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\EVENTS.jsonl",
+      "sha256": "e0cbdc0dcb67c5e92954c11b029db4e8aabba9c35a640e9a8282e54acab26908",
+      "bytes": 6020
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\RESULTS.json",
+      "sha256": "844ac9ab096e208ed4fcedefe5060650018eba635d08b2878e09b4c7dbdd0701",
+      "bytes": 4727
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice153\\GENERATED_INDEX.json",
+      "sha256": "7e595e9c407a37a0c8b5992c23f9d0a647d6f997f0f81bcfacecc3d75b4ecec4",
+      "bytes": 936
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\PREREG.json",
+      "sha256": "4be5bb07c53038fd2611a3bc32e2fd7deefebdc989f5dfac375a1ae980baa87e",
+      "bytes": 1867
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\AUDIO_SETUP.json",
+      "sha256": "66323ebfc7d7d24ee1911164a65b474f47ad857dedefc438ccb4f22f8580075c",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\AUDIO_READY.json",
+      "sha256": "24406d7ae15094b1c4e16d86b825725d3a6aeb53fe8dac6ad5f85eb9745a3012",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\AUDIO_RESULT.json",
+      "sha256": "2016badd2c90810e8fc89846440641b77db4dd5ff39e9ba9432df53a9f27495d",
+      "bytes": 2319
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\EVENTS.jsonl",
+      "sha256": "d513b2eb82a7e20657ba8e70d28bf9a4a678866df79e893ac33ad93098b3d44a",
+      "bytes": 11876
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\RESULTS.json",
+      "sha256": "a571e7b97e801fa1e2743f49f335241a566e8b9787d4d19454ef8b21a25431fc",
+      "bytes": 9452
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\OBSERVATION_INDEX.json",
+      "sha256": "fd7fbeb4a38850c6a4eb461678c1316a883ecbac10e2fff02370a274f88dc270",
+      "bytes": 382
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice154\\GENERATED_INDEX.json",
+      "sha256": "eb0f2ded1eadcdd13192bcaba7c40c6b44d65b0688af9d032b0fc48417ca0279",
+      "bytes": 1873
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-capture145\\RESULTS.json",
+      "sha256": "0b7a01e5b70beb09887b9c3fc9032791a88ac9c19aeeb4757d19b3f1c9d98954",
+      "bytes": 1587
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-capture146\\RESULTS.json",
+      "sha256": "216076bf25ac2b6ab356285c31ea511ff6755d07160991412fb2739d07eedf24",
+      "bytes": 366
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis150\\RESULTS.json",
+      "sha256": "9804b3b3c8c4ea0340242d796f341e2b5c75f80746fe7a77d35ddc9d5779f9df",
+      "bytes": 9097
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-phase151\\PREREG.json",
+      "sha256": "59637fcf85f7910b11dec98b3be6791db9cb450559f093fd91e4488f46149453",
+      "bytes": 559
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-phase151\\RESULTS.json",
+      "sha256": "494c6a9548df80aca6e6437daa906dc0f45345c395b6461022f22f615c1b207d",
+      "bytes": 958
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis156\\PREREG.json",
+      "sha256": "9b6f90b98dcee1fb80d21db553d8d6468a28ce22c878cde10c5109ea600a5239",
+      "bytes": 347
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis156\\RESULT_INDEX.json",
+      "sha256": "cf7c12f00bcb2518c9b8cb31150ee4c87c08e8747338719a5ec4a65e2d58e4bb",
+      "bytes": 218
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis157\\PREREG.json",
+      "sha256": "e317e83313dbccc42d677344e18fe8982466d59368ddc7cce72963c097159554",
+      "bytes": 386
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis157\\RESULT_INDEX.json",
+      "sha256": "6e73d4d2e4c6d483ecdef370ed732b17829c56e83c5932adf8bd8e787f4fe03f",
+      "bytes": 218
+    },
+    {
+      "path": "scratchpad\\c03-integrate143.py",
+      "sha256": "47eb4275d7131b671050d956f36211439af8b3bed22511792f35ff15c4351acb",
+      "bytes": 5095
+    },
+    {
+      "path": "scratchpad\\c03-reference143-class.txt",
+      "sha256": "c5ce8fff108187ca726599deba57ca603ad5a909c5298fd1151b77da446f3941",
+      "bytes": 7050
+    },
+    {
+      "path": "scratchpad\\c03-prepare144.py",
+      "sha256": "ab826659ba7636b4d4ba7c5a4a6753d930f101fc0517389b34e3d3484ceeb8c7",
+      "bytes": 1519
+    },
+    {
+      "path": "scratchpad\\c03-probe145.py",
+      "sha256": "81ffcefcf7efc8c59d0999377250f75893c370ffbc0c1a18484ca009c4751e47",
+      "bytes": 1231
+    },
+    {
+      "path": "scratchpad\\c03-probe146.py",
+      "sha256": "92fb2c2e63f4d724e43d01bc22d568d6dc18d80806423bb9b368bc699ab4f5ad",
+      "bytes": 1315
+    },
+    {
+      "path": "scratchpad\\c03-prepare148.py",
+      "sha256": "25d24794ac5512db4db098cf48e69152917a6b848aa916730e8913cdfeefb069",
+      "bytes": 263
+    },
+    {
+      "path": "scratchpad\\c03-prepare149.py",
+      "sha256": "45f350b306f0b7feee17d906609baf883132d1867d30e5c3c415427a4f3bc83f",
+      "bytes": 3525
+    },
+    {
+      "path": "scratchpad\\c03-analyze150.py",
+      "sha256": "68885c00d55b49438938472d79de3cc4bde16d9cd3d4ef9ecdddd3e06dce1717",
+      "bytes": 2181
+    },
+    {
+      "path": "scratchpad\\c03-check151.py",
+      "sha256": "bcbb4dd490d7ad2c6d1d43c85b15f35bfcca630d28f2c2774670b301efecbb83",
+      "bytes": 3215
+    },
+    {
+      "path": "scratchpad\\c03-prepare152.py",
+      "sha256": "ad3967f02d95f45b02a3c587f184fa87bdb28e4c1adca00e81cc72016f2e7563",
+      "bytes": 2826
+    },
+    {
+      "path": "scratchpad\\c03-prepare153.py",
+      "sha256": "11aca5b059dd3c708bf98a42aab98d43de3efb18693c84dfe2361381313fce15",
+      "bytes": 1770
+    },
+    {
+      "path": "scratchpad\\c03-prepare154.py",
+      "sha256": "ed9c3d8ff5d10c5a1661b4994aee5f9936b8b2a31367b044fc9ad4b7bce9dea4",
+      "bytes": 1890
+    },
+    {
+      "path": "scratchpad\\c03-preview155.py",
+      "sha256": "38b0edc06f83b441cabe4b41693a0a1a661811f2f5aa6f07f7030f5c27ece3a9",
+      "bytes": 338
+    },
+    {
+      "path": "scratchpad\\c03-prepare156.py",
+      "sha256": "f6192daff72ee443dbc64b9bdf8c593a6059631b9836a6e1c1f0a1ce665eb67d",
+      "bytes": 1195
+    },
+    {
+      "path": "scratchpad\\c03-analyze-voice156.py",
+      "sha256": "d17ec8b7d64c2fa87fdd8d62f71ff846aa734ea73f253fb0a9070cf7b5496f2b",
+      "bytes": 5732
+    },
+    {
+      "path": "scratchpad\\c03-prepare157.py",
+      "sha256": "09b494c026a0761c680f4cf8507d817cc2bd79234b4bf142ec53501984d7300a",
+      "bytes": 547
+    },
+    {
+      "path": "scratchpad\\c03-analyze-voice157.py",
+      "sha256": "9b617ea5a49e7913388da260e47a6e0d65277851b758f60ed021229ca668fd48",
+      "bytes": 5098
+    },
+    {
+      "path": "scratchpad\\c03-snapshot147.py",
+      "sha256": "4f18d3aa6ce49d21296794f9fc85a28ac5442ac7aa30e1dcdc140522d45a4327",
+      "bytes": 1349
+    },
+    {
+      "path": "scratchpad\\c03-checkpoint157.py",
+      "sha256": "a9ecfb08cb979b03fdee9c749d049822ae1dfaed6b80d1889e7bd3539121a260",
+      "bytes": 7973
+    },
+    {
+      "path": "scratchpad\\c03-pin157.py",
+      "sha256": "ba139b1f7c9dae2a9448f7c31855d5a65d7fa70541a070207e5fca6c408c9975",
+      "bytes": 5718
+    },
+    {
+      "path": "scratchpad\\c03-voice144.py",
+      "sha256": "57f37dfc68de18f9564124a9b6cd1361e0cc6c2962b7b96ffe16f3122aba7788",
+      "bytes": 3888
+    },
+    {
+      "path": "scratchpad\\c03-capture-voice144.py",
+      "sha256": "6ffc7b35c0019d3e39578ee12ea211e5a4b040d7816f00af54a8079f71363967",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-voice148.py",
+      "sha256": "593411513dd6b624de7d9bdfc3cd836d9d16215824c8f80248032edc7196a9c1",
+      "bytes": 3888
+    },
+    {
+      "path": "scratchpad\\c03-capture-voice148.py",
+      "sha256": "444438556a623c8021b4fc129c63fd92c8a28195eacf24ee5ca500f79b7735bb",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-voice149.py",
+      "sha256": "7ae05bea7785e8db966e3e1078bf82cc4aed4d7c00f8746634713b7a9fa2b065",
+      "bytes": 5868
+    },
+    {
+      "path": "scratchpad\\c03-capture-voice149.py",
+      "sha256": "0e50bdfed8e733afda1a2cdd5a82b1bc7c376801d271cfab914dbf3234cc7947",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-voice152.py",
+      "sha256": "710125a32e206504b784d68aee0bc6171ab73f4abdb4974470c84865209c67b7",
+      "bytes": 6741
+    },
+    {
+      "path": "scratchpad\\c03-capture-voice152.py",
+      "sha256": "62c97df856adac5b1dea16f1545f5b93af08b0962b541c9bca08377a54e8f29b",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-voice153.py",
+      "sha256": "fab3893e42fa794896787cc4f2718c9c9948a05cf503aab046c3ce51cdea7dc5",
+      "bytes": 4720
+    },
+    {
+      "path": "scratchpad\\c03-capture-voice153.py",
+      "sha256": "c621dcd1d31ac3e3254e346e86a81779529c6655c09641c5daf385976833ea60",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-voice154.py",
+      "sha256": "6375a1fe47519d7b8198abe79a1776418cf26ac096b9f205351b668ca7dafa91",
+      "bytes": 6749
+    },
+    {
+      "path": "scratchpad\\c03-capture-voice154.py",
+      "sha256": "acc1c913e995c52b1514ea36e657926400e25bdcd3633bbaba41ddeae8dc3420",
+      "bytes": 6334
+    }
+  ]
+}

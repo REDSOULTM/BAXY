@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-08T19:28:58.925538+00:00",
+  "available_mib": 5078.2890625,
+  "required_mib": 4900,
+  "status": "preflight_deferred_no_runtime_no_calls",
+  "source_changed": false,
+  "manifest_changed": false,
+  "reason": "Previous execution failed free RAM assertion before PREREG and loading; current sample reported here is subsequent."
+}

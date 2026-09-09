@@ -1,0 +1,26 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T10:17:13.787699+00:00",
+  "hypothesis": "Remove the diagnostic global sampling override and observe the existing per-role runtime payloads, including deterministic decisions. Same 12-turn panel, original instructions/guards, with raw conversation audit before veto. No model promotion or additional decoding.",
+  "expected": "Useful faithful replies without global sampling overriding classifiers. Record every actual role sampler and raw public draft; inspect whether remaining language failures are genuine monolingual answers or false rejections.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "ngl": 99,
+    "kv": "q8_0",
+    "sampling": "Existing role payloads unchanged; effective values in sampling.jsonl",
+    "source": "src/baxy_mind/llm.py; no sampling override",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "71fb87e6672b28205e472be7c239bda0763ec224618b75e834c6202f4d4e3a39",
+    "src/baxy_mind/__main__.py": "92df02b84fbda9aac8047b38a0ceca3caec0b8052eae1ab0e0fd8fa16ac4cbf9",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "9a93d81926d4f817218d6340814021b2b4a0084078cba3b0f62dea8f13619f66",
+    "artifacts/comprobaciones/C03/astra-qwen2507-role-sampling.turns.jsonl": "1c5e5fa8ea458ad305e3ab14458bbbdfbe550a39c911712f43bbcaf0482bebec",
+    "artifacts/comprobaciones/C03/astra-qwen2507-role-sampling/profile/sitecustomize.py": "0d811f8fcdb6b51b5da845615689f85d5a47e4aeb08a944ad50a342979a2c05c",
+    "scratchpad/c03-qwen2507-role-sampling.py": "0546a51c457c592d8f5cc93584d5c9924ac5d9e71676b985c56a2306add20b2c"
+  }
+}

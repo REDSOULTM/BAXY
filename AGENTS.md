@@ -42,6 +42,9 @@ cada goal.
 3. **Sólo se arregla lo que bloquea** (goals 01–10). Lo demás, una línea en
    `documentacion/APLAZADOS.md`.
 4. **Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo.
+   Evalúa cada modelo con perfiles basados en papers, documentación y reproducciones
+   de usuarios; verifica backend y ajustes efectivos. Compara calidad, latencia,
+   RAM y VRAM. Un fallo con defaults no descarta el modelo.
 5. **Arquitectura modular.** Una responsabilidad por pieza, cero código muerto.
 
 ## Los seis invariantes

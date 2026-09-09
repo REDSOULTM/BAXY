@@ -1,0 +1,60 @@
+{
+  "utc": "2026-09-07T18:06:29.535472+00:00",
+  "scriptSha256": "b5f07cbf77814b3602eb475b0bd865a9de82cfdd86f49c17905df16e5927dbe9",
+  "method": "Same exact three empty213 PCM windows plus human1 near_none positive control. Inspect native greedy result before/after product corrector and applied decoder acknowledgement. Then independent existing Nemotron on unchanged window plus documented .66s flush. No gain/crop/model downloads/parameter changes or playback.",
+  "purpose": "Attribute text loss to decoding or correction boundary; independent decode can establish recoverable voice, not exact original waveform or acceptance.",
+  "inputs": [
+    {
+      "human": 0,
+      "id": "2001",
+      "condition": "raw_speex",
+      "gain": 0.10988562847131873,
+      "onset": 59109,
+      "text": "",
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "seconds": 0.7810000000026776,
+      "sha256": "b5dc49152ae3c977145d6247dbff072e4734b47d3a9d9f90300bac3df3d75ad1",
+      "waveCorrelation": 0.9387932141062333,
+      "waveProjectionGain": 0.8929347688959169
+    },
+    {
+      "human": 1,
+      "id": "1764",
+      "condition": "near_speex",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "text": "",
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "seconds": 0.5779999999940628,
+      "sha256": "47e58ef0b14f9e7785dc7f687b5bf28b57f81050361a3b130e8f739429869cf2",
+      "waveCorrelation": 0.9541936522297815,
+      "waveProjectionGain": 0.927180119892806
+    },
+    {
+      "human": 1,
+      "id": "1764",
+      "condition": "raw_speex",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "text": "",
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "seconds": 0.8439999999973224,
+      "sha256": "0567ffba87a2ddc07791163a582ed142d447d932e4f5be94bc35e23aee4bd35d",
+      "waveCorrelation": 0.9411733925792687,
+      "waveProjectionGain": 0.8972906835554653
+    },
+    {
+      "human": 1,
+      "id": "1764",
+      "condition": "near_none",
+      "gain": 0.1233880664696456,
+      "onset": 59109,
+      "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "seconds": 0.6089999999967404,
+      "sha256": "7c910271c86eca5252cf245aabb95a44722094f66a589997de6e22cc4805d562",
+      "waveCorrelation": 1.0,
+      "waveProjectionGain": 1.0000000038083938
+    }
+  ]
+}

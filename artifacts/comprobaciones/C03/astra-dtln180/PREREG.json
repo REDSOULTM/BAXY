@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-07T15:01:01.614109+00:00",
+  "hypothesis": "Smallest128 fails mixed words179 at low CPU cost. Contrast author challenge512 once; no intermediate256 collection or VAD/gain tuning.",
+  "difference": "Only published512 weights; same exact author process_file, sameLiteRT2.2.0 CPU1/XNNPACK, same five174 controls, same raw/normalizedParakeet window.",
+  "revision": "9d24e128b4f409db18227b8babb343016625921f",
+  "source": "https://github.com/breizhn/DTLN-aec/tree/9d24e128b4f409db18227b8babb343016625921f",
+  "criteria": "Echo rejection, near-only and mixed word preservation, CPU cost below hop budget; no adoption from suppression alone. Still synthetic/offline, not physical/human acceptance."
+}

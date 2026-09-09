@@ -1,0 +1,37 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T11:33:47.530700+00:00",
+  "hypothesis": "Keep the resource-viable IQ3 full-GPU profile. Undo the ineffective strict candidate probe. Reuse existing candidate-free semantic effect classification before any candidate can withdraw stable knowledge. Close only joint syntax and semantic no_effect/zero agreement; external reads, incomplete and compound effects retain existing interpretation. No prompt or model changes.",
+  "expected": "Explanations stay knowledge while factual operations continue. Adjudicate all12, including requested language; no automatic acceptance or promotion.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-8b-iq3-xxs-0b69f75b\\Qwen_Qwen3-8B-IQ3_XXS.gguf",
+    "sha256": "11a2ba2a7970f621c03e05bce111df2cb7c04880ffec2cdd03445d7b5e8b8514",
+    "ngl": 99,
+    "kv": "q4_0",
+    "hostCompositionBudgetProfile": "unchanged GPU 5/10s",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "7c7aa2fc972fdf61e305c6ab42cd4ce20513a80f00220fca17b3704c783e692f",
+    "src/baxy_mind/__main__.py": "1512446a0036ae29139ecdfc87d99c55c1742d218bb2717e589f6e92c0c83803",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "b689bb910cfd7db689ce43d06432beb871ad76495d4d552c62c46c4fff14b9e1",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "9ed19a2dc3ba6e632310d2476a508a8c3b12fcb4355b290988ad8e9e5ecb3282",
+    "src/Baxy.App/MainWindowViewModel.cs": "4993a30085c9894a4854b87e7fad8e1ebfecfeaf47c1178969c512016bbc588f",
+    "src/Baxy.App/MissionNarration.cs": "2df840ad6352a382ffbdcb3f530d807c3f9487cedd623a7f2de7efba3b87ba8e",
+    "src/Baxy.App/MindPlanSession.cs": "d3823cb6f1d5910dc66d4ad873a492eece2b6343d78721d91245fddf1a3b3008",
+    "src/Baxy.App/UserMessagePolicy.cs": "0baee988fab1c32d7f388de34735dc1e3abafdc4432148e18ee83bbad208e550",
+    "artifacts/comprobaciones/C03/astra-qwen8-before-catalog.turns.jsonl": "1c5e5fa8ea458ad305e3ab14458bbbdfbe550a39c911712f43bbcaf0482bebec",
+    "artifacts/comprobaciones/C03/astra-qwen8-before-catalog/profile/sitecustomize.py": "05d3ff2092eccc7623f8e7df21a6948135e70ddbd94962b3cae287579a889242",
+    "scratchpad/c03-qwen8-before-catalog.py": "a4d1c447b9b5ddee4af2ee11d09c825de97b9eb3cf080b05306b1968afa8baa1"
+  }
+}

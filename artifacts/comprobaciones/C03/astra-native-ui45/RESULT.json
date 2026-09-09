@@ -1,0 +1,8 @@
+{
+  "stopReason": "operator_finished_observation",
+  "gpuPeakMiB": 3792.2734375,
+  "ramPeakMiB": 5555.48046875,
+  "gpuAttributionAvailable": true,
+  "registrationUnchanged": true,
+  "seconds": 146.98
+}

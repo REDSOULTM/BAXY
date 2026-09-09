@@ -1,0 +1,5 @@
+{"case": "injected-contradiction", "request": "Dime la hora, please, en spanglish", "response": "Son las 13:23; son las 13:23", "error": null}
+{"case": "es", "request": "\u00bfQu\u00e9 hora es?", "response": "Son las 13:23.", "error": null}
+{"case": "en", "request": "What time is it?", "response": "It is 13:23.", "error": null}
+{"case": "mixed", "request": "Dime la hora, please, en spanglish", "response": "Son las 13:23; it\u2019s 13:23.", "error": null}
+{"elapsedSeconds": 4.69, "gpuPeakMiB": 3517.55859375}

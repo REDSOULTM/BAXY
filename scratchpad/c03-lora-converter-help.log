@@ -1,0 +1,43 @@
+usage: convert_lora_to_gguf.py [-h] [--outfile OUTFILE]
+                               [--outtype {f32,f16,bf16,q8_0,auto}]
+                               [--bigendian] [--no-lazy] [--verbose]
+                               [--dry-run] [--base BASE]
+                               [--base-model-id BASE_MODEL_ID]
+                               [--trust-remote-code]
+                               lora_path
+
+Convert a Hugging Face PEFT LoRA adapter to a GGUF file
+
+positional arguments:
+  lora_path             directory containing Hugging Face PEFT LoRA config
+                        (adapter_model.json) and weights
+                        (adapter_model.safetensors or adapter_model.bin)
+
+options:
+  -h, --help            show this help message and exit
+  --outfile OUTFILE     path to write to; default: based on input. {ftype}
+                        will be replaced by the outtype.
+  --outtype {f32,f16,bf16,q8_0,auto}
+                        output format - use f32 for float32, f16 for float16,
+                        bf16 for bfloat16, q8_0 for Q8_0, auto for the
+                        highest-fidelity 16-bit float type depending on the
+                        first loaded tensor type
+  --bigendian           model is executed on big endian machine
+  --no-lazy             use more RAM by computing all outputs before writing
+                        (use in case lazy evaluation is broken)
+  --verbose             increase output verbosity
+  --dry-run             only print out what will be done, without writing any
+                        new files
+  --base BASE           directory containing Hugging Face model config files
+                        (config.json, tokenizer.json) for the base model that
+                        the adapter is based on - only config is needed,
+                        actual model weights are not required. If base model
+                        is unspecified, it will be loaded from Hugging Face
+                        hub based on the adapter config
+  --base-model-id BASE_MODEL_ID
+                        the model ID of the base model, if it is not available
+                        locally or in the adapter config. If specified, it
+                        will ignore --base and load the base model config from
+                        the Hugging Face hub (Example: 'meta-
+                        llama/Llama-3.2-1B-Instruct')
+  --trust-remote-code   trust remote code in the model

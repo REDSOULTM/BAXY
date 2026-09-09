@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-fleurs195.py", line 8, in <module>
+    import soundfile as sf
+ModuleNotFoundError: No module named 'soundfile'

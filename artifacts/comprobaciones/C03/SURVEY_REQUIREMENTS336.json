@@ -1,0 +1,9 @@
+{
+  "records": 742,
+  "source": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner-review328-private\\reviewed-records.jsonl",
+  "source_sha256": "3a8a51a58a00fbf106fc76d6972304721df67c0c1cbb8a4c89f272ef6605405e",
+  "requirements_sha256": "445c8e7b01f6bd33c2576793c75c76c8ccb37abcd12923222ccec7b2e010c512",
+  "private_requirements": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl",
+  "validated_current": 0,
+  "acceptance_frozen": false
+}

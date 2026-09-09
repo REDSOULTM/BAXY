@@ -1,0 +1,158 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:17 equivalente al reloj observado; unidades horas/minutos conservadas."
+  },
+  "t2": {
+    "verdict": "FALLO",
+    "reason": "FALLO DE NATURALIDAD: conserva16:17,volumen100 y desactivación de muteo, pero inventa/desforma el término desmudo. No aprobado como prosa natural."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:17 correcta, inglés."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:17,volumen100,muted:false conservados en inglés."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:17 correcta; español válido para petición mixta."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:17,audio activo y nivel100 conservados."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Saludo natural; bienvenida y pregunta social admitidas por el dueño."
+  },
+  "t8": {
+    "verdict": "ÚTIL",
+    "reason": "Explicación sencilla del cifrado con clave y analogía de candado; útil bajo la rúbrica del dueño."
+  },
+  "t9": {
+    "verdict": "ÚTIL",
+    "reason": "Copia en otro lugar para recuperar datos perdidos o dañados; definición simple suficiente."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Explicación cotidiana de atracción hacia la Tierra; hilo presentado como analogía, no hecho literal."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Respeta no abrir Paint; no anuncia ejecución."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Lima es la capital de Perú."
+  },
+  "t13": {
+    "verdict": "ÚTIL",
+    "reason": "Dos oraciones; fotosíntesis explica luz,agua,CO2,glucosa y oxígeno."
+  },
+  "t14": {
+    "verdict": "ÚTIL",
+    "reason": "Menor densidad del hielo por expansión: explicación correcta."
+  },
+  "t15": {
+    "verdict": "ÚTIL",
+    "reason": "Ejemplos distinguen archivo de contenedor; definición circular inicial mejorable, pero diferencia útil."
+  },
+  "t16": {
+    "verdict": "ÚTIL",
+    "reason": "Lista vacía en el perfil de prueba según lectura real; no extrapolar al resto de perfiles."
+  },
+  "t17": {
+    "verdict": "ÚTIL",
+    "reason": "Pregunta por confirmar/cancelar el cierre de la ventana concreta, antes del efecto."
+  },
+  "t18": {
+    "verdict": "ÚTIL",
+    "reason": "Cancela la solicitud, conserva que no se cerró la ventana."
+  },
+  "t19": {
+    "verdict": "ÚTIL",
+    "reason": "Nueva pregunta de confirmación para la ventana concreta; no reutiliza autorización cancelada."
+  },
+  "t20": {
+    "verdict": "ÚTIL",
+    "reason": "Cierre de fixture propio confirmado por producto y por su proceso terminado antes de limpieza."
+  },
+  "t21": {
+    "verdict": "ÚTIL",
+    "reason": "Hora16:17 en inglés; sesión continúa tras cierre."
+  },
+  "t22": {
+    "verdict": "ÚTIL",
+    "reason": "Estado real inicial: volumen100,muted:false."
+  },
+  "t23": {
+    "verdict": "ÚTIL",
+    "reason": "Pregunta por nivel/dirección faltantes y conserva objetivo pendiente."
+  },
+  "t24": {
+    "verdict": "ÚTIL",
+    "reason": "Nivel80 aplicado,verified+succeeded+observed.applied verdaderos; sin muteo."
+  },
+  "t25": {
+    "verdict": "ÚTIL",
+    "reason": "Lectura posterior80 coincide. Mutado es un préstamo/errata poco elegante; el nivel solicitado y la ausencia de muteo se entienden."
+  },
+  "t26": {
+    "verdict": "ÚTIL",
+    "reason": "Pregunta en inglés por ajuste faltante y conserva objetivo."
+  },
+  "t27": {
+    "verdict": "ÚTIL",
+    "reason": "Nivel60 realmente aplicado y narrado en inglés, sin muteo."
+  },
+  "t28": {
+    "verdict": "ÚTIL",
+    "reason": "Lectura posterior60 con mute off coincide."
+  },
+  "t29": {
+    "verdict": "ÚTIL",
+    "reason": "Pregunta concreta por nivel; comprende petición mixta y conserva objetivo."
+  },
+  "t30": {
+    "verdict": "ÚTIL",
+    "reason": "Fragmento40% resuelve aclaración; efecto verificado y narración correcta."
+  },
+  "t31": {
+    "verdict": "ÚTIL",
+    "reason": "Lectura posterior40 coincide."
+  },
+  "t32": {
+    "verdict": "ÚTIL",
+    "reason": "Restauración real al100%,verificada y narrada."
+  },
+  "t33": {
+    "verdict": "ÚTIL",
+    "reason": "Lectura final100,muted:false; estado original restaurado."
+  },
+  "t34": {
+    "verdict": "AVERÍA INYECTADA — ESTADO RECUPERABLE",
+    "reason": "Sin prosa por avería forzada. Estado composition_failed visible en protocolo, causa conservada y controles usables; no es una respuesta normal aprobada."
+  },
+  "t35": {
+    "verdict": "RECUPERACIÓN ÚTIL",
+    "reason": "Tras restore, responde la hora correcta en la misma sesión y retira el error; se conserva fuera de la muestra normal."
+  },
+  "t36": {
+    "verdict": "AVERÍA INYECTADA — ESTADO RECUPERABLE",
+    "reason": "Sin prosa por avería forzada. Estado composition_failed visible en protocolo, causa conservada y controles usables; no es una respuesta normal aprobada."
+  },
+  "t37": {
+    "verdict": "RECUPERACIÓN ÚTIL",
+    "reason": "Tras restore, responde la hora correcta en la misma sesión y retira el error; se conserva fuera de la muestra normal."
+  },
+  "t38": {
+    "verdict": "AVERÍA INYECTADA — ESTADO RECUPERABLE",
+    "reason": "Sin prosa por avería forzada. Estado composition_failed visible en protocolo, causa conservada y controles usables; no es una respuesta normal aprobada."
+  },
+  "t39": {
+    "verdict": "RECUPERACIÓN ÚTIL",
+    "reason": "Tras restore, responde la hora correcta en la misma sesión y retira el error; se conserva fuera de la muestra normal."
+  }
+}

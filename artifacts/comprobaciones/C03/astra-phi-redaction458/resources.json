@@ -1,0 +1,14 @@
+[
+  {
+    "model": "phi4-mini",
+    "backend": "b10865",
+    "completed": 14,
+    "violations": [],
+    "effective_seeds_observed": [
+      0
+    ],
+    "gpu_peak_mib": 3390.51171875,
+    "ram_peak_mib": 955.41015625,
+    "seconds": 7.625
+  }
+]

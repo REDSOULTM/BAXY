@@ -1,0 +1,27 @@
+[
+  {
+    "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\voice.py",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source172-snapshot\\voice.py",
+    "sha256": "bdbfcc088fe023232ad37df4c75d95b6d699f7c7e8fe1b395cbeca14081ed06a"
+  },
+  {
+    "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\test_mind_voice_runtime.py",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source172-snapshot\\test_mind_voice_runtime.py",
+    "sha256": "754c80b8f497814db03548aae154314dce6c06cf20c7d2bd6a9b0380cf667451"
+  },
+  {
+    "source": "C:\\Users\\usuario\\AppData\\Local\\Temp\\c03-source172-red.log",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source172-snapshot\\c03-source172-red.log",
+    "sha256": "a4c19e65f976b9f7b928eb9aad200adf2a7075cd6b94f16211ae00951ff6a01f"
+  },
+  {
+    "source": "C:\\Users\\usuario\\AppData\\Local\\Temp\\c03-source172-owner.log",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source172-snapshot\\c03-source172-owner.log",
+    "sha256": "9bab78c11ae4d59a5b164328ba22bcc2d2bebe2711439da82fef2b5d839b0eb7"
+  },
+  {
+    "source": "C:\\Users\\usuario\\AppData\\Local\\Temp\\c03-source172-fast.log",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source172-snapshot\\c03-source172-fast.log",
+    "sha256": "8c4384c017175fef184dbad1b74319061f0b0df01b179ed3de7944487d2cb279"
+  }
+]

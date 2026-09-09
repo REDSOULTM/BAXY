@@ -1,0 +1,7 @@
+{
+  "method": "Original174 wheel only; RAW221232243+8human213 as238. FixedAEC16kmono delay0; noNS/AGC/gain/threshold changes. Block bridge output padding128=max(n512 mod160), native128delay from64framer+64suppression; pairedraw256. First validate chronological native parity and impulse delay, then freeze11DSP outputs before ASR.",
+  "previousTurn": "progress:246247 isolated reference and revised hypothesis from historical174178 measurement conditions",
+  "wheelSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+  "reasonToRevisit": "Earlier174178 used preRAW220 capture and pre207218 primary modified_beam_search/unstable normalization; current test uses actual human195/RAW213 and baxy.2. No reinterpretation of old scores as current.",
+  "scope": "diagnostic only, no installed dependency or product change"
+}

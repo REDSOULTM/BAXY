@@ -1,0 +1,42 @@
+{
+  "public": {
+    "artifacts/comprobaciones/C03/astra-product252/ABORTED.json": "771e74b4d3f3307e61a35756305f1efe754261bad367756fee1ba1106a797cf1",
+    "artifacts/comprobaciones/C03/astra-product252/DRIVER.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/comprobaciones/C03/astra-product252/PREREG.json": "9281439a485bd38aa0bed42c2c878eb360c031987c1ad91a189bbe4405883ee9",
+    "artifacts/comprobaciones/C03/astra-product253/COMPLETE.json": "6f7f7fc2c636d924ee99b1a623ffd00075f8e9e988c87fb5d4e6b26e34274b51",
+    "artifacts/comprobaciones/C03/astra-product253/DRIVER.log": "e3455f582ad7eb98653bf52bb9a4d4f83b5dcd8b2be56a3240f718a20215dd86",
+    "artifacts/comprobaciones/C03/astra-product253/PREREG.json": "d6cf9f7c8e03f07a5cf827d8c17cded54d2a9139c20aa552a166a7cfa769ce7e",
+    "artifacts/comprobaciones/C03/astra-product253/RESULTS.json": "31603ffdaccab08ea53fad2e2fcd0ff01e19d202ba7dacab2936f394e7735d69",
+    "artifacts/comprobaciones/C03/astra-alignment254/RESULTS.json": "11e1ab67d2dceda7fa15ba3ba869e68cc2279d0db13ecae78478608a293afd85",
+    "artifacts/comprobaciones/C03/astra-voice254/AUDIO_SETUP.json": "fd4b406eb897d47f26aebd98ba8925938fd9683f222a483814e145561f215b0f",
+    "artifacts/comprobaciones/C03/astra-voice254/COMPLETE.json": "c008ab0a2b1001cf81b00cd08b12c53e144c2cd24e04a33ae2f53da904050fde",
+    "artifacts/comprobaciones/C03/astra-voice254/DRIVER.log": "09c83bb7aa7534f3ed3455103e71aaef711178ffff9b4985b3bb83755d84313e",
+    "artifacts/comprobaciones/C03/astra-voice254/PREREG.json": "aa3b4c5abafecedeeaae9ec6106329189fba82f276341eeeb530452779769a01",
+    "artifacts/comprobaciones/C03/astra-voice254/RESULTS.json": "068e8470c5b3f2db37d8e2e7be54285e5ab2afb56fd51b067e64a7f849e12088",
+    "artifacts/comprobaciones/C03/astra-voice254/TRACE_METRICS.json": "d493390285d973ea06e4e9bf457a56ce431a32cdac06044be62fe8e6b5018abc",
+    "scratchpad/capture_split252.py": "58abb2efcb158f4ba7926db5a82d98ff5dc1a955c5699090de3d353503aca861",
+    "scratchpad/c03-product252.py": "e1d0d9dfb1928b7b83f6fcce2e110bc1e330ec0e06d1f6e467cf885382f1d388",
+    "scratchpad/c03-product253.py": "c252090eee5f4778e2cd526ffeb9e01ba89a432cf3f8b4f97a6c8f2bf35c549d",
+    "scratchpad/webrtc_aligned254.py": "ce484df4630cb74fd8ca0b74ffdc3d80acd2ec9709028b54824343b89ab5edfd",
+    "scratchpad/c03-voice254.py": "7e97d832f00626d9f40069a00ad4a83bf2721120231fdf6649c9284718adb6d8",
+    "artifacts/comprobaciones/C03/COMPARACION_LITERAL252_254.md": "0e2d1961122c4a7b8c17ad5bb5814250ea8a688e0e9b6a592927bf32e95de9a7"
+  },
+  "private": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\echo221-aec3-linear.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\echo232-aec3-linear.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\echo243-aec3-linear.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h0-near-aec3-linear.npz": "341ab5a7e71f9343f99e1fa084a8eae67159d75b80ce0ecc5e28d222d9fe1372",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h0-raw-aec3-linear.npz": "fd307fd6946c7f6bf7ca1cc17d7f6b8922bde7f394bd47c9820f45a6dfc61b75",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h1-near-aec3-linear.npz": "92e6e1773ee65022ce3336588944bf647c7646ce6e79a9ccc9a105b8c8820d78",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h1-raw-aec3-linear.npz": "87c943bdbbbf4474d176139cd4cd01dd5872eb64cbb883fb69239aa750ddf31a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h2-near-aec3-linear.npz": "bf224a380884c8e91ad87a386bd5d788c9d06a0424979a8e819aca14dbaf1a44",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h2-raw-aec3-linear.npz": "05e5f193ff565ee64c1e7392bb0c898a5b9c74b69c790bc9ed24646f729dcce3",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h3-near-aec3-linear.npz": "e1784189394c57a0574f5b33e460cca3a6fa483777c860ea78df9e5dc92c463c",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product253-private\\h3-raw-aec3-linear.npz": "ad66598bf2534cf5f89a385c636f82dd204a415a4311d2fac4bbda9e2a83d618",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\EVENTS.json": "0a7db31b549ca4368ca7ba710e313b07ddfef383e8158826068dc02f32b8c0d0",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\generated254.json": "a4f52b1a1520973853bea43c4372d7a83f6e8ecc47a3b33d14c8e4adf7fb1178",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\generated254.npz": "14d8592f1bd7de2d6fc6f3a35630cefe3a2ac5db8e7e386784b3bdb9a7f3258d",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\STATUS.json": "c35aec353a386211f3acdb7a6100c1046b68a7aaec0b16d800f068682b8b30ca",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice254-private\\tap254.npz": "53728aa6fe52ed00ba113f78cf82e5706a91961cc0d4b192bf75605b61c74436"
+  }
+}

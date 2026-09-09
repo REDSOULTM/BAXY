@@ -1,0 +1,206 @@
+{
+  "status": "trained-not-promoted",
+  "updates": [
+    {
+      "update": 1,
+      "epoch": 1,
+      "loss": 4.790881514549255,
+      "gradNorm": 5.503111362457275,
+      "gpuPeakMiB": 2953.53515625,
+      "elapsedSeconds": 32.45
+    },
+    {
+      "update": 2,
+      "epoch": 1,
+      "loss": 5.592688798904419,
+      "gradNorm": 6.413289546966553,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 35.48
+    },
+    {
+      "update": 3,
+      "epoch": 1,
+      "loss": 2.6234404742717743,
+      "gradNorm": 4.276492595672607,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 38.31
+    },
+    {
+      "update": 4,
+      "epoch": 1,
+      "loss": 2.3350731134414673,
+      "gradNorm": 4.80169677734375,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 41.28
+    },
+    {
+      "update": 5,
+      "epoch": 1,
+      "loss": 3.0790085196495056,
+      "gradNorm": 6.653005123138428,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 44.09
+    },
+    {
+      "update": 6,
+      "epoch": 1,
+      "loss": 2.244118392467499,
+      "gradNorm": 5.209234237670898,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 47.08
+    },
+    {
+      "update": 7,
+      "epoch": 1,
+      "loss": 1.3845553174614906,
+      "gradNorm": 3.999319314956665,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 50.14
+    },
+    {
+      "update": 8,
+      "epoch": 1,
+      "loss": 1.637947902083397,
+      "gradNorm": 4.7353835105896,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 53.08
+    },
+    {
+      "update": 9,
+      "epoch": 1,
+      "loss": 1.0284448191523552,
+      "gradNorm": 2.4980392456054688,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 55.92
+    },
+    {
+      "update": 10,
+      "epoch": 1,
+      "loss": 1.64362333714962,
+      "gradNorm": 3.36519455909729,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 58.83
+    },
+    {
+      "update": 11,
+      "epoch": 1,
+      "loss": 1.9387523531913757,
+      "gradNorm": 2.8221893310546875,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 61.81
+    },
+    {
+      "update": 12,
+      "epoch": 1,
+      "loss": 0.835092768073082,
+      "gradNorm": 1.506466031074524,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 64.83
+    },
+    {
+      "update": 13,
+      "epoch": 2,
+      "loss": 1.5974730551242828,
+      "gradNorm": 2.3511123657226562,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 67.67
+    },
+    {
+      "update": 14,
+      "epoch": 2,
+      "loss": 1.099808193743229,
+      "gradNorm": 1.9379043579101562,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 70.61
+    },
+    {
+      "update": 15,
+      "epoch": 2,
+      "loss": 0.5068138018250465,
+      "gradNorm": 1.3433758020401,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 73.42
+    },
+    {
+      "update": 16,
+      "epoch": 2,
+      "loss": 1.2641433365643024,
+      "gradNorm": 1.9921982288360596,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 76.42
+    },
+    {
+      "update": 17,
+      "epoch": 2,
+      "loss": 0.8068515472114086,
+      "gradNorm": 1.4463388919830322,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 79.44
+    },
+    {
+      "update": 18,
+      "epoch": 2,
+      "loss": 0.8652601689100266,
+      "gradNorm": 1.630387306213379,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 82.3
+    },
+    {
+      "update": 19,
+      "epoch": 2,
+      "loss": 1.2474342081695795,
+      "gradNorm": 1.6722350120544434,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 85.25
+    },
+    {
+      "update": 20,
+      "epoch": 2,
+      "loss": 0.9169656429439783,
+      "gradNorm": 1.8889976739883423,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 88.08
+    },
+    {
+      "update": 21,
+      "epoch": 2,
+      "loss": 1.3833075761795044,
+      "gradNorm": 2.0521092414855957,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 91.14
+    },
+    {
+      "update": 22,
+      "epoch": 2,
+      "loss": 0.5803611725568771,
+      "gradNorm": 0.8862336874008179,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 94.06
+    },
+    {
+      "update": 23,
+      "epoch": 2,
+      "loss": 0.7067230502143502,
+      "gradNorm": 1.2813719511032104,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 96.92
+    },
+    {
+      "update": 24,
+      "epoch": 2,
+      "loss": 0.5033317012712359,
+      "gradNorm": 1.3222150802612305,
+      "gpuPeakMiB": 3025.53515625,
+      "elapsedSeconds": 99.86
+    }
+  ],
+  "trainExamples": 48,
+  "maxTokens": 345,
+  "trainableParameters": 2949120,
+  "adapter": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-training-cdbee75f\\c03-pilot-lora-v1",
+  "torchPeakMiB": 2876.0,
+  "adapterSha256": "d7184fbd348f769dd207efd0957a55771f106fa5d95bed591eb60c386e987073",
+  "elapsedSeconds": 100.22,
+  "gpuPeakMiB": 3025.53515625,
+  "ramPeakMiB": 4642.40234375
+}

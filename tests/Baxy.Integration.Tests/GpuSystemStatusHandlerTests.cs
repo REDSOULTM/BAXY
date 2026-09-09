@@ -441,7 +441,7 @@ public sealed class GpuSystemStatusHandlerTests
             ? new BatteryStatus(false, null, null, true)
             : null,
         scope.HasFlag(SystemStatusScope.OperatingSystem)
-            ? new OperatingSystemStatus(10, 0, 26100, "x64", true)
+            ? new OperatingSystemStatus(10, 0, 26100, "x64", true, "Microsoft Windows 11 Pro")
             : null,
         scope.HasFlag(SystemStatusScope.Uptime) ? 60 : null,
         []);

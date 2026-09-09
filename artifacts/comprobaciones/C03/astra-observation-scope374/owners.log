@@ -1,0 +1,49 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 19%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+........................................................................ [ 39%]
+........................................................................ [ 45%]
+........................................................................ [ 52%]
+........................................................................ [ 58%]
+........................................................................ [ 65%]
+........................................................................ [ 71%]
+........................................................................ [ 78%]
+........................................................................ [ 84%]
+........................................................................ [ 91%]
+........................................................................ [ 97%]
+......................F.                                                 [100%]
+================================== FAILURES ===================================
+_______ test_published_split_and_ceiling_are_the_numbers_r144_reported ________
+
+    def test_published_split_and_ceiling_are_the_numbers_r144_reported() -> None:
+        candidate = _module()
+        report = candidate.build()
+    
+        integrity = report["integrity"]
+        assert integrity["v8_artifacts"]["observed"] == V8_EVIDENCE_SHA256
+        # What moved since the campaign, named file by file and split by kind: the
+        # catalogue aliases moved with the catalogue (157 -> 158 operations), and
+        # goal 03 replaced the two decision-path programs.
+        identity = integrity["program_identity"]
+>       assert {
+            row["file"]: row["observed_sha256"]
+            for row in identity["files"]
+            if not row["identical"] and not row["file"].startswith("tests/")
+        } == {
+            **V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN,
+            **V8_PROGRAMS_REPLACED_BY_GOAL_03,
+        }
+E       AssertionError: assert {'src/baxy_mi...8f35e303eb48'} == {'src/baxy_mi...1120e30a3399'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'src/baxy_mind/llm.py': 'aced7eec48707e25335267fdb1d1eff1913285ffb77d1b48c32c8f35e303eb48'} != {'src/baxy_mind/llm.py': '5420ee567d2ba107d1f3e7900340bbad388226205b169c357dd51120e30a3399'}
+E         {'src/baxy_mind/__main__.py': '967cb8e3a5684cad3da62a9970c941cec8eacb41ee4444b03d94efea40c0c8d0'} != {'src/baxy_mind/__main__.py': 'aa290163fbf9ff44bc5e3a1de5bfa32e155168fc4ff21e9e524d9b222958ad56'}
+E         Use -v to get more diff
+
+tests\test_price_v8_veto_damage_by_cause.py:161: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported
+1 failed, 1103 passed in 5.79s

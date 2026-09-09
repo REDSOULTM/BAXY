@@ -1,0 +1,15 @@
+{
+  "scope": "Native diagnostic comparisons, no source promotion",
+  "files": {
+    "artifacts/comprobaciones/C03/astra-selector-history65/PREREG.json": "4ea9d0a7d908ce8df195c7c0d27dfccd39e706d188d0e59d9a37c2c5afecb753",
+    "artifacts/comprobaciones/C03/astra-selector-history65/RESULT.json": "f82d1ed8c4da9513d53a94339e9053727b432e74435f15f4c764f78c36620bba",
+    "artifacts/comprobaciones/C03/astra-selector-history65/posts.jsonl": "65aa59f3397dd13173037ec27450c0d4ba93fedec75d390229590731960d169e",
+    "artifacts/comprobaciones/C03/astra-selector-history66/PREREG.json": "584344a373b13d80357fceb8da474a24b461b4e8d2e36855c1312f999a44edb4",
+    "artifacts/comprobaciones/C03/astra-selector-history66/RESULT.json": "e3806483492491bed45bb81d268136f3159309e9870641c62d19c8405f89e91c",
+    "artifacts/comprobaciones/C03/astra-selector-history66/posts.jsonl": "9e4a9e605fbf2c328036ebf74870024546753e0c98f7f4b284012f5d489b61c6",
+    "artifacts/comprobaciones/C03/astra-selector-catalog67/PREREG.json": "217792012458ed944e2425f8c47ef7714d1d59db3d8954612e70c3028a1abfe1",
+    "artifacts/comprobaciones/C03/astra-selector-catalog67/RESULT.json": "edd036534551842083e8ef94e75a1f306ed581cd778e42b94fa2a8cd58f8f6b3",
+    "artifacts/comprobaciones/C03/astra-selector-catalog67/posts.jsonl": "ff5c01747cbd45b14015e4eed2460740c84f2b929925be15d188500e64e58745",
+    "artifacts/comprobaciones/C03/PRUEBAS_CONTEXTO_SELECTOR65_67.md": "73d78bf72af4e5fe5df5f87c460702f53d07dbd8fc0690d18f02d2c323d313de"
+  }
+}

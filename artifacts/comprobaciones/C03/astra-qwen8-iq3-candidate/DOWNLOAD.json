@@ -1,0 +1,22 @@
+{
+  "kind": "single-quant-candidate-not-promotion",
+  "revision": "0b69f75b7472688e6808490aa2b85efdb81b5ce7",
+  "url": "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/0b69f75b7472688e6808490aa2b85efdb81b5ce7/Qwen_Qwen3-8B-IQ3_XXS.gguf",
+  "target": "D:\\BAXYRuntime\\experiments\\models\\qwen3-8b-iq3-xxs-0b69f75b\\Qwen_Qwen3-8B-IQ3_XXS.gguf",
+  "expectedSha256": "11a2ba2a7970f621c03e05bce111df2cb7c04880ffec2cdd03445d7b5e8b8514",
+  "expectedBytes": 3369633312,
+  "hypothesis": "Inherited Qwen8 Q4 composition is better natively but partial CPU loading causes 4s composition and 17s interpretation timeouts. A single IQ3_XXS with ngl30 and q4_0 KV may keep the same 8B mostly on GPU within total4096MiB. No quant sweep; reject if resource or semantic quality fails.",
+  "profileToMeasure": {
+    "ngl": 30,
+    "kv": "q4_0",
+    "maxGpuMiB": 4096,
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    }
+  },
+  "status": "downloaded_verified",
+  "elapsedSeconds": 138.95
+}

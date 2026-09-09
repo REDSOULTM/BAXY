@@ -1,0 +1,12 @@
+{
+  "wheel": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\runtime_wheels\\sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl",
+  "sha256": "abb55ee911483d7e9be5b874d168ee50273f59dec8f862dfb4c6cce0cabd665b",
+  "upstreamCommit": "142807252687d81b40d6315f23470a1512a00de3",
+  "upstreamWheelSha256": "b8436ffe2763b3fd522fbac8fe53f47d611721c84819c241acfb65d122403d7d",
+  "patchSha256": "591291b2aa961cbd57700a6e73f63da969811620ea294cedb0376164ad58a163",
+  "extensionSha256": "675d563506dc24466f09951ec07ba980053d385afca4caf5e26ca80281a0b4c0",
+  "normalizationPatchSha256": "79cb34698cf0fb6083d8f66ab194970e5fddef9e26422f469183822412e87c48",
+  "normalizationUpstreamCommit": "0967a08db705d8eec9cf5cef962c8ec57c16e4a8",
+  "change": "NeMo per-stream greedy decoder shares the model; upstream3857 fixes float32 feature normalization for both decoders.",
+  "profile": "Windows x64, CPython3.12, VS2022 Release, ONNX Runtime1.27.0 CPU"
+}

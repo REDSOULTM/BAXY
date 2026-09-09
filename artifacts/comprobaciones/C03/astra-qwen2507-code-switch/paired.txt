@@ -1,0 +1,14 @@
+n=12 published=11 other=1
+
+001	t1	published_final	¿Qué hora es?	Son las 06:53.
+002	t2	published_final	Dime la hora y el estado del audio.	La hora local es 06:53. El volumen está en el nivel 100. El audio está muteado.
+003	t3	published_final	What time is it?	It's 06:53.
+004	t4	published_final	Tell me the time and the volume.	The local clock is 06:53. The volume is 100. The device is muted.
+005	t5	published_final	Dime la hora, please, en spanglish	Son las 06:53, please. Six fifty-three, if you're asking.
+006	t6	published_final	What time is it y cómo está el audio?	Son las 06:53. The clock shows 06:53. El audio está mutado. Muted: sí. Nivel de volumen: 100. El estado del audio es mute.
+007	t7	published_final	Hey, buenas	Hola, buenos días! ¿Cómo va tu día? How’s your day going? I hope you’re having a great start to the morning. ¡Qué buena energía!
+008	t8	published_final	Explain encryption, pero en simple	{"answer":"La criptografía es como un código que convierte tu información en algo que solo las personas con la clave pueden entender. Es como si tuvieras un mensaje secreto y lo encriptaras con un código, así nadie más puede leerlo sin la clave. In other words, encryption is like a secret code that turns your data into something only people with the right key can decode. It’s like putting a message in a locked box
+009	t9	composition_failed	responde en spanglish: qué es una copia de seguridad	composition_failed
+010	t10	published_final	Explain gravity, pero sin tecnicismos	La gravedad es como una fuerza que tira todo hacia abajo, como si el suelo estuviera pegado a la tierra. Everything falls down because of it, like a ball dropped from a table. Gravity is like a invisible hand pulling things toward the ground.
+011	t11	published_final	no abras Paint	No abriré Paint.
+012	t12	published_final	what is the capital of Peru	Lima.

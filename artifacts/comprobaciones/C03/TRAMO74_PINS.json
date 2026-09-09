@@ -1,0 +1,13 @@
+{
+  "scope": "Integrated Python veto repair; C03 remains open",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_VETO74.md": "e23531a07a45b442820a28571e6ed5795628d33881eb2953ff5924da20660cb6",
+    "artifacts/comprobaciones/C03/astra-files74-veto/PREREG.json": "6a40bb94a13adefdeb584bbd9d91a4354f10561b04f287d10e47166e6f9222fb",
+    "artifacts/comprobaciones/C03/astra-files74-veto/RESULT.json": "80bd91eebbcb7e893e2d6b2cf2cb8662676cdbd93f81b273f3bfb4e368bca1a9",
+    "artifacts/comprobaciones/C03/astra-files74-veto/paired.json": "f3ab804370db8764601758ccb151ffe208b0d92c003cee7ade25278e0e1d6861",
+    "src/baxy_mind/llm.py": "f9fdd12c8d98732d339bf5f35ee56e8b73f1afdd0e03ae50c81cf6bd365e356d",
+    "tests/test_compose_contract.py": "a5e7bbb67bbb71c822d5f98db0603a25434a409c449b860a212b40f061b35ddf",
+    "artifacts/comprobaciones/C03/astra-files74-veto/c03-veto74-pytest.log": "9e2aafc576bc9b67025fcf152f0d416ff18eba2e8c08032c581971613456be07",
+    "artifacts/comprobaciones/C03/astra-files74-veto/c03-veto74-fast.log": "75cfc94611d54094d9609e2c0589ecd639b5c00a3b26bcb4456d8aacd257b42e"
+  }
+}

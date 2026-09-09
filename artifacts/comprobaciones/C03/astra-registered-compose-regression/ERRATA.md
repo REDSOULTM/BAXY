@@ -1,0 +1,1 @@
+The six confirmation cases omitted requiredResponseWords from ModelMessageComposer.CreateFacts. They triggered the legacy confirm/cancel default validator and cannot establish the post-fix shell recovery behavior. Clock cases are unaffected. Full failed outputs retained. Corrected contract is preregistered separately in astra-registered-compose-contract.

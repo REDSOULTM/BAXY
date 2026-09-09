@@ -1,0 +1,2803 @@
+{
+  "cases": [
+    {
+      "id": "t3",
+      "text": "cuál es la capital de francia",
+      "history": [
+        {
+          "role": "user",
+          "content": "hola buenas"
+        },
+        {
+          "role": "assistant",
+          "content": "Hola, ¿qué tal? Bienvenido."
+        },
+        {
+          "role": "user",
+          "content": "Hello?"
+        },
+        {
+          "role": "assistant",
+          "content": "Hey, what's up?"
+        }
+      ],
+      "candidates": [
+        {
+          "name": "browser.navigate",
+          "description": "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "x-maxUtf8Bytes": 2048,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.tabs.list",
+          "description": "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.page.read",
+          "description": "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "maximumCharacters": {
+                "type": "integer",
+                "minimum": 256,
+                "maximum": 32768
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.navigate.named",
+          "description": "Navega Opera mediante un perfil CDP privado y verifica la URL final observada.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "browser": {
+                "type": "string",
+                "enum": [
+                  "opera"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "x-maxUtf8Bytes": 2048,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "browser",
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.restore",
+          "description": "Restaura una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.known.create",
+          "description": "Crea un ZIP privado de una carpeta conocida de Windows y verifica su manifiesto y SHA-256.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "folder": {
+                "type": "string",
+                "enum": [
+                  "all_known",
+                  "desktop",
+                  "documents",
+                  "pictures",
+                  "projects"
+                ]
+              }
+            },
+            "required": [
+              "folder"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.move",
+          "description": "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              },
+              "x": {
+                "type": "integer",
+                "minimum": -32768,
+                "maximum": 32767
+              },
+              "y": {
+                "type": "integer",
+                "minimum": -32768,
+                "maximum": 32767
+              }
+            },
+            "required": [
+              "windowId",
+              "x",
+              "y"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.maximize",
+          "description": "Maximiza una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.minimize",
+          "description": "Minimiza una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.status",
+          "description": "Mide el estado y progreso local de una instalación Steam por AppID exacto.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.cancel.active",
+          "description": "Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.active",
+          "description": "Lee la ventana visible en primer plano y verifica su proceso, estado, geometría e identidad efímera.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.focus",
+          "description": "Enfoca una ventana resuelta previamente y verifica su identidad y foco.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.search",
+          "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeTrashed": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "app.installed",
+          "description": "Comprueba en el catalogo Inicio de Windows si una aplicacion concreta esta instalada sin abrirla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "x-maxUtf8Bytes": 256,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.process.list",
+          "description": "Enumera procesos locales acotados por CPU, memoria o nombre y verifica PID, nombre y tiempo de creacion con dos observaciones; no expone rutas ni argumentos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "sort": {
+                "type": "string",
+                "enum": [
+                  "cpu",
+                  "memory",
+                  "name"
+                ]
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.control",
+          "description": "Controla la pagina CDP actual y verifica historial, desplazamiento o cierre mediante postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "back",
+                  "close",
+                  "fullscreen_video",
+                  "reload",
+                  "scroll_down",
+                  "scroll_up"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "routine.phrase.create",
+          "description": "Crea una rutina local acotada de reproducción o captura al oir una frase exacta.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "capture.screenshot",
+                  "media.control"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "x-maxUtf8Bytes": 640,
+                "x-nonWhitespace": true
+              },
+              "phrase": {
+                "type": "string",
+                "x-maxUtf8Bytes": 640,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "name",
+              "phrase"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.known.verify.latest",
+          "description": "Verifica el SHA-256 del backup ZIP más reciente de la carpeta indicada.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "folder": {
+                "type": "string",
+                "enum": [
+                  "all_known",
+                  "desktop",
+                  "documents",
+                  "pictures",
+                  "projects"
+                ]
+              }
+            },
+            "required": [
+              "folder"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "filesystem.move",
+          "description": "Mueve un archivo identificado y verifica hash de destino y ausencia de origen.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "destinationRelativePath": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              },
+              "expectedSha256": {
+                "type": "string",
+                "maxLength": 64,
+                "x-nonWhitespace": true
+              },
+              "resourceId": {
+                "type": "string",
+                "maxLength": 35,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "destinationRelativePath",
+              "expectedSha256",
+              "resourceId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.installed.named",
+          "description": "Comprueba por nombre si un juego esta instalado mediante manifiestos de Steam y Epic y verifica que exista su directorio local.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "any",
+                  "epic",
+                  "steam"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 256,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "provider",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "capture.active.window",
+          "description": "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.list",
+          "description": "Lista copias privadas verificadas, ordenadas desde la mas reciente, sin exponer rutas internas.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.create",
+          "description": "Crea una nota privada local y verifica su relectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "x-maxUtf8Bytes": 65536
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "content",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.known.list",
+          "description": "Lista los backups ZIP de carpetas conocidas y vuelve a verificar sus hashes.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.prepare",
+          "description": "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "package.install.commit",
+          "description": "Confirma una instalación preparada mediante winget y verifica su recibo.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "confirmationId": {
+                "type": "string",
+                "maxLength": 96,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "confirmationId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.create",
+          "description": "Crea una tarea local privada; la fecha opcional es metadato y no programa recordatorios.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "type": "string",
+                "x-maxUtf8Bytes": 65536
+              },
+              "due": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "maxLength": 64
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "t8",
+      "text": "y la fecha?",
+      "history": [
+        {
+          "role": "user",
+          "content": "El aire es h20?"
+        },
+        {
+          "role": "assistant",
+          "content": "No, el aire no es H₂O. El aire es una mezcla de gases, principalmente nitrógeno y oxígeno, mientras que H₂O es agua."
+        },
+        {
+          "role": "user",
+          "content": "ahora explicame que es Steam"
+        },
+        {
+          "role": "assistant",
+          "content": "Steam es una plataforma que permite descargar, jugar y gestionar videojuegos en línea."
+        },
+        {
+          "role": "user",
+          "content": "Dime que hora es"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 16 horas y 34 minutos."
+        }
+      ],
+      "candidates": [
+        {
+          "name": "system.time",
+          "description": "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.create",
+          "description": "Crea una tarea local privada; la fecha opcional es metadato y no programa recordatorios.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "details": {
+                "type": "string",
+                "x-maxUtf8Bytes": 65536
+              },
+              "due": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "maxLength": 64
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.status",
+          "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.mute",
+          "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.page.read",
+          "description": "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "maximumCharacters": {
+                "type": "integer",
+                "minimum": 256,
+                "maximum": 32768
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "calendar.event.list",
+          "description": "Lista eventos acotados desde una cuenta autenticada sin modificarlos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "endUtc": {
+                "type": "string",
+                "maxLength": 64,
+                "x-nonWhitespace": true
+              },
+              "startUtc": {
+                "type": "string",
+                "maxLength": 64,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "endUtc",
+              "startUtc"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "routine.read",
+          "description": "Lee metadatos de una rutina exacta sin ejecutarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "routineId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "routineId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.purchase.prepare",
+          "description": "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.search",
+          "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeTrashed": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.ensure.connected",
+          "description": "Comprueba que Wi-Fi ya está conectado y devuelve la identidad opaca del perfil observado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.seek.relative",
+          "description": "Adelanta o retrocede la sesión SMTC actual y verifica la posición final en su timeline.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "seconds": {
+                "type": "integer",
+                "minimum": -3600,
+                "maximum": 3600
+              }
+            },
+            "required": [
+              "seconds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.focus",
+          "description": "Enfoca una ventana resuelta previamente y verifica su identidad y foco.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.status",
+          "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "email.latest.reply",
+          "description": "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "x-maxUtf8Bytes": 16384,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "web.search",
+          "description": "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 2000,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "calendar.event.create",
+          "description": "Crea un evento en una cuenta de calendario autenticada y verifica su identidad remota.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "endUtc": {
+                "type": "string",
+                "maxLength": 64,
+                "x-nonWhitespace": true
+              },
+              "startUtc": {
+                "type": "string",
+                "maxLength": 64,
+                "x-nonWhitespace": true
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "endUtc",
+              "startUtc",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.resolve.exact",
+          "description": "Resuelve un único título literal y emite autoridad CAS sin exponer detalles.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.complete",
+          "description": "Marca completa una tarea local seleccionada por identidad y versión exactas.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "expectedVersion": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "taskId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "expectedVersion",
+              "taskId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.tabs.list",
+          "description": "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.list",
+          "description": "Lista copias privadas verificadas, ordenadas desde la mas reciente, sin exponer rutas internas.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.active",
+          "description": "Lee la ventana visible en primer plano y verifica su proceso, estado, geometría e identidad efímera.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.launch",
+          "description": "Inicia un AppID poseído y verifica la identidad del proceso lanzado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.volume",
+          "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "level"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.reopen",
+          "description": "Reabre una tarea completada usando identidad y versión exactas.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "expectedVersion": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "taskId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "expectedVersion",
+              "taskId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "email.latest.read",
+          "description": "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.navigate",
+          "description": "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "x-maxUtf8Bytes": 2048,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "filesystem.search",
+          "description": "Busca nombres dentro del sandbox sin seguir puntos de reanálisis.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "reminder.resolve.exact",
+          "description": "Resuelve un recordatorio por título literal y devuelve autoridad CAS.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "t17",
+      "text": "Ponlo a 100 ahora",
+      "history": [
+        {
+          "role": "user",
+          "content": "está silenciado el audio"
+        },
+        {
+          "role": "assistant",
+          "content": "El volumen está en 35 y el sonido no está silenciado."
+        },
+        {
+          "role": "user",
+          "content": "turn up the volume"
+        },
+        {
+          "role": "assistant",
+          "content": "how much and in which direction should the volume be adjusted?"
+        },
+        {
+          "role": "user",
+          "content": "decime cuánto volumen hay"
+        },
+        {
+          "role": "assistant",
+          "content": "El volumen es de 35. El sonido no está silenciado."
+        }
+      ],
+      "candidates": [
+        {
+          "name": "audio.status",
+          "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.status",
+          "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "input.pointer.control",
+          "description": "Mueve el puntero al centro, hace clic en su posición actual o desplaza hacia abajo y verifica el recibo Win32.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "click",
+                  "move_center",
+                  "scroll_down"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.search",
+          "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeTrashed": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.create",
+          "description": "Crea una nota privada local y verifica su relectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "x-maxUtf8Bytes": 65536
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "content",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.seek.relative",
+          "description": "Adelanta o retrocede la sesión SMTC actual y verifica la posición final en su timeline.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "seconds": {
+                "type": "integer",
+                "minimum": -3600,
+                "maximum": 3600
+              }
+            },
+            "required": [
+              "seconds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.purchase.prepare",
+          "description": "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.minimize",
+          "description": "Minimiza una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.verify",
+          "description": "Reabre un backup privado y verifica tamaño y SHA-256.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "backupId": {
+                "type": "string",
+                "maxLength": 39,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "backupId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.restore",
+          "description": "Restaura una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.control",
+          "description": "Controla la pagina CDP actual y verifica historial, desplazamiento o cierre mediante postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "back",
+                  "close",
+                  "fullscreen_video",
+                  "reload",
+                  "scroll_down",
+                  "scroll_up"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.maximize",
+          "description": "Maximiza una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.play.exact",
+          "description": "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "spotify"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "provider",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.resolve.exact",
+          "description": "Resuelve un único título literal y emite autoridad CAS sin exponer detalles.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.settings.set",
+          "description": "Cambia un ajuste permitido mediante API oficial y verifica su postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "setting": {
+                "type": "string",
+                "enum": [
+                  "brightness",
+                  "do_not_disturb",
+                  "night_light"
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "setting",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.page.read",
+          "description": "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "maximumCharacters": {
+                "type": "integer",
+                "minimum": 256,
+                "maximum": 32768
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.cancel.active",
+          "description": "Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.resize",
+          "description": "Redimensiona una ventana resuelta y verifica ancho y alto exactos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "height": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 32768
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 32768
+              },
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "height",
+              "width",
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.play.query",
+          "description": "Busca y reproduce el primer resultado musical pertinente en Spotify y verifica now-playing.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "spotify"
+                ]
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "provider",
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.volume",
+          "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "level"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "notification.list.due",
+          "description": "Enumera recordatorios vencidos no descartados para que la superficie de usuario los presente.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.control",
+          "description": "Controla una sesión SMTC seleccionada y verifica su estado posterior.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "next",
+                  "pause",
+                  "play",
+                  "previous",
+                  "stop",
+                  "toggle"
+                ]
+              },
+              "sourceApp": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "x-maxUtf8Bytes": 256
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.volume.adjust",
+          "description": "Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "down",
+                  "up"
+                ]
+              }
+            },
+            "required": [
+              "amount",
+              "direction"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "filesystem.search",
+          "description": "Busca nombres dentro del sandbox sin seguir puntos de reanálisis.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "routine.read",
+          "description": "Lee metadatos de una rutina exacta sin ejecutarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "routineId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "routineId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.prepare",
+          "description": "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.tabs.list",
+          "description": "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.mute",
+          "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "t18",
+      "text": "Hola, quien sos?",
+      "history": [
+        {
+          "role": "user",
+          "content": "turn up the volume"
+        },
+        {
+          "role": "assistant",
+          "content": "how much and in which direction should the volume be adjusted?"
+        },
+        {
+          "role": "user",
+          "content": "decime cuánto volumen hay"
+        },
+        {
+          "role": "assistant",
+          "content": "El volumen es de 35. El sonido no está silenciado."
+        },
+        {
+          "role": "user",
+          "content": "Ponlo a 100 ahora"
+        },
+        {
+          "role": "assistant",
+          "content": "Este pedido está fuera de lo que hago en este PC."
+        }
+      ],
+      "candidates": [
+        {
+          "name": "system.identity",
+          "description": "Lee el dominio y usuario efectivos del proceso BAXY mediante dos observaciones coherentes.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.status",
+          "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.status",
+          "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "message.send",
+          "description": "Envía un mensaje a un destinatario resuelto y exige recibo del provider oficial.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "recipientId": {
+                "type": "string",
+                "maxLength": 128,
+                "x-nonWhitespace": true
+              },
+              "text": {
+                "type": "string",
+                "x-maxUtf8Bytes": 16384
+              }
+            },
+            "required": [
+              "recipientId",
+              "text"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.time",
+          "description": "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.mute",
+          "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "task.resolve.exact",
+          "description": "Resuelve un único título literal y emite autoridad CAS sin exponer detalles.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "web.search",
+          "description": "Busca mediante un proveedor web configurado y devuelve resultados estructurados acotados.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 2000,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "routine.resolve.exact",
+          "description": "Resuelve por nombre literal una rutina y emite autoridad CAS sin exponer inputs.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "name": {
+                "type": "string",
+                "x-maxUtf8Bytes": 640,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "office.document.read",
+          "description": "Lee una proyección estructurada de un documento identificado mediante el adapter oficial.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "documentId": {
+                "type": "string",
+                "maxLength": 128,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "documentId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.status",
+          "description": "Mide CPU, memoria, disco, batería, GPU y Windows sin modificar el equipo.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "battery",
+                  "cpu",
+                  "cpu_memory",
+                  "disk",
+                  "gpu_identity",
+                  "gpu_usage",
+                  "memory",
+                  "os",
+                  "os_memory",
+                  "summary"
+                ]
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "network.status",
+          "description": "Lee conectividad e interfaces activas sin exponer direcciones, SSID ni nombres locales.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.status",
+          "description": "Lee dos veces el estado WLAN actual y devuelve conexión e identidad opaca del perfil sin exponer SSID ni credenciales.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.ensure.connected",
+          "description": "Comprueba que Wi-Fi ya está conectado y devuelve la identidad opaca del perfil observado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "routine.read",
+          "description": "Lee metadatos de una rutina exacta sin ejecutarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "routineId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "routineId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.process.list",
+          "description": "Enumera procesos locales acotados por CPU, memoria o nombre y verifica PID, nombre y tiempo de creacion con dos observaciones; no expone rutas ni argumentos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "sort": {
+                "type": "string",
+                "enum": [
+                  "cpu",
+                  "memory",
+                  "name"
+                ]
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.power",
+          "description": "Solicita una transición confirmada de bloqueo, cierre de sesión o energía mediante la API oficial de Windows y exige su recibo de aceptación.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "lock",
+                  "restart",
+                  "shutdown",
+                  "signout",
+                  "sleep"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "reminder.resolve.exact",
+          "description": "Resuelve un recordatorio por título literal y devuelve autoridad CAS.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeDeleted": {
+                "type": "boolean"
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "filesystem.search",
+          "description": "Busca nombres dentro del sandbox sin seguir puntos de reanálisis.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.connect",
+          "description": "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "profileId": {
+                "type": "string",
+                "maxLength": 128,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "profileId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.search",
+          "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeTrashed": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.list",
+          "description": "Lista copias privadas verificadas, ordenadas desde la mas reciente, sin exponer rutas internas.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.restore",
+          "description": "Restaura una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "notification.list.due",
+          "description": "Enumera recordatorios vencidos no descartados para que la superficie de usuario los presente.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.settings.set",
+          "description": "Cambia un ajuste permitido mediante API oficial y verifica su postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "setting": {
+                "type": "string",
+                "enum": [
+                  "brightness",
+                  "do_not_disturb",
+                  "night_light"
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "setting",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "email.latest.read",
+          "description": "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "window.minimize",
+          "description": "Minimiza una ventana resuelta previamente y verifica su identidad y estado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "maxLength": 36,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "windowId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.profile.list",
+          "description": "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "t20",
+      "text": "no silencies el audio",
+      "history": [
+        {
+          "role": "user",
+          "content": "Ponlo a 100 ahora"
+        },
+        {
+          "role": "assistant",
+          "content": "Este pedido está fuera de lo que hago en este PC."
+        },
+        {
+          "role": "user",
+          "content": "Hola, quien sos?"
+        },
+        {
+          "role": "assistant",
+          "content": "¿En qué puedo ayudarte?"
+        },
+        {
+          "role": "user",
+          "content": "Dime qué dispositivo de audio está activo"
+        },
+        {
+          "role": "assistant",
+          "content": "¿Estás refiriéndote al dispositivo de salida de audio (como altavoces o auriculares) o al micrófono?"
+        }
+      ],
+      "candidates": [
+        {
+          "name": "audio.mute",
+          "description": "Silencia o reactiva la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.status",
+          "description": "Lee el volumen y el silencio actuales de la salida predeterminada sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.volume",
+          "description": "Fija el volumen absoluto de la salida predeterminada y corrobora la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "level"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.play.exact",
+          "description": "Reproduce un resultado musical exacto en una sesión autenticada y verifica now-playing.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "spotify"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "provider",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.microphone.mute",
+          "description": "Silencia o reactiva el micrófono predeterminado de Windows y corrobora la postlectura del endpoint de captura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.status",
+          "description": "Lee la sesión multimedia actual de Windows y devuelve título, artista y estado sin modificarla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.ensure.connected",
+          "description": "Comprueba que Wi-Fi ya está conectado y devuelve la identidad opaca del perfil observado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "bluetooth.device.pair",
+          "description": "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "deviceId": {
+                "type": "string",
+                "x-maxUtf8Bytes": 256,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "deviceId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "app.installed",
+          "description": "Comprueba en el catalogo Inicio de Windows si una aplicacion concreta esta instalada sin abrirla.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "x-maxUtf8Bytes": 256,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.disconnect",
+          "description": "Desconecta WLAN mediante API oficial y verifica ausencia de conexión.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "notification.list.due",
+          "description": "Enumera recordatorios vencidos no descartados para que la superficie de usuario los presente.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "input.select.all",
+          "description": "Selecciona todo en el control enfocado de la ventana activa y verifica la seleccion mediante UI Automation.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "audio.volume.adjust",
+          "description": "Sube o baja el volumen de salida una cantidad acotada desde su valor observado y verifica la postlectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "down",
+                  "up"
+                ]
+              }
+            },
+            "required": [
+              "amount",
+              "direction"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.play.query",
+          "description": "Busca y reproduce el primer resultado musical pertinente en Spotify y verifica now-playing.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "spotify"
+                ]
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "provider",
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "backup.verify",
+          "description": "Reabre un backup privado y verifica tamaño y SHA-256.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "backupId": {
+                "type": "string",
+                "maxLength": 39,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "backupId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.search",
+          "description": "Busca texto en notas locales y verifica por relectura cada resultado acotado.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "includeTrashed": {
+                "type": "boolean"
+              },
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.cancel.active",
+          "description": "Cancela todas las descargas activas observadas en Steam y verifica que ninguna siga progresando.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.play.youtube",
+          "description": "Busca en YouTube, reproduce un resultado de video y verifica el elemento multimedia y su estado posterior.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "note.create",
+          "description": "Crea una nota privada local y verifica su relectura.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "x-maxUtf8Bytes": 65536
+              },
+              "title": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "content",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "filesystem.move",
+          "description": "Mueve un archivo identificado y verifica hash de destino y ausencia de origen.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "destinationRelativePath": {
+                "type": "string",
+                "x-maxUtf8Bytes": 1024,
+                "x-nonWhitespace": true
+              },
+              "expectedSha256": {
+                "type": "string",
+                "maxLength": 64,
+                "x-nonWhitespace": true
+              },
+              "resourceId": {
+                "type": "string",
+                "maxLength": 35,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "destinationRelativePath",
+              "expectedSha256",
+              "resourceId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "network.status",
+          "description": "Lee conectividad e interfaces activas sin exponer direcciones, SSID ni nombres locales.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.power",
+          "description": "Solicita una transición confirmada de bloqueo, cierre de sesión o energía mediante la API oficial de Windows y exige su recibo de aceptación.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "lock",
+                  "restart",
+                  "shutdown",
+                  "signout",
+                  "sleep"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "filesystem.search",
+          "description": "Busca nombres dentro del sandbox sin seguir puntos de reanálisis.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "query": {
+                "type": "string",
+                "x-maxUtf8Bytes": 512,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "wifi.connect",
+          "description": "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "profileId": {
+                "type": "string",
+                "maxLength": 128,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "profileId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "game.install.prepare",
+          "description": "Prepara la instalación de un AppID exacto sin iniciar descarga ni aceptar diálogos.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "appId": {
+                "type": "string",
+                "maxLength": 16,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "appId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "browser.navigate",
+          "description": "Navega una sesión CDP autenticada a una URL exacta y verifica la URL final.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "x-maxUtf8Bytes": 2048,
+                "x-nonWhitespace": true
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "media.control",
+          "description": "Controla una sesión SMTC seleccionada y verifica su estado posterior.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "next",
+                  "pause",
+                  "play",
+                  "previous",
+                  "stop",
+                  "toggle"
+                ]
+              },
+              "sourceApp": {
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "x-maxUtf8Bytes": 256
+              }
+            },
+            "required": [
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "system.identity",
+          "description": "Lee el dominio y usuario efectivos del proceso BAXY mediante dos observaciones coherentes.",
+          "arguments_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        }
+      ]
+    }
+  ],
+  "stages": [
+    "primary_without_history",
+    "primary_with_history",
+    "guarded_with_history"
+  ],
+  "method": "Five previously consumed literal real-log inputs. Reconstruct last six public transcript messages; not an exact capture of original wire history/pending state. Same authenticated candidate names as original raw_attempt; descriptions/schemas from current Core. Direct primary JSON interpretation with/without history, then existing decision wrapper with history. Registered model and source default KV/sampling. No PC actions, no fabricated responses, no new acceptance.",
+  "sourceSha256": "9dc120c15feef8e83a88625aae4e5c7f8ce5ec3919a16bad052505e39c5872c9",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

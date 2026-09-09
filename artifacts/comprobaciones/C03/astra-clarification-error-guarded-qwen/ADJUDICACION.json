@@ -1,0 +1,50 @@
+{
+  "t1": {
+    "verdict": "REVISAR CONTINUIDAD",
+    "reason": "Pregunta para aclarar volumen; falta comprobar respuesta con un nivel y continuación real."
+  },
+  "t2": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; no se atribuyen efectos que no se verificaron."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; no se atribuyen efectos que no se verificaron."
+  },
+  "t4": {
+    "verdict": "REVISAR CONTINUIDAD",
+    "reason": "Pregunta para aclarar volumen; falta comprobar respuesta con un nivel y continuación real."
+  },
+  "t5": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; no se atribuyen efectos que no se verificaron."
+  },
+  "t6": {
+    "verdict": "FALLO",
+    "reason": "composition_failed; no hay respuesta final. Bloquear la causa inventada no logró una recuperación útil."
+  },
+  "t7": {
+    "verdict": "REVISAR CONTINUIDAD",
+    "reason": "Pregunta para aclarar volumen; falta comprobar respuesta con un nivel y continuación real."
+  },
+  "t8": {
+    "verdict": "FALLO",
+    "reason": "La respuesta no resuelve el turno actual; arrastra la cancelación/aclaración anterior."
+  },
+  "t9": {
+    "verdict": "FALLO",
+    "reason": "La respuesta no resuelve el turno actual; arrastra la cancelación/aclaración anterior."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; no se atribuyen efectos que no se verificaron."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; no se atribuyen efectos que no se verificaron."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; no se atribuyen efectos que no se verificaron."
+  }
+}

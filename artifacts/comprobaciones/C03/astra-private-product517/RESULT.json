@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-09T00:14:00.715230+00:00",
+  "session": 93796,
+  "exit": 0,
+  "useful_finals": 7,
+  "total": 9,
+  "disable_effect_verified": true,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1912.046875,
+    "seconds": 48.828
+  },
+  "manifest_unchanged": true,
+  "source_adopted": "516 private configuration grammar is verified through actual C# memory route; no519 prompt change yet.",
+  "remaining": "T2 internal narration; T9 reports unsupported absence of detected PC changes despite actual enabled=false. The raw shape hint says Completing a request does not imply changing the PC; investigate that hint separately. Progress remains separate."
+}

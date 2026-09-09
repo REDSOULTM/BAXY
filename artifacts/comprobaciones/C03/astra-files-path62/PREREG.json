@@ -1,0 +1,8 @@
+{
+  "method": "Counterfactual native comparison before a provider validation change. Current filesystem.search declares filename search inside a sandbox; absolute paths can never match a Windows filename. Compare captured current empty-search failure with a typed absolute_path_search_unsupported failure before lookup, no completed steps. Same two literal technical requests, model, BAXY prompts, sampler, limits; no guards/retries or product source change. This is proposed validation behavior, not an observed provider error. No UI/audio/human reserve.",
+  "texts": [
+    "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/ausente47.txt\".",
+    "Lee el archivo \"C:/Users/usuario/AppData/Local/BAXY/C03-fixtures/files53-outside/c03-sombra.txt\"."
+  ],
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

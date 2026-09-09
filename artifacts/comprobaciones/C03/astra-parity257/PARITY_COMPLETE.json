@@ -1,0 +1,12 @@
+{
+  "cases": 12,
+  "frames": 13433,
+  "impulsePeaks": [
+    8256,
+    8256,
+    8256
+  ],
+  "allExact": true,
+  "wheelSha256": "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb",
+  "limitation": "Installed source257 AEC owner parity; actual capture/ASR/UI/physical validation still needed. C03 stays active with all acceptance requirements."
+}

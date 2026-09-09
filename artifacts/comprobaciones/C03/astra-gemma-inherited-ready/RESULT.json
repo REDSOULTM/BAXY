@@ -1,0 +1,16 @@
+[
+  {
+    "variant": "standard_base",
+    "elapsedSeconds": 10.56,
+    "gpuPeakMiB": 1679.56640625,
+    "ramPeakMiB": 2263.32421875,
+    "error": null
+  },
+  {
+    "variant": "inherited_lora",
+    "elapsedSeconds": 11.16,
+    "gpuPeakMiB": 1783.56640625,
+    "ramPeakMiB": 2268.05078125,
+    "error": null
+  }
+]

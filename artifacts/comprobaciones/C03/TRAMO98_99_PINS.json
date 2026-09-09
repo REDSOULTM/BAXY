@@ -1,0 +1,12 @@
+{
+  "scope": "Source98 Python pipeline99; real UI still pending",
+  "files": {
+    "artifacts/comprobaciones/C03/PRUEBAS_PROGRESO98_99.md": "740b55d3f0bf9a3a3ef294150850825a42146be3df42d33f547cd1fbe5a930b3",
+    "artifacts/comprobaciones/C03/ASTRA-TRAMO-98.md": "63fe56a37fd8bf55f2bc016adabf4ee0e3df601f583add044a8f405370f13353",
+    "artifacts/comprobaciones/C03/astra-progress-pipeline99/PREREG.json": "8164cfdd8c3dbe076c1d1acf8b35d8e50b1a922f9a559126e4e6707261d34c77",
+    "artifacts/comprobaciones/C03/astra-progress-pipeline99/RESULT.json": "02a8ab8f04e3aab7677e21205072029d58df78ed0806964df257c07003168c1a",
+    "artifacts/comprobaciones/C03/astra-progress-pipeline99/finals.jsonl": "4c936e5efe1a365cad10a6f312e13815ac284601c4fee5a4e55bfa99e6ff22d9",
+    "artifacts/comprobaciones/C03/astra-progress-pipeline99/posts.jsonl": "d492185b6252f63e95ec7fe009b1fd9e844ce74e46db2014ac383302c6f9725f",
+    "artifacts/comprobaciones/C03/astra-progress-pipeline99/compose-audit.jsonl": "51a8be5284e1dbb456144b8d1c17b8ed4fcc0d6402a539bee10b8bcb84ef5804"
+  }
+}

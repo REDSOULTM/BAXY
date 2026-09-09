@@ -1,0 +1,390 @@
+[
+  {
+    "pid": 14748,
+    "name": "py.exe",
+    "command": [
+      "py",
+      "main.py",
+      "--ui-probe",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\turns.jsonl",
+      "--ui-capture",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\rendered.jsonl"
+    ]
+  },
+  {
+    "pid": 31916,
+    "name": "conhost.exe",
+    "command": [
+      "\\??\\C:\\windows\\system32\\conhost.exe",
+      "0x4"
+    ]
+  },
+  {
+    "pid": 23644,
+    "name": "python.exe",
+    "command": [
+      "C:\\Python313\\python.exe",
+      "main.py",
+      "--ui-probe",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\turns.jsonl",
+      "--ui-capture",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\rendered.jsonl"
+    ]
+  },
+  {
+    "pid": 20040,
+    "name": "dotnet.exe",
+    "command": [
+      "C:\\Users\\usuario\\.dotnet\\dotnet.exe",
+      "msbuild",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\Baxy.Core.csproj",
+      "-nologo",
+      "-p:Configuration=Release",
+      "-getProperty:TargetDir",
+      "-getProperty:TargetFramework",
+      "-getProperty:TargetName",
+      "-getProperty:UseAppHost",
+      "-getProperty:RuntimeIdentifier"
+    ]
+  },
+  {
+    "pid": 29436,
+    "name": "dotnet.exe",
+    "command": [
+      "C:\\Users\\usuario\\.dotnet\\dotnet.exe",
+      "build",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\Baxy.App.csproj",
+      "-c",
+      "Release"
+    ]
+  },
+  {
+    "pid": 14884,
+    "name": "dotnet.exe",
+    "command": [
+      "C:\\Users\\usuario\\.dotnet\\dotnet.exe",
+      "publish",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\Baxy.Core.csproj",
+      "-c",
+      "Release",
+      "-r",
+      "win-x64"
+    ]
+  },
+  {
+    "pid": 11140,
+    "name": "powershell.exe",
+    "command": [
+      "powershell",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scripts\\run_baxy.ps1",
+      "-UiProbe",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\turns.jsonl",
+      "-UiCapture",
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\rendered.jsonl"
+    ]
+  },
+  {
+    "pid": 484,
+    "name": "Baxy.exe",
+    "command": [
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
+      "--ui-probe=D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\turns.jsonl",
+      "--ui-capture=D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\astra-runtime-qwen-registered\\ui\\rendered.jsonl"
+    ]
+  },
+  {
+    "pid": 33348,
+    "name": "baxy-core.exe",
+    "command": [
+      "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe"
+    ]
+  },
+  {
+    "pid": 9612,
+    "name": "msedgewebview2.exe",
+    "command": [
+      "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--embedded-browser-webview=1",
+      "--webview-exe-name=Baxy.exe",
+      "--webview-exe-version=1.0.0+2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49",
+      "--user-data-dir=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView",
+      "--noerrdialogs",
+      "--embedded-browser-webview-dpi-awareness=1",
+      "--mojo-named-platform-channel-pipe=484.11988.3259551422550184857",
+      "/pfhostedapp:340d73b5998ee94b164ee25e28e481646acde819"
+    ]
+  },
+  {
+    "pid": 25252,
+    "name": "msedgewebview2.exe",
+    "command": [
+      "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--type=crashpad-handler",
+      "--user-data-dir=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView",
+      "/prefetch:4",
+      "/pfhostedapp:340d73b5998ee94b164ee25e28e481646acde819",
+      "--monitor-self-annotation=ptype=crashpad-handler",
+      "--database=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView\\Crashpad",
+      "--annotation=IsOfficialBuild=1",
+      "--annotation=channel=",
+      "--annotation=chromium-version=141.0.7390.66",
+      "--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--annotation=plat=Win64",
+      "--annotation=prod=Edge WebView2",
+      "--annotation=ver=141.0.3537.71",
+      "--initial-client-data=0x180,0x184,0x188,0x15c,0x190,0x7ff9ed4da9d8,0x7ff9ed4da9e4,0x7ff9ed4da9f0"
+    ]
+  },
+  {
+    "pid": 7248,
+    "name": "msedgewebview2.exe",
+    "command": [
+      "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--type=gpu-process",
+      "--noerrdialogs",
+      "--user-data-dir=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView",
+      "--webview-exe-name=Baxy.exe",
+      "--webview-exe-version=1.0.0+2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49",
+      "--embedded-browser-webview=1",
+      "--embedded-browser-webview-dpi-awareness=1",
+      "--no-pre-read-main-dll",
+      "--gpu-preferences=SAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAA==",
+      "--startup-read-main-dll",
+      "--metrics-shmem-handle=1748,i,872977305779239888,3034590374480053617,262144",
+      "--field-trial-handle=1888,i,1911951599268098958,9234436494245164393,262144",
+      "--enable-features=ForceSWDCompWhenDCompFallbackRequired,LocalNetworkAccessForFencedFrameNavigationsWarningOnly,LocalNetworkAccessForNavigationsWarningOnly,LocalNetworkAccessForSubframeNavigationsWarningOnly,LocalNetworkAccessForWorkersWarningOnly,msAggressiveCacheTrimming,msCustomDataPartition,msWebView2NoTabForScreenShare,msWindowsTaskManager",
+      "--disable-features=BackForwardCache,BackgroundTabLoadingFromPerformanceManager,CloseOmniboxPopupOnInactiveAreaClick,CollectAVProductsInfo,CollectCodeIntegrityInfo,EnableHangWatcher,FilterAdsOnAbusiveSites,GetWifiProtocol,LoginDetection,MediaFoundationCameraUsageMonitoring,PreconnectToSearch,SafetyHub,SegmentationPlatform,SpareRendererForSitePerProcess,Ukm,WebPayments,msAITrackerClassification,msAbydosForWindowlessWV2,msAffirmVirtualCard,msAllowChromeWebstore,msAllowMSAPrtSSOForNonMSAProfile,msApplicationGuard,msAskBeforeClosingMultipleTabs,msAutoToggleAADPrtSSOForNonAADProfile,msAutofillEdgeCoupons,msAutofillEdgeCouponsAutoApply,msAutofillEdgeServiceRequest,msAutofillEnableEdgeSuggestions,msAutomaticTabFreeze,msBrowserSettingsSupported,msCoarseGeolocationService,msDataProtection,msDesktopMode,msDesktopRewards,msDisableVariationsSeedFetchThrottling,msEEProactiveHistory,msETFOffstoreExtensionFileDataCollection,msETFPasswordTheftDNRActionSignals,msEdgeAdPlatformUI,msEdgeAddWebCapturetoCollections,msEdgeAutofillShowDeployedPassword,msEdgeCaptureSelectionInPDF,msEdgeCloudConfigService,msEdgeCloudConfigServiceV2,msEdgeCohorts,msEdgeCollectionsPrismExperiment1,msEdgeCollectionsPrismOverallMigration,msEdgeComposeNext,msEdgeEnableNurturingFramework,msEdgeEnclavePrefsBasic,msEdgeEnclavePrefsNotification,msEdgeFaviconService,msEdgeHJTelemetry,msEdgeHubAppSkype,msEdgeImageEditorUI,msEdgeLinkDoctor,msEdgeMouseGestureDefaultEnabled,msEdgeMouseGestureSupported,msEdgeNewDeviceFre,msEdgeOnRampFRE,msEdgeOnRampImport,msEdgePDFCMHighlightUX,msEdgePasswordIris,msEdgePasswordIrisSaveBubble,msEdgePasswordStrengthCheck,msEdgeProngPersonalization,msEdgeReadingView,msEdgeRose,msEdgeScreenshotUI,msEdgeSendTabToSelf,msEdgeSettingsImport,msEdgeSettingsImportV2,msEdgeShoppingPersistentStorage,msEdgeShoppingUI,msEdgeSmartFind,msEdgeSuperDragDefaultEnabled,msEdgeSuperDragDropSupported,msEdgeTranslate,msEdgeUpdatesMoreMenuPill,msEdgeWebCapture,msEdgeWebCaptureUniformExperience,msEdgeWebContentFilteringFeedback,msEdgeWorkSearchBanner,msEnableCustomJobMemoryLimitsOnXbox,msEnableMIPForPDF,msEnablePdfUpsell,msEnableThirdPartyScanning,msEnableWebSignInCta,msEnableWebToBrowserSignIn,msEndpointDlp,msEntityExtraction,msExtensionTelemetryFramework,msExternalTaskManager,msFileSystemAccessDirectoryIterationBlocklistCheck,msForceBrowserSignIn,msForeignSessionsPage,msGeolocationAccessService,msGeolocationOSLocationPermissionFallback,msGeolocationSQMService,msGeolocationService,msGrowthInfraLaunchSourceLogging,msGuidedSwitchAllowed,msHubPinPersist,msImplicitSignin,msIrm,msIrmv2,msKlarnaVirtualCard,msLlmConsumerDlpPurview,msLoadStatistics,msLogIsEdgePinnedToTaskbarOnLaunch,msMIPCrossTenantPdfViewSupport,msMdatpWebSiteDlp,msNotificationPermissionForPWA,msNumberOfSitesToPin,msNurturingGlobalSitePinningOnCloseModal,msNurturingSitePinningCITopSites,msNurturingSitePinningWithWindowsConsent,msOnHoverSearchInSidebar,msOpenOfficeDocumentsInWebViewer,msPageInteractionRestrictionRevoke,msPasswordBreachDetection,msPdfAnnotationsVisibility,msPdfDataRecovery,msPdfDigitalSignatureRead,msPdfFreeText,msPdfFreeTextForCJK,msPdfHighlightMode,msPdfInking,msPdfKeyphraseSupport,msPdfOOUI,msPdfPopupMarkerRenderer,msPdfShare,msPdfSharedLibrary,msPdfTextNote,msPdfTextNoteMoreMenu,msPdfThumbnailCache,msPdfUnderside,msPdfViewRestore,msPersonalizationUMA,msPriceComparison,msPromptDefaultHandlerForPDF,msReactiveSearch,msReadAloud,msReadAloudPdf,msRedirectToShoreline,msRevokeExtensions,msSaasDlp,msShoppingTrigger,msShorelineSearch,msShorelineSearchFindOnPageWebUI,msShowOfflineGameEntrance,msShowReadAloudIconInAddressBar,msShowUXForAADPrtSSOForNonAADProfile,msSitePinningWithoutUi,msSuspendMessageForNewSessionWhenHavingPendingNavigation,msSyncEdgeCollections,msTabResourceStats,msTokenizationAutofillInlineEnabled,msTouchMode,msTriggeringSignalGenerator,msUserUnderstanding,msVideoSuperResolutionUI,msWalletBuyNow,msWalletCheckout,msWalletDiagnosticDataLogger,msWalletHubEntry,msWalletHubIntlP3,msWalletPartialCard,msWalletPasswordCategorization,msWalletPasswordCategorizationPlatformExpansion,msWalletTokenizationCardMetadata,msWalletTokenizedAutofill,msWebAssist,msWebAssistHistorySearchService,msWebOOUI,msWindowsUserActivities,msZipPayVirtualCard",
+      "--variations-seed-version",
+      "--mojo-platform-channel-handle=1884",
+      "/prefetch:2",
+      "/pfhostedapp:340d73b5998ee94b164ee25e28e481646acde819"
+    ]
+  },
+  {
+    "pid": 20796,
+    "name": "msedgewebview2.exe",
+    "command": [
+      "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--type=utility",
+      "--utility-sub-type=network.mojom.NetworkService",
+      "--lang=es-419",
+      "--service-sandbox-type=none",
+      "--noerrdialogs",
+      "--user-data-dir=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView",
+      "--webview-exe-name=Baxy.exe",
+      "--webview-exe-version=1.0.0+2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49",
+      "--embedded-browser-webview=1",
+      "--embedded-browser-webview-dpi-awareness=1",
+      "--no-pre-read-main-dll",
+      "--startup-read-main-dll",
+      "--metrics-shmem-handle=2072,i,7446124395992558256,11187590857622653494,524288",
+      "--field-trial-handle=1888,i,1911951599268098958,9234436494245164393,262144",
+      "--enable-features=ForceSWDCompWhenDCompFallbackRequired,LocalNetworkAccessForFencedFrameNavigationsWarningOnly,LocalNetworkAccessForNavigationsWarningOnly,LocalNetworkAccessForSubframeNavigationsWarningOnly,LocalNetworkAccessForWorkersWarningOnly,msAggressiveCacheTrimming,msCustomDataPartition,msWebView2NoTabForScreenShare,msWindowsTaskManager",
+      "--disable-features=BackForwardCache,BackgroundTabLoadingFromPerformanceManager,CloseOmniboxPopupOnInactiveAreaClick,CollectAVProductsInfo,CollectCodeIntegrityInfo,EnableHangWatcher,FilterAdsOnAbusiveSites,GetWifiProtocol,LoginDetection,MediaFoundationCameraUsageMonitoring,PreconnectToSearch,SafetyHub,SegmentationPlatform,SpareRendererForSitePerProcess,Ukm,WebPayments,msAITrackerClassification,msAbydosForWindowlessWV2,msAffirmVirtualCard,msAllowChromeWebstore,msAllowMSAPrtSSOForNonMSAProfile,msApplicationGuard,msAskBeforeClosingMultipleTabs,msAutoToggleAADPrtSSOForNonAADProfile,msAutofillEdgeCoupons,msAutofillEdgeCouponsAutoApply,msAutofillEdgeServiceRequest,msAutofillEnableEdgeSuggestions,msAutomaticTabFreeze,msBrowserSettingsSupported,msCoarseGeolocationService,msDataProtection,msDesktopMode,msDesktopRewards,msDisableVariationsSeedFetchThrottling,msEEProactiveHistory,msETFOffstoreExtensionFileDataCollection,msETFPasswordTheftDNRActionSignals,msEdgeAdPlatformUI,msEdgeAddWebCapturetoCollections,msEdgeAutofillShowDeployedPassword,msEdgeCaptureSelectionInPDF,msEdgeCloudConfigService,msEdgeCloudConfigServiceV2,msEdgeCohorts,msEdgeCollectionsPrismExperiment1,msEdgeCollectionsPrismOverallMigration,msEdgeComposeNext,msEdgeEnableNurturingFramework,msEdgeEnclavePrefsBasic,msEdgeEnclavePrefsNotification,msEdgeFaviconService,msEdgeHJTelemetry,msEdgeHubAppSkype,msEdgeImageEditorUI,msEdgeLinkDoctor,msEdgeMouseGestureDefaultEnabled,msEdgeMouseGestureSupported,msEdgeNewDeviceFre,msEdgeOnRampFRE,msEdgeOnRampImport,msEdgePDFCMHighlightUX,msEdgePasswordIris,msEdgePasswordIrisSaveBubble,msEdgePasswordStrengthCheck,msEdgeProngPersonalization,msEdgeReadingView,msEdgeRose,msEdgeScreenshotUI,msEdgeSendTabToSelf,msEdgeSettingsImport,msEdgeSettingsImportV2,msEdgeShoppingPersistentStorage,msEdgeShoppingUI,msEdgeSmartFind,msEdgeSuperDragDefaultEnabled,msEdgeSuperDragDropSupported,msEdgeTranslate,msEdgeUpdatesMoreMenuPill,msEdgeWebCapture,msEdgeWebCaptureUniformExperience,msEdgeWebContentFilteringFeedback,msEdgeWorkSearchBanner,msEnableCustomJobMemoryLimitsOnXbox,msEnableMIPForPDF,msEnablePdfUpsell,msEnableThirdPartyScanning,msEnableWebSignInCta,msEnableWebToBrowserSignIn,msEndpointDlp,msEntityExtraction,msExtensionTelemetryFramework,msExternalTaskManager,msFileSystemAccessDirectoryIterationBlocklistCheck,msForceBrowserSignIn,msForeignSessionsPage,msGeolocationAccessService,msGeolocationOSLocationPermissionFallback,msGeolocationSQMService,msGeolocationService,msGrowthInfraLaunchSourceLogging,msGuidedSwitchAllowed,msHubPinPersist,msImplicitSignin,msIrm,msIrmv2,msKlarnaVirtualCard,msLlmConsumerDlpPurview,msLoadStatistics,msLogIsEdgePinnedToTaskbarOnLaunch,msMIPCrossTenantPdfViewSupport,msMdatpWebSiteDlp,msNotificationPermissionForPWA,msNumberOfSitesToPin,msNurturingGlobalSitePinningOnCloseModal,msNurturingSitePinningCITopSites,msNurturingSitePinningWithWindowsConsent,msOnHoverSearchInSidebar,msOpenOfficeDocumentsInWebViewer,msPageInteractionRestrictionRevoke,msPasswordBreachDetection,msPdfAnnotationsVisibility,msPdfDataRecovery,msPdfDigitalSignatureRead,msPdfFreeText,msPdfFreeTextForCJK,msPdfHighlightMode,msPdfInking,msPdfKeyphraseSupport,msPdfOOUI,msPdfPopupMarkerRenderer,msPdfShare,msPdfSharedLibrary,msPdfTextNote,msPdfTextNoteMoreMenu,msPdfThumbnailCache,msPdfUnderside,msPdfViewRestore,msPersonalizationUMA,msPriceComparison,msPromptDefaultHandlerForPDF,msReactiveSearch,msReadAloud,msReadAloudPdf,msRedirectToShoreline,msRevokeExtensions,msSaasDlp,msShoppingTrigger,msShorelineSearch,msShorelineSearchFindOnPageWebUI,msShowOfflineGameEntrance,msShowReadAloudIconInAddressBar,msShowUXForAADPrtSSOForNonAADProfile,msSitePinningWithoutUi,msSuspendMessageForNewSessionWhenHavingPendingNavigation,msSyncEdgeCollections,msTabResourceStats,msTokenizationAutofillInlineEnabled,msTouchMode,msTriggeringSignalGenerator,msUserUnderstanding,msVideoSuperResolutionUI,msWalletBuyNow,msWalletCheckout,msWalletDiagnosticDataLogger,msWalletHubEntry,msWalletHubIntlP3,msWalletPartialCard,msWalletPasswordCategorization,msWalletPasswordCategorizationPlatformExpansion,msWalletTokenizationCardMetadata,msWalletTokenizedAutofill,msWebAssist,msWebAssistHistorySearchService,msWebOOUI,msWindowsUserActivities,msZipPayVirtualCard",
+      "--variations-seed-version",
+      "--mojo-platform-channel-handle=2228",
+      "/prefetch:11",
+      "/pfhostedapp:340d73b5998ee94b164ee25e28e481646acde819"
+    ]
+  },
+  {
+    "pid": 24404,
+    "name": "msedgewebview2.exe",
+    "command": [
+      "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--type=utility",
+      "--utility-sub-type=storage.mojom.StorageService",
+      "--lang=es-419",
+      "--service-sandbox-type=service",
+      "--noerrdialogs",
+      "--user-data-dir=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView",
+      "--webview-exe-name=Baxy.exe",
+      "--webview-exe-version=1.0.0+2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49",
+      "--embedded-browser-webview=1",
+      "--embedded-browser-webview-dpi-awareness=1",
+      "--no-pre-read-main-dll",
+      "--startup-read-main-dll",
+      "--metrics-shmem-handle=2060,i,6808693000217780282,4805097605988267199,524288",
+      "--field-trial-handle=1888,i,1911951599268098958,9234436494245164393,262144",
+      "--enable-features=ForceSWDCompWhenDCompFallbackRequired,LocalNetworkAccessForFencedFrameNavigationsWarningOnly,LocalNetworkAccessForNavigationsWarningOnly,LocalNetworkAccessForSubframeNavigationsWarningOnly,LocalNetworkAccessForWorkersWarningOnly,msAggressiveCacheTrimming,msCustomDataPartition,msWebView2NoTabForScreenShare,msWindowsTaskManager",
+      "--disable-features=BackForwardCache,BackgroundTabLoadingFromPerformanceManager,CloseOmniboxPopupOnInactiveAreaClick,CollectAVProductsInfo,CollectCodeIntegrityInfo,EnableHangWatcher,FilterAdsOnAbusiveSites,GetWifiProtocol,LoginDetection,MediaFoundationCameraUsageMonitoring,PreconnectToSearch,SafetyHub,SegmentationPlatform,SpareRendererForSitePerProcess,Ukm,WebPayments,msAITrackerClassification,msAbydosForWindowlessWV2,msAffirmVirtualCard,msAllowChromeWebstore,msAllowMSAPrtSSOForNonMSAProfile,msApplicationGuard,msAskBeforeClosingMultipleTabs,msAutoToggleAADPrtSSOForNonAADProfile,msAutofillEdgeCoupons,msAutofillEdgeCouponsAutoApply,msAutofillEdgeServiceRequest,msAutofillEnableEdgeSuggestions,msAutomaticTabFreeze,msBrowserSettingsSupported,msCoarseGeolocationService,msDataProtection,msDesktopMode,msDesktopRewards,msDisableVariationsSeedFetchThrottling,msEEProactiveHistory,msETFOffstoreExtensionFileDataCollection,msETFPasswordTheftDNRActionSignals,msEdgeAdPlatformUI,msEdgeAddWebCapturetoCollections,msEdgeAutofillShowDeployedPassword,msEdgeCaptureSelectionInPDF,msEdgeCloudConfigService,msEdgeCloudConfigServiceV2,msEdgeCohorts,msEdgeCollectionsPrismExperiment1,msEdgeCollectionsPrismOverallMigration,msEdgeComposeNext,msEdgeEnableNurturingFramework,msEdgeEnclavePrefsBasic,msEdgeEnclavePrefsNotification,msEdgeFaviconService,msEdgeHJTelemetry,msEdgeHubAppSkype,msEdgeImageEditorUI,msEdgeLinkDoctor,msEdgeMouseGestureDefaultEnabled,msEdgeMouseGestureSupported,msEdgeNewDeviceFre,msEdgeOnRampFRE,msEdgeOnRampImport,msEdgePDFCMHighlightUX,msEdgePasswordIris,msEdgePasswordIrisSaveBubble,msEdgePasswordStrengthCheck,msEdgeProngPersonalization,msEdgeReadingView,msEdgeRose,msEdgeScreenshotUI,msEdgeSendTabToSelf,msEdgeSettingsImport,msEdgeSettingsImportV2,msEdgeShoppingPersistentStorage,msEdgeShoppingUI,msEdgeSmartFind,msEdgeSuperDragDefaultEnabled,msEdgeSuperDragDropSupported,msEdgeTranslate,msEdgeUpdatesMoreMenuPill,msEdgeWebCapture,msEdgeWebCaptureUniformExperience,msEdgeWebContentFilteringFeedback,msEdgeWorkSearchBanner,msEnableCustomJobMemoryLimitsOnXbox,msEnableMIPForPDF,msEnablePdfUpsell,msEnableThirdPartyScanning,msEnableWebSignInCta,msEnableWebToBrowserSignIn,msEndpointDlp,msEntityExtraction,msExtensionTelemetryFramework,msExternalTaskManager,msFileSystemAccessDirectoryIterationBlocklistCheck,msForceBrowserSignIn,msForeignSessionsPage,msGeolocationAccessService,msGeolocationOSLocationPermissionFallback,msGeolocationSQMService,msGeolocationService,msGrowthInfraLaunchSourceLogging,msGuidedSwitchAllowed,msHubPinPersist,msImplicitSignin,msIrm,msIrmv2,msKlarnaVirtualCard,msLlmConsumerDlpPurview,msLoadStatistics,msLogIsEdgePinnedToTaskbarOnLaunch,msMIPCrossTenantPdfViewSupport,msMdatpWebSiteDlp,msNotificationPermissionForPWA,msNumberOfSitesToPin,msNurturingGlobalSitePinningOnCloseModal,msNurturingSitePinningCITopSites,msNurturingSitePinningWithWindowsConsent,msOnHoverSearchInSidebar,msOpenOfficeDocumentsInWebViewer,msPageInteractionRestrictionRevoke,msPasswordBreachDetection,msPdfAnnotationsVisibility,msPdfDataRecovery,msPdfDigitalSignatureRead,msPdfFreeText,msPdfFreeTextForCJK,msPdfHighlightMode,msPdfInking,msPdfKeyphraseSupport,msPdfOOUI,msPdfPopupMarkerRenderer,msPdfShare,msPdfSharedLibrary,msPdfTextNote,msPdfTextNoteMoreMenu,msPdfThumbnailCache,msPdfUnderside,msPdfViewRestore,msPersonalizationUMA,msPriceComparison,msPromptDefaultHandlerForPDF,msReactiveSearch,msReadAloud,msReadAloudPdf,msRedirectToShoreline,msRevokeExtensions,msSaasDlp,msShoppingTrigger,msShorelineSearch,msShorelineSearchFindOnPageWebUI,msShowOfflineGameEntrance,msShowReadAloudIconInAddressBar,msShowUXForAADPrtSSOForNonAADProfile,msSitePinningWithoutUi,msSuspendMessageForNewSessionWhenHavingPendingNavigation,msSyncEdgeCollections,msTabResourceStats,msTokenizationAutofillInlineEnabled,msTouchMode,msTriggeringSignalGenerator,msUserUnderstanding,msVideoSuperResolutionUI,msWalletBuyNow,msWalletCheckout,msWalletDiagnosticDataLogger,msWalletHubEntry,msWalletHubIntlP3,msWalletPartialCard,msWalletPasswordCategorization,msWalletPasswordCategorizationPlatformExpansion,msWalletTokenizationCardMetadata,msWalletTokenizedAutofill,msWebAssist,msWebAssistHistorySearchService,msWebOOUI,msWindowsUserActivities,msZipPayVirtualCard",
+      "--variations-seed-version",
+      "--mojo-platform-channel-handle=2484",
+      "/prefetch:13",
+      "/pfhostedapp:340d73b5998ee94b164ee25e28e481646acde819"
+    ]
+  },
+  {
+    "pid": 30320,
+    "name": "msedgewebview2.exe",
+    "command": [
+      "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+      "--type=renderer",
+      "--noerrdialogs",
+      "--user-data-dir=C:\\Users\\usuario\\AppData\\Local\\BAXY\\webview2-field\\EBWebView",
+      "--webview-exe-name=Baxy.exe",
+      "--webview-exe-version=1.0.0+2bf3d4c5406b7bf1c230f7cbb0b2c3de6d74fc49",
+      "--embedded-browser-webview=1",
+      "--embedded-browser-webview-dpi-awareness=1",
+      "--dma-cps-flags=0",
+      "--no-pre-read-main-dll",
+      "--video-capture-use-gpu-memory-buffer",
+      "--lang=es-419",
+      "--device-scale-factor=1.25",
+      "--num-raster-threads=4",
+      "--enable-main-frame-before-activation",
+      "--renderer-client-id=5",
+      "--js-flags=--expose-gc --ms-user-locale=",
+      "--time-ticks-at-unix-epoch=-1788705143277685",
+      "--launch-time-ticks=16240397395",
+      "--ram-no-pressure-read-main-dll",
+      "--metrics-shmem-handle=3664,i,3915207884585596363,17793100698467187580,2097152",
+      "--field-trial-handle=1888,i,1911951599268098958,9234436494245164393,262144",
+      "--enable-features=ForceSWDCompWhenDCompFallbackRequired,LocalNetworkAccessForFencedFrameNavigationsWarningOnly,LocalNetworkAccessForNavigationsWarningOnly,LocalNetworkAccessForSubframeNavigationsWarningOnly,LocalNetworkAccessForWorkersWarningOnly,msAggressiveCacheTrimming,msCustomDataPartition,msWebView2NoTabForScreenShare,msWindowsTaskManager",
+      "--disable-features=BackForwardCache,BackgroundTabLoadingFromPerformanceManager,CloseOmniboxPopupOnInactiveAreaClick,CollectAVProductsInfo,CollectCodeIntegrityInfo,EnableHangWatcher,FilterAdsOnAbusiveSites,GetWifiProtocol,LoginDetection,MediaFoundationCameraUsageMonitoring,PreconnectToSearch,SafetyHub,SegmentationPlatform,SpareRendererForSitePerProcess,Ukm,WebPayments,msAITrackerClassification,msAbydosForWindowlessWV2,msAffirmVirtualCard,msAllowChromeWebstore,msAllowMSAPrtSSOForNonMSAProfile,msApplicationGuard,msAskBeforeClosingMultipleTabs,msAutoToggleAADPrtSSOForNonAADProfile,msAutofillEdgeCoupons,msAutofillEdgeCouponsAutoApply,msAutofillEdgeServiceRequest,msAutofillEnableEdgeSuggestions,msAutomaticTabFreeze,msBrowserSettingsSupported,msCoarseGeolocationService,msDataProtection,msDesktopMode,msDesktopRewards,msDisableVariationsSeedFetchThrottling,msEEProactiveHistory,msETFOffstoreExtensionFileDataCollection,msETFPasswordTheftDNRActionSignals,msEdgeAdPlatformUI,msEdgeAddWebCapturetoCollections,msEdgeAutofillShowDeployedPassword,msEdgeCaptureSelectionInPDF,msEdgeCloudConfigService,msEdgeCloudConfigServiceV2,msEdgeCohorts,msEdgeCollectionsPrismExperiment1,msEdgeCollectionsPrismOverallMigration,msEdgeComposeNext,msEdgeEnableNurturingFramework,msEdgeEnclavePrefsBasic,msEdgeEnclavePrefsNotification,msEdgeFaviconService,msEdgeHJTelemetry,msEdgeHubAppSkype,msEdgeImageEditorUI,msEdgeLinkDoctor,msEdgeMouseGestureDefaultEnabled,msEdgeMouseGestureSupported,msEdgeNewDeviceFre,msEdgeOnRampFRE,msEdgeOnRampImport,msEdgePDFCMHighlightUX,msEdgePasswordIris,msEdgePasswordIrisSaveBubble,msEdgePasswordStrengthCheck,msEdgeProngPersonalization,msEdgeReadingView,msEdgeRose,msEdgeScreenshotUI,msEdgeSendTabToSelf,msEdgeSettingsImport,msEdgeSettingsImportV2,msEdgeShoppingPersistentStorage,msEdgeShoppingUI,msEdgeSmartFind,msEdgeSuperDragDefaultEnabled,msEdgeSuperDragDropSupported,msEdgeTranslate,msEdgeUpdatesMoreMenuPill,msEdgeWebCapture,msEdgeWebCaptureUniformExperience,msEdgeWebContentFilteringFeedback,msEdgeWorkSearchBanner,msEnableCustomJobMemoryLimitsOnXbox,msEnableMIPForPDF,msEnablePdfUpsell,msEnableThirdPartyScanning,msEnableWebSignInCta,msEnableWebToBrowserSignIn,msEndpointDlp,msEntityExtraction,msExtensionTelemetryFramework,msExternalTaskManager,msFileSystemAccessDirectoryIterationBlocklistCheck,msForceBrowserSignIn,msForeignSessionsPage,msGeolocationAccessService,msGeolocationOSLocationPermissionFallback,msGeolocationSQMService,msGeolocationService,msGrowthInfraLaunchSourceLogging,msGuidedSwitchAllowed,msHubPinPersist,msImplicitSignin,msIrm,msIrmv2,msKlarnaVirtualCard,msLlmConsumerDlpPurview,msLoadStatistics,msLogIsEdgePinnedToTaskbarOnLaunch,msMIPCrossTenantPdfViewSupport,msMdatpWebSiteDlp,msNotificationPermissionForPWA,msNumberOfSitesToPin,msNurturingGlobalSitePinningOnCloseModal,msNurturingSitePinningCITopSites,msNurturingSitePinningWithWindowsConsent,msOnHoverSearchInSidebar,msOpenOfficeDocumentsInWebViewer,msPageInteractionRestrictionRevoke,msPasswordBreachDetection,msPdfAnnotationsVisibility,msPdfDataRecovery,msPdfDigitalSignatureRead,msPdfFreeText,msPdfFreeTextForCJK,msPdfHighlightMode,msPdfInking,msPdfKeyphraseSupport,msPdfOOUI,msPdfPopupMarkerRenderer,msPdfShare,msPdfSharedLibrary,msPdfTextNote,msPdfTextNoteMoreMenu,msPdfThumbnailCache,msPdfUnderside,msPdfViewRestore,msPersonalizationUMA,msPriceComparison,msPromptDefaultHandlerForPDF,msReactiveSearch,msReadAloud,msReadAloudPdf,msRedirectToShoreline,msRevokeExtensions,msSaasDlp,msShoppingTrigger,msShorelineSearch,msShorelineSearchFindOnPageWebUI,msShowOfflineGameEntrance,msShowReadAloudIconInAddressBar,msShowUXForAADPrtSSOForNonAADProfile,msSitePinningWithoutUi,msSuspendMessageForNewSessionWhenHavingPendingNavigation,msSyncEdgeCollections,msTabResourceStats,msTokenizationAutofillInlineEnabled,msTouchMode,msTriggeringSignalGenerator,msUserUnderstanding,msVideoSuperResolutionUI,msWalletBuyNow,msWalletCheckout,msWalletDiagnosticDataLogger,msWalletHubEntry,msWalletHubIntlP3,msWalletPartialCard,msWalletPasswordCategorization,msWalletPasswordCategorizationPlatformExpansion,msWalletTokenizationCardMetadata,msWalletTokenizedAutofill,msWebAssist,msWebAssistHistorySearchService,msWebOOUI,msWindowsUserActivities,msZipPayVirtualCard",
+      "--variations-seed-version",
+      "--mojo-platform-channel-handle=3648",
+      "/pfhostedapp:340d73b5998ee94b164ee25e28e481646acde819",
+      "/prefetch:1"
+    ]
+  },
+  {
+    "pid": 33324,
+    "name": "conhost.exe",
+    "command": [
+      "\\??\\C:\\windows\\system32\\conhost.exe",
+      "0x4"
+    ]
+  },
+  {
+    "pid": 24052,
+    "name": "powershell.exe",
+    "command": [
+      "C:\\windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "-NoLogo",
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      "$ErrorActionPreference='Stop'; $utf8=[System.Text.UTF8Encoding]::new($false); [Console]::OutputEncoding=$utf8; $OutputEncoding=$utf8; Get-StartApps | Select-Object Name,AppID | ConvertTo-Json -Compress"
+    ]
+  },
+  {
+    "pid": 7844,
+    "name": "conhost.exe",
+    "command": [
+      "\\??\\C:\\windows\\system32\\conhost.exe",
+      "0x4"
+    ]
+  },
+  {
+    "pid": 22388,
+    "name": "python.exe",
+    "command": [
+      "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "baxy_mind"
+    ]
+  },
+  {
+    "pid": 32168,
+    "name": "conhost.exe",
+    "command": [
+      "\\??\\C:\\windows\\system32\\conhost.exe",
+      "0x4"
+    ]
+  },
+  {
+    "pid": 32704,
+    "name": "python.exe",
+    "command": [
+      "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "baxy_mind"
+    ]
+  },
+  {
+    "pid": 21120,
+    "name": "llama-server.exe",
+    "command": [
+      "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+      "-m",
+      "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "55967",
+      "-ngl",
+      "99",
+      "-c",
+      "12288",
+      "-b",
+      "2048",
+      "-ub",
+      "256",
+      "-fa",
+      "on",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-np",
+      "3",
+      "--jinja",
+      "--reasoning",
+      "off",
+      "--reasoning-budget",
+      "0",
+      "--cont-batching"
+    ]
+  },
+  {
+    "pid": 18288,
+    "name": "python.exe",
+    "command": [
+      "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "baxy_mind.router_worker"
+    ]
+  },
+  {
+    "pid": 10568,
+    "name": "conhost.exe",
+    "command": [
+      "\\??\\C:\\windows\\system32\\conhost.exe",
+      "0x4"
+    ]
+  },
+  {
+    "pid": 16032,
+    "name": "python.exe",
+    "command": [
+      "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "baxy_mind.router_worker"
+    ]
+  },
+  {
+    "pid": 15616,
+    "name": "espeak-ng.exe",
+    "command": [
+      "D:\\BAXYRuntime\\assets\\espeak-ng\\espeak-ng.exe",
+      "-q",
+      "-v",
+      "es-419",
+      "--ipa=3",
+      "\u00a1Hola! \u00bfC\u00f3mo est\u00e1s?"
+    ]
+  }
+]

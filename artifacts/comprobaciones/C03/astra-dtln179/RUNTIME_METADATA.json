@@ -1,0 +1,21 @@
+{
+  "requires_dist": [
+    "backports.strenum",
+    "flatbuffers",
+    "numpy>=1.23.2",
+    "tqdm",
+    "typing-extensions",
+    "protobuf",
+    "ml_dtypes",
+    "ai-edge-litert-sdk-intel-nightly; extra == \"npu-intel\"",
+    "ai-edge-litert-sdk-intel-nightly; extra == \"npu-sdk\"",
+    "ai-edge-litert-sdk-qualcomm~=0.2.0; extra == \"npu-sdk\"",
+    "ai-edge-litert-sdk-mediatek~=0.2.0; extra == \"npu-sdk\"",
+    "lark; extra == \"model-utils\"",
+    "xdsl==0.28.0; extra == \"model-utils\""
+  ],
+  "interpreterFiles": [
+    "ai_edge_litert/_pywrap_litert_interpreter_wrapper.pyd",
+    "ai_edge_litert/interpreter.py"
+  ]
+}

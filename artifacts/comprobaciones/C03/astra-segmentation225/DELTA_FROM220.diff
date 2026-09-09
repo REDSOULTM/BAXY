@@ -1,0 +1,101 @@
+--- 220/src/baxy_mind/voice.py
++++ 225/src/baxy_mind/voice.py
+@@ -2406,6 +2406,9 @@
+                                 self.cancel_speech()
+                                 self._emit("barge_in")
+                         else:
++                            # Low energy cannot open a turn during output, but
++                            # quieter words must not split an admitted utterance.
++                            speech = speech_started
+                             barge_frames = 0
+                     else:
+                         barge_frames = 0
+--- 220/tests/test_mind_voice_runtime.py
++++ 225/tests/test_mind_voice_runtime.py
+@@ -2020,6 +2020,86 @@
+         engine.shutdown()
+ 
+ 
++@pytest.mark.parametrize(
++    ("speaking", "amplitude", "expected_segments", "expected_cancellations"),
++    [(True, 0.001, 0, 0), (True, 0.02, 1, 1), (False, 0.001, 1, 0)],
++)
++def test_output_energy_rejection_also_controls_transcription(
++    monkeypatch, speaking, amplitude, expected_segments, expected_cancellations,
++):
++    events = []
++    engine = _prepare_voice_engine(monkeypatch, events)
++    engine._mode = "direct"  # noqa: SLF001
++    probabilities = [0.0] * 8 + [0.9] * 6 + [0.0] * 32
++    engine._vad = _SequenceVad(probabilities)  # noqa: SLF001
++    stop = threading.Event()
++
++    class Stream(_FiniteInputStream):
++        def read(self, samples):
++            frame, overflow = super().read(samples)
++            frame.fill(amplitude if 9 <= self.reads <= 14 else 0.0)
++            return frame, overflow
++
++    stream = Stream(stop, len(probabilities))
++    requests = queue.Queue()
++    cancelled_at = []
++    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: speaking))
++    monkeypatch.setattr(engine, "cancel_speech", lambda: cancelled_at.append(stream.reads))
++    monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
++    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
++    _install_sounddevice(monkeypatch, lambda **_: stream)
++    try:
++        engine._capture_loop(  # noqa: SLF001
++            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
++        )
++        assert requests.qsize() == expected_segments
++        assert len(cancelled_at) == expected_cancellations
++        assert not any(item["event"] == "error" for item in events)
++        if expected_cancellations:
++            assert cancelled_at == [11]
++        if expected_segments:
++            # Keep all six voiced blocks, including the two before cancellation.
++            audio = requests.get_nowait().audio
++            voiced = audio[audio != 0]
++            np.testing.assert_array_equal(voiced, np.full(6 * 512, amplitude, np.float32))
++    finally:
++        engine.shutdown()
++
++
++def test_barge_energy_threshold_does_not_split_an_active_utterance(monkeypatch):
++    events = []
++    engine = _prepare_voice_engine(monkeypatch, events)
++    engine._mode = "direct"  # noqa: SLF001
++    amplitudes = [0.0] * 8 + [0.02] * 3 + [0.001] * 24 + [0.02] * 3 + [0.0] * 32
++    engine._vad = _SequenceVad([0.0] * 8 + [0.9] * 30 + [0.0] * 32)  # noqa: SLF001
++    stop = threading.Event()
++
++    class Stream(_FiniteInputStream):
++        def read(self, samples):
++            frame, overflow = super().read(samples)
++            frame.fill(amplitudes[min(self.reads - 1, len(amplitudes) - 1)])
++            return frame, overflow
++
++    stream = Stream(stop, len(amplitudes))
++    requests = queue.Queue()
++    monkeypatch.setattr(VoiceEngine, "speaking", property(lambda _: True))
++    monkeypatch.setattr(engine, "cancel_speech", lambda: None)
++    monkeypatch.setattr(engine._ducker, "duck", lambda: True)  # noqa: SLF001
++    monkeypatch.setattr(engine._ducker, "restore", lambda: True)  # noqa: SLF001
++    _install_sounddevice(monkeypatch, lambda **_: stream)
++    try:
++        engine._capture_loop(  # noqa: SLF001
++            stop_event=stop, decode_queue=requests, capture_ready_event=threading.Event(),
++        )
++        assert requests.qsize() == 1
++        assert not any(item["event"] == "error" for item in events)
++        audio = requests.get_nowait().audio
++        expected = np.repeat(np.asarray(amplitudes[8:38], dtype=np.float32), 512)
++        np.testing.assert_array_equal(audio[audio != 0], expected)
++    finally:
++        engine.shutdown()
++
++
+ @pytest.mark.parametrize("failure", [None, "open", "read", "reference"])
+ def test_capture_owns_aec_and_closes_it_after_success_or_failure(monkeypatch, failure):
+     events = []

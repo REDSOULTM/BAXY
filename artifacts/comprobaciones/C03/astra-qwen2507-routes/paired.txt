@@ -1,0 +1,20 @@
+n=18 published=16 other=2
+
+001	t1	published_final	Buenas	¡Buenas! ¿Cómo va?
+002	t2	published_final	qué puedes hacer aquí en el PC	Puedo abrir y cerrar programas, mover y enfocar ventanas, leer y ajustar el audio, y tomar notas. También puedo leer la hora y el estado del equipo y llevar tareas. Hay otras cosas también.
+003	t3	published_final	¿Qué hora es?	Son las 06:28.
+004	t4	published_final	Dime la hora y el estado del audio.	La hora local es 06:28. El volumen está en el nivel 100 y el audio está mutado. El estado del audio ha sido actualizado y se considera completado.
+005	t5	published_final	traduce good evening al español, nada más	Buenas tardes
+006	t6	composition_failed	cierra aquello	composition_failed
+007	t7	published_final	no abras Paint	No voy a abrir Paint.
+008	t8	published_final	abre la aplicación C03ProgramaInexistente20260906	Este pedido está fuera de lo que hago en este PC.
+009	t9	published_final	Hello	Hey, welcome! How’s it going?
+010	t10	published_final	What time is it?	It's 06:29.
+011	t11	published_final	Tell me the time and the volume.	Local clock is 06:29. Volume is 100. Mute is on.
+012	t12	published_final	open that	What would you like me to open for you?
+013	t13	composition_failed	Explain encryption, pero en simple	composition_failed
+014	t14	published_final	Hey, buenas	Hey, buenos días, ¿cómo estás? ¿Ya estás listo para empezar?
+015	t15	published_final	Dime la hora, please, en spanglish	06:30
+016	t16	published_final	Borra el archivo C03-Prueba-Respuesta-20260906.txt del escritorio	No puedo borrar ese archivo porque no tengo permiso ni acceso para realizar esa acción.
+017	t17	published_final	cancelar	Entendido, se cancela.
+018	t18	published_final	what is the capital of Peru	Lima

@@ -1,0 +1,18 @@
+{
+  "responses": 36,
+  "sources": [
+    {
+      "path": "artifacts/comprobaciones/C03/astra-gemma-inherited-ready/replies.jsonl",
+      "sha256": "eb2cef12a9e456c648fc0499b5a3ba331c48d498ffbb53c748ae18812c72b60b"
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-gemma-standard-thinking/replies.jsonl",
+      "sha256": "7fda4c5f39aaf9209b8ae7e8adcd9dfa3dc2da51784d7b531244ab0b66e52592"
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/astra-gemma-published/replies.jsonl",
+      "sha256": "7778b67da82e9e29bbde5f1065a830c1935b3b72ac1db612ebc75f9dc5af621c"
+    }
+  ],
+  "reportSha256": "485f37e072786ebfc6e43f408bf1c8fa16bb6261b293606bd996dd06f33d94ce"
+}

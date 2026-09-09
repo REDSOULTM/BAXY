@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-08T18:35:59.928993+00:00",
+  "method": "Human-message semantic review by Codex of all204 candidates; no BAXY inference or development use. Exact owner literals/occurrences unchanged. Classification not inherited blindly from historical labels. Reading for reserve adjudication is separate from using these texts for repair. Do not put their literals into development scripts/tests/prompts.",
+  "reviewed": 204,
+  "language_counts": {
+    "es": 195,
+    "en": 2,
+    "undetermined": 5,
+    "mixed": 2
+  },
+  "needs_original_context": 31,
+  "possible_100char_log_truncations": 6,
+  "canonical_unique_NFC_case_whitespace": 192,
+  "duplicate_groups": 12,
+  "source_sha256": "12bf00278adbf00a7035f96d2d9584667466674062b298119a8a88cf2fb3e3dd",
+  "review_sha256": "7b9a64496c23b73e7b71df2cd71af98ca43d210b27671d6b1e3eb2b1476d6d2f",
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-reserve-language475-private",
+  "certified_fresh": 0,
+  "frozen": false,
+  "executed": 0,
+  "next": "Inspect original source/context and potential truncated logs; audit training/split and dynamic/private exposure separately; keep all cases out of development. Freeze100 with candidate only after panel green. No translation, rewriting or quota-filling."
+}

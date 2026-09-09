@@ -1,0 +1,821 @@
+[
+  {
+    "index": 0,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5
+  },
+  {
+    "index": 1,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5310000000026776
+  },
+  {
+    "index": 2,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5319999999919673
+  },
+  {
+    "index": 3,
+    "nativeText": "Hola, aquí Baxi.",
+    "text": "Hola, aquí Baxi.",
+    "expectedNative": "Hola, aquí Baxi.",
+    "calls": [
+      {
+        "text": "Hola, aquí Baxi.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.7649999999994179
+  },
+  {
+    "index": 4,
+    "nativeText": "It is ten fifty six.",
+    "text": "It is ten fifty six.",
+    "expectedNative": "It is ten fifty six.",
+    "calls": [
+      {
+        "text": "It is ten fifty six.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.15700000000651926
+  },
+  {
+    "index": 5,
+    "nativeText": "Son las diez cincuenta y seis.",
+    "text": "Son las diez cincuenta y seis.",
+    "expectedNative": "Son las diez cincuenta y seis.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y seis.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.1870000000053551
+  },
+  {
+    "index": 6,
+    "nativeText": "Dolar, aquí vaci",
+    "text": "Dolar, aquí vaci",
+    "expectedNative": "Dolar, aquí vaci",
+    "calls": [
+      {
+        "text": "Dolar, aquí vaci",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.17199999999138527
+  },
+  {
+    "index": 7,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.6560000000026776
+  },
+  {
+    "index": 8,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5939999999973224
+  },
+  {
+    "index": 9,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.45300000000861473
+  },
+  {
+    "index": 10,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.3909999999887077
+  },
+  {
+    "index": 11,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.3899999999994179
+  },
+  {
+    "index": 12,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5940000000118744
+  },
+  {
+    "index": 13,
+    "nativeText": "Son las diez cincuenta y cinco.",
+    "text": "Son las diez cincuenta y cinco.",
+    "expectedNative": "Son las diez cincuenta y cinco.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y cinco.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.17199999999138527
+  },
+  {
+    "index": 14,
+    "nativeText": "It is ten fifty six.",
+    "text": "It is ten fifty six.",
+    "expectedNative": "It is ten fifty six.",
+    "calls": [
+      {
+        "text": "It is ten fifty six.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.15600000000267755
+  },
+  {
+    "index": 15,
+    "nativeText": "Son las diez cincuenta y seis.",
+    "text": "Son las diez cincuenta y seis.",
+    "expectedNative": "Son las diez cincuenta y seis.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y seis.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.17200000000593718
+  },
+  {
+    "index": 16,
+    "nativeText": "Dolar, aquí vaci",
+    "text": "Dolar, aquí vaci",
+    "expectedNative": "Dolar, aquí vaci",
+    "calls": [
+      {
+        "text": "Dolar, aquí vaci",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.20299999999406282
+  },
+  {
+    "index": 17,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudieron al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.4379999999946449
+  },
+  {
+    "index": 18,
+    "nativeText": "Son las diez y cuenta.",
+    "text": "Son las diez y cuenta.",
+    "expectedNative": "Son las diez y cuenta.",
+    "calls": [
+      {
+        "text": "Son las diez y cuenta.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.125
+  },
+  {
+    "index": 19,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.3899999999994179
+  },
+  {
+    "index": 20,
+    "nativeText": "Son las 10.55.",
+    "text": "Son las 10.55.",
+    "expectedNative": "Son las 10.55.",
+    "calls": [
+      {
+        "text": "Son las 10.55.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.20300000000861473
+  },
+  {
+    "index": 21,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.4539999999979045
+  },
+  {
+    "index": 22,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.4210000000020955
+  },
+  {
+    "index": 23,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.46899999999732245
+  },
+  {
+    "index": 24,
+    "nativeText": "However, the slow communication channels styles in the West could lag behind by twenty five to thirty years.",
+    "text": "However, the slow communication channels styles in the West could lag behind by twenty five to thirty years.",
+    "expectedNative": "However, the slow communication channels styles in the West could lag behind by twenty five to thirty years.",
+    "calls": [
+      {
+        "text": "However, the slow communication channels styles in the West could lag behind by twenty five to thirty years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5470000000059372
+  },
+  {
+    "index": 25,
+    "nativeText": "Son las diez cincuenta y cinco.",
+    "text": "Son las diez cincuenta y cinco.",
+    "expectedNative": "Son las diez cincuenta y cinco.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y cinco.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.17199999999138527
+  },
+  {
+    "index": 26,
+    "nativeText": "It is ten fifty six.",
+    "text": "It is ten fifty six.",
+    "expectedNative": "It is ten fifty six.",
+    "calls": [
+      {
+        "text": "It is ten fifty six.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.17200000000593718
+  },
+  {
+    "index": 27,
+    "nativeText": "Son las diez cincuenta y seis.",
+    "text": "Son las diez cincuenta y seis.",
+    "expectedNative": "Son las diez cincuenta y seis.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y seis.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.20299999999406282
+  },
+  {
+    "index": 28,
+    "nativeText": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "text": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "expectedNative": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+    "calls": [
+      {
+        "text": "However Due to the slow communication channels, styles in the West could lag behind by twenty five to thirty years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5620000000053551
+  },
+  {
+    "index": 29,
+    "nativeText": "Son of",
+    "text": "Son of",
+    "expectedNative": "Son of",
+    "calls": [
+      {
+        "text": "Son of",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.14100000000325963
+  },
+  {
+    "index": 30,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.4529999999940628
+  },
+  {
+    "index": 31,
+    "nativeText": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.4850000000005821
+  },
+  {
+    "index": 32,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5
+  },
+  {
+    "index": 33,
+    "nativeText": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the world say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.4529999999940628
+  },
+  {
+    "index": 34,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5
+  },
+  {
+    "index": 35,
+    "nativeText": "Son las diez cincuenta y cinco.",
+    "text": "Son las diez cincuenta y cinco.",
+    "expectedNative": "Son las diez cincuenta y cinco.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y cinco.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.1880000000091968
+  },
+  {
+    "index": 36,
+    "nativeText": "It is ten fifty six.",
+    "text": "It is ten fifty six.",
+    "expectedNative": "It is ten fifty six.",
+    "calls": [
+      {
+        "text": "It is ten fifty six.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.1869999999908032
+  },
+  {
+    "index": 37,
+    "nativeText": "Son las diez cincuenta y seis.",
+    "text": "Son las diez cincuenta y seis.",
+    "expectedNative": "Son las diez cincuenta y seis.",
+    "calls": [
+      {
+        "text": "Son las diez cincuenta y seis.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.17200000000593718
+  },
+  {
+    "index": 38,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5470000000059372
+  },
+  {
+    "index": 39,
+    "nativeText": "Son of these one.",
+    "text": "Son of these one.",
+    "expectedNative": "Son of these one.",
+    "calls": [
+      {
+        "text": "Son of these one.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.1409999999887077
+  },
+  {
+    "index": 40,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.46800000000803266
+  },
+  {
+    "index": 41,
+    "nativeText": "S.",
+    "text": "S.",
+    "expectedNative": "S.",
+    "calls": [
+      {
+        "text": "S.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.10899999999674037
+  },
+  {
+    "index": 42,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.7819999999919673
+  },
+  {
+    "index": 43,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5940000000118744
+  },
+  {
+    "index": 44,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.7969999999913853
+  },
+  {
+    "index": 45,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.6560000000026776
+  },
+  {
+    "index": 46,
+    "nativeText": "",
+    "text": "",
+    "expectedNative": "",
+    "calls": [
+      {
+        "text": "",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.13999999999941792
+  },
+  {
+    "index": 47,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.7809999999881256
+  },
+  {
+    "index": 48,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.8280000000086147
+  },
+  {
+    "index": 49,
+    "nativeText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.7029999999940628
+  },
+  {
+    "index": 50,
+    "nativeText": "Hola, aquí Basi. Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "text": "Hola, aquí Basi. Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "expectedNative": "Hola, aquí Basi. Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "calls": [
+      {
+        "text": "Hola, aquí Basi. Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.7810000000026776
+  },
+  {
+    "index": 51,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5939999999973224
+  },
+  {
+    "index": 52,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5779999999940628
+  },
+  {
+    "index": 53,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.6720000000059372
+  },
+  {
+    "index": 54,
+    "nativeText": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "expectedNative": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "calls": [
+      {
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5939999999973224
+  },
+  {
+    "index": 55,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.6710000000020955
+  },
+  {
+    "index": 56,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 3 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 3 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 3 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 3 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.625
+  },
+  {
+    "index": 57,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.6879999999946449
+  },
+  {
+    "index": 58,
+    "nativeText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "expectedNative": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "calls": [
+      {
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5929999999934807
+  },
+  {
+    "index": 59,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5940000000118744
+  },
+  {
+    "index": 60,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5470000000059372
+  },
+  {
+    "index": 61,
+    "nativeText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5929999999934807
+  },
+  {
+    "index": 62,
+    "nativeText": "All nouns alongside the word say for you. Always begin with a capital letter, even in the middle of a sentence.",
+    "text": "All nouns alongside the word say for you. Always begin with a capital letter, even in the middle of a sentence.",
+    "expectedNative": "All nouns alongside the word say for you. Always begin with a capital letter, even in the middle of a sentence.",
+    "calls": [
+      {
+        "text": "All nouns alongside the word say for you. Always begin with a capital letter, even in the middle of a sentence.",
+        "contextual": false
+      }
+    ],
+    "seconds": 0.5160000000032596
+  }
+]

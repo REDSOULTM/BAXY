@@ -1,0 +1,4 @@
+{"config": "es_419", "id": "2001", "archiveMemberIndex": 1, "seconds": 12.84, "dtype": "float32", "peakNative": 0.7124196887016296}
+{"config": "es_419", "id": "1764", "archiveMemberIndex": 3, "seconds": 9.72, "dtype": "float32", "peakNative": 0.6674610376358032}
+{"config": "en_us", "id": "1904", "archiveMemberIndex": 1, "seconds": 10.56, "dtype": "float32", "peakNative": 0.03796595335006714}
+{"config": "en_us", "id": "1675", "archiveMemberIndex": 2, "seconds": 8.76, "dtype": "float32", "peakNative": 0.4254966378211975}

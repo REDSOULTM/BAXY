@@ -1,0 +1,21 @@
+D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\artifacts\comprobaciones\C03\astra-reference-tts118\02-reference.wav
+
+[2026-09-07 07:46:05.857] [piper] [debug] Loading voice from D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx (config=D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx.json)
+[2026-09-07 07:46:05.858] [piper] [debug] Parsing voice config at D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx.json
+[2026-09-07 07:46:05.858] [piper] [debug] Voice contains 1 speaker(s)
+[2026-09-07 07:46:05.858] [piper] [debug] Loading onnx model from D:\BAXYRuntime\experiments\voice\c03-john114\en_US-john-medium.onnx
+[2026-09-07 07:46:06.489] [piper] [debug] Loaded onnx model in 0.63097 second(s)
+[2026-09-07 07:46:06.490] [piper] [info] Loaded voice in 0.6313984 second(s)
+[2026-09-07 07:46:06.490] [piper] [debug] Voice uses eSpeak phonemes (en)
+[2026-09-07 07:46:06.490] [piper] [debug] Initializing eSpeak
+[2026-09-07 07:46:06.523] [piper] [debug] Initialized eSpeak
+[2026-09-07 07:46:06.523] [piper] [info] Initialized piper
+[2026-09-07 07:46:06.523] [piper] [debug] Phonemizing text: I couldn't read the file because it wasn't found in the sandbox.
+[2026-09-07 07:46:06.548] [piper] [debug] Converting 66 phoneme(s) to ids: aɪ kˌʊdənt ɹˈiːd ðə fˈaɪl bɪkˈɒz ɪt wˌɒzn̩t fˈaʊnd ɪnðə sˈandbɒks.
+[2026-09-07 07:46:06.548] [piper] [debug] Converted 66 phoneme(s) to 135 phoneme id(s): 1, 0, 14, 0, 74, 0, 3, 0, 23, 0, 121, 0, 100, 0, 17, 0, 59, 0, 26, 0, 32, 0, 3, 0, 88, 0, 120, 0, 21, 0, 122, 0, 17, 0, 3, 0, 41, 0, 59, 0, 3, 0, 19, 0, 120, 0, 14, 0, 74, 0, 24, 0, 3, 0, 15, 0, 74, 0, 23, 0, 120, 0, 52, 0, 38, 0, 3, 0, 74, 0, 32, 0, 3, 0, 35, 0, 121, 0, 52, 0, 38, 0, 26, 0, 144, 0, 32, 0, 3, 0, 19, 0, 120, 0, 14, 0, 100, 0, 26, 0, 17, 0, 3, 0, 74, 0, 26, 0, 41, 0, 59, 0, 3, 0, 31, 0, 120, 0, 14, 0, 26, 0, 17, 0, 15, 0, 52, 0, 23, 0, 31, 0, 10, 0, 2, 
+[2026-09-07 07:46:06.548] [piper] [debug] Synthesizing audio for 135 phoneme id(s)
+[2026-09-07 07:46:06.866] [piper] [debug] Synthesized 3.959002267573696 second(s) of audio in 0.3179763 second(s)
+[2026-09-07 07:46:06.867] [piper] [info] Real-time factor: 0.08031728160511363 (infer=0.3179763 sec, audio=3.959002267573696 sec)
+[2026-09-07 07:46:06.867] [piper] [debug] Terminating eSpeak
+[2026-09-07 07:46:06.867] [piper] [debug] Terminated eSpeak
+[2026-09-07 07:46:06.867] [piper] [info] Terminated piper

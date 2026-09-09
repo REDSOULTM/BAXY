@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-09T00:04:25.889802+00:00",
+  "inheritance": "Exact FunctionGemma source roots and fields from scripts/build_historical_corpus.py:45-50,1764-1769,2154-2186. Source477 verifies originals;475 contains the204 potential reserve entries. No new model inference.",
+  "method": "Read each source JSONL once, hash before/after, compare reserve literals against full strings in user_text,prev_text,final_reply,q; additionally normalized whitespace/NFC/casefold full strings and lines. Record exact/normalized distinction and every source line/field. Any match is a conservative exposure flag; absence is not full freshness certification. No change to reserve475 or acceptance freeze.",
+  "limits": "Only these three inherited training/eval corpora. Not paraphrase equivalence, all local classifiers, private C03 exposure after483, missing original sessions or context certification.",
+  "sources": [
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\FunctionGemma\\finetune_llm\\curated\\train_v3.jsonl",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\FunctionGemma\\router\\data\\router_eval_corpus.curated.jsonl",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\FunctionGemma\\router\\data\\router_corpus_curated_ft.jsonl"
+  ],
+  "reserve_sha256": "7b9a64496c23b73e7b71df2cd71af98ca43d210b27671d6b1e3eb2b1476d6d2f",
+  "original_verification_sha256": "ccdf5114bc8ddd5965c96b9785636b91264760f9f9dc65113b90c427b7040582"
+}

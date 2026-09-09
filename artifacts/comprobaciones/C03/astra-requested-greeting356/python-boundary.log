@@ -1,0 +1,18 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_requested_greeting_rejects_an_added_pc_claim_before_shell_publication __
+
+    def test_requested_greeting_rejects_an_added_pc_claim_before_shell_publication() -> None:
+        # The Python composer owns this rejection. A shell-only stub bypasses it.
+        # Preserve the requested greeting when recovering from the unrelated claim.
+        client = _Recorder(["Hola Lina, abr� Spotify.", "Hola Lina."])
+>       assert client.compose_user_message("dime hola Lina", "conversation", CONVERSATION) == "Hola Lina."
+E       AssertionError: assert 'Listo.' == 'Hola Lina.'
+E         
+E         - Hola Lina.
+E         + Listo.
+
+tests\test_compose_contract.py:396: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_compose_contract.py::test_requested_greeting_rejects_an_added_pc_claim_before_shell_publication
+1 failed, 87 deselected in 0.61s

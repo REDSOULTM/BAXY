@@ -1,0 +1,4 @@
+{
+  "method": "Four small child processes, numpy imported before blocking stdin reader. Compare os.read CRT versus _winapi.ReadFile native with same anonymous pipe. Probe os.isatty(0) separately from scipy.signal import/resampling. No audio or LLM;10 s bounded per process. Parent keeps stdin open and sends no bytes.",
+  "criterion": "Determine whether the descriptor CRT lock itself can explain cold native import stalling. Child os._exit is experimental cleanup, not product shutdown."
+}

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\scratchpad\c03-negative-current-selection.py", line 26, in <module>
+    names, _, contracts = _prepare_turn_candidates(candidates)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\baxy_mind\llm.py", line 807, in _prepare_turn_candidates
+    raise ValueError("candidatos de turno inválidos")
+ValueError: candidatos de turno inválidos

@@ -40,6 +40,11 @@ internal sealed record MindTurnDecision(
     /// vetoed an English greeting composed as Spanish and left the turn silent.
     /// </summary>
     public string? ResponseLanguage { get; init; }
+
+    // Presentation disposition only; this never grants an executable effect.
+    public string? ConversationKind { get; init; }
+
+    public string? RecoveryFailureCode { get; init; }
 }
 
 internal sealed record MindArgumentResult(
@@ -116,6 +121,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> _pending = new();
     private readonly SemaphoreSlim _writeLock = new(1, 1);
+    // Model work is serial in Python. Its execution deadline starts only after
+    // the previous request completes, not while waiting behind that request.
+    private readonly SemaphoreSlim _requestLock = new(1, 1);
     private LocalJsonlSidecarProcess? _sidecar;
     private Task? _pump;
     private CancellationTokenSource? _pumpCancellation;
@@ -126,6 +134,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private bool _disposed;
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
+
+    internal bool HasActiveRequest => _requestLock.CurrentCount == 0;
 
     public bool IsPlannerAvailable => IsReady && _plannerAvailable;
 
@@ -146,7 +156,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         Math.Clamp(
             timeout.TotalSeconds >= CpuMessageCompositionRequestTimeout.TotalSeconds
                 ? timeout.TotalSeconds - 5d
-                : timeout.TotalSeconds,
+                : timeout.TotalSeconds - 1d,
             1d,
             MaximumMessageCompositionProtocolBudgetSeconds);
 
@@ -398,7 +408,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         string text,
         IReadOnlyList<(string Role, string Content)> history,
         TimeSpan timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool pendingClarification = false)
     {
         if (!IsTurnDecisionAvailable)
         {
@@ -421,6 +432,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 ["type"] = "turn.decide",
                 ["text"] = text,
                 ["history"] = historyArray,
+                ["pendingClarification"] = pendingClarification,
                 ["uiLanguage"] =
                     CultureInfo.CurrentUICulture.TwoLetterISOLanguageName,
             },
@@ -448,11 +460,28 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
         string question = (string?)reply["question"] ?? string.Empty;
         string response = (string?)reply["reply"] ?? string.Empty;
+        string? conversationKind = null;
+        if (reply["conversationKind"] is JsonNode disposition
+            && (kind != "conversation"
+                || disposition is not JsonValue value
+                || !value.TryGetValue(out conversationKind)
+                || conversationKind is not ("social" or "knowledge" or "followup"
+                    or "unsupported" or "unsupported_language")))
+        {
+            return null;
+        }
         string? responseLanguage = (string?)reply["responseLanguage"] is { } language
             && language is "es" or "en" or "mixed"
                 ? language
                 : null;
         if (!TryParsePreserveObjective(reply, out bool preserveObjective))
+        {
+            return null;
+        }
+        string? recoveryFailureCode = (string?)reply["failure_code"];
+        if (recoveryFailureCode is not null
+            && (recoveryFailureCode is not ("turn_contract_failure" or "turn_runtime_failure" or "turn_unavailable")
+                || effectOperations.Length != 0))
         {
             return null;
         }
@@ -495,6 +524,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 IntentOperations = intentOperations,
                 PreserveObjective = preserveObjective,
                 ResponseLanguage = responseLanguage,
+                ConversationKind = conversationKind,
+                RecoveryFailureCode = recoveryFailureCode,
             }
             : null;
     }
@@ -1094,6 +1125,32 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         CancellationToken cancellationToken,
         bool returnProtocolError = false)
     {
+        // Cancellation is handled by the sidecar control plane independently
+        // of model work and must never wait for an inference to finish.
+        if ((string?)request["type"] is "voice.cancel" or "shutdown")
+        {
+            return await SendRequestAsync(request, timeout, returnProtocolError,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        await _requestLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return await SendRequestAsync(request, timeout, returnProtocolError,
+                cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _requestLock.Release();
+        }
+    }
+
+    private async Task<JsonObject?> SendRequestAsync(
+        JsonObject request,
+        TimeSpan timeout,
+        bool returnProtocolError,
+        CancellationToken cancellationToken)
+    {
         if (!IsReady)
         {
             return null;
@@ -1102,6 +1159,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         string requestId = Interlocked.Increment(ref _requestSequence)
             .ToString(System.Globalization.CultureInfo.InvariantCulture);
         request["id"] = requestId;
+        string requestType = (string?)request["type"] ?? "unknown";
+        string traceId = ShellTraceSink.TurnId;
+        ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "mind.request.start",
+            $"{requestType}.id.{requestId}.budget_ms.{(long)timeout.TotalMilliseconds}");
         var completion = new TaskCompletionSource<JsonObject>(
             TaskCreationOptions.RunContinuationsAsynchronously);
         if (!_pending.TryAdd(requestId, completion))
@@ -1147,11 +1208,20 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         catch (Exception exception) when (exception is not OperationCanceledException
             || !cancellationToken.IsCancellationRequested)
         {
-            // A timed-out request is no longer correlatable: its eventual reply
-            // is discarded below. Keeping IsReady=true would send every retry
-            // into the same wedged sidecar forever. The owner will dispose and
-            // recreate it through WaitForMindReadyAsync.
-            _ready = false;
+            // A late voice-cancel acknowledgement does not invalidate concurrent
+            // model work. The caller receives false and the late reply is discarded.
+            // Model deadlines and transport failures still trigger owner recovery.
+            bool voiceCancelTimeout = exception is OperationCanceledException
+                && requestType == "voice.cancel";
+            if (!voiceCancelTimeout)
+            {
+                _ready = false;
+            }
+
+            string failure = exception is OperationCanceledException
+                ? "request_timeout" : "request_io";
+            ShellTraceSink.Record(ShellTraceScopes.Turn, traceId,
+                "mind.request.failed", $"{failure}.{requestType}.id.{requestId}");
             return null;
         }
         finally
@@ -1228,7 +1298,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
                 if ((string?)message["type"] == "turn.signal")
                 {
-                    if ((string?)message["text"] is { Length: > 0 } signal)
+                    if ((string?)message["id"] is { Length: > 0 } signalRequestId
+                        && _pending.ContainsKey(signalRequestId)
+                        && (string?)message["text"] is { Length: > 0 } signal)
                     {
                         TurnSignalReceived?.Invoke(signal);
                     }

@@ -1,0 +1,56 @@
+[
+  {
+    "index": 0,
+    "language": "en",
+    "text": "It is 07:14.",
+    "seconds": 1.720907029478458,
+    "generationAndProcessSeconds": 0.8440000000118744,
+    "transcript": "It is 714",
+    "wavSha256": "43d76cde3694cf435234127a1e8e4b935ce36e243fe43055c629e207c20c2ed9"
+  },
+  {
+    "index": 1,
+    "language": "en",
+    "text": "The file read failed because the content is invalid UTF-8.",
+    "seconds": 4.367981859410431,
+    "generationAndProcessSeconds": 1.0779999999940628,
+    "transcript": "The file read failed because the content is invalid UTF-8.",
+    "wavSha256": "fdcdc91fa18f9f0c79880c29c85cd9806a9f213eb0d4b0585b7a69cd1aafaf8c"
+  },
+  {
+    "index": 2,
+    "language": "en",
+    "text": "I couldn't read the file because it wasn't found in the sandbox.",
+    "seconds": 4.159002267573696,
+    "generationAndProcessSeconds": 1.110000000000582,
+    "transcript": "I couldn't read the file because it wasn't found in the sandbox.",
+    "wavSha256": "df3213cb11f906a7caf29659c98033dc4bfb0d49e9bdeb0addd32030dc0ea8f7"
+  },
+  {
+    "index": 3,
+    "language": "es",
+    "text": "¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?",
+    "seconds": 3.7695238095238097,
+    "generationAndProcessSeconds": 1.2180000000080327,
+    "transcript": "Hola, aquí Baxi. ¿En qué te puedo ayudar hoy?",
+    "wavSha256": "c1182b324368b3e4c69019b56d15bb596aa98616dc73be7eb9978c5d7b22c88d"
+  },
+  {
+    "index": 4,
+    "language": "es",
+    "text": "Son las 07:13.",
+    "seconds": 1.6280272108843536,
+    "generationAndProcessSeconds": 0.9219999999913853,
+    "transcript": "Son las 7.13.",
+    "wavSha256": "8fb29562939b2ca67e58c94eaa0640f0eec5a6416055523c18156d28a8dbd987"
+  },
+  {
+    "index": 5,
+    "language": "es",
+    "text": "Son las 07:15.",
+    "seconds": 1.686077097505669,
+    "generationAndProcessSeconds": 0.9689999999973224,
+    "transcript": "Son las 7.15.",
+    "wavSha256": "73884411bdde02a543619b97a7b65d150e56ba4b6dd73576b20b9c5613f4cda6"
+  }
+]

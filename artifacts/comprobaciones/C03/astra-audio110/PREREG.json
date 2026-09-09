@@ -1,0 +1,49 @@
+{
+  "utc": "2026-09-07T10:12:17.765040+00:00",
+  "method": "Same source108, Qwen3.5 override, full registered voice stack with wake on. Real desktop via py main.py, Computer Use inputs, no diagnostic PythonPath/hook. Three inherited technical clock requests ES/EN/mixed, not human reserve. Record microphone(default MME Realtek input1,16kmono) and separate WASAPI loopback(default Realtek endpoint13,48kstereo) outside repository for up to180s. Original audio is level0/muted true; temporarily use0.30/unmuted and restore both in recorder finally. Capture greeting and responses; inspect acoustic energy/transcription locally after stopping product, never count loopback as room/microphone evidence. Resource sampler attaches only to newly launched App before readiness; no other models/builds. No voice-input acceptance yet.",
+  "cases": [
+    "Dime la hora.",
+    "What time is it?",
+    "Dime la hora, please."
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "modelSha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "profile": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\dev-mente-v2",
+  "sourceFiles": {
+    "src/baxy_mind/llm.py": "e414ced302b7ba1e2191aaff6b5994f4c562a8a69ffb6ba5b686591d79e7213d",
+    "src/baxy_mind/__main__.py": "fe254d2d87fb3b52e471719508d4751196750acd62e60c3b45bd19b3a063a244",
+    "src/Baxy.App/MainWindowViewModel.cs": "4818e9de57df8fd6268122c40ccdeb0369fd993eba9e651fddb3ea3cabc45e46",
+    "src/Baxy.App/FieldProductChannel.cs": "28e4663a6cc3959c3a315a34deade1361ec4d42a2d93c0c054a8af1b2950cd7f",
+    "src/Baxy.App/MindSidecarClient.cs": "4dcef3872f842a02c8b5deb0aa48114311d92772e5bb0afb971b878500ab10a8",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "073911d52e5c5b48865c6de2d1c693a522b59103465a2e9b7efead35abda3d61",
+    "src/Baxy.FieldUi/src/types.ts": "3f48fb8fdcfde8cb5d4ef09858f1e4422d277ae0443c30ecfbad6de959b10bb1",
+    "src/Baxy.FieldUi/src/components/NeuralGraph.tsx": "86b9b2e1d40929a016c5224f0c68f40749503b8884a43267143312ce12b850d7",
+    "src/Baxy.FieldUi/src/components/FieldCenter.tsx": "a65371dc5c5afc57b2eb375c7105d1de3134c112b7293f17cc12b30d5ed4461b",
+    "src/Baxy.FieldUi/src/components/LogoMark.tsx": "39b70aa8195f79bb5cad2c28f5efe3e44d0a63e8ead9daf04a8d7d1649512f59",
+    "src/Baxy.FieldUi/src/App.tsx": "f729c4ed3af86fe48d19f1a0d201a001348eba5ae7e468b6051b1da5a1eb7313",
+    "src/Baxy.FieldUi/src/styles/prototype.css": "56cb6012613d9e9cf2f348bc49634ef44b35cc775020caee4d09280ba29f727c",
+    "src/Baxy.FieldUi/src/hooks/useEventStream.ts": "dd855753ae0b001a4fe9d499aeb09a83b048dacd32054d4c1456642811683b45",
+    "src/Baxy.FieldUi/ORIGIN.md": "07b58df55b68b38d9d61429f2b0e68bf01827eb39c7ac782dd848e6144cd6da8",
+    "src/Baxy.FieldUi/dist/index.html": "01d05090c87b6100703765f2a80051ebe6747ca260b0f6362b25826cd6a9320a",
+    "src/Baxy.FieldUi/dist/assets/index-Dh8gdcnz.js": "3526427606d8fd7395a0b55b1c2ab270c3282d65ab124568205570e50cbc9d0f",
+    "src/Baxy.FieldUi/dist/assets/index-B7EBy9jN.css": "a5262cad74ec68e7c2836b2ada0dd53a06dd016f58f89793657a88b1887561c1",
+    "src/baxy_mind/voice_output.py": "d123946278b2e70d897216e6a44ba24c5f0b505d138732e7cb31e0898d9f4afa",
+    "src/baxy_mind/voice.py": "6cf3b754cd8b9b987847faa7864fb664847734dac16f8f81f3a742658dd84332",
+    "src/baxy_mind/voice_aec.py": "400d9db8ef27b65711470f229c64a25531343a056965a774d2371ae73e07e166",
+    "scratchpad/c03-capture-audio110.py": "b8eb090353c73a513a4c54385c5bc56e1fa4d46ae8329e1ed7c2273cc3fc791c"
+  },
+  "heritage": [
+    "ASTRA-TRAMO-45.md",
+    "PRUEBAS_VOZ_UI_C03.md",
+    "PRUEBAS_UI109.md"
+  ],
+  "primarySource": "https://python-sounddevice.readthedocs.io/en/0.5.5/api/streams.html",
+  "primarySourceConsulted": "2026-09-07; same installed0.5.5; InputStream.read with owned stream, no callback",
+  "notAcceptance": [
+    "fresh human100",
+    "physical speech input",
+    "registered model promotion",
+    "full gate"
+  ]
+}

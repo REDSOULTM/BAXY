@@ -1,0 +1,391 @@
+{
+  "utc": "2026-09-07T19:56:03.477843+00:00",
+  "public": [
+    {
+      "path": "scratchpad\\c03-dsp236.py",
+      "sha256": "87774043f93dad41400af73673a738ced3d8156670799c22e3ab899d6182f997"
+    },
+    {
+      "path": "scratchpad\\c03-product237.py",
+      "sha256": "b1820894e20fc96a0b4023af6d1dec2ae70c2cade7adf3325900f8966f2f2130"
+    },
+    {
+      "path": "scratchpad\\c03-dsp238.py",
+      "sha256": "e9d844bfaa2ac5975261d73a672f2a82b6632a945b2463254e57132dd696fcea"
+    },
+    {
+      "path": "scratchpad\\c03-product239.py",
+      "sha256": "c21a4a9bb91f3bf362012da8c54d1968b6e282c93f50c7842e3ab8e9f2102ab6"
+    },
+    {
+      "path": "scratchpad\\c03-voice240.py",
+      "sha256": "158cdba463079b2756ec104ad3c89c68fa4a618713dc6bb1fb585c60dd9d7529"
+    },
+    {
+      "path": "scratchpad\\c03-recognizer241.py",
+      "sha256": "0eceba54c88820bc9cebc4b6302340712ca385eeea21a8973dfe31a4138bc5a7"
+    },
+    {
+      "path": "scratchpad\\c03-seal241.py",
+      "sha256": "708660e8642c180c6772c18c3785ce823ebf0ed32084b0f5803c853a28f4d534"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\COMPARACION_DTLN236_237.md",
+      "sha256": "2511ebffd59ee9cd4803f76e783db60ec30b94f6518629e53cd267b90590534e"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\COMPARACION_LITERAL237.md",
+      "sha256": "366dcb63cdda02e1b81c60b5435696bd227ef26422ecd239d627fb0afd493b4f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\RESULTADOS_DTLN238_241.md",
+      "sha256": "3a79b472fdeb8f94107baa830d40ad1eaec15be5bbbdcb818d786a062eadbbb9"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\COMPARACION_LITERAL239_241.md",
+      "sha256": "61a78313f417fa1cfc617ffaf718c8620f208f5bb7cad680cc71312af7e9ad2b"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dsp236\\COMPLETE.json",
+      "sha256": "2a19022aa7963f5f1cd7ee69d7179b2c751f9c78aa4e0385ba828e260a33a730"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dsp236\\PREREG.json",
+      "sha256": "106296ba0ff7edbeff206de63d8f8fa6e095a5e98e05e5cb137d96b5050f2760"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dsp236\\RESULTS.json",
+      "sha256": "1a9b1485fbc27bb7473d9a0db7ffbb0506afa6e4a25720efa769894f1a66e3ee"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-product237\\COMPLETE.json",
+      "sha256": "1fd103bb0354001528b8e8f36e127547465bc4ee970ded4183933a7a32e923f1"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-product237\\PREREG.json",
+      "sha256": "68da37adab0b9ae4de16f69925316286184dd684923a0e371c54a6e1676c70eb"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-product237\\RESULTS.json",
+      "sha256": "e8025b3df5fbaeb5a4f7b3d8197af40fc896c01aef7fa8c53ae8eb129a779fd9"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dsp238\\COMPLETE.json",
+      "sha256": "69a3a649ec6fb17db34e99960b1bb39a5812cf0305c8fcaf68d79eb2787e653a"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dsp238\\PREREG.json",
+      "sha256": "6ef1c281b0b43c936959e20f1b500c64901a7a1efb63c8fe13ee962e2679037a"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-dsp238\\RESULTS.json",
+      "sha256": "0d2e1571db46566e4183247d67bb56c9f4883b04de9d2e9402ec28460baa7bbc"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-product239\\COMPLETE.json",
+      "sha256": "32abeda354af901157bdb38b777d62ebd47131de375e9f9b268c669402fb48e5"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-product239\\PREREG.json",
+      "sha256": "8ee77e07b94d867191fd791741c7b8454c7d343ba919b26e1b8cb28d7daba890"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-product239\\RESULTS.json",
+      "sha256": "aeb05873522e44bb5fed66de1aeb1656af2be789f8763190ed2d09afeb0effd9"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice240\\AUDIO_SETUP.json",
+      "sha256": "fd4b406eb897d47f26aebd98ba8925938fd9683f222a483814e145561f215b0f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice240\\COMPLETE.json",
+      "sha256": "c008ab0a2b1001cf81b00cd08b12c53e144c2cd24e04a33ae2f53da904050fde"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice240\\PREREG.json",
+      "sha256": "1930f46886a2c8bc34dac1bdc5723dd9dcdd6d93d2ab0a9a737838a26039d86a"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice240\\RESULTS.json",
+      "sha256": "97c48e013d370d7316be9759aa3c7c4d6010dee364e60fb792d8c44d02b3c403"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-voice240\\TRACE_METRICS.json",
+      "sha256": "25a8feb5e9b7ec361ab8fa05589aa50685773f13387772893d885a7555bf68c1"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-recognizer241\\COMPLETE.json",
+      "sha256": "1ac6dd618c599651eecac4385019e472d53bf7a44a417de51ad246511a72df15"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-recognizer241\\PREREG.json",
+      "sha256": "16d922bbc4eb76f48a884f596d98c5db21312201528a25edf2e3b6c3dd8d22d0"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-recognizer241\\RESULTS.json",
+      "sha256": "8e0923dbe5d65b08f48e0c57f3105098aa1caf1d7ccdcb3bcce785eef284b039"
+    }
+  ],
+  "private": [
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\echo221-speex.npz",
+      "sha256": "987d531ecbd26d58703cf119560f29bed82b73961604643dcbea0a7b69df14ed"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\echo221-dtln128.npz",
+      "sha256": "7bfc460463272f59fe9815853798f809b6729f9115dad9db3a084443406e555f"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\echo232-speex.npz",
+      "sha256": "c35b8775cec8cee4d4e3a8aed785c21791ec66431bfef44f89f0e3aa5af17e6d"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\echo232-dtln128.npz",
+      "sha256": "2f5b95dc9fc6c6f86ab8f32e9e1bdd93b16861ab4aad4bb0e31309e5837e3a5a"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h0-near-speex.npz",
+      "sha256": "d791db3ccb98912d2cd6d06d8a3dd5de654e9ee3a9e506fed81689593cf1b1ae"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h0-near-dtln128.npz",
+      "sha256": "5a5412db15ad622853472c80221f558ab6acc3b958a3a9ce44cc09240257dc5e"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h0-raw-speex.npz",
+      "sha256": "54423cb1cc946d4fcc8a986d91b80bd7ddf87fd2ff3fe90a09ee9703c7ed4616"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h0-raw-dtln128.npz",
+      "sha256": "f20079c27586947041421767b46818b99153a7b10a7f0a3552a734b70de00fe4"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h1-near-speex.npz",
+      "sha256": "e94ce7438766e163f9c9f4ed8ae3f887e91163bec5f14e6de9dbf13779cdfad2"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h1-near-dtln128.npz",
+      "sha256": "28a5e21609fac5e8b4a714fec247aad4729fe0f2caebda65183901f22ee54a48"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h1-raw-speex.npz",
+      "sha256": "fea575af5381389a6507eb658415047abf6f324a2fa72135fe4ca3889c7da5f2"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h1-raw-dtln128.npz",
+      "sha256": "c936677a5265f5cb9ee39f46d1abbdf55416466cd401d04df174fab3236536c5"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h2-near-speex.npz",
+      "sha256": "4022229841b29c7175af60fa4f273f979491d023123a9d7d2a03fe9ff70b0620"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h2-near-dtln128.npz",
+      "sha256": "e70cdff1b3738cc0de3e1b44ab11ae5bf798bb56a1e214042412dd2278637d1e"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h2-raw-speex.npz",
+      "sha256": "d749f782d1d8ebe73f216897a13ac627669537a394417d62bf8b24305317fe15"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h2-raw-dtln128.npz",
+      "sha256": "2e0e35add9386c7d8121400f50344a41c73273bffafd88c6fbcc54c57622b6fa"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h3-near-speex.npz",
+      "sha256": "8533e300fa1efca994a448c7c1d7bbfb17e8b54f875f3a488ededa178016dbf2"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h3-near-dtln128.npz",
+      "sha256": "e9a291e3ddc9a13e5b628be8edb0928a17513ad6fbb7aa3ff47faf837bff8868"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h3-raw-speex.npz",
+      "sha256": "2db8883fcefd60859e05f337670beb9887ac18d3ff5399b4cab0b5d209d60516"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp236-private\\h3-raw-dtln128.npz",
+      "sha256": "4f328a40f5d0808d19c4dbb1fd30c2ab5c7c3f65f44e3e9325b32e03971d67f2"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\echo221-speex.npz",
+      "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\echo221-dtln128.npz",
+      "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\echo232-speex.npz",
+      "sha256": "c08559a6da4d1e13e5cf96f1eed20f469d312cf3e529f076918c94e23526168b"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\echo232-dtln128.npz",
+      "sha256": "32a5c5801af663d72436ee5ab0a75cbb6a28b6c669a1176d8d2944443de65466"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h0-near-speex.npz",
+      "sha256": "a6083359c5fda98ab04e30ed0b89b54de4abb7a6aa0c69c37ee65941eee97b2e"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h0-near-dtln128.npz",
+      "sha256": "b358c1c387b42c6ef1d29aa9bdcb8f9584b3e115c426c9a265ed809cb81769c4"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h0-raw-speex.npz",
+      "sha256": "ab13d5699e8c735d29d237b4dc4f272a1dcfd89577e453cb2ae6e94f7e9e10e9"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h0-raw-dtln128.npz",
+      "sha256": "0c7e74cb598ab034c597f4fb591093cd4129a1266383bf3418cfde60f83b0f99"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h1-near-speex.npz",
+      "sha256": "8b507e49ac716828139d928f1561814c66e2acf5d83b7138a7da3912d38dfa55"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h1-near-dtln128.npz",
+      "sha256": "7de1cfb470d5647644fc1cb82e0bcf7685021248cdddeca55b8bdcad99202db0"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h1-raw-speex.npz",
+      "sha256": "a6c22113f08287c487003df146ad41786a0e9f8110c9da7c18900bdeddcf43a3"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h1-raw-dtln128.npz",
+      "sha256": "cca72a8740d762514f48b28cddac424e7d7e3ecdc6ade18f4b8d5d26c59076c1"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h2-near-speex.npz",
+      "sha256": "ab16a30669713cae83c489dcefcd93aed758e18c4310b157d6828ddaff9b895d"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h2-near-dtln128.npz",
+      "sha256": "11f3728488508704dd4e626c9d299048e80967ccbd1cb5ea38f70fe51565fe17"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h2-raw-speex.npz",
+      "sha256": "4b8275915a854051c8c0e135e05b2e1b26cb260c50dc680d0b7676386409c2de"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h2-raw-dtln128.npz",
+      "sha256": "79f20dd83a5cdf5b6ef01bd9ed79bf275132bb2d2827e0e6a44cab6945fa029e"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h3-near-speex.npz",
+      "sha256": "dedaf7274f3f487446c4d63f80b637b0aeec2421d4c672bb17ff15b29a2fc267"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h3-near-dtln128.npz",
+      "sha256": "01667cfca379f78aec2daffde5df0b55b02d0031d11d6219429758c93efb959b"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h3-raw-speex.npz",
+      "sha256": "0c165c2a77d2702f25139018f392a5f6a25ef00501d28487a95685a147d1e853"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product237-private\\h3-raw-dtln128.npz",
+      "sha256": "9ef2a8580fabbe8d3250baf10407e1c8e6f06f13544ac26329dbabb480de1b91"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\echo221-dtln512.npz",
+      "sha256": "3ec8e973f445c6d5093dee18468fdafbd72505a48d7bc9aee6dee406a158f889"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\echo232-dtln512.npz",
+      "sha256": "6c51b603f50b8e906704fc9edee219213c43893cde3da5bf33ed44482a221134"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h0-near-dtln512.npz",
+      "sha256": "e431f52bc7d36713be2b42b1e368160b976a8743066f9463839df8631e927137"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h0-raw-dtln512.npz",
+      "sha256": "581da3ccdae66804ebf8a108ff1fddbcd13ada370e10e74d33ff21a0c19bd6ca"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h1-near-dtln512.npz",
+      "sha256": "8e99a4f46101ac72cd77098d79a7397ef827499d1e56075dd8a8e69d7645ac71"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h1-raw-dtln512.npz",
+      "sha256": "ea66dc2da107caf77661ce4aaa74a2d2f35a2b7d2496b3047737d0c8edaa09b9"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h2-near-dtln512.npz",
+      "sha256": "b5002e49a4e4253ca01d826e9fb273d63a08f2c91229aa706da41084549c6f80"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h2-raw-dtln512.npz",
+      "sha256": "a95d2836feeb274854c81a9528d3f87a181dbc426c40b5a617de0ad95203e520"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h3-near-dtln512.npz",
+      "sha256": "adf266a4f59986be85cb02259951f55d50c2e5a3ecf3096537af10bf7d22693b"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dsp238-private\\h3-raw-dtln512.npz",
+      "sha256": "add9b1a7f1590f1199bc66019fda0d10b0f3049b49e30a63b1e9ace59b0be2ec"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\echo221-dtln512.npz",
+      "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\echo232-dtln512.npz",
+      "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h0-near-dtln512.npz",
+      "sha256": "b5a2ddefc246ba0339c02eebbed594649e537d3f87af5c4aac667a4d862e06f2"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h0-raw-dtln512.npz",
+      "sha256": "7b402e026c530880706ce25426bbfd8b94f3838c2f3e0b5fcf6a0f10e0baa7e7"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h1-near-dtln512.npz",
+      "sha256": "fe4984c2ab3f37e28eea9cec25c32bd1b09f82f24e973838c96adc497de4c51e"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h1-raw-dtln512.npz",
+      "sha256": "2c441beb35f42f2cde75ffc1f14d3eeee3d94567fd480c208efc920bb86d6263"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h2-near-dtln512.npz",
+      "sha256": "dea2888fed0ccc26664baf318966b9d4b4f4edfc39bf624582975265d5cd956d"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h2-raw-dtln512.npz",
+      "sha256": "ea54718b1df1058de4aee4ba36c1c1cdeb9a5c0cd5cbc7796fe2cf1f0b0c9283"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h3-near-dtln512.npz",
+      "sha256": "0a95c6c03c2c4cc0d6d4871f630d7bf81fe01d7334d1a0949d53b22966382847"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h3-raw-dtln512.npz",
+      "sha256": "e8d7b2fac8088e93f1195389dc10ce31b078e83751deb18f76097271c58115f2"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice240-private\\EVENTS.json",
+      "sha256": "66b262736699c70b3001262e08aeca28d4703b04cdc2856546c06b3820c1a747"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice240-private\\generated240.json",
+      "sha256": "0a1647fb9aecf89d9dc9479a09a5d54e6817035fb6414a54ec00f1ed87c6c7fa"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice240-private\\generated240.npz",
+      "sha256": "a50133691880c3ed300516473c5ac4ddaffde5c98c13aa4f43e205c75e3531c4"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice240-private\\STATUS.json",
+      "sha256": "cfdcdc043a6fd51660f2e668407d631dc17d955657c9df141661fccdf751e708"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-voice240-private\\tap240.npz",
+      "sha256": "f9e40666b5f5cc4d3ecaf4d2e9f89b670fb918dc3f9667710913dcc56314d2a5"
+    }
+  ]
+}

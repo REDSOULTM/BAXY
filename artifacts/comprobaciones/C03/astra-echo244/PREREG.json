@@ -1,0 +1,7 @@
+{
+  "method": "Exact full1317frames243 through fresh integrated DTLN512 and frozen adapter182(512), compare all clean samples and returned microphone/reference pairs. Compare recorded actual guard calls. No model, thresholds, gain or alignment change. Save pairs for real segmentation replay.",
+  "inputSha256": "4f3641dd69e19259c37348660ba200c2aa47fdbc5d159a737f12de709c24e9d0",
+  "scriptSha256": "eb9e1a6ddfe26e87fc28a14670096f6f012167354e5cd315a5301bb237cdb3df",
+  "sourceSha256": "c99e4fa0d83d2961560ed030153b49fd230d26334b20e56ee4d37e9714ba8c11",
+  "adapterSha256": "245715cb0cf4163742323ac8d974153b257bcaeb89e4821b2462541d3ba8780e"
+}

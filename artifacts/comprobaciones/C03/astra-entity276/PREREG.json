@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-07T23:41:43.934014+00:00",
+  "hypothesis": "Exact app-name entity tokens dominate E5 toward Steam game operations; replacing only an authenticated app span with its type in the retrieval query can preserve requested verb semantics.",
+  "method": "Three reused development literals, actual catalog occurrence pattern, original E5/documents/ranking. Compare full request with typed-entity query only. This does not replace model/user text or grant effect authority.",
+  "criteria": "app.open reaches shortlist and ranks ahead of unrelated games for all three inputs. Broader regression required; no product adoption yet.",
+  "entityType": "installed application",
+  "inputs": [
+    "Tengo en mente que abras steam",
+    "abre steam",
+    "Si, abre steam"
+  ]
+}

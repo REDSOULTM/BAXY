@@ -1,0 +1,9 @@
+....F....................                                                [100%]
+================================== FAILURES ===================================
+_ test_explicit_need_after_acknowledgement_preserves_requested_effect[perfecto, necesito lo dessilencies pls-operations4] _
+tests\test_effect_intent.py:7075: in test_explicit_need_after_acknowledgement_preserves_requested_effect
+    assert result is not None and result.operations == operations
+E   assert (None is not None)
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_explicit_need_after_acknowledgement_preserves_requested_effect[perfecto, necesito lo dessilencies pls-operations4]
+1 failed, 24 passed, 1810 deselected in 1.01s

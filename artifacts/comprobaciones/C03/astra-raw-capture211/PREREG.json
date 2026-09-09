@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-07T18:00:44.431143+00:00",
+  "scriptSha256": "95ec923fcfd15cb8a4dec8de7c2051e9ad77779dc83c3851e26cc311d21e0575",
+  "sourceSha256": "d072466450c409a3d74b61ff8c0a21dce39d68b709947da622c66907fda95f1a",
+  "playbackSha256": "7bfe695e57c2ea677d48de3d925db19de1da1cde47422f0b55b04b8dd9a5e40b",
+  "method": "Simultaneous default/RAW 16k mono512 WASAPI callbacks; same device, autoconvert, ADC anchoring and product loopback4512. One fixed30s playback of four original187 Piper clips at seconds2/9/16/23. No live cancel/filter/ASR/model/wake.",
+  "comparison": "Capture actual per-stream APO effects before starting; require normal AEC ON and RAW no AEC. Analyze both captured inputs with unchanged Speex/VAD/guard offline. No threshold or gain sweep.",
+  "limitation": "Pure playback echo only; no simultaneous physical human voice, no acceptance, no causal claim about historical183 yet.",
+  "levelScalar": 0.3,
+  "maximumSeconds": 40,
+  "intervalsSeconds": [
+    [
+      2,
+      5.792743764172336
+    ],
+    [
+      9,
+      11.069206349206349
+    ],
+    [
+      16,
+      17.76734693877551
+    ],
+    [
+      23,
+      24.976326530612244
+    ]
+  ],
+  "sourceCaptureSha256": "1005f17b4358940dada0421019e25f2d97d4d656c236d6dbd4f84f22fcaacdff",
+  "sourceLoopbackSha256": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+  "portaudioSha256": "ec080194f01e4095c7fb43dbd7ed05af922c5b34295056a9ff56782741d65481"
+}

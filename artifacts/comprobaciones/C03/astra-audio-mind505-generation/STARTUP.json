@@ -1,0 +1,48 @@
+{
+  "seconds": 24.75,
+  "events": [
+    {
+      "event": "resources_built",
+      "pid": 49812,
+      "seconds": 1.61,
+      "semantic": false
+    },
+    {
+      "event": "corpus_build_start",
+      "pid": 49812,
+      "seconds": 1.61
+    },
+    {
+      "event": "router_ready",
+      "pid": 49812,
+      "seconds": 24.125
+    },
+    {
+      "event": "corpus_build_end",
+      "pid": 49812,
+      "seconds": 24.328,
+      "diagnostics": {
+        "state": "ready",
+        "failure": "",
+        "count": 25156,
+        "dimensions": 384,
+        "source_sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+        "encoder_identity": "intfloat/multilingual-e5-small|query-prefix|normalize=true|dimensions=384",
+        "abstention_policy": {
+          "state": "loaded",
+          "failure": "",
+          "calibration_fingerprint": "7fddf0c569340762cf1728a3e71dbe6790fdb8b98e0d78b51d28b96ed61cdcab",
+          "calibration_rows": 3460,
+          "authority": "conversation_signal_or_abstain_only",
+          "retrieval_enabled": true
+        }
+      }
+    },
+    {
+      "event": "resources_built",
+      "pid": 49812,
+      "seconds": 28.328,
+      "semantic": true
+    }
+  ]
+}

@@ -9,6 +9,8 @@ internal interface IWindowsAudioEndpoint : IDisposable
 {
     string EndpointId { get; }
 
+    string? ReadDisplayName();
+
     float ReadVolumeScalar();
 
     bool ReadMuted();
@@ -127,6 +129,7 @@ internal sealed partial class WindowsCoreAudioPlatform : IWindowsAudioPlatform
 
             WindowsCoreAudioEndpoint endpoint = new(
                 endpointId,
+                device,
                 volume,
                 volumeLease,
                 deviceLease,
@@ -215,6 +218,50 @@ internal sealed partial class WindowsCoreAudioPlatform : IWindowsAudioPlatform
         return typed;
     }
 
+    private static unsafe string? ReadEndpointDisplayName(IMmDevice device)
+    {
+        // Core Audio exposes the endpoint label through a read-only property
+        // store. It is display data, separate from the private endpoint ID.
+        int result = device.OpenPropertyStore(0, out nint storePointer);
+        ReleaseOnFailure(result, storePointer);
+        ThrowForHResult(result, AudioControlErrorCodes.EndpointUnavailable);
+        IAudioPropertyStore store = WrapUnique<IAudioPropertyStore>(storePointer, out IDisposable lease);
+        using (lease)
+        {
+            AudioPropertyKey key = new(new Guid("a45c254e-df1c-4efd-8020-67d146a850e0"), 14);
+            // PROPVARIANT occupies 24 bytes on 64-bit Windows (16 on 32-bit).
+            // Allocate the larger size with native alignment; VT_LPWSTR's
+            // pointer is at byte offset 8 on both architectures.
+            ulong* value = stackalloc ulong[3];
+            new Span<ulong>(value, 3).Clear();
+            try
+            {
+                result = store.GetValue(in key, (nint)value);
+                ThrowForHResult(result, AudioControlErrorCodes.EndpointUnavailable);
+                ushort variantType = *(ushort*)value;
+                if (variantType == 0)
+                {
+                    return null; // S_OK + VT_EMPTY means the property is absent.
+                }
+
+                if (variantType != 31)
+                {
+                    throw new AudioPlatformException(AudioControlErrorCodes.EndpointUnavailable);
+                }
+
+                nint textPointer = *(nint*)((byte*)value + 8);
+                string? name = textPointer == 0 ? null : Marshal.PtrToStringUni(textPointer);
+                return string.IsNullOrWhiteSpace(name) || name.Length > 512 || name.Any(char.IsControl)
+                    ? null
+                    : name;
+            }
+            finally
+            {
+                _ = PropVariantClear((nint)value);
+            }
+        }
+    }
+
     private static unsafe void ReleaseIUnknown(nint pointer)
     {
         nint vtable = *(nint*)pointer;
@@ -264,6 +311,9 @@ internal sealed partial class WindowsCoreAudioPlatform : IWindowsAudioPlatform
     private static partial int CoInitializeEx(nint reserved, uint coInit);
 
     [LibraryImport("ole32.dll")]
+    private static partial int PropVariantClear(nint value);
+
+    [LibraryImport("ole32.dll")]
     private static partial void CoUninitialize();
 
     [LibraryImport("ole32.dll")]
@@ -293,6 +343,7 @@ internal sealed partial class WindowsCoreAudioPlatform : IWindowsAudioPlatform
 
     private sealed class WindowsCoreAudioEndpoint(
         string endpointId,
+        IMmDevice device,
         IAudioEndpointVolume volume,
         IDisposable volumeLease,
         IDisposable deviceLease,
@@ -305,6 +356,12 @@ internal sealed partial class WindowsCoreAudioPlatform : IWindowsAudioPlatform
         private ComInitialization _initialization = initialization;
 
         public string EndpointId { get; } = endpointId;
+
+        public string? ReadDisplayName()
+        {
+            ObjectDisposedException.ThrowIf(_deviceLease is null, this);
+            return ReadEndpointDisplayName(device);
+        }
 
         public float ReadVolumeScalar()
         {
@@ -403,6 +460,33 @@ internal partial interface IMmDevice
 
     [PreserveSig]
     int GetState(out uint state);
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal readonly struct AudioPropertyKey(Guid formatId, uint propertyId)
+{
+    public readonly Guid FormatId = formatId;
+    public readonly uint PropertyId = propertyId;
+}
+
+[GeneratedComInterface(Options = ComInterfaceOptions.ComObjectWrapper)]
+[Guid("886d8eeb-8cf2-4446-8d02-cdba1dbdcf99")]
+internal partial interface IAudioPropertyStore
+{
+    [PreserveSig]
+    int GetCount(out uint count);
+
+    [PreserveSig]
+    int GetAt(uint index, out AudioPropertyKey key);
+
+    [PreserveSig]
+    int GetValue(in AudioPropertyKey key, nint value);
+
+    [PreserveSig]
+    int SetValue(in AudioPropertyKey key, nint value);
+
+    [PreserveSig]
+    int Commit();
 }
 
 [GeneratedComInterface(Options = ComInterfaceOptions.ComObjectWrapper)]

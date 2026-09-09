@@ -1,0 +1,145 @@
+[
+  {
+    "mode": "default",
+    "speex": false,
+    "frames": 1020,
+    "speakingFrames": 300,
+    "speechFramesAll": 229,
+    "speechFramesSpeaking": 229,
+    "guardTrueSpeaking": 54,
+    "candidateInterruptions": [
+      {
+        "frame": 97,
+        "playbackSeconds": 2.4091669392219046
+      },
+      {
+        "frame": 177,
+        "playbackSeconds": 4.97106763922784
+      },
+      {
+        "frame": 189,
+        "playbackSeconds": 5.353718939222745
+      },
+      {
+        "frame": 312,
+        "playbackSeconds": 9.290942539228126
+      },
+      {
+        "frame": 319,
+        "playbackSeconds": 9.514963939232985
+      },
+      {
+        "frame": 538,
+        "playbackSeconds": 16.522456239224994
+      },
+      {
+        "frame": 557,
+        "playbackSeconds": 17.131438339216402
+      },
+      {
+        "frame": 567,
+        "playbackSeconds": 17.45099093922181
+      },
+      {
+        "frame": 752,
+        "playbackSeconds": 23.37108763922879
+      },
+      {
+        "frame": 757,
+        "playbackSeconds": 23.53155223921931
+      }
+    ],
+    "speakingInputRms": 0.005151834193359972,
+    "speakingOutputRms": 0.005151834193359972,
+    "dspP99Ms": 0.007405000942526358,
+    "sha256": "93834dc85a3a4c248d43a2e66fa091d662af47a0cf75d9600503ec288ceb0eb7"
+  },
+  {
+    "mode": "default",
+    "speex": true,
+    "frames": 1020,
+    "speakingFrames": 300,
+    "speechFramesAll": 26,
+    "speechFramesSpeaking": 26,
+    "guardTrueSpeaking": 54,
+    "candidateInterruptions": [
+      {
+        "frame": 97,
+        "playbackSeconds": 2.3771669392153854
+      }
+    ],
+    "speakingInputRms": 0.005151834500024817,
+    "speakingOutputRms": 0.0019487010892806423,
+    "dspP99Ms": 0.24423899987596076,
+    "sha256": "b8dfe183252fba6c8e696d41b5180276b6b4c8ed9e4b67072bc6f0fb4c8cb6dd"
+  },
+  {
+    "mode": "raw",
+    "speex": false,
+    "frames": 1021,
+    "speakingFrames": 300,
+    "speechFramesAll": 226,
+    "speechFramesSpeaking": 226,
+    "guardTrueSpeaking": 63,
+    "candidateInterruptions": [
+      {
+        "frame": 97,
+        "playbackSeconds": 2.409192339226138
+      },
+      {
+        "frame": 188,
+        "playbackSeconds": 5.32286053923599
+      },
+      {
+        "frame": 311,
+        "playbackSeconds": 9.257361039228272
+      },
+      {
+        "frame": 318,
+        "playbackSeconds": 9.482590439234627
+      },
+      {
+        "frame": 537,
+        "playbackSeconds": 16.490842939223512
+      },
+      {
+        "frame": 556,
+        "playbackSeconds": 17.098365539233782
+      },
+      {
+        "frame": 565,
+        "playbackSeconds": 17.386013939219993
+      },
+      {
+        "frame": 751,
+        "playbackSeconds": 23.33949513922562
+      },
+      {
+        "frame": 755,
+        "playbackSeconds": 23.467511039227247
+      },
+      {
+        "frame": 776,
+        "playbackSeconds": 24.139095539227128
+      }
+    ],
+    "speakingInputRms": 0.006885686169680817,
+    "speakingOutputRms": 0.006885686169680817,
+    "dspP99Ms": 0.010640005348250233,
+    "sha256": "6af7df4c98686ffe34ade9360c60d7312d25faba2f868b610735605cb4c40692"
+  },
+  {
+    "mode": "raw",
+    "speex": true,
+    "frames": 1021,
+    "speakingFrames": 300,
+    "speechFramesAll": 27,
+    "speechFramesSpeaking": 27,
+    "guardTrueSpeaking": 63,
+    "candidateInterruptions": [],
+    "speakingInputRms": 0.006886400998216456,
+    "speakingOutputRms": 0.0019075202054103623,
+    "dspP99Ms": 0.2946600026916712,
+    "sha256": "c39606bb4fd631f2f1f8db37e0163c5abcf4a6c66683ebbcd825d2f9dd74388e"
+  }
+]

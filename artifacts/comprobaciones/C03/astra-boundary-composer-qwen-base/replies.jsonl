@@ -1,0 +1,9 @@
+{"stage": "guarded", "id": "unsupported-1", "request": "Abre EstudioC03Inexistente.", "response": "Este pedido está fuera de lo que hago en este PC.", "error": null, "finishReason": null, "seconds": 0.766}
+{"stage": "guarded", "id": "unsupported-2", "request": "Open EstudioC03Inexistente.", "response": "This is outside what I do on this PC.", "error": null, "finishReason": null, "seconds": 0.281}
+{"stage": "guarded", "id": "unsupported-3", "request": "Open EstudioC03Inexistente, por favor.", "response": "No puedo abrir EstudioC03Inexistente, eso está fuera de mi ámbito.", "error": null, "finishReason": null, "seconds": 0.453}
+{"stage": "guarded", "id": "unsupported-4", "request": "Abre la aplicación EstudioC03.", "response": "No puedo abrir la aplicación EstudioC03.", "error": null, "finishReason": null, "seconds": 0.297}
+{"stage": "guarded", "id": "unsupported-5", "request": "Open the application EstudioC03.", "response": "This is outside what I do on this PC.", "error": null, "finishReason": null, "seconds": 0.266}
+{"stage": "guarded", "id": "unsupported-6", "request": "Open la aplicación EstudioC03, please.", "response": "No puedo abrir la aplicación EstudioC03.", "error": null, "finishReason": null, "seconds": 0.344}
+{"stage": "guarded", "id": "unsupported-7", "request": "Abre el archivo AusenteC03.", "response": "Ese archivo no está en mi ámbito de trabajo.", "error": null, "finishReason": null, "seconds": 0.297}
+{"stage": "guarded", "id": "unsupported-8", "request": "Open the file MissingC03.", "response": "This is outside what I do on this PC.", "error": null, "finishReason": null, "seconds": 0.265}
+{"stage": "guarded", "id": "unsupported-9", "request": "Open el archivo MissingC03, please.", "response": "No puedo abrir el archivo MissingC03.", "error": null, "finishReason": null, "seconds": 0.313}

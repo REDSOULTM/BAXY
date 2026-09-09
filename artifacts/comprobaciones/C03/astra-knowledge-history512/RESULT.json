@@ -1,0 +1,43 @@
+{
+  "utc": "2026-09-08T23:09:55.695931+00:00",
+  "baseline": {
+    "failed": 6,
+    "passed": 1,
+    "seconds": 2.66
+  },
+  "focal": {
+    "passed": 7,
+    "seconds": 0.76
+  },
+  "first_owners": {
+    "failed": 4,
+    "passed": 3402,
+    "subtests_passed": 121,
+    "seconds": 53.39,
+    "session": 8589,
+    "exit": 1
+  },
+  "test_contract_update": "Four expectations required the old message sequence. Their exact literals/authors were preserved in data; updated assertions require roundtrip equality and unchanged topic scoping/history, not fewer checks. Four-failure rerun4pass1.47s. Source unchanged after focal implementation.",
+  "owners": {
+    "passed": 3406,
+    "subtests_passed": 121,
+    "skips": 0,
+    "seconds": 53.88,
+    "session": 40969,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.55,
+    "warnings": 0,
+    "errors": 0,
+    "session": 32963,
+    "exit": 0
+  },
+  "source_sha256": {
+    "src/baxy_mind/llm.py": "ab0e3064c4f93334fc98ad3282fbeaf9c7edc4d818858bb0b071dfc53a1c47d7",
+    "tests/test_turn_policy.py": "cf26e7fe0d9c536913abfedfb79dc132f3bcd9bc7b6c6ebdb2933c0c109d68e5"
+  },
+  "change": "Direct knowledge quotes already scoped prior dialogue, preserving all bounded roles/literals; current user request untouched. Same history and provenance first system are used for repair. Semantic reading, stored history, raw audit counts and other presentation shapes remain original. No extra decoder, model, profile, memory entry or visible fixed answer.",
+  "limits": "511 private22/22 is not integrated or C03 acceptance; run513 with the actual registeredT0 pipeline next. No effects/UI/voice or Full yet."
+}

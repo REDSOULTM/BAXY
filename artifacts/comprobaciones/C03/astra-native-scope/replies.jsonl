@@ -1,0 +1,11 @@
+{"text": "no me molesta, dime la hora", "answer": {"mode": "action", "question": "", "conversation_kind": "", "effect_operations": ["system.time"], "response_language": "es"}}
+{"text": "I don't mind, tell me the time", "answer": {"mode": "action", "question": "", "conversation_kind": "", "effect_operations": ["system.time"], "response_language": "es"}}
+{"text": "no abras Steam, dime la hora", "answer": {"mode": "action", "question": "", "conversation_kind": "", "effect_operations": ["system.time"], "response_language": "es"}}
+{"text": "no me digas la hora", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}
+{"text": "don't tell me the time", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}
+{"text": "no uses herramientas, dime la hora", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}
+{"text": "traduce: no me molesta, dime la hora", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}
+{"text": "no me digas la hora, dime la hora", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}
+{"text": "dime la hora y baja el volumen", "answer": {"mode": "plan", "question": "", "conversation_kind": "", "effect_operations": ["system.time", "audio.volume.adjust"], "response_language": "es"}}
+{"text": "ayer me dijiste la hora", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}
+{"text": "El aire es h20?", "answer": {"mode": "conversation", "question": "", "conversation_kind": "knowledge", "effect_operations": [], "response_language": "es"}}

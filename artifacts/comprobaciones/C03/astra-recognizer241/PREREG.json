@@ -1,0 +1,207 @@
+{
+  "utc": "2026-09-07T19:44:44.162862+00:00",
+  "scriptSha256": "0eceba54c88820bc9cebc4b6302340712ca385eeea21a8973dfe31a4138bc5a7",
+  "method": "Existing independent local Nemotron on exact eight DTLN512239 product segments, eight fixed windows and four original human195 PCM controls already decoded by Parakeet219. Reuse exact Parakeet results, no model/decoder/padding/gain search. Same documented .66s streaming flush and auto language as214; no hints or corrector.",
+  "purpose": "Locate remaining word/content differences at recognition vs waveform/endpoint boundaries. An independent transcript proves recoverability only when it actually recovers the content; no automatic runtime promotion.",
+  "helperSha256": "ddef36e3a938698523dee9e5ae3354a19655f91e8c5dba0753664a32f44002a0",
+  "modelFiles": [
+    {
+      "path": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11\\encoder.int8.onnx",
+      "sha256": "012e9321373af99021415e0b0eb3ec827b4be3153be6f30d9b448fe65e896e68"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11\\decoder.int8.onnx",
+      "sha256": "19f9c98fc6d0a2c33a65a43b36fdb2e914c26c0aa9764be3aebc502a1e982fb0"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11\\joiner.int8.onnx",
+      "sha256": "4101c7c679a0bc30483794b27a059e34e79232aa2068d78d51231a22c8b0d7ce"
+    },
+    {
+      "path": "D:\\BAXYRuntime\\assets\\stt\\sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11\\tokens.txt",
+      "sha256": "729cc103155bafa785f9cd45746cd41cabe97eab7182fc04d594129587958f8a"
+    }
+  ],
+  "inputs": [
+    {
+      "case": "h0-near",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+      "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "pcmSha256": "4b2815c8a91db770aba3c85168f7c622102944140e1d5e1ab98b029158a691e4",
+      "samples": 174592
+    },
+    {
+      "case": "h0-near",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+      "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "pcmSha256": "8e72cca122d661f5706640c709d782880df01cf2601a9f6524469b51ca78d115",
+      "samples": 237440
+    },
+    {
+      "case": "h0-raw",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+      "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "pcmSha256": "35b01308af25c45d80ec297a46d731f5670f3bc16390325a0fac5a37c62c3967",
+      "samples": 174592
+    },
+    {
+      "case": "h0-raw",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "pcmSha256": "92525165eecac49cd9acdfe491ee2b761680a7e590c553032ef63285546115ec",
+      "samples": 237440
+    },
+    {
+      "case": "h1-near",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro.",
+      "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "pcmSha256": "91fb739a857fd9c0987e23608ac88ebe91cb25c9cbe2608e70c11ae4e2a8e35c",
+      "samples": 119808
+    },
+    {
+      "case": "h1-near",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+      "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "pcmSha256": "b17e4786ae4fec852b723deb4808892f88a50b747d7952dd1c53867810fbfaeb",
+      "samples": 187520
+    },
+    {
+      "case": "h1-raw",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+      "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "pcmSha256": "3af512cad9420922abdab982954bf142eb22aa83671ebc3738c5ebdee046e20b",
+      "samples": 119808
+    },
+    {
+      "case": "h1-raw",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+      "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "pcmSha256": "e04033f4a6b8351842418df3f74a0b6881a36e23b03d0c5d7029ad3d8812f8c2",
+      "samples": 187520
+    },
+    {
+      "case": "h2-near",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+      "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "pcmSha256": "a150278c6fc5cca4a7ea176605a1a480b502a76fa79a9bac166cdfddad5e0efa",
+      "samples": 137728
+    },
+    {
+      "case": "h2-near",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+      "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "pcmSha256": "254fdbfcf6a790ca17b55db9ea500175989e945b407f97317aba97e9003d0b95",
+      "samples": 200960
+    },
+    {
+      "case": "h2-raw",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "However, due to the slow communication channels, styles in the West can lag behind by 25 to 30 years.",
+      "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "pcmSha256": "b3bb0b3ad5d09a2e44732cf7822bcd5d2e07db411021afb94e285e2b6bc84262",
+      "samples": 137216
+    },
+    {
+      "case": "h2-raw",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+      "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "pcmSha256": "437358a9f6c49f73c30bd16cba37a917b012c1d5f14283e4b1889f16f25bdb83",
+      "samples": 200960
+    },
+    {
+      "case": "h3-near",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+      "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "pcmSha256": "22833dcec4f3a1b024c9b89e657ebe100ded81947becd4124044d8082e21a4dd",
+      "samples": 133632
+    },
+    {
+      "case": "h3-near",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+      "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "pcmSha256": "f4e99a10cffe43c41a76a45722489c80772719e92b5252edb4bda4d70bdf7fdc",
+      "samples": 172160
+    },
+    {
+      "case": "h3-raw",
+      "kind": "segment",
+      "index": 0,
+      "parakeet": "All nouns alongside the world say for you. Always begin with a capital letter, even in the middle of a sentence.",
+      "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "pcmSha256": "63ec9cebdc6fbc350e5a1d3285b07c2101574962233250741a98364f65dee58c",
+      "samples": 134656
+    },
+    {
+      "case": "h3-raw",
+      "kind": "window",
+      "index": 0,
+      "parakeet": "All nouns alongside the world say for you. Always begin with a capital letter, even in the middle of a sentence.",
+      "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "pcmSha256": "b93c82943aef87eb90f6ab573537e1e1162f7b5a630b1f59fc9bf61c8161ed0e",
+      "samples": 172160
+    },
+    {
+      "case": "h0-original",
+      "kind": "original",
+      "index": 0,
+      "parakeet": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "reference": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "pcmSha256": "b9ed5b403f7ad4efe2ea12aebe217c16f9b94ad13299e307edf4148a02c6993a",
+      "samples": 237440
+    },
+    {
+      "case": "h1-original",
+      "kind": "original",
+      "index": 0,
+      "parakeet": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la plaza de San Pedro.",
+      "reference": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "pcmSha256": "ce93805933a381b9f3f052e77cdef1bd1779b6a6ade86f847d7398c0e75f0527",
+      "samples": 187520
+    },
+    {
+      "case": "h2-original",
+      "kind": "original",
+      "index": 0,
+      "parakeet": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+      "reference": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "pcmSha256": "8a2c5251061c962f70ce2693a5c6f84f69230141787a498eb46058db614571d2",
+      "samples": 200960
+    },
+    {
+      "case": "h3-original",
+      "kind": "original",
+      "index": 0,
+      "parakeet": "All nouns alongside the word say for you always begin with a capital letter even in the middle of a sentence.",
+      "reference": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "pcmSha256": "a01a6376bdf856b290ecdd9799297346161fc28bd2b4bff31d0f01f603986497",
+      "samples": 172160
+    }
+  ]
+}

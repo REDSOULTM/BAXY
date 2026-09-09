@@ -1,0 +1,8 @@
+{"id": "actual437-t7", "variant": "9b-ngl14", "answer": "Mi nombre guardado es Jordan.", "finish_reason": "stop", "seconds": 4.204}
+{"id": "actual437-t4", "variant": "9b-ngl14", "answer": "I have saved the name Jordan in my private memory.", "finish_reason": "stop", "seconds": 5.062}
+{"id": "name-marta", "variant": "9b-ngl14", "answer": "Mi nombre guardado en mi memoria privada es Marta.", "finish_reason": "stop", "seconds": 5.531}
+{"id": "compound-name", "variant": "9b-ngl14", "answer": "Mi nombre guardado en mi memoria privada es Ana María.", "finish_reason": "stop", "seconds": 5.5}
+{"id": "third-person", "variant": "9b-ngl14", "answer": "Tengo guardado el nombre de tu hermana: Nina.", "finish_reason": "stop", "seconds": 5.532}
+{"id": "two-records", "variant": "9b-ngl14", "answer": "Tengo guardados dos nombres en mi memoria privada: Jordan y Nina.", "finish_reason": "stop", "seconds": 5.984}
+{"id": "memory.enable", "variant": "9b-ngl14", "answer": "Memory configuration is now enabled.", "finish_reason": "stop", "seconds": 3.125}
+{"id": "memory.save", "variant": "9b-ngl14", "answer": "Got it. Your memory has been saved.", "finish_reason": "stop", "seconds": 3.859}

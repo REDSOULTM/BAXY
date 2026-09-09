@@ -43,7 +43,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 message = TryProjectConfiguration(
                     privatePayload,
                     operationName,
-                    out string configuration)
+                    out string configuration,
+                    responseReplayed)
                         ? configuration
                         : null;
                 break;
@@ -53,7 +54,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 message = TryProjectMutation(
                     privatePayload,
                     operationName,
-                    out string mutation)
+                    out string mutation,
+                    responseReplayed)
                         ? mutation
                         : null;
                 break;
@@ -62,12 +64,13 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 message = TryProjectForget(
                     privatePayload,
                     operationName,
-                    out string forget)
+                    out string forget,
+                    responseReplayed)
                         ? forget
                         : null;
                 break;
             case "memory.status":
-                message = TryProjectStatus(privatePayload, out string status)
+                message = TryProjectStatus(privatePayload, out string status, responseReplayed)
                     ? status
                     : null;
                 break;
@@ -83,7 +86,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             case "memory.list":
                 message = TryProjectRecords(privatePayload, out ProjectedRecords? records)
                     && records is not null
-                        ? CreateRecordsMessage(records)
+                        ? CreateRecordsMessage(records, operationName, responseReplayed)
                         : null;
                 break;
             default:
@@ -103,28 +106,29 @@ internal sealed record MemoryOperationResponseProjection(string Message)
     private static bool TryProjectConfiguration(
         JsonElement payload,
         string operationName,
-        out string message)
+        out string message,
+        bool responseReplayed)
     {
         message = string.Empty;
         if (!HasExactProperties(payload, ["version", "enabled", "replayed"])
             || !HasVersionOne(payload)
             || !TryGetBoolean(payload, "enabled", out bool enabled)
-            || !TryGetBoolean(payload, "replayed", out _)
+            || !TryGetBoolean(payload, "replayed", out bool replayed)
             || enabled != string.Equals(operationName, "memory.enable", StringComparison.Ordinal))
         {
             return false;
         }
 
-        message = enabled
-            ? "La memoria local está habilitada."
-            : "La memoria local está deshabilitada.";
+        message = CompletedFacts(operationName, "memory_configuration",
+            new JsonObject { ["enabled"] = enabled }, responseReplayed || replayed);
         return true;
     }
 
     private static bool TryProjectMutation(
         JsonElement payload,
         string operationName,
-        out string message)
+        out string message,
+        bool responseReplayed)
     {
         message = string.Empty;
         if (!HasExactProperties(
@@ -139,24 +143,25 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 MaximumSelectorUtf8Bytes,
                 allowEmpty: false,
                 out _)
-            || !TryGetBoolean(payload, "replayed", out _))
+            || !TryGetBoolean(payload, "replayed", out bool replayed))
         {
             return false;
         }
 
-        message = operationName switch
+        message = CompletedFacts(operationName, "memory_updated", new JsonObject
         {
-            "memory.correct" => "Corregí la memoria local solicitada.",
-            "memory.sensitive.save" => "Guardé el dato sensible en la memoria local protegida.",
-            _ => "Guardé el dato en la memoria local.",
-        };
+            ["saved"] = true,
+            ["corrected"] = operationName == "memory.correct",
+            ["sensitive"] = operationName == "memory.sensitive.save",
+        }, responseReplayed || replayed);
         return true;
     }
 
     private static bool TryProjectForget(
         JsonElement payload,
         string operationName,
-        out string message)
+        out string message,
+        bool responseReplayed)
     {
         message = string.Empty;
         if (!HasExactProperties(payload, ["version", "deletedCount", "replayed"])
@@ -167,23 +172,19 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 minimum: 0,
                 maximum: MaximumRecordCount,
                 out int deleted)
-            || !TryGetBoolean(payload, "replayed", out _))
+            || !TryGetBoolean(payload, "replayed", out bool replayed))
         {
             return false;
         }
 
-        message = deleted switch
-        {
-            0 when operationName == "memory.session.clear" =>
-                "No había memoria temporal de esta sesión para eliminar.",
-            0 => TurnVisibleFacts.Failure("memory_forget_empty"),
-            1 => "Eliminé una memoria local.",
-            _ => $"Eliminé {deleted} memorias locales.",
-        };
+        message = deleted == 0 && operationName != "memory.session.clear"
+            ? TurnVisibleFacts.Failure("memory_forget_empty")
+            : CompletedFacts(operationName, "memory_deleted",
+                new JsonObject { ["deletedCount"] = deleted }, responseReplayed || replayed);
         return true;
     }
 
-    private static bool TryProjectStatus(JsonElement payload, out string message)
+    private static bool TryProjectStatus(JsonElement payload, out string message, bool responseReplayed)
     {
         message = string.Empty;
         if (!HasExactProperties(
@@ -214,8 +215,15 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        string state = enabled ? "habilitada" : "deshabilitada";
-        message = $"La memoria local está {state}: {total} en total ({persistent} persistentes, {session} de esta sesión y {temporary} temporales), con un máximo de {maximum}.";
+        message = CompletedFacts("memory.status", "memory_status", new JsonObject
+        {
+            ["enabled"] = enabled,
+            ["totalRecords"] = total,
+            ["persistentRecords"] = persistent,
+            ["sessionRecords"] = session,
+            ["temporaryRecords"] = temporary,
+            ["maximumRecords"] = maximum,
+        }, responseReplayed);
         return true;
     }
 
@@ -255,10 +263,14 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        string countText = count == 1 ? "una memoria" : $"{count} memorias";
-        message = responseReplayed || payloadReplayed
-            ? $"El archivo de exportación de {countText} ya estaba disponible en Documentos/BAXY y su integridad SHA-256 fue verificada. Esa carpeta puede estar redirigida o sincronizada según la configuración de Windows."
-            : $"Exporté {countText} en Documentos/BAXY y verifiqué su integridad SHA-256. Esa carpeta puede estar redirigida o sincronizada según la configuración de Windows.";
+        message = CompletedFacts("memory.export", "memory_exported", new JsonObject
+        {
+            ["destination"] = "Documents/BAXY",
+            ["recordCount"] = count,
+            ["integrityVerified"] = true,
+            ["integrityAlgorithm"] = "SHA-256",
+            ["mayRedirectOrSync"] = true,
+        }, responseReplayed || payloadReplayed);
         return true;
     }
 
@@ -440,7 +452,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             _ => false,
         };
 
-    private static string CreateRecordsMessage(ProjectedRecords projected)
+    private static string CreateRecordsMessage(ProjectedRecords projected, string operationName, bool responseReplayed)
     {
         if (projected.TotalCount == 0)
         {
@@ -474,7 +486,19 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         };
         return shown == 0
             ? TurnVisibleFacts.Failure(cause, extra)
-            : TurnVisibleFacts.Status(cause, extra);
+            : CompletedFacts(operationName, cause, extra, responseReplayed);
+    }
+
+    private static string CompletedFacts(string operation, string cause, JsonObject observed, bool replayed)
+    {
+        observed["replayed"] = replayed;
+        return TurnVisibleFacts.Status(cause, new JsonObject
+        {
+            ["operation"] = operation,
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = observed,
+        });
     }
 
     private static bool HasExactProperties(JsonElement element, string[] expected)

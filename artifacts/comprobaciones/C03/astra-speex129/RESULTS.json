@@ -1,0 +1,104 @@
+[
+  {
+    "case": "physical_echo",
+    "method": "raw",
+    "energyReductionDb": 0.0,
+    "qualifiedFrames": 25,
+    "longestConsecutiveFrames": 7,
+    "firstThreeRelativeToSpeechSeconds": 1.414,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\physical_echo-raw.wav",
+    "sha256": "36b47aa85cc8683ec57ebdac29ace29c4af79cde49f3fdd5d6563dd8d761405d"
+  },
+  {
+    "case": "physical_echo",
+    "method": "aec",
+    "meanFrameMs": 0.06928822950069312,
+    "p99FrameMs": 0.08927499482524566,
+    "energyReductionDb": 3.185640339260034,
+    "qualifiedFrames": 8,
+    "longestConsecutiveFrames": 6,
+    "firstThreeRelativeToSpeechSeconds": 1.414,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\physical_echo-aec.wav",
+    "sha256": "3a5b53675e66d57f1f8cf0be465c505fd1daf7efec500587b78a07b9647f4ceb"
+  },
+  {
+    "case": "physical_echo",
+    "method": "aec_residual",
+    "meanFrameMs": 0.1027528171100086,
+    "p99FrameMs": 0.12546799393021485,
+    "energyReductionDb": 3.185658470441168,
+    "qualifiedFrames": 8,
+    "longestConsecutiveFrames": 6,
+    "firstThreeRelativeToSpeechSeconds": 1.446,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\physical_echo-aec_residual.wav",
+    "sha256": "bc772bac377daa4aa121cc45e2277278b0b0535e7e445cd3a7922eb8b247a338"
+  },
+  {
+    "case": "near_only",
+    "method": "raw",
+    "energyReductionDb": 0.0,
+    "qualifiedFrames": 45,
+    "longestConsecutiveFrames": 9,
+    "firstThreeRelativeToSpeechSeconds": 1.19,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\near_only-raw.wav",
+    "sha256": "5741aa87852048fa11b684ba817ed0a8da7f2c1b7b26d3e7a213f80c417c1ab5"
+  },
+  {
+    "case": "near_only",
+    "method": "aec",
+    "meanFrameMs": 0.06812082501271201,
+    "p99FrameMs": 0.09291699345340002,
+    "energyReductionDb": 0.08897349132801002,
+    "qualifiedFrames": 45,
+    "longestConsecutiveFrames": 9,
+    "firstThreeRelativeToSpeechSeconds": 1.19,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\near_only-aec.wav",
+    "sha256": "ce6f24e2100f7d6852ce8796367a2127f4784bd1d472c8096c2058438946a6a0"
+  },
+  {
+    "case": "near_only",
+    "method": "aec_residual",
+    "meanFrameMs": 0.1033331993872429,
+    "p99FrameMs": 0.1725979900220408,
+    "energyReductionDb": 0.08897310825307932,
+    "qualifiedFrames": 45,
+    "longestConsecutiveFrames": 9,
+    "firstThreeRelativeToSpeechSeconds": 1.222,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\near_only-aec_residual.wav",
+    "sha256": "83ff641d8553a861252ded550d17af36773f90eb7892f0fed0d9db1d72638d70"
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "method": "raw",
+    "energyReductionDb": 0.0,
+    "qualifiedFrames": 64,
+    "longestConsecutiveFrames": 14,
+    "firstThreeRelativeToSpeechSeconds": 1.19,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\physical_echo_plus_synthetic_near-raw.wav",
+    "sha256": "59cd283e30cead4ce154d2f0abcd2f7a760fc072e69193aa44350711c011a935"
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "method": "aec",
+    "meanFrameMs": 0.06839919530412264,
+    "p99FrameMs": 0.08649600276839901,
+    "energyReductionDb": 0.7384553714891211,
+    "qualifiedFrames": 54,
+    "longestConsecutiveFrames": 13,
+    "firstThreeRelativeToSpeechSeconds": 1.19,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\physical_echo_plus_synthetic_near-aec.wav",
+    "sha256": "2dd86d891ba221075fd597b8ad0d3063bea93593fcb82d4b6398acf61599c2b1"
+  },
+  {
+    "case": "physical_echo_plus_synthetic_near",
+    "method": "aec_residual",
+    "meanFrameMs": 0.10641790756986663,
+    "p99FrameMs": 0.17214000006788396,
+    "energyReductionDb": 0.7384594729919446,
+    "qualifiedFrames": 54,
+    "longestConsecutiveFrames": 13,
+    "firstThreeRelativeToSpeechSeconds": 1.222,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-speex129-private\\physical_echo_plus_synthetic_near-aec_residual.wav",
+    "sha256": "5ce1dcd83d71e949c78e37be608a170cc5f4c00152ea7027b6909cc941062fa5"
+  }
+]

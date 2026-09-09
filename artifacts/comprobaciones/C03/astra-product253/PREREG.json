@@ -1,0 +1,407 @@
+{
+  "utc": "2026-09-07T20:50:38.098167+00:00",
+  "scriptSha256": "c252090eee5f4778e2cd526ffeb9e01ba89a432cf3f8b4f97a6c8f2bf35c549d",
+  "method": "One offline hypothesis: diagnostic copy capture242. Aligned linear250+64samples provides recognition and candidate-onset VAD; final248 provides independent confirmation VAD and barge energy. Speech continuity uses either VAD at existing0.5; raw echo guard256 unchanged. Buffer candidate from linear onset, publish only after final confirms (three qualified frames during TTS). TTS ending alone never authorizes a candidate. Same0.7s trailing silence, no ASR hints/decoder/weights/gain changes. All11timelines plus8fixedwindows. No effects or source edits.",
+  "criterion": "Compare pre-suppressor linear250 to original final249 and DTLN512239 on identical ten timelines, plus243 failure for human content and echo. Report every literal, not merely zero interruptions.",
+  "limitation": "Offline fixed playback masks; no actual counterfactual cancellation of output, human microphone or UI acceptance. Dataset is development controls, never the human Carter reserve.",
+  "sourceSha256": "982c5b126d320c8a5a95e1ce19b827627f32d76fbbd841871f984cee127963ea",
+  "captureCopySha256": "58abb2efcb158f4ba7926db5a82d98ff5dc1a955c5699090de3d353503aca861",
+  "inputs": [
+    {
+      "case": "echo221",
+      "backend": "aec3-linear",
+      "human": null,
+      "referenceText": null,
+      "frames": 1316,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\echo221-aec3-linear.npz",
+      "sha256": "5afdd17f0bd202743114161948c17a2e69feba74f3db48296950143186dfe2f3",
+      "dspMs": {
+        "mean": 0.37340205164311674,
+        "p99": 0.5008800013456493,
+        "max": 0.8694999996805564
+      }
+    },
+    {
+      "case": "echo232",
+      "backend": "aec3-linear",
+      "human": null,
+      "referenceText": null,
+      "frames": 1316,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\echo232-aec3-linear.npz",
+      "sha256": "ba823c3492d32d16f3efb0cd0d57d8945f22041af3ceddf7b7a471b810335554",
+      "dspMs": {
+        "mean": 0.36766694542287714,
+        "p99": 0.475355008529732,
+        "max": 0.7455000013578683
+      }
+    },
+    {
+      "case": "h0-near",
+      "backend": "aec3-linear",
+      "human": 0,
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h0-near-aec3-linear.npz",
+      "sha256": "dd35d824d27ece7266e969ce63e2b1148ead8fd5f40a2579fe89687155f216a9",
+      "dspMs": {
+        "mean": 0.36494407468339946,
+        "p99": 0.4974599985871458,
+        "max": 1.4248999941628426
+      },
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    {
+      "case": "h0-raw",
+      "backend": "aec3-linear",
+      "human": 0,
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h0-raw-aec3-linear.npz",
+      "sha256": "6e8865705b7d60b3ba85fab8040bae030c79d4a1d04d905904ab3df8d57ff142",
+      "dspMs": {
+        "mean": 0.37456718872355554,
+        "p99": 0.5907199985813346,
+        "max": 1.6202999977394938
+      },
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    {
+      "case": "h1-near",
+      "backend": "aec3-linear",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h1-near-aec3-linear.npz",
+      "sha256": "52f1c05c05c9c707b2dbe03ff7ffdc500fed55c46041733a118b8ba9f4d0c0cf",
+      "dspMs": {
+        "mean": 0.36079177255689804,
+        "p99": 0.47794000129215414,
+        "max": 0.7363999902736396
+      },
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    {
+      "case": "h1-raw",
+      "backend": "aec3-linear",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h1-raw-aec3-linear.npz",
+      "sha256": "64ea31f8afee05de72ecb0c021681013ef0ec958b69c6314f32f0081f9898171",
+      "dspMs": {
+        "mean": 0.3766157694659666,
+        "p99": 0.5900600051972998,
+        "max": 1.2981999898329377
+      },
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    {
+      "case": "h2-near",
+      "backend": "aec3-linear",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h2-near-aec3-linear.npz",
+      "sha256": "e4f04d79a2e03f4256467cf0ae64e7373c6d46392d44fd23c14dc79fffe0ed83",
+      "dspMs": {
+        "mean": 0.3588543582847205,
+        "p99": 0.4690200032200664,
+        "max": 0.5072000058135018
+      },
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    {
+      "case": "h2-raw",
+      "backend": "aec3-linear",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h2-raw-aec3-linear.npz",
+      "sha256": "9935b75674653f056b94b00a467164f612e3e8adaa574c7e7003e087790444d5",
+      "dspMs": {
+        "mean": 0.3785501467206549,
+        "p99": 0.6193399924086392,
+        "max": 1.3841000036336482
+      },
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    {
+      "case": "h3-near",
+      "backend": "aec3-linear",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h3-near-aec3-linear.npz",
+      "sha256": "115114e7cb06af5c255c27bda45ffdc31572eeeb456859f2888d811427c766bd",
+      "dspMs": {
+        "mean": 0.3613157692370137,
+        "p99": 0.4818799934582783,
+        "max": 0.5986000032862648
+      },
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    {
+      "case": "h3-raw",
+      "backend": "aec3-linear",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "frames": 1021,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\h3-raw-aec3-linear.npz",
+      "sha256": "5d20f3c306ce27d90a355ffadd93d8e88e5fce4adb1df4a343bd49bd32ab0477",
+      "dspMs": {
+        "mean": 0.36449510304610283,
+        "p99": 0.48855999484658236,
+        "max": 0.6409999914467335
+      },
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    {
+      "case": "echo243",
+      "backend": "aec3-linear",
+      "human": null,
+      "referenceText": null,
+      "frames": 1317,
+      "engineSha256": "718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-linear250-private\\echo243-aec3-linear.npz",
+      "sha256": "e043066046b326b86208b5d63ca13f45cfdc10bb3567b84341b2840327948174",
+      "dspMs": {
+        "mean": 0.3742798784426495,
+        "p99": 0.5301960109500211,
+        "max": 1.3980999938212335
+      }
+    }
+  ],
+  "confirmationInputs": {
+    "echo221": {
+      "case": "echo221",
+      "backend": "aec3",
+      "human": null,
+      "referenceText": null,
+      "frames": 1316,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo221-aec3.npz",
+      "sha256": "ad3bfc26c878958c446555e10499bcdd39f3f0639736e0de1c41cf64ff33ad99",
+      "dspMs": {
+        "mean": 0.3610958206261392,
+        "p99": 0.5889300067792641,
+        "max": 1.1789999989559874
+      }
+    },
+    "echo232": {
+      "case": "echo232",
+      "backend": "aec3",
+      "human": null,
+      "referenceText": null,
+      "frames": 1316,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo232-aec3.npz",
+      "sha256": "7e19a07d155120b11469d5b0edcf62d7381d0020ee77265abf9fb8a582aa1386",
+      "dspMs": {
+        "mean": 0.3482399694988678,
+        "p99": 0.46395000535994685,
+        "max": 0.705700003891252
+      }
+    },
+    "h0-near": {
+      "case": "h0-near",
+      "backend": "aec3",
+      "human": 0,
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h0-near-aec3.npz",
+      "sha256": "2880369122595756f41c2ec198ac6d26b0f8919c88c1e1ff03378c9e634370b3",
+      "dspMs": {
+        "mean": 0.3352639569993743,
+        "p99": 0.5648399965139101,
+        "max": 1.9717000104719773
+      },
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    "h0-raw": {
+      "case": "h0-raw",
+      "backend": "aec3",
+      "human": 0,
+      "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h0-raw-aec3.npz",
+      "sha256": "6ce7b5ebf4f9d0c95967828be14a99a11f1e2aebe35da687f58de610b6b4df1a",
+      "dspMs": {
+        "mean": 0.3466691480207017,
+        "p99": 0.4553800041321665,
+        "max": 0.8280000038212165
+      },
+      "humanWindowSamples": [
+        43109,
+        280549
+      ]
+    },
+    "h1-near": {
+      "case": "h1-near",
+      "backend": "aec3",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h1-near-aec3.npz",
+      "sha256": "8ca9947fa67ddaaa17311b315e0e14035b3c6d2c6e2ceebae54027785a758c59",
+      "dspMs": {
+        "mean": 0.33860225270932814,
+        "p99": 0.47271999355871225,
+        "max": 1.039199996739626
+      },
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    "h1-raw": {
+      "case": "h1-raw",
+      "backend": "aec3",
+      "human": 1,
+      "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h1-raw-aec3.npz",
+      "sha256": "5caffb3a32f0a47db6f06f35ebb8c2f5fa1b2fae2abcf7d621ab0dc5ca44ea4c",
+      "dspMs": {
+        "mean": 0.35057649342537045,
+        "p99": 0.4770399944391098,
+        "max": 0.6562999915331602
+      },
+      "humanWindowSamples": [
+        43109,
+        230629
+      ]
+    },
+    "h2-near": {
+      "case": "h2-near",
+      "backend": "aec3",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h2-near-aec3.npz",
+      "sha256": "bfe903b9d81d2a7972be47989198ba846fb10183b2ca26f7a59bb6f4c0e0393e",
+      "dspMs": {
+        "mean": 0.3305320274465636,
+        "p99": 0.43675999331753657,
+        "max": 0.6239999929675832
+      },
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    "h2-raw": {
+      "case": "h2-raw",
+      "backend": "aec3",
+      "human": 2,
+      "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h2-raw-aec3.npz",
+      "sha256": "cbfa3f5d55f3e806496d89b9b95b9fe1d6902a16cd45568b66086a70e93254ad",
+      "dspMs": {
+        "mean": 0.3536585699437354,
+        "p99": 0.4803200077731161,
+        "max": 1.5276000049198046
+      },
+      "humanWindowSamples": [
+        43109,
+        244069
+      ]
+    },
+    "h3-near": {
+      "case": "h3-near",
+      "backend": "aec3",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h3-near-aec3.npz",
+      "sha256": "1699acec0e2a69b8eacf37ef58f89c728ffe25dcf54e1463a1a71a7a57ce50d9",
+      "dspMs": {
+        "mean": 0.33185288925649714,
+        "p99": 0.4544800118310377,
+        "max": 0.5741000059060752
+      },
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    "h3-raw": {
+      "case": "h3-raw",
+      "backend": "aec3",
+      "human": 3,
+      "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+      "frames": 1021,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\h3-raw-aec3.npz",
+      "sha256": "84aa0a507c902af9a38d845e6306c5e9d47a0f35b30e00de5ea0a07889df9ab8",
+      "dspMs": {
+        "mean": 0.3591694416409636,
+        "p99": 0.5094000021927055,
+        "max": 3.2256999984383583
+      },
+      "humanWindowSamples": [
+        43109,
+        215269
+      ]
+    },
+    "echo243": {
+      "case": "echo243",
+      "backend": "aec3",
+      "human": null,
+      "referenceText": null,
+      "frames": 1317,
+      "engineSha256": "0dabbdadd5d7fd7dcb88323266e5e14d46aaa136c58fa0573c4b0323b683c80b",
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-webrtc248-private\\echo243-aec3.npz",
+      "sha256": "049688f41486cb4d24120f392cdd3139565cde559b6c6a92df27ef8beb41e3fd",
+      "dspMs": {
+        "mean": 0.35539263484024725,
+        "p99": 0.48054400598630215,
+        "max": 1.5352000045822933
+      }
+    }
+  }
+}

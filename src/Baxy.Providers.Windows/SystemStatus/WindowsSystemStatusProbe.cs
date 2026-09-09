@@ -2,6 +2,8 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Text.Json;
+using Baxy.Providers.Windows.External;
 using Microsoft.Win32;
 
 namespace Baxy.Providers.Windows.SystemStatus;
@@ -29,7 +31,8 @@ internal readonly record struct OperatingSystemReading(
     int MinorVersion,
     int BuildNumber,
     string Architecture,
-    bool IsWorkstation);
+    bool IsWorkstation,
+    string Caption);
 
 internal interface ISystemStatusProbe
 {
@@ -47,7 +50,7 @@ internal interface ISystemStatusProbe
 
     PowerReading ReadPowerStatus();
 
-    OperatingSystemReading ReadOperatingSystem();
+    ValueTask<OperatingSystemReading> ReadOperatingSystemAsync(CancellationToken cancellationToken);
 
     ulong ReadUptimeMilliseconds();
 }
@@ -55,14 +58,20 @@ internal interface ISystemStatusProbe
 internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
 {
     private const ushort AllProcessorGroups = 0xFFFF;
-    private const int OsVersionInformationSize = 284;
-    private const int OsProductTypeOffset = 282;
-    private const byte NtWorkstation = 1;
-    private const byte NtDomainController = 2;
-    private const byte NtServer = 3;
     private const int MaximumCpuModelUtf8Bytes = 512;
     private const string CpuRegistryPath = @"HARDWARE\DESCRIPTION\System\CentralProcessor\0";
     private const string CpuRegistryValue = "ProcessorNameString";
+    private readonly IExternalProcessRunner _processRunner;
+
+    public WindowsSystemStatusProbe()
+        : this(new ExternalProcessRunner())
+    {
+    }
+
+    internal WindowsSystemStatusProbe(IExternalProcessRunner processRunner)
+    {
+        _processRunner = processRunner ?? throw new ArgumentNullException(nameof(processRunner));
+    }
 
     public CpuTimeSample ReadCpuTimes()
     {
@@ -166,38 +175,55 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
             status.BatteryLifePercent);
     }
 
-    public OperatingSystemReading ReadOperatingSystem()
+    public async ValueTask<OperatingSystemReading> ReadOperatingSystemAsync(
+        CancellationToken cancellationToken)
     {
-        nint buffer = Marshal.AllocHGlobal(OsVersionInformationSize);
+        cancellationToken.ThrowIfCancellationRequested();
+        const string script = """
+            $ErrorActionPreference = 'Stop'
+            [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+            Get-CimInstance -ClassName Win32_OperatingSystem -Property Caption,Version,ProductType |
+                Select-Object Caption,Version,ProductType | ConvertTo-Json -Compress
+            """;
+        ExternalProcessResult result = await _processRunner.RunAsync(
+            "powershell.exe",
+            ["-NoProfile", "-NonInteractive", "-Command", script],
+            TimeSpan.FromSeconds(5),
+            cancellationToken).ConfigureAwait(false);
+        if (result.ExitCode != 0)
+        {
+            throw new IOException("Windows did not return its operating-system identity.");
+        }
+
         try
         {
-            byte[] zeros = new byte[OsVersionInformationSize];
-            Marshal.Copy(zeros, 0, buffer, zeros.Length);
-            Marshal.WriteInt32(buffer, OsVersionInformationSize);
-            int result = RtlGetVersion(buffer);
-            if (result != 0)
+            using JsonDocument document = JsonDocument.Parse(result.Output);
+            JsonElement os = document.RootElement;
+            if (os.ValueKind != JsonValueKind.Object
+                || !os.TryGetProperty("Caption", out JsonElement captionValue)
+                || captionValue.ValueKind != JsonValueKind.String
+                || !os.TryGetProperty("Version", out JsonElement versionValue)
+                || versionValue.ValueKind != JsonValueKind.String
+                || !Version.TryParse(versionValue.GetString(), out Version? version)
+                || !os.TryGetProperty("ProductType", out JsonElement productTypeValue)
+                || productTypeValue.ValueKind != JsonValueKind.Number
+                || !productTypeValue.TryGetInt32(out int productType)
+                || productType is not (1 or 2 or 3))
             {
-                throw new Win32Exception(result, "Windows did not return its version.");
+                throw new IOException("Windows returned an invalid operating-system identity.");
             }
 
-            byte productType = Marshal.ReadByte(buffer, OsProductTypeOffset);
-            bool isWorkstation = productType switch
-            {
-                NtWorkstation => true,
-                NtDomainController or NtServer => false,
-                _ => throw new InvalidOperationException(
-                    "Windows returned an unknown operating-system product type."),
-            };
             return new OperatingSystemReading(
-                Marshal.ReadInt32(buffer, sizeof(int)),
-                Marshal.ReadInt32(buffer, sizeof(int) * 2),
-                Marshal.ReadInt32(buffer, sizeof(int) * 3),
+                version.Major,
+                version.Minor,
+                version.Build,
                 GetArchitectureName(RuntimeInformation.OSArchitecture),
-                isWorkstation);
+                productType == 1,
+                captionValue.GetString()!.Trim().Normalize(NormalizationForm.FormC));
         }
-        finally
+        catch (JsonException exception)
         {
-            Marshal.FreeHGlobal(buffer);
+            throw new IOException("Windows returned an invalid operating-system identity.", exception);
         }
     }
 
@@ -267,6 +293,4 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
     [LibraryImport("kernel32.dll")]
     private static partial ulong GetTickCount64();
 
-    [LibraryImport("ntdll.dll", EntryPoint = "RtlGetVersion")]
-    private static partial int RtlGetVersion(nint versionInformation);
 }

@@ -1,6 +1,6 @@
 /* shared types — match server WS payload contract and HTTP endpoints. */
 
-export type ConvState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking';
+export type ConvState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
 
 export type SourceTag =
   | 'TOOL'

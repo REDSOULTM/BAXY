@@ -1,0 +1,14 @@
+{
+  "responses": 78,
+  "passed": {
+    "pilot2": 25,
+    "pilot3": 32
+  },
+  "formatHoldoutPassed": {
+    "pilot2": 4,
+    "pilot3": 9
+  },
+  "verbatimChecked": true,
+  "sourceSha256": "e5bcb0d90144f027982c6e5d1abb1a5ba840678eddaaccead5ca76c53fe68ea8",
+  "reportSha256": "4191fef11914033d709942913604af6a37e4dda8498d2fd3b8a5e3ca1cb03e2e"
+}

@@ -1,0 +1,368 @@
+{
+  "cases": [
+    {
+      "text": "Explain encryption, pero en simple",
+      "capturedPayload": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste."
+          },
+          {
+            "role": "system",
+            "content": "Política interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla."
+          },
+          {
+            "role": "system",
+            "content": "La petición mezcla español e inglés (spanglish). Puedes responder con naturalidad en español; no es obligatorio alternar idiomas. Conserva los nombres propios y los términos de la persona. Si pide un idioma concreto, respétalo. Pedir spanglish admite préstamos y mezcla natural, sin exigir proporciones ni frases en ambos idiomas."
+          },
+          {
+            "role": "assistant",
+            "content": "La hora local es 23:43. Los altavoces (Realtek(R) Audio) están activos y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "What time is it?"
+          },
+          {
+            "role": "assistant",
+            "content": "It's 23:43."
+          },
+          {
+            "role": "user",
+            "content": "Tell me the time and the volume."
+          },
+          {
+            "role": "assistant",
+            "content": "The time is 23:43 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+          },
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:43."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:43. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          },
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 256,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "seed": 0
+      },
+      "failedPanelContext": [
+        {
+          "role": "assistant",
+          "content": "La hora local es 23:34. El estado del audio muestra que los altavoces (Realtek(R) Audio) están activos y con el volumen en 100. No está silenciado."
+        },
+        {
+          "role": "user",
+          "content": "What time is it?"
+        },
+        {
+          "role": "assistant",
+          "content": "It's 23:34."
+        },
+        {
+          "role": "user",
+          "content": "Tell me the time and the volume."
+        },
+        {
+          "role": "assistant",
+          "content": "The time is 23:34 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+        },
+        {
+          "role": "user",
+          "content": "Dime la hora, please, en spanglish"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 23:34."
+        },
+        {
+          "role": "user",
+          "content": "What time is it y cómo está el audio?"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 23:34. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+        },
+        {
+          "role": "user",
+          "content": "Hey, buenas"
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+        }
+      ]
+    },
+    {
+      "text": "responde en spanglish: qué es una copia de seguridad",
+      "capturedPayload": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste."
+          },
+          {
+            "role": "system",
+            "content": "Política interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla."
+          },
+          {
+            "role": "system",
+            "content": "La petición mezcla español e inglés (spanglish). Puedes responder con naturalidad en español; no es obligatorio alternar idiomas. Conserva los nombres propios y los términos de la persona. Si pide un idioma concreto, respétalo. Pedir spanglish admite préstamos y mezcla natural, sin exigir proporciones ni frases en ambos idiomas."
+          },
+          {
+            "role": "assistant",
+            "content": "It's 23:43."
+          },
+          {
+            "role": "user",
+            "content": "Tell me the time and the volume."
+          },
+          {
+            "role": "assistant",
+            "content": "The time is 23:43 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+          },
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:43."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:43. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          },
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          },
+          {
+            "role": "assistant",
+            "content": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así se protege la información de que la vean malos."
+          },
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 256,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "seed": 0
+      },
+      "failedPanelContext": [
+        {
+          "role": "assistant",
+          "content": "It's 23:34."
+        },
+        {
+          "role": "user",
+          "content": "Tell me the time and the volume."
+        },
+        {
+          "role": "assistant",
+          "content": "The time is 23:34 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+        },
+        {
+          "role": "user",
+          "content": "Dime la hora, please, en spanglish"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 23:34."
+        },
+        {
+          "role": "user",
+          "content": "What time is it y cómo está el audio?"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 23:34. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+        },
+        {
+          "role": "user",
+          "content": "Hey, buenas"
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+        },
+        {
+          "role": "user",
+          "content": "Explain encryption, pero en simple"
+        },
+        {
+          "role": "assistant",
+          "content": "La criptografía es como un código que convierte información en algo que solo las personas con la clave pueden entender. Así, si alguien quiere leer un mensaje, necesita tener la clave para descifrarlo. Es como un secreto que solo tú y tu amigo conocéis."
+        }
+      ]
+    },
+    {
+      "text": "Explain gravity, pero sin tecnicismos",
+      "capturedPayload": {
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste."
+          },
+          {
+            "role": "system",
+            "content": "Política interna del turno: conocimiento o explicación. Responde directamente con la información útil disponible en una frase, salvo que la persona pida profundizar, detalle o un formato concreto. Si el fragmento depende de alternativas o contexto ausente, di brevemente qué comparación falta sin inventarla."
+          },
+          {
+            "role": "system",
+            "content": "La petición mezcla español e inglés (spanglish). Puedes responder con naturalidad en español; no es obligatorio alternar idiomas. Conserva los nombres propios y los términos de la persona. Si pide un idioma concreto, respétalo. Pedir spanglish admite préstamos y mezcla natural, sin exigir proporciones ni frases en ambos idiomas."
+          },
+          {
+            "role": "assistant",
+            "content": "The time is 23:43 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+          },
+          {
+            "role": "user",
+            "content": "Dime la hora, please, en spanglish"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:43."
+          },
+          {
+            "role": "user",
+            "content": "What time is it y cómo está el audio?"
+          },
+          {
+            "role": "assistant",
+            "content": "Son las 23:43. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+          },
+          {
+            "role": "user",
+            "content": "Hey, buenas"
+          },
+          {
+            "role": "assistant",
+            "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+          },
+          {
+            "role": "user",
+            "content": "Explain encryption, pero en simple"
+          },
+          {
+            "role": "assistant",
+            "content": "Encryption es como poner un código a la información para que solo las personas con la clave puedan leerla. Es como cerrar un mensaje en una caja con un candado: si no tienes la llave, no puedes abrirlo. Así se protege la información de que la vean malos."
+          },
+          {
+            "role": "user",
+            "content": "responde en spanglish: qué es una copia de seguridad"
+          },
+          {
+            "role": "assistant",
+            "content": "Una copia de seguridad es como tener una copia del archivo o datos en otro lugar, para que si se pierden o se dañan, puedas recuperarlos fácilmente. Es como tener un backup del libro en otro lugar si lo pierdes."
+          },
+          {
+            "role": "user",
+            "content": "Explain gravity, pero sin tecnicismos"
+          }
+        ],
+        "temperature": 0.0,
+        "max_tokens": 256,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "seed": 0
+      },
+      "failedPanelContext": [
+        {
+          "role": "assistant",
+          "content": "The time is 23:34 on the local clock. The volume is at 100 for \"Altavoces (Realtek(R) Audio)\", and sound is not muted."
+        },
+        {
+          "role": "user",
+          "content": "Dime la hora, please, en spanglish"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 23:34."
+        },
+        {
+          "role": "user",
+          "content": "What time is it y cómo está el audio?"
+        },
+        {
+          "role": "assistant",
+          "content": "Son las 23:34. El audio está activo en los Altavoces (Realtek(R) Audio) y el volumen está en 100."
+        },
+        {
+          "role": "user",
+          "content": "Hey, buenas"
+        },
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿Cómo estás?"
+        },
+        {
+          "role": "user",
+          "content": "Explain encryption, pero en simple"
+        },
+        {
+          "role": "assistant",
+          "content": "La criptografía es como un código que convierte información en algo que solo las personas con la clave pueden entender. Así, si alguien quiere leer un mensaje, necesita tener la clave para descifrarlo. Es como un secreto que solo tú y tu amigo conocéis."
+        },
+        {
+          "role": "user",
+          "content": "responde en spanglish: qué es una copia de seguridad"
+        },
+        {
+          "role": "assistant",
+          "content": "Una copia de seguridad es como un backup: es una copia del dato importante que se guarda en otro lugar para que, si se pierde o se daña el original, se pueda recuperar fácilmente."
+        }
+      ]
+    }
+  ],
+  "stages": [
+    "captured",
+    "failed_panel_context",
+    "no_context"
+  ],
+  "method": "Nine direct native server completions. Three exact captured product chat payloads; substitute only preceding dialogue with source46 failed-panel public context following actual C# last12 and Python duplicate-removal semantics; then retain only current user plus unchanged system policies. Same template, temperature0, seed0, budget256, no reply guards/retries or functions. Capture full raw finish reason. Not fresh acceptance, no source/model promotion. Original failed-panel wire was not captured: that middle stage remains a reconstruction, now including its leading orphan assistant.",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

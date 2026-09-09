@@ -1,10 +1,51 @@
 # Estado de Sprints comprobación
 
 C01 CERRADO `d6500f8`. C02 CERRADO `88b5370`. **C03 EN_CURSO**. C04 no abierto.
-HEAD `5f572ee` WIP `main`. Falta 100/100.
-**Sesión de Opus 5 High cerrada el 2026-09-06; relevo en**
-`artifacts/comprobaciones/C03/HANDOFF_OPUS_METODO.md` **y estado en**
-`artifacts/comprobaciones/C03/CHECKPOINT.md`. Cerrar esa sesión no cumple C03.
+Rama de trabajo `Goal-c03`, base `2bf3d4c`, candidato Astra en curso. Falta 100/100.
+Encargo vigente: `C03_ASTRA_AUTORIDAD.md`; estado operativo único en
+`artifacts/comprobaciones/C03/CHECKPOINT.md`. El handoff de Opus y los apartados
+de abajo conservan evidencia histórica, no certifican el candidato nuevo.
+
+La baseline Astra de 16 turnos da **10/16 útiles y fieles, 15/16 publicados**;
+adjudicación en `artifacts/comprobaciones/C03/astra-baseline/ADJUDICACION.md`.
+El candidato con coordinación reparada da 11/16 útiles/fieles y 15 publicados
+en `astra-serial`; `astra-facts` conserva 11/16, `astra-prose` cae a 9/16 por
+una pregunta elíptica que inicia una misión wifi y arrastra los turnos siguientes.
+El veto de efectos reparado elimina esa contaminación en cuatro controles:
+3/4 plenamente correctos, uno con fallo de gramática. No son aceptación fresca.
+El primer Full Astra terminó rojo por una huella histórica desactualizada;
+el segundo se interrumpió durante Python por instrucción de reservar Full para
+el cierre; .NET terminó sin fallos. No equivale a Full verde. Tras conservar la
+pregunta bajo INTENT_KNOWLEDGE, `astra-knowledge-question` da 4/4 correctos por
+la entrada real y 366 pruebas dueñas pasan. Ver checkpoint para fuente y proceso.
+El panel ampliado `astra-routes-development` da 11/18 correctos: pérdida del pedido
+al ocultar un nombre de archivo, spanglish y disposición de error bloquean C03.
+Los apartados históricos no aplazan estos fallos a C05/C06. Ningún modelo
+diagnóstico se ha promovido. Fixture propio retirado tras comprobar su hash.
+
+Tramo 4: un acuse tardío de cancelación de voz ya no invalida la mente;
+la decisión ausente conserva mind_unavailable. Cancelar una aclaración limpia
+el objetivo sin reinterpretarlo, también con cancel that/cancela eso. Dueños
+C#: 101 pass/0 skips; Python: 369 pass/101 subtests. La proyección conserva el
+estado resultante; el panel de cancelación pasó de 3/6 a 5/6 correctos antes
+del último ajuste causal, cuya medición consta en CHECKPOINT.md. Estos controles
+no acreditan las ocho rutas ni reemplazan los cien turnos frescos.
+
+Tramo 5 conserva unsupported en el protocolo, mixed entre lectores y la lectura
+del reloj cuando se pide un idioma. Dueños: Python 1219 pass/101 subtests; C# 73
+pass de subtipo y 190 de hora/hechos/idioma, sin omisiones (suites con solapamiento).
+astra-language-boundary 4/8 correctos y astra-language-preserved 3/8 plenamente
+correctos muestran defectos de calidad abiertos; ocho publicados no son ocho
+correctos. La salida anticipada del resolver contextual se corrige después de
+esa medición. ASTRA-TRAMO-5.md y CHECKPOINT.md conservan la reanudación.
+
+Tramo 6: Qwen3-8B heredado, con override diagnóstico, obtiene 3/6 útiles;
+con kind/estado conservados sube a 4/6. Retirar el veto general de una frase
+recupera las bienvenidas ES, pero quedan dos explicaciones mixed sin respuesta.
+Picos atribuidos 3336–3338 MiB; ninguna promoción. Se conserva ahora el pedido
+en todos los intentos de progreso y se retira el recorte del primer verbo.
+Dueños: 222 pass/101 subtests. El contraste final figura en CHECKPOINT.md;
+no hay aceptación 100 ni Full final. Los apartados siguientes son históricos.
 
 ## Criterios de C03 ya cumplidos
 

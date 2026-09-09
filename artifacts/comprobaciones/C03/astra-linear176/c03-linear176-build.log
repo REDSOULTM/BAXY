@@ -1,0 +1,20 @@
+Processing D:\BAXYRuntime\experiments\voice\webrtc176\source
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pywebrtc-audio
+  Building wheel for pywebrtc-audio (pyproject.toml): started
+  Building wheel for pywebrtc-audio (pyproject.toml): still running...
+  Building wheel for pywebrtc-audio (pyproject.toml): still running...
+  Building wheel for pywebrtc-audio (pyproject.toml): finished with status 'done'
+  Created wheel for pywebrtc-audio: filename=pywebrtc_audio-0.2.0-cp312-cp312-win_amd64.whl size=316966 sha256=718f8681940df85abb3535790721b3fc735a564a0e7fbb82f5ed747401816e69
+  Stored in directory: C:\Users\usuario\AppData\Local\Temp\pip-ephem-wheel-cache-ow166l7f\wheels\3a\d9\f6\a55231317918acdd2d2eb4c29a66b26d3ee80dbd177ec61583
+Successfully built pywebrtc-audio
+
+[notice] A new release of pip is available: 26.1.2 -> 26.2.1
+[notice] To update, run: C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Scripts\python.exe -m pip install --upgrade pip

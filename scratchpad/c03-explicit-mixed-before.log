@@ -1,0 +1,58 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_ test_explicit_spanglish_is_a_language_request[responde en spanglish: qu\xe9 es el cifrado] _
+
+text = 'responde en spanglish: qu� es el cifrado'
+
+    @pytest.mark.parametrize("text", [
+        "responde en spanglish: qu� es el cifrado",
+        "reply in spanglish: what is encryption",
+        "traduce esta explicaci�n a spanglish",
+    ])
+    def test_explicit_spanglish_is_a_language_request(text: str) -> None:
+>       assert read_request(text).language == "mixed"
+E       AssertionError: assert 'es' == 'mixed'
+E         
+E         - mixed
+E         + es
+
+tests\test_request_reading.py:65: AssertionError
+_ test_explicit_spanglish_is_a_language_request[reply in spanglish: what is encryption] _
+
+text = 'reply in spanglish: what is encryption'
+
+    @pytest.mark.parametrize("text", [
+        "responde en spanglish: qu� es el cifrado",
+        "reply in spanglish: what is encryption",
+        "traduce esta explicaci�n a spanglish",
+    ])
+    def test_explicit_spanglish_is_a_language_request(text: str) -> None:
+>       assert read_request(text).language == "mixed"
+E       AssertionError: assert 'en' == 'mixed'
+E         
+E         - mixed
+E         + en
+
+tests\test_request_reading.py:65: AssertionError
+_ test_explicit_spanglish_is_a_language_request[traduce esta explicaci\xf3n a spanglish] _
+
+text = 'traduce esta explicaci�n a spanglish'
+
+    @pytest.mark.parametrize("text", [
+        "responde en spanglish: qu� es el cifrado",
+        "reply in spanglish: what is encryption",
+        "traduce esta explicaci�n a spanglish",
+    ])
+    def test_explicit_spanglish_is_a_language_request(text: str) -> None:
+>       assert read_request(text).language == "mixed"
+E       AssertionError: assert 'es' == 'mixed'
+E         
+E         - mixed
+E         + es
+
+tests\test_request_reading.py:65: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_explicit_spanglish_is_a_language_request[responde en spanglish: qu\xe9 es el cifrado]
+FAILED tests/test_request_reading.py::test_explicit_spanglish_is_a_language_request[reply in spanglish: what is encryption]
+FAILED tests/test_request_reading.py::test_explicit_spanglish_is_a_language_request[traduce esta explicaci\xf3n a spanglish]
+3 failed, 177 deselected in 0.77s

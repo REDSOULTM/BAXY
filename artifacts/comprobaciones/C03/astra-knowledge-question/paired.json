@@ -1,0 +1,84 @@
+[
+  {
+    "turnId": "t1",
+    "request": "What is fourteen times six?",
+    "terminal": "published_final",
+    "final": "14 times 6 is 84.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "define DNS in one sentence",
+    "terminal": "published_final",
+    "final": "DNS stands for Domain Name System, which translates domain names into IP addresses so computers can communicate using readable names instead of numerical addresses.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "unsafe_language:empty_or_too_long",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 164,
+        "draft_sha256": "daead32a46fb829d2b8985c336e4baa97f4b64298ebcb289f111f46340e62fbe",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "DNS stands for Domain Name System, which translates domain names into IP addresses so computers can communicate using readable names instead of numerical addresses."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "cuánto es doce por ocho",
+    "terminal": "published_final",
+    "final": "Doce por ocho es 96.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": "looks_like_failure",
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "conversation",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 20,
+        "draft_sha256": "d8c179b680293eace7166ffec894bb3dee1d4ccd93bd475f731ba68482e9ccbd",
+        "payload": {},
+        "situation": "{\"kind\":\"conversation\",\"polarity\":\"success\"}",
+        "draft": "Doce por ocho es 96."
+      }
+    ]
+  },
+  {
+    "turnId": "t4",
+    "request": "what is the capital of Peru",
+    "terminal": "published_final",
+    "final": "The capital of Peru is Lima.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": []
+  }
+]

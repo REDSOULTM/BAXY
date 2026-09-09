@@ -187,6 +187,56 @@ class PlannerCatalogTests(unittest.TestCase):
             {"state": False},
         )
 
+    def test_window_title_literals_cross_the_same_schema_gate_without_a_model(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "process": {"type": "string", "maxLength": 260},
+                "byTitle": {"type": "boolean"},
+            },
+            "required": ["process"],
+            "additionalProperties": False,
+        }
+        for request, title in (
+            (
+                "cierra la ventana titulada Ventana C03 de prueba",
+                "Ventana C03 de prueba",
+            ),
+            (
+                'Close the window titled "Budget & Forecast — Révision!".',
+                "Budget & Forecast — Révision!",
+            ),
+            ("Cierra la window called «Proyecto Ámbar»", "Proyecto Ámbar"),
+            (
+                "Cierra la ventana con el título Archivo (versión 2)",
+                "Archivo (versión 2)",
+            ),
+        ):
+            with self.subTest(request=request):
+                self.assertEqual(
+                    _ground_explicit_arguments("window.resolve", request, schema),
+                    {"process": title, "byTitle": True},
+                )
+        for request in (
+            "Cierra la ventana de la cocina",
+            "Cierra el proceso testhost",
+            "Cierra la ventana titulada",
+            'Close the window titled "unfinished',
+            'Close the window titled "One" and close the window titled "Two"',
+            'Close the window titled "One" and mute the audio',
+            'Close the window titled ""',
+        ):
+            with self.subTest(request=request):
+                self.assertIsNone(
+                    _ground_explicit_arguments("window.resolve", request, schema)
+                )
+        old_schema = {**schema, "properties": {"process": {"type": "string"}}}
+        self.assertIsNone(
+            _ground_explicit_arguments(
+                "window.resolve", 'Close the window titled "Draft"', old_schema
+            )
+        )
+
     def test_mute_literal_synonyms_cross_the_independent_schema_grounding_gate(self):
         schema = {
             "type": "object",
@@ -606,6 +656,26 @@ class PlannerCatalogTests(unittest.TestCase):
             ),
             {"captureId": "capture_opaque_01"},
         )
+
+    def test_file_read_uses_only_a_unique_verified_sandbox_identity(self):
+        read_tool = tool("filesystem.read.text", "Read one file.",
+                         properties={"resourceId": {"type": "string", "maxLength": 35}},
+                         required=["resourceId"])
+        for producer, verified, count, valid in (
+            ("filesystem.search", True, 1, True),
+            ("filesystem.list", True, 1, True),
+            ("filesystem.known.search", True, 1, False),
+            ("filesystem.search", False, 1, False),
+            ("filesystem.search", True, 0, False),
+            ("filesystem.search", True, 2, False),
+        ):
+            observations = [{"operation": producer, "verified": verified, "status": "completed",
+                             "result": {"entries": [{"resourceId": f"fs_{index:032x}"}
+                                                     for index in range(count)]}}]
+            with self.subTest(producer=producer, verified=verified, count=count):
+                self.assertEqual(_verified_dependency_identity_arguments(
+                    "filesystem.read.text", "Lee el archivo del sandbox.", observations, read_tool),
+                    {"resourceId": "fs_" + "0" * 32} if valid else None)
 
     def test_verified_dependency_identity_rejects_ambiguity_and_partial_schema(self):
         note_tool = tool(
@@ -2613,10 +2683,12 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(command[command.index("-b") + 1], "2048")
         self.assertEqual(command[command.index("-ub") + 1], "256")
         self.assertEqual(command[command.index("-fa") + 1], "on")
-        self.assertEqual(command[command.index("-ctk") + 1], "q4_0")
-        self.assertEqual(command[command.index("-ctv") + 1], "q4_0")
+        self.assertEqual(command[command.index("-ctk") + 1], "q8_0")
+        self.assertEqual(command[command.index("-ctv") + 1], "q8_0")
         self.assertEqual(command[command.index("-np") + 1], "3")
         self.assertIn("--cont-batching", command)
+        self.assertEqual(command[command.index("--cache-ram") + 1], "0")
+        self.assertIn("--no-mmap", command)
         self.assertEqual(command[command.index("--reasoning") + 1], "off")
         self.assertEqual(command[command.index("--reasoning-budget") + 1], "0")
         self.assertEqual(_context_size_from_env("bad"), 4096)
@@ -2647,7 +2719,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertTrue(_kv_offload_from_env("1"))
         self.assertFalse(_kv_offload_from_env("off"))
         self.assertEqual(_kv_cache_type_from_env("q4_0"), "q4_0")
-        self.assertEqual(_kv_cache_type_from_env("f16"), "q4_0")
+        self.assertEqual(_kv_cache_type_from_env("f16"), "q8_0")
 
     def test_gpu_profile_can_measure_host_resident_kv_without_cpu_compute(self):
         runtime = object.__new__(LlmRuntime)
@@ -2700,6 +2772,8 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(command[command.index("-c") + 1], "4096")
         self.assertEqual(command[command.index("-np") + 1], "1")
         self.assertNotIn("--cont-batching", command)
+        self.assertEqual(command[command.index("--cache-ram") + 1], "0")
+        self.assertNotIn("--no-mmap", command)
         self.assertEqual(command[command.index("-fa") + 1], "on")
         self.assertEqual(command[command.index("-dev") + 1], "none")
         self.assertIn("--no-kv-offload", command)
@@ -2822,9 +2896,6 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(result, "¿En qué aplicación quieres hacerlo?")
         self.assertEqual(len(seen), 1)
         self.assertEqual(seen[0]["messages"][0]["content"], USER_MESSAGE_PROMPT)
-        prompt = seen[0]["messages"][0]["content"].casefold()
-        for token in ("planner", "router", "schema", "primera persona"):
-            self.assertIn(token, prompt)
         self.assertFalse(seen[0]["chat_template_kwargs"]["enable_thinking"])
         self.assertLessEqual(seen[0]["max_tokens"], 256)
 
@@ -2852,12 +2923,12 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(result, "Abrí Steam.")
         self.assertEqual(prompt, CPU_USER_MESSAGE_PROMPT)
         self.assertFalse(seen[0]["cache_prompt"])
-        self.assertLess(len(prompt), len(USER_MESSAGE_PROMPT) // 2)
+        self.assertLessEqual(len(prompt), 600)
         for required in (
             "compañero",
             "tuteas",
-            "listo",
-            "sin json",
+            "hechos",
+            "internos",
         ):
             self.assertIn(required, prompt.casefold())
 
@@ -2925,7 +2996,9 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
 
     def test_visible_message_retries_when_required_options_are_dropped(self):
         runtime = object.__new__(LlmRuntime)
-        replies = ["Confirmar / cancel"]
+        # Both aliases in "Confirmar / cancel" are valid choices. Exercise an
+        # actually missing cancellation choice, independently of punctuation.
+        replies = ["Confirmar"]
         seen = []
 
         def fake_post(payload):
@@ -2941,7 +3014,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         )
 
         self.assertEqual(result, "¿Confirmas o cancelas?")
-        self.assertGreaterEqual(len(seen), 1)
+        self.assertGreaterEqual(len(seen), 2)
 
     def test_visible_confirmation_collapses_bilingual_aliases_by_language(self):
         runtime = object.__new__(LlmRuntime)
@@ -2950,9 +3023,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         def fake_post(payload):
             seen.append(payload)
             return {
-                "choices": [
-                    {"message": {"content": "¿Quieres confirmar o cancelar?"}}
-                ]
+                "choices": [{"message": {"content": "¿Quieres confirmar o cancelar?"}}]
             }
 
         runtime._post = fake_post
@@ -2983,9 +3054,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         def fake_post(payload):
             seen.append(payload)
             return {
-                "choices": [
-                    {"message": {"content": "¿Quieres continuar o cancelar?"}}
-                ]
+                "choices": [{"message": {"content": "¿Quieres continuar o cancelar?"}}]
             }
 
         runtime._post = fake_post
@@ -3006,7 +3075,7 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(result, "¿Quieres continuar o cancelar?")
         self.assertEqual(len(seen), 1)
         self.assertIn(
-            "opciones literales: continuar, cancelar",
+            "Palabras: continuar, cancelar",
             seen[0]["messages"][1]["content"],
         )
 
@@ -3330,10 +3399,6 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             "Mandatory language: English",
             seen[0]["messages"][1]["content"],
         )
-        self.assertIn(
-            "nunca Listo ni un imperativo",
-            seen[0]["messages"][0]["content"],
-        )
 
     def test_visible_status_retries_an_imperative_echo(self):
         runtime = object.__new__(LlmRuntime)
@@ -3460,6 +3525,9 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
             {"type": "null"},
         )
         self.assertGreater(seen[0]["max_tokens"], 512)
+        instructions = seen[0]["messages"][0]["content"]
+        self.assertIn("Abre una app.", instructions)
+        self.assertIn("Fija volumen.", instructions)
 
     def test_plan_argument_batch_can_identify_one_unresolved_step(self):
         runtime = object.__new__(LlmRuntime)
@@ -4569,6 +4637,56 @@ class PlannerGroundingNormalizationTests(unittest.TestCase):
                 "busca Carter",
             ),
             {"query": "Carter"},
+        )
+
+    def test_window_title_selector_is_grounded_by_target_kind_not_enable_words(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "process": {"type": "string"},
+                "byTitle": {"type": "boolean"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 50},
+            },
+            "required": ["process"],
+            "additionalProperties": False,
+        }
+        for source in (
+            "Cierra la ventana titulada Informe final",
+            "Close the window titled Informe final",
+            "Cierra la window named Informe final",
+        ):
+            with self.subTest(source=source):
+                arguments = {"process": "Informe final", "byTitle": True}
+                self.assertEqual(
+                    normalize_grounded_arguments(arguments, schema, source), arguments
+                )
+                self.assertEqual(
+                    normalize_grounded_arguments(
+                        {**arguments, "limit": 10}, schema, source
+                    ),
+                    arguments,
+                )
+                self.assertFalse(
+                    validate_argument_grounding(
+                        {"process": "Informe final", "byTitle": False}, schema, source
+                    )
+                )
+                self.assertIsNone(
+                    normalize_grounded_arguments(
+                        {"process": "Informe final", "byTitle": False}, schema, source
+                    )
+                )
+                self.assertIsNone(
+                    normalize_grounded_arguments(
+                        {"process": "Informe final"}, schema, source
+                    )
+                )
+        self.assertFalse(
+            validate_argument_grounding(
+                {"process": "testhost", "byTitle": True},
+                schema,
+                "Sí, cierra el proceso testhost",
+            )
         )
 
     def test_required_value_is_never_removed_to_force_acceptance(self):

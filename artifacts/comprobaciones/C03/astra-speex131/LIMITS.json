@@ -1,0 +1,5 @@
+{
+  "input": "Existing captures127 and labelled synthetic near controls129; local CPU only",
+  "alignment": "Approximate common streamReadyUtc; preprocessor one-frame delay compensated for echo guard",
+  "criterion": "Existing VAD/energy/count/echo thresholds unchanged; no effect routing. Do not infer live scheduling, causal mic/reference synchronization or physical double-talk acceptance."
+}

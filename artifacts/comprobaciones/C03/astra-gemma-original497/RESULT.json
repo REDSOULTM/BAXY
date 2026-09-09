@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-08T21:02:03.706333+00:00",
+  "session": 98048,
+  "exit": 0,
+  "cases": 14,
+  "all_expected_operation_names_without_extras": true,
+  "wrong_contextual_mute_state": 3,
+  "zero_argument_schema_violations": 4,
+  "matching_rendered_prompts_with494": 3,
+  "maximum_completion_tokens": 648,
+  "maximum_total_tokens": 2785,
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 1681.98828125,
+    "ram_peak_mib": 1030.96484375,
+    "seconds": 62.719,
+    "manifest_unchanged": true
+  },
+  "adopted": false,
+  "conclusion": "Original Gemma avoids the repeated additional calls of the published checkpoint under native grammar on this panel, including three identical rendered prompts. It still inverts unmute in the contextual compound, emits arguments in the zero-argument interface, and has one stage-like no-action response. No 14/14 product claim.",
+  "next": "Repair independently reproduced positive adversative clause loss498, then contextual clarification transport. No more sampler or grammar sweeps without a new cause."
+}

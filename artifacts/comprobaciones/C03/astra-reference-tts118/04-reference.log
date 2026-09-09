@@ -1,0 +1,21 @@
+D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\artifacts\comprobaciones\C03\astra-reference-tts118\04-reference.wav
+
+[2026-09-07 07:46:09.041] [piper] [debug] Loading voice from D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx (config=D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx.json)
+[2026-09-07 07:46:09.042] [piper] [debug] Parsing voice config at D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx.json
+[2026-09-07 07:46:09.042] [piper] [debug] Voice contains 1 speaker(s)
+[2026-09-07 07:46:09.042] [piper] [debug] Loading onnx model from D:\BAXYRuntime\assets\voice\baxy-es\es_MX-claude-high.onnx
+[2026-09-07 07:46:09.696] [piper] [debug] Loaded onnx model in 0.6534518 second(s)
+[2026-09-07 07:46:09.696] [piper] [info] Loaded voice in 0.6538801 second(s)
+[2026-09-07 07:46:09.696] [piper] [debug] Voice uses eSpeak phonemes (es-419)
+[2026-09-07 07:46:09.696] [piper] [debug] Initializing eSpeak
+[2026-09-07 07:46:09.727] [piper] [debug] Initialized eSpeak
+[2026-09-07 07:46:09.727] [piper] [info] Initialized piper
+[2026-09-07 07:46:09.727] [piper] [debug] Phonemizing text: Son las 07:13.
+[2026-09-07 07:46:09.750] [piper] [debug] Converting 23 phoneme(s) to ids: sˈon las sjˈete tɾˈese.
+[2026-09-07 07:46:09.751] [piper] [debug] Converted 23 phoneme(s) to 49 phoneme id(s): 1, 0, 31, 0, 120, 0, 27, 0, 26, 0, 3, 0, 24, 0, 14, 0, 31, 0, 3, 0, 31, 0, 22, 0, 120, 0, 18, 0, 32, 0, 18, 0, 3, 0, 32, 0, 92, 0, 120, 0, 18, 0, 31, 0, 18, 0, 10, 0, 2, 
+[2026-09-07 07:46:09.751] [piper] [debug] Synthesizing audio for 49 phoneme id(s)
+[2026-09-07 07:46:09.853] [piper] [debug] Synthesized 1.4280272108843537 second(s) of audio in 0.1021587 second(s)
+[2026-09-07 07:46:09.854] [piper] [info] Real-time factor: 0.07153834270198171 (infer=0.1021587 sec, audio=1.4280272108843537 sec)
+[2026-09-07 07:46:09.854] [piper] [debug] Terminating eSpeak
+[2026-09-07 07:46:09.854] [piper] [debug] Terminated eSpeak
+[2026-09-07 07:46:09.854] [piper] [info] Terminated piper

@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-08T21:25:51.448842+00:00",
+  "baseline": {
+    "failed": 9,
+    "passed": 5,
+    "seconds": 1.73
+  },
+  "first_intervention": {
+    "failed": 2,
+    "passed": 34,
+    "seconds": 1.0,
+    "reason": "Clause heads still omitted ponle; dative TV scope was not excluded. Both failed controls preserved and fixed through existing shared grammars."
+  },
+  "focal": {
+    "passed": 36,
+    "seconds": 0.75
+  },
+  "owners": {
+    "passed": 3188,
+    "skips": 0,
+    "seconds": 47.04,
+    "session": 53141,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.37,
+    "warnings": 0,
+    "errors": 0,
+    "session": 4862,
+    "exit": 0
+  },
+  "source_sha256": "7b25e014ddb61c6fdb7fef43fde5d488805144cbb8f718201624365b3915f941",
+  "tests_sha256": "a4a067a5163b5eaea4939b06076e90516dd890141d4624db0d31ce789b739f65",
+  "change": "Shared setting verb includes ponle and is reused by clause boundaries. Missing level with explicit local PC/computer asks for level. Existing audio-scope guard also recognizes dative a/al/to for non-global audio targets.",
+  "limits": "Only source and owned validation; original current-fragment context and C# resumption remain to prove."
+}

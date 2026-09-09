@@ -120,9 +120,9 @@ flowchart TD
 
 ## Qué falta concretamente en C03
 
-El checkpoint registra respuestas infieles publicadas, agotamientos de composición, ausencia de Full vigente, manifiesto de Granite no reproducible desde el repo, recuperación aún no demostrada en una misma sesión y GUI comprobada sólo por título de ventana. La contradicción de idioma Python/C# para «Good afternoon» está reproducida; no se atribuyen todos los fallos a esa única causa.
+Actualización 2026-09-06: el checkpoint y `artifacts/comprobaciones/C03/ASTRA-TRAMO-29.md` sustituyen el diagnóstico operativo de este apartado. Se ha registrado Qwen3-4B-Instruct-2507 Q4_K_M, conservando STT/TTS/wake, y observado la ventana real de `py main.py`. Las averías reject/timeout/exhaust ya permiten restaurar y responder en el mismo proceso y sesión. Estas comprobaciones no cierran C03: faltan aceptación fresca, validación del candidato final y Full vigente; los fallos normales descubiertos permanecen documentados.
 
-Primero reparar contratos de idioma, intención y hechos con pruebas acotadas; después validar continuidad e integración real; finalmente evaluar casos nuevos y completar todas las condiciones de cierre. Granite 4.2 3B sigue siendo el modelo local del producto; Astra u Opus serían el agente que modifica y valida el código.
+Primero resolver los bloqueos de idioma, intención y hechos con pruebas acotadas; después validar continuidad e integración real; finalmente evaluar casos nuevos y completar todas las condiciones de cierre. C04–C09 y fases10–12 deben verificar el runtime efectivo, sin presuponer que una aceptación histórica de Granite certifique Qwen. C03 no sustituye su aceptación propia ni la comprobación instalada de12.3.
 
 C09 habilita la fase 10. 10.18 certifica integración funcional. 11.16 cierra el candidato de desarrollo. **12.3 cierra la entrega instalada y validada** bajo las condiciones documentadas, no una garantía de ausencia universal de errores.
 
@@ -136,4 +136,3 @@ C09 habilita la fase 10. 10.18 certifica integración funcional. 11.16 cierra el
 - [Goal de relevo preparado para Opus 5 High](Sprints%20comprobación/C03_OPUS5_HIGH.md). Sigue siendo un prompt para Opus; este mapa no cambia el agente ni inicia su ejecución.
 
 Los protocolos, índices, lanzadores y variantes de prompt no se cuentan como goals adicionales. Los bloques A–F y A–B de fase 11 se definen en sus documentos; sus letras no implican funcionalidades nuevas.
-

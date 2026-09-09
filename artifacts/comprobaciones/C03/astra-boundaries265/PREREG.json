@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-07T22:43:49.254634+00:00",
+  "method": "Three owner literals reused as development, frozen Core262 catalog. No LLM, CPU encoder, UI, or effects. Inspect actual boundary predicates before any source change.",
+  "inputs": [
+    "abre steam",
+    "Tengo en mente que abras steam",
+    "Si, abre steam"
+  ],
+  "catalogSha256": "7e062d540823fc261c3367d6ba7e982619e5d90ae61209b39c3159fe48293e97",
+  "source": {
+    "src/baxy_mind/__main__.py": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+    "src/baxy_mind/effect_intent.py": "0f12d86e856b8840fd57015e7b79fd0f2fd4656fdfd2db1894e866da2e91366c"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-08T23:53:18.624192+00:00",
+  "cause": "515 T9 loses a supported private memory disable at the exact-alias parser, before model narration. Source Classify and TryParseAuditedLiteral inspected; existing MemoryTurnSession remains owner of protection/confirmation.",
+  "treatment": "Replace configuration aliases with one anchored private-memory configuration grammar: explicit enable/disable verbs and on/off constructions, own memory noun optionally qualified private/local/personal ES/EN. No general routing changes or authorization changes.",
+  "controls": "Positive current aliases, qualifier combinations, polite envelopes; negative negations, quotes, definitions, capability/status questions, hypothetical requests, unrelated program/computer memories and compound requests. Assert operation and exact enabled flag; no visible answer templates.",
+  "validation": "First focal tests on old source for causal red; then same tests and all owner memory integration tests. Fast after integrated source; no Full during repair. No source edit during runtime.",
+  "inheritance": [
+    "515 exact payloads",
+    "NaturalMemoryRequestParser configuration aliases and existing owner tests",
+    "biblioteca/01_INVENTARIO.md memory entries and gemma4-agent/documentacion/08_memoria_jarvis/README.md: older long-term-memory layer is evidence, not authority. Reuse current encrypted private route."
+  ],
+  "source_before": {
+    "src\\Baxy.App\\NaturalMemoryRequestParser.cs": "ed2fe272fb1c30afcf487923522f73125d6f8141e838535bb573e2f09683580f",
+    "tests\\Baxy.Integration.Tests\\NaturalMemoryRequestParserTests.cs": "3505f60642f32d978b2f8f89234b1f932d4f9bcdcb3ea5dc0a151127b1bd39c7"
+  }
+}

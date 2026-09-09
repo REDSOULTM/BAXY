@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-08T21:25:51.541123+00:00",
+  "cause": "Owner51 begins with the numeric answer to an immediately preceding, now explicitly recognized missing-level request. Current turn and plan readers must retain this referent without importing unrelated old actions.",
+  "hypothesis": "Resolve only an explicit numeric first clause against a unique prior user request whose authenticated clarification contract is audio.volume/level. Reuse the closed resolver on the two exact user literals, with all denials/corrections/catalog guards. Assistant prose never supplies authority or a target.",
+  "controls": "Absent/other/multiple/negative antecedents; independent new requests; unavailable operations; current negation and retraction; additional positive/negative clauses. Check actual plan argument grounding as well as turn selection.",
+  "heritage": "CONTEXTO_RECUPERACION489.md; existing _contextual_output_level_target and clock-reference reader. 489 ranking alone and490 sampling alone failed. 500 repairs the actual prior missing-level contract. No new model sweep or blanket history concatenation.",
+  "limits": "No reserve cases or provider effects. Pure tests first, then integrated source validation and actual mind/plan before adoption of contextual behavior."
+}

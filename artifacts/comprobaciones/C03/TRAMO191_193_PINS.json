@@ -1,0 +1,145 @@
+{
+  "public": [
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_FEEDBACK191_193.md",
+      "sha256": "d9a54f7c579a608ff333c5d326dd23dd9746ad84fe353d05257a922d70363d7a",
+      "bytes": 5290
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\INDEX.json",
+      "sha256": "75af785e255887a11b8d7a058e8778900afbb5951ce932b8f09d262463e791f2",
+      "bytes": 1796
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-red.log",
+      "sha256": "839b656f2ee0f06a7cc0111bbfa3bb879f0ec832f001983bded1abdb7a3c322e",
+      "bytes": 2385
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-python.log",
+      "sha256": "ea7ebb873d6117d85488af94e8741138bcf231482f837e941d9a1da78c940f3c",
+      "bytes": 562
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-python-retry.log",
+      "sha256": "bd198b1e5605792a80cf1db3a059cad026ad426299dba181fc8167eaeebbee80",
+      "bytes": 183
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-dotnet.log",
+      "sha256": "3ccd29e61bd64cce16d0e21b469c72b7e99c6cd5b88f6293b966aa96f32084ec",
+      "bytes": 1902
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-dotnet-retry.log",
+      "sha256": "a859c7dffd0c30e38a949e641b7ab5562571f09c21bfe236a5dd6caa892bb9bf",
+      "bytes": 1590
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-dotnet-owner.log",
+      "sha256": "8d2458d309d7aba26744daa67749a7ceb385272bdef269a076d69523b8531b44",
+      "bytes": 1590
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback192-fast.log",
+      "sha256": "128df60ae023162cdab383a0d6d64ae45acd965a4fcb250fc9796fc19b18a599",
+      "bytes": 2913
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\c03-feedback193-policy.log",
+      "sha256": "513931fc8e054330c8f8dd5a44dfbf58004d5e73bdb8e06efe71bb45fcffff65",
+      "bytes": 1590
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\src\\baxy_mind\\voice.py",
+      "sha256": "034e05dc7efcf984bd51248314715d51cc52acc9fea3ec401f369ede87a652ac",
+      "bytes": 123625
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\src\\baxy_mind\\llm.py",
+      "sha256": "79ea1c186830da43bd94cd459e11811f7f881992e2308fb048a7991b23fd8b17",
+      "bytes": 421291
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\src\\Baxy.App\\MainWindowViewModel.cs",
+      "sha256": "16182b316a851feb3fc751bf0979b76eecbd4208a1c91d68bbbb6b45e698bff9",
+      "bytes": 102675
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\src\\Baxy.App\\TurnVisibleFacts.cs",
+      "sha256": "a5173eeba8db6884e37ddc33ed8934354fcf049951fe14faaf560bdd8be078e7",
+      "bytes": 3145
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\tests\\test_mind_voice_runtime.py",
+      "sha256": "2c06083ad402a87a2f6347818548deb22df363dc793e3cd6d53afa110a1faff9",
+      "bytes": 85278
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\tests\\test_compose_contract.py",
+      "sha256": "2bc761c5e601c77965b1fcd2fe712fb820849470e976d22602dd2b8186fae682",
+      "bytes": 22031
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source192-snapshot\\tests\\Baxy.Integration.Tests\\VoiceFeedbackTests.cs",
+      "sha256": "45ddcc2f568cd1568d3ee7dca9225671ba46ab25e9341b28937c862295790bb5",
+      "bytes": 4549
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe191\\PREREG.json",
+      "sha256": "5f6d4b2512fd8cc4ae955cd56f3ab9852b2286c468b614b0efa9a5d5ef1b5642",
+      "bytes": 3388
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe191\\RESULTS.json",
+      "sha256": "0551aa5cc9a34980ee3a87b116270165ef18362896d338d4df90f360493a44e0",
+      "bytes": 2540
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe191\\COMPLETE.json",
+      "sha256": "90f2cd3e4f3e2f0cc66611cd78b5f53e6dd3eba139acf9b5fc035c67d434f721",
+      "bytes": 47
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-observe191\\c03-observe191.log",
+      "sha256": "16687797c63f021f21a4b26815f7be7c7fed8516441cf6d1c945c9de14e1df9f",
+      "bytes": 2007
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-feedback193\\PREREG.json",
+      "sha256": "80e2b9a2f78417aad4572cb230dadb799ddb931c6d10509ee7fac73e2065b96d",
+      "bytes": 1192
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-feedback193\\RESULTS.json",
+      "sha256": "d6e88253d83b745cb5c110b5b351b57c5c6e451124335118f946ebc290c79f14",
+      "bytes": 714
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-feedback193\\CLEANUP.json",
+      "sha256": "f6186e3c3cff8b1613fe0c1b1a6035664764b8125d2799683a9b28b8e769d6ef",
+      "bytes": 128
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-feedback193\\posts.jsonl",
+      "sha256": "a297533b7e61da6558a4926ae16b36da90a428bfc08976d7026c2d2c2c3d0fe8",
+      "bytes": 3876
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-feedback193\\c03-feedback193.log",
+      "sha256": "49227fd89387ad80f8d7cae7b20c59edd1a477945b3efb6c52fdc697de07aaad",
+      "bytes": 704
+    },
+    {
+      "path": "scratchpad\\c03-observe191.py",
+      "sha256": "5d864ec249b277ff4b02ef2d7505a14cf3aee7c0563ee584eeea1ca5da141824",
+      "bytes": 3361
+    },
+    {
+      "path": "scratchpad\\c03-feedback193.py",
+      "sha256": "85e3859ce33bfa7f95587a70776cebb0dd44633bf1c2f487fd3da542d1f541e6",
+      "bytes": 3983
+    }
+  ],
+  "private": []
+}

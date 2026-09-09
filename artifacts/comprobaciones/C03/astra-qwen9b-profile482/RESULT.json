@@ -1,0 +1,37 @@
+{
+  "completed": true,
+  "compositions": 16,
+  "resources": [
+    {
+      "completed": true,
+      "violations": [],
+      "gpu_peak_mib": 2901.3828125,
+      "ram_peak_mib": 3838.62890625,
+      "seconds": 170.328,
+      "manifest_unchanged": true
+    }
+  ],
+  "source_unchanged": true,
+  "manifest_unchanged": true,
+  "needs_semantic_adjudication": false,
+  "native_calls": 19,
+  "finish_reasons": {
+    "stop": 19
+  },
+  "extra_repair_calls": 3,
+  "confirmation_scores": [
+    {
+      "seed": 0,
+      "useful": 4,
+      "total": 6
+    },
+    {
+      "seed": 17,
+      "useful": 2,
+      "total": 6
+    }
+  ],
+  "memory_controls_useful": 2,
+  "memory_controls_total": 4,
+  "decision": "No adoptar. El perfil documentado recupera algunas confirmaciones pero intercambia errores, mantiene atribución errónea del nombre y aumenta coste frente a candidatos pequeños. No prueba incapacidad global del modelo ni autoriza barrido de semillas/redacciones."
+}

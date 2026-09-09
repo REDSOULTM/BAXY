@@ -1,0 +1,11 @@
+{
+  "frames": 265,
+  "cleanPcmBitIdentical": true,
+  "guardPairsAligned": true,
+  "librarySha256": "bb683ab3c50f66f777f0d2eb570b57c0ef5c71cb7e45535f9625a3f2ab56d9f1",
+  "libraryPath": "D:\\BAXYRuntime\\assets\\aec\\speexdsp-1.2.1\\speexdsp.dll",
+  "meanFrameMs": 0.1335264145141854,
+  "p99FrameMs": 0.16160400060471167,
+  "nativeOwnerClosed": true,
+  "physicalAcceptance": false
+}

@@ -1,0 +1,9 @@
+# Entradas directas del componente de voz; no es un lock instalable autónomo.
+# El grafo completo, wheels y hashes viven en pylock.runtime-win-x64.toml.
+sherpa-onnx==1.13.4+baxy.2
+livekit-wakeword==0.2.1
+silero-vad==6.2.1
+sounddevice==0.5.5
+pywin32==311
+PyAudioWPatch==0.2.12.8
+pycaw==20251023

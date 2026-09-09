@@ -1,0 +1,9 @@
+{
+  "number": 28068,
+  "title": "models: fix GDN normalization from `max` to `rsqrt`",
+  "state": "closed",
+  "merged_at": "2026-09-06T16:46:22Z",
+  "merge_commit_sha": "5fdfa6282936576d2f352d4b97f397a109f207a6",
+  "html_url": "https://github.com/ggml-org/llama.cpp/pull/28068",
+  "body": "GDN normalizes q and k with `x * rsqrt(sum(x^2) + eps)`.\r\n\r\nllama.cpp uses `x / max(sqrt(sum(x^2)), eps)`\r\n\r\n### All references uses the non max form:\r\n\r\n- **[QwenLM/FlashQLA](https://github.com/QwenLM/FlashQLA)**, the Qwen team's GDN kernel library and now an FLA backend: `sum_sq = (x_f32*x_f32).sum(-1) + eps; rstd = rsqrt(sum_sq)`, eps default 1e-6.\r\n- **transformers** shipped `F.normalize` for Qwen3-Next on 2025-09-09 and corrected it three days later in huggingface/transformers#40842\r\n- **vLLM** and **SGLang** delegate to vendored FLA and never had the clamp.\r\n\r\n| model | arm | mean KLD | 99.9% | same top-1 |\r\n|---|---|---|---|---|\r\n| Qwen3.8-Flash-Next UD-IQ1_S | **patch** | **0.032120** | 0.944566 | 93.435% |\r\n| | `-ub 128` control | 0.032690 | 0.937080 | 93.646% |\r\n| Qwen3.8-27B Q4_K_M | **patch** | **0.001750** | **0.069372** | **98.412%** |\r\n| | `-ub 128` control | 0.001769 | 0.076817 | 98.347% |\r\n\r\nAffects qwen35, qwen35moe, qwen3next, qwen4exp, kimi-linear, kimi-k3, bailingmoe3\r\nggml_l2_norm unchanged, rwkv7 untouched\r\n\r\n### AI Usage\r\nUsed Claude and Local Models for testing, iteration and code design - manual verification of model / PR usage"
+}

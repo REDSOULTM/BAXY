@@ -1,0 +1,5 @@
+n=3 published=2 other=1
+
+001	t1	published_final	cierra la calculadora	No puedo cerrar la calculadora porque no es una acción segura.
+002	t2	published_final	cancelar	Entendido, se cancela.
+003	t3	composition_failed	¿Qué hora es?	composition_failed

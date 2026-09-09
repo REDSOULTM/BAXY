@@ -1,0 +1,16 @@
+{
+  "public": {
+    "artifacts/comprobaciones/C03/astra-reference246/COMPLETE.json": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6",
+    "artifacts/comprobaciones/C03/astra-reference246/DRIVER.log": "4437daee16fbf4abd6f93d057dc65eb4580a51de39e08ce954fadbb43ccb533c",
+    "artifacts/comprobaciones/C03/astra-reference246/PREREG.json": "9e585da18ee17444fbdf5dab104be1bf39f9fef4ecbe8bc3e6f126e5743e99db",
+    "artifacts/comprobaciones/C03/astra-reference246/RESULTS.json": "0cde7fa5e16fd158eabacc3284696fd4eeb04786de58cf6c5003d90b89ec1115",
+    "artifacts/comprobaciones/C03/astra-path247/COMPLETE.json": "ea61d7736f0b7ecb9b35158f03de77013db6b100cf1d36c957e78e6c8817c5b6",
+    "artifacts/comprobaciones/C03/astra-path247/DRIVER.log": "9f81cae607764cbc7e1aab0f99d81d5683eb5829756ecf8f2d2136bc6778a3f5",
+    "artifacts/comprobaciones/C03/astra-path247/PREREG.json": "37bc5d7c6924e94cdc8dc97c87e1799d51a34afc55b4642a8ace88e0e80c5805",
+    "artifacts/comprobaciones/C03/astra-path247/RESULTS.json": "b01ad4394a3d8dce412bc83c9bd7b1dec0e2af3a2ebe7ef7566245dbdb596d46",
+    "scratchpad/c03-reference246.py": "4ea80e3de6a7ba67492a00a83d20a25ec8e7947a8ac64beaee7514eee8c59a70",
+    "scratchpad/c03-path247.py": "2f00f7131ed6d10188f7461040b399b8d49a86126adf0b5e2270e904d146d90a",
+    "artifacts/comprobaciones/C03/DIAGNOSTICO_REFERENCIA246_247.md": "168aa9e734cf9089f2c25f4f9e31efc8d7069dee43dae691686c9522690db586"
+  },
+  "private": {}
+}

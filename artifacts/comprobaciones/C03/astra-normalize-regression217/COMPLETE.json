@@ -1,0 +1,19 @@
+{
+  "readings": 126,
+  "rejections": [
+    {
+      "method": "greedy_search",
+      "context": true,
+      "error": "Greedy NeMo decoder cannot use hotwords"
+    },
+    {
+      "method": "unknown_decoder",
+      "context": false,
+      "error": "Unsupported per-stream NeMo decoder"
+    }
+  ],
+  "mixedBatchPassed": true,
+  "greedyChanges": 13,
+  "beamChanges": 16,
+  "exitCode": 0
+}

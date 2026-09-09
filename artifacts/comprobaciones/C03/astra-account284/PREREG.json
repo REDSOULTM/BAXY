@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-08T00:07:38.921249+00:00",
+  "hypothesis": "A Core-observed account identity is a required fact of its public result. Existing guard already checks other observed values; extend it to the actual userName field using exact token boundaries and original accents.",
+  "nativeEvidence": "astra-identity283/RESULT.json: same initial payload, before Hola soy BAXY; dynamic observed-name guard gives Tu nombre de usuario en el sistema es usuario.",
+  "scope": "Fact conservation only. Does not claim personal-name memory works, change operation selection, or broaden authority. No response literal, account constant, new prompt or sampler.",
+  "validation": "Observed account/partial-name/Unicode/absent-value controls and actual compose retry; owning compose/transport/turn suites. Integrated Fast/UI remains separately required.",
+  "sourceBeforeSha256": "657fef891f3cc80acde818149e6889da46de8315e50219a5745fd4937d13285a"
+}

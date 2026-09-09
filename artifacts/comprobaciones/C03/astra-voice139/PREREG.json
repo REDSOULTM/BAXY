@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-07T12:26:35.320893+00:00",
+  "sources": {
+    "src/baxy_mind/voice.py": "c4fd72b78e23f152d973a13a4b4ce494cd1fc33bcb0dac17b0a865ac6f03f6e9",
+    "src/baxy_mind/voice_aec.py": "73a1f6638c6463c711639cb91e3544c6d3034f4cd7f359b09402d1db99ebd822",
+    "src/baxy_mind/speex_aec.py": "1172fc74bb462f3c10cfd23268eed1d5db9aa819524078ba174517f846c660d5",
+    "assets.manifest.json": "d1f9891f670928f8cb30dcd8ad747c80d364dad06f320fc10e40e7d4efd599ba"
+  },
+  "phases": [
+    "direct"
+  ],
+  "text": "The file read failed because the content is invalid UTF-8.",
+  "method": "Observe integrated136 exact AEC pairs/clean/VAD, microphone stream clock/latency/backlog and loopback callback blocks. Wrappers return original values; no shadow VAD or candidate modifications. Actual physical output, private capture and no transcript routing. Instrumentation can affect timing, so this is diagnostic.",
+  "hypothesis": "138 fails while134 shadowed prototype passed despite137 DSP bit parity. Determine whether latest512 repeats/skips reference and whether reference is causal relative to microphone."
+}

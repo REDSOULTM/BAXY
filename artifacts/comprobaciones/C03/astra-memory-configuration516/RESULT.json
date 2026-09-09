@@ -1,0 +1,59 @@
+{
+  "utc": "2026-09-09T00:08:59.649623+00:00",
+  "baseline": {
+    "passed": 22,
+    "failed": 10,
+    "skips": 0,
+    "milliseconds": 643,
+    "session": 71205,
+    "exit": 1
+  },
+  "focal": {
+    "passed": 36,
+    "failed": 0,
+    "skips": 0,
+    "milliseconds": 588,
+    "session": 91189,
+    "exit": 0
+  },
+  "first_owners": {
+    "passed": 1961,
+    "failed": 1,
+    "skips": 0,
+    "duration": "4 m 1 s",
+    "session": 77040,
+    "exit": 1
+  },
+  "export_focal": {
+    "passed": 1,
+    "failed": 0,
+    "skips": 0,
+    "milliseconds": 134,
+    "session": 88772,
+    "exit": 0
+  },
+  "final_owners": {
+    "passed": 1962,
+    "failed": 0,
+    "skips": 0,
+    "duration": "3 m 47 s",
+    "session": 31964,
+    "exit": 0
+  },
+  "fast": {
+    "passed": true,
+    "release_seconds": 3.47,
+    "warnings": 0,
+    "errors": 0,
+    "session": 66617,
+    "exit": 0,
+    "initial_preflight": "Wrong runtime Python selected, no ruff. Existing dedicated BAXYQuality environment used on retry, no dependency or threshold change. Failure retained."
+  },
+  "change": "Anchored private-memory configuration grammar replaces exact configuration aliases; keeps original Classify guards and encrypted memory.configure route, confirms only via existing kernel flow. No new model invocation, fixed visible response or public capability. Existing export test now checks typed destination/integrity/sync data instead of a stale localized JSON substring, preserving file/replay/privacy assertions.",
+  "source_sha256": {
+    "src/Baxy.App/NaturalMemoryRequestParser.cs": "98c826f79076aa91edc2331ff557906901c520981f0d592bb15ccf556e53a332",
+    "tests/Baxy.Integration.Tests/NaturalMemoryRequestParserTests.cs": "1d46fc5fd4dfa6f7590985349851317aee7577510270d41ebe215ee32c15821c",
+    "tests/Baxy.Integration.Tests/MemoryHandlersTests.cs": "f92187a643eb4edcca228f3f184be23b1df795bbed825e339bbebd96b5d9a5b6"
+  },
+  "limits": "No Full during repair, no actual desktop or physical voice. Product517 prepared to validate real disable and prior eight controls. Status/progress prose and whole C03 remain open."
+}

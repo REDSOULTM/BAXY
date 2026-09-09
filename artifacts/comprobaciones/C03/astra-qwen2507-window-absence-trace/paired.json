@@ -1,0 +1,87 @@
+[
+  {
+    "turnId": "t1",
+    "request": "cierra la calculadora",
+    "terminal": "published_final",
+    "final": "¿Cuál es el nombre del proceso de la calculadora que deseas cerrar?",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "Esperando tu aclaración",
+    "mindReplyRejection": null,
+    "compose": []
+  },
+  {
+    "turnId": "t2",
+    "request": "cancelar",
+    "terminal": "published_final",
+    "final": "La clarificación fue cancelada.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "outcome",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 32,
+        "draft_sha256": "fd84d76249551a195c05e4cf2f9188e598d760a73db25283f1a3092f77f8fbb0",
+        "payload": {
+          "kind": "status",
+          "outcome": "completed",
+          "state": "clarification cancelled"
+        },
+        "situation": "{\"kind\":\"status\",\"polarity\":\"success\",\"cause\":\"clarification_cancelled\"}",
+        "draft": "La clarificación fue cancelada."
+      }
+    ]
+  },
+  {
+    "turnId": "t3",
+    "request": "¿Qué hora es?",
+    "terminal": "published_final",
+    "final": "Son las 08:22.",
+    "diagnostic": null,
+    "compositionFailure": null,
+    "status": "BAXY disponible",
+    "mindReplyRejection": null,
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t3",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "mixed_language_needs_review": false,
+        "greeting": "none",
+        "payload_keys": [
+          "clock"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 14,
+        "draft_sha256": "324bd7c0f64557e04febd977f1da0b6e347ab827aa72375bafba3f383f0518ec",
+        "payload": {
+          "clock": "08:22"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-06T11:22:03.3610130+00:00\",\"localUtcOffsetMinutes\":-180}}",
+        "draft": "Son las 08:22."
+      }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+0.00.142.490 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.231.746 I srv    load_model: loading model 'D:\BAXYRuntime\experiments\models\qwen3-4b-instruct-2507-a06e946b\Qwen3-4B-Instruct-2507-Q4_K_M.gguf'
+0.00.932.889 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.02.964.439 I srv    load_model: initializing, n_slots = 3, n_ctx_slot = 4096, kv_unified = 'false'
+0.02.977.716 I srv  llama_server: model loaded
+0.02.977.733 I srv  llama_server: listening on http://127.0.0.1:57485
+0.03.242.676 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = -1
+0.03.242.728 I slot launch_slot_: id  2 | task 1 | processing task, is_child = 0
+0.04.020.522 I slot print_timing: id  2 | task 1 | prompt eval time =     137.61 ms /   318 tokens (    0.43 ms per token,  2310.88 tokens per second)
+0.04.020.531 I slot print_timing: id  2 | task 1 |        eval time =     640.15 ms /    48 tokens (   13.34 ms per token,    74.98 tokens per second)
+0.04.020.532 I slot print_timing: id  2 | task 1 |       total time =     777.76 ms /   366 tokens
+0.04.020.533 I slot print_timing: id  2 | task 1 |    graphs reused =         47
+0.04.020.596 I slot      release: id  2 | task 1 | stop processing: n_tokens = 365, truncated = 0
+0.04.057.820 I slot get_availabl: id  2 | task -1 | selected slot by LCP similarity, sim_best = 0.624 (> 0.100 thold), f_keep = 0.792
+0.04.058.032 I slot launch_slot_: id  2 | task 51 | processing task, is_child = 0
+0.04.406.503 I slot print_timing: id  2 | task 51 | prompt eval time =      74.14 ms /   174 tokens (    0.43 ms per token,  2346.97 tokens per second)
+0.04.406.512 I slot print_timing: id  2 | task 51 |        eval time =     274.31 ms /    22 tokens (   12.47 ms per token,    80.20 tokens per second)
+0.04.406.513 I slot print_timing: id  2 | task 51 |       total time =     348.45 ms /   196 tokens
+0.04.406.515 I slot print_timing: id  2 | task 51 |    graphs reused =         67
+0.04.406.576 I slot      release: id  2 | task 51 | stop processing: n_tokens = 484, truncated = 0

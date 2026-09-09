@@ -186,6 +186,17 @@ internal static class UserMessagePolicy
         return trimmed.Length >= 2 && trimmed[0] == '{' && trimmed[^1] == '}';
     }
 
+    internal static bool HasRequiredInput(UserMessageDraft draft) =>
+        draft.Intent == "clarification"
+        && TryReadJson(draft.Source, out JsonElement root)
+        && root.ValueKind == JsonValueKind.Object
+        && root.TryGetProperty("kind", out JsonElement kind)
+        && kind.ValueKind == JsonValueKind.String && kind.GetString() == "clarification"
+        && root.TryGetProperty("polarity", out JsonElement polarity)
+        && polarity.ValueKind == JsonValueKind.String && polarity.GetString() == "pending"
+        && root.TryGetProperty("missingValue", out JsonElement missing)
+        && missing.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(missing.GetString());
+
     public static UserMessageDraft Create(
         string source,
         UserMessageEvent messageEvent)
@@ -205,7 +216,8 @@ internal static class UserMessagePolicy
     /// Cuando la persona pregunta por esa misma palabra —«explícame qué es un
     /// router»— nombrarla es responder, no filtrar el interior del producto.
     /// </summary>
-    internal static string? LeakedInternalTerm(string text, string? userText)
+    internal static string? LeakedInternalTerm(
+        string text, string? userText, string? priorUserText = null)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > 4_096)
         {
@@ -219,8 +231,8 @@ internal static class UserMessagePolicy
                 continue;
             }
 
-            if (userText is not null
-                && userText.Contains(term, StringComparison.OrdinalIgnoreCase))
+            if (userText?.Contains(term, StringComparison.OrdinalIgnoreCase) is true
+                || priorUserText?.Contains(term, StringComparison.OrdinalIgnoreCase) is true)
             {
                 continue;
             }
@@ -239,7 +251,8 @@ internal static class UserMessagePolicy
     public static string? ModelResponseRejectionReason(
         string? modelText,
         UserMessageDraft draft,
-        string? userText = null)
+        string? userText = null,
+        string? priorUserText = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
         if (string.IsNullOrWhiteSpace(modelText))
@@ -252,7 +265,7 @@ internal static class UserMessagePolicy
         }
         // «Un router enruta el tráfico» sólo es jerga si nadie preguntó por un
         // router: sin el pedido, explicar uno era imposible.
-        if (LeakedInternalTerm(modelText, userText) is not null)
+        if (LeakedInternalTerm(modelText, userText, priorUserText) is not null)
         {
             return "unsafe_language";
         }
@@ -266,7 +279,7 @@ internal static class UserMessagePolicy
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(modelText))
             || HasRepeatedWord(FoldForPolicy(modelText))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
-            || ContainsInternalCode(modelText, userText)
+            || ContainsInternalCode(modelText, string.Concat(userText, " ", priorUserText))
             || FoldForPolicy(modelText).Contains("hecho ya ocurrido", StringComparison.Ordinal)
             || FoldForPolicy(modelText).Contains("hola saludo", StringComparison.Ordinal))
         {
@@ -289,15 +302,18 @@ internal static class UserMessagePolicy
             return "internal_code";
         }
 
+        if (HasRequiredInput(draft)
+            && !modelText.Contains('?', StringComparison.Ordinal)
+            && !modelText.Contains('¿', StringComparison.Ordinal))
+        {
+            return "clarification_not_a_question";
+        }
+
         if (ContainsStutteredToken(modelText))
         {
             return "internal_code";
         }
-        if (Regex.IsMatch(
-                modelText,
-                @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b",
-                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
-            || FoldForPolicy(modelText).Contains(
+        if (FoldForPolicy(modelText).Contains(
                 "el mensaje es",
                 StringComparison.Ordinal)
             || FoldForPolicy(modelText).Contains(
@@ -352,7 +368,15 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (!PreservesObservedClock(draft.Source, modelText))
+            bool dateRequested = Regex.IsMatch(userText ?? string.Empty,
+                @"\b(?:fecha|date)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            bool clockRequested = !dateRequested || Regex.IsMatch(userText ?? string.Empty,
+                @"\b(?:hora|time)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (clockRequested && !PreservesObservedClock(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (dateRequested && !PreservesObservedDate(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -439,10 +463,11 @@ internal static class UserMessagePolicy
     public static string? AcceptModelAuthoredResponse(
         string? modelText,
         UserMessageDraft draft,
-        string? userText = null)
+        string? userText = null,
+        string? priorUserText = null)
     {
         ArgumentNullException.ThrowIfNull(draft);
-        return ModelResponseRejectionReason(modelText, draft, userText) is null
+        return ModelResponseRejectionReason(modelText, draft, userText, priorUserText) is null
             ? WithDiagnosticCode(modelText!, draft)
             : null;
     }
@@ -455,8 +480,11 @@ internal static class UserMessagePolicy
     public static bool IsSafeConversationReply(
         string userText,
         string reply,
-        string? mindLanguage = null) =>
-        ConversationReplyRejectionReason(userText, reply, mindLanguage) is null;
+        string? mindLanguage = null,
+        string? priorUserText = null,
+        bool clarification = false,
+        bool hasRequiredInput = false) =>
+        ConversationReplyRejectionReason(userText, reply, mindLanguage, priorUserText, clarification, hasRequiredInput) is null;
 
     /// <summary>
     /// Por qué no se puede publicar una respuesta de la mente, o null si sí.
@@ -467,9 +495,12 @@ internal static class UserMessagePolicy
     public static string? ConversationReplyRejectionReason(
         string userText,
         string reply,
-        string? mindLanguage = null)
+        string? mindLanguage = null,
+        string? priorUserText = null,
+        bool clarification = false,
+        bool hasRequiredInput = false)
     {
-        if (LeakedInternalTerm(reply, userText) is { } leaked)
+        if (LeakedInternalTerm(reply, userText, priorUserText) is { } leaked)
         {
             return "unsafe_language:" + leaked;
         }
@@ -483,23 +514,24 @@ internal static class UserMessagePolicy
             ("restates_request",
                 !IsGreetingRequest(userText) && RestatesTheRequest(userText, reply)),
             ("clock_pattern", ContainsClockPattern(reply)),
-            ("internal_code", ContainsInternalCode(reply, userText)),
+            ("internal_code", ContainsInternalCode(reply, string.Concat(userText, " ", priorUserText))),
             ("unverified_success", ClaimsUnverifiedSuccess(reply)),
             ("invented_token", ContainsMeasuredInventedToken(reply)),
             ("stuttered_token", ContainsStutteredToken(reply)),
             ("unsolicited_catalog",
                 !IsSelfDescriptionQuestion(userText)
-                && (ProposesUnsolicitedCatalogAction(userText, reply)
-                    || MentionsUnsolicitedCatalogFamily(userText, reply))),
+                && ProposesUnsolicitedCatalogAction(userText, reply, clarification)),
             ("machine_slot_ask", LooksLikeMachineSlotAsk(said)),
             ("punctuation_only", IsPunctuationOnly(reply)),
             ("too_thin", IsTooThin(reply)),
             ("asks_to_invent_clock", AsksToInventClock(said)),
-            ("echoes_request", EchoesRequestAsQuestion(userText, reply)),
+            ("echoes_request",
+                !IsGreetingRequest(userText) && EchoesRequestAsQuestion(userText, reply)),
             ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
             ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
             ("looks_like_failure",
                 LooksLikeFailure(reply)
+                && !LooksLikeKnowledgeQuestion(user)
                 && ConversationFallbackIntent(userText) != "out_of_catalog"),
             ("greeting_not_returned",
                 IsGreetingRequest(userText)
@@ -531,7 +563,7 @@ internal static class UserMessagePolicy
             // saludo delante de la respuesta no es el defecto; quedarse sólo
             // en el saludo sí lo es.
             ("knowledge_not_answered",
-                LooksLikeKnowledgeQuestion(user)
+                !hasRequiredInput && LooksLikeKnowledgeQuestion(user)
                 && (IsGreetingOnly(reply)
                     || (StartsWithGreeting(reply) && GreetingRemainder(userText) is null)
                     || reply.Contains('?', StringComparison.Ordinal)
@@ -539,7 +571,7 @@ internal static class UserMessagePolicy
             ("unsolicited_legal_frame", InventsUnsolicitedLegalFrame(userText, reply)),
             ("broken_word", reply.Contains("teá", StringComparison.Ordinal)),
             ("identity_not_answered",
-                IsIdentityQuestion(userText)
+                !hasRequiredInput && IsIdentityQuestion(userText)
                 && (IsGreetingOnly(reply)
                     || reply.Contains('?', StringComparison.Ordinal)
                     || reply.Contains('¿', StringComparison.Ordinal)
@@ -649,7 +681,6 @@ internal static class UserMessagePolicy
         }
 
         if (IsConnectivityStatusRequest(userText)
-            || NaturalSystemStatusRequestParser.IsClockAndAudioStatusRequest(userText)
             || NaturalSystemStatusRequestParser.IsCurrentTimeRequest(userText))
         {
             return "conversation";
@@ -816,25 +847,6 @@ internal static class UserMessagePolicy
             ["hola", "buenos", "buenas", "que tal", "qué tal"]);
     }
 
-    internal static bool IsNegativeConstraintRequest(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return false;
-        }
-
-        string user = FoldForPolicy(text);
-        if (LooksLikeContinueConstraint(user))
-        {
-            return false;
-        }
-
-        return ContainsAny(
-            user,
-            ["no abras", "don't open", "dont open", "don't launch", "no lances",
-                "sin lanzar"]);
-    }
-
     private static bool LooksLikeNegativeAction(string user) =>
         ContainsAny(
             user,
@@ -858,11 +870,13 @@ internal static class UserMessagePolicy
             || IsGreetingRequest(userText);
     }
 
-    internal static bool ProposesUnsolicitedCatalogAction(string userText, string reply)
+    internal static bool ProposesUnsolicitedCatalogAction(
+        string userText, string reply, bool clarification = false)
     {
         string user = FoldForPolicy(userText);
-        string said = FoldForPolicy(reply);
-        if (!LooksLikeCatalogProposal(said)
+        string said = CatalogProposalScope(FoldForPolicy(reply));
+        if ((!CatalogFamilies.Any(family => ContainsAny(said, family))
+                && !ContainsCatalogActionVerb(said))
             || said.Contains("que accion", StringComparison.Ordinal)
             || said.Contains("what action", StringComparison.Ordinal)
             || said.Contains("que necesitas", StringComparison.Ordinal)
@@ -872,7 +886,9 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        if (!UserInvitedAnyCatalogAction(user))
+        // A classified clarification already belongs to the requested action.
+        // Still reject every family absent from that request below.
+        if (!clarification && !ContainsCatalogActionVerb(user))
         {
             return true;
         }
@@ -894,21 +910,6 @@ internal static class UserMessagePolicy
         }
 
         return !coveredFamilyNamed;
-    }
-
-    internal static bool MentionsUnsolicitedCatalogFamily(string userText, string reply)
-    {
-        string user = FoldForPolicy(userText);
-        string said = FoldForPolicy(reply);
-        foreach (string[] family in CatalogFamilies)
-        {
-            if (ContainsAny(said, family) && !UserCoversCatalogFamily(user, family))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static bool UserCoversCatalogFamily(string user, string[] family)
@@ -937,7 +938,9 @@ internal static class UserMessagePolicy
     [
         ["papelera", "recycle", "reciclaje"],
         ["ventana", "window"],
-        ["wifi", "wi-fi", "wlan", "inalambr"],
+        ["wifi", "wi-fi", "wlan", "inalambr", "estado de la red", "network status"],
+        ["estado del sistema", "system status"],
+        ["aplicacion", "application", "programa", "program"],
         ["steam"],
         ["rutina", "routine"],
         ["portapapeles", "clipboard"],
@@ -951,15 +954,35 @@ internal static class UserMessagePolicy
         ["minimice", "minimize", "minimizar"],
     ];
 
-    private static bool LooksLikeCatalogProposal(string folded) =>
-        folded.Contains("quieres que", StringComparison.Ordinal)
-        || folded.Contains("want me to", StringComparison.Ordinal)
-        || folded.Contains("do you want me", StringComparison.Ordinal)
-        || folded.Contains("metadatos de una rutina", StringComparison.Ordinal)
-        || folded.Contains("salida predeterminada", StringComparison.Ordinal);
+    private static string CatalogProposalScope(string folded)
+    {
+        // A conversational offer is not necessarily an operation. Inspect its
+        // object, without borrowing catalog nouns from the preceding answer.
+        string proposals = string.Join(" ", Regex.Matches(folded,
+                @"\b(?:quieres que|want me to|do you want me(?: to)?)\b[^.!?;\r\n]*",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+            .Cast<Match>().Select(static match => match.Value));
+        if (proposals.Length > 0)
+        {
+            return proposals;
+        }
 
+        return folded.Contains("metadatos de una rutina", StringComparison.Ordinal)
+            || folded.Contains("salida predeterminada", StringComparison.Ordinal)
+            ? folded
+            : string.Empty;
+    }
+
+    // A noun in an explanation is not a request for a parameter. C03's
+    // encryption answer mentioned a recipient and was needlessly rewritten.
+    // Preserve the slot guard only for an actual question or direct request.
     private static bool LooksLikeMachineSlotAsk(string folded) =>
-        folded.Contains("nombre de la aplicacion", StringComparison.Ordinal)
+        (folded.Contains('?', StringComparison.Ordinal)
+            || folded.Contains('¿', StringComparison.Ordinal)
+            || Regex.IsMatch(folded,
+                @"^(?:(?:por favor|please)\s+)?(?:dime|indica|especifica|proporciona|aclara|tell|name|specify|provide|clarify)\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        && (folded.Contains("nombre de la aplicacion", StringComparison.Ordinal)
         || folded.Contains("name of the application", StringComparison.Ordinal)
         || folded.Contains("pc network name", StringComparison.Ordinal)
         || folded.Contains("network name", StringComparison.Ordinal)
@@ -1005,7 +1028,7 @@ internal static class UserMessagePolicy
         || folded.Contains("tema que necesitas", StringComparison.Ordinal)
         || folded.Contains("tema principal", StringComparison.Ordinal)
         || folded.Contains("quien te pregunta", StringComparison.Ordinal)
-        || folded.Contains("proposito de", StringComparison.Ordinal);
+        || folded.Contains("proposito de", StringComparison.Ordinal));
 
     private static bool LooksLikeAmbiguousAction(string user) =>
         ContainsAny(
@@ -1115,30 +1138,23 @@ internal static class UserMessagePolicy
         return GreetingRemainder(reply) is { Length: 0 };
     }
 
-    private static bool StartsWithGreeting(string reply)
-    {
-        string folded = FoldForPolicy(reply).Trim().Trim('.', '!', '?', '¿', '¡', ' ');
-        return folded.StartsWith("hola", StringComparison.Ordinal)
-            || folded.StartsWith("hello", StringComparison.Ordinal)
-            || folded.StartsWith("hi ", StringComparison.Ordinal)
-            || folded.StartsWith("hi,", StringComparison.Ordinal)
-            || folded.StartsWith("hey", StringComparison.Ordinal)
-            || folded.StartsWith("buenos", StringComparison.Ordinal)
-            || folded.StartsWith("buenas", StringComparison.Ordinal)
-            || folded.StartsWith("good afternoon", StringComparison.Ordinal)
-            || folded.StartsWith("good morning", StringComparison.Ordinal)
-            || folded.StartsWith("good evening", StringComparison.Ordinal);
-    }
+    private static bool StartsWithGreeting(string reply) => GreetingRemainder(reply) is not null;
 
     private static bool HasRepeatedWord(string folded)
     {
-        string[] words = folded.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        string previous = string.Empty;
-        foreach (string raw in words)
+        Match? previous = null;
+        foreach (Match word in Regex.Matches(
+            folded,
+            @"[\p{L}\p{N}]+",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
         {
-            string word = raw.Trim('.', ',', ';', ':', '!', '?', '¿', '¡', '"', '\'', '(', ')');
+            // Quotes and sentence punctuation separate meaningful uses, such
+            // as la ventana "Ventana de trabajo". Only whitespace-separated
+            // duplicate words are evidence of a stutter.
             if (word.Length >= 3
-                && string.Equals(word, previous, StringComparison.Ordinal))
+                && previous is not null
+                && string.Equals(word.Value, previous.Value, StringComparison.Ordinal)
+                && string.IsNullOrWhiteSpace(folded[(previous.Index + previous.Length)..word.Index]))
             {
                 return true;
             }
@@ -1329,7 +1345,7 @@ internal static class UserMessagePolicy
         return true;
     }
 
-    private static bool UserInvitedAnyCatalogAction(string user) =>
+    private static bool ContainsCatalogActionVerb(string user) =>
         ContainsAny(
             user,
             [
@@ -1419,9 +1435,23 @@ internal static class UserMessagePolicy
         const RegexOptions options =
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking;
         string folded = FoldForPolicy(reply);
+        // A complete identifier already supplied by the person is not a leak.
+        // Restrict this exemption to code shapes, preserving all other checks.
+        const string identifierPattern = @"[\w-]+(?:[._][\w-]+)+";
+        var userIdentifiers = Regex.Matches(userText ?? string.Empty, identifierPattern, options)
+            .Select(static match => match.Value)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        string withoutUserIdentifiers = Regex.Replace(reply, identifierPattern,
+            match => userIdentifiers.Contains(match.Value) ? string.Empty : match.Value, options);
+        // Public web hosts in explanations are not operation identifiers.
+        // Only the host span is excluded: codes elsewhere and URL paths still
+        // cross the same checks below.
+        string withoutWebHosts = Regex.Replace(withoutUserIdentifiers,
+            @"\b(?:https?://|www\.)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}\b",
+            string.Empty, options | RegexOptions.IgnoreCase);
         return EchoesAnInstructionThePersonDidNotWrite(folded, userText)
-            || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
-            || Regex.IsMatch(reply, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options)
+            || Regex.IsMatch(withoutUserIdentifiers, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
+            || Regex.IsMatch(withoutWebHosts, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options)
             || folded.Contains("el mensaje es", StringComparison.Ordinal)
             || folded.Contains("unclear", StringComparison.Ordinal)
             || folded.Contains("entender la solicitud", StringComparison.Ordinal)
@@ -1566,42 +1596,24 @@ internal static class UserMessagePolicy
         }
 
         return answered == asked
-            || answered == lead
+            // An explicitly requested greeting is the answer itself. A copied
+            // information request following that greeting is still an echo.
+            || (answered == lead
+                && (!StartsWithGreeting(reply) || LooksLikeKnowledgeQuestion(asked)))
             || (answered.StartsWith(asked, StringComparison.Ordinal)
                 && answered.Length <= asked.Length + 12);
     }
 
     private static bool ContainsPersonMetadiscourse(string folded)
     {
-        const RegexOptions options =
-            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking;
-
-        // A conversational answer should address the person, not narrate
-        // what "the user/person" did or wanted. Check every sentence rather
-        // than only the beginning of the whole reply.
-        if (Regex.IsMatch(
-                folded,
-                @"(?:^|[\r\n]+|[.!?]\s+)[\s«»“”‘’'()\[\]-]*(?:(?:(?:al|del|el|la|este|esta|ese|esa)\s+|(?:a|de|para)\s+(?:el|la|este|esta|ese|esa)\s+)(?:usuario|usuaria|persona)|(?:the|this|that)\s+(?:user|person|requester))\b",
-                options))
-        {
-            return true;
-        }
-
-        // Also reject a short introductory clause followed by an explicit
-        // attribution, while avoiding ordinary guidance such as
-        // "Puedes crear el usuario admin desde Configuración".
-        if (Regex.IsMatch(
+        // The defect is attributing the request to a third person. Merely
+        // mentioning a user/account is valid, including "Tú eres el usuario…".
+        // Bind the subject to a request/speech predicate instead of banning
+        // the noun everywhere or exempting one literal account name.
+        return Regex.IsMatch(
             folded,
-            @"[,;:]\s*(?:(?:(?:al|del|el|la|este|esta|ese|esa)\s+|(?:a|de|para)\s+(?:el|la|este|esta|ese|esa)\s+)(?:usuario|usuaria|persona)|(?:the|this|that)\s+(?:user|person|requester))\b[^.!?\r\n]{0,80}\b(?:le gustaria|le interesa|quiere|quisiera|desea|prefiere|pidio|ha pedido|pregunto|dijo|saludo|solicito|menciono|would like|wants|asked|said|greeted|requested|mentioned|prefers|has asked)\b",
-            options))
-        {
-            return true;
-        }
-
-        return folded.Contains("the user", StringComparison.Ordinal)
-            || folded.Contains("los usuarios", StringComparison.Ordinal)
-            || (folded.Contains("el usuario", StringComparison.Ordinal)
-                && !folded.Contains("usuario admin", StringComparison.Ordinal));
+            @"\b(?:(?:al|del|el|la|este|esta|ese|esa)\s+(?:usuario|usuaria|persona)|(?:the|this|that)\s+(?:user|person|requester))\s+(?:le gustaria|le interesa|quiere|quisiera|desea|prefiere|pidio|ha pedido|pregunto|dijo|saludo|solicito|menciono|se refiere|would like|wants|asked|said|greeted|requested|mentioned|prefers|has asked|is referring)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
     public static string WithDiagnosticCode(string text, UserMessageDraft draft)
@@ -1623,22 +1635,32 @@ internal static class UserMessagePolicy
         }
 
         string normalized = FoldForPolicy(sourceOrResult);
+        // Absence of failures is compatible with a successful observation.
+        // Remove only the negated failure assertion, not the whole sentence:
+        // an independent "but the CPU check failed" must still be detected.
+        string assertedFailures = Regex.Replace(
+            normalized,
+            @"\b(?:(?:sin|ningun[oa]?|no\s+(?:hay|hubo))\s+(?:ningun[oa]?\s+)?fallos?\b"
+            + @"|no\s+se\s+(?:(?:ha|han)\s+)?(?:detect|registr|report|encontr)(?:ado|o|aron)\s+(?:ningun[oa]?\s+)?fallos?\b"
+            + @"|(?:not|never)\s+failed\b|(?:no|zero|0)\s+failed\b"
+            + @"|none\s+of\s+(?:(?!(?:but|and)\b)\w+\s+){1,5}failed\b)",
+            string.Empty,
+            RegexOptions.CultureInvariant);
         return normalized.Contains("no pude", StringComparison.Ordinal)
         || normalized.Contains("no puedo", StringComparison.Ordinal)
         || normalized.Contains("no complete", StringComparison.Ordinal)
         || normalized.Contains("no logre", StringComparison.Ordinal)
-        || normalized.Contains("no se pudo", StringComparison.Ordinal)
-        || normalized.Contains("falló", StringComparison.Ordinal)
-        || normalized.Contains("fallo", StringComparison.Ordinal)
+        || Regex.IsMatch(assertedFailures,
+            @"\b(?:fallos?|failed)\b|\bno\s+(?:encontre|se\s+(?:pudo|pudieron|encontro|encontraron))\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
         || normalized.Contains("no recibí", StringComparison.Ordinal)
         || normalized.Contains("no realicé", StringComparison.Ordinal)
         || normalized.Contains("no interpreté", StringComparison.Ordinal)
         || normalized.Contains("no está disponible", StringComparison.Ordinal)
-        || normalized.Contains("i couldn't", StringComparison.Ordinal)
-        || normalized.Contains("i could not", StringComparison.Ordinal)
+        || Regex.IsMatch(normalized, @"\b(?:cannot|can't|could\s+not|couldn't)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
         || normalized.Contains("wasn't able", StringComparison.Ordinal)
-        || normalized.Contains("was not able", StringComparison.Ordinal)
-        || normalized.Contains("failed", StringComparison.Ordinal);
+        || normalized.Contains("was not able", StringComparison.Ordinal);
     }
 
     private static bool AttributesBaxyActionToUser(string source, string result)
@@ -1920,6 +1942,42 @@ internal static class UserMessagePolicy
         return ClockAppears(FoldForPolicy(result), hhmm);
     }
 
+    private static readonly CultureInfo[] CalendarCultures =
+        [CultureInfo.GetCultureInfo("es-ES"), CultureInfo.GetCultureInfo("en-US")];
+
+    private static bool PreservesObservedDate(string source, string result)
+    {
+        if (!TryDerivedLocalMoment(source, out DateTimeOffset local))
+        {
+            return true;
+        }
+
+        const string month = "(?:enero|january|febrero|february|marzo|march|abril|april|"
+            + "mayo|may|junio|june|julio|july|agosto|august|septiembre|setiembre|"
+            + "september|octubre|october|noviembre|november|diciembre|december)";
+        string pattern = @"\b(?:\d{4}-\d{1,2}-\d{1,2}|\d{1,2}\s+(?:de\s+)?"
+            + month + @"(?:\s+(?:de\s+)?\d{4})?|" + month
+            + @"\s+\d{1,2}(?:,?\s+\d{4})?)\b";
+        bool found = false;
+        foreach (Match match in Regex.Matches(result, pattern,
+                     RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            found = true;
+            bool hasYear = Regex.IsMatch(match.Value, @"\b\d{4}\b");
+            bool sameDate = CalendarCultures.Any(culture =>
+                DateOnly.TryParse(match.Value, culture,
+                    DateTimeStyles.AllowWhiteSpaces, out DateOnly date)
+                && date.Month == local.Month && date.Day == local.Day
+                && (!hasYear || date.Year == local.Year));
+            if (!sameDate)
+            {
+                return false;
+            }
+        }
+
+        return found;
+    }
+
     private static bool InventedVolume(string source, string result)
     {
         string folded = FoldForPolicy(result);
@@ -1945,10 +2003,7 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        foreach (Match match in Regex.Matches(
-            result,
-            @"\b\d{1,2}:\d{2}\b",
-            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+        foreach (Match match in MatchClockTokens(result))
         {
             if (!ClockAppears(match.Value, hhmm))
             {
@@ -2286,12 +2341,25 @@ internal static class UserMessagePolicy
     internal static bool TryDerivedLocalClock(string source, out string hhmm)
     {
         hhmm = string.Empty;
+        if (!TryDerivedLocalMoment(source, out DateTimeOffset local))
+        {
+            return false;
+        }
+
+        hhmm = local.Hour.ToString(CultureInfo.InvariantCulture)
+            + ":" + local.Minute.ToString("D2", CultureInfo.InvariantCulture);
+        return true;
+    }
+
+    private static bool TryDerivedLocalMoment(string source, out DateTimeOffset local)
+    {
+        local = default;
         if (!IsStructuredFacts(source) || !TryReadJson(source, out JsonElement root))
         {
             return false;
         }
 
-        if (!TryClockFromObserved(root, out hhmm)
+        if (!TryMomentFromObserved(root, out local)
             && root.TryGetProperty("steps", out JsonElement steps)
             && steps.ValueKind == JsonValueKind.Array)
         {
@@ -2300,7 +2368,7 @@ internal static class UserMessagePolicy
                 if (step.GetString() is { Length: > 0 } text
                     && IsStructuredFacts(text)
                     && TryReadJson(text, out JsonElement nested)
-                    && TryClockFromObserved(nested, out hhmm))
+                    && TryMomentFromObserved(nested, out local))
                 {
                     return true;
                 }
@@ -2309,12 +2377,12 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        return !string.IsNullOrEmpty(hhmm);
+        return local != default;
     }
 
-    private static bool TryClockFromObserved(JsonElement root, out string hhmm)
+    private static bool TryMomentFromObserved(JsonElement root, out DateTimeOffset local)
     {
-        hhmm = string.Empty;
+        local = default;
         if (!root.TryGetProperty("observed", out JsonElement observed)
             || observed.ValueKind != JsonValueKind.Object
             || !observed.TryGetProperty("utc", out JsonElement utcElement)
@@ -2330,12 +2398,22 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        DateTimeOffset local = utcTime.ToOffset(TimeSpan.FromMinutes(offsetMinutes));
-        hhmm = local.Hour.ToString(CultureInfo.InvariantCulture)
-            + ":"
-            + local.Minute.ToString("D2", CultureInfo.InvariantCulture);
+        local = utcTime.ToOffset(TimeSpan.FromMinutes(offsetMinutes));
         return true;
     }
+
+    private static readonly Regex ClockTokens = new(
+        @"\b(\d{1,2})(?::|\s+(?:horas?\s+y|hours?\s+and)\s+)"
+            + @"(\d{1,2})(?:\s+(?:minutos?|minutes?))?(?:\s*([ap])\.?\s*m\.?)?\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    private static readonly Regex SpokenClockTokens = new(
+        @"\b(?:son\s+las|es\s+la)\s+(\d{1,2})\s+y\s+(\d{1,2})"
+            + @"(?:\s+minutos?)?(?:\s*([ap])\.?\s*m\.?)?\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    private static IEnumerable<Match> MatchClockTokens(string text) =>
+        ClockTokens.Matches(text).Concat(SpokenClockTokens.Matches(text));
 
     private static bool ClockAppears(string foldedResult, string hhmm)
     {
@@ -2347,37 +2425,25 @@ internal static class UserMessagePolicy
             return false;
         }
 
-        string padded = hour.ToString("D2", CultureInfo.InvariantCulture)
-            + ":"
-            + minute.ToString("D2", CultureInfo.InvariantCulture);
-        string compact = hour.ToString(CultureInfo.InvariantCulture)
-            + ":"
-            + minute.ToString("D2", CultureInfo.InvariantCulture);
-        return ContainsClockToken(foldedResult, padded)
-            || ContainsClockToken(foldedResult, compact);
-    }
-
-    private static bool ContainsClockToken(string folded, string form)
-    {
-        int start = 0;
-        while (true)
+        foreach (Match match in MatchClockTokens(foldedResult))
         {
-            int index = folded.IndexOf(form, start, StringComparison.Ordinal);
-            if (index < 0)
+            int statedHour = int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            int statedMinute = int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture);
+            if (match.Groups[3].Success)
             {
-                return false;
+                if (statedHour is < 1 or > 12)
+                {
+                    continue;
+                }
+                statedHour = statedHour % 12
+                    + (match.Groups[3].Value.Equals("p", StringComparison.OrdinalIgnoreCase) ? 12 : 0);
             }
-
-            bool leftOk = index == 0 || !char.IsDigit(folded[index - 1]);
-            int end = index + form.Length;
-            bool rightOk = end >= folded.Length || !char.IsDigit(folded[end]);
-            if (leftOk && rightOk)
+            if (statedHour == hour && statedMinute == minute)
             {
                 return true;
             }
-
-            start = index + 1;
         }
+        return false;
     }
 
     private static bool PreservesBaxyFirstPerson(string source, string result)
@@ -2497,13 +2563,44 @@ internal static class UserMessagePolicy
 
     private static void CollectStructuredLiterals(JsonElement root, List<string> facts)
     {
+        // A single short recalled value is an observed literal, just like a
+        // title. Preserve it through both composition and final acceptance.
+        // Lists/long records still travel as observations; requiring every
+        // value would turn a read into an unbounded literal-copy contract.
+        if (root.TryGetProperty("operation", out JsonElement operation)
+            && operation.ValueKind == JsonValueKind.String
+            && operation.GetString() is "memory.recall" or "memory.list"
+            && root.TryGetProperty("verified", out JsonElement verified)
+            && verified.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("succeeded", out JsonElement succeeded)
+            && succeeded.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("observed", out JsonElement observed)
+            && observed.ValueKind == JsonValueKind.Object
+            && observed.TryGetProperty("records", out JsonElement records)
+            && records.ValueKind == JsonValueKind.Array
+            && records.GetArrayLength() == 1
+            && records[0].ValueKind == JsonValueKind.Object
+            && records[0].TryGetProperty("value", out JsonElement recalled)
+            && recalled.ValueKind == JsonValueKind.String
+            && recalled.GetString() is { Length: > 0 and <= 256 } literal
+            && literal != "[REDACTED]")
+        {
+            facts.Add(literal);
+        }
+
         foreach (string key in new[] { "reason", "title" })
         {
             if (root.TryGetProperty(key, out JsonElement value)
+                && value.ValueKind == JsonValueKind.String
                 && value.GetString() is { Length: > 0 } text)
             {
                 facts.Add(text);
             }
+        }
+        if (root.TryGetProperty("reason", out JsonElement reason)
+            && reason.ValueKind == JsonValueKind.Object)
+        {
+            CollectStructuredLiterals(reason, facts);
         }
     }
 

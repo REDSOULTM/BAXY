@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-07T23:32:09.637700+00:00",
+  "inputs": [
+    "Tengo en mente que abras steam",
+    "abre steam",
+    "Si, abre steam"
+  ],
+  "hypothesis": "Schema argument metadata obscures application opening semantics; compare exact catalogue descriptions without schema suffix, keeping operation name and ranking.",
+  "method": "Current E5 CPU, frozen Core262 catalog, development literals. No native LLM or effects; no source change. One difference: remove schema suffix from passage documents.",
+  "encoder": "intfloat/multilingual-e5-small",
+  "encoderRevision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+  "catalogSha256": "7e062d540823fc261c3367d6ba7e982619e5d90ae61209b39c3159fe48293e97",
+  "inheritance": [
+    "astra-retrieval261/RESULT.json",
+    "astra-selector-catalog67/PREREG.json"
+  ],
+  "criteria": "app.open retained top28 for all three literals; larger regression required before adoption."
+}

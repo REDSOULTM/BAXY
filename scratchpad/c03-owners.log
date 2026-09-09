@@ -1,0 +1,325 @@
+........................................................................ [ 35%]
+.......................F.....F.......................................... [ 71%]
+.................................................F........               [100%]
+================================== FAILURES ===================================
+______________ test_a_greeting_with_a_request_keeps_the_request _______________
+
+    def test_a_greeting_with_a_request_keeps_the_request() -> None:
+        for text, expected in (
+            ("hey, close Paint", "close Paint"),
+            ("hey, what can you do", "what can you do"),
+            ("hola, �qu� puedes hacer?", "�qu� puedes hacer?"),
+        ):
+            reading = read_request(text)
+            assert reading.greeting == "leading"
+            assert reading.ask == expected
+            content = _compose_user_content(text, {}, "LANG", reading=reading)
+            assert text in content
+    
+        only = read_request("Good afternoon")
+        assert only.greeting_only
+>       assert "Good afternoon" not in _compose_user_content(
+            "Good afternoon",
+            {"situation": {"greeting": "hi"}},
+            "LANG",
+            reading=only,
+        )
+E       assert 'Good afternoon' not in 'Texto origi... "hi"}\nLANG'
+E         
+E         'Good afternoon' is contained here:
+E           Texto original de la persona: Good afternoon
+E         ?                               ++++++++++++++
+E           situation: {"greeting": "hi"}
+E           LANG
+
+tests\test_request_reading.py:78: AssertionError
+_____________ test_an_english_greeting_reaches_granite_in_english _____________
+
+    def test_an_english_greeting_reaches_granite_in_english() -> None:
+        captured: list[dict] = []
+    
+        class FakeClient(llm_mod.LlmRuntime):
+            def __init__(self) -> None:  # noqa: D107
+                self._gguf = r"D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf"
+    
+            def _post(self, payload):  # noqa: ANN001
+                captured.append(payload)
+                return {"choices": [{"message": {"content": "Hi, good to see you."}}]}
+    
+        text = FakeClient().compose_user_message(
+            "Good afternoon",
+            "welcome",
+            {"situation": '{"kind":"welcome","polarity":"success"}'},
+        )
+    
+        assert text == "Hi, good to see you."
+        assert captured[0]["messages"][0]["content"] == (
+            llm_mod.GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT
+        )
+>       assert '"greeting": "hi"' in captured[0]["messages"][1]["content"]
+E       assert '"greeting": "hi"' in 'Texto original de la persona: Good afternoon\nMandatory language: English. Outside literal contract items, do not introduce Spanish words such as �Listo� or �encontr�.'
+
+tests\test_request_reading.py:187: AssertionError
+__________________ test_public_compose_profile_follows_gguf ___________________
+
+    def test_public_compose_profile_follows_gguf() -> None:
+        qwen = r"D:\BAXYRuntime\assets\models\Qwen3-4B-Q4_K_M.gguf"
+        granite = r"D:\BAXYRuntime\assets\models\granite-4.2-3b-Q4_K_M.gguf"
+        assert _public_compose_sampling(qwen) == {"temperature": 0.0}
+        assert _public_compose_sampling(granite) == {"temperature": 1.0, "top_p": 0.95}
+        assert _message_response_language("book a room on Deimos") == "en"
+        assert _message_response_language("don't launch Notepad") == "en"
+        assert _message_response_language("qu� hora es") == "es"
+        assert _strip_prompt_labels("<think></think>Soy BAXY, un compa�ero que vive en el PC.") == (
+            "Soy BAXY, un compa�ero que vive en el PC."
+        )
+    
+        captured: list[dict] = []
+    
+        class FakeClient(llm_mod.LlmRuntime):
+            def __init__(self, gguf: str) -> None:  # noqa: D107
+                self._gguf = gguf
+    
+            def _post(self, payload):  # noqa: ANN001
+                captured.append(payload)
+                return {"choices": [{"message": {"content": "<think></think>Soy BAXY."}}]}
+    
+        granite_client = FakeClient(granite)
+        text = granite_client.compose_user_message(
+            "qui�n eres",
+            "welcome",
+            {"situation": '{"kind":"welcome","polarity":"success"}'},
+        )
+        assert text == "Soy BAXY."
+        assert captured[0]["temperature"] == 1.0
+        assert captured[0]["top_p"] == 0.95
+        assert captured[0]["messages"][0]["content"] == GRANITE_WELCOME_USER_MESSAGE_PROMPT
+        captured.clear()
+        granite_client.compose_user_message(
+            "what is UTC, one line",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        knowledge = json.dumps(captured[-1], ensure_ascii=False)
+        assert "hay red" not in knowledge.casefold()
+        assert "Do not greet" in captured[-1]["messages"][1]["content"]
+        assert "Do not configure" in captured[-1]["messages"][1]["content"]
+        assert "Do not restate the request" in captured[-1]["messages"][1]["content"]
+        captured.clear()
+        granite_client.compose_user_message(
+            "define huso horario, una frase",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        define_extra = captured[-1]["messages"][1]["content"]
+        assert "Do not configure" in define_extra
+        assert "Explain the concept" in define_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "qu� puedes hacer en este equipo",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        capability_extra = captured[0]["messages"][1]["content"]
+        assert "name three or four entries of can" in capability_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "Hola, �qu� puedes hacer?",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        r01_extra = captured[0]["messages"][1]["content"]
+        assert "name three or four entries of can" in r01_extra
+        assert "Greet briefly" not in r01_extra
+        assert "Reply I don't do that" not in r01_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "Expl�came con calma qu� puedes hacer en este PC y qu� no haces, sin abrir nada.",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        r10_extra = captured[0]["messages"][1]["content"]
+        assert "name three or four entries of can" in r10_extra
+        assert "situation: {}" not in r10_extra
+        assert '"situation": {"situation"' not in r10_extra
+        assert "Reply I don't do that" not in r10_extra
+        assert "JSON" in r10_extra
+        assert "One short sentence" in r10_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "don't open Calculator",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        constraint_extra = captured[0]["messages"][1]["content"]
+        assert "will not open" in constraint_extra
+        assert "Reply I don't do that" not in constraint_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "Who is speaking",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        identity_extra = captured[0]["messages"][1]["content"]
+        assert "Name BAXY" in identity_extra
+        assert compose_visible_defect(
+            "I don't do that.",
+            "conversation",
+            "don't open Calculator",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        ) == "reversed_result"
+        assert compose_visible_defect(
+            "I will not open Calculator.",
+            "conversation",
+            "don't open Calculator",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        ) == ""
+        assert compose_visible_defect(
+            "Continue in one short sentence without opening apps.",
+            "conversation",
+            "keep going without opening apps",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        ) == "copied_instruction"
+        assert compose_visible_defect(
+            "Please specify the PC network name.",
+            "status",
+            "are you connected?",
+            {
+                "situation": json.dumps(
+                    {
+                        "kind": "operation",
+                        "operation": "network.status",
+                        "polarity": "success",
+                        "observed": {"online": True},
+                    },
+                    ensure_ascii=False,
+                )
+            },
+        ) == "copied_instruction"
+        assert compose_visible_defect(
+            "En este PC abro programas, leo la hora y el audio. No abro nada ahora.",
+            "conversation",
+            "Expl�came con calma qu� puedes hacer en este PC y qu� no haces, sin abrir nada.",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        ) == ""
+        assert "Do not configure" not in capability_extra
+        assert "Explain the concept" not in capability_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "traduce 'hello' al espa�ol, nada m�s",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        translation = captured[-1]["messages"][1]["content"]
+        assert "Give only the translation" in translation
+        assert "Do not greet" in translation
+        assert "Do not refuse" in translation
+        captured.clear()
+        granite_client.compose_user_message(
+            "keep going without opening apps",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        continue_payload = _compose_situation_payload(
+            {"kind": "conversation", "polarity": "success"},
+            "en",
+            "keep going without opening apps",
+        )
+        assert continue_payload.get("effect") is None
+        assert "continuing" not in continue_payload
+        assert continue_payload.get("opening") == "none"
+        assert "apps" not in continue_payload
+        continue_system = captured[0]["messages"][0]["content"]
+        assert continue_system == GRANITE_CONTINUE_EN_USER_MESSAGE_PROMPT
+        assert continue_system != GRANITE_USER_MESSAGE_PROMPT
+        assert "Tuteas" not in continue_system
+        assert "Eres BAXY" not in continue_system
+        assert GRANITE_CONTINUE_EN_CPU_USER_MESSAGE_PROMPT.startswith("You are BAXY")
+        continue_extra = captured[0]["messages"][1]["content"]
+        assert "keep going without opening apps" in continue_extra
+        assert "continuing" not in continue_extra
+        assert '"opening": "none"' in continue_extra
+        assert '"apps": "none"' not in continue_extra
+        assert "effect" not in continue_extra
+        assert "will not open" in continue_extra
+        assert "English only." not in continue_extra
+        assert "Name continue and limit" not in continue_extra
+        assert "Keep talking" not in continue_extra
+        assert "Stay in the conversation" not in continue_extra
+        assert "Continue in one short sentence" not in continue_extra
+        # El contrato de idioma viaja siempre: sin �l, �sigue charlando sin abrir
+        # programas� se contest� en ingl�s (panel-opus-2/027).
+        assert "Mandatory language" in continue_extra
+        assert "One short sentence of the facts" not in continue_extra
+        # �Qu� no haces� pregunta por el l�mite, no por las capacidades: con la
+        # lista delante el modelo la negaba entera (panel-opus-2/017 y /030).
+        assert _looks_like_refuse_question("What will you never do")
+        assert _looks_like_refuse_question("qu� no haces, una frase")
+        assert _looks_like_refuse_question("qu� no haces en este PC, sin abrir nada")
+        assert not _looks_like_capability_question("qu� no haces, una frase")
+        assert _looks_like_capability_question("qu� puedes hacer en este PC")
+        captured.clear()
+        granite_client.compose_user_message(
+            "qu� no haces, una frase",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        limits_extra = captured[0]["messages"][1]["content"]
+        assert "only do the work of this PC" in limits_extra
+        assert "Never list what you do as things you refuse" in limits_extra
+        assert "name three or four entries of can" not in limits_extra
+        assert "Reply I don't do that" not in limits_extra
+        captured.clear()
+        clock_facts = {
+            "situation": json.dumps(
+                {
+                    "kind": "operation",
+                    "operation": "system.time",
+                    "polarity": "success",
+                    "observed": {
+                        "utc": "2026-09-05T12:08:00.0000000+00:00",
+                        "localUtcOffsetMinutes": -240,
+                    },
+                },
+                ensure_ascii=False,
+            )
+        }
+        granite_client.compose_user_message(
+            "�Qu� hora es?",
+            "status",
+            clock_facts,
+        )
+        assert captured[0]["messages"][0]["content"] == GRANITE_CLOCK_USER_MESSAGE_PROMPT
+        assert "Tuteas" not in captured[0]["messages"][0]["content"]
+        captured.clear()
+        granite_client.compose_user_message(
+            "What time is it?",
+            "status",
+            clock_facts,
+        )
+        assert captured[0]["messages"][0]["content"] == GRANITE_CLOCK_EN_USER_MESSAGE_PROMPT
+        captured.clear()
+        granite_client.compose_user_message(
+            "close that",
+            "conversation",
+            {"situation": '{"kind":"conversation","polarity":"success"}'},
+        )
+        close_extra = captured[0]["messages"][1]["content"]
+        assert "Ask one short question that names the missing target" in close_extra
+        captured.clear()
+        granite_client.compose_user_message(
+            "Hi there",
+            "welcome",
+            {"situation": '{"kind":"welcome","polarity":"success"}'},
+        )
+        hi_extra = captured[0]["messages"][1]["content"]
+        assert captured[0]["messages"][0]["content"] == GRANITE_WELCOME_EN_USER_MESSAGE_PROMPT
+>       assert '"greeting": "hi"' in hi_extra
+E       assert '"greeting": "hi"' in 'Texto original de la persona: Hi there\nMandatory language: English. Outside literal contract items, do not introduce Spanish words such as �Listo� or �encontr�.'
+
+tests\test_goal06_voice.py:323: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_request_reading.py::test_a_greeting_with_a_request_keeps_the_request
+FAILED tests/test_request_reading.py::test_an_english_greeting_reaches_granite_in_english
+FAILED tests/test_goal06_voice.py::test_public_compose_profile_follows_gguf
+3 failed, 199 passed in 2.96s

@@ -1,0 +1,86 @@
+{
+  "t1": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t2": {
+    "verdict": "FALLO",
+    "reason": "Audio desactivado contradice muted:false (t2); reunión y falta de tiempo inventadas (t5)."
+  },
+  "t3": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t4": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t5": {
+    "verdict": "FALLO",
+    "reason": "Audio desactivado contradice muted:false (t2); reunión y falta de tiempo inventadas (t5)."
+  },
+  "t6": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t7": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t8": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t9": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t10": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t11": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t12": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t13": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t14": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t15": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t16": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t17": {
+    "verdict": "FALLO",
+    "reason": "No hubo respuesta final publicada."
+  },
+  "t18": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t19": {
+    "verdict": "FALLO",
+    "reason": "No hubo respuesta final publicada."
+  },
+  "t20": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  },
+  "t21": {
+    "verdict": "ÚTIL",
+    "reason": "Responde al turno; revisar los hechos y límites de la captura enlazada."
+  }
+}

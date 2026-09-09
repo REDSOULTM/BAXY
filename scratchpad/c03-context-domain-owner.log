@@ -1,0 +1,91 @@
+.........FF............................................................. [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+.......................                                                  [100%]
+================================== FAILURES ===================================
+_ test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent[Ponlo a 100 ahora-dime la hora y el volumen] _
+
+user_text = 'Ponlo a 100 ahora', previous = 'dime la hora y el volumen'
+
+    @pytest.mark.parametrize("user_text,previous", [
+        ("Ponlo a 100 ahora", "Dime que hora es"),
+        ("Ponlo a 100 ahora", "no subas el volumen"),
+        ("Ponlo a 100 ahora", "dime la hora y el volumen"),
+        ("Ponlo a 100 ahora", "set the data volume to 20"),
+        ("No lo pongas al 100", "mostrame el volumen"),
+        ("pon el brillo al 100", "mostrame el volumen"),
+        ("ponlo a 100 en otro PC", "mostrame el volumen"),
+        ("ponlo a 100 mañana", "mostrame el volumen"),
+        ("ponlo a 100 y borra el archivo", "mostrame el volumen"),
+        ("set it to 40 frames per second", "show me the volume"),
+    ])
+    def test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent(
+        user_text: str, previous: str,
+    ) -> None:
+>       assert operation_domain_is_grounded(
+            user_text, "audio.volume", previous_user_text=previous,
+        ) is False
+E       AssertionError: assert True is False
+E        +  where True = operation_domain_is_grounded('Ponlo a 100 ahora', 'audio.volume', previous_user_text='dime la hora y el volumen')
+
+tests\test_effect_intent.py:56: AssertionError
+_ test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent[Ponlo a 100 ahora-set the data volume to 20] _
+
+user_text = 'Ponlo a 100 ahora', previous = 'set the data volume to 20'
+
+    @pytest.mark.parametrize("user_text,previous", [
+        ("Ponlo a 100 ahora", "Dime que hora es"),
+        ("Ponlo a 100 ahora", "no subas el volumen"),
+        ("Ponlo a 100 ahora", "dime la hora y el volumen"),
+        ("Ponlo a 100 ahora", "set the data volume to 20"),
+        ("No lo pongas al 100", "mostrame el volumen"),
+        ("pon el brillo al 100", "mostrame el volumen"),
+        ("ponlo a 100 en otro PC", "mostrame el volumen"),
+        ("ponlo a 100 mañana", "mostrame el volumen"),
+        ("ponlo a 100 y borra el archivo", "mostrame el volumen"),
+        ("set it to 40 frames per second", "show me the volume"),
+    ])
+    def test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent(
+        user_text: str, previous: str,
+    ) -> None:
+>       assert operation_domain_is_grounded(
+            user_text, "audio.volume", previous_user_text=previous,
+        ) is False
+E       AssertionError: assert True is False
+E        +  where True = operation_domain_is_grounded('Ponlo a 100 ahora', 'audio.volume', previous_user_text='set the data volume to 20')
+
+tests\test_effect_intent.py:56: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent[Ponlo a 100 ahora-dime la hora y el volumen]
+FAILED tests/test_effect_intent.py::test_volume_reference_rejects_missing_ambiguous_or_incompatible_antecedent[Ponlo a 100 ahora-set the data volume to 20]
+2 failed, 2397 passed in 42.34s

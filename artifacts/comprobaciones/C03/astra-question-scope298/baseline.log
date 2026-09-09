@@ -1,0 +1,41 @@
+FFF.FF...F                                                               [100%]
+================================== FAILURES ===================================
+_ test_answered_content_before_a_distinct_question_is_not_a_restatement[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel, \xbfc\xf3mo est\xe1s? \U0001f60e] _
+tests\test_turn_policy.py:632: in test_answered_content_before_a_distinct_question_is_not_a_restatement
+    assert not visible_reply_restates_the_request(reply, ask)
+E   AssertionError: assert not True
+E    +  where True = visible_reply_restates_the_request('Hola Emmanuel, \xbfc\xf3mo est\xe1s? \U0001f60e', 'me llamo emmanuel, dime hola emmanuel')
+_ test_answered_content_before_a_distinct_question_is_not_a_restatement[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel, \xbfc\xf3mo est\xe1s hoy?] _
+tests\test_turn_policy.py:632: in test_answered_content_before_a_distinct_question_is_not_a_restatement
+    assert not visible_reply_restates_the_request(reply, ask)
+E   AssertionError: assert not True
+E    +  where True = visible_reply_restates_the_request('Hola Emmanuel, �c�mo est�s hoy?', 'me llamo emmanuel, dime hola emmanuel')
+_ test_answered_content_before_a_distinct_question_is_not_a_restatement[my favorite city is Lima-Lima's got that cool mix of old-world charm and modern vibes, right? \U0001f306 What\u2019s your favorite spot there?] _
+tests\test_turn_policy.py:632: in test_answered_content_before_a_distinct_question_is_not_a_restatement
+    assert not visible_reply_restates_the_request(reply, ask)
+E   assert not True
+E    +  where True = visible_reply_restates_the_request("Lima's got that cool mix of old-world charm and modern vibes, right? \U0001f306 What\u2019s your favorite spot there?", 'my favorite city is Lima')
+_ test_answered_content_before_a_distinct_question_is_not_a_restatement[My name is Morgan, say hello to Morgan-Hello Morgan! How are you?] _
+tests\test_turn_policy.py:632: in test_answered_content_before_a_distinct_question_is_not_a_restatement
+    assert not visible_reply_restates_the_request(reply, ask)
+E   AssertionError: assert not True
+E    +  where True = visible_reply_restates_the_request('Hello Morgan! How are you?', 'My name is Morgan, say hello to Morgan')
+_ test_answered_content_before_a_distinct_question_is_not_a_restatement[Tell me about the water cycle-The water cycle includes evaporation, condensation and precipitation. Would you like an example?] _
+tests\test_turn_policy.py:632: in test_answered_content_before_a_distinct_question_is_not_a_restatement
+    assert not visible_reply_restates_the_request(reply, ask)
+E   AssertionError: assert not True
+E    +  where True = visible_reply_restates_the_request('The water cycle includes evaporation, condensation and precipitation. Would you like an example?', 'Tell me about the water cycle')
+____ test_chat_publishes_the_requested_greeting_without_a_false_echo_retry ____
+tests\test_turn_policy.py:657: in test_chat_publishes_the_requested_greeting_without_a_false_echo_retry
+    answer, calls = runtime.chat(
+src\baxy_mind\llm.py:6769: in chat
+    raise ConversationReplyContractError(failure_reason)
+E   baxy_mind.llm.ConversationReplyContractError: respuesta conversacional vac�a o repetida
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_answered_content_before_a_distinct_question_is_not_a_restatement[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel, \xbfc\xf3mo est\xe1s? \U0001f60e]
+FAILED tests/test_turn_policy.py::test_answered_content_before_a_distinct_question_is_not_a_restatement[me llamo emmanuel, dime hola emmanuel-Hola Emmanuel, \xbfc\xf3mo est\xe1s hoy?]
+FAILED tests/test_turn_policy.py::test_answered_content_before_a_distinct_question_is_not_a_restatement[my favorite city is Lima-Lima's got that cool mix of old-world charm and modern vibes, right? \U0001f306 What\u2019s your favorite spot there?]
+FAILED tests/test_turn_policy.py::test_answered_content_before_a_distinct_question_is_not_a_restatement[My name is Morgan, say hello to Morgan-Hello Morgan! How are you?]
+FAILED tests/test_turn_policy.py::test_answered_content_before_a_distinct_question_is_not_a_restatement[Tell me about the water cycle-The water cycle includes evaporation, condensation and precipitation. Would you like an example?]
+FAILED tests/test_turn_policy.py::test_chat_publishes_the_requested_greeting_without_a_false_echo_retry
+6 failed, 4 passed, 925 deselected in 3.37s

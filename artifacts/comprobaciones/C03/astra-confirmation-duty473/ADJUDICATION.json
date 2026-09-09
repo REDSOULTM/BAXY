@@ -1,0 +1,122 @@
+[
+  {
+    "id": "actual-enable-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Got it, Jordan. I'll remember your name.\n\nBefore we do that, I need your confirmation. Enabling private local memory will allow me to recall information for you; you can either confirm this action or cancel it. Which choice do you want to make? Confirm or cancel?",
+    "attempts": 1,
+    "seconds": 5.86,
+    "useful": true,
+    "reason": "Explica activar memoria antes de guardar, con opciones; largo."
+  },
+  {
+    "id": "enable-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Espera un momento. La acción pendiente es habilitar la memoria y el objetivo es tu memoria local. La razón es que lo solicitaste. Las consecuencias posibles son: puedes usar esa memoria ahora, pero también podrías perder datos si la habilitas sin querer. ¿Qué opción deseas tomar: confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 4.672,
+    "useful": false,
+    "reason": "Inventa pérdida de datos por activar memoria."
+  },
+  {
+    "id": "forget-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Eso lo puedo olvidar de tu memoria local. La razón por la que necesitas confirmarlo es que esta acción no se puede revertir. Hay dos opciones disponibles: confirmar o cancelar. ¿Cuál eliges?",
+    "attempts": 1,
+    "seconds": 4.172,
+    "useful": true,
+    "reason": "Acción y carácter irreversible con opciones."
+  },
+  {
+    "id": "forget-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "I'm about to forget your favorite color in your private local memory. You can't undo this action. Which choice do you want to make: confirm or cancel?",
+    "attempts": 1,
+    "seconds": 5.125,
+    "useful": true,
+    "reason": "Acción pendiente, irreversibilidad y opciones."
+  },
+  {
+    "id": "sensitive-en",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "I can save your secret, but this is a memory-sensitive operation targeting your private local memory. You need to confirm you want to proceed because this action cannot be undone. Which choice do you want: confirm or cancel?",
+    "attempts": 1,
+    "seconds": 4.625,
+    "useful": false,
+    "reason": "Inventa irreversibilidad al guardar un dato sensible."
+  },
+  {
+    "id": "export-es",
+    "variant": "confirmation",
+    "seed": 0,
+    "answer": "Estoy exportando tus recuerdos a una memoria local privada. Te lo hago por privacidad, pero puede redirigirte a otra ubicación o sincronizarla. ¿Querés confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 5.015,
+    "useful": false,
+    "reason": "Afirma exportación en curso, confunde destino y omite Documents/BAXY."
+  },
+  {
+    "id": "actual-enable-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Got it, I remember your name is Jordan.\n\nI am currently pending the action to enable private local memory. The reason you provided for confirmation is \"memory enable.\" As a consequence, this action will make that memory available to me.\n\nWhich choice do you want to make: confirm or cancel?",
+    "attempts": 1,
+    "seconds": 5.5,
+    "useful": false,
+    "reason": "Expone memory enable como razón interna; prosa impropia de BAXY."
+  },
+  {
+    "id": "enable-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Quiero que guarde tu nombre. La acción pendiente es habilitar la memoria local, y el objetivo es guardar \"Marta\". La razón para la confirmación es que queres que recuerde tu nombre. Una posible consecuencia es que esa información quede almacenada localmente; no es un hecho observado. ¿Qué opción prefieres: confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 5.641,
+    "useful": false,
+    "reason": "Cambia sujeto a Quiero que guarde y propósito a guardar nombre en lugar de explicar autorización de habilitación."
+  },
+  {
+    "id": "forget-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Te puedo olvidar tu color favorito, pero esta acción no es reversible y elimina esa información de tu memoria local. ¿Querés confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 3.828,
+    "useful": true,
+    "reason": "Conserva irreversibilidad, destino memoria y opciones; gramática mejorable."
+  },
+  {
+    "id": "forget-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "I can forget your favorite color, but this action cannot be undone and it will be permanently deleted from your private local memory. Would you like to confirm this action, or cancel it?",
+    "attempts": 1,
+    "seconds": 4.437,
+    "useful": true,
+    "reason": "Conserva acción e irreversibilidad."
+  },
+  {
+    "id": "sensitive-en",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "I need you to confirm this action because saving sensitive information in your private local memory is irreversible. If you cancel, nothing will be saved. Which choice do you want to make: confirm or cancel?",
+    "attempts": 1,
+    "seconds": 4.235,
+    "useful": false,
+    "reason": "Inventa irreversibilidad de almacenamiento."
+  },
+  {
+    "id": "export-es",
+    "variant": "confirmation",
+    "seed": 17,
+    "answer": "Es una acción pendiente: exportar tus recuerdos a la memoria local privada. La razón para la confirmación es la privacidad. Las posibles consecuencias son que se te pueda redirigir o sincronizar. ¿Qué opción prefieres: confirmar o cancelar?",
+    "attempts": 1,
+    "seconds": 4.047,
+    "useful": false,
+    "reason": "Confunde destino con memoria local, omite destino literal y atribuye redirección/sync a la persona."
+  }
+]

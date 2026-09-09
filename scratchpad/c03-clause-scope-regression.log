@@ -1,0 +1,19 @@
+.F....                                                                   [100%]
+================================== FAILURES ===================================
+_ test_positive_clock_clause_survives_a_negative_social_opening[I don't mind, tell me the time] _
+
+text = "I don't mind, tell me the time"
+
+    @pytest.mark.parametrize("text", [
+        "no me molesta, dime la hora",
+        "I don't mind, tell me the time",
+    ])
+    def test_positive_clock_clause_survives_a_negative_social_opening(text: str) -> None:
+        result = resolve_explicit_effects(text, {"system.time"})
+>       assert result is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:37: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_positive_clock_clause_survives_a_negative_social_opening[I don't mind, tell me the time]
+1 failed, 5 passed, 1561 deselected in 1.11s

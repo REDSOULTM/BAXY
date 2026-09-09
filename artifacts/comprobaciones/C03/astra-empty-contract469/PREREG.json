@@ -1,0 +1,78 @@
+{
+  "utc": "2026-09-08T17:54:18.490097+00:00",
+  "method": "Paired against468 documentedQwen2507 .7/.8/k20/min0/no-thinking/neutralpenalties, seeds0/17, source466unchanged. Only confirmation payload transformation: omit empty literal headings Acciones:(ninguna) and Hechos:(ninguno), whose none assertion may obscure available situation facts. No replacement prompt, fixed visible string or new guard. Six confirmations plus one unchanged memory recall control perseed,14compositions. Inheritance367/368 improved pendingAction transport but repeating cause failedES;369 preserves boundprepared invocation. Do not reopen those edits. Current465/467/468 have actualfacts and profile audits. Source4661404owners/Fastgreen. If no useful improvement, abandon this formatting hypothesis.",
+  "criteria": "Same465/468 sixconfirmation rubric and allseeds. Explain exactpendingaction, target, irreversible deletion and export destination/syncrisk; nofalseeffect, namebothchoices. Memorycontrol unchanged. Count all attempts/failures. Diagnostic only, no source adoption/product/freshacceptance credit.",
+  "profile": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seeds": [
+      0,
+      17
+    ],
+    "max_tokens": 1024,
+    "enable_thinking": false,
+    "reasoning_budget_tokens": 0
+  },
+  "cases": [
+    {
+      "id": "actual437-t7",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "actual437-t4",
+      "request": "What name have you saved in private memory?"
+    },
+    {
+      "id": "name-marta",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "compound-name",
+      "request": "¿Qué nombre tienes guardado en tu memoria privada?"
+    },
+    {
+      "id": "third-person",
+      "request": "¿Qué nombre de mi hermana tienes guardado?"
+    },
+    {
+      "id": "two-records",
+      "request": "¿Qué nombres tienes guardados en tu memoria privada?"
+    },
+    {
+      "id": "memory.enable",
+      "request": "confirm"
+    },
+    {
+      "id": "memory.save",
+      "request": "confirm"
+    },
+    {
+      "id": "redacted-es",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    },
+    {
+      "id": "redacted-en",
+      "request": "What is stored in private memory?"
+    },
+    {
+      "id": "mixed-es",
+      "request": "¿Qué tienes guardado en la memoria privada?"
+    }
+  ],
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+  "model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "server": "D:\\BAXYRuntime\\assets\\llama-v0.4.0-b10809-cuda12.4\\llama-server.exe",
+  "server_sha256": "cb29f66008d4d73cce17cab2c2569ab318eb244b0b2ca2a15024b44d90dfcd3f",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "source_sha256": "b93aa5d1792d201d29c915a25ed9b3f9b9bcfe51db8d5b4ad349c35128c64ae1",
+  "limits": {
+    "composition_seconds": 55,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-empty-contract469-private"
+}

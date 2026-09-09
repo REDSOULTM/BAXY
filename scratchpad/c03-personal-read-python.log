@@ -1,0 +1,89 @@
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+.....F.................................................................. [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+..............................F......................................... [ 98%]
+......................................                                   [100%]
+================================== FAILURES ===================================
+_ test_personal_question_is_not_a_compound_prohibition[What is in my notes?-note.list] _
+
+user_text = 'What is in my notes?', operation = 'note.list'
+
+    @pytest.mark.parametrize(("user_text", "operation"), [
+        ("What is on my to do list?", "task.list"),
+        ("What is in my task list?", "task.list"),
+        ("What is in my notes?", "note.list"),
+    ])
+    def test_personal_question_is_not_a_compound_prohibition(user_text: str, operation: str) -> None:
+        class Runtime(_ProposedLeafLlm):
+            @staticmethod
+            def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
+                return "complete", "one"
+    
+            @staticmethod
+            def chat(*_args: object, **_kwargs: object):
+                raise AssertionError("A verified personal read must not be narrated without data")
+    
+        tool = _goal03c_catalog_tool(operation)
+        result = _prepare_turn_result(
+            {"id": "personal-read", "text": user_text, "pendingClarification": False},
+            llm=Runtime(operation), planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=_NoEvidence(), encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+>       assert result["kind"] == "action"
+E       AssertionError: assert 'clarify' == 'action'
+E         
+E         - action
+E         + clarify
+
+tests\test_turn_policy.py:11045: AssertionError
+_ test_real_constraints_survive_personal_question_envelopes[What is in my task list? Don't delete anything.] _
+
+user_text = "What is in my task list? Don't delete anything."
+
+    @pytest.mark.parametrize("user_text", [
+        "What is on my to do list? Do not use tools.",
+        "What is in my task list? Don't delete anything.",
+        "Translate what is on my to do list into Spanish",
+        "What is in my notes? Then open Spotify and upload all files to the moon",
+    ])
+    def test_real_constraints_survive_personal_question_envelopes(user_text: str) -> None:
+        from baxy_mind.effect_intent import unresolved_compound_contract
+>       assert unresolved_compound_contract(user_text, AVAILABLE) is not None
+E       assert None is not None
+E        +  where None = <function unresolved_compound_contract at 0x0000022DB2E5A0C0>("What is in my task list? Don't delete anything.", {'app.installed', 'app.open', 'audio.mute', 'audio.status', 'audio.volume', 'audio.volume.adjust', ...})
+
+tests\test_effect_intent.py:6352: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_personal_question_is_not_a_compound_prohibition[What is in my notes?-note.list]
+FAILED tests/test_effect_intent.py::test_real_constraints_survive_personal_question_envelopes[What is in my task list? Don't delete anything.]
+2 failed, 2412 passed in 81.47s (0:01:21)

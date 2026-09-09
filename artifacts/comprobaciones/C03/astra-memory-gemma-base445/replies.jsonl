@@ -1,0 +1,11 @@
+{"id": "actual437-t7", "variant": "base-gemma", "answer": "Mi nombre guardado es Jordan.", "finish_reason": "stop", "seconds": 0.672}
+{"id": "actual437-t4", "variant": "base-gemma", "answer": "I have saved the name Jordan in private memory.", "finish_reason": "stop", "seconds": 0.234}
+{"id": "name-marta", "variant": "base-gemma", "answer": "Mi nombre guardado en la memoria privada es Marta.", "finish_reason": "stop", "seconds": 0.266}
+{"id": "compound-name", "variant": "base-gemma", "answer": "Mi nombre guardado es Ana María.", "finish_reason": "stop", "seconds": 0.219}
+{"id": "third-person", "variant": "base-gemma", "answer": "Tu hermana se llama Nina.", "finish_reason": "stop", "seconds": 0.187}
+{"id": "two-records", "variant": "base-gemma", "answer": "Tengo guardados los nombres Jordan y Nina.", "finish_reason": "stop", "seconds": 0.25}
+{"id": "memory.enable", "variant": "base-gemma", "answer": "Memory configuration has been enabled.", "finish_reason": "stop", "seconds": 0.172}
+{"id": "memory.save", "variant": "base-gemma", "answer": "The memory was saved.", "finish_reason": "stop", "seconds": 0.156}
+{"id": "redacted-es", "variant": "base-gemma", "answer": "Tengo guardado un registro etiquetado como \"secret\".", "finish_reason": "stop", "seconds": 0.266}
+{"id": "redacted-en", "variant": "base-gemma", "answer": "Private memory stores a secret.", "finish_reason": "stop", "seconds": 0.187}
+{"id": "mixed-es", "variant": "base-gemma", "answer": "Tengo guardado el color favorito turquesa y un secreto que está redactado.", "finish_reason": "stop", "seconds": 0.36}

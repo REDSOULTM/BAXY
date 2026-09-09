@@ -8,6 +8,7 @@ interface Props {
 }
 
 const STATE_SEED: Record<ConvState, number> = {
+  error: 37,
   idle: 7,
   standby: 11,
   listening: 17,
@@ -16,6 +17,7 @@ const STATE_SEED: Record<ConvState, number> = {
 };
 
 const STATE_COLOR: Record<ConvState, string> = {
+  error: '#E55366',
   idle: '#B83A4A',
   standby: '#5B6580',
   listening: '#E55366',

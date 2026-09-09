@@ -1,0 +1,5 @@
+n=3 published=2 other=1
+
+001	t1	composition_failed	responde en spanglish: qué es el cifrado	composition_failed
+002	t2	published_final	¿y para qué sirve, in simple terms?	No se especifica la función en la situación proporcionada.
+003	t3	published_final	cuánto es doce por ocho	Doce multiplicado por ocho es 96.

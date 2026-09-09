@@ -1,0 +1,25 @@
+{"human": 0, "condition": "near_only", "engine": "raw", "candidates": 7, "p99ms": 0.009275997290387725}
+{"human": 0, "condition": "near_only", "engine": "speex", "candidates": 7, "p99ms": 0.2325040020514279}
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+{"human": 0, "condition": "near_only", "engine": "dtln128", "candidates": 6, "p99ms": 2.9789000016171476}
+{"human": 0, "condition": "mixed", "engine": "raw", "candidates": 15, "p99ms": 0.011351999128237365}
+{"human": 0, "condition": "mixed", "engine": "speex", "candidates": 8, "p99ms": 0.22883199562784282}
+{"human": 0, "condition": "mixed", "engine": "dtln128", "candidates": 7, "p99ms": 2.6066959975287314}
+{"human": 1, "condition": "near_only", "engine": "raw", "candidates": 2, "p99ms": 0.010656000813469286}
+{"human": 1, "condition": "near_only", "engine": "speex", "candidates": 2, "p99ms": 0.2012160036247223}
+{"human": 1, "condition": "near_only", "engine": "dtln128", "candidates": 2, "p99ms": 2.6042799948481843}
+{"human": 1, "condition": "mixed", "engine": "raw", "candidates": 13, "p99ms": 0.012091997195966504}
+{"human": 1, "condition": "mixed", "engine": "speex", "candidates": 3, "p99ms": 0.18328000558540222}
+{"human": 1, "condition": "mixed", "engine": "dtln128", "candidates": 3, "p99ms": 2.3794359981548037}
+{"human": 2, "condition": "near_only", "engine": "raw", "candidates": 3, "p99ms": 0.006752000190317629}
+{"human": 2, "condition": "near_only", "engine": "speex", "candidates": 3, "p99ms": 0.18419999745674423}
+{"human": 2, "condition": "near_only", "engine": "dtln128", "candidates": 3, "p99ms": 2.582396001089364}
+{"human": 2, "condition": "mixed", "engine": "raw", "candidates": 11, "p99ms": 0.01007200393360106}
+{"human": 2, "condition": "mixed", "engine": "speex", "candidates": 2, "p99ms": 0.2204559906385839}
+{"human": 2, "condition": "mixed", "engine": "dtln128", "candidates": 2, "p99ms": 2.5478400004794817}
+{"human": 3, "condition": "near_only", "engine": "raw", "candidates": 5, "p99ms": 0.011116004316136227}
+{"human": 3, "condition": "near_only", "engine": "speex", "candidates": 5, "p99ms": 0.21500800678040827}
+{"human": 3, "condition": "near_only", "engine": "dtln128", "candidates": 5, "p99ms": 2.5124519946984947}
+{"human": 3, "condition": "mixed", "engine": "raw", "candidates": 14, "p99ms": 0.008103995933197435}
+{"human": 3, "condition": "mixed", "engine": "speex", "candidates": 6, "p99ms": 0.21047199377790082}
+{"human": 3, "condition": "mixed", "engine": "dtln128", "candidates": 5, "p99ms": 3.0572999955620617}

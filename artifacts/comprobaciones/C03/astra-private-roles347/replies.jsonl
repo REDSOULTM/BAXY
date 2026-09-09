@@ -1,0 +1,16 @@
+{"id": "memory.enable", "variant": "baseline", "answer": "La configuración de la memoria se ha confirmado como completada. El estado actual es \"memory configuration\" y el resultado es exitoso. El sistema ha sido revisado y está en funcionamiento.", "finish_reason": "stop"}
+{"id": "memory.enable", "variant": "tool-return", "answer": "La configuración de memoria se confirmó como activada.", "finish_reason": "stop"}
+{"id": "memory.save", "variant": "baseline", "answer": "La memoria fue actualizada correctamente. No se realizaron cambios en el sistema.", "finish_reason": "stop"}
+{"id": "memory.save", "variant": "tool-return", "answer": "Los resultados verificados: el estado de memoria se actualizó. No se detectaron correcciones ni datos sensibles.", "finish_reason": "stop"}
+{"id": "memory.recall", "variant": "baseline", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "memory.recall", "variant": "tool-return", "answer": "Me llamo Emmanuel.", "finish_reason": "stop"}
+{"id": "name-lina", "variant": "baseline", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-lina", "variant": "tool-return", "answer": "Me llamo Lina.", "finish_reason": "stop"}
+{"id": "name-accent", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "finish_reason": "stop"}
+{"id": "name-accent", "variant": "tool-return", "answer": "Álvaro", "finish_reason": "stop"}
+{"id": "name-english", "variant": "baseline", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "name-english", "variant": "tool-return", "answer": "Your name is Taylor.", "finish_reason": "stop"}
+{"id": "sister", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "finish_reason": "stop"}
+{"id": "sister", "variant": "tool-return", "answer": "Olivia", "finish_reason": "stop"}
+{"id": "disabled-control", "variant": "baseline", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "finish_reason": "stop"}
+{"id": "disabled-control", "variant": "tool-return", "answer": "La memoria ha sido desactivada.", "finish_reason": "stop"}

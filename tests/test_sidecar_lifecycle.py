@@ -210,6 +210,59 @@ sys.exit(sidecar.main())
     assert b"_enter_buffered_busy" not in stderr
 
 
+def test_cold_voice_dsp_responds_while_redirected_stdin_remains_open() -> None:
+    """Native SciPy initialization must not race a blocking Windows pipe read."""
+    source_root = Path(__file__).resolve().parents[1] / "src"
+    script = """
+import sys
+from baxy_mind import __main__ as sidecar
+from baxy_mind.voice_aec import _resample
+import numpy as np
+
+def probe_dispatch(lifecycle, *, read_message, write_message, request_finished):
+    write_message({"type": "hello", "protocol": "test"})
+    assert read_message()["type"] == "probe"
+    # This is intentionally the first DSP request in a fresh process. Require
+    # SciPy itself so a missing dependency cannot pass through interpolation.
+    from scipy.signal import resample_poly
+    assert callable(resample_poly)
+    audio = _resample(np.zeros(1536, dtype=np.int16), 48000)
+    assert audio.shape == (512,)
+    write_message({"type": "probe.done"})
+    return 0
+
+sidecar._run_sidecar = probe_dispatch
+sys.exit(sidecar.main())
+"""
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = str(source_root)
+    process = subprocess.Popen(
+        [sys.executable, "-c", script],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=environment,
+    )
+    try:
+        assert process.stdin is not None
+        process.stdin.write(b'{"type":"probe"}\n')
+        process.stdin.flush()
+        # Keep stdin open: communicate() would send EOF and hide the deadlock.
+        return_code = process.wait(timeout=10.0)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=3.0)
+        pytest.fail("cold voice DSP stalled with the protocol input still open")
+    finally:
+        if process.stdin is not None:
+            process.stdin.close()
+    stdout = process.stdout.read() if process.stdout is not None else b""
+    stderr = process.stderr.read() if process.stderr is not None else b""
+    assert return_code == 0, stderr.decode("utf-8", errors="replace")
+    assert b'"type":"probe.done"' in stdout
+    assert not stderr
+
+
 def test_eof_closes_only_the_constructed_router(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

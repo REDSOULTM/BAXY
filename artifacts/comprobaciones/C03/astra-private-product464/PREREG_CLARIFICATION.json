@@ -1,0 +1,4 @@
+{
+  "utc": "2026-09-08T17:31:13.527289+00:00",
+  "note": "PREREG.method begins with correct464 serveron/-1/deepseek description but inherited trailing463 text incorrectly says serverstays off/0. Actual hook source and effective command agree with first description: on/-1/deepseek, nonmemory_post budget0/kwargsfalse. No result changed to fit typo. All reasoning lengths recorded."
+}

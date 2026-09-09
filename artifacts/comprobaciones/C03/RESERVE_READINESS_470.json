@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-08T18:10:56.514645+00:00",
+  "method": "Read-only metadata audit of335remaining204 IDs. No user literal displayed to agent, no replay, no freezing, no new model exposure. Recounts existing ownership/language/provenance readiness while470download runs. Need refresh exposure since335 before selecting acceptance.",
+  "summary": {
+    "candidate_rows": 204,
+    "owner_authorship_yes": 204,
+    "still_needs_semantic_language_review": 204,
+    "with_current_exposure_as_of335": 0,
+    "occurrences_with_original_source_hash": 1380
+  },
+  "historical_labels_only": {
+    "other": 69,
+    "es": 91,
+    "en": 2,
+    "spanglish": 1
+  },
+  "occurrence_classes": {
+    "user_mission": 221,
+    "unclassified": 884,
+    "conversation_question": 271,
+    "feedback_failure": 2,
+    "preference": 2
+  },
+  "occurrence_provenance": {
+    "not_labeled": 496,
+    "runtime_request_start": 477,
+    "runtime_task_start; human_vs_automated_unverified": 407
+  },
+  "source_sha256": "30490c8c25d158a77e520e2a23ffe13a4ea8fb0cfb9279e7127dff91936cbd0b",
+  "certified_fresh": 0,
+  "frozen": false,
+  "next": "Refresh exact exposure against current source/development artifacts, then semantic language/context/provenance adjudication and100freeze. No synthetic translations/quotas. Do not count metadata completeness as human acceptance."
+}

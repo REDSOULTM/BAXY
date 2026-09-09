@@ -1,0 +1,9 @@
+{"requestId": "27", "user": "Mensaje actual:\nExplain encryption, pero en simple", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "30", "user": "Mensaje actual:\nresponde en spanglish: qu\u00e9 es una copia de seguridad", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "33", "user": "Mensaje actual:\nExplain gravity, pero sin tecnicismos", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "39", "user": "Mensaje actual:\nwhat is the capital of Peru", "response": {"role": "assistant", "content": "{\"request_type\":\"external_read\",\"effect_count\":\"zero\"}"}}
+{"requestId": "42", "user": "Mensaje actual:\nExplain photosynthesis in two sentences.", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "45", "user": "Mensaje actual:\nExpl\u00edcame por qu\u00e9 el hielo flota.", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "48", "user": "Mensaje actual:\n\u00bfQu\u00e9 diferencia hay entre un archivo y una carpeta? Reply in Spanglish.", "response": {"role": "assistant", "content": "{\"request_type\":\"stable_conversation\",\"effect_count\":\"zero\"}"}}
+{"requestId": "51", "user": "Mensaje actual:\nWhat is on my to do list?", "response": {"role": "assistant", "content": "{\"request_type\":\"external_read\",\"effect_count\":\"one\"}"}}
+{"requestId": "55", "user": "Mensaje actual:\ncierra la ventana del proceso C03WindowFixture", "response": {"role": "assistant", "content": "{\"request_type\":\"environment_change\",\"effect_count\":\"one\"}"}}

@@ -31,7 +31,8 @@ from baxy_mind.voice import (  # noqa: E402
     VoiceEngine,
     WakePhraseMatcher,
 )
-from baxy_mind.voice_aec import AudioDucker, EchoCanceller, _com_apartment  # noqa: E402
+from baxy_mind.voice_aec import AudioDucker, _com_apartment  # noqa: E402
+from baxy_mind.webrtc_aec import EchoCanceller, FRAME_SAMPLES, REFERENCE_SAMPLES  # noqa: E402
 from baxy_mind.voice_output import SapiSpeechOutput  # noqa: E402
 
 OUT = REPO / "artifacts" / "product" / "voice_system_gate.json"
@@ -59,7 +60,8 @@ _HISTORICAL_CLIP_TOOLS = [
 ]
 
 EXPECTED_DISTRIBUTIONS = {
-    "sherpa-onnx": ("1.13.4", "Apache-2.0"),
+    "sherpa-onnx": ("1.13.4+baxy.2", "Apache-2.0"),
+    "pywebrtc-audio": ("0.2.0+baxy.1", "Apache-2.0; bundled WebRTC and third-party notices"),
     "livekit-wakeword": ("0.2.1", "Apache-2.0"),
     "silero-vad": ("6.2.1", "MIT"),
     "sounddevice": ("0.5.5", "MIT"),
@@ -134,7 +136,21 @@ def _aec_gate() -> dict[str, float | bool]:
     reference = rng.normal(0, 900, 16_000).astype(np.int16)
     microphone = np.zeros_like(reference)
     microphone[96:] = (reference[:-96].astype(np.float64) * 0.58).astype(np.int16)
-    clean = EchoCanceller(filter_samples=160).process(microphone, reference)
+    padded_size = math.ceil(microphone.size / FRAME_SAMPLES) * FRAME_SAMPLES
+    mic = np.pad(microphone, (0, padded_size - microphone.size))
+    ref = np.pad(reference, (REFERENCE_SAMPLES - FRAME_SAMPLES, padded_size - reference.size))
+    frames = []
+    canceller = EchoCanceller()
+    try:
+        for offset in range(0, padded_size, FRAME_SAMPLES):
+            frame = canceller.process(
+                mic[offset : offset + FRAME_SAMPLES].astype(np.float32) / 32768.0,
+                ref[offset : offset + REFERENCE_SAMPLES],
+            )
+            frames.append(frame.confirmation)
+    finally:
+        canceller.close()
+    clean = np.concatenate(frames)[: microphone.size]
     start = 8_000
     before = float(np.sqrt(np.mean(microphone[start:].astype(np.float64) ** 2)))
     after = float(np.sqrt(np.mean((clean[start:] * 32_768.0) ** 2)))
@@ -374,11 +390,11 @@ def main() -> int:
         "status": "passed" if passed else "failed",
         "architecture": {
             "wake": "Hyperspotter cascade + 2 s pre-roll; no ASR activation",
-            "stt": "Parakeet TDT 0.6B v3 int8 final/AEC; Nemotron 3.5 Streaming only partial after an authorized turn",
+            "stt": "Parakeet TDT 0.6B v3 int8 final on capture-cleaned audio; Nemotron 3.5 Streaming only partial after an authorized turn",
             "streaming_preview_requested": args.streaming_preview,
             "vad": "Silero VAD 6.2.1 ONNX/CPU",
             "tts": "Windows SAPI installed voice",
-            "aec": "WASAPI loopback + delay/direct-path + NLMS",
+            "aec": "AEC3 aligned recognition/confirmation signals (CPU)",
             "barge_in": "VAD onset + loopback echo correlation + SAPI purge",
         },
         "probe": probe,

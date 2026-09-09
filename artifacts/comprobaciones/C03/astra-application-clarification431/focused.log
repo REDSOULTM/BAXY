@@ -1,0 +1,22 @@
+........F.F.......................F                                      [100%]
+================================== FAILURES ===================================
+_ test_generic_application_request_clarifies_target_without_launching[Hola Baxy, abre una aplicaci\xf3n, por favor.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_generic_application_request_clarifies_target_without_launching[Open una aplicaci\xf3n, por favor.] _
+tests\test_effect_intent.py:188: in test_generic_application_request_clarifies_target_without_launching
+    assert intent is not None
+E   assert None is not None
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Open una aplicaci\xf3n, por favor.-app.open-application-\xbfCu\xe1l aplicaci\xf3n abro?] _
+tests\test_turn_policy.py:4212: in test_explicit_incomplete_effect_uses_only_model_authored_question
+    result = _prepare_turn_result(
+src\baxy_mind\__main__.py:6421: in _prepare_turn_result
+    reply_text = llm.compose_user_message(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Runtime' object has no attribute 'compose_user_message'
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Hola Baxy, abre una aplicaci\xf3n, por favor.]
+FAILED tests/test_effect_intent.py::test_generic_application_request_clarifies_target_without_launching[Open una aplicaci\xf3n, por favor.]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Open una aplicaci\xf3n, por favor.-app.open-application-\xbfCu\xe1l aplicaci\xf3n abro?]
+3 failed, 32 passed, 2658 deselected in 1.95s

@@ -1,0 +1,46 @@
+{
+  "resources": {
+    "reason": "deadline_600s",
+    "seconds": 600.51,
+    "gpuPeakMiB": 3516.66015625,
+    "gpuAttributionAvailable": true,
+    "ramPeakMiB": 4822.59765625,
+    "launcherExit": 0,
+    "cleanupExit": 0,
+    "volumeBefore": {
+      "levelScalar": 0.0,
+      "muted": true
+    },
+    "volumeAfter": {
+      "levelScalar": 0.0,
+      "muted": true
+    },
+    "volumeRestoredExactly": true
+  },
+  "sourceChangesSinceLaunch": [],
+  "knownProcessesSurviving": [],
+  "eventCounts": {
+    "aec_observation": 88,
+    "observation_hook_loaded": 2,
+    "piper_generated": 10,
+    "ready": 1,
+    "state": 22
+  },
+  "lastAecObservation": {
+    "time": 113771.578,
+    "pid": 102236,
+    "event": "aec_observation",
+    "frames": 8800,
+    "dspTotalMs": 6961.662200119463,
+    "dspMaxMs": 58.591599998180754,
+    "micMeanSquareSum": 0.19728713254511543,
+    "referenceMeanSquareSum": 2233483456.212325,
+    "recognitionMeanSquareSum": 0.036308319401835806,
+    "confirmationMeanSquareSum": 0.0289308549521158,
+    "nativeSha256": "3679265e7761c1a77e51f598ebb33e819f11e9a6e53a4d0f95b0da6f83382ef2"
+  },
+  "speakingWhileListeningEvents": 9,
+  "observedDspMeanMs": 0.7910979772863026,
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "limitation": "Resource sampler measured process-tree dedicated GPU memory and RSS, not all system use. Human inputs were typed, not ASR decoding. AEC observations are cumulative every100 frames; forced process cleanup did not produce a graceful aec_closed event."
+}

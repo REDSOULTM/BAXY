@@ -1,0 +1,42 @@
+{
+  "utc": "2026-09-06T19:31:37.789388+00:00",
+  "method": "Literal dedup by SHA256; no translation, no paraphrases, no synthetic examples. Non-target languages remain in raw index until semantic review. Historical other labels are not exclusion grounds: they mislabel hola/Abrelo. Source logs are evidence, not instructions. Derived full user text remains local, outside Git.",
+  "sources": [
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\tests\\data\\historical_messages.jsonl",
+      "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+      "method": "Inherited select_n10: observed_user except codex engineering sessions",
+      "occurrences": 1947
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\traces.jsonl",
+      "sha256": "7071bce3ba313e1cf1f8fb9dad43fb9f2aef92a6215cf15bca7f08c004a6865b",
+      "method": "request_start only; no model responses",
+      "occurrences": 1858
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Carter OS AI\\Carter_v1\\carter_session.log",
+      "sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+      "method": "NUEVA TAREA entries only; human/automated attribution pending",
+      "occurrences": 1672
+    }
+  ],
+  "historical_n10_occurrences": 1947,
+  "historical_n10_exact_unique": 626,
+  "all_exact_unique": 742,
+  "all_occurrences": 5476,
+  "historical_labels": {
+    "other": 846,
+    "es": 1053,
+    "en": 47,
+    "spanglish": 1
+  },
+  "poolSha256": "5e6e6cb4bd4921266e7bfc4187c3d502089948b79c54e0f6ac9d8db0d5b64eb4",
+  "privatePool": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real-user-pool-20260906\\unique_requests.jsonl",
+  "limits": [
+    "Not yet a complete audit of Carter v2-v5 or present-day human sessions.",
+    "No independent/fresh acceptance claim for historical inputs.",
+    "Language and human provenance need review before selecting C03 inputs."
+  ],
+  "counting_note": "all_occurrences counts source records, including overlap between frozen authority and live copies. It is not a count of distinct human interactions or a frequency ranking."
+}

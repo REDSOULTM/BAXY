@@ -1,0 +1,4 @@
+{
+  "reason": "Harness namespace copied globals before replacing the finite replay stream, so copied capture method read the original empty PCM inbox instead of frozen input. No completed timelines or ASR results. Confirmed live252 Python PIDs42836/47768 stopped; do not interpret as product failure.",
+  "repair": "Use live voice module globals for copied method, as original product method does. New runner/artifacts253 preserve252."
+}

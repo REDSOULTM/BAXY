@@ -1,0 +1,214 @@
+{
+  "rows": [
+    {
+      "text": "Encryption es como poner un candado en un mensaje para que solo quien tiene la clave pueda leerlo.",
+      "expected": "mixed",
+      "actual": "es",
+      "pass": false,
+      "ms": 37.602,
+      "spans": [
+        {
+          "text": "Encryption es como poner un candado en un mensaje para que solo quien tiene la clave pueda leerlo.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "Okay, imagine tu contraseña como una llave para abrir un mensaje secreto.",
+      "expected": "mixed",
+      "actual": "mixed",
+      "pass": true,
+      "ms": 6.385,
+      "spans": [
+        {
+          "text": "Okay, imagine ",
+          "language": "ENGLISH"
+        },
+        {
+          "text": "tu contraseña como una llave para abrir un mensaje secreto.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "It’s 6:30, amigos.",
+      "expected": "mixed",
+      "actual": "es",
+      "pass": false,
+      "ms": 1.464,
+      "spans": [
+        {
+          "text": "It’s 6:30, amigos.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "El cifrado protege tus datos so only someone with the key can read them.",
+      "expected": "mixed",
+      "actual": "mixed",
+      "pass": true,
+      "ms": 4.996,
+      "spans": [
+        {
+          "text": "El cifrado protege tus datos so ",
+          "language": "SPANISH"
+        },
+        {
+          "text": "only someone with the key can read them.",
+          "language": "ENGLISH"
+        }
+      ]
+    },
+    {
+      "text": "Encryption protects your data by making it unreadable without a key.",
+      "expected": "en",
+      "actual": "en",
+      "pass": true,
+      "ms": 2.452,
+      "spans": [
+        {
+          "text": "Encryption protects your data by making it unreadable without a key.",
+          "language": "ENGLISH"
+        }
+      ]
+    },
+    {
+      "text": "El cifrado protege tus datos para que nadie los lea sin una clave.",
+      "expected": "es",
+      "actual": "es",
+      "pass": true,
+      "ms": 1.095,
+      "spans": [
+        {
+          "text": "El cifrado protege tus datos para que nadie los lea sin una clave.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "Hello! How can I help you today?",
+      "expected": "en",
+      "actual": "en",
+      "pass": true,
+      "ms": 0.793,
+      "spans": [
+        {
+          "text": "Hello! How can I help you today?",
+          "language": "ENGLISH"
+        }
+      ]
+    },
+    {
+      "text": "¡Buenas! What can I help you with?",
+      "expected": "mixed",
+      "actual": "en",
+      "pass": false,
+      "ms": 0.849,
+      "spans": [
+        {
+          "text": "¡Buenas! What can I help you with?",
+          "language": "ENGLISH"
+        }
+      ]
+    },
+    {
+      "text": "La aplicación Chrome está abierta.",
+      "expected": "es",
+      "actual": "es",
+      "pass": true,
+      "ms": 1.799,
+      "spans": [
+        {
+          "text": "La aplicación Chrome está abierta.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "Chrome is open.",
+      "expected": "en",
+      "actual": "en",
+      "pass": true,
+      "ms": 0.791,
+      "spans": [
+        {
+          "text": "Chrome is open.",
+          "language": "ENGLISH"
+        }
+      ]
+    },
+    {
+      "text": "84.",
+      "expected": "neutral",
+      "actual": "neutral",
+      "pass": true,
+      "ms": 0.003,
+      "spans": []
+    },
+    {
+      "text": "06:30",
+      "expected": "neutral",
+      "actual": "neutral",
+      "pass": true,
+      "ms": 0.001,
+      "spans": []
+    },
+    {
+      "text": "The capital of Peru is Lima.",
+      "expected": "en",
+      "actual": "en",
+      "pass": true,
+      "ms": 0.53,
+      "spans": [
+        {
+          "text": "The capital of Peru is Lima.",
+          "language": "ENGLISH"
+        }
+      ]
+    },
+    {
+      "text": "La capital de Perú es Lima.",
+      "expected": "es",
+      "actual": "es",
+      "pass": true,
+      "ms": 0.324,
+      "spans": [
+        {
+          "text": "La capital de Perú es Lima.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "El router está conectado y usa DNS.",
+      "expected": "es",
+      "actual": "es",
+      "pass": true,
+      "ms": 0.356,
+      "spans": [
+        {
+          "text": "El router está conectado y usa DNS.",
+          "language": "SPANISH"
+        }
+      ]
+    },
+    {
+      "text": "The router is connected and uses DNS.",
+      "expected": "en",
+      "actual": "en",
+      "pass": true,
+      "ms": 0.166,
+      "spans": [
+        {
+          "text": "The router is connected and uses DNS.",
+          "language": "ENGLISH"
+        }
+      ]
+    }
+  ],
+  "pass": 13,
+  "total": 16,
+  "elapsed": 0.1546411999988777,
+  "rssDeltaMiB": 5.8125
+}

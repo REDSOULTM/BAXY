@@ -1,0 +1,38 @@
+{
+  "status": "steps_completed",
+  "steps": [
+    {
+      "step": 1,
+      "loss": 5.180698871612549,
+      "gradNorm": 7.725306034088135,
+      "seconds": 1.953,
+      "torchReservedMiB": 2918.0,
+      "gpuPeakMiB": null
+    },
+    {
+      "step": 2,
+      "loss": 4.758459091186523,
+      "gradNorm": 7.462507724761963,
+      "seconds": 1.015,
+      "torchReservedMiB": 2918.0,
+      "gpuPeakMiB": null
+    },
+    {
+      "step": 3,
+      "loss": 3.921670436859131,
+      "gradNorm": 7.220649719238281,
+      "seconds": 1.031,
+      "torchReservedMiB": 2918.0,
+      "gpuPeakMiB": null
+    }
+  ],
+  "inputTokens": 274,
+  "answerTokens": 16,
+  "trainableParameters": 2949120,
+  "torchPeakMiB": 2918.0,
+  "elapsedSeconds": 27.97,
+  "gpuPeakMiB": null,
+  "ramPeakMiB": 4560.640625,
+  "telemetryAvailable": false,
+  "viable": false
+}

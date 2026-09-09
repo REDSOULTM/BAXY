@@ -1,0 +1,16 @@
+{"id": "memory.enable", "variant": "baseline", "answer": "La configuración de la memoria se ha confirmado como completada. El estado actual es \"memory configuration\" y el resultado es exitoso. El sistema ha sido revisado y está en funcionamiento.", "error": null}
+{"id": "memory.enable", "variant": "operation", "answer": "Sí, confirmado. La función \"seen\" está habilitada y no se ha reproducido aún.", "error": null}
+{"id": "memory.save", "variant": "baseline", "answer": "La memoria fue actualizada correctamente. No se realizaron cambios en el sistema.", "error": null}
+{"id": "memory.save", "variant": "operation", "answer": "Sí, ya se guardó. No se corrigió aún. No hay datos sensibles. No se repitió.", "error": null}
+{"id": "memory.recall", "variant": "baseline", "answer": "Me llamo Emmanuel.", "error": null}
+{"id": "memory.recall", "variant": "operation", "answer": "Me llamo Emmanuel.", "error": null}
+{"id": "name-lina", "variant": "baseline", "answer": "Me llamo Lina.", "error": null}
+{"id": "name-lina", "variant": "operation", "answer": "Me llamo Lina.", "error": null}
+{"id": "name-accent", "variant": "baseline", "answer": "Tu nombre es Álvaro.", "error": null}
+{"id": "name-accent", "variant": "operation", "answer": "Tu nombre es Álvaro.", "error": null}
+{"id": "name-english", "variant": "baseline", "answer": "Your name is Taylor.", "error": null}
+{"id": "name-english", "variant": "operation", "answer": "Your name is Taylor.", "error": null}
+{"id": "sister", "variant": "baseline", "answer": "Tu hermana se llama Olivia.", "error": null}
+{"id": "sister", "variant": "operation", "answer": "Olivia.", "error": null}
+{"id": "disabled-control", "variant": "baseline", "answer": "La memoria ha sido desactivada según la configuración actual. El estado actual indica que la memoria está deshabilitada.", "error": null}
+{"id": "disabled-control", "variant": "operation", "answer": "La memoria ha sido desactivada.", "error": null}

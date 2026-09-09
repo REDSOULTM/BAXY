@@ -1,0 +1,54 @@
+[
+  {
+    "model": "qwen35-4b",
+    "backend": "b10809",
+    "completed": 22,
+    "violations": [],
+    "effective_seeds_observed": [
+      0,
+      17
+    ],
+    "gpu_peak_mib": 3174.5390625,
+    "ram_peak_mib": 1161.07421875,
+    "seconds": 14.922
+  },
+  {
+    "model": "qwen2507",
+    "backend": "b10809",
+    "completed": 22,
+    "violations": [],
+    "effective_seeds_observed": [
+      0,
+      17
+    ],
+    "gpu_peak_mib": 3496.15625,
+    "ram_peak_mib": 759.7265625,
+    "seconds": 9.094
+  },
+  {
+    "model": "gemma-base",
+    "backend": "b10809",
+    "completed": 22,
+    "violations": [],
+    "effective_seeds_observed": [
+      0,
+      17
+    ],
+    "gpu_peak_mib": 1683.0078125,
+    "ram_peak_mib": 2500.25390625,
+    "seconds": 10.781
+  },
+  {
+    "model": "gemma-published",
+    "backend": "b10809",
+    "completed": 22,
+    "violations": [],
+    "effective_seeds_observed": [
+      0,
+      17
+    ],
+    "gpu_peak_mib": 1695.7890625,
+    "ram_peak_mib": 2828.05078125,
+    "seconds": 11.984
+  }
+]

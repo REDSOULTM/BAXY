@@ -1,0 +1,137 @@
+........................................................................ [ 66%]
+............................FFF......                                    [100%]
+================================== FAILURES ===================================
+_____ test_mission_keeps_observations_at_the_step_that_verified_them[es] ______
+
+language = 'es'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    def test_mission_keeps_observations_at_the_step_that_verified_them(language: str) -> None:
+        import json
+        from baxy_mind.llm import _compose_situation_payload
+    
+        def result(operation, observed):
+            return json.dumps({"kind": "operation", "operation": operation,
+                               "polarity": "success", "verified": True, "observed": observed})
+    
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "mission_completed",
+            "completedRequest": "Cierra la ventana titulada 'Proyecto �mbar'",
+            "steps": [result("window.resolve", {"windows": [{"processName": "Example",
+                        "state": "maximized", "foreground": False}]}),
+                      result("app.close", {"windowClosed": True})]}, language)
+        assert "seen" not in payload
+        assert payload["completedRequest"] == "Cierra la ventana titulada 'Proyecto �mbar'"
+        steps = payload["completedStepsInOrder"]
+        assert steps[0]["operation"] == "window.resolve"
+        assert steps[0]["resultAtThisStep"]["seen"]["windows"][0]["state"] == "maximized"
+        assert steps[1]["operation"] == "app.close"
+        assert steps[1]["resultAtThisStep"]["seen"] == {"windowClosed": True}
+    
+        reads = _compose_situation_payload({"kind": "status", "polarity": "success",
+            "cause": "mission_completed", "steps": [
+                result("system.time", {"utc": "2026-09-06T12:00:00Z", "localUtcOffsetMinutes": -180}),
+                result("audio.status", {"level": 20, "muted": False})]}, language)
+        assert reads["completedStepsInOrder"][0]["resultAtThisStep"]["clock"] == "09:00"
+>       assert reads["completedStepsInOrder"][1]["resultAtThisStep"]["seen"] == {"level": 20, "muted": False}
+E       AssertionError: assert {'level': 20,...e': 'unmuted'} == {'level': 20, 'muted': False}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'muteState': 'unmuted'}
+E         Right contains 1 more item:
+E         {'muted': False}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:533: AssertionError
+_____ test_mission_keeps_observations_at_the_step_that_verified_them[en] ______
+
+language = 'en'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    def test_mission_keeps_observations_at_the_step_that_verified_them(language: str) -> None:
+        import json
+        from baxy_mind.llm import _compose_situation_payload
+    
+        def result(operation, observed):
+            return json.dumps({"kind": "operation", "operation": operation,
+                               "polarity": "success", "verified": True, "observed": observed})
+    
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "mission_completed",
+            "completedRequest": "Cierra la ventana titulada 'Proyecto �mbar'",
+            "steps": [result("window.resolve", {"windows": [{"processName": "Example",
+                        "state": "maximized", "foreground": False}]}),
+                      result("app.close", {"windowClosed": True})]}, language)
+        assert "seen" not in payload
+        assert payload["completedRequest"] == "Cierra la ventana titulada 'Proyecto �mbar'"
+        steps = payload["completedStepsInOrder"]
+        assert steps[0]["operation"] == "window.resolve"
+        assert steps[0]["resultAtThisStep"]["seen"]["windows"][0]["state"] == "maximized"
+        assert steps[1]["operation"] == "app.close"
+        assert steps[1]["resultAtThisStep"]["seen"] == {"windowClosed": True}
+    
+        reads = _compose_situation_payload({"kind": "status", "polarity": "success",
+            "cause": "mission_completed", "steps": [
+                result("system.time", {"utc": "2026-09-06T12:00:00Z", "localUtcOffsetMinutes": -180}),
+                result("audio.status", {"level": 20, "muted": False})]}, language)
+        assert reads["completedStepsInOrder"][0]["resultAtThisStep"]["clock"] == "09:00"
+>       assert reads["completedStepsInOrder"][1]["resultAtThisStep"]["seen"] == {"level": 20, "muted": False}
+E       AssertionError: assert {'level': 20,...e': 'unmuted'} == {'level': 20, 'muted': False}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'muteState': 'unmuted'}
+E         Right contains 1 more item:
+E         {'muted': False}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:533: AssertionError
+____ test_mission_keeps_observations_at_the_step_that_verified_them[mixed] ____
+
+language = 'mixed'
+
+    @pytest.mark.parametrize("language", ["es", "en", "mixed"])
+    def test_mission_keeps_observations_at_the_step_that_verified_them(language: str) -> None:
+        import json
+        from baxy_mind.llm import _compose_situation_payload
+    
+        def result(operation, observed):
+            return json.dumps({"kind": "operation", "operation": operation,
+                               "polarity": "success", "verified": True, "observed": observed})
+    
+        payload = _compose_situation_payload({
+            "kind": "status", "polarity": "success", "cause": "mission_completed",
+            "completedRequest": "Cierra la ventana titulada 'Proyecto �mbar'",
+            "steps": [result("window.resolve", {"windows": [{"processName": "Example",
+                        "state": "maximized", "foreground": False}]}),
+                      result("app.close", {"windowClosed": True})]}, language)
+        assert "seen" not in payload
+        assert payload["completedRequest"] == "Cierra la ventana titulada 'Proyecto �mbar'"
+        steps = payload["completedStepsInOrder"]
+        assert steps[0]["operation"] == "window.resolve"
+        assert steps[0]["resultAtThisStep"]["seen"]["windows"][0]["state"] == "maximized"
+        assert steps[1]["operation"] == "app.close"
+        assert steps[1]["resultAtThisStep"]["seen"] == {"windowClosed": True}
+    
+        reads = _compose_situation_payload({"kind": "status", "polarity": "success",
+            "cause": "mission_completed", "steps": [
+                result("system.time", {"utc": "2026-09-06T12:00:00Z", "localUtcOffsetMinutes": -180}),
+                result("audio.status", {"level": 20, "muted": False})]}, language)
+        assert reads["completedStepsInOrder"][0]["resultAtThisStep"]["clock"] == "09:00"
+>       assert reads["completedStepsInOrder"][1]["resultAtThisStep"]["seen"] == {"level": 20, "muted": False}
+E       AssertionError: assert {'level': 20,...e': 'unmuted'} == {'level': 20, 'muted': False}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'muteState': 'unmuted'}
+E         Right contains 1 more item:
+E         {'muted': False}
+E         Use -v to get more diff
+
+tests\test_c03_request_preservation.py:533: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_request_preservation.py::test_mission_keeps_observations_at_the_step_that_verified_them[es]
+FAILED tests/test_c03_request_preservation.py::test_mission_keeps_observations_at_the_step_that_verified_them[en]
+FAILED tests/test_c03_request_preservation.py::test_mission_keeps_observations_at_the_step_that_verified_them[mixed]
+3 failed, 106 passed in 1.55s

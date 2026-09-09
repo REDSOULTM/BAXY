@@ -1,0 +1,63 @@
+BAXY · desktop
+minimizar
+maximizar
+cerrar
+qwen 3.5
+4b · local
+voice on — click to mute
+system
+29%
+cpu
+11%
+mem
+15.0gb
+gpu
+2%
+net
+0.0mb/s
+dsk
+72%
+tmp
+0°c
+perfil
+normal
+no vidente
+movilidad
+ctx
+0.0k/ 4.1k
+TRIGGERS
+0 active
+TOOLS
+169 wired
+uptime
+25:32:18
+￼
+￼
+￼
+›
+message input
+0 / 4k
+microphone always listening
+attach files
+send
+no attachments
+new session
+shortcuts
+settings
+activity
+3 entries · #415d21179501
+13:04:35
+BAXY
+¿Podrías repetir lo que dijiste?
+13:03:59
+BAXY
+Estoy listo para ayudarte con lo que necesites.
+13:03:11
+BAXY
+¡Hola! Aquí BAXY. ¿En qué te puedo ayudar hoy?
+SESSIONS
+1 cached
+MEMORY
+0 pinned
+local · no telemetry
+13:04

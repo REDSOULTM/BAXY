@@ -1,0 +1,350 @@
+[
+  {
+    "sha": "99f3dc32296f825fec94f202da1e9fede1e78cf9",
+    "date": "2026-07-12T23:58:44Z",
+    "title": "server: honour per-request reasoning_budget_tokens in chat completions (#23116)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/99f3dc32296f825fec94f202da1e9fede1e78cf9"
+  },
+  {
+    "sha": "91c631b21d6e5d09e9c6659efdf6baeef5a44ddb",
+    "date": "2026-07-13T07:45:10Z",
+    "title": "chat : fix reasoning leak with force-opened bare <think> templates (#24674)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/91c631b21d6e5d09e9c6659efdf6baeef5a44ddb"
+  },
+  {
+    "sha": "c9330ed0cf726be38308822ebbfada07f437c35d",
+    "date": "2026-07-14T10:05:40Z",
+    "title": "ui: add reasoning effort control to mobile add sheet (#25539)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/c9330ed0cf726be38308822ebbfada07f437c35d"
+  },
+  {
+    "sha": "3dafb585f8344b7ca58fd2b64826c1a4dd318bca",
+    "date": "2026-07-16T03:53:14Z",
+    "title": "opencl: disable FA and MoE weights repack to work around compiler issues for Adreno 850 GPU (#25745)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/3dafb585f8344b7ca58fd2b64826c1a4dd318bca"
+  },
+  {
+    "sha": "32e789fdfd598e9a1872da55ac941e4d94f030bd",
+    "date": "2026-07-16T13:06:12Z",
+    "title": "tests: actually exercise `test-recurrent-state-rollback` (#25758)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/32e789fdfd598e9a1872da55ac941e4d94f030bd"
+  },
+  {
+    "sha": "b4aa7dd477acf065a3b9c6a8cf324c904da1a834",
+    "date": "2026-07-21T21:58:34Z",
+    "title": "mtmd : use align_corners for qwen3vl vision position embedding interpolation (#25781)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/b4aa7dd477acf065a3b9c6a8cf324c904da1a834"
+  },
+  {
+    "sha": "e8e6c7af2456fd50bb62f7a2bbd642e6fb14ae77",
+    "date": "2026-07-22T12:32:54Z",
+    "title": "minor: fix reasoning preserve var for DS4 [no ci] (#25999)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/e8e6c7af2456fd50bb62f7a2bbd642e6fb14ae77"
+  },
+  {
+    "sha": "cf512566dc89d7a2bdefd43f6d4b85a1c18e93a7",
+    "date": "2026-07-22T21:09:49Z",
+    "title": "ui: Add a \"Default\" option for the reasoning selector (#25846)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/cf512566dc89d7a2bdefd43f6d4b85a1c18e93a7"
+  },
+  {
+    "sha": "8f5ab832ca7d8a7b4f23687693fb8b0ecbc227e7",
+    "date": "2026-07-24T10:54:47Z",
+    "title": "cohere2 moe template parser: enforce JSON schema for text responses if a response schema is provided (#26018)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/8f5ab832ca7d8a7b4f23687693fb8b0ecbc227e7"
+  },
+  {
+    "sha": "27209a598da5b9eb18cbf274e4e9b3367526b114",
+    "date": "2026-07-24T17:19:10Z",
+    "title": "server: support \"reasoning_effort\": \"none\" in OAI API (#26045)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/27209a598da5b9eb18cbf274e4e9b3367526b114"
+  },
+  {
+    "sha": "910196f6b3dfc6aca88fa732e2b02f270ff9b56b",
+    "date": "2026-07-25T09:58:09Z",
+    "title": "common : add support for multiple end sequences in the reasoning budget sampler (#25544)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/910196f6b3dfc6aca88fa732e2b02f270ff9b56b"
+  },
+  {
+    "sha": "6ba5ef247034cd57201360aed246d98f5a404d92",
+    "date": "2026-07-28T09:27:20Z",
+    "title": "common/chat: add specialized minimax m3 parser (#26210)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/6ba5ef247034cd57201360aed246d98f5a404d92"
+  },
+  {
+    "sha": "bc71c24c9da1e7ba6f5993da0e61476155720b06",
+    "date": "2026-07-28T18:13:06Z",
+    "title": "ggml-webgpu: Fix some binding alias issues to support all archs, fix recurrent-state-rollback test (#25931)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/bc71c24c9da1e7ba6f5993da0e61476155720b06"
+  },
+  {
+    "sha": "e1af89a6815737a5db132eee23a94a8ee58553e0",
+    "date": "2026-07-29T10:53:44Z",
+    "title": "conversion: fix Qwen2.5-Omni mmproj conversion regression (#26262)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/e1af89a6815737a5db132eee23a94a8ee58553e0"
+  },
+  {
+    "sha": "afeebe103bd99cda8f5dfaefcabadf890db7fda7",
+    "date": "2026-07-29T16:02:30Z",
+    "title": "llama: move suppress_tokens handling to common/sampling (#26276)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/afeebe103bd99cda8f5dfaefcabadf890db7fda7"
+  },
+  {
+    "sha": "a09d8abf8c926be74c040674e86c69955deac09f",
+    "date": "2026-07-31T13:06:40Z",
+    "title": "Support rotated kv cache quant (#26180)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/a09d8abf8c926be74c040674e86c69955deac09f"
+  },
+  {
+    "sha": "c629da565c80b0b17fac6262acdca4d772e745d8",
+    "date": "2026-08-01T16:03:32Z",
+    "title": "cli : persist reasoning_content in chat history (#26362)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/c629da565c80b0b17fac6262acdca4d772e745d8"
+  },
+  {
+    "sha": "f5919bf458ef190468b5c329bb293f8a54a1e69c",
+    "date": "2026-08-02T09:13:20Z",
+    "title": "chat : add qwen3 specialized parser (#26252)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/f5919bf458ef190468b5c329bb293f8a54a1e69c"
+  },
+  {
+    "sha": "4ed2b13f758ea467282cf0b0e1a938fca7f51211",
+    "date": "2026-08-03T08:15:01Z",
+    "title": "model: MTP support for Qwen3-Next (#25589)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/4ed2b13f758ea467282cf0b0e1a938fca7f51211"
+  },
+  {
+    "sha": "0ef6e55edb306fcbcf73e6f1f41923cccb9cf7f8",
+    "date": "2026-08-03T22:59:11Z",
+    "title": "chat : add new template for DeepSeek V4 Flash 0731 (#26398)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0ef6e55edb306fcbcf73e6f1f41923cccb9cf7f8"
+  },
+  {
+    "sha": "66fa168a5617292651d93cb528db32537ecaa062",
+    "date": "2026-08-04T02:07:23Z",
+    "title": "Extended SYCL oneDNN SDPA to non-FP16 KV caches (Q4_0–Q8_0 and FP32) (#25874)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/66fa168a5617292651d93cb528db32537ecaa062"
+  },
+  {
+    "sha": "07132750825a4f2d27a547cd9cdde1c6f6001885",
+    "date": "2026-08-04T15:26:15Z",
+    "title": "mtmd: support Qwen3-TTS (note: breaking change to llama-tts binary) (#26254)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/07132750825a4f2d27a547cd9cdde1c6f6001885"
+  },
+  {
+    "sha": "217df17ac30ba2a8c374088772f81926cc5beee3",
+    "date": "2026-08-07T11:32:52Z",
+    "title": "mtmd: stop feeding the text stream again during Qwen3-TTS generation (#26706)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/217df17ac30ba2a8c374088772f81926cc5beee3"
+  },
+  {
+    "sha": "157b81fe6dbfec7d7ce91ef7cd9c6bc0c218d6fe",
+    "date": "2026-08-10T07:53:46Z",
+    "title": "model : Granite-Switch Architecture (#25107)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/157b81fe6dbfec7d7ce91ef7cd9c6bc0c218d6fe"
+  },
+  {
+    "sha": "a52077c4cabb4f3c0298329c9d2dd1324d5604cb",
+    "date": "2026-08-10T10:20:59Z",
+    "title": "chat : Align Laguna-S-2.1 chat template to huggingface (#26232)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/a52077c4cabb4f3c0298329c9d2dd1324d5604cb"
+  },
+  {
+    "sha": "dd1ea524333b1e697489067d7a4c39c60d32beee",
+    "date": "2026-08-10T13:58:56Z",
+    "title": "llama : support multi-output backend sampling (#25532)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/dd1ea524333b1e697489067d7a4c39c60d32beee"
+  },
+  {
+    "sha": "ba360efe1f574ebae727aad64112d18ecedca85a",
+    "date": "2026-08-11T15:58:54Z",
+    "title": "chat : tighten bare function parsing for Qwen models (#26793)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/ba360efe1f574ebae727aad64112d18ecedca85a"
+  },
+  {
+    "sha": "0b1bad14ff204627636aeb1de22ddcd5acb859d4",
+    "date": "2026-08-11T20:15:20Z",
+    "title": "chat : fix muse-glimmer detection of tool calls after EOM (#26879)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0b1bad14ff204627636aeb1de22ddcd5acb859d4"
+  },
+  {
+    "sha": "6eff59326205854cf4b9edd45e67ee3436c16d58",
+    "date": "2026-08-12T05:05:13Z",
+    "title": "convert : handle per_layer_config in Gemma4 (transformers 5.15) (#26882)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/6eff59326205854cf4b9edd45e67ee3436c16d58"
+  },
+  {
+    "sha": "0d0bfcd4fd8828e3e7906b6fc4561725b534511e",
+    "date": "2026-08-13T09:07:28Z",
+    "title": "spec: enable backend sampling for both dflash & dspark (#26958)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0d0bfcd4fd8828e3e7906b6fc4561725b534511e"
+  },
+  {
+    "sha": "2606220d9f2705dab8260633e9f85ce5b081319e",
+    "date": "2026-08-13T16:18:44Z",
+    "title": "chat : fix LFM2 tool call arg name prefix ambiguity (#26960)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/2606220d9f2705dab8260633e9f85ce5b081319e"
+  },
+  {
+    "sha": "aee56b3abfeb134218fe5c496c329a1faac1ef28",
+    "date": "2026-08-13T17:30:48Z",
+    "title": "OpenVINO: Qwen3.5, memory optimization, and test-recurrent-state-rollback (#26952)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/aee56b3abfeb134218fe5c496c329a1faac1ef28"
+  },
+  {
+    "sha": "1692f9e50bb20fd96b963af38a282daf78feea64",
+    "date": "2026-08-14T14:20:40Z",
+    "title": "ggml : recurrent state rollback for ggml_ssm_scan (#26623)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/1692f9e50bb20fd96b963af38a282daf78feea64"
+  },
+  {
+    "sha": "7e4c0a96880dae4fc4268ad441f8a6446bd5460a",
+    "date": "2026-08-14T18:23:11Z",
+    "title": "chat : pass reasoning_effort to template",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/7e4c0a96880dae4fc4268ad441f8a6446bd5460a"
+  },
+  {
+    "sha": "9d57ce456c94d241dde672b2db9cf18879766568",
+    "date": "2026-08-14T22:25:26Z",
+    "title": "mtmd: fix Granite4 Vision image sequence assembly (#26653)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/9d57ce456c94d241dde672b2db9cf18879766568"
+  },
+  {
+    "sha": "9f0d017efb4a388bd5c60a27a575c90f20868e51",
+    "date": "2026-08-17T09:30:15Z",
+    "title": "mtmd: harden preprocessor_granite (#27235)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/9f0d017efb4a388bd5c60a27a575c90f20868e51"
+  },
+  {
+    "sha": "7221e24f579efbb5fd2a2ced1fffaef1aff2fe0d",
+    "date": "2026-08-19T14:53:31Z",
+    "title": "model : GraniteSWAForCausalLM / GraniteMoeSWAForCausalLM (#25505)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/7221e24f579efbb5fd2a2ced1fffaef1aff2fe0d"
+  },
+  {
+    "sha": "63b64a50a37600243c7dfbc4bbb92bd360a11ff7",
+    "date": "2026-08-20T14:00:54Z",
+    "title": "metal : dequant kv cache only for large batches (#27438)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/63b64a50a37600243c7dfbc4bbb92bd360a11ff7"
+  },
+  {
+    "sha": "4a08fa29705b8177e332b134306566c2c4b95902",
+    "date": "2026-08-23T16:38:51Z",
+    "title": "test: move tools/parser to tests (#27548)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/4a08fa29705b8177e332b134306566c2c4b95902"
+  },
+  {
+    "sha": "0cc5b14959ee3a813bd787baaef50a170493547a",
+    "date": "2026-08-25T14:33:00Z",
+    "title": "chat : scope qwen3-coder workarounds (#27679)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0cc5b14959ee3a813bd787baaef50a170493547a"
+  },
+  {
+    "sha": "6c84c7d5d8833c6e0df69628f75a0f599797934e",
+    "date": "2026-08-27T19:32:31Z",
+    "title": "model: add Qwen3.8-Flash-Next (qwen4exp) (#27742)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/6c84c7d5d8833c6e0df69628f75a0f599797934e"
+  },
+  {
+    "sha": "be876204aa23bc0d8f890981fde2853555b132f9",
+    "date": "2026-08-28T08:53:31Z",
+    "title": "sycl: bind the f16 KV cache in place for the oneDNN SDPA path (#27468)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/be876204aa23bc0d8f890981fde2853555b132f9"
+  },
+  {
+    "sha": "511f9c1379a52516f328859af86daa124eddc717",
+    "date": "2026-08-28T11:42:07Z",
+    "title": "OpenVINO: Update OV to 2026.3.1, whisper.cpp support, Qwen3.5 on NPU, and new ops (#27843)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/511f9c1379a52516f328859af86daa124eddc717"
+  },
+  {
+    "sha": "86632248188c106d749fad34a1dcd237c95863d4",
+    "date": "2026-08-28T13:34:26Z",
+    "title": "context : disable non-fused GDN and LID ops (#27877)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/86632248188c106d749fad34a1dcd237c95863d4"
+  },
+  {
+    "sha": "6fe74980162af0ed5e559870d5deccafaa034e7c",
+    "date": "2026-08-28T17:24:46Z",
+    "title": "model: qwen4exp: reduce number of graph splits (#27880)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/6fe74980162af0ed5e559870d5deccafaa034e7c"
+  },
+  {
+    "sha": "daef7b6874397a5a7c3d7e38b55e2ee0adf7da38",
+    "date": "2026-08-31T05:04:34Z",
+    "title": "vulkan: top_k radix select for k >= 1024 for Qwen 3.8 Flash Next (#28032)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/daef7b6874397a5a7c3d7e38b55e2ee0adf7da38"
+  },
+  {
+    "sha": "662a0b0121a53c23b825a71e64ab6eff59b7f4d8",
+    "date": "2026-08-31T09:19:20Z",
+    "title": "spec : fuse the DFlash encoder into the KV cache injection (#27310)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/662a0b0121a53c23b825a71e64ab6eff59b7f4d8"
+  },
+  {
+    "sha": "2d8d612e4c68d3801e556a1b4a028f55ec33ecbb",
+    "date": "2026-08-31T16:49:58Z",
+    "title": "kv-cache : optimize restoring non-contiguous cells (#27991)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/2d8d612e4c68d3801e556a1b4a028f55ec33ecbb"
+  },
+  {
+    "sha": "09412af38a9fe328da2ed452a40f310eea350290",
+    "date": "2026-09-01T04:23:59Z",
+    "title": "qwen4exp: sum the indexer heads by slices (#28023)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/09412af38a9fe328da2ed452a40f310eea350290"
+  },
+  {
+    "sha": "0eadefebd3f8f92a86d634a0e5b8fffc9dc792c0",
+    "date": "2026-09-01T04:24:49Z",
+    "title": "qwen4exp: support recurrent state rollback (#28123)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0eadefebd3f8f92a86d634a0e5b8fffc9dc792c0"
+  },
+  {
+    "sha": "36b10154383b60eb15baac2c7a40d2a5f784faa7",
+    "date": "2026-09-01T10:22:04Z",
+    "title": "qwen4exp: fix seq_cp, block position keying, mtmd input, cuda abort, add tests (#27941)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/36b10154383b60eb15baac2c7a40d2a5f784faa7"
+  },
+  {
+    "sha": "73159c30399a77144f59d37fde504dfd00afbea5",
+    "date": "2026-09-01T16:58:44Z",
+    "title": "model : fix gemma4-assistant (#28183)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/73159c30399a77144f59d37fde504dfd00afbea5"
+  },
+  {
+    "sha": "69320fef12d3385dcf9ca45db4dcf7eec21d5f71",
+    "date": "2026-09-02T05:20:29Z",
+    "title": "hexagon: add missing FARF logs for cpy/get_rows/set_rows/gdn ops (#28217)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/69320fef12d3385dcf9ca45db4dcf7eec21d5f71"
+  },
+  {
+    "sha": "0f3a71be15af836d277c9f918adfafb45732677e",
+    "date": "2026-09-02T10:46:16Z",
+    "title": "mtmd: Fix Qwen3-tts-0.6b (#28231)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/0f3a71be15af836d277c9f918adfafb45732677e"
+  },
+  {
+    "sha": "e750b887a82719c27200b71545f63ed78ec24719",
+    "date": "2026-09-02T16:19:54Z",
+    "title": "common, server : enable preserve_reasoning kwarg by default, log its effective state (#28174)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/e750b887a82719c27200b71545f63ed78ec24719"
+  },
+  {
+    "sha": "159b741427337a2e9a58b08121001545d66b5825",
+    "date": "2026-09-02T21:53:32Z",
+    "title": "finetune: fix no KV cache (#27199)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/159b741427337a2e9a58b08121001545d66b5825"
+  },
+  {
+    "sha": "5ec4eab69edbfaa4b01bcf1ee1123bb885b8d892",
+    "date": "2026-09-03T07:32:24Z",
+    "title": "misc : prevent RAM peaking at model loading stage (#27483)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/5ec4eab69edbfaa4b01bcf1ee1123bb885b8d892"
+  },
+  {
+    "sha": "163a40796f0ebaae246325f8d2e15028b413fa9d",
+    "date": "2026-09-04T10:23:27Z",
+    "title": "model, mtmd: fix gemma4 vision handling (#28335)",
+    "url": "https://github.com/ggml-org/llama.cpp/commit/163a40796f0ebaae246325f8d2e15028b413fa9d"
+  }
+]

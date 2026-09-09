@@ -1,0 +1,10 @@
+n=8 published=8 other=0
+
+001	t1	published_final	abre la aplicación C03ProgramaInexistente20260906	No puedo abrir la aplicación C03ProgramaInexistente20260906 porque está fuera de lo que hago en este PC.
+002	t2	published_final	Open C03ProgramaInexistente20260906	I saw Open C03ProgramInexistente20260906.
+003	t3	published_final	Explain encryption, pero en simple	¿Puedes especificar si deseas que la explicación de 'encryption' sea en términos técnicos o en un lenguaje más accesible y simple, como lo mencionaste?
+004	t4	published_final	Hey, buenas	Hey, buenas.
+005	t5	published_final	Dime la hora, please, en spanglish	05:01
+006	t6	published_final	responde en spanglish: qué es el cifrado	El cifrado es el proceso de transformar información en un formato que solo las personas autorizadas pueden leer o descifrar.
+007	t7	published_final	what is the capital of Peru	The capital of Peru is Lima.
+008	t8	published_final	cuánto es doce por ocho	¿Cuánto es doce multiplicado por ocho?

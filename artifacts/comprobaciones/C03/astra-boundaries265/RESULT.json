@@ -1,0 +1,58 @@
+[
+  {
+    "input": "abre steam",
+    "folded": "abre steam",
+    "explicitIntent": {
+      "operations": [
+        "app.open"
+      ],
+      "evidence": [
+        "steam"
+      ]
+    },
+    "resolvedApp": "Steam",
+    "catalogUnavailable": null,
+    "unresolvedCompound": null,
+    "authoritative": true,
+    "knownUnsupported": false,
+    "stableNoEffect": null,
+    "nonAction": false,
+    "clauses": [
+      "abre steam"
+    ],
+    "contradictoryCorrection": false
+  },
+  {
+    "input": "Tengo en mente que abras steam",
+    "folded": "tengo en mente que abras steam",
+    "explicitIntent": null,
+    "resolvedApp": null,
+    "catalogUnavailable": null,
+    "unresolvedCompound": null,
+    "authoritative": true,
+    "knownUnsupported": false,
+    "stableNoEffect": null,
+    "nonAction": false,
+    "clauses": [
+      "tengo en mente que abras steam"
+    ],
+    "contradictoryCorrection": false
+  },
+  {
+    "input": "Si, abre steam",
+    "folded": "si, abre steam",
+    "explicitIntent": null,
+    "resolvedApp": null,
+    "catalogUnavailable": null,
+    "unresolvedCompound": "CompoundEffectContract(minimum_effects=2, required_clause_sequences=(('app.open',),), clause_requirements=(('si', ()), ('abre steam', ('app.open',))))",
+    "authoritative": true,
+    "knownUnsupported": false,
+    "stableNoEffect": null,
+    "nonAction": false,
+    "clauses": [
+      "si",
+      "abre steam"
+    ],
+    "contradictoryCorrection": false
+  }
+]

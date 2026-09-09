@@ -1,0 +1,9 @@
+0.00.144.736 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.239.293 I srv    load_model: loading model 'D:\BAXYRuntime\experiments\models\baxy-gemma4-e2b-published-f9b84ecd\gemma-4-E2B-it-Q4_K_M.gguf'
+0.02.022.169 W load: control-looking token:     50 '<|tool_response>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.02.022.791 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.02.098.071 W load: special_eog_ids contains '<|tool_response>', removing '</s>' token from EOG list
+0.05.959.061 I srv    load_model: initializing, n_slots = 3, n_ctx_slot = 4096, kv_unified = 'false'
+0.05.960.674 W srv          init: --cache-idle-slots requires --cache-ram, disabling
+0.05.982.653 I srv  llama_server: model loaded
+0.05.982.668 I srv  llama_server: listening on http://127.0.0.1:60693

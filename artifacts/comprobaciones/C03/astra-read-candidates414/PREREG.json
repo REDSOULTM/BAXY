@@ -1,0 +1,32 @@
+{
+  "reference411_sha256": "250286226e60dbcfcebf35406e63cc847f693b2e46b7427fe7126dfeeeeaf873",
+  "utc": "2026-09-08T12:57:16.748188+00:00",
+  "case_ids": [
+    "actual411-t3",
+    "account-es",
+    "account-en",
+    "username-en",
+    "username-es",
+    "os-version",
+    "os-memory",
+    "cpu",
+    "concept",
+    "negative",
+    "actual402b-t6",
+    "english-name",
+    "new-name",
+    "third-party"
+  ],
+  "private_case_file": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-read-recovery413-cases-private\\cases.json",
+  "method": "Same14development cases413, including exact411native history/welcome; target cold then14warm per arm. Two sequential sidecars, same source410/catalog/model/template/sampler. Both use diagnostic early-read hook; ONLY new arm filters candidates to authenticated read_only risk BEFORE selecting the first4 for the secondary native request. Primary28tools remains identical. Both still retain only read proposals and run normal downstream guards. No effects, injected answers, operation hardcoding, source edits or promotion. Check each arms own first primary from its trace byte offset against411 before continuing.",
+  "case_file_sha256": "963d094719882418fa0e117ff3a0237ba45ccc9620faaa0a00e400a37de014a7",
+  "reason": "413 improved cold target but warm secondAUTO still recited. actual-target-native-sequence proves cold top4 identity/status/folder.open/notification.diagnose selects identity, while warm identity/cancel.at/cancel.latest/diagnose recites. The observation-recovery review should not offer writing operations. Test typed-risk candidate filtering instead of another identical pass, prompt, seed or catalog descriptor.",
+  "criteria": "Compared with413early-read14/15, repair warm target without losing cold target or13controls. All proposed recovery effects read_only, all normal guards retained; count native calls and latency. No source adoption based only on availability or nonempty prose. The original late fallback remains only for this diagnostic and must be retired/reused if implementation follows.",
+  "model": "D:\\BAXYRuntime\\experiments\\models\\qwen35-4b-e87f1764\\Qwen3.5-4B-Q4_K_M.gguf",
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "backend_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "catalog_count": 169,
+  "catalog_sha256": "499e516bc739e14154c2f7fe7e06db22b28ad10d6c30c4c48ef3c5586a68404b",
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-read-candidates414-private"
+}

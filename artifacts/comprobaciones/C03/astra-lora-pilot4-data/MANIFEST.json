@@ -1,0 +1,45 @@
+{
+  "kind": "reviewed-heritage-knowledge-pilot-not-acceptance",
+  "trainCount": 192,
+  "holdoutCount": 42,
+  "hypothesis": "Prior tiny-topic tuning improves format but alters unseen facts. Add 20 individually reviewed inherited knowledge concepts in three languages to preserve broader factual behavior; do not train on consumed development questions.",
+  "same": "Base weights, LoRA profile, response-only loss, two epochs and learning rate unchanged. All 132 prior examples retained; 60 reviewed additions.",
+  "source": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\Probando Gemma 4\\dataset_finetune\\curated\\train_v3.jsonl",
+  "sourceSha256": "6ccf110a23090ce274695d24a7c7956f2ea36e91b51fe001509be4a9abd01643",
+  "selectedLines": [
+    53,
+    58,
+    62,
+    64,
+    66,
+    106,
+    568,
+    1143,
+    1150,
+    1151,
+    1306,
+    1312,
+    1313,
+    1748,
+    1760,
+    2815,
+    4438,
+    4505,
+    4594,
+    4617
+  ],
+  "replacementsObserved": 37,
+  "historicalCause": "Probando Gemma 4/dataset_finetune/scripts/build_v3.py:795-798 replaces no-tool reply_is_template explanations with ack, even when an actual explanatory target exists.",
+  "primaryCrossChecks": [
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures",
+    "https://requests.readthedocs.io/en/latest/",
+    "https://docs.python.org/3/tutorial/classes.html",
+    "https://www.genome.gov/genetics-glossary/Deoxyribonucleic-Acid-DNA"
+  ],
+  "files": {
+    "TRAIN.jsonl": "a5d93a84ebbad49c908a37c67d556c7ceeaf3171d4a4af31bc2689be271f76af",
+    "HOLDOUT.jsonl": "ac66f40ef55e34b16b241bd1055bf64fc36004f540192e8fbc17cf940b07803f",
+    "HERITAGE_REVIEW.jsonl": "3eb8ebc2b68b8dede1114ea58b1f7615b0ca3f711e4f8648fd8e6bf3ae7e3b89",
+    "HISTORICAL_REPLACEMENTS.jsonl": "580dc703de14e16fb876f4d83a782249661a26209805a05917fe192a4abe1ede"
+  }
+}

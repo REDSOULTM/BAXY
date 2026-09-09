@@ -1,0 +1,133 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\Baxy.App.csproj (en 185 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 185 ms).
+  1 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error PrivateConfirmationAndRecoveryNameThePreparedActionWithoutPrivateArguments [122 ms]
+  Mensaje de error:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Seguimiento de la pila:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.PrivateConfirmationAndRecoveryNameThePreparedActionWithoutPrivateArguments() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 113
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+  Con error RecalledValuesAndRedactionAreObservationsForTheComposer [7 ms]
+  Mensaje de error:
+   System.Collections.Generic.KeyNotFoundException : The given key was not present in the dictionary.
+  Seguimiento de la pila:
+     at System.Text.Json.JsonElement.GetProperty(String propertyName)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.RecalledValuesAndRedactionAreObservationsForTheComposer() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 96
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.enable","{\"version\":1,\"enabled\":true,\"replayed\":false}","{\"enabled\":true,\"replayed\":false}") [18 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.disable","{\"version\":1,\"enabled\":false,\"replayed\":true}","{\"enabled\":false,\"replayed\":true}") [< 1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.save","{\"version\":1,\"recordId\":\"52dc83f9-cee9-49e6-bd99-20c9b1c67dda\",\"revision\":1,\"selector\":\"favorite_color\",\"replayed\":false}","{\"saved\":true,\"corrected\":false,\"sensitive\":false}") [< 1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.correct","{\"version\":1,\"recordId\":\"52dc83f9-cee9-49e6-bd99-20c9b1c67dda\",\"revision\":2,\"selector\":\"favorite_color\",\"replayed\":false}","{\"saved\":true,\"corrected\":true,\"sensitive\":false}") [< 1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.forget","{\"version\":1,\"deletedCount\":2,\"replayed\":false}","{\"deletedCount\":2}") [< 1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.status","{\"version\":1,\"enabled\":true,\"totalRecords\":3,\"persistentRecords\":1,\"sessionRecords\":1,\"temporaryRecords\":1,\"maximumRecords\":512}","{\"enabled\":true,\"totalRecords\":3,\"persistentRecords\":1,\"sessionRecords\":1,\"temporaryRecords\":1,\"maximumRecords\":512}") [< 1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+
+  Con error StrictProjectionAcceptsOnlyKnownCompletedShapes("memory.export","{\"version\":1,\"path\":\"C:\\\\Users\\\\local\\\\Documents\\\\BAXY\\\\memory-export-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef.json\",\"recordCount\":3,\"sha256\":\"abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789\",\"replayed\":false}","{\"destination\":\"Documents/BAXY\",\"recordCount\":3,\"integrityVerified\":true,\"mayRedirectOrSync\":true}") [< 1 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.IsStructuredFacts(projection!.Message), Is.True)
+  Expected: True
+  But was:  False
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(String operation, String json, String expectedObservations) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 65
+   at InvokeStub_MemoryAppFlowTests.StrictProjectionAcceptsOnlyKnownCompletedShapes(Object, Span`1)
+
+
+
+Con error! - Con error:     9, Superado:     0, Omitido:     0, Total:     9, Duración: 153 ms - Baxy.Integration.Tests.dll (net10.0)

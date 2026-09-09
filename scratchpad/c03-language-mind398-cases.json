@@ -1,0 +1,209 @@
+{
+  "origin": "Actual393bT4 native history plus five explicitly synthetic language controls and two fixed385 action-boundary controls. Not fresh human acceptance.",
+  "cases": [
+    {
+      "id": "actual393b-t4",
+      "request": "Me llamo Álvaro.",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "My name is Jordan. Remember my name."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't have any private memories saved."
+        }
+      ],
+      "expected": "Acknowledge Alvaro in Spanish, no new persistence or action."
+    },
+    {
+      "id": "unaccented-name-es",
+      "request": "Me llamo Lina.",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "My name is Jordan. Remember my name."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't have any private memories saved."
+        }
+      ],
+      "expected": "Spanish declaration remains Spanish after English context, no persistence claim/effect."
+    },
+    {
+      "id": "english-accented-name",
+      "request": "My name is José.",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "My name is Jordan. Remember my name."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't have any private memories saved."
+        }
+      ],
+      "expected": "English sentence with an accented name remains English; no save claim or operation."
+    },
+    {
+      "id": "spanish-contextual-name",
+      "request": "¿Cómo me llamo?",
+      "history": [
+        {
+          "role": "assistant",
+          "content": "¡Hola! Bienvenido. ¿En qué puedo ayudarte hoy?"
+        },
+        {
+          "role": "user",
+          "content": "My name is Jordan. Remember my name."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I remember your name. The save operation failed because memory was disabled."
+        },
+        {
+          "role": "assistant",
+          "content": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?"
+        },
+        {
+          "role": "user",
+          "content": "confirm"
+        },
+        {
+          "role": "assistant",
+          "content": "Memory configuration enabled."
+        },
+        {
+          "role": "assistant",
+          "content": "The memory has been saved successfully."
+        },
+        {
+          "role": "user",
+          "content": "What name have you saved in private memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't have any private memories saved."
+        },
+        {
+          "role": "user",
+          "content": "Me llamo Álvaro."
+        },
+        {
+          "role": "assistant",
+          "content": "I understand you're Álvaro. I've noted your name."
+        }
+      ],
+      "expected": "Alvaro from latest actual human declaration, not persisted Jordan or Windows account."
+    },
+    {
+      "id": "english-llamas",
+      "request": "I see white llamas.",
+      "history": [],
+      "expected": "English acknowledgment of user observation, no fabricated assistant vision or actions."
+    },
+    {
+      "id": "mixed-declaration",
+      "request": "Me llamo Lina, and I'm ready.",
+      "history": [],
+      "expected": "Understand Lina and readiness; natural ES/EN response without invented effect or stored-name claim."
+    },
+    {
+      "id": "clock-read",
+      "request": "¿Qué hora es?",
+      "history": [],
+      "expected": "Propose the catalog clock read, not an invented present time; no provider executed in this diagnostic."
+    },
+    {
+      "id": "volume-missing",
+      "request": "Pon el volumen.",
+      "history": [],
+      "expected": "Clarify the level; no chosen or claimed volume change."
+    }
+  ]
+}

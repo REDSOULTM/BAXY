@@ -1,0 +1,14 @@
+{
+  "llmHash": "C3259EEC8A93179A7E305F3A05CA542F294D5F0FF49D23C3240A8BAE6ECE20BC",
+  "fixtureSha256": "8D4114109469EDFD28BEB9A611E1A89A0A6DB1CCBA42FFD6D6D98E30A010BAE8",
+  "fixture": "D:\\Perfil\\Escritorio\\C03-Prueba-Respuesta-20260906.txt",
+  "clientHash": "18890489465BB39CD27764E24422F2497CDCD4FB6BFC941294459AFA43F39888",
+  "appHash": "B9A2563B0C2AC3C6264B63CD444D37213E8F687583D23284656CECD31833D4B2",
+  "expected": [
+    "Exact file confirmation, not ambiguity or masked request",
+    "Cancellation and intact file",
+    "Lima with usable state"
+  ],
+  "purpose": "Same three development turns after isolating late voice cancel acknowledgements and preserving unavailable decision cause.",
+  "viewModelHash": "62E365387F1BB3FADA9D011C3AF19E2813E3BAA0A20F83280622B374EDB5D0A0"
+}

@@ -1,0 +1,154 @@
+diff --git a/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h b/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h
+index b400c48..17ed376 100644
+--- a/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h
++++ b/sherpa-onnx/csrc/offline-recognizer-transducer-nemo-impl.h
+@@ -10,6 +10,7 @@
+ #include <memory>
+ #include <regex>  // NOLINT
+ #include <sstream>
++#include <stdexcept>
+ #include <string>
+ #include <utility>
+ #include <vector>
+@@ -158,6 +159,31 @@ class OfflineRecognizerTransducerNeMoImpl : public OfflineRecognizerImpl {
+   }
+ 
+   void DecodeStreams(OfflineStream **ss, int32_t n) const override {
++    // Select a decoder per utterance without reloading the shared NeMo model.
++    // A contextual stream must retain beam search; greedy cannot use its graph.
++    const auto effective_method = [this](OfflineStream *stream) {
++      const auto &requested = stream->GetOption("decoding_method");
++      return requested.empty() ? config_.decoding_method : requested;
++    };
++    const std::string method = effective_method(ss[0]);
++    bool mixed_methods = false;
++    for (int32_t i = 0; i != n; ++i) {
++      const std::string current = effective_method(ss[i]);
++      if (current != config_.decoding_method && current != "greedy_search") {
++        throw std::invalid_argument("Unsupported per-stream NeMo decoder");
++      }
++      if (current == "greedy_search" && ss[i]->GetContextGraph() != nullptr) {
++        throw std::invalid_argument("Greedy NeMo decoder cannot use hotwords");
++      }
++      mixed_methods = mixed_methods || current != method;
++    }
++    if (mixed_methods) {
++      // Keep each decoder's established batch behavior for homogeneous batches.
++      for (int32_t i = 0; i != n; ++i) {
++        DecodeStreams(ss + i, 1);
++      }
++      return;
++    }
+     auto memory_info =
+         Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+ 
+@@ -194,16 +220,36 @@ class OfflineRecognizerTransducerNeMoImpl : public OfflineRecognizerImpl {
+         memory_info, features_length_vec.data(), n,
+         features_length_shape.data(), features_length_shape.size());
+ 
++    const std::string trace_prefix = ss[0]->GetOption("baxy_trace_prefix");
++    const auto dump_tensor = [&trace_prefix](const Ort::Value &tensor, const char *stage) {
++      if (trace_prefix.empty()) return;
++      auto info = tensor.GetTensorTypeAndShapeInfo();
++      auto shape = info.GetShape();
++      std::ofstream dimensions(trace_prefix + "." + stage + ".shape");
++      for (auto d : shape) dimensions << d << " ";
++      std::ofstream binary(trace_prefix + "." + stage + ".f32", std::ios::binary);
++      binary.write(reinterpret_cast<const char *>(tensor.GetTensorData<float>()),
++                   info.GetElementCount() * sizeof(float));
++      if (!dimensions || !binary) throw std::runtime_error("diagnostic_dump_failed");
++    };
+     Ort::Value x = PadSequence(model_->Allocator(), features_pointer, 0);
++    dump_tensor(x, "features");
+ 
+     auto t = model_->RunEncoder(std::move(x), std::move(x_length));
+     // t[0] encoder_out, float tensor, (batch_size, dim, T)
+     // t[1] encoder_out_length, int64 tensor, (batch_size,)
+ 
+     Ort::Value encoder_out = Transpose12(model_->Allocator(), &t[0]);
++    dump_tensor(encoder_out, "encoder");
+ 
+-    auto results =
+-        decoder_->Decode(std::move(encoder_out), std::move(t[1]), ss, n);
++    std::vector<OfflineTransducerDecoderResult> results;
++    if (method == "greedy_search" && method != config_.decoding_method) {
++      OfflineTransducerGreedySearchNeMoDecoder greedy(
++          model_.get(), config_.blank_penalty, model_->IsTDT());
++      results = greedy.Decode(std::move(encoder_out), std::move(t[1]), ss, n);
++    } else {
++      results = decoder_->Decode(std::move(encoder_out), std::move(t[1]), ss, n);
++    }
+ 
+     int32_t frame_shift_ms = 10;
+     for (int32_t i = 0; i != n; ++i) {
+@@ -219,6 +265,7 @@ class OfflineRecognizerTransducerNeMoImpl : public OfflineRecognizerImpl {
+       r.text = ApplyHomophoneReplacer(std::move(r.text));
+ 
+       ss[i]->SetResult(r);
++      ss[i]->SetOption("applied_decoding_method", method);
+     }
+   }
+ 
+diff --git a/sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc b/sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc
+index 50121bd..d97b63c 100644
+--- a/sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc
++++ b/sherpa-onnx/csrc/offline-transducer-greedy-search-nemo-decoder.cc
+@@ -6,6 +6,9 @@
+ 
+ #include <algorithm>
+ #include <iterator>
++#include <cmath>
++#include <fstream>
++#include "sherpa-onnx/csrc/offline-stream.h"
+ #include <utility>
+ #include <vector>
+ 
+@@ -103,7 +106,14 @@ static OfflineTransducerDecoderResult DecodeOne(
+ 
+ static OfflineTransducerDecoderResult DecodeOneTDT(
+     const float *p, int32_t num_rows, int32_t num_cols,
+-    OfflineTransducerNeMoModel *model, float blank_penalty) {
++    OfflineTransducerNeMoModel *model, float blank_penalty, OfflineStream *trace_stream) {
++  const std::string trace_prefix = trace_stream ? trace_stream->GetOption("baxy_trace_prefix") : "";
++  std::ofstream trace;
++  if (!trace_prefix.empty()) {
++    trace.open(trace_prefix + ".joiner.tsv");
++    trace.precision(9);
++    trace << "t\ty\tskip\tvocab\tblank_logit\tbest_nonblank\tnonfinite\n";
++  }
+   auto memory_info =
+       Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+ 
+@@ -164,6 +174,14 @@ static OfflineTransducerDecoderResult DecodeOneTDT(
+         duration_logits,
+         std::max_element(duration_logits, duration_logits + num_durations)));
+ 
++    if (trace.is_open()) {
++      int nonfinite = 0;
++      for (int j = 0; j < output_size; ++j) nonfinite += !std::isfinite(p_logit[j]);
++      trace << t << "\t" << y << "\t" << skip << "\t" << vocab_size << "\t"
++            << p_logit[blank_id] << "\t"
++            << *std::max_element(token_logits, token_logits + blank_id) << "\t"
++            << nonfinite << "\n";
++    }
+     if (y != blank_id) {
+       ans.tokens.push_back(y);
+       ans.timestamps.push_back(t);
+@@ -201,7 +219,7 @@ static OfflineTransducerDecoderResult DecodeOneTDT(
+ std::vector<OfflineTransducerDecoderResult>
+ OfflineTransducerGreedySearchNeMoDecoder::Decode(
+     Ort::Value encoder_out, Ort::Value encoder_out_length,
+-    OfflineStream ** /*ss = nullptr*/, int32_t /*n= 0*/) {
++    OfflineStream **ss, int32_t n) {
+   auto shape = encoder_out.GetTensorTypeAndShapeInfo().GetShape();
+ 
+   int32_t batch_size = static_cast<int32_t>(shape[0]);
+@@ -228,7 +246,7 @@ OfflineTransducerGreedySearchNeMoDecoder::Decode(
+                            : encoder_out_length.GetTensorData<int64_t>()[i];
+ 
+     if (is_tdt_) {
+-      ans[i] = DecodeOneTDT(this_p, this_len, dim2, model_, blank_penalty_);
++      ans[i] = DecodeOneTDT(this_p, this_len, dim2, model_, blank_penalty_, (ss && i < n) ? ss[i] : nullptr);
+     } else {
+       ans[i] = DecodeOne(this_p, this_len, dim2, model_, blank_penalty_);
+     }

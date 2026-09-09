@@ -1,0 +1,124 @@
+[
+  {
+    "request": "My name is Jordan. Remember my name.",
+    "answers": [
+      {
+        "text": "Jordan, I remember your name. The save operation failed because memory was disabled.",
+        "route": "error"
+      },
+      {
+        "text": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+        "route": "confirmation"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Jordan, I'm ready to enable your private local memory. Do you want to confirm this action or cancel it?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil",
+    "reason": "Causa real memoria deshabilitada y confirmación de activación ligada a la solicitud."
+  },
+  {
+    "request": "confirm",
+    "answers": [
+      {
+        "text": "Memory configuration enabled.",
+        "route": "result"
+      },
+      {
+        "text": "The memory has been saved successfully.",
+        "route": "result"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The memory has been saved successfully.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "parcial",
+    "reason": "Activación y guardado verificados, narración genérica no identifica el nombre."
+  },
+  {
+    "request": "What name have you saved in private memory?",
+    "answers": [
+      {
+        "text": "I saved the name Jordan in private memory.",
+        "route": "result"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I saved the name Jordan in private memory.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil",
+    "reason": "Lectura privada real devuelveJordan; respuesta conserva el nombre y el guardado previo."
+  },
+  {
+    "request": "Me llamo Álvaro.",
+    "answers": [
+      {
+        "text": "¿Qué necesitas exactamente con tu PC?",
+        "route": "clarification"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¿Qué necesitas exactamente con tu PC?",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "Aclaración innecesaria sobre el PC ante una declaración del nombre."
+  },
+  {
+    "request": "¿Qué nombre tienes guardado en tu memoria privada?",
+    "answers": [
+      {
+        "text": "El nombre que tengo guardado en mi memoria privada es \"Jordan\".",
+        "route": "conversation"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "El nombre que tengo guardado en mi memoria privada es \"Jordan\".",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "útil en contenido; ruta pendiente",
+    "reason": "RespondeJordan, coincidente con la lectura verificadaT3. No hubo nueva lectura: la aclaraciónT4 toma precedencia y el turno atraviesa conversación. NO acredita reparación del compositor privado español."
+  },
+  {
+    "request": "¿Cómo me llamo?",
+    "answers": [
+      {
+        "text": "Tu nombre es Jordan.",
+        "route": "result"
+      }
+    ],
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Tu nombre es Jordan.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": "fallo",
+    "reason": "La ruta genérica leeJordan persistido en lugar de Álvaro del diálogo actual."
+  }
+]

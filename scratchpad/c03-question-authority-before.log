@@ -1,0 +1,284 @@
+.FFFFF.                                                                  [100%]
+================================== FAILURES ===================================
+_ test_information_question_cannot_authorize_a_mutating_effect[\xbfy para qu\xe9 sirve?] _
+
+objective = '�y para qu� sirve?'
+
+    @pytest.mark.parametrize("objective", [
+        "�D�nde dejaste el PowerPoint? �Qu� me hiciste?",
+        "�y para qu� sirve?",
+        "�por qu� importa?",
+        "why does it matter?",
+        "why is a router useful?",
+        "cu�nto es doce por ocho",
+    ])
+    def test_information_question_cannot_authorize_a_mutating_effect(objective: str) -> None:
+        close_tool = {
+            "type": "function",
+            "function": {
+                "name": "app_close",
+                "canonical_name": "app.close",
+                "description": "Close one exact application.",
+                "risk": "work_loss",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"process": {"type": "string"}},
+                    "required": ["process"],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        decision = validate_turn_decision(
+            {
+                "mode": "action",
+                "operation": "app.close",
+                "question": "",
+                "conversation_kind": "",
+                "effect_count": "one",
+                "effect_operations": ["app.close"],
+                "effect_verification": "grounding_required",
+                "response_language": "es",
+            },
+            {"app.close"},
+        )
+    
+        vetoed = apply_information_question_effect_veto(
+            decision,
+            objective,
+            PlannerCatalog([close_tool]),
+        )
+    
+>       assert vetoed["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:6767: AssertionError
+_ test_information_question_cannot_authorize_a_mutating_effect[\xbfpor qu\xe9 importa?] _
+
+objective = '�por qu� importa?'
+
+    @pytest.mark.parametrize("objective", [
+        "�D�nde dejaste el PowerPoint? �Qu� me hiciste?",
+        "�y para qu� sirve?",
+        "�por qu� importa?",
+        "why does it matter?",
+        "why is a router useful?",
+        "cu�nto es doce por ocho",
+    ])
+    def test_information_question_cannot_authorize_a_mutating_effect(objective: str) -> None:
+        close_tool = {
+            "type": "function",
+            "function": {
+                "name": "app_close",
+                "canonical_name": "app.close",
+                "description": "Close one exact application.",
+                "risk": "work_loss",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"process": {"type": "string"}},
+                    "required": ["process"],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        decision = validate_turn_decision(
+            {
+                "mode": "action",
+                "operation": "app.close",
+                "question": "",
+                "conversation_kind": "",
+                "effect_count": "one",
+                "effect_operations": ["app.close"],
+                "effect_verification": "grounding_required",
+                "response_language": "es",
+            },
+            {"app.close"},
+        )
+    
+        vetoed = apply_information_question_effect_veto(
+            decision,
+            objective,
+            PlannerCatalog([close_tool]),
+        )
+    
+>       assert vetoed["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:6767: AssertionError
+_ test_information_question_cannot_authorize_a_mutating_effect[why does it matter?] _
+
+objective = 'why does it matter?'
+
+    @pytest.mark.parametrize("objective", [
+        "�D�nde dejaste el PowerPoint? �Qu� me hiciste?",
+        "�y para qu� sirve?",
+        "�por qu� importa?",
+        "why does it matter?",
+        "why is a router useful?",
+        "cu�nto es doce por ocho",
+    ])
+    def test_information_question_cannot_authorize_a_mutating_effect(objective: str) -> None:
+        close_tool = {
+            "type": "function",
+            "function": {
+                "name": "app_close",
+                "canonical_name": "app.close",
+                "description": "Close one exact application.",
+                "risk": "work_loss",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"process": {"type": "string"}},
+                    "required": ["process"],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        decision = validate_turn_decision(
+            {
+                "mode": "action",
+                "operation": "app.close",
+                "question": "",
+                "conversation_kind": "",
+                "effect_count": "one",
+                "effect_operations": ["app.close"],
+                "effect_verification": "grounding_required",
+                "response_language": "es",
+            },
+            {"app.close"},
+        )
+    
+        vetoed = apply_information_question_effect_veto(
+            decision,
+            objective,
+            PlannerCatalog([close_tool]),
+        )
+    
+>       assert vetoed["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:6767: AssertionError
+_ test_information_question_cannot_authorize_a_mutating_effect[why is a router useful?] _
+
+objective = 'why is a router useful?'
+
+    @pytest.mark.parametrize("objective", [
+        "�D�nde dejaste el PowerPoint? �Qu� me hiciste?",
+        "�y para qu� sirve?",
+        "�por qu� importa?",
+        "why does it matter?",
+        "why is a router useful?",
+        "cu�nto es doce por ocho",
+    ])
+    def test_information_question_cannot_authorize_a_mutating_effect(objective: str) -> None:
+        close_tool = {
+            "type": "function",
+            "function": {
+                "name": "app_close",
+                "canonical_name": "app.close",
+                "description": "Close one exact application.",
+                "risk": "work_loss",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"process": {"type": "string"}},
+                    "required": ["process"],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        decision = validate_turn_decision(
+            {
+                "mode": "action",
+                "operation": "app.close",
+                "question": "",
+                "conversation_kind": "",
+                "effect_count": "one",
+                "effect_operations": ["app.close"],
+                "effect_verification": "grounding_required",
+                "response_language": "es",
+            },
+            {"app.close"},
+        )
+    
+        vetoed = apply_information_question_effect_veto(
+            decision,
+            objective,
+            PlannerCatalog([close_tool]),
+        )
+    
+>       assert vetoed["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:6767: AssertionError
+_ test_information_question_cannot_authorize_a_mutating_effect[cu\xe1nto es doce por ocho] _
+
+objective = 'cu�nto es doce por ocho'
+
+    @pytest.mark.parametrize("objective", [
+        "�D�nde dejaste el PowerPoint? �Qu� me hiciste?",
+        "�y para qu� sirve?",
+        "�por qu� importa?",
+        "why does it matter?",
+        "why is a router useful?",
+        "cu�nto es doce por ocho",
+    ])
+    def test_information_question_cannot_authorize_a_mutating_effect(objective: str) -> None:
+        close_tool = {
+            "type": "function",
+            "function": {
+                "name": "app_close",
+                "canonical_name": "app.close",
+                "description": "Close one exact application.",
+                "risk": "work_loss",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"process": {"type": "string"}},
+                    "required": ["process"],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        decision = validate_turn_decision(
+            {
+                "mode": "action",
+                "operation": "app.close",
+                "question": "",
+                "conversation_kind": "",
+                "effect_count": "one",
+                "effect_operations": ["app.close"],
+                "effect_verification": "grounding_required",
+                "response_language": "es",
+            },
+            {"app.close"},
+        )
+    
+        vetoed = apply_information_question_effect_veto(
+            decision,
+            objective,
+            PlannerCatalog([close_tool]),
+        )
+    
+>       assert vetoed["mode"] == "conversation"
+E       AssertionError: assert 'action' == 'conversation'
+E         
+E         - conversation
+E         + action
+
+tests\test_turn_policy.py:6767: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_information_question_cannot_authorize_a_mutating_effect[\xbfy para qu\xe9 sirve?]
+FAILED tests/test_turn_policy.py::test_information_question_cannot_authorize_a_mutating_effect[\xbfpor qu\xe9 importa?]
+FAILED tests/test_turn_policy.py::test_information_question_cannot_authorize_a_mutating_effect[why does it matter?]
+FAILED tests/test_turn_policy.py::test_information_question_cannot_authorize_a_mutating_effect[why is a router useful?]
+FAILED tests/test_turn_policy.py::test_information_question_cannot_authorize_a_mutating_effect[cu\xe1nto es doce por ocho]
+5 failed, 2 passed, 827 deselected in 3.13s

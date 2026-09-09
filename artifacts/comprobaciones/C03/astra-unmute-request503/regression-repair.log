@@ -1,0 +1,10 @@
+F
+================================== FAILURES ===================================
+_________________ test_write_a_note_resolves_as_note_creation _________________
+tests\test_effect_intent.py:2950: in test_write_a_note_resolves_as_note_creation
+    assert result is not None
+E   assert None is not None
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_write_a_note_resolves_as_note_creation
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 2847 deselected in 1.50s

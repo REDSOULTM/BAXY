@@ -1,0 +1,146 @@
+{
+  "public": [
+    {
+      "path": "artifacts\\comprobaciones\\C03\\PRUEBAS_UI263.md",
+      "sha256": "4c9bcea1e2be2a95abdab8534cb55c8600cf0be2e79aec62672632f7eba5bc14"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\AUDIO_SETUP.json",
+      "sha256": "fd4b406eb897d47f26aebd98ba8925938fd9683f222a483814e145561f215b0f"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\compose-audit.jsonl",
+      "sha256": "bdf9af3f5d2609f0a89bdb57813dad982073973429b927057a637e022e04327e"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\launch.log",
+      "sha256": "eda8080ea0483602a091daf382c7864b1840d7a05e75946dd755668f81613ab4"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\PREREG.json",
+      "sha256": "680c691ea59a0c89a3096c3de6f6b4e0102a31a5733b61ae7027932debf506ca"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\PROCESS.json",
+      "sha256": "a8079a4b8c0352d6bb0bcd290cedcd51bea85b52f18fd81e87fb7bbc41cce56c"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\PROCESSES_OBSERVED.json",
+      "sha256": "a026bf3c3f7a7273a062b5c2eb35d9478e8833b6ebcff79f25b38cf141d2cec5"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\raw-replies.jsonl",
+      "sha256": "64f2fb6f6fa5b44f2b6b3e468189b404fc2fc2338e285c36cfe50797311bd457"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\RECOVERY_ADDENDUM.json",
+      "sha256": "d2a0ea5ab22d028ca11e94ba15d68e3dc72fcbd05c5086d821c27e50741f70f7"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\RESOURCES.json",
+      "sha256": "566d8a5ec763277be6856cd6de3701afc7ef8c8160c7ad22f3ee63a84291bf52"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\shell-trace.jsonl",
+      "sha256": "7e6fb75ec70fa3f1a6da8288fae897705d8b0ef023515418e615850a86cc59a2"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\SUMMARY.json",
+      "sha256": "ef13df1e8da3231f38fa486db0372ace1354a9ffc78a773de6ff89d3528728f7"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\turn-audit.jsonl",
+      "sha256": "95edacd51b3e1a03683fbcc5b4faaf69a85aaa28279db6d2d1c0d1bc3090ed3b"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_CAPABILITIES.txt",
+      "sha256": "675fce100172b27478a0c3041216ed9b83b5f32de56adcec46e4744c6b49fdd9"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_CAPABILITIES_TERMINAL.txt",
+      "sha256": "ab88e360ca6fa1601781815c7eb71f1cb4ae4750fbb2ac6991a0a64f8f472089"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_FOLLOWUP.txt",
+      "sha256": "d5f9f2815c627d0d61903dc73b60b95fee0c14dd37f089f69210b72062fb2c7b"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_LONG.txt",
+      "sha256": "e5f592bb77b863de0ac2cf4eff276ecd81f0b0b8d8d4b5f3ff7ce65d7b405fd8"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_RECOVERY.txt",
+      "sha256": "0c26e0562e9914a6f30c2657e1fc0b8662c9e37447035c45b33b80b28830426c"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_RECOVERY_SETTLED.txt",
+      "sha256": "8aee2674f28e0818cea0e70df33c35b466875bef82191bbf5840350322b846ea"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_STEAM.txt",
+      "sha256": "2283bd3640fa40d71fdd297b2c11c2a21a6aa362aeff8a657bfa8c6bc156f67b"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-ui263\\UI_STEAM_SETTLED.txt",
+      "sha256": "c879f7e297f55f87d2789d0dc9ab86b1e160aea26362146f7140c81dea543dcf"
+    },
+    {
+      "path": "scratchpad\\c03-prepare263.py",
+      "sha256": "d5a50546dd7c9f6da0048c535b92ea8b21285bc98f4dae3b587f73340d67856c"
+    },
+    {
+      "path": "scratchpad\\c03-launch263.py",
+      "sha256": "c7a6673a5506cccba11f7cc0be7ddd220265714db3e0833b8815c70006012670"
+    },
+    {
+      "path": "scratchpad\\c03-ui263-hook\\sitecustomize.py",
+      "sha256": "79ba3717b45bad143587595bfc1da7ae2c8dca0a45b0c6d85dcfc0bd3dbf4183"
+    },
+    {
+      "path": "scratchpad\\c03-inspect263.py",
+      "sha256": "10cbe446090050c78f12a9c7b3ed937add7c58cca315de941bfad5e14d28848d"
+    },
+    {
+      "path": "scratchpad\\c03-read263.py",
+      "sha256": "e7804a167d777a6a787939b4d308ca8f0652128da7322751e34623362d45c8ea"
+    },
+    {
+      "path": "scratchpad\\c03-finish263.py",
+      "sha256": "457e79cd8d0a0da85c7475cab79e29c8fba8650e7fbd2e7d47d6beadb4e8881d"
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source263-snapshot\\FILES.json",
+      "sha256": "620e0d4112773cf9886a8c6dc6833f906d26b3fbff0b99f7ada93785dee3b113"
+    }
+  ],
+  "private": [
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\voice-events.jsonl",
+      "sha256": "4e85952acb30a685a2f706137ac9bcc299fa29d5268890ed77ff68fa1922ad80"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\http-posts.jsonl",
+      "sha256": "3cf84b699dc30eb8a828bdc534db4e155bf92c4df1612c3bbc553af48ea77812"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\piper-49904-1.npy",
+      "sha256": "7db228ecc6d8239704bf12786cbb728540d96a525566d1a6a3c412a1ac06966c"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\piper-49904-3.npy",
+      "sha256": "5fc20ef29e1b063a63e89e4ae5818f8d75dcb6f06a53b6a46fffa7192bb3efde"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\piper-49904-10.npy",
+      "sha256": "e143b4d2c4ddb78edf9b211af9661a7a06bca2b0ebcc83c963a36a77726952f8"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\piper-49904-14.npy",
+      "sha256": "d6178a48231b33598d415cc66aa25a77368f291115c4f948056d611c88100874"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui263-private\\piper-49904-49.npy",
+      "sha256": "39ac9c518f6941edfd5e2c174b833324940df6b774cd992516c71e32b6b57090"
+    }
+  ]
+}

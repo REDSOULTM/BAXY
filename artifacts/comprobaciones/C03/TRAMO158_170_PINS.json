@@ -1,0 +1,728 @@
+{
+  "state": "EN_CURSO",
+  "source": 164,
+  "utc": "2026-09-07T14:12:22.576810+00:00",
+  "prior143_157Verified": true,
+  "privateFiles": [
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio158-private\\loopback.wav",
+      "sha256": "ed2ab413ac77d3532433488e7801f370e088dcab81b324816ffade159251cb94"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio158-private\\microphone.wav",
+      "sha256": "6f4ec3f0b8ba623d2e4935ed4071c6e58b1ae2eb2015ab83eb0533aab8d318c4"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio158-private\\process158.json",
+      "sha256": "764560bab4d38a240e129dbbb72f131c17462467c23b541d54409f567d676098"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio166-private\\analysis167.json",
+      "sha256": "42dc8e40c1ade76349c5482a8da9872f0030d85000218faea6a899c9946fda36"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio166-private\\loopback.wav",
+      "sha256": "bedce3ce1f1f5c9f5b9f014e8d2b8f3b7be7ace6c5c0b6bd15bc5aa5a9d90d79"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio166-private\\microphone.wav",
+      "sha256": "aef132517b6416f0ce2a4c3edafd247dd1ec472f62633773dbc17e81600a8499"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\catalog.json",
+      "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\messages.jsonl",
+      "sha256": "9a54bbc8552a938a6c25eebafd11882d43f1fb0f2a112f4caaeea378f69f8160"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\stacks161.log",
+      "sha256": "fe6e392a259c879e4c6d800b6991aa608c2a5444ef416216567d8c15e487ec90"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar161-private\\stderr.log",
+      "sha256": "eb2589da2c228bbc316eca78d064ce3824a247796f2d028893632942d606cf41"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar162-private\\catalog.json",
+      "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar162-private\\messages.jsonl",
+      "sha256": "3f0dcdc8c7ef9cc53b990b970d4e1ba56b276e069dfa783181a7373be5940aab"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar162-private\\preload.json",
+      "sha256": "9702a5da9d777aca3a9d83a93dacebe9b17972ef0dd56d564d207834e77d9d56"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar162-private\\stacks162.log",
+      "sha256": "5ee703827694990979a809c9a0e0ca785148521dab8b5c64acc0ea0283817a74"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar162-private\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar165-private\\catalog.json",
+      "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar165-private\\messages.jsonl",
+      "sha256": "2e0c4cacc0f50f338c93a8033e4b99cd8d53a3e6fc90b4d097747379acbf1906"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar165-private\\stacks165.log",
+      "sha256": "646c4c2557b3e820c9d4c757a6a0e810837ff5319dea3bfafd7830efa56708b1"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar165-private\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\catalog.json",
+      "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\loopback.wav",
+      "sha256": "fd50f879290b1213184d6ab8278468269950d387990651a918175b641846911c"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\messages.jsonl",
+      "sha256": "d0916387d41cc39bd1d632dd0960f7cb25ba18bf07714f7d3a2a985e9d3ade90"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\microphone.wav",
+      "sha256": "d12ef26e37aaf0d706205d4e15165e396142921a959ce37d4c4bd5bcaf59f303"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\stacks168.log",
+      "sha256": "2666dfd3f53cee358f3255cd5be8bdad32f7c1a5aec341a40b4351bf615d1e56"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar168-private\\tts-state.jsonl",
+      "sha256": "1374a5ee2153d540eab9e8afc64891cc7e04648852488b8de3c0cadc2837028c"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\barge169.json",
+      "sha256": "c591db679ce72ccb4e733fa9e4b44c2c26892277cdb7cb05af8096fdb4c923d8"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\barge169.npz",
+      "sha256": "cef275d37bd921fc10c0d8dada94707a1dc5648af8fb68120b8dbe0a0451bcce"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\catalog.json",
+      "sha256": "a0d251b43f3c670d1d77d9769d1e2b8753ebf321c3546d53c19874cd4541867b"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\loopback.wav",
+      "sha256": "3ab87901ba31d299a90d25ddf7d5f0bcd1893bdffdaad944ada28d591042f6ce"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\messages.jsonl",
+      "sha256": "c72a2714decdeff0b71522a298ed03938cea1720d1fcf1be44e02b8d22476c52"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\microphone.wav",
+      "sha256": "68f736cf800c35ca2be87a249a7bdd2d6de622a7b840ac853ce10f7cf3f86a61"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\stacks169.log",
+      "sha256": "3ae2b9e3d3e5a96a49ed4781b7b32d71104fc20a1f92148c1727aa52a068965e"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-sidecar169-private\\tts-state.jsonl",
+      "sha256": "e61f124c6c3f3a503bfdc2eb8ec37dd33700286994bbe66afea1e8d33620942c"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-start159-private\\stacks159.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-start160-private\\stacks160.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "files": [
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis167\\PREREG.json",
+      "sha256": "3e9cbb61df43d3f0d557fb04d69aa14a25d450cfb0b51b07d823cc34552da48c",
+      "bytes": 489
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis167\\RESULT_INDEX.json",
+      "sha256": "49b84140d64efaf5fc2542a61a77f9b5920c321bd1cdcf6da685583cf24e8de1",
+      "bytes": 184
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis170\\PREREG.json",
+      "sha256": "6982512b4bcd5fbcbaa66a865c9c0f8871b4277e0a69126bd6dd149fa85380a1",
+      "bytes": 651
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-analysis170\\RESULTS.json",
+      "sha256": "7416e4f4981b976c15a5b1d60a6c5519bc776ccf685e77f40b6e2a1389afa7e7",
+      "bytes": 1492
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\01-clock-es.json",
+      "sha256": "038a9facbcd4d39013123ceee08c78505bd3a914479355a66f5aeb086ab99f3d",
+      "bytes": 6172
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\01-clock-es.png",
+      "sha256": "4f8b1597cd2e3dfbd00a5db5b7879539e78769c270ede9c8861b4f8ed23f1298",
+      "bytes": 61634
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\02-clock-en.json",
+      "sha256": "06d5afb57eea97d6ffc0ab7f7a7bcb1d9fe1f5720eea3d4aabdb0ddc5e9a4373",
+      "bytes": 6499
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\02-clock-en.png",
+      "sha256": "43f49f5d2ef1a0a5a2df71bbdb6c27207ba4367c079bd52891b22535d74a1489",
+      "bytes": 63444
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\AUDIO_READY.json",
+      "sha256": "efe98fa866376242b2e093754f03e5ade3c8c2b0ddf29fb95d467cb8b47febb5",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\AUDIO_RESULT.json",
+      "sha256": "5a0416b379386ba46018f09ff0bb644d75769e76843e170b96bc4de03ec1a252",
+      "bytes": 2317
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\AUDIO_SETUP.json",
+      "sha256": "ee337cf78332940e80e158b40c9fd83350fec42d79cce9e6b9cd17a537296b6b",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\compose-audit.jsonl",
+      "sha256": "dd8503212bfcf41d422fbc0bf1bb10275448762fecc331ecb753fbe7d114285b",
+      "bytes": 2943
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\launch.log",
+      "sha256": "227832038bfd6552674d39a852521dc2b069b492f20d0d53a7ee0f8bb187b0eb",
+      "bytes": 3782
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\PREREG.json",
+      "sha256": "b0da68876e7a1579d7d4f3a3058502686916abec05a30312af9285da7edf6550",
+      "bytes": 5428
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\PROCESS.json",
+      "sha256": "d07721914838562c97f36d95803be4bba574eadc6e7b318844d7bf1799ea8c12",
+      "bytes": 148
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\RESOURCES.json",
+      "sha256": "9343ecdaba8123d6319993462153139817fbdbd651e18585b10b87dbb46111bf",
+      "bytes": 201
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\shell-trace.jsonl",
+      "sha256": "72b5a792eb39e3e48dc2bb7251dad9c4f444e5b5847b07e32eb95aac459b380a",
+      "bytes": 11168
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio158\\STOP_APP",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\01-clock-es.json",
+      "sha256": "fd4420ae8246813f4db11319b0dc92388d66d9ff539c2ffda1b26af16421dfa2",
+      "bytes": 6252
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\01-clock-es.png",
+      "sha256": "b62542470474ae813d5113a23b09407e992f69fb509ef6e14e058b96254659a5",
+      "bytes": 65132
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\02-clock-en.json",
+      "sha256": "f9e69694e734f40255c6ac34710634c99521a52cf24acbb4685882292f2f4043",
+      "bytes": 6581
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\02-clock-en.png",
+      "sha256": "10dfe4c0244d59ca714a9017bb8a9d3941dc0791678b219c43198004d04e1747",
+      "bytes": 67123
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\03-clock-mixed.json",
+      "sha256": "d61e8cfaa31408b77f1f61b3809f08524af8a03c26b3ce9066acf232769c8039",
+      "bytes": 6913
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\03-clock-mixed.png",
+      "sha256": "43ad3a1cf21e4df3ef64b018002ad533c41a7c4265d13be7b56f5b8f447b679f",
+      "bytes": 68741
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\AUDIO_READY.json",
+      "sha256": "0a5fde7d664d52293397a24dce97b5e3e24ff0cad0a96e354de19707de4c8350",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\AUDIO_RESULT.json",
+      "sha256": "7d9b405544eb3e6a04b127b3feb9ec533745c01b017cf49ca979dacb9ebd31bf",
+      "bytes": 2320
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\AUDIO_SETUP.json",
+      "sha256": "4d8d279795dda9a2d0a8514d724dbbc39d3440cf5fcf8eabed29eb2fda74a849",
+      "bytes": 282
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\compose-audit.jsonl",
+      "sha256": "e2732a792ff2038f9725535a77b44e546b3059dce8610cbe23b5fe2c509b9fa9",
+      "bytes": 2331
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\launch.log",
+      "sha256": "8f24e378b65200480c21063331344879bc79713ee83ef476bd616c81075442bb",
+      "bytes": 410
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\PREREG.json",
+      "sha256": "6929efd7be40b201121f8275025d6a151fea7272033cdce9d00d6bef247b6034",
+      "bytes": 5482
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\PROCESS.json",
+      "sha256": "f075765b317b242b4e2eed2a4101e0882abc419411aed3468b13ae26122b5394",
+      "bytes": 144
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\RESOURCES.json",
+      "sha256": "8effa5c8454707e0ea0bbba84001b2ca51a303e51d708b4421823af079db0d34",
+      "bytes": 199
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\shell-trace.jsonl",
+      "sha256": "6af5aa42bae2ab82fd470bb9a90c1d3f8b85a92109fbb0763860912ed8bc2278",
+      "bytes": 7993
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\STOP_APP",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-audio166\\STOP_AUDIO",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar161\\CLEANUP.json",
+      "sha256": "6cde783f5c04ab47cb292ccb7ba32e2050127b7bed8527a97f9e673021172db2",
+      "bytes": 45
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar161\\FAILURE.json",
+      "sha256": "3a6038c2c762e7236b3a057e1fe68c8e122c629b283cec0533afacb4ba3ad9cf",
+      "bytes": 94
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar161\\INDEX.json",
+      "sha256": "e98712a444bd8263000b07ef6666c77f34d71f855b5918d64ef4ed04ce26a1fe",
+      "bytes": 857
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar161\\PREREG.json",
+      "sha256": "77c33a924308a700bd6b7fd24cfe2544325ee937b9a798c2c4265938f9849ac1",
+      "bytes": 515
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar161\\RESULTS.json",
+      "sha256": "0292f66c1d4fab35c14adcfa1835c91f61b2709d7d5e833a756fa8f2ebe36768",
+      "bytes": 1644
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar162\\CLEANUP.json",
+      "sha256": "eb703173a01e2f67f73ab57b618bdfec07e00c83444a48fec9e656bde771407b",
+      "bytes": 46
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar162\\INDEX.json",
+      "sha256": "03800188e9023cb8c517adf065f5cf0810667103996669b962512bcb99f5b8aa",
+      "bytes": 854
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar162\\PREREG.json",
+      "sha256": "df072b95c1c9cd3e9f6bc904d9fc930f900db705f04fe623a859f20b08cee1b7",
+      "bytes": 608
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar162\\RESULTS.json",
+      "sha256": "11a5f8bc1ded69e9ce4f1c4967ccd9409b03900c30fdc1e38fab1649eeab64ae",
+      "bytes": 3090
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar165\\CLEANUP.json",
+      "sha256": "b1db4774d717ec64da8ab7877b0a21b10066604765de0427ed122ad25e3d5379",
+      "bytes": 46
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar165\\INDEX.json",
+      "sha256": "40a4ae39c210c0fe3dc50ae943f96ac245060ce312a1a35666ffb53f2f627fc8",
+      "bytes": 854
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar165\\PREREG.json",
+      "sha256": "3b07907d5785e3cb645c05791d42510568a8e955069e0ff66b784a7f42a47521",
+      "bytes": 553
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar165\\RESULTS.json",
+      "sha256": "374431c2e29a340d794024fd37217c0c31e329aeec8f9528466b5f44a49dd34e",
+      "bytes": 3105
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\AUDIO_READY.json",
+      "sha256": "ddffa048071a4e603cd16c40c11f6f902f62d5746a0d9514d53459bc55d678ff",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\AUDIO_RESULT.json",
+      "sha256": "5a340ece9ab35a902965a28442704518d35e58f10310974421c8b6efba41ee6e",
+      "bytes": 2318
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\AUDIO_SETUP.json",
+      "sha256": "54286b0987f4253a5e6538a3ffa2c37396b42da3b0e958af0e178105cfb2740a",
+      "bytes": 284
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\CLEANUP.json",
+      "sha256": "e43cf439dab1dadd586a8c697e20320c2d31e2d9c601c414d0169c850de00361",
+      "bytes": 45
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\INDEX.json",
+      "sha256": "08abef4e400aadb140cba962d3702977a7f0cc23501ee5c22010a3ea44306793",
+      "bytes": 1070
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\PREREG.json",
+      "sha256": "f74747ce7e6f44d9363c4420d5f02630d3bde358639c87fd4f509757c9fc40af",
+      "bytes": 1184
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\RESULTS.json",
+      "sha256": "e01348ca869e75f631db60ce394b8ebf52fcfc9881478d2dfed0c66c673904be",
+      "bytes": 3607
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\RUNTIME_CONFIG.json",
+      "sha256": "3b07907d5785e3cb645c05791d42510568a8e955069e0ff66b784a7f42a47521",
+      "bytes": 553
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar168\\STOP_AUDIO",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\AUDIO_READY.json",
+      "sha256": "2468594b4e667096f0410337cce380441433dc234ea9f506851602afacd4916d",
+      "bytes": 106
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\AUDIO_RESULT.json",
+      "sha256": "9c1379037778936c1d61f15da8eeea31920cdcd38f2bfdf4233082b999c2308b",
+      "bytes": 2320
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\AUDIO_SETUP.json",
+      "sha256": "3f648155928be0f7cbb94fc0e82f656a4cc83cb3554df3a3e19c296b7063c570",
+      "bytes": 284
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\CLEANUP.json",
+      "sha256": "b6dd6156ec971a16bc07d78b437dc7c2ac821138d7f3ad0ffb758af2d799da51",
+      "bytes": 46
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\INDEX.json",
+      "sha256": "c67d8ac0f4f8b1b5e35de5b6e5bec75318875a841ce216f4adf41fee46a22502",
+      "bytes": 1070
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\PREREG.json",
+      "sha256": "6fd021804e789b8a11e36a6cb0aa281d3a3559acee8d7420dc39ad11bf1f01ed",
+      "bytes": 1169
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\RESULTS.json",
+      "sha256": "a244a9d4678ff9367700643a925cc8e614225c4f79b6ac3150dc60bbe1121793",
+      "bytes": 3594
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\RUNTIME_CONFIG.json",
+      "sha256": "3b07907d5785e3cb645c05791d42510568a8e955069e0ff66b784a7f42a47521",
+      "bytes": 553
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-sidecar169\\STOP_AUDIO",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\__main__.py",
+      "sha256": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376",
+      "bytes": 315365
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\c03-source164-fast.log",
+      "sha256": "8e55745419adf0c361a37a9cb685a8370a322b3470c64ca6378ba50a68948ce4",
+      "bytes": 2913
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\c03-source164-owner.log",
+      "sha256": "a537ef31d7b73214618b1cc00d3a0a06ba3a568eccb3a6805bbdd815507d893b",
+      "bytes": 265
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\c03-source164-red.log",
+      "sha256": "013997dbb39b4e0e351d95c2cbc78bc7b387fd180aeb959b442a7b6bc9fd19c3",
+      "bytes": 6522
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\INDEX.json",
+      "sha256": "cb342c245a9a3e01382550520f3a26978a2559bf1916a8925e926157c99bfae5",
+      "bytes": 1507
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\test_sidecar_lifecycle.py",
+      "sha256": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+      "bytes": 50953
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\voice_aec.py",
+      "sha256": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a",
+      "bytes": 11440
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-start159\\PREREG.json",
+      "sha256": "c6b27ec6e032704520a9f84eae537e91a9fa1906c24c2326ec4943bc49705a52",
+      "bytes": 1081
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-start159\\RESULTS.json",
+      "sha256": "93b240ed747ef1baced985149ea68ddd6a7c2da171e26be7e64c98100b5d5f48",
+      "bytes": 1518
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-start159\\TRACE_INDEX.json",
+      "sha256": "d2b26140c68b62c83b074cad856c3fbac7b5c4d6a5a744c9c9c953a661a7b43f",
+      "bytes": 181
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-start160\\PREREG.json",
+      "sha256": "9ba2b32c20fe386b4e445a31aaee21b0c80f9a599ad10a5e87fe7d30de12b907",
+      "bytes": 1192
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-start160\\RESULTS.json",
+      "sha256": "65d44917f09af5a488bec5362daea281bd390b49a5d7441955e020a1ada2f02d",
+      "bytes": 1629
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-start160\\TRACE_INDEX.json",
+      "sha256": "53a777812a97b047f5445c5728ac206db547fb02ba5d6626cef805d05751e181",
+      "bytes": 181
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-stdin163\\PREREG.json",
+      "sha256": "8ee0d226f9f12d24d65ee7f82469bb3cf2cc385610e71eb465f6ccb08fb5da5d",
+      "bytes": 493
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\astra-stdin163\\RESULTS.json",
+      "sha256": "89491821a2cc1d64be2e68581b98d365658d05a2bf235ca8f83a4d02ca1a4e63",
+      "bytes": 820
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\ASTRA-TRAMO-158_161.md",
+      "sha256": "2036d73ee19e9b09fe3f1d681a9e4b722e40aa80be34de729cb5c2dc7c43f6e6",
+      "bytes": 3634
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\ASTRA-TRAMO-162_165.md",
+      "sha256": "9aa9b300d3a898d29aa69b940ceaf9a16a306ab3f6e5f9c2da72d069081a9b99",
+      "bytes": 2144
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\ASTRA-TRAMO-166_168.md",
+      "sha256": "42544117597d167df336dea30c16584634f3132d9afb50b82fef001f72b03181",
+      "bytes": 2355
+    },
+    {
+      "path": "artifacts\\comprobaciones\\C03\\ASTRA-TRAMO-169_170.md",
+      "sha256": "8459a03dfd143fdedd554e48a00da58749331a4bc9881db6c2fdceffb562d509",
+      "bytes": 2015
+    },
+    {
+      "path": "scratchpad\\c03-analyze167.py",
+      "sha256": "7a56235a9786127e10646c40f34fdbbe184bdf954a46b781b64b8103632d13c7",
+      "bytes": 4415
+    },
+    {
+      "path": "scratchpad\\c03-analyze170.py",
+      "sha256": "0f682762ce30d083ede3351ccd12df9fe0b13959a05163512eea8c59d913ecf5",
+      "bytes": 2666
+    },
+    {
+      "path": "scratchpad\\c03-capture-audio158.py",
+      "sha256": "063fb99c1025d0057be5c98e462e6ef28e7e40e368d9d9532c4cb55a05e5bbb9",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-capture-audio166.py",
+      "sha256": "c0fd691216c8d8ef125349ef846979d755a775ba478a1eb229700b7c013d1e71",
+      "bytes": 6334
+    },
+    {
+      "path": "scratchpad\\c03-capture168.py",
+      "sha256": "e39316853bfd2e15ad088cd4d7a8e03f6ba7ef03171077751c6fe91c4055fbf9",
+      "bytes": 6338
+    },
+    {
+      "path": "scratchpad\\c03-capture169.py",
+      "sha256": "ee06979eeffbff1e2de09fb3bd2f4a7da3945aa4a9fbf6c6e93a927b6fb2f87a",
+      "bytes": 6338
+    },
+    {
+      "path": "scratchpad\\c03-launch-audio158.py",
+      "sha256": "896bc5bcaa37726be4687a6caa6f73c90b1a40029c206ae8dea868d1eeb4a706",
+      "bytes": 3546
+    },
+    {
+      "path": "scratchpad\\c03-launch-audio166.py",
+      "sha256": "54bf763ada133e888c178818ef51bc655bf72d23f7432bfafd6f6c34f3874508",
+      "bytes": 3546
+    },
+    {
+      "path": "scratchpad\\c03-pin171.py",
+      "sha256": "065876172cabc4fde1667a71b51acebea019f524bb027d3bd7b6ff846557e5e9",
+      "bytes": 7177
+    },
+    {
+      "path": "scratchpad\\c03-prepare158.py",
+      "sha256": "7ff98cdecc7dc3790d7f43dadab42bb3cd1d61ffba8895fce356af7db87450a0",
+      "bytes": 2181
+    },
+    {
+      "path": "scratchpad\\c03-prepare162.py",
+      "sha256": "b3a9487d931472292a507c7b5da6e0287abe38f8a521f81d81a02ea096d5f0cc",
+      "bytes": 2829
+    },
+    {
+      "path": "scratchpad\\c03-prepare165.py",
+      "sha256": "47a286f57ddc11d2d169169d0733d64b3caa515b7b33bffcbac1bb5e00201ba7",
+      "bytes": 4346
+    },
+    {
+      "path": "scratchpad\\c03-prepare166.py",
+      "sha256": "c8bbe0a46fe6bc044a65868ce80bb5479bcfada4cac22496fb6df084c6b3640d",
+      "bytes": 2399
+    },
+    {
+      "path": "scratchpad\\c03-prepare168.py",
+      "sha256": "5340b804c03dc5cb34866b713b7c0d5c14531c7658de64cfb931a8320c07d7d1",
+      "bytes": 6467
+    },
+    {
+      "path": "scratchpad\\c03-prepare169.py",
+      "sha256": "0a587acab667efdca4cc63fdcbf9be81757cd82e41d325f07198352363c30fea",
+      "bytes": 3511
+    },
+    {
+      "path": "scratchpad\\c03-process158.py",
+      "sha256": "327ca1dcc151086b5a83af8211dd5c4354db3a3eaccb2184274f3594d188105e",
+      "bytes": 1238
+    },
+    {
+      "path": "scratchpad\\c03-sidecar161-entry.py",
+      "sha256": "e240d99b5fe9956288b84799132e9b85b9547bf54067086971c57a58beaf581c",
+      "bytes": 477
+    },
+    {
+      "path": "scratchpad\\c03-sidecar161.py",
+      "sha256": "fbc38b25bd808574951fdc21d4e9f9791dd8f61240a40e7a8e17ce975e7165da",
+      "bytes": 5521
+    },
+    {
+      "path": "scratchpad\\c03-sidecar162-entry.py",
+      "sha256": "7a4872808c042f88fc1059a07b9b284c2719bed0935a1e507fce7f6abaee488d",
+      "bytes": 695
+    },
+    {
+      "path": "scratchpad\\c03-sidecar162.py",
+      "sha256": "0fe60fbe661d1b174df40cff9f7e14d2b6d7c37232ab0ea174f17d1220749f3f",
+      "bytes": 5719
+    },
+    {
+      "path": "scratchpad\\c03-sidecar165-entry.py",
+      "sha256": "d10f6fb6e5e524e60ee881cc1b339b93583dcc98198117c3977f02a5810cbe13",
+      "bytes": 490
+    },
+    {
+      "path": "scratchpad\\c03-sidecar165.py",
+      "sha256": "c492a7bc85d8e6583d31b862138333f29441c6f736c8685716dbab156f42bf96",
+      "bytes": 5664
+    },
+    {
+      "path": "scratchpad\\c03-sidecar168-entry.py",
+      "sha256": "ce5874ca101dd39b464902fcb7723af1674853f017d5691fc1ef9cddeafac57e",
+      "bytes": 964
+    },
+    {
+      "path": "scratchpad\\c03-sidecar168.py",
+      "sha256": "cb120cfe1a83fefa4b0bba132ceaa3ea507dd45d20626ac1b6fbc486134284a5",
+      "bytes": 6123
+    },
+    {
+      "path": "scratchpad\\c03-sidecar169-entry.py",
+      "sha256": "34c23d34a053daabe26272f423bfb08a47b37b73a55b39be502ec182421f6adf",
+      "bytes": 2339
+    },
+    {
+      "path": "scratchpad\\c03-sidecar169.py",
+      "sha256": "ea8a7ef90c07899fd909eceeaa748152745762a0df99b9e09b92b508cd73813f",
+      "bytes": 6123
+    },
+    {
+      "path": "scratchpad\\c03-start159.py",
+      "sha256": "88f2c3b0c6c24d722ab6dfb5cb40f4b1bec68dd4221f1cb3f43118b0ef9eb4e4",
+      "bytes": 2335
+    },
+    {
+      "path": "scratchpad\\c03-start160.py",
+      "sha256": "98d4d506b6ce1cdf213d3e5e237651ee28c4c41569e41f01d92527a730d35875",
+      "bytes": 650
+    },
+    {
+      "path": "scratchpad\\c03-stdin163.py",
+      "sha256": "173675d47bf77138053731f29e388ceb050f709ccb605acfa25de654e212726b",
+      "bytes": 2506
+    }
+  ]
+}

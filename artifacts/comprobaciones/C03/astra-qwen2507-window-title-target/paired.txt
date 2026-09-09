@@ -1,0 +1,8 @@
+n=6 published=6 other=0
+
+001	t1	published_final	cierra la ventana titulada Ventana C03 de prueba	¿Cuál es el nombre del proceso para la ventana titulada Ventana C03 de prueba?
+002	t2	published_final	cancelar	La clarificación fue cancelada.
+003	t3	published_final	cierra la ventana titulada Ventana C03 de prueba	¿Cuál es el nombre del proceso para la ventana titulada Ventana C03 de prueba?
+004	t4	published_final	confirmar	¿Cuál es el nombre del proceso para cerrar la ventana titulada 'Ventana C03 de prueba'?
+005	t5	published_final	What time is it?	It's 10:54.
+006	t6	published_final	What is on my to do list?	I don't have access to your to-do list. You'll need to check your own list or ask someone who has access to it.

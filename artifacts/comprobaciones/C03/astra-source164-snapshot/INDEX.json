@@ -1,0 +1,32 @@
+[
+  {
+    "source": "src/baxy_mind/__main__.py",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\__main__.py",
+    "sha256": "dc6d5337f8acc4bad38038cbca11620eb756c2e37904869ef811528323770376"
+  },
+  {
+    "source": "src/baxy_mind/voice_aec.py",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\voice_aec.py",
+    "sha256": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a"
+  },
+  {
+    "source": "tests/test_sidecar_lifecycle.py",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\test_sidecar_lifecycle.py",
+    "sha256": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d"
+  },
+  {
+    "source": "C:\\Users\\usuario\\AppData\\Local\\Temp\\c03-source164-red.log",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\c03-source164-red.log",
+    "sha256": "013997dbb39b4e0e351d95c2cbc78bc7b387fd180aeb959b442a7b6bc9fd19c3"
+  },
+  {
+    "source": "C:\\Users\\usuario\\AppData\\Local\\Temp\\c03-source164-owner.log",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\c03-source164-owner.log",
+    "sha256": "a537ef31d7b73214618b1cc00d3a0a06ba3a568eccb3a6805bbdd815507d893b"
+  },
+  {
+    "source": "C:\\Users\\usuario\\AppData\\Local\\Temp\\c03-source164-fast.log",
+    "copy": "artifacts\\comprobaciones\\C03\\astra-source164-snapshot\\c03-source164-fast.log",
+    "sha256": "8e55745419adf0c361a37a9cb685a8370a322b3470c64ca6378ba50a68948ce4"
+  }
+]

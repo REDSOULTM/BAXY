@@ -1,0 +1,291 @@
+{
+  "utc": "2026-09-09T00:19:20.246575+00:00",
+  "arms": {
+    "base": {
+      "useful": 8,
+      "total": 11,
+      "terminals": [
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 1,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Memory saved successfully. No corrections made. System state updated to \"memory updated\".",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 2,
+          "useful": false,
+          "reason": "Internal result/metadata narration remains."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¿De qué aplicación te refieres?",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 3,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Jordan",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 4,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¡Hola Álvaro! ¿Cómo va tu día? 😎",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 5,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¿De qué aplicación te refieres?",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 6,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Jordan",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 7,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Álvaro.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 8,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "La memoria privada ha sido desactivada. El estado actual indica que está deshabilitada. No se han detectado cambios en el sistema.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 9,
+          "useful": false,
+          "reason": "Verified disable reported; additional claim of no detected PC changes is unsupported."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "21:14",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 10,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "No, no tengo memoria local. El estado actual indica que la memoria local está deshabilitada.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 11,
+          "useful": false,
+          "reason": "The response denies having local memory while the verified facts show a disabled existing store with one record; capability and activation are conflated."
+        }
+      ],
+      "shape_calls": 13,
+      "shape_changes": 0,
+      "resources": {
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2171.0703125,
+        "seconds": 32.438
+      },
+      "exit": {
+        "exitCode": 0,
+        "manifest_unchanged": true
+      },
+      "session": 87936,
+      "session_exit": 0
+    },
+    "hint": {
+      "useful": 9,
+      "total": 11,
+      "terminals": [
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Alright, Jordan. I remember your name. We're about to enable private local memory. Should we go ahead with that, or should we cancel? Choose: confirm or cancel.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 1,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Memory saved successfully. No corrections made. Status confirmed as completed.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 2,
+          "useful": false,
+          "reason": "Internal result/metadata narration remains."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¿De qué aplicación te refieres?",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 3,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Jordan",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 4,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¡Hola Álvaro! ¿Cómo va tu día? 😎",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 5,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¿De qué aplicación te refieres?",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 6,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Jordan",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 7,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Álvaro.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 8,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "La memoria privada ha sido desactivada. El estado actual indica que está deshabilitada.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 9,
+          "useful": true,
+          "reason": "Verified disabled state without the unsupported PC observation; redundant second sentence is not a new false fact."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "21:16",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 10,
+          "useful": true,
+          "reason": "Useful truthful result, decision, clarification or conversation."
+        },
+        {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "No, no tengo memoria local. El estado actual indica que la memoria local está deshabilitada.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "turn": 11,
+          "useful": false,
+          "reason": "The response denies having local memory while the verified facts show a disabled existing store with one record; capability and activation are conflated."
+        }
+      ],
+      "shape_calls": 13,
+      "shape_changes": 6,
+      "resources": {
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 1840.76953125,
+        "seconds": 31.5
+      },
+      "exit": {
+        "exitCode": 0,
+        "manifest_unchanged": true
+      },
+      "session": 81593,
+      "session_exit": 0
+    }
+  },
+  "decision": "Adopt only removal of the broad second sentence from successful-status shape instructions. Preserve verified-results instruction and all data/guards/profile. The factual claim disappears in T9; no read/confirmation/name regression in this product panel. T2 and T11 remain open, progress separately.",
+  "limitations": "One registered-profile source diagnostic, not an optimized global model ranking, acceptance sample or voice/UI validation. Real clocks differ between runs as expected; compare each against its own verified payload. Resource totals do not establish a speed improvement."
+}

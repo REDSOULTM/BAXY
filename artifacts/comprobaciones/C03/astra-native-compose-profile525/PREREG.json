@@ -1,0 +1,92 @@
+{
+  "utc": "2026-09-09T00:50:44.445515+00:00",
+  "cause": "524 exact resolved private reads are reinterpreted as assistant identity or generic chatbot memory capability. _compose_user_content already separates request from situation/language; its existing include_request control can scope generation without changing the real input used for routing/guards. Prior code comment about account-read identity warns against broad changes: this test is only memory.recall/status completed data, not account queries or welcome.",
+  "method": "Three original524 payloads, same Qwen3.5/b10865 and three sampling profiles. Remove only the first raw natural-question line before situation, retaining all system text, JSON fields and values, language and literal contracts. No replacement words, role/provenance guesses, value extraction, output editing or source changes. Compare each of9responses against its exact524 baseline counterpart.",
+  "profiles": [
+    [
+      "production-greedy-seed0",
+      {
+        "seed": 0
+      }
+    ],
+    [
+      "documented-seed0",
+      {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      }
+    ],
+    [
+      "documented-seed17",
+      {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 17
+      }
+    ]
+  ],
+  "sources": [
+    "https://huggingface.co/Qwen/Qwen3.5-4B",
+    "src/baxy_mind/llm.py:_compose_user_content",
+    "524 exact payloads and responses"
+  ],
+  "criteria": "Stored EN/ES entry must report Jordan without claiming it is the assistant identity; disabled store must be described from observed facts without false loss of capability, erasure, playback or resets. Preserve explicit language and literal data. Any promising change needs bounded source guards, preservation of original request/readers/format requirements, and full product before adoption. No general deletion of user requests.",
+  "server_command": [
+    "D:/BAXYRuntime/assets/llama-b10865-cuda12.4/llama-server.exe",
+    "-m",
+    "D:/BAXYRuntime/experiments/models/qwen35-4b-e87f1764/Qwen3.5-4B-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "57851",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-compose-profile525-private\\server.log"
+  ],
+  "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+  "server_sha256": "16eac28198d6218a9892f08dac0f0c81612a72872b4dd9741c4c6c36f88c4fd7",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "capture_sha256": "216cd5344e501020f5cc4f8d4d927c73ea546175ae737231154bebc1986d074b",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 360,
+    "request_seconds": 60
+  },
+  "exclusions": "Native consumed synthetic data only. No actual status/effects, source/runtime promotion, physicalUI/voice or acceptance. Native prototype removes one known frame line; production, if adopted, must operate on typed composition inputs."
+}

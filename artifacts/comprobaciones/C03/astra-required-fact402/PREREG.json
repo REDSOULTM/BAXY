@@ -1,0 +1,7 @@
+{
+  "utc": "2026-09-08T11:19:58.134178+00:00",
+  "hypothesis": "Reuse RequiredLiteralFacts for one short nonredacted projected memory read value. Actual401 changed only this fact transport:3/8->5/8 with no new failure, leaving Spanish subjects and redaction unresolved.",
+  "scope": "UserMessagePolicy.CollectStructuredLiterals and owner MemoryAppFlowTests. Only verified successful memory.recall/list records; no generic subject extraction, cache, new prompt, parser or runtime change. Single short value avoids unrelated multi-fact mission scaffold; large/multi/empty/redacted data remain observations without imposing a copied full response.",
+  "validation": "Add owner tests first and record failing baseline. Focal owner then MemoryAppFlow/MemoryOperationProtection/PlannerAppBoundary owners; Fast. No Full until complete C03. Final actual product measurement must use source402, not retain-value injection.",
+  "prior_source_sha256": "a6ed2c91fbf09ae556d07c1f9465845e7a6b30ca8c9d04fe585cb8617ff9e123"
+}

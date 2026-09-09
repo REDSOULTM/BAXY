@@ -1,0 +1,10 @@
+warning: in the working copy of 'artifacts/comprobaciones/C03/CHECKPOINT.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'documentacion/sprints/Sprints comprobación/05_ESTADO_Y_CONTINUACION.md', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'experiments/stt_quality/audit_fresh_postweight_stt_sources.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'experiments/stt_quality/evaluate_reserved_stt.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/baxy_mind/__main__.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/baxy_mind/effect_intent.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/baxy_mind/llm.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/test_compose_contract.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/test_price_v8_veto_damage_by_cause.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'tests/test_turn_policy.py', CRLF will be replaced by LF the next time Git touches it

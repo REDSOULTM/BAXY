@@ -553,6 +553,7 @@ export default function App() {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
     const SET: Record<string, { base: string; mid: string; hi: string; peak: string; glow: string; bar: string }> = {
+      error:     { base: '#7A1E2B', mid: '#B83A4A', hi: '#E55366', peak: '#FFE9EC', glow: 'rgba(229,83,102,0.9)', bar: '#E55366' },
       standby:   { base: '#2a2f3a', mid: '#5B6580', hi: '#8B95A8', peak: '#D8DCE6', glow: 'rgba(139,149,168,0.75)', bar: '#5B6580' },
       idle:      { base: '#5a1a22', mid: '#B83A4A', hi: '#FF4D63', peak: '#FFE3E7', glow: 'rgba(255,77,99,0.9)',    bar: '#5B7FDB' },
       listening: { base: '#7A1E2B', mid: '#E55366', hi: '#FF6677', peak: '#FFFFFF', glow: 'rgba(255,102,119,0.95)', bar: '#6FA8B0' },

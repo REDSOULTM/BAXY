@@ -1,0 +1,18 @@
+{
+  "reason": "deadline_600s",
+  "seconds": 600.51,
+  "gpuPeakMiB": 3516.66015625,
+  "gpuAttributionAvailable": true,
+  "ramPeakMiB": 4822.59765625,
+  "launcherExit": 0,
+  "cleanupExit": 0,
+  "volumeBefore": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "volumeAfter": {
+    "levelScalar": 0.0,
+    "muted": true
+  },
+  "volumeRestoredExactly": true
+}

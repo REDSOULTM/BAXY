@@ -1,0 +1,207 @@
+[
+  {
+    "case": "echo221",
+    "backend": "dtln512",
+    "human": null,
+    "referenceText": null,
+    "segments": [],
+    "cancellations": [],
+    "humanWindowText": null,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\echo221-dtln512.npz",
+    "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+  },
+  {
+    "case": "echo232",
+    "backend": "dtln512",
+    "human": null,
+    "referenceText": null,
+    "segments": [],
+    "cancellations": [],
+    "humanWindowText": null,
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\echo232-dtln512.npz",
+    "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+  },
+  {
+    "case": "h0-near",
+    "backend": "dtln512",
+    "human": 0,
+    "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "segments": [
+      {
+        "firstSample": 87552,
+        "lastSample": 262144,
+        "pcmSha256": "4b2815c8a91db770aba3c85168f7c622102944140e1d5e1ab98b029158a691e4",
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h0-near-dtln512.npz",
+    "sha256": "b5a2ddefc246ba0339c02eebbed594649e537d3f87af5c4aac667a4d862e06f2"
+  },
+  {
+    "case": "h0-raw",
+    "backend": "dtln512",
+    "human": 0,
+    "referenceText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo de clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "segments": [
+      {
+        "firstSample": 87552,
+        "lastSample": 262144,
+        "pcmSha256": "35b01308af25c45d80ec297a46d731f5670f3bc16390325a0fac5a37c62c3967",
+        "text": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello pueda afectar sus planes de viaje."
+      }
+    ],
+    "cancellations": [
+      181,
+      194,
+      307,
+      319,
+      335,
+      348,
+      354,
+      368
+    ],
+    "humanWindowText": "Se recomienda enfáticamente a los viajeros que se informen sobre cualquier riesgo del clima extremo en el área que visitan, dado que ello puede afectar sus planes de viaje.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h0-raw-dtln512.npz",
+    "sha256": "7b402e026c530880706ce25426bbfd8b94f3838c2f3e0b5fcf6a0f10e0baa7e7"
+  },
+  {
+    "case": "h1-near",
+    "backend": "dtln512",
+    "human": 1,
+    "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "segments": [
+      {
+        "firstSample": 93184,
+        "lastSample": 212992,
+        "pcmSha256": "91fb739a857fd9c0987e23608ac88ebe91cb25c9cbe2608e70c11ae4e2a8e35c",
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudier acceder al funeral en la plaza de San Pedro."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h1-near-dtln512.npz",
+    "sha256": "fe4984c2ab3f37e28eea9cec25c32bd1b09f82f24e973838c96adc497de4c51e"
+  },
+  {
+    "case": "h1-raw",
+    "backend": "dtln512",
+    "human": 1,
+    "referenceText": "Fue tanta la cantidad de gente que se concentró, que no todos pudieron acceder al funeral en la Plaza de San Pedro.",
+    "segments": [
+      {
+        "firstSample": 93696,
+        "lastSample": 213504,
+        "pcmSha256": "3af512cad9420922abdab982954bf142eb22aa83671ebc3738c5ebdee046e20b",
+        "text": "Fue tanta la cantidad de gente que se concentró que no todos pudieron acceder al funeral en la plaza de San Pedro."
+      }
+    ],
+    "cancellations": [
+      193,
+      198,
+      306,
+      318,
+      333,
+      360,
+      365
+    ],
+    "humanWindowText": "Fue tanta la cantidad de gente que se concentró que no todos pudier al funeral en la plaza de San Pedro.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h1-raw-dtln512.npz",
+    "sha256": "2c441beb35f42f2cde75ffc1f14d3eeee3d94567fd480c208efc920bb86d6263"
+  },
+  {
+    "case": "h2-near",
+    "backend": "dtln512",
+    "human": 2,
+    "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "segments": [
+      {
+        "firstSample": 72704,
+        "lastSample": 210432,
+        "pcmSha256": "a150278c6fc5cca4a7ea176605a1a480b502a76fa79a9bac166cdfddad5e0efa",
+        "text": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h2-near-dtln512.npz",
+    "sha256": "dea2888fed0ccc26664baf318966b9d4b4f4edfc39bf624582975265d5cd956d"
+  },
+  {
+    "case": "h2-raw",
+    "backend": "dtln512",
+    "human": 2,
+    "referenceText": "However, due to the slow communication channels, styles in the west could lag behind by 25 to 30 year.",
+    "segments": [
+      {
+        "firstSample": 73216,
+        "lastSample": 210432,
+        "pcmSha256": "b3bb0b3ad5d09a2e44732cf7822bcd5d2e07db411021afb94e285e2b6bc84262",
+        "text": "However, due to the slow communication channels, styles in the West can lag behind by 25 to 30 years."
+      }
+    ],
+    "cancellations": [
+      153,
+      160,
+      189,
+      306,
+      318,
+      323,
+      328,
+      341,
+      351,
+      360
+    ],
+    "humanWindowText": "However, due to the slow communication channels, styles in the West could lag behind by 25 to 30 years.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h2-raw-dtln512.npz",
+    "sha256": "ea54718b1df1058de4aee4ba36c1c1cdeb9a5c0cd5cbc7796fe2cf1f0b0c9283"
+  },
+  {
+    "case": "h3-near",
+    "backend": "dtln512",
+    "human": 3,
+    "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "segments": [
+      {
+        "firstSample": 65024,
+        "lastSample": 198656,
+        "pcmSha256": "22833dcec4f3a1b024c9b89e657ebe100ded81947becd4124044d8082e21a4dd",
+        "text": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence."
+      }
+    ],
+    "cancellations": [],
+    "humanWindowText": "All nouns alongside the word say for you always begin with a capital letter, even in the middle of a sentence.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h3-near-dtln512.npz",
+    "sha256": "0a95c6c03c2c4cc0d6d4871f630d7bf81fe01d7334d1a0949d53b22966382847"
+  },
+  {
+    "case": "h3-raw",
+    "backend": "dtln512",
+    "human": 3,
+    "referenceText": "All nouns, alongside the word Sie for you, always begin with a capital letter, even in the middle of a sentence.",
+    "segments": [
+      {
+        "firstSample": 65024,
+        "lastSample": 199680,
+        "pcmSha256": "63ec9cebdc6fbc350e5a1d3285b07c2101574962233250741a98364f65dee58c",
+        "text": "All nouns alongside the world say for you. Always begin with a capital letter, even in the middle of a sentence."
+      }
+    ],
+    "cancellations": [
+      137,
+      144,
+      155,
+      161,
+      169,
+      176,
+      198,
+      313,
+      341,
+      345
+    ],
+    "humanWindowText": "All nouns alongside the world say for you. Always begin with a capital letter, even in the middle of a sentence.",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-product239-private\\h3-raw-dtln512.npz",
+    "sha256": "e8d7b2fac8088e93f1195389dc10ce31b078e83751deb18f76097271c58115f2"
+  }
+]

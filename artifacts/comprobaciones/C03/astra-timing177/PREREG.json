@@ -1,0 +1,5 @@
+{
+  "method": "No playback/AEC/ASR. First160-sample frames after speaking with reference RMS20PCM (existing echo guard minimum); exact first nonzero synthetic near sample. Measured near-only lag per176 stage before projecting mixed stage onto known near. Projection is diagnostic, not source separation or fidelity score. Preserve approximate127 streamReadyUtc alignment; do not select cutoff/lag from mixed output.",
+  "sampleRate": 16000,
+  "speakingSample": 391581
+}

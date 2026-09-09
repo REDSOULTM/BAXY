@@ -1,0 +1,37 @@
+{
+  "kind": "integrated-development-diagnostic-not-promotion",
+  "utc": "2026-09-06T12:05:17.465956+00:00",
+  "hypothesis": "Representation-only contrast: merge consecutive plain system messages into one block, preserving every instruction word and order, all user/history content and sampler. No new wording, language verifier or product change. This tests whether the repeated role boundaries hurt instruction following; template retaining content alone did not establish this.",
+  "expected": "First16 development inputs unchanged versus dialogue-state: compare language and usefulness, not just publication. Last5 separately test exact process window resolution/confirmation using ApplicationFrameHost (read-only observation: its MainWindowTitle is Calculadora; owned CalculatorApp PID8328 from prior experiment). This does NOT fix or certify natural app-name resolution.",
+  "profile": {
+    "model": "D:\\BAXYRuntime\\experiments\\models\\qwen3-8b-iq3-xxs-0b69f75b\\Qwen_Qwen3-8B-IQ3_XXS.gguf",
+    "sha256": "11a2ba2a7970f621c03e05bce111df2cb7c04880ffec2cdd03445d7b5e8b8514",
+    "ngl": 99,
+    "kv": "q4_0",
+    "hostCompositionBudgetProfile": "unchanged GPU 5/10s",
+    "sampling": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0
+    },
+    "source": "https://huggingface.co/Qwen/Qwen3-8B#best-practices",
+    "limits": "Existing product budgets and validators unchanged; stop if attributed GPU exceeds 4096 MiB."
+  },
+  "registrationSha256": "428b6248eeb8f78bb94082eec5b59bc127a669d9c609e24251591dbcb5743181",
+  "files": {
+    "src/baxy_mind/llm.py": "a60365657522707f3fba3e93d2c7288dc253efb1e17a90ce2d966f0ac7d08a2d",
+    "src/baxy_mind/__main__.py": "6836411fe1429ef8d7b38830408506828c5b5ac9ac3ce25447ed8d6f6f8b2558",
+    "src/baxy_mind/request_reading.py": "b01f97725a7573e6a1b6875ca20d8c90d76acacc1e59aaab4551aeccf0674277",
+    "src/baxy_mind/effect_intent.py": "b689bb910cfd7db689ce43d06432beb871ad76495d4d552c62c46c4fff14b9e1",
+    "src/Baxy.App/PendingModelMessageQueue.cs": "4c345880f8150b43e5a4ffeecdbc5055c204337c12485103527d61b75a2ccf88",
+    "src/Baxy.App/MindSidecarClient.cs": "5881c61a37573e0d746fe740710ec814bf2c3ab6c3c107c1f8ea686b75ff1eb4",
+    "src/Baxy.App/MainWindowViewModel.cs": "164e7b865e2763295a08f215b6c0098058964946a1a46b058e8cfa662920b616",
+    "src/Baxy.App/MissionNarration.cs": "0cfcc213094ad254beb826549af174cbe2062221fc9afb8a0b0acdafe4641222",
+    "src/Baxy.App/MindPlanSession.cs": "4f545be662060ba6b7e119a03b4b61b8485b75d3fd54fe317a7d53344874e4d6",
+    "src/Baxy.App/UserMessagePolicy.cs": "360b4f260b186d7ff83f16398c5e71adad22fa4363aadd385f00931ef338d97b",
+    "artifacts/comprobaciones/C03/astra-qwen8-system-packing.turns.jsonl": "e18025baa91faabe6212b865f84225d2e112935266aedcdc42ef4b4c265bbb0e",
+    "artifacts/comprobaciones/C03/astra-qwen8-system-packing/profile/sitecustomize.py": "d91dda39125f5dfa39b799b3e157f53d47df127dc65a4728d6d00cf9ba13299b",
+    "scratchpad/c03-qwen8-system-packing.py": "d9099f62e3e686e1dd088fd9630e44baf68f490614b8c9ced88da5e2d08e90e1"
+  }
+}

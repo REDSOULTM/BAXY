@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "text": "no me molesta, dime la hora",
+      "clock_covers_entire_authorized_request": true,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "I don't mind, tell me the time",
+      "clock_covers_entire_authorized_request": true,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "no abras Steam, dime la hora",
+      "clock_covers_entire_authorized_request": true,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "no me digas la hora",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "don't tell me the time",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "no uses herramientas, dime la hora",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "traduce: no me molesta, dime la hora",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "no me digas la hora, dime la hora",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "dime la hora y baja el volumen",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "ayer me dijiste la hora",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    },
+    {
+      "text": "El aire es h20?",
+      "clock_covers_entire_authorized_request": false,
+      "kind": "consumed_or_synthetic_regression_control"
+    }
+  ],
+  "contract": {
+    "description": "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes.",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "required_arguments": []
+  },
+  "stages": [
+    "existing_candidate_free_shape",
+    "existing_full_request_compatibility"
+  ],
+  "method": "Existing validators, no changed prompt, no source change, no tool execution. Full-request compatibility, not the positive-clause verifier whose precondition is not met here. No history. Compare semantic type/count and whether one read covers the full request including restrictions.",
+  "sourceSha256": "6abb4d5a1b4a566be53e5adfb8624caabbeae4f40aa1e52835b26b0f8de8d01b",
+  "registrationSha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}
