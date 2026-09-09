@@ -1,0 +1,653 @@
+..........FFFFFFFFF............................FFFFF...                  [100%]
+================================== FAILURES ===================================
+_ test_absolute_volume_clarifies_missing_level_without_observing[Pon el volumen a...] _
+
+text = 'Pon el volumen a...'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Fija el volumen del sistema al\u2026] _
+
+text = 'Fija el volumen del sistema al…'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Ajusta el volumen en...] _
+
+text = 'Ajusta el volumen en...'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Set the volume to...] _
+
+text = 'Set the volume to...'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Set the volume at\u2026] _
+
+text = 'Set the volume at…'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Change the volume on my computer to] _
+
+text = 'Change the volume on my computer to'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Baxy, ponme el volumen a] _
+
+text = 'Baxy, ponme el volumen a'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Please adjust the volume to...] _
+
+text = 'Please adjust the volume to...'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_absolute_volume_clarifies_missing_level_without_observing[Set el volumen to...] _
+
+text = 'Set el volumen to...'
+
+    @pytest.mark.parametrize("text", [
+        "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+        "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+        "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+        "Pon el volumen a...", "Fija el volumen del sistema al…",
+        "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+        "Change the volume on my computer to", "Baxy, ponme el volumen a",
+        "Please adjust the volume to...", "Set el volumen to...",
+    ])
+    def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+        available = ("audio.volume", "audio.volume.adjust", "audio.status")
+        intent = resolve_explicit_clarification_intent(text, available)
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:154: AssertionError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Pon el volumen a...-audio.volume-level-\xbfQu\xe9 nivel de volumen quieres?] _
+
+objective = 'Pon el volumen a...', operation = 'audio.volume', missing = 'level'
+question = '¿Qué nivel de volumen quieres?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+>       result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+
+tests\test_turn_policy.py:4327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6035: in _prepare_turn_result
+    else turn_evidence.retrieve(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ('user: ¿Cómo está el audio?\nassistant: El volumen está en 100.\nuser: Pon el volumen a...', <function test_explicit_incomplete_effect_uses_only_model_authored_question.<locals>.<lambda> at 0x000001B3B706CEA0>, ['audio.volume'])
+
+    @staticmethod
+    def retrieve(*_args: object) -> list[object]:
+>       raise AssertionError("explicit clarification must not retrieve")
+E       AssertionError: explicit clarification must not retrieve
+
+tests\test_turn_policy.py:4315: AssertionError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Fija el volumen del sistema al\u2026-audio.volume-level-\xbfA qu\xe9 porcentaje?] _
+
+objective = 'Fija el volumen del sistema al…', operation = 'audio.volume'
+missing = 'level', question = '¿A qué porcentaje?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+>       result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+
+tests\test_turn_policy.py:4327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6035: in _prepare_turn_result
+    else turn_evidence.retrieve(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ('user: ¿Cómo está el audio?\nassistant: El volumen está en 100.\nuser: Fija el volumen del sistema al…', <function te...xplicit_incomplete_effect_uses_only_model_authored_question.<locals>.<lambda> at 0x000001B3B706C040>, ['audio.volume'])
+
+    @staticmethod
+    def retrieve(*_args: object) -> list[object]:
+>       raise AssertionError("explicit clarification must not retrieve")
+E       AssertionError: explicit clarification must not retrieve
+
+tests\test_turn_policy.py:4315: AssertionError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume to...-audio.volume-level-What volume level do you want?] _
+
+objective = 'Set the volume to...', operation = 'audio.volume'
+missing = 'level', question = 'What volume level do you want?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+>       result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+
+tests\test_turn_policy.py:4327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6035: in _prepare_turn_result
+    else turn_evidence.retrieve(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ('user: ¿Cómo está el audio?\nassistant: El volumen está en 100.\nuser: Set the volume to...', <function test_explicit_incomplete_effect_uses_only_model_authored_question.<locals>.<lambda> at 0x000001B3B706E8E0>, ['audio.volume'])
+
+    @staticmethod
+    def retrieve(*_args: object) -> list[object]:
+>       raise AssertionError("explicit clarification must not retrieve")
+E       AssertionError: explicit clarification must not retrieve
+
+tests\test_turn_policy.py:4315: AssertionError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Change the volume on my computer to-audio.volume-level-What level should I set?] _
+
+objective = 'Change the volume on my computer to', operation = 'audio.volume'
+missing = 'level', question = 'What level should I set?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+>       result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+
+tests\test_turn_policy.py:4327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6035: in _prepare_turn_result
+    else turn_evidence.retrieve(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ('user: ¿Cómo está el audio?\nassistant: El volumen está en 100.\nuser: Change the volume on my computer to', <functio...xplicit_incomplete_effect_uses_only_model_authored_question.<locals>.<lambda> at 0x000001B3B706EE80>, ['audio.volume'])
+
+    @staticmethod
+    def retrieve(*_args: object) -> list[object]:
+>       raise AssertionError("explicit clarification must not retrieve")
+E       AssertionError: explicit clarification must not retrieve
+
+tests\test_turn_policy.py:4315: AssertionError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Set el volumen to...-audio.volume-level-\xbfQu\xe9 nivel quieres poner?] _
+
+objective = 'Set el volumen to...', operation = 'audio.volume'
+missing = 'level', question = '¿Qué nivel quieres poner?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+>       result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+
+tests\test_turn_policy.py:4327: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\__main__.py:6035: in _prepare_turn_result
+    else turn_evidence.retrieve(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+_args = ('user: ¿Cómo está el audio?\nassistant: El volumen está en 100.\nuser: Set el volumen to...', <function test_explicit_incomplete_effect_uses_only_model_authored_question.<locals>.<lambda> at 0x000001B3B706FEC0>, ['audio.volume'])
+
+    @staticmethod
+    def retrieve(*_args: object) -> list[object]:
+>       raise AssertionError("explicit clarification must not retrieve")
+E       AssertionError: explicit clarification must not retrieve
+
+tests\test_turn_policy.py:4315: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Pon el volumen a...]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Fija el volumen del sistema al\u2026]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Ajusta el volumen en...]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Set the volume to...]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Set the volume at\u2026]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Change the volume on my computer to]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Baxy, ponme el volumen a]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Please adjust the volume to...]
+FAILED tests/test_effect_intent.py::test_absolute_volume_clarifies_missing_level_without_observing[Set el volumen to...]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Pon el volumen a...-audio.volume-level-\xbfQu\xe9 nivel de volumen quieres?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Fija el volumen del sistema al\u2026-audio.volume-level-\xbfA qu\xe9 porcentaje?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume to...-audio.volume-level-What volume level do you want?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Change the volume on my computer to-audio.volume-level-What level should I set?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Set el volumen to...-audio.volume-level-\xbfQu\xe9 nivel quieres poner?]
+14 failed, 41 passed, 2852 deselected in 3.99s

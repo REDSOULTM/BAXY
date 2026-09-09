@@ -1,0 +1,11 @@
+# Aclaración628 — conservar un valor todavía no dicho
+
+608, turno7 `missing-value`, auditoría26: el selector devuelve knowledge sin operación; conversation_presentation lo convierte en unsupported. El shell rechaza la imposibilidad y seis composiciones repiten una negación de capacidad, hasta missing_literal_fact. No se modifica ese veto para aceptar la respuesta equivocada.
+
+La primera frontera reparable anterior está en resolve_explicit_clarification_intent: reconoce la orden de volumen sin nivel, pero pierde esa misma orden cuando termina en una preposición de valor sin complemento. Reproducción dueña antes de editar:14fallos nuevos/41pass. Se amplía exclusivamente el reconocimiento completo existente con a/al/en/to/at opcional; mantiene catálogo, rechazo de otros dispositivos, valores presentes, negación, citas y órdenes compuestas. No cambia modelo, sampler, clasificación semántica general, prosa visible ni autoridad de ejecución.
+
+Herencia: test_absolute_volume_clarifies_missing_level_without_observing y test_explicit_incomplete_effect_uses_only_model_authored_question ya conservan operación/campo y piden al modelo una pregunta. REGISTRO_DE_MANTENIBILIDAD.md:1482–1488 documenta la recuperación sin autoridad ni literal fijo.609–610 demostraron que cambiar indiscriminadamente not_complete a conocimiento no arregla la petición; esa hipótesis no se repite.
+
+Contraste consultado2026-09-09: [Cohen2019](https://aclanthology.org/W19-5924/) distingue argumentos ausentes y restricciones no atómicas. Aplicación local: preguntar un nivel ausente y conservar expresiones completas como «al mínimo» o «como estaba antes» para su interpretación habitual. No se incorpora su arquitectura general ni se infiere que un patrón certifique la comprensión universal. Investigación del Qwen2507 registrado reutilizada de612/625; no hay cambio de perfil que justifique otro barrido nativo.
+
+Aceptación de esta reparación: pruebas dueñas y Fast verdes; repetir12controles608 en producto y añadir variantes nuevas de valores ausentes ES/EN/mixed, sin cambios efectivos. Adjudicar todos los finales y pasos; preservar fallos previos. No acredita pantalla/voz ni cierra las ocho rutas. Encuesta25/717/0 hasta evidencia individual adicional. Full final sigue obligatorio.

@@ -1,0 +1,45 @@
+{
+  "utc": "2026-09-09T12:15:04.535154+00:00",
+  "source": 630,
+  "finals": 20,
+  "correct": 16,
+  "previous629_correct": 11,
+  "volume_clarifications_correct": 9,
+  "volume_clarifications_total": 9,
+  "failed_cases": {
+    "H0012": "Existing noisy identity interpretation failure.",
+    "missing-app": "Existing grammatical error: incorrect preposition.",
+    "missing-reference-en": "Existing capability refusal instead of missing-reference clarification.",
+    "knowledge-discourse": "Existing ciertos bacterias agreement error."
+  },
+  "new_failures": 0,
+  "effects": 0,
+  "same_panel_sha256": "b6cff4db18a9589e78ef364c6869bda79f91bb50faddf6cce6e34d7f8f5dd239",
+  "missing_value_final_ms": 627.494,
+  "missing_value_decision_calls": 1,
+  "new_progress_defects": 0,
+  "progress_labels": [
+    "Estoy revisando la solicitud del usuario. Aún no se han obtenido los resultados solicitados.",
+    "I'm currently reviewing the request. No results are available yet."
+  ],
+  "whole_clarification_route_accepted": false,
+  "next_slot_execution_tested": false,
+  "ui_or_voice_credit": false,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2420.6796875,
+    "seconds": 117.234
+  },
+  "private_hashes": {
+    "panel.json": "b6cff4db18a9589e78ef364c6869bda79f91bb50faddf6cce6e34d7f8f5dd239",
+    "capture/events.jsonl": "5717fbd193a62bc3a5aa3bf4a9a307247c572cbc57b2d196784eee37e0663841",
+    "turn-audit.jsonl": "3e751fb360d6fe1a14a4ad1832ac6cb4c81fdb566cb43d88fe823758fe3ce91a",
+    "shell-trace.jsonl": "c99642a8bd756c4cfe919d29805c0f5a19f9f176ec192253dc60ddef1e841a60",
+    "compose-audit.jsonl": "b5ad11116ab140f54f4194b3dc5289fe2d9a07ac897c908857c3bea48572cf56",
+    "adjudication.json": "cf762347e903102fe75e197857735a5fb1c582dbf453a05c61a09f8cb94be26d",
+    "progress-adjudication.json": "c4e5dd4f8127dddd1df27076d6a945ac6d8a2625854deab4e643cad32771c474",
+    "RESULT.md": "41615e0fb58a4cf8f819a8076c3bdf802ac08ece509ae08d3f7f49afa5657f28"
+  }
+}

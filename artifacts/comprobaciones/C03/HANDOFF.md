@@ -1,19 +1,16 @@
-# Handoff C03 — fuente626 publicada — 2026-09-09
+# Handoff C03 — fuente630 validada — 2026-09-09
 
-## Objetivo y estado
-Completar las ocho rutas de respuesta veraz en producto real, encuesta742 con variantes, UI/voz y recursos conjuntos; no sólo los paneles de conversación. Goal activo; ninguna decisión pendiente del dueño. Autorización536 para históricos/nuevos/encuesta vigente. BAXY manual cerrado. No procesos de campaña ni build activos.
+## Estado
+Goal activo;25cubiertos/717abiertos/0NA, ninguna decisión pendiente. Autorización536: históricos/encuesta/nuevos con generalización ES/EN. BAXY manual cerrado; sin procesos de campaña/build/pruebas ni agentes. Main intacto5f572ee1. Fuente630 validada y lista para commit/push;626 sigue siendo la última publicación hasta completarlo.
 
-Fuente626 publicada en `67085974c69c60034cba2ad95d156ddb096de6f6`, HEAD=origin verificado; main intacto. Cambia sólo la política de salida de progreso mixed a español permitido, conservando inglés explícito, fases/pasos y reintentos. La conversación conserva spanglish. `astra-progress-source626/RESULT.json` y `astra-conversation-regression627/RESULT.json` fijan evidencia. Encuesta25 cubiertos/717 abiertos/0 no aplicables;742/rev1248 intacta.
+## Cambio y evidencia
+628 conserva nivel ausente tras a/al/en/to/at.630 transporta startsNewObjective opcional false para impedir que una nueva orden incompleta se concatene a la anterior; mantiene PreserveObjective para su siguiente fragmento. Sin efectos, modelo, sampler o prosa fija nuevos.
 
-## Validación
-`pytest tests/test_c03_request_preservation.py -q`:200pass. Dueñas ampliadas (ese fichero, compose_contract, first_signal, turn_policy, price_v8 y stt_quality_evaluators):1363pass/1skip ambiental (archivos de campaña STT ausentes),8,30s. `scripts/test_source_quality.ps1`:Fast verde, Release20,29s,0advertencias/errores.33pines de6campañas verificados también en staging. Full626 no ejecutado: sólo Python; Full final sigue pendiente. Full606 es línea base histórica, no prueba de626.
+Full630 exit0:Python10253pass/3omisiones+466subtests(589,57s);.NET4457pass/1omisión agregada,0fallos;16omisiones opt-in impresas aparte. DueñasPython1254pass/1skip,.NET114pass. Fuente intacta durante Full. Detalle en astra-objective-continuity630/RESULT.json y FULL.log.
 
-627 conserva33/35 finales; H0012 y Atlas fallan. Avisos boot_stage emitidos ya no narran el análisis del idioma; conservan tercera persona española pendiente. No hay prueba de pantalla/voz. Pico3499,559MiB GPU/2361,191MiB RAM, sin UI/voz juntas; no mínimo global acreditado.
-
-## No repetir sin evidencia nueva
-619 se rechazó por regresión de tono Qwen aunque mejoraba Gemma.615–617 no calificaron el subtipo social.622–624 no promovieron Ministral: guardia14/20original y11/20subtipo; se aisló user-user incompatible, prosa compatible4/12; nativo8/12 e identidad mínima0/12 con1corte. Todo sellado.565 ya rechazó cambiar el destinatario de la fase;625 no lo reabre.
+631 repite20casos629:16correctos frente a11;9/9aclaraciones de volumen. Siguen H0012, gramática missing-app/knowledge-discourse y missing-reference-en. Progreso sin regresión pero tercera persona pendiente. Ninguna prueba de pantalla/voz o ejecución del siguiente valor. Pico3499,559MiB GPU/2420,680MiB RAM;117,234s incluyen NativeAOT al arrancar. No mínimo conjunto acreditado.
 
 ## Siguiente acción
-Inspeccionar el caso `missing-value` de `%LOCALAPPDATA%/BAXY/C03-effect-controls608-private/turn-audit.jsonl` y `compose-audit.jsonl`: «Pon el volumen a...» termina en `missing_literal_fact`/reintentos agotados en vez de preguntar el valor. Localizar el primer campo erróneo antes de inferir o editar; empezar en el owner de composición `src/baxy_mind/llm.py` y el traspaso de aclaración en `__main__.py`. Es un bloqueo de aclaración C03 distinto de los barridos de identidad/estilo descartados.
+Publicar630/evidencia628–632 y verificar remoto; auditoría scratchpad/c03-audit-publication628-632.py --staged:5campañas/34pines. Después reparar H0040: auditoría632 demuestra ausencia inventada desde ventana enfocada y respuesta inglesa histórica sin lectura. effect_intent.py:7821–7823 casa cualquier ventana con window.active; _strict_catalog_request:8424 lo devuelve. Catálogo ya ofrece window.application.status. Probar aplicación abierta/cerrada, nombres, foco e idioma antes de acreditar. Registro H0040 actualizado con causa; SHA requisitos6b09a8af1c44d52274c7dd97af5ed759637db4a9f46f276b22bdcef2514d92af.
 
-Pendientes:717requisitos, identidad/tono/progreso y otras rutas, recuperación de errores, UI real, loopback completo/AEC separados, VRAM conjunta mínima, registroCPU si se califica, Full final y publicación. No cerrar filas de otros owners ni el goal por esta reparación parcial.
+No reabrir609/619/615–617 sin causa nueva. Restan717requisitos,otras rutas,continuación real de aclaraciones,UI/voz/recuperación/VRAM conjunta y Full final. No cerrarC03 por este tramo.

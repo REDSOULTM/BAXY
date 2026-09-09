@@ -1,0 +1,42 @@
+{
+  "utc": "2026-09-09T11:43:44.010188+00:00",
+  "source": 628,
+  "finals": 20,
+  "correct": 11,
+  "same608_correct": 7,
+  "same608_total": 12,
+  "variants_correct": 4,
+  "variants_total": 8,
+  "adopted": false,
+  "first_repaired_boundary": "explicit_clarification on request26",
+  "next_wrong_boundary": "MainWindowViewModel resumes previous objective because clarify is never self-contained",
+  "failed_cases": {
+    "H0012": "Existing noisy identity interpretation failure.",
+    "missing-app": "Existing ungrammatical preposition in clarification.",
+    "missing-value": "628 correctly returns clarify on26, then shell resumes prior app objective on27 and loses it.",
+    "missing-reference-en": "Existing unsupported refusal instead of missing-reference question.",
+    "knowledge-discourse": "Existing ciertos bacterias agreement error.",
+    "missing-level-variant-2": "New volume request merged with preceding clarification; composition fails.",
+    "missing-level-variant-4": "New volume request merged with preceding clarification; false interpretation failure.",
+    "missing-level-variant-6": "New volume request merged with preceding clarification; composition fails.",
+    "missing-level-variant-8": "New volume request merged with preceding clarification; composition fails."
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2461.640625,
+    "seconds": 93.906
+  },
+  "ui_or_voice_credit": false,
+  "private_hashes": {
+    "panel.json": "b6cff4db18a9589e78ef364c6869bda79f91bb50faddf6cce6e34d7f8f5dd239",
+    "capture/events.jsonl": "62dab962c329849959de0cc85d42bd56bf443a2721fa607c13b4a357af6a8f62",
+    "turn-audit.jsonl": "f5426c6dc2046ca4b295a21d3e2d56b2f2a128000679e0bf16de20f7260d150c",
+    "shell-trace.jsonl": "0307f2150fb0a035195618a8bfe969fa318d5f8c2d103f436e9e79846d4ff88c",
+    "compose-audit.jsonl": "58f8aac45e1eeeeac013ab010687ec34ebf35775073544bf0f5c5d0636ddb402",
+    "adjudication.json": "250f20158a71acdb4b6e7e4fa263d4479129b824473330b6f4687e129ff94534",
+    "progress.json": "d28a07349db2a8d27abb94d506a9cbb2e0d4805e46cfd319e5933bf78c2785bd",
+    "RESULT.md": "b026a95f84063aa2447454f6d091144e9b732ae89ffcd5ceee352cd0a04e6547"
+  }
+}

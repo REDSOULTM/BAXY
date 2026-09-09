@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-09T11:46:54.270337+00:00",
+  "source": 630,
+  "source_sha256": {
+    "src/baxy_mind/__main__.py": "e03aa7836e20b88b50b773c2c6ad914152be8db2c1aa39a20824d4d6c12ed1c3",
+    "src/baxy_mind/effect_intent.py": "1de48c012e9a930f218736299a9bfbe86e8c1099c5821d8188d99136cdf9adbf",
+    "src/Baxy.App/MindSidecarClient.cs": "c87b73ff936d125f0f606b139cc8f8578a5c0606e2768329a5bdcfeafa5ce54c",
+    "src/Baxy.App/UserMessagePolicy.cs": "8fd790a33c7f78fc908fdaeab8de362448a5390bceef4bdc902aea51ee5bfa0e"
+  },
+  "python_tree_sha256": "92d8fd81f3189ac96fbbb8750413da2cadac900b279ea2660eb1ff076eab7370",
+  "python_files": 404,
+  "method": "Mind marks new recognized incomplete commands using existing request-head authority; optional startsNewObjective false by default. Shell keeps the new objective for its next slot without appending it to the previous one. No effect authority, model, prompt or sampling changed.",
+  "required_validation": "Python owners, .NET PlannerAppBoundaryTests114, Full630, then product631 same20cases629 after all builds complete. Keep original failures and zero effects. Full required for both-language source adoption.",
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  }
+}

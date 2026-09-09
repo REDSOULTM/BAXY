@@ -1,0 +1,1097 @@
+FFFFFFFFFFFF                                                             [100%]
+================================== FAILURES ===================================
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[ponme un recordatorio para llamar al dentista-reminder.create-due_time-\xbfCu\xe1ndo quieres que te lo recuerde?] _
+
+objective = 'ponme un recordatorio para llamar al dentista'
+operation = 'reminder.create', missing = 'due_time'
+question = '¿Cuándo quieres que te lo recuerde?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Ajusta el volumen.-audio.volume-level-\xbfA qu\xe9 nivel quieres el volumen?] _
+
+objective = 'Ajusta el volumen.', operation = 'audio.volume', missing = 'level'
+question = '¿A qué nivel quieres el volumen?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume.-audio.volume-level-What volume level do you want?] _
+
+objective = 'Set the volume.', operation = 'audio.volume', missing = 'level'
+question = 'What volume level do you want?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume, por favor.-audio.volume-level-\xbfA qu\xe9 nivel lo ponemos?] _
+
+objective = 'Set the volume, por favor.', operation = 'audio.volume'
+missing = 'level', question = '¿A qué nivel lo ponemos?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Pon el volumen a...-audio.volume-level-\xbfQu\xe9 nivel de volumen quieres?] _
+
+objective = 'Pon el volumen a...', operation = 'audio.volume', missing = 'level'
+question = '¿Qué nivel de volumen quieres?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Fija el volumen del sistema al\u2026-audio.volume-level-\xbfA qu\xe9 porcentaje?] _
+
+objective = 'Fija el volumen del sistema al…', operation = 'audio.volume'
+missing = 'level', question = '¿A qué porcentaje?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume to...-audio.volume-level-What volume level do you want?] _
+
+objective = 'Set the volume to...', operation = 'audio.volume'
+missing = 'level', question = 'What volume level do you want?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Change the volume on my computer to-audio.volume-level-What level should I set?] _
+
+objective = 'Change the volume on my computer to', operation = 'audio.volume'
+missing = 'level', question = 'What level should I set?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Set el volumen to...-audio.volume-level-\xbfQu\xe9 nivel quieres poner?] _
+
+objective = 'Set el volumen to...', operation = 'audio.volume'
+missing = 'level', question = '¿Qué nivel quieres poner?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Abre una aplicaci\xf3n.-app.open-application-\xbfQu\xe9 aplicaci\xf3n quieres abrir?] _
+
+objective = 'Abre una aplicación.', operation = 'app.open'
+missing = 'application', question = '¿Qué aplicación quieres abrir?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Open an application.-app.open-application-Which application should I open?] _
+
+objective = 'Open an application.', operation = 'app.open'
+missing = 'application', question = 'Which application should I open?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+_ test_explicit_incomplete_effect_uses_only_model_authored_question[Open una aplicaci\xf3n, por favor.-app.open-application-\xbfCu\xe1l aplicaci\xf3n abro?] _
+
+objective = 'Open una aplicación, por favor.', operation = 'app.open'
+missing = 'application', question = '¿Cuál aplicación abro?'
+
+    @pytest.mark.parametrize("objective,operation,missing,question", [
+        ("ponme un recordatorio para llamar al dentista", "reminder.create", "due_time",
+         "¿Cuándo quieres que te lo recuerde?"),
+        ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+        ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+        ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+        ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+        ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+        ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+        ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+        ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+        ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+        ("Open an application.", "app.open", "application", "Which application should I open?"),
+        ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+    ])
+    def test_explicit_incomplete_effect_uses_only_model_authored_question(
+        objective: str, operation: str, missing: str, question: str,
+    ) -> None:
+        tool = {
+            "type": "function",
+            "function": {
+                "name": operation.replace(".", "_"),
+                "canonical_name": operation,
+                "description": "Fixture operation requiring a value.",
+                "risk": "low_reversible",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        missing: {"type": "string"},
+                    },
+                    "required": [missing],
+                    "additionalProperties": False,
+                },
+            },
+        }
+        calls: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = []
+    
+        class NoEvidence:
+            @staticmethod
+            def candidate_families(*_args: object) -> tuple[str, ...]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+            @staticmethod
+            def retrieve(*_args: object) -> list[object]:
+                raise AssertionError("explicit clarification must not retrieve")
+    
+        class Runtime:
+            @staticmethod
+            def formulate_explicit_clarification_question(
+                objective: str,
+                operations: tuple[str, ...],
+                missing_fields: tuple[str, ...],
+            ) -> str:
+                calls.append((objective, operations, missing_fields))
+                return question
+    
+        result = _prepare_turn_result(
+            {
+                "id": "explicit-reminder-clarification",
+                "text": objective,
+                "history": [
+                    {"role": "user", "content": "¿Cómo está el audio?"},
+                    {"role": "assistant", "content": "El volumen está en 100."},
+                ],
+            },
+            llm=Runtime(),
+            planner_catalog=PlannerCatalog([tool]),
+            turn_evidence=NoEvidence(),
+            encoder=lambda _texts: (),
+            tool_by_name={operation: tool},
+        )
+    
+        assert calls == [
+            (
+                objective,
+                (operation,),
+                (missing,),
+            )
+        ]
+        assert result["kind"] == "clarify"
+>       assert result["startsNewObjective"] is True
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'startsNewObjective'
+
+tests\test_turn_policy.py:4351: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[ponme un recordatorio para llamar al dentista-reminder.create-due_time-\xbfCu\xe1ndo quieres que te lo recuerde?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Ajusta el volumen.-audio.volume-level-\xbfA qu\xe9 nivel quieres el volumen?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume.-audio.volume-level-What volume level do you want?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume, por favor.-audio.volume-level-\xbfA qu\xe9 nivel lo ponemos?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Pon el volumen a...-audio.volume-level-\xbfQu\xe9 nivel de volumen quieres?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Fija el volumen del sistema al\u2026-audio.volume-level-\xbfA qu\xe9 porcentaje?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Set the volume to...-audio.volume-level-What volume level do you want?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Change the volume on my computer to-audio.volume-level-What level should I set?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Set el volumen to...-audio.volume-level-\xbfQu\xe9 nivel quieres poner?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Abre una aplicaci\xf3n.-app.open-application-\xbfQu\xe9 aplicaci\xf3n quieres abrir?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Open an application.-app.open-application-Which application should I open?]
+FAILED tests/test_turn_policy.py::test_explicit_incomplete_effect_uses_only_model_authored_question[Open una aplicaci\xf3n, por favor.-app.open-application-\xbfCu\xe1l aplicaci\xf3n abro?]
+12 failed, 1025 deselected in 3.08s

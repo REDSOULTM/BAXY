@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T11:26:12.967876+00:00",
+  "confirmedAtUtc": "2026-09-09T12:15:04.864310+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "626 adoptada: progreso mixed sin metanarración.1363pass/1skip+Fast verde;62733/35sin regresión, dos etiquetas de progreso sin análisis del idioma.25/717/0.",
-  "continuation": "Fuente626 publicada y remoto verificado. Siguiente: localizar la primera transformacion incorrecta de missing-value en C03-effect-controls608-private/turn-audit.jsonl y compose-audit.jsonl: Pon el volumen a... acaba en missing_literal_fact, no aclaracion. No repetir modelos ni corregir prompts antes de ver el dato perdido. C03/717 requisitos/UI/voz/recursos conjuntos/Full final pendientes.",
+  "checkpoint": "630 adoptada: Full exit0 Python10253pass/3skips+466subtests,.NET4457pass/1skip;63116/20,9/9volumen y0regresiones.25/717/0.",
+  "continuation": "Publicar630 y evidencia628–632, verificar remoto/main. Después reparar el alcance incorrecto de ventanas auditado632 en effect_intent.py:7821–7823/8424, con lectura por aplicación y regresión ES/EN. No tocar modelo/prosa antes de conservar hechos. UI/voz/recuperación/717requisitos yFullfinal pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "67085974c69c60034cba2ad95d156ddb096de6f6",
+  "publishedSourceCommit": "pending_publication_of_validated_source630",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",

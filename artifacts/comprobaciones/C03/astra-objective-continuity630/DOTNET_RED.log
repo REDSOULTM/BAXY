@@ -1,0 +1,80 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 229 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 229 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 229 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 229 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 229 ms).
+  2 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn("Pon el volumen a...","audio.volume","¿A qué nivel?") [123 ms]
+  Mensaje de error:
+     Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False)
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass6_0.<NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 259
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+
+
+  Con error NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn("Set the volume to...","audio.volume","What level should I set?") [< 1 ms]
+  Mensaje de error:
+     Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False)
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+   at InvokeStub_PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass6_0.<NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 259
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+   at InvokeStub_PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(Object, Span`1)
+
+
+  Con error NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn("Abre una aplicación","app.open","¿Qué aplicación?") [< 1 ms]
+  Mensaje de error:
+     Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False)
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+   at InvokeStub_PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass6_0.<NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 259
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+   at InvokeStub_PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(Object, Span`1)
+
+
+  Con error NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn("Create a reminder","reminder.create","What should I remind you about?") [< 1 ms]
+  Mensaje de error:
+     Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False)
+  Expected: False
+  But was:  True
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+   at InvokeStub_PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass6_0.<NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 259
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(String text, String operation, String question) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 257
+   at InvokeStub_PlannerAppBoundaryTests.NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(Object, Span`1)
+
+
+
+Con error! - Con error:     4, Superado:     1, Omitido:     0, Total:     5, Duración: 129 ms - Baxy.Integration.Tests.dll (net10.0)

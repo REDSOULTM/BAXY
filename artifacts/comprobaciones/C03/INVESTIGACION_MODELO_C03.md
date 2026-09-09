@@ -370,3 +370,10 @@ Se reconsultaron2026-09-09 la ficha oficial https://huggingface.co/mistralai/Min
 ## Progreso625–627
 
 565 había rechazado reformular el destinatario.625 conserva destinatario/fase/modelo/sampler y elimina sólo metadatos de política mixed que605 narraba. Cuatro fases mixtas y ocho controles ES/EN conservan estado/pasos; la metanarración desaparece, la tercera persona no.626 integra la selección de español para progreso mixed, con inglés explícito intacto y política completa en conversación.1363pass/1skip+Fast;62733/35finales y transporte de progreso sin explicación del idioma. Fuente parcial adoptada, no cierre de ruta/UI/voz ni nueva promoción de modelo.
+
+
+## Auditoría632: alcance de observación de ventanas
+
+541H0040 no tiene prueba de ausencia:85elige window.active y89contesta knowledge sin lectura.632 recupera esos payloads y reproduce en el lector actual la reducción de una ventana nombrada a la enfocada. El primer retorno está en effect_intent.py:_strict_catalog_request:8424, por el dominio genérico window.active de7821–7823. No se evalúa otro modelo ni se retoca el compositor mientras la entrada tiene alcance incorrecto.
+
+Contraste primario consultado2026-09-09: [GetForegroundWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getforegroundwindow) devuelve la ventana enfocada; [EnumWindows](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumwindows) enumera las ventanas de primer nivel. El catálogo actual ya diferencia window.active de window.application.status; el segundo usa nombre y una instantánea visible del catálogo Inicio. La solución posterior debe conservar esa diferencia, con controles de aplicación abierta/cerrada, nombre, idioma y foco. No se infiere que una aplicación carece de ventanas por no ser la enfocada. Ningún dato de usuario se envió en las consultas documentales.

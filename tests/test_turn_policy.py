@@ -4274,6 +4274,11 @@ def test_explicit_message_payload_future_tense_preserves_intent_identity() -> No
     ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
     ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
     ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
+    ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
+    ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
+    ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
+    ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
+    ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
     ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
     ("Open an application.", "app.open", "application", "Which application should I open?"),
     ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
@@ -4343,6 +4348,8 @@ def test_explicit_incomplete_effect_uses_only_model_authored_question(
         )
     ]
     assert result["kind"] == "clarify"
+    assert result["startsNewObjective"] is True
+    assert result.get("preserveObjective", True) is True
     assert result["intentOperations"] == [operation]
     assert result["effectOperations"] == []
     assert result["question"] == question

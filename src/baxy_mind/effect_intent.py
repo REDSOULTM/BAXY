@@ -3060,6 +3060,7 @@ def resolve_explicit_clarification_intent(
             rf"{_SET_VOLUME_VERB}\s+(?:(?:el|the)\s+)?(?:volumen|volume)"
             r"(?:\s+(?:(?:al?|del?)\s+(?:sistema|equipo|pc|computador(?:a)?|ordenador)|"
             r"(?:of|on)\s+(?:the|my)\s+(?:system|computer|pc)))?"
+            r"(?:\s+(?:a|al|en|to|at))?"
             r"(?:\s*,?\s*(?:please|por favor))?[.!?]*",
             folded,
         ) is not None
@@ -3067,6 +3068,8 @@ def resolve_explicit_clarification_intent(
         # The same setting head with no target level is incomplete, not a
         # request to observe the previous level. Preserve the known operation
         # before the native selector can repeat an earlier status request.
+        # A trailing value preposition still supplies no level. Full matching
+        # preserves supplied values, other targets and subsequent clauses.
         return ClarificationIntent(("audio.volume",), ("level",))
     if (
         "audio.volume.adjust" in available

@@ -242,6 +242,45 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    [TestCase("Pon el volumen a...", "audio.volume", "¿A qué nivel?")]
+    [TestCase("Set the volume to...", "audio.volume", "What level should I set?")]
+    [TestCase("Abre una aplicación", "app.open", "¿Qué aplicación?")]
+    [TestCase("Create a reminder", "reminder.create", "What should I remind you about?")]
+    public void NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(
+        string text, string operation, string question)
+    {
+        var decision = new MindTurnDecision("clarify", null, [], question, string.Empty)
+        {
+            IntentOperations = [operation],
+            StartsNewObjective = true,
+        };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False);
+            Assert.That(decision.PreserveObjective, Is.True,
+                "The next slot value must still be able to complete this new request.");
+            Assert.That(decision.EffectOperations, Is.Empty);
+            Assert.That(MindClarificationPolicy.ShouldResumePendingObjective("37",
+                new MindTurnDecision("conversation", null, [], string.Empty, "Entendido.")), Is.True);
+        });
+    }
+
+    [Test]
+    public void StartsNewObjectiveIsOptionalBooleanAndDefaultsToLegacyFalse()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(new JsonObject(), out bool legacy)
+                && !legacy, Is.True);
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
+                new JsonObject { ["startsNewObjective"] = true }, out bool enabled) && enabled, Is.True);
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
+                new JsonObject { ["startsNewObjective"] = false }, out bool disabled) && !disabled, Is.True);
+            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
+                new JsonObject { ["startsNewObjective"] = "true" }, out _), Is.False);
+        });
+    }
+
     [Test]
     public void MindCatalogConfigurationCarriesOptionalVerifiedEntitySnapshots()
     {

@@ -143,6 +143,10 @@ def test_relative_volume_clarification_preserves_complete_and_other_requests(tex
     "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
     "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
     "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
+    "Pon el volumen a...", "Fija el volumen del sistema al…",
+    "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
+    "Change the volume on my computer to", "Baxy, ponme el volumen a",
+    "Please adjust the volume to...", "Set el volumen to...",
 ])
 def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
     available = ("audio.volume", "audio.volume.adjust", "audio.status")
@@ -159,6 +163,12 @@ def test_absolute_volume_clarifies_missing_level_without_observing(text: str) ->
     "Ajusta el volumen de datos", "Set the volume on my phone", "Ajusta el volumen de Spotify",
     "Ajusta el volumen y el brillo", "Pon el volumen, no, mejor déjalo",
     "Explícame cómo se ajusta el volumen", "Ajusta el volumen; abre Paint",
+    "Pon el volumen a 37", "Set the volume at 62 percent",
+    "Fija el volumen al mínimo", "Set the volume to maximum",
+    "Pon el volumen a la mitad", "Pon el volumen a como estaba antes",
+    "Set the volume to the previous level", "No pongas el volumen a...",
+    "Set the volume on my phone to...", "Pon el volumen de Spotify a...",
+    "Pon el volumen a... y abre Paint", "Traduce al inglés: Pon el volumen a...",
 ])
 def test_missing_level_does_not_replace_complete_or_different_requests(text: str) -> None:
     assert resolve_explicit_clarification_intent(text, ("audio.volume",)) is None

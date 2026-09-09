@@ -1,0 +1,5 @@
+# Producto629: 11/20, candidato628 aún sin adopción
+
+Los12controles608 conservan7correctos/5fallos. Sólo4de8variantes nuevas aclaran correctamente. El cambio628 sí alcanza explicit_clarification: request26 devuelve clarify sin efectos, pero el shell llama otra vez a turn.decide27 al fusionarlo con la aclaración pendiente de aplicación. MindClarificationPolicy.IsSelfContainedRequest siempre devuelve false para clarify; PreserveObjective controla tanto reanudación anterior como conservación del nuevo objetivo. No se debe ponerlo a false indiscriminadamente: perdería la respuesta al siguiente fragmento.
+
+La reparación630 distinguirá una orden nueva identificada por la mente y la conservación de su propio dato pendiente, con un indicador opcional sin autoridad de ejecución. No se añaden patrones de lenguaje al shell. Se conserva628 como candidato necesario, todavía sin adopción.3375pass/1skip+121subtests y Fast verde no prueban finales del producto. GPU3499,559MiB/RAM2461,641MiB;93,906s. Cero efectos en auditoría; no UI/voz. Encuesta25/717/0.

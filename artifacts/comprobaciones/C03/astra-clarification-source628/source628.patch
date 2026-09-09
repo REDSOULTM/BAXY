@@ -1,0 +1,91 @@
+diff --git a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+index 445ad116..c7d63026 100644
+--- a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
++++ b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a"
++    "ad6066f740c94999a16a2cc47da6796c5989e6e1fb23c704c28454ab6ae5bc03"
+ )
+ CONSUMED_BLIND_CONTRACT = (
+     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
+diff --git a/experiments/stt_quality/evaluate_reserved_stt.py b/experiments/stt_quality/evaluate_reserved_stt.py
+index 8fd95ced..bc578a60 100644
+--- a/experiments/stt_quality/evaluate_reserved_stt.py
++++ b/experiments/stt_quality/evaluate_reserved_stt.py
+@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a"
++    "ad6066f740c94999a16a2cc47da6796c5989e6e1fb23c704c28454ab6ae5bc03"
+ )
+ SAMPLE_RATE = 16_000
+ SILENCE_SAMPLES = SAMPLE_RATE // 5
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 383d9e1c..7e114c6c 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3060,6 +3060,7 @@ def resolve_explicit_clarification_intent(
+             rf"{_SET_VOLUME_VERB}\s+(?:(?:el|the)\s+)?(?:volumen|volume)"
+             r"(?:\s+(?:(?:al?|del?)\s+(?:sistema|equipo|pc|computador(?:a)?|ordenador)|"
+             r"(?:of|on)\s+(?:the|my)\s+(?:system|computer|pc)))?"
++            r"(?:\s+(?:a|al|en|to|at))?"
+             r"(?:\s*,?\s*(?:please|por favor))?[.!?]*",
+             folded,
+         ) is not None
+@@ -3067,6 +3068,8 @@ def resolve_explicit_clarification_intent(
+         # The same setting head with no target level is incomplete, not a
+         # request to observe the previous level. Preserve the known operation
+         # before the native selector can repeat an earlier status request.
++        # A trailing value preposition still supplies no level. Full matching
++        # preserves supplied values, other targets and subsequent clauses.
+         return ClarificationIntent(("audio.volume",), ("level",))
+     if (
+         "audio.volume.adjust" in available
+diff --git a/tests/test_effect_intent.py b/tests/test_effect_intent.py
+index 84244a2f..264e43c4 100644
+--- a/tests/test_effect_intent.py
++++ b/tests/test_effect_intent.py
+@@ -143,6 +143,10 @@ def test_relative_volume_clarification_preserves_complete_and_other_requests(tex
+     "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+     "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+     "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
++    "Pon el volumen a...", "Fija el volumen del sistema al…",
++    "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
++    "Change the volume on my computer to", "Baxy, ponme el volumen a",
++    "Please adjust the volume to...", "Set el volumen to...",
+ ])
+ def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+     available = ("audio.volume", "audio.volume.adjust", "audio.status")
+@@ -159,6 +163,12 @@ def test_absolute_volume_clarifies_missing_level_without_observing(text: str) ->
+     "Ajusta el volumen de datos", "Set the volume on my phone", "Ajusta el volumen de Spotify",
+     "Ajusta el volumen y el brillo", "Pon el volumen, no, mejor déjalo",
+     "Explícame cómo se ajusta el volumen", "Ajusta el volumen; abre Paint",
++    "Pon el volumen a 37", "Set the volume at 62 percent",
++    "Fija el volumen al mínimo", "Set the volume to maximum",
++    "Pon el volumen a la mitad", "Pon el volumen a como estaba antes",
++    "Set the volume to the previous level", "No pongas el volumen a...",
++    "Set the volume on my phone to...", "Pon el volumen de Spotify a...",
++    "Pon el volumen a... y abre Paint", "Traduce al inglés: Pon el volumen a...",
+ ])
+ def test_missing_level_does_not_replace_complete_or_different_requests(text: str) -> None:
+     assert resolve_explicit_clarification_intent(text, ("audio.volume",)) is None
+diff --git a/tests/test_turn_policy.py b/tests/test_turn_policy.py
+index b171488c..71d104c2 100644
+--- a/tests/test_turn_policy.py
++++ b/tests/test_turn_policy.py
+@@ -4274,6 +4274,11 @@ def test_explicit_message_payload_future_tense_preserves_intent_identity() -> No
+     ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+     ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+     ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
++    ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
++    ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
++    ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
++    ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
++    ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+     ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+     ("Open an application.", "app.open", "application", "Which application should I open?"),
+     ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),

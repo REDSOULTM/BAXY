@@ -5737,6 +5737,10 @@ def _prepare_turn_result(
             "question": question,
             "reply": "",
         }
+        if effect_request_is_authoritative(objective):
+            # A new command can lack a value without supplying one for the
+            # preceding request. Keep its own objective for the next answer.
+            result["startsNewObjective"] = True
         _append_turn_audit(
             {
                 "schema": "baxy.mind-turn-audit.v1",

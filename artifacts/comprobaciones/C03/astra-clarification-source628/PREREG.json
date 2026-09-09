@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-09T11:36:21.795248+00:00",
+  "source": 628,
+  "effect_intent_sha256": "1de48c012e9a930f218736299a9bfbe86e8c1099c5821d8188d99136cdf9adbf",
+  "python_tree_sha256": "ad6066f740c94999a16a2cc47da6796c5989e6e1fb23c704c28454ab6ae5bc03",
+  "python_files": 404,
+  "test_first": {
+    "failed": 14,
+    "passed": 41
+  },
+  "targeted": {
+    "passed": 55
+  },
+  "method": "Existing full-clause missing-level recognizer accepts an unfilled value preposition. No fixed prosa, inferred level, operation promotion, semantic-guard change or model/profile change.",
+  "criteria": "Owner suites and Fast green, same12 product608 controls plus8 incomplete-value variants in product629. No new failures or effects; retain all old defects, no UI/voice claim."
+}

@@ -1,4 +1,10 @@
-# C03 — fuente publicada120713be; auditoría534; aclaración pendiente
+# C03 — estado actual y registro de tramos
+
+**Estado vigente,2026-09-09:** goal activo; **ninguna decisión pendiente del dueño**. La [autorización536](AUTORIZACION_DUENO_536.md) permite usar históricos, encuesta y casos nuevos con generalización ES/EN. Los bloqueos534 descritos abajo son históricos y quedaron resueltos.
+
+Fuente630 validada y lista para publicar; main intacto. Full630 exit0:Python10253pass/3omisiones+466subpruebas,.NET4457pass/1omisión agregada.63116/20 y9/9aclaraciones de volumen, sin nuevas regresiones; persistencia de la respuesta siguiente aún requiere producto.628sola no bastaba y629se conserva como fallo. Encuesta25cubiertos/717abiertos/0NA; no confundir abiertos con fallos medidos. Estado operativo y siguiente acción en [HANDOFF.md](HANDOFF.md) y [RELEVO_ACTIVO.json](RELEVO_ACTIVO.json). Las entradas de cada tramo se conservan a continuación y sus cifras no describen automáticamente la fuente actual.
+
+## Registro histórico — fuente120713be y auditoría534
 
 Goal íntegro EN_CURSO en01a07974-2a33-7ed3-ba87-2436944e8115. Autoridad: astra-baseline-full526/GOAL_OBJECTIVE.md (sustituye publicación/Full/reserva/encuesta/audio/escalado), identidad y AGENTS. Goal-c03 y origin/Goal-c03 comprobados iguales en120713be877aaf426820174ece35a642923f5eda; main intacto5f572ee1b48cb5e2543ee5e06510e51057c9c845. Sin agentes. BAXY manual cerrado; no inferencia, medición ni suite en curso. Build servers cerrados. Encuesta742/rev1248 preservada.
 
@@ -611,3 +617,28 @@ Producto627:3499,559MiB GPU/2361,191MiB RAM,88,750s, sin infracciones; UI y voz 
 ## Publicacion626 confirmada
 
 Fuente y evidencia622–627 publicadas en `67085974c69c60034cba2ad95d156ddb096de6f6`; HEAD=origin/Goal-c03 y main intacto comprobados. Fuente626:1363pass/1skip+Fast; Full final pendiente. Siguiente bloqueo concreto: aclaracion missing-value608 y su dato perdido, sin repetir ajustes de modelos descartados. Encuesta25/717/0.
+
+
+## Candidato628 — aclaración de nivel ausente
+
+608 pierde la orden de volumen al terminar en una preposición sin valor. Se extiende el reconocedor completo existente;14fallos nuevos antes,55pass después. Mantiene valor presente, catálogo, negación, dispositivo y compuestos. Sólo Python; no cambio de prosa/modelo. Dueñas/Fast/producto629 pendientes. Encuesta25/717/0. No decisión pendiente del dueño.
+
+
+# Producto629: 11/20, candidato628 aún sin adopción
+
+Los12controles608 conservan7correctos/5fallos. Sólo4de8variantes nuevas aclaran correctamente. El cambio628 sí alcanza explicit_clarification: request26 devuelve clarify sin efectos, pero el shell llama otra vez a turn.decide27 al fusionarlo con la aclaración pendiente de aplicación. MindClarificationPolicy.IsSelfContainedRequest siempre devuelve false para clarify; PreserveObjective controla tanto reanudación anterior como conservación del nuevo objetivo. No se debe ponerlo a false indiscriminadamente: perdería la respuesta al siguiente fragmento.
+
+La reparación630 distinguirá una orden nueva identificada por la mente y la conservación de su propio dato pendiente, con un indicador opcional sin autoridad de ejecución. No se añaden patrones de lenguaje al shell. Se conserva628 como candidato necesario, todavía sin adopción.3375pass/1skip+121subtests y Fast verde no prueban finales del producto. GPU3499,559MiB/RAM2461,641MiB;93,906s. Cero efectos en auditoría; no UI/voz. Encuesta25/717/0.
+
+
+# Fuente630 adoptada — la nueva aclaración conserva su propio pedido
+
+628 conserva la orden de volumen que termina con una preposición todavía sin valor.630 evita que el shell la concatene con una aclaración anterior: la mente marca una orden nueva ya reconocida; el shell mantiene su propio objetivo pendiente. startsNewObjective es opcional, false por defecto y no concede efectos. No hay patrones nuevos de lenguaje en C#, prosa fija, cambio de modelo ni nuevo proceso residente.
+
+Producto631 repite exactamente los20casos629:16correctos frente a11. Las9peticiones incompletas de volumen aclaran correctamente en español/inglés/mixed; cero efectos en auditoría y cero nuevos fallos. Persisten H0012, gramática de missing-app, missing-reference-en y gramática de knowledge-discourse. Progreso conserva los dos avisos previos, sin metanarración de idioma; su tercera persona española sigue pendiente. Es transporte de producto, no prueba de pantalla/voz. El siguiente fragmento queda preservado por el contrato probado, pero esta corrida no ejecuta un valor posterior ni acredita la ruta entera.
+
+Full630:exit0, Python10253pass/3omisiones+466subpruebas en589,57s; .NET4457pass/1omisión agregada,0fallos. Omisiones ambientales/opt-in se conservan aparte y no se cuentan como pass. Dueñas previas:Python1254pass/1skip, .NET114pass/0skip;6283375pass/1skip+121subpruebas. Ningún umbral ni suite se relajó. Fuente de ambos extremos comprobada intacta duranteFull. Es validación de este tramo, no cierreC03.
+
+631 midió3499,559MiB GPU y2420,680MiB RAM, sin infracciones.117,234s incluyen la publicación NativeAOT que main.py necesitó al arrancar: no comparar ese total con629como latencia de conversación. El turno reparado emitió su final en627,494ms, una sola decisión en vez de dos. UI y voz juntas y el mínimo global de recursos siguen pendientes.
+
+Encuesta25cubiertos/717abiertos/0NA.632 audita H0040: las negaciones541no estaban respaldadas por las observaciones; queda abierta la reparación del alcance de ventanas, con causa exacta y documentación primaria. Se publica en Goal-c03 sin tocar main. Ninguna decisión pendiente del dueño; autorización536 vigente.

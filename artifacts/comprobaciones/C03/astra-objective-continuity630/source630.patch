@@ -1,0 +1,262 @@
+diff --git a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+index 445ad116..e0cac28a 100644
+--- a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
++++ b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a"
++    "92d8fd81f3189ac96fbbb8750413da2cadac900b279ea2660eb1ff076eab7370"
+ )
+ CONSUMED_BLIND_CONTRACT = (
+     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
+diff --git a/experiments/stt_quality/evaluate_reserved_stt.py b/experiments/stt_quality/evaluate_reserved_stt.py
+index 8fd95ced..47fadaa9 100644
+--- a/experiments/stt_quality/evaluate_reserved_stt.py
++++ b/experiments/stt_quality/evaluate_reserved_stt.py
+@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "47de59d8e395e11d7ada744fb459bb10a12f9458173db971236009f9abfd1d0a"
++    "92d8fd81f3189ac96fbbb8750413da2cadac900b279ea2660eb1ff076eab7370"
+ )
+ SAMPLE_RATE = 16_000
+ SILENCE_SAMPLES = SAMPLE_RATE // 5
+diff --git a/src/Baxy.App/MindSidecarClient.cs b/src/Baxy.App/MindSidecarClient.cs
+index 469ab393..0f99f05f 100644
+--- a/src/Baxy.App/MindSidecarClient.cs
++++ b/src/Baxy.App/MindSidecarClient.cs
+@@ -34,6 +34,13 @@ internal sealed record MindTurnDecision(
+     /// </summary>
+     public bool PreserveObjective { get; init; } = true;
+ 
++    /// <summary>
++    /// The mind recognized a new request that needs its own clarification.
++    /// It must not be appended as a value for an older pending objective.
++    /// This flag grants no execution authority and does not discard the new objective.
++    /// </summary>
++    public bool StartsNewObjective { get; init; }
++
+     /// <summary>
+     /// Language the mind actually wrote <see cref="Reply"/> in, as reported by
+     /// the mind. The shell never re-derives it: a second reading here is what
+@@ -474,7 +481,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+             && language is "es" or "en" or "mixed"
+                 ? language
+                 : null;
+-        if (!TryParsePreserveObjective(reply, out bool preserveObjective))
++        if (!TryParsePreserveObjective(reply, out bool preserveObjective)
++            || !TryParseStartsNewObjective(reply, out bool startsNewObjective))
+         {
+             return null;
+         }
+@@ -523,6 +531,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+             {
+                 IntentOperations = intentOperations,
+                 PreserveObjective = preserveObjective,
++                StartsNewObjective = startsNewObjective,
+                 ResponseLanguage = responseLanguage,
+                 ConversationKind = conversationKind,
+                 RecoveryFailureCode = recoveryFailureCode,
+@@ -533,17 +542,29 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+     internal static bool TryParsePreserveObjective(
+         JsonObject reply,
+         out bool preserveObjective)
++        => TryParseOptionalBoolean(reply, "preserveObjective", true, out preserveObjective);
++
++    internal static bool TryParseStartsNewObjective(
++        JsonObject reply,
++        out bool startsNewObjective)
++        => TryParseOptionalBoolean(reply, "startsNewObjective", false, out startsNewObjective);
++
++    private static bool TryParseOptionalBoolean(
++        JsonObject reply,
++        string property,
++        bool defaultValue,
++        out bool result)
+     {
+         ArgumentNullException.ThrowIfNull(reply);
+-        preserveObjective = true;
+-        JsonNode? value = reply["preserveObjective"];
++        result = defaultValue;
++        JsonNode? value = reply[property];
+         if (value is null)
+         {
+             return true;
+         }
+ 
+         return value is JsonValue scalar
+-            && scalar.TryGetValue(out preserveObjective);
++            && scalar.TryGetValue(out result);
+     }
+ 
+     internal static bool TryParseEffectOperations(
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index be0acdca..4cbf4456 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -118,6 +118,10 @@ internal static class MindClarificationPolicy
+                     operation,
+                     StringComparison.Ordinal),
+             "plan" => decision.Operation is null,
++            "clarify" => decision.StartsNewObjective
++                && decision.Operation is null
++                && decision.EffectOperations.Count == 0
++                && decision.IntentOperations.Count > 0,
+             // Slot values such as "mañana a las 9", "Opera" or "la segunda"
+             // can look conversational in isolation. They must keep the
+             // pending objective instead of silently discarding it.
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 0f8a4288..18baf2c8 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5737,6 +5737,10 @@ def _prepare_turn_result(
+             "question": question,
+             "reply": "",
+         }
++        if effect_request_is_authoritative(objective):
++            # A new command can lack a value without supplying one for the
++            # preceding request. Keep its own objective for the next answer.
++            result["startsNewObjective"] = True
+         _append_turn_audit(
+             {
+                 "schema": "baxy.mind-turn-audit.v1",
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 383d9e1c..7e114c6c 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3060,6 +3060,7 @@ def resolve_explicit_clarification_intent(
+             rf"{_SET_VOLUME_VERB}\s+(?:(?:el|the)\s+)?(?:volumen|volume)"
+             r"(?:\s+(?:(?:al?|del?)\s+(?:sistema|equipo|pc|computador(?:a)?|ordenador)|"
+             r"(?:of|on)\s+(?:the|my)\s+(?:system|computer|pc)))?"
++            r"(?:\s+(?:a|al|en|to|at))?"
+             r"(?:\s*,?\s*(?:please|por favor))?[.!?]*",
+             folded,
+         ) is not None
+@@ -3067,6 +3068,8 @@ def resolve_explicit_clarification_intent(
+         # The same setting head with no target level is incomplete, not a
+         # request to observe the previous level. Preserve the known operation
+         # before the native selector can repeat an earlier status request.
++        # A trailing value preposition still supplies no level. Full matching
++        # preserves supplied values, other targets and subsequent clauses.
+         return ClarificationIntent(("audio.volume",), ("level",))
+     if (
+         "audio.volume.adjust" in available
+diff --git a/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs b/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+index cab91003..0f8aa0fe 100644
+--- a/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
++++ b/tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs
+@@ -242,6 +242,45 @@ public sealed class PlannerAppBoundaryTests
+         });
+     }
+ 
++    [TestCase("Pon el volumen a...", "audio.volume", "¿A qué nivel?")]
++    [TestCase("Set the volume to...", "audio.volume", "What level should I set?")]
++    [TestCase("Abre una aplicación", "app.open", "¿Qué aplicación?")]
++    [TestCase("Create a reminder", "reminder.create", "What should I remind you about?")]
++    public void NewIncompleteRequestReplacesPriorObjectiveAndKeepsItsOwn(
++        string text, string operation, string question)
++    {
++        var decision = new MindTurnDecision("clarify", null, [], question, string.Empty)
++        {
++            IntentOperations = [operation],
++            StartsNewObjective = true,
++        };
++        Assert.Multiple(() =>
++        {
++            Assert.That(MindClarificationPolicy.ShouldResumePendingObjective(text, decision), Is.False);
++            Assert.That(decision.PreserveObjective, Is.True,
++                "The next slot value must still be able to complete this new request.");
++            Assert.That(decision.EffectOperations, Is.Empty);
++            Assert.That(MindClarificationPolicy.ShouldResumePendingObjective("37",
++                new MindTurnDecision("conversation", null, [], string.Empty, "Entendido.")), Is.True);
++        });
++    }
++
++    [Test]
++    public void StartsNewObjectiveIsOptionalBooleanAndDefaultsToLegacyFalse()
++    {
++        Assert.Multiple(() =>
++        {
++            Assert.That(MindSidecarClient.TryParseStartsNewObjective(new JsonObject(), out bool legacy)
++                && !legacy, Is.True);
++            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
++                new JsonObject { ["startsNewObjective"] = true }, out bool enabled) && enabled, Is.True);
++            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
++                new JsonObject { ["startsNewObjective"] = false }, out bool disabled) && !disabled, Is.True);
++            Assert.That(MindSidecarClient.TryParseStartsNewObjective(
++                new JsonObject { ["startsNewObjective"] = "true" }, out _), Is.False);
++        });
++    }
++
+     [Test]
+     public void MindCatalogConfigurationCarriesOptionalVerifiedEntitySnapshots()
+     {
+diff --git a/tests/test_effect_intent.py b/tests/test_effect_intent.py
+index 84244a2f..264e43c4 100644
+--- a/tests/test_effect_intent.py
++++ b/tests/test_effect_intent.py
+@@ -143,6 +143,10 @@ def test_relative_volume_clarification_preserves_complete_and_other_requests(tex
+     "Ajusta el volumen.", "Set the volume.", "Set the volume, por favor.",
+     "Pon el volumen.", "Fija el volumen del sistema", "change the volume please",
+     "Adjust volume", "establece el volumen", "deja el volumen", "ponme el volumen",
++    "Pon el volumen a...", "Fija el volumen del sistema al…",
++    "Ajusta el volumen en...", "Set the volume to...", "Set the volume at…",
++    "Change the volume on my computer to", "Baxy, ponme el volumen a",
++    "Please adjust the volume to...", "Set el volumen to...",
+ ])
+ def test_absolute_volume_clarifies_missing_level_without_observing(text: str) -> None:
+     available = ("audio.volume", "audio.volume.adjust", "audio.status")
+@@ -159,6 +163,12 @@ def test_absolute_volume_clarifies_missing_level_without_observing(text: str) ->
+     "Ajusta el volumen de datos", "Set the volume on my phone", "Ajusta el volumen de Spotify",
+     "Ajusta el volumen y el brillo", "Pon el volumen, no, mejor déjalo",
+     "Explícame cómo se ajusta el volumen", "Ajusta el volumen; abre Paint",
++    "Pon el volumen a 37", "Set the volume at 62 percent",
++    "Fija el volumen al mínimo", "Set the volume to maximum",
++    "Pon el volumen a la mitad", "Pon el volumen a como estaba antes",
++    "Set the volume to the previous level", "No pongas el volumen a...",
++    "Set the volume on my phone to...", "Pon el volumen de Spotify a...",
++    "Pon el volumen a... y abre Paint", "Traduce al inglés: Pon el volumen a...",
+ ])
+ def test_missing_level_does_not_replace_complete_or_different_requests(text: str) -> None:
+     assert resolve_explicit_clarification_intent(text, ("audio.volume",)) is None
+diff --git a/tests/test_price_v8_veto_damage_by_cause.py b/tests/test_price_v8_veto_damage_by_cause.py
+index 6a199d31..4d7754f4 100644
+--- a/tests/test_price_v8_veto_damage_by_cause.py
++++ b/tests/test_price_v8_veto_damage_by_cause.py
+@@ -101,7 +101,7 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
+ # CPU actor/quantity repairs; consumed V8 evidence and verdict remain unchanged.
+ V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
+     "src/baxy_mind/__main__.py": (
+-        "f5799ceda0288d30bbdf911957a2de5591bba252d5f8b4eeb8ec2a15c805b3a1"
++        "e03aa7836e20b88b50b773c2c6ad914152be8db2c1aa39a20824d4d6c12ed1c3"
+     ),
+     "src/baxy_mind/llm.py": (
+         "464603566c9dc66204cc75e45a79c8058063d0bb06fe6ff554bf56529e5ea73e"
+diff --git a/tests/test_turn_policy.py b/tests/test_turn_policy.py
+index b171488c..37508259 100644
+--- a/tests/test_turn_policy.py
++++ b/tests/test_turn_policy.py
+@@ -4274,6 +4274,11 @@ def test_explicit_message_payload_future_tense_preserves_intent_identity() -> No
+     ("Ajusta el volumen.", "audio.volume", "level", "¿A qué nivel quieres el volumen?"),
+     ("Set the volume.", "audio.volume", "level", "What volume level do you want?"),
+     ("Set the volume, por favor.", "audio.volume", "level", "¿A qué nivel lo ponemos?"),
++    ("Pon el volumen a...", "audio.volume", "level", "¿Qué nivel de volumen quieres?"),
++    ("Fija el volumen del sistema al…", "audio.volume", "level", "¿A qué porcentaje?"),
++    ("Set the volume to...", "audio.volume", "level", "What volume level do you want?"),
++    ("Change the volume on my computer to", "audio.volume", "level", "What level should I set?"),
++    ("Set el volumen to...", "audio.volume", "level", "¿Qué nivel quieres poner?"),
+     ("Abre una aplicación.", "app.open", "application", "¿Qué aplicación quieres abrir?"),
+     ("Open an application.", "app.open", "application", "Which application should I open?"),
+     ("Open una aplicación, por favor.", "app.open", "application", "¿Cuál aplicación abro?"),
+@@ -4343,6 +4348,8 @@ def test_explicit_incomplete_effect_uses_only_model_authored_question(
+         )
+     ]
+     assert result["kind"] == "clarify"
++    assert result["startsNewObjective"] is True
++    assert result.get("preserveObjective", True) is True
+     assert result["intentOperations"] == [operation]
+     assert result["effectOperations"] == []
+     assert result["question"] == question

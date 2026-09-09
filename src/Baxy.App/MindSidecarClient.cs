@@ -35,6 +35,13 @@ internal sealed record MindTurnDecision(
     public bool PreserveObjective { get; init; } = true;
 
     /// <summary>
+    /// The mind recognized a new request that needs its own clarification.
+    /// It must not be appended as a value for an older pending objective.
+    /// This flag grants no execution authority and does not discard the new objective.
+    /// </summary>
+    public bool StartsNewObjective { get; init; }
+
+    /// <summary>
     /// Language the mind actually wrote <see cref="Reply"/> in, as reported by
     /// the mind. The shell never re-derives it: a second reading here is what
     /// vetoed an English greeting composed as Spanish and left the turn silent.
@@ -474,7 +481,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             && language is "es" or "en" or "mixed"
                 ? language
                 : null;
-        if (!TryParsePreserveObjective(reply, out bool preserveObjective))
+        if (!TryParsePreserveObjective(reply, out bool preserveObjective)
+            || !TryParseStartsNewObjective(reply, out bool startsNewObjective))
         {
             return null;
         }
@@ -523,6 +531,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             {
                 IntentOperations = intentOperations,
                 PreserveObjective = preserveObjective,
+                StartsNewObjective = startsNewObjective,
                 ResponseLanguage = responseLanguage,
                 ConversationKind = conversationKind,
                 RecoveryFailureCode = recoveryFailureCode,
@@ -533,17 +542,29 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal static bool TryParsePreserveObjective(
         JsonObject reply,
         out bool preserveObjective)
+        => TryParseOptionalBoolean(reply, "preserveObjective", true, out preserveObjective);
+
+    internal static bool TryParseStartsNewObjective(
+        JsonObject reply,
+        out bool startsNewObjective)
+        => TryParseOptionalBoolean(reply, "startsNewObjective", false, out startsNewObjective);
+
+    private static bool TryParseOptionalBoolean(
+        JsonObject reply,
+        string property,
+        bool defaultValue,
+        out bool result)
     {
         ArgumentNullException.ThrowIfNull(reply);
-        preserveObjective = true;
-        JsonNode? value = reply["preserveObjective"];
+        result = defaultValue;
+        JsonNode? value = reply[property];
         if (value is null)
         {
             return true;
         }
 
         return value is JsonValue scalar
-            && scalar.TryGetValue(out preserveObjective);
+            && scalar.TryGetValue(out result);
     }
 
     internal static bool TryParseEffectOperations(

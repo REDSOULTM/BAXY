@@ -1,0 +1,84 @@
+{
+  "utc": "2026-09-09T12:15:04.726385+00:00",
+  "adopted": true,
+  "full_exit": 0,
+  "python": {
+    "passed": 10253,
+    "skipped": 3,
+    "subtests": 466,
+    "seconds": 589.57
+  },
+  "dotnet": [
+    {
+      "failed": 0,
+      "passed": 60,
+      "skipped": 0,
+      "total": 60,
+      "duration": "212 ms",
+      "suite": "Baxy.Contracts.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 3279,
+      "skipped": 1,
+      "total": 3280,
+      "duration": "9 m 11 s",
+      "suite": "Baxy.Integration.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 140,
+      "skipped": 0,
+      "total": 140,
+      "duration": "1 s",
+      "suite": "Baxy.Kernel.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 501,
+      "skipped": 0,
+      "total": 501,
+      "duration": "41 s",
+      "suite": "Baxy.Providers.Windows.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 477,
+      "skipped": 0,
+      "total": 477,
+      "duration": "1 m 16 s",
+      "suite": "Baxy.Setup.Tests.dll"
+    }
+  ],
+  "dotnet_printed_omissions": 16,
+  "source_unchanged_during_full": true,
+  "owners": {
+    "python_passed": 1254,
+    "python_skipped": 1,
+    "dotnet_passed": 114,
+    "dotnet_skipped": 0
+  },
+  "source_files": {
+    "src/baxy_mind/__main__.py": "e03aa7836e20b88b50b773c2c6ad914152be8db2c1aa39a20824d4d6c12ed1c3",
+    "src/baxy_mind/effect_intent.py": "1de48c012e9a930f218736299a9bfbe86e8c1099c5821d8188d99136cdf9adbf",
+    "src/Baxy.App/MindSidecarClient.cs": "c87b73ff936d125f0f606b139cc8f8578a5c0606e2768329a5bdcfeafa5ce54c",
+    "src/Baxy.App/UserMessagePolicy.cs": "8fd790a33c7f78fc908fdaeab8de362448a5390bceef4bdc902aea51ee5bfa0e",
+    "tests/test_effect_intent.py": "707a8c5cd51c66222960ac6981c5f16c9ffae7d5c3d7499e037d84218f4fb3f4",
+    "tests/test_turn_policy.py": "4d93784a468dc0ad06541719cea97124068b3ce2a48f62711f33c926ed51ba7f",
+    "tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs": "f4837dc0c8a87253c0ca3ad6914e618f5e06994a3c434af27787062d1cc93a4f",
+    "tests/test_price_v8_veto_damage_by_cause.py": "d6d9c14eeef21cce7b34b230a214b37ccf18bf186f90675ea646a73ef363283a",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "deb7dd42f03c0ac3bb2c94fa5688bad21c4c46085bfb079c172b53eaff7b978b",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "109ba18247e0c1ef23386404b041b74904eccaa87cc7cae76e004fb7d6f55d22"
+  },
+  "product631": {
+    "correct": 16,
+    "total": 20,
+    "new_failures": 0
+  },
+  "goal_complete": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  }
+}

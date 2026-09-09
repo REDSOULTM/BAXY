@@ -1,0 +1,12 @@
+{
+  "adopted": false,
+  "targeted_passed": 55,
+  "owners_passed": 3375,
+  "owners_skipped": 1,
+  "owners_subtests": 121,
+  "fast_exit": 0,
+  "release_seconds": 18.55,
+  "product629_correct": 11,
+  "product629_total": 20,
+  "next_candidate": 630
+}

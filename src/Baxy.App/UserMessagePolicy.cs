@@ -118,6 +118,10 @@ internal static class MindClarificationPolicy
                     operation,
                     StringComparison.Ordinal),
             "plan" => decision.Operation is null,
+            "clarify" => decision.StartsNewObjective
+                && decision.Operation is null
+                && decision.EffectOperations.Count == 0
+                && decision.IntentOperations.Count > 0,
             // Slot values such as "mañana a las 9", "Opera" or "la segunda"
             // can look conversational in isolation. They must keep the
             // pending objective instead of silently discarding it.

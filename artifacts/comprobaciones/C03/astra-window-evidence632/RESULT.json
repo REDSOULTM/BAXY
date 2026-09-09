@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-09T11:52:40.680948+00:00",
+  "case_id": "H0040",
+  "historical_replies": 2,
+  "historical_correct": 0,
+  "current_spanish_parser_wrong_scope": true,
+  "current_english_product_run": false,
+  "source_modified": false,
+  "survey_modified": false,
+  "current_sources": {
+    "src/baxy_mind/effect_intent.py": "1de48c012e9a930f218736299a9bfbe86e8c1099c5821d8188d99136cdf9adbf",
+    "src/baxy_mind/__main__.py": "e03aa7836e20b88b50b773c2c6ad914152be8db2c1aa39a20824d4d6c12ed1c3"
+  },
+  "historical_sources": {
+    "adjudication.json": "8cb9f1b6c22154cc2d7f0d508976fed028983286236039c0dbd5d584f580ab85",
+    "turn-audit.jsonl": "81d731c0099a89ab59bc59183cc1421f0d9a327a5c645eca18bf880100bf4731",
+    "compose-audit.jsonl": "3b9b0e1e4c54bad0166ed18812f53f0c61c255beea4d2e59435850da5a649bec",
+    "raw-replies.jsonl": "ac06bfe8970e9f378fe809323556cd7de1a5858bff20891f9405ec10ed1fc474",
+    "shell-trace.jsonl": "d3aedeff945c1e952ad081b49a073818a6ffa26248e06775d128ca94c02240b3"
+  },
+  "private_hashes": {
+    "evidence.json": "85190eab6c5abbcd178b8c39f77b88091da01098a9c51fe85f8f6c93e7722fa7",
+    "RESULT.md": "cfd1df6427ac8a0483bf142e8893b1260a30969112f070f47e0b31092924fc15"
+  }
+}
