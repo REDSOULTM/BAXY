@@ -1,0 +1,15 @@
+{
+  "native_finals": 8,
+  "production_adoption": false,
+  "conclusion": "Mismo feedback y borradores; perfil oficial Qwen0,7/0,8/20/0, presence0/repeat1. Seed0 corrige sujeto y gramática en los cuatro casos. Seed17 omite sujeto explícito en Está usando, ambiguo; los otros tres se conservan. Perfil candidato seed0 exclusivamente para reparación detectada, no muestreo global. Fuente oficial comprobada:https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices.",
+  "private_report_sha256": "def8c4e6a15bd2a4a2faa4ac1566579d8b5e4f9a3514e098dabeb3534094f45d",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.1953125,
+    "seconds": 5.625,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  }
+}

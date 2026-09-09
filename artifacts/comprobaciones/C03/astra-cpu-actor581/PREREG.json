@@ -1,0 +1,35 @@
+{
+  "stage": "After owner validation, before source Fast/STT/product582.",
+  "utc": "2026-09-09T06:37:59.543740+00:00",
+  "inheritance": "578 real-draft feedback fixes actors but greedy grammar fails;579 documented Qwen seed0 fixes four originals;580 three varied first-person failures corrected, already-correct ES control must not be repaired.",
+  "change": "CPU-observation-scoped wrong_machine_actor guard; reuse existing retry/third slots with actual rejected draft and unchanged feedback, qualified Qwen2507 correction-only sampling. Correct first replies unchanged. Retry/third never receives contradictory First person instruction for this defect. Other models keep their sampling.",
+  "additional_blocker": "A stub probe after adding actor detection showed the old fact guard accepted corrected subject with CPU99% although observed23.75. CPU-only numeric claims are now checked against observed usage (display-precision rounding) and physical/logical counts. Exclude mixed observations so an audio or other metric percentage is not misattributed to CPU. No claim of universal metric validation.",
+  "baseline": {
+    "initial_population": 26,
+    "initial_failed": 20,
+    "initial_passed": 6,
+    "final_population": 39,
+    "final_failed": 25,
+    "final_passed": 14,
+    "final_seconds": 0.7,
+    "method": "Saved exact pre581 llm source loaded in an isolated subprocess under its existing module/resource path; no working-tree overwrite, model or effects. Final tests against the same saved owner.",
+    "test_corrections": "English actor tests use English requests. Existing exhaustion contract returns empty string, not ValueError; test now requires no publication and exactly3requests."
+  },
+  "focal": {
+    "passed": 39,
+    "seconds": 0.61
+  },
+  "owners": {
+    "passed": 1993,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 9.52
+  },
+  "compose_transport_contracts": {
+    "passed": 156,
+    "skipped": 0,
+    "seconds": 1.27
+  },
+  "source_sha256": "6f06269e41391ee3f6ead05df0a655f5b847384849af191deaa09fe0f605a069",
+  "no_new_inference_slots": true
+}

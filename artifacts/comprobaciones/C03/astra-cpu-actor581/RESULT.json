@@ -1,0 +1,30 @@
+{
+  "adopted": true,
+  "final_baseline": {
+    "failed": 32,
+    "passed": 14,
+    "seconds": 0.73
+  },
+  "final_owners_and_contracts": {
+    "passed": 2156,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 10.53
+  },
+  "focal_and_stt": {
+    "cpu_passed": 46,
+    "stt_passed": 12,
+    "environmental_skips": 1,
+    "seconds": 1.57
+  },
+  "fast": "passed",
+  "release_incremental_seconds": 1.76,
+  "source_sha256": "c454dca85447c7ca75ad3c38f5284b45a5f3d0bf3e172a946b9a47529d2ab31a",
+  "test_sha256": "e3b72b9484b4c7e36be51c013b2a54fdad67542074584ec5a13ebefb49b4a382",
+  "product": "pending582",
+  "survey": {
+    "covered": 12,
+    "open": 730,
+    "not_applicable": 0
+  }
+}

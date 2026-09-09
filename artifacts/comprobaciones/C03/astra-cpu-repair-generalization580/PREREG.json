@@ -1,0 +1,72 @@
+{
+  "method": "Six explicitly synthetic development fixtures change question wording/ES/EN, measured CPU percentage, physical/logical ratio and processor label. Generate each initial draft with registered greedy first, then feed that actual draft into the unchanged feedback578 with documented sampling579 seed0. This is twelve native requests and no production-source change. Tests generalization and preservation; no human acceptance or observed-hardware claim.",
+  "inheritance": "558/559 stateless field rename/ownership instruction did not fix the failure. Current compose_visible_defect has wrong_actor only for capabilities/connectivity, so CPU first person passes without repair. Existing third generic repair also asks First person; no claim this caused the initial native543/575 failures (their system prompts do not contain it). No guard/source change until native evidence supports repair.",
+  "criteria": "ES must stop saying Estoy usando/Tengo for computer observations, with values unchanged. Correct EN controls must preserve language, subject and facts. Native success alone is not adoption; requires fact-scoped guard, bounded existing retry path, owner tests and actual product regression. No global default model ranking, new training or survey credit.",
+  "feedback": "Review who the subject of your previous answer is. The observations describe this computer; they do not measure the assistant as a process or hardware owned by the assistant. Correct only the subject if needed, keep all observed values and the original question language. Return only the revised answer.",
+  "profiles": [
+    [
+      "baseline",
+      {
+        "seed": 0
+      }
+    ],
+    [
+      "draft-feedback",
+      {
+        "temperature": 0.7,
+        "top_p": 0.8,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "seed": 0
+      }
+    ]
+  ],
+  "case_count": 6,
+  "server_command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "59242",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-cpu-repair-generalization580-private\\server.log"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 360,
+    "request_seconds": 60
+  }
+}

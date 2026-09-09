@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T06:15:25.547933+00:00",
+  "confirmedAtUtc": "2026-09-09T06:48:24.029587+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "576: compound clock/mute conservation adopted;2651pass+121subtests,1632pass/1STTskip,Fast green. Survey12/730/0.",
-  "continuation": "Publish576; run read-only product577. CPU ownership guard investigation after575; remaining C03 requirements open.",
+  "checkpoint": "581 final: scoped CPU actor/numeric guards;2156pass+121subtests,CPU46+STT12pass/1skip,Fast green. Survey12/730/0; product582 pending.",
+  "continuation": "Publish581 and run582; adjudicate actual CPU generalization and controls. All remaining C03 obligations stay open.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "ad6d9a1a69efc3b71b654e2ca9a0bb7185085305",
+  "publishedSourceCommit": "022416a05eb88bec4c291cf5969278a2de3bf7e2",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

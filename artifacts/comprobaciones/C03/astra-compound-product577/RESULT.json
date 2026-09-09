@@ -1,0 +1,15 @@
+{
+  "finals": 9,
+  "correct": 9,
+  "source576_verified": true,
+  "new_survey_credit": false,
+  "private_report_sha256": "a3cb6a2fdd7f02d7253ab17215c06a189100a769f1d0d22f464d29e8569cf6a5",
+  "adjudication_sha256": "0c2960355ffdac2ec29e542ba8901a11d3903d8ce4850eb6b87aa59b45e431a9",
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1859.54296875,
+    "seconds": 28.766
+  }
+}

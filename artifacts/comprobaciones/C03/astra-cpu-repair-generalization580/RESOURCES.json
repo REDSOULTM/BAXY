@@ -1,0 +1,9 @@
+{
+  "completed": true,
+  "violations": [],
+  "gpu_peak_mib": 3497.55859375,
+  "ram_peak_mib": 725.4140625,
+  "seconds": 7.14,
+  "manifest_unchanged": true,
+  "server_exit_after_intentional_cleanup": 15
+}

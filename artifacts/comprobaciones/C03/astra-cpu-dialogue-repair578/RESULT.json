@@ -1,0 +1,15 @@
+{
+  "native_finals": 8,
+  "production_adoption": false,
+  "conclusion": "Dar al modelo su borrador real y feedback de sujeto corrige los dos actores. Greedy genera Esto computadora en el uso ES: gramática defectuosa, no adoptar ese perfil. EN conserva hechos e idioma. La instrucción genérica First person del tercer reintento no estaba en los primeros prompts543/575; no atribuirle la causa inicial.",
+  "private_report_sha256": "a15101a78bb0cb0d023c7d8a0d18c914d557b7026368a1139ccd98dabb7adfc7",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.59765625,
+    "seconds": 5.547,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  }
+}

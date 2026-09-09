@@ -1,0 +1,81 @@
+...................................FF................................... [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+.............................................. [ 52%]
+......................................................................................................................... [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+.............................................                            [100%]
+================================== FAILURES ===================================
+_ test_repair_cannot_change_observed_cpu_quantities[The CPU usage is 99 PERCENT.] _
+
+reply = 'The CPU usage is 99 PERCENT.'
+
+    @pytest.mark.parametrize("reply", [
+        "Este equipo está usando un 99% de la CPU.",
+        "Este equipo tiene 8 núcleos físicos y 6 procesadores lógicos.",
+        "This computer has 8 physical cores and 6 logical processors.",
+        "Physical core count: 8. Logical processor count: 6.",
+        "The CPU usage is 99 PERCENT.",
+        "The CPU usage is -23.75 per cent.",
+        "El uso es del −23,75 porciento.",
+        "Este equipo tiene -6 núcleos físicos.",
+        "Physical cores: 8. Logical processors: 6.",
+    ])
+    def test_repair_cannot_change_observed_cpu_quantities(reply):
+>       assert llm.compose_visible_defect(reply, "status", "Describe CPU", facts()) == "wrong_machine_value"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_value'
+E         
+E         - wrong_machine_value
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:131: AssertionError
+_ test_repair_cannot_change_observed_cpu_quantities[The CPU usage is -23.75 per cent.] _
+
+reply = 'The CPU usage is -23.75 per cent.'
+
+    @pytest.mark.parametrize("reply", [
+        "Este equipo está usando un 99% de la CPU.",
+        "Este equipo tiene 8 núcleos físicos y 6 procesadores lógicos.",
+        "This computer has 8 physical cores and 6 logical processors.",
+        "Physical core count: 8. Logical processor count: 6.",
+        "The CPU usage is 99 PERCENT.",
+        "The CPU usage is -23.75 per cent.",
+        "El uso es del −23,75 porciento.",
+        "Este equipo tiene -6 núcleos físicos.",
+        "Physical cores: 8. Logical processors: 6.",
+    ])
+    def test_repair_cannot_change_observed_cpu_quantities(reply):
+>       assert llm.compose_visible_defect(reply, "status", "Describe CPU", facts()) == "wrong_machine_value"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_value'
+E         
+E         - wrong_machine_value
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:131: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_cpu_actor.py::test_repair_cannot_change_observed_cpu_quantities[The CPU usage is 99 PERCENT.]
+FAILED tests/test_c03_cpu_actor.py::test_repair_cannot_change_observed_cpu_quantities[The CPU usage is -23.75 per cent.]
+2 failed, 2154 passed, 121 subtests passed in 11.11s

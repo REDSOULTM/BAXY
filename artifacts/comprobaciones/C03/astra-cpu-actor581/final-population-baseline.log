@@ -1,0 +1,191 @@
+FFFFFFFFFFFFFFFF...FFFF......FFFF.....F                                  [100%]
+================================== FAILURES ===================================
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-False] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-True] _
+tests\test_c03_cpu_actor.py:34: in test_observed_cpu_rejects_assistant_as_owner_or_measured_process
+    assert llm.compose_visible_defect(reply, "status", user_text, facts(mission)) == "wrong_machine_actor"
+E   AssertionError: assert '' == 'wrong_machine_actor'
+E     
+E     - wrong_machine_actor
+__ test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling __
+tests\test_c03_cpu_actor.py:64: in test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling
+    assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E   AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E     
+E     - Este equipo está usando un 23,75% de la CPU.
+E     ?    ------- ^^^^^
+E     + Estoy usando un 23,75% de la CPU.
+E     ?     ^
+_ test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person _
+tests\test_c03_cpu_actor.py:82: in test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person
+    assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E   AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E     
+E     - Este equipo está usando un 23,75% de la CPU.
+E     ?    ------- ^^^^^
+E     + Estoy usando un 23,75% de la CPU.
+E     ?     ^
+_ test_persistent_wrong_actor_exhausts_the_existing_bound_without_publishing_it _
+tests\test_c03_cpu_actor.py:90: in test_persistent_wrong_actor_exhausts_the_existing_bound_without_publishing_it
+    assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == ""
+E   AssertionError: assert 'Estoy usando...5% de la CPU.' == ''
+E     
+E     + Estoy usando un 23,75% de la CPU.
+_______________ test_other_model_does_not_inherit_qwen_sampling _______________
+tests\test_c03_cpu_actor.py:97: in test_other_model_does_not_inherit_qwen_sampling
+    assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E   AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E     
+E     - Este equipo está usando un 23,75% de la CPU.
+E     ?    ------- ^^^^^
+E     + Estoy usando un 23,75% de la CPU.
+E     ?     ^
+_ test_repair_cannot_change_observed_cpu_quantities[Este equipo est\xe1 usando un 99% de la CPU.] _
+tests\test_c03_cpu_actor.py:125: in test_repair_cannot_change_observed_cpu_quantities
+    assert llm.compose_visible_defect(reply, "status", "Describe CPU", facts()) == "wrong_machine_value"
+E   AssertionError: assert '' == 'wrong_machine_value'
+E     
+E     - wrong_machine_value
+_ test_repair_cannot_change_observed_cpu_quantities[Este equipo tiene 8 n\xfacleos f\xedsicos y 6 procesadores l\xf3gicos.] _
+tests\test_c03_cpu_actor.py:125: in test_repair_cannot_change_observed_cpu_quantities
+    assert llm.compose_visible_defect(reply, "status", "Describe CPU", facts()) == "wrong_machine_value"
+E   AssertionError: assert '' == 'wrong_machine_value'
+E     
+E     - wrong_machine_value
+_ test_repair_cannot_change_observed_cpu_quantities[This computer has 8 physical cores and 6 logical processors.] _
+tests\test_c03_cpu_actor.py:125: in test_repair_cannot_change_observed_cpu_quantities
+    assert llm.compose_visible_defect(reply, "status", "Describe CPU", facts()) == "wrong_machine_value"
+E   AssertionError: assert '' == 'wrong_machine_value'
+E     
+E     - wrong_machine_value
+_ test_repair_cannot_change_observed_cpu_quantities[Physical core count: 8. Logical processor count: 6.] _
+tests\test_c03_cpu_actor.py:125: in test_repair_cannot_change_observed_cpu_quantities
+    assert llm.compose_visible_defect(reply, "status", "Describe CPU", facts()) == "wrong_machine_value"
+E   AssertionError: assert '' == 'wrong_machine_value'
+E     
+E     - wrong_machine_value
+_ test_wrong_quantity_in_actor_repair_is_rejected_before_existing_last_attempt _
+tests\test_c03_cpu_actor.py:142: in test_wrong_quantity_in_actor_repair_is_rejected_before_existing_last_attempt
+    assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E   AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E     
+E     - Este equipo está usando un 23,75% de la CPU.
+E     ?    ------- ^^^^^
+E     + Estoy usando un 23,75% de la CPU.
+E     ?     ^
+=========================== short test summary info ===========================
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-True]
+FAILED tests/test_c03_cpu_actor.py::test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling
+FAILED tests/test_c03_cpu_actor.py::test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person
+FAILED tests/test_c03_cpu_actor.py::test_persistent_wrong_actor_exhausts_the_existing_bound_without_publishing_it
+FAILED tests/test_c03_cpu_actor.py::test_other_model_does_not_inherit_qwen_sampling
+FAILED tests/test_c03_cpu_actor.py::test_repair_cannot_change_observed_cpu_quantities[Este equipo est\xe1 usando un 99% de la CPU.]
+FAILED tests/test_c03_cpu_actor.py::test_repair_cannot_change_observed_cpu_quantities[Este equipo tiene 8 n\xfacleos f\xedsicos y 6 procesadores l\xf3gicos.]
+FAILED tests/test_c03_cpu_actor.py::test_repair_cannot_change_observed_cpu_quantities[This computer has 8 physical cores and 6 logical processors.]
+FAILED tests/test_c03_cpu_actor.py::test_repair_cannot_change_observed_cpu_quantities[Physical core count: 8. Logical processor count: 6.]
+FAILED tests/test_c03_cpu_actor.py::test_wrong_quantity_in_actor_repair_is_rejected_before_existing_last_attempt
+25 failed, 14 passed in 0.70s

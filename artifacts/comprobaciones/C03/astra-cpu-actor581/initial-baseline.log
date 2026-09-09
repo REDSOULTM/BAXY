@@ -1,0 +1,442 @@
+FFFFFFFFFFFFFFFF...FFFF...                                               [100%]
+================================== FAILURES ===================================
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-False] _
+
+reply = 'Estoy usando un 23,75% de la CPU.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-True] _
+
+reply = 'Estoy usando un 23,75% de la CPU.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-False] _
+
+reply = 'En este momento estoy ocupando un 23,75 por ciento del procesador.'
+mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-True] _
+
+reply = 'En este momento estoy ocupando un 23,75 por ciento del procesador.'
+mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-False] _
+
+reply = 'Tengo un procesador Example Processor con 6 núcleos físicos.'
+mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-True] _
+
+reply = 'Tengo un procesador Example Processor con 6 núcleos físicos.'
+mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-False] _
+
+reply = 'Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.'
+mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-True] _
+
+reply = 'Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.'
+mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-False] _
+
+reply = 'I am using 23.75% of the CPU.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-True] _
+
+reply = 'I am using 23.75% of the CPU.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-False] _
+
+reply = "I'm consuming 23.75 percent of the processor.", mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-True] _
+
+reply = "I'm consuming 23.75 percent of the processor.", mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-False] _
+
+reply = 'I have an Example Processor with 6 physical cores.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-True] _
+
+reply = 'I have an Example Processor with 6 physical cores.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-False] _
+
+reply = 'My computer has 6 physical cores.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+_ test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-True] _
+
+reply = 'My computer has 6 physical cores.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Estoy usando un 23,75% de la CPU.",
+        "En este momento estoy ocupando un 23,75 por ciento del procesador.",
+        "Tengo un procesador Example Processor con 6 núcleos físicos.",
+        "Mi equipo tiene 6 núcleos físicos y 8 procesadores lógicos.",
+        "I am using 23.75% of the CPU.",
+        "I'm consuming 23.75 percent of the processor.",
+        "I have an Example Processor with 6 physical cores.",
+        "My computer has 6 physical cores.",
+    ])
+    def test_observed_cpu_rejects_assistant_as_owner_or_measured_process(reply, mission):
+>       assert llm.compose_visible_defect(reply, "status", "cuánta CPU estoy usando", facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert '' == 'wrong_machine_actor'
+E         
+E         - wrong_machine_actor
+
+tests\test_c03_cpu_actor.py:33: AssertionError
+__ test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling __
+
+    def test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling():
+        bad = "Estoy usando un 23,75% de la CPU."
+        good = "Este equipo está usando un 23,75% de la CPU."
+        client = Recorder([bad, good])
+>       assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E       AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E         
+E         - Este equipo está usando un 23,75% de la CPU.
+E         ?    ------- ^^^^^
+E         + Estoy usando un 23,75% de la CPU.
+E         ?     ^
+
+tests\test_c03_cpu_actor.py:63: AssertionError
+_ test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person _
+
+    def test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person():
+        first = "Estoy usando un 23,75% de la CPU."
+        second = "Mi equipo está usando un 23,75% de la CPU."
+        good = "Este equipo está usando un 23,75% de la CPU."
+        client = Recorder([first, second, good])
+>       assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E       AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E         
+E         - Este equipo está usando un 23,75% de la CPU.
+E         ?    ------- ^^^^^
+E         + Estoy usando un 23,75% de la CPU.
+E         ?     ^
+
+tests\test_c03_cpu_actor.py:81: AssertionError
+_ test_persistent_wrong_actor_exhausts_the_existing_bound_without_publishing_it _
+
+    def test_persistent_wrong_actor_exhausts_the_existing_bound_without_publishing_it():
+        client = Recorder(["Estoy usando un 23,75% de la CPU."] * 3)
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_c03_cpu_actor.py:89: Failed
+_______________ test_other_model_does_not_inherit_qwen_sampling _______________
+
+    def test_other_model_does_not_inherit_qwen_sampling():
+        good = "Este equipo está usando un 23,75% de la CPU."
+        client = Recorder(["Estoy usando un 23,75% de la CPU.", good], model="Other-4B.gguf")
+>       assert client.compose_user_message("cuánta CPU estoy usando", "status", facts()) == good
+E       AssertionError: assert 'Estoy usando...5% de la CPU.' == 'Este equipo ...5% de la CPU.'
+E         
+E         - Este equipo está usando un 23,75% de la CPU.
+E         ?    ------- ^^^^^
+E         + Estoy usando un 23,75% de la CPU.
+E         ?     ^
+
+tests\test_c03_cpu_actor.py:97: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Estoy usando un 23,75% de la CPU.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[En este momento estoy ocupando un 23,75 por ciento del procesador.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Tengo un procesador Example Processor con 6 n\xfacleos f\xedsicos.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[Mi equipo tiene 6 n\xfacleos f\xedsicos y 8 procesadores l\xf3gicos.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I am using 23.75% of the CPU.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I'm consuming 23.75 percent of the processor.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[I have an Example Processor with 6 physical cores.-True]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-False]
+FAILED tests/test_c03_cpu_actor.py::test_observed_cpu_rejects_assistant_as_owner_or_measured_process[My computer has 6 physical cores.-True]
+FAILED tests/test_c03_cpu_actor.py::test_repair_keeps_actual_draft_facts_and_question_with_qualified_sampling
+FAILED tests/test_c03_cpu_actor.py::test_second_repair_uses_latest_rejected_draft_and_never_demands_first_person
+FAILED tests/test_c03_cpu_actor.py::test_persistent_wrong_actor_exhausts_the_existing_bound_without_publishing_it
+FAILED tests/test_c03_cpu_actor.py::test_other_model_does_not_inherit_qwen_sampling
+20 failed, 6 passed in 0.67s

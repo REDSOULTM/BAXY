@@ -1,0 +1,15 @@
+{
+  "native_finals": 12,
+  "production_adoption": false,
+  "conclusion": "Seis fixtures sintéticos cambian pregunta/idioma, porcentaje, conteos físicos/lógicos y nombre de procesador. Primero se genera el borrador real y después su corrección. Los tres borradores con primera persona indebida (2/3/5, ordinales cero) pasan a Este equipo/computador y conservan19%,6núcleos/modeloR3 y4físicos/8lógicos. Los controlesEN1/4 permanecen correctos. El controlES0 ya decía Estás usando y corregirlo innecesariamente da Está usando: la adopción debe detectar primera persona indebida y dejar el correcto intacto; no corregir todas las respuestas. Doce EOS, saltos de línea efectivos verificados, no literales escapados. No observaciones reales ni aceptación humana en estos fixtures.",
+  "private_report_sha256": "bd2049f0a698eaaef88820d09e42837de3554693b042b23e5bb32cd5e4ea8c04",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 725.4140625,
+    "seconds": 7.14,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  }
+}

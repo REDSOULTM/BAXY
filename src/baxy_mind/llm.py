@@ -343,6 +343,31 @@ def _public_compose_prompts(gguf: str | None = None) -> tuple[str, str]:
     return USER_MESSAGE_PROMPT, CPU_USER_MESSAGE_PROMPT
 
 
+_MACHINE_ACTOR_FEEDBACK = (
+    "Review who the subject of your previous answer is. The observations describe "
+    "this computer; they do not measure the assistant as a process or hardware "
+    "owned by the assistant. Correct only the subject if needed, keep all observed "
+    "values and the original question language. Return only the revised answer."
+)
+
+
+def _machine_actor_repair_payload(payload: dict, draft: str, gguf: str | None) -> dict:
+    """Use an existing retry to correct the actual rejected CPU claim."""
+    repaired = dict(payload)
+    repaired["messages"] = [
+        *payload["messages"],
+        {"role": "assistant", "content": draft},
+        {"role": "user", "content": _MACHINE_ACTOR_FEEDBACK},
+    ]
+    if "qwen3-4b-instruct-2507" in _gguf_file_name(gguf):
+        # Qualified on draft-aware repair579/580, not a global writer profile.
+        repaired.update(
+            temperature=0.7, top_p=0.8, top_k=20, min_p=0.0,
+            presence_penalty=0.0, repeat_penalty=1.0, seed=0,
+        )
+    return repaired
+
+
 def _message_response_language(text: str) -> str:
     """Idioma visible del turno. La lectura del pedido es el único owner."""
 
@@ -3938,6 +3963,41 @@ def _reply_uses_opposite_language(text: str, language: str | None) -> bool:
     return not wanted and other >= 2
 
 
+def _cpu_only_numbers_contradict(text: str, observed: dict) -> bool:
+    """Check CPU quantities where no other observed metric can own them."""
+    cpu = observed.get("cpu")
+    if not isinstance(cpu, dict) or not cpu or set(observed) - {"scope", "cpu", "failures"}:
+        return False
+    number_text = text.replace("−", "-")
+    for match in re.finditer(
+        r"(?<![\w.,+-])([+-]?\d+(?:[.,]\d+)?)\s*(?:%|por\s*ciento\b|per\s*cent\b)",
+        number_text,
+        re.IGNORECASE,
+    ):
+        value = cpu.get("usagePercent")
+        if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0 <= value <= 100:
+            return True
+        shown = match[1].replace(",", ".")
+        precision = len(shown.partition(".")[2])
+        if abs(float(shown) - value) > 0.5 * 10 ** -precision + 1e-9:
+            return True
+    counts = re.finditer(
+        r"(?<![\w+-])(?:(?P<number>[+-]?\d+)\s+(?:"
+        r"(?P<before>physical|logical)\s+(?:cores?|processors?)|"
+        r"(?:n[uú]cleos?|cores?|procesadores?|processors?)(?:\s+(?P<after>f[ií]sicos?|l[oó]gicos?))?)|"
+        r"(?P<label>physical|logical)\s+(?:cores?|processors?)(?:\s+count)?\s*:\s*(?P<count>[+-]?\d+))\b",
+        number_text,
+        re.IGNORECASE,
+    )
+    for match in counts:
+        qualifier = match["before"] or match["after"] or match["label"] or "physical"
+        key = "logicalProcessorCount" if qualifier.casefold().startswith(("log", "lóg")) else "physicalCoreCount"
+        value = cpu.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value != int(match["number"] or match["count"]):
+            return True
+    return False
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -4539,6 +4599,18 @@ def compose_visible_defect(
     observed_dict = _merged_observed(situation)
     if not observed_dict and isinstance(observed, dict):
         observed_dict = observed
+    if _cpu_only_numbers_contradict(stripped, observed_dict):
+        return "wrong_machine_value"
+    if isinstance(observed_dict.get("cpu"), dict) and observed_dict["cpu"] and re.search(
+        r"\b(?:estoy\s+(?:usando|ocupando|consumiendo)|"
+        r"tengo\s+(?:(?:un|una|el|la)\s+)?(?:procesador|cpu)|"
+        r"mi\s+(?:equipo|pc|computador(?:a)?|ordenador|procesador|cpu)|"
+        r"i(?:\s+am|'m|’m)\s+(?:using|consuming)|"
+        r"i\s+have\s+(?:(?:an?|the|\d+)\s+[^.!?\n]{0,80})?(?:processors?|cpu|cores)|"
+        r"my\s+(?:computer|pc|processor|cpu))\b",
+        folded,
+    ):
+        return "wrong_machine_actor"
     mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
     if mentions_mute and "muted" not in observed_dict and operation != "audio.mute":
         return "extra_claim"
@@ -9970,6 +10042,9 @@ class LlmRuntime:
             {"role": "user", "content": retry_user},
         ]
         retry_payload.update(compose_sampling)
+        if defect == "wrong_machine_actor":
+            retry_payload = _machine_actor_repair_payload(payload, text, gguf)
+            sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
         retry = post(retry_payload)
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
@@ -10008,6 +10083,8 @@ class LlmRuntime:
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},
         ]
+        if defect == "wrong_machine_actor":
+            third_payload = _machine_actor_repair_payload(payload, retry_text, gguf)
         third = post(third_payload)
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
