@@ -1,0 +1,15 @@
+{
+  "adopted": false,
+  "source_sha256": "8b704707c2e5bad1300049aedd2ac76722fdf55dc230287d5160488609fb9458",
+  "factual_source_sha256": "21772869bccdecf3fc8ca9e5edb7b964f226f40841d4ec993789e7f505b1fa71",
+  "test_sha256": "1452c483e42291661b7419e79c3b32e894c755eea061c95c9b40e56b4b351758",
+  "same_final_cohort": {
+    "total": 223,
+    "baseline_failed": 105,
+    "baseline_passed": 118,
+    "candidate_passed": 223
+  },
+  "integrated_focal_passed": 662,
+  "broad_validation_run": false,
+  "private_hashes": {}
+}

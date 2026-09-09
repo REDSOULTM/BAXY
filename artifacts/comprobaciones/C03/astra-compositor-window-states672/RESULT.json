@@ -1,0 +1,25 @@
+{
+  "correct": 10,
+  "total": 14,
+  "empty": 2,
+  "incomplete_or_ambiguous": 2,
+  "native_calls": 19,
+  "all_first_drafts_reproduce668": true,
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 719.1640625,
+    "seconds": 12.15700000000652,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "panel.json": "636d22535fbe37efcbcca9ec4ea99e1b4a018d2966a8d0371542706bd5e5ce50",
+    "requests.jsonl": "88b1f6e8d34da687733cc8dc2ec9c9e8864fc3d59dee79b2edc046d929a23a7d",
+    "responses.jsonl": "c4d408712349d237d4774ac342a51d3b7d7bd27329cef6c882fcef550c0db65d",
+    "finals.jsonl": "ca05c5531a79fb5fb6fab6aae01a7b0b92d74aa8e1b02dd15c42a44f024ed2ea",
+    "adjudication.json": "786e92278ccd9ea9d6f56d02cc65acf1f76fd5f7c6d71927342e7daabeebd040",
+    "RESULT.md": "6e1ed3226ab4455fcc63b0d73f12c3133ba25a54a618a08f559c04b26076521e"
+  }
+}

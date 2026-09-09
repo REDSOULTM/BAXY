@@ -1,0 +1,13 @@
+{
+  "adopted": false,
+  "sources": {
+    "src/baxy_mind/llm.py": "5a7ddc56d432ed9f7d26426c8a06cb28c631d50fc5310a0be000df0028be2bb6",
+    "src/baxy_mind/window_prose_facts.py": "829548158807df361781965c3671fba19c8b2143bee10994985a1308f5a18656",
+    "tests/test_c03_window_state_facts.py": "622a8adbeadabcd8bd3b97d2d4a8cb85a5bd0044c961d441196e02a0d7b33702",
+    "tests/test_c03_window_prose_projection.py": "5737d93bde8edd360a7965f70e7e39bac0b31a530038c9116561a5290296db50"
+  },
+  "focal_passed": 669,
+  "focal_seconds": 4.03,
+  "broad_validation_run": false,
+  "private_hashes": {}
+}

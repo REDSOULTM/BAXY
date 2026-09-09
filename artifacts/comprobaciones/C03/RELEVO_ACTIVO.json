@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T17:16:36.756073+00:00",
+  "confirmedAtUtc": "2026-09-09T17:35:41.536091+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "667 WIP439 focales;668 original10/10 y compuestos0/4;669 producto24/24;670 nativo1/4. No adoptada.",
-  "continuation": "Auditar/publicar evidencia667-670 sin adoptar fuente667. Siguiente: contraste factual de estados separados; nativo ya confunde normal/visible con foco. Ver HANDOFF. BAXY cerrado.",
+  "checkpoint": "674 WIP669 focales;675 compositor15/17, dos incompletos. No fuente adoptada. Encuesta26/716/0.",
+  "continuation": "Publicar evidencia671-675. Siguiente: falta de cobertura de foco realmente preguntado, diferenciada de contradicción; preservar preguntas de otros estados. Ver HANDOFF. Ningún proceso activo ni decisión pendiente.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -44,6 +44,6 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "RAM liberada y verificada;668/669/670 completadas y adjudicadas, con primer error nativo localizado. No decisión pendiente.",
+  "previousGoalTurnClassificationReason": "Contrato factual y feedback implementados; misma cohorte nativa10/14→13/14, ampliada15/17; evidencia de incompletitud localizada.",
   "activeValidation": null
 }

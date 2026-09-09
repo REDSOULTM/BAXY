@@ -1061,3 +1061,42 @@ Mismos cuatro fixtures668, campos proyectados y parámetros: nativo mínimo1/4, 
 Matiz de adjudicación668: «not active and configured…» admite negación de la conjunción completa. Sin una afirmación posterior de actividad, debe contarse respuesta incompleta/ambigua, no negación inequívoca del foco. Ese caso sigue fallando; el total668 no cambia. El nativo inglés670 sí resuelve explícitamente ambos hechos después de esa apertura, y se cuenta correcto. Esta corrección del motivo preserva los originales668 sellados.
 
 Todos12 EOS, GPU3497,559MiB/RAM722,902MiB,17,234s, sin infracciones ni cambio de registro. Sin UI/voz ni crédito de encuesta. Siguiente: extender el contraste factual existente para estados de ventana con sujeto y negación conservados, y comprobar reparación por la ruta real del compositor. No añadir otro narrador ni respuestas visibles fijas. C03 activo, encuesta26/716/0.
+
+
+# 671 — contradicciones de foco detectadas, reparación aún insuficiente
+
+Se extiende el contrato factual existente para afirmaciones explícitas de foco, ligadas al título/proceso observado. Normal/minimizada/maximizada no determinan foco. Conserva campos desconocidos, nombres que contienen estados, sujetos distintos, preguntas, condicionales, incertidumbre y negación de conjunción ambigua. Es gramática delimitada, no verificación semántica universal ni prueba de respuesta completa.
+
+Cohorte final223: módulo factual publicado en proceso aislado105fallos/118pases; candidata223pases. Focal integrada662pases/0skips,3,90s. También se guardan baseline inicial216casos104fallos/112pases y controles de alcance que encontraron6fallos antes de refinar. Sin fuente mutada para medir baseline. No dueñas amplias/Fast ni adopción aún: el modelo real672 mantiene10/14 respuestas correctas, aunque deja de publicar tres contradicciones claras. Encuesta26/716/0.
+
+
+# 672 — la guardia frena contradicciones pero no completa las respuestas
+
+Compositor real con transporte nativo:10/14 correctas. Los14primeros borradores reproducen668. Diez controles correctos conservan una llamada. Tres contradicciones claras se rechazan: un caso pasa a respuesta incompleta y dos agotan tres intentos con salida vacía. El cuarto compuesto inglés conserva negación ambigua e incompletitud. Ningún vacío cuenta como éxito.19llamadas totales, todasEOS.
+
+GPU3497,559MiB/RAM719,164MiB/12,157s, sin infracciones; registro y fuentes intactos. No kernel/UI/voz. Falta información específica en el reintento: State only what seen shows no identifica el campo contradicho.671 no adoptada; probar evidencia externa del campo en el reintento existente. Encuesta26/716/0.
+
+
+# 673 — evidencia del campo permite reparar los seis casos probados
+
+Tres reintentos originales672 y tres variantes de nombre: aviso genérico0/6; misma petición más datos de contradicción verificados6/6. Los controles originales reproducen672. La corrección identifica sujeto, predicado activo, valor observado, valor afirmado y borrador rechazado; no añade otra instrucción de sistema ni una respuesta prefabricada. Todos12 EOS, GPU3497,559MiB/RAM719,574MiB/9,812s, sin infracciones ni cambio de registro.
+
+Contraste bibliográfico acotado: Kamoi et al., TACL2024, https://aclanthology.org/2024.tacl-1.78/ distingue feedback externo fiable de autocrítica sin evidencia; Wadhwa et al., Findings2024, https://aclanthology.org/2024.findings-emnlp.716/ estudia feedback fino con modelos entrenados, no este runtime. Motivan la distinción, no prueban BAXY. Aquí la evidencia viene del campo tipado y la comprobación determinista, no de otro juez LLM.
+
+No promoción desde el experimento aislado. Siguiente674: derivar la misma evidencia desde el contrato factual y llevarla al reintento existente; demostrar paridad, controles negativos, compositor real y producto. El inglés con negación ambigua/incompletitud sigue pendiente. Encuesta26/716/0; C03 activo.
+
+
+# 674 — información verificada en el reintento existente
+
+El contrato factual ahora devuelve la contradicción concreta, derivada del título y foco observado, conservando valor observado, valor afirmado y borrador. El compositor lleva esos datos JSON en su mensaje de usuario del reintento; no cambia instrucciones de sistema, primer borrador ni número máximo de llamadas. El tercer intento usa su propio borrador rechazado. No otro juez, capa ni respuesta visible prefabricada.
+
+Focal669pases/0skips,4,03s; incluye230pruebas de estados/feedback más439existentes. Datos y nombres se derivan de cada observación, y un borrador válido no recibe feedback ni otra llamada. Candidata no adoptada: faltan declaraciones/dueñas amplias/Fast y dos respuestas incompletas675. Full651 sigue sólo de baseline anterior. Encuesta26/716/0.
+
+
+# 675 — reparación integrada15/17; completitud sigue abierta
+
+En los mismos14casos672, la candidata mejora10/14→13/14. Se añaden tres nombres cambiados y cumplen2/3: total15/17. Cinco reintentos coinciden exactamente con las peticiones medidas673 y producen respuestas completas. Los diez controles originales siguen iguales con una sola llamada. Todos17resultados son no vacíos;22llamadas, todasEOS.
+
+Dos fallos quedan abiertos: el inglés activo=true mantiene negación ambigua sin aclarar foco; Brújula7 activo=true omite foco desde el primer borrador, de modo que la guardia de contradicciones no dispara reparación. No se aprueba por haber eliminado salidas vacías. Siguiente: comprobar cobertura de los hechos realmente preguntados dentro del contrato existente, preservando preguntas sólo de maximización o topmost, nombres y negaciones. Distinguir falta de respuesta de contradicción en los datos de reparación; no inventar un valor que el borrador nunca afirmó.
+
+GPU3497,559MiB/RAM719,934MiB/14,234s sin infracciones. Registro intacto; no kernel/UI/voz.674 sigue WIP no adoptado, sin dueñas amplias/Fast. Encuesta26/716/0; C03 activo.

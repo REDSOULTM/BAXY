@@ -1,0 +1,3273 @@
+Baseline uses exact published factual module; no filesystem source mutation.
+...FFF...FFF...FFFFFF...FFF...FFF...FFF...FFF...FFF......FFF...FFF...FFF [ 32%]
+FFF...FFF...FFF......FFF...FFF...FFFFFF...FFF...FFF...FFF...FFF...FFF... [ 64%]
+...FFF...FFF...FFFFFF...FFF...FFF......FFF...FFF...FFFFFF............... [ 96%]
+...FFF.                                                                  [100%]
+================================== FAILURES ===================================
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-normal-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'normal'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-normal-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'normal'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-normal-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'normal'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-maximized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'maximized'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-maximized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'maximized'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-maximized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'maximized'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-minimized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'minimized'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-minimized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'minimized'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-minimized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'minimized'
+phrase = 'La ventana {name} está activa.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-normal-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'normal'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-normal-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'normal'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-normal-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'normal'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-maximized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'maximized'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-maximized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'maximized'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-maximized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'maximized'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-minimized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'minimized'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-minimized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'minimized'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-minimized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'minimized'
+phrase = 'La ventana {name} no está activa.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-normal-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'normal'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-normal-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'normal'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-normal-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'normal'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-maximized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'maximized'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-maximized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'maximized'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-maximized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'maximized'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-minimized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'minimized'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-minimized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'minimized'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-minimized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'minimized'
+phrase = 'La ventana {name} está inactiva.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-normal-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'normal'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-normal-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'normal'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-normal-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'normal'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-maximized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'maximized'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-maximized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'maximized'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-maximized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'maximized'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-minimized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'minimized'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-minimized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'minimized'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-minimized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'minimized'
+phrase = 'La ventana {name} tiene el foco.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-normal-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'normal'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-normal-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'normal'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-normal-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'normal'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-maximized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'maximized'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-maximized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'maximized'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-maximized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'maximized'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-minimized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'minimized'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-minimized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'minimized'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-minimized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'minimized'
+phrase = 'La ventana {name} no tiene el foco.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-normal-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'normal'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-normal-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'normal'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-normal-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'normal'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-maximized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'maximized'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-maximized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'maximized'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-maximized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'maximized'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-minimized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'minimized'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-minimized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'minimized'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-minimized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'minimized'
+phrase = 'The {name} window is active.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-normal-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'normal'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-normal-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'normal'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-normal-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'normal'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-maximized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'maximized'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-maximized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'maximized'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-maximized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'maximized'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-minimized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'minimized'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-minimized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'minimized'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-minimized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'minimized'
+phrase = 'The {name} window is not active.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-normal-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'normal'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-normal-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'normal'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-normal-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'normal'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-maximized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'maximized'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-maximized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'maximized'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-maximized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'maximized'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-minimized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'minimized'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-minimized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'minimized'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-minimized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'minimized'
+phrase = "The {name} window isn't active.", positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-normal-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'normal'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-normal-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'normal'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-normal-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'normal'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-maximized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'maximized'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-maximized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'maximized'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-maximized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'maximized'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-minimized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'minimized'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-minimized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'minimized'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-minimized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'minimized'
+phrase = 'The {name} window has focus.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-normal-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'normal'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-normal-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'normal'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-normal-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'normal'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-maximized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'maximized'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-maximized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'maximized'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-maximized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'maximized'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-minimized-True-Atlas] _
+
+name = 'Atlas', focus = True, state = 'minimized'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-minimized-True-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = True, state = 'minimized'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-minimized-True-Is Active] _
+
+name = 'Is Active', focus = True, state = 'minimized'
+phrase = 'The {name} window does not have focus.', positive = False
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-normal-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'normal'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-normal-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'normal'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-normal-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'normal'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-maximized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'maximized'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-maximized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'maximized'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-maximized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'maximized'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-minimized-False-Atlas] _
+
+name = 'Atlas', focus = False, state = 'minimized'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-minimized-False-\xd3rbita 29] _
+
+name = 'Órbita 29', focus = False, state = 'minimized'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-minimized-False-Is Active] _
+
+name = 'Is Active', focus = False, state = 'minimized'
+phrase = 'The {name} window is in the foreground.', positive = True
+
+    @pytest.mark.parametrize("name", ["Atlas", "Órbita 29", "Is Active"])
+    @pytest.mark.parametrize("focus", [True, False])
+    @pytest.mark.parametrize("state", ["normal", "maximized", "minimized"])
+    @pytest.mark.parametrize("phrase,positive", [
+        ("La ventana {name} está activa.", True),
+        ("La ventana {name} no está activa.", False),
+        ("La ventana {name} está inactiva.", False),
+        ("La ventana {name} tiene el foco.", True),
+        ("La ventana {name} no tiene el foco.", False),
+        ("The {name} window is active.", True),
+        ("The {name} window is not active.", False),
+        ("The {name} window isn't active.", False),
+        ("The {name} window has focus.", True),
+        ("The {name} window does not have focus.", False),
+        ("The {name} window is in the foreground.", True),
+    ])
+    def test_focus_is_not_inferred_from_display_state(name, focus, state, phrase, positive):
+        original = situation(focus, state, name)
+        saved = copy.deepcopy(original)
+        defect = _payload_fact_defect(phrase.format(name=name), _compose_situation_payload(original, "en"))
+>       assert defect == ("" if positive == focus else "reversed_result")
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:35: AssertionError
+_ test_unambiguous_wrong_compound_focus_is_rejected[No, la ventana Atlas no est\xe1 activa ni configurada para mantenerse siempre encima.-True] _
+
+reply = 'No, la ventana Atlas no está activa ni configurada para mantenerse siempre encima.'
+focus = True
+
+    @pytest.mark.parametrize("reply,focus", [
+        ("No, la ventana Atlas no está activa ni configurada para mantenerse siempre encima.", True),
+        ("Sí, la ventana Atlas está activa y está configurada para mantenerse siempre encima.", False),
+        ("Yes, the Atlas window is active and configured to stay always on top.", False),
+    ])
+    def test_unambiguous_wrong_compound_focus_is_rejected(reply, focus):
+        payload = _compose_situation_payload(situation(focus), "en")
+>       assert _payload_fact_defect(reply, payload) == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:46: AssertionError
+_ test_unambiguous_wrong_compound_focus_is_rejected[S\xed, la ventana Atlas est\xe1 activa y est\xe1 configurada para mantenerse siempre encima.-False] _
+
+reply = 'Sí, la ventana Atlas está activa y está configurada para mantenerse siempre encima.'
+focus = False
+
+    @pytest.mark.parametrize("reply,focus", [
+        ("No, la ventana Atlas no está activa ni configurada para mantenerse siempre encima.", True),
+        ("Sí, la ventana Atlas está activa y está configurada para mantenerse siempre encima.", False),
+        ("Yes, the Atlas window is active and configured to stay always on top.", False),
+    ])
+    def test_unambiguous_wrong_compound_focus_is_rejected(reply, focus):
+        payload = _compose_situation_payload(situation(focus), "en")
+>       assert _payload_fact_defect(reply, payload) == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:46: AssertionError
+_ test_unambiguous_wrong_compound_focus_is_rejected[Yes, the Atlas window is active and configured to stay always on top.-False] _
+
+reply = 'Yes, the Atlas window is active and configured to stay always on top.'
+focus = False
+
+    @pytest.mark.parametrize("reply,focus", [
+        ("No, la ventana Atlas no está activa ni configurada para mantenerse siempre encima.", True),
+        ("Sí, la ventana Atlas está activa y está configurada para mantenerse siempre encima.", False),
+        ("Yes, the Atlas window is active and configured to stay always on top.", False),
+    ])
+    def test_unambiguous_wrong_compound_focus_is_rejected(reply, focus):
+        payload = _compose_situation_payload(situation(focus), "en")
+>       assert _payload_fact_defect(reply, payload) == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:46: AssertionError
+______________ test_uncertainty_does_not_hide_a_later_assertion _______________
+
+    def test_uncertainty_does_not_hide_a_later_assertion():
+        text = "I cannot tell whether Vega is active, but Atlas is active."
+>       assert _payload_fact_defect(text, _compose_situation_payload(situation(False), "en")) == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:85: AssertionError
+______________ test_two_explicit_subjects_retain_their_own_focus ______________
+
+    def test_two_explicit_subjects_retain_their_own_focus():
+        value = situation(True)
+        value["observed"]["windows"].append({"title":"Vega", "foreground":False, "state":"normal"})
+        value["observed"]["count"] = 2
+        payload = _compose_situation_payload(value, "en")
+        assert not _payload_fact_defect("Atlas is active. Vega is not active.", payload)
+>       assert _payload_fact_defect("Atlas is not active. Vega is active.", payload) == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:94: AssertionError
+_____________ test_actual_compositor_repairs_focus_contradiction ______________
+
+    def test_actual_compositor_repairs_focus_contradiction():
+        good = "Atlas is not active; its window is in normal state."
+        client = Recorder(["Atlas is active and in normal state.", good, good])
+        result = client.compose_user_message("Is the Atlas window active?", "status", {"situation":situation(False)})
+>       assert result == good
+E       AssertionError: assert 'Atlas is act...normal state.' == 'Atlas is not...normal state.'
+E         
+E         - Atlas is not active; its window is in normal state.
+E         + Atlas is active and in normal state.
+
+tests\test_c03_window_state_facts.py:112: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-normal-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-normal-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-normal-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-maximized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-maximized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-maximized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-minimized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-minimized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 activa.-True-minimized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-normal-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-normal-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-normal-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-maximized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-maximized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-maximized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-minimized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-minimized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no est\xe1 activa.-False-minimized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-normal-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-normal-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-normal-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-maximized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-maximized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-maximized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-minimized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-minimized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} est\xe1 inactiva.-False-minimized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-normal-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-normal-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-normal-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-maximized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-maximized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-maximized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-minimized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-minimized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} tiene el foco.-True-minimized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-normal-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-normal-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-normal-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-maximized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-maximized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-maximized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-minimized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-minimized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[La ventana {name} no tiene el foco.-False-minimized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-normal-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-normal-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-normal-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-maximized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-maximized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-maximized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-minimized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-minimized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is active.-True-minimized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-normal-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-normal-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-normal-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-maximized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-maximized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-maximized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-minimized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-minimized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is not active.-False-minimized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-normal-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-normal-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-normal-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-maximized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-maximized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-maximized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-minimized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-minimized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window isn't active.-False-minimized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-normal-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-normal-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-normal-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-maximized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-maximized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-maximized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-minimized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-minimized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window has focus.-True-minimized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-normal-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-normal-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-normal-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-maximized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-maximized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-maximized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-minimized-True-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-minimized-True-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window does not have focus.-False-minimized-True-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-normal-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-normal-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-normal-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-maximized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-maximized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-maximized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-minimized-False-Atlas]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-minimized-False-\xd3rbita 29]
+FAILED tests/test_c03_window_state_facts.py::test_focus_is_not_inferred_from_display_state[The {name} window is in the foreground.-True-minimized-False-Is Active]
+FAILED tests/test_c03_window_state_facts.py::test_unambiguous_wrong_compound_focus_is_rejected[No, la ventana Atlas no est\xe1 activa ni configurada para mantenerse siempre encima.-True]
+FAILED tests/test_c03_window_state_facts.py::test_unambiguous_wrong_compound_focus_is_rejected[S\xed, la ventana Atlas est\xe1 activa y est\xe1 configurada para mantenerse siempre encima.-False]
+FAILED tests/test_c03_window_state_facts.py::test_unambiguous_wrong_compound_focus_is_rejected[Yes, the Atlas window is active and configured to stay always on top.-False]
+FAILED tests/test_c03_window_state_facts.py::test_uncertainty_does_not_hide_a_later_assertion
+FAILED tests/test_c03_window_state_facts.py::test_two_explicit_subjects_retain_their_own_focus
+FAILED tests/test_c03_window_state_facts.py::test_actual_compositor_repairs_focus_contradiction
+105 failed, 118 passed in 1.72s

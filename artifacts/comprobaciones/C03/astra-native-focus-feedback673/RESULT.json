@@ -1,0 +1,24 @@
+{
+  "scores": {
+    "generic672": 0,
+    "verified_field_feedback": 6
+  },
+  "total_per_arm": 6,
+  "all_original_controls_reproduce672": true,
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 719.57421875,
+    "seconds": 9.811999999976251,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "panel.json": "6d96288e5935dfed0ea85c22725dc392fb12954e7369fe13f38601e8baca9dab",
+    "requests.jsonl": "00e87d4bb787a5d361933d2cda55223972807d364ccf5ef35779d64154e16813",
+    "responses.jsonl": "79ec86a11633482c298910a9768af134fedbd1f5017b1c399744e3acbbb303f5",
+    "adjudication.json": "3571089bb7a2c1b56eb4580eff8e61a90f2a0067572fd69787b72c3e50af537c",
+    "RESULT.md": "a68debde12d5824f4a75e8a47641f6dbc2612823b2a9929f460ce280e82f289c"
+  }
+}

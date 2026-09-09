@@ -1,0 +1,118 @@
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+.....................................................................FF. [ 96%]
+FFFF...                                                                  [100%]
+================================== FAILURES ===================================
+_ test_conditional_question_or_reported_question_is_not_a_current_assertion[If Atlas is active, the shortcut goes to it.] _
+
+text = 'If Atlas is active, the shortcut goes to it.'
+
+    @pytest.mark.parametrize("text", [
+        "If Atlas is active, the shortcut goes to it.",
+        "Si Atlas está activa, el atajo le llega a ella.",
+        "Is Atlas active?", "¿Atlas está activa?",
+        "You asked whether Atlas is active.",
+        "Preguntaste si Atlas está activa.",
+    ])
+    def test_conditional_question_or_reported_question_is_not_a_current_assertion(text):
+>       assert not _payload_fact_defect(text, _compose_situation_payload(situation(False), "en"))
+E       AssertionError: assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('If Atlas is active, the shortcut goes to it.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'})
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(False)
+
+tests\test_c03_window_state_facts.py:80: AssertionError
+_ test_conditional_question_or_reported_question_is_not_a_current_assertion[Si Atlas est\xe1 activa, el atajo le llega a ella.] _
+
+text = 'Si Atlas está activa, el atajo le llega a ella.'
+
+    @pytest.mark.parametrize("text", [
+        "If Atlas is active, the shortcut goes to it.",
+        "Si Atlas está activa, el atajo le llega a ella.",
+        "Is Atlas active?", "¿Atlas está activa?",
+        "You asked whether Atlas is active.",
+        "Preguntaste si Atlas está activa.",
+    ])
+    def test_conditional_question_or_reported_question_is_not_a_current_assertion(text):
+>       assert not _payload_fact_defect(text, _compose_situation_payload(situation(False), "en"))
+E       AssertionError: assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('Si Atlas está activa, el atajo le llega a ella.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'})
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(False)
+
+tests\test_c03_window_state_facts.py:80: AssertionError
+_ test_conditional_question_or_reported_question_is_not_a_current_assertion[\xbfAtlas est\xe1 activa?] _
+
+text = '¿Atlas está activa?'
+
+    @pytest.mark.parametrize("text", [
+        "If Atlas is active, the shortcut goes to it.",
+        "Si Atlas está activa, el atajo le llega a ella.",
+        "Is Atlas active?", "¿Atlas está activa?",
+        "You asked whether Atlas is active.",
+        "Preguntaste si Atlas está activa.",
+    ])
+    def test_conditional_question_or_reported_question_is_not_a_current_assertion(text):
+>       assert not _payload_fact_defect(text, _compose_situation_payload(situation(False), "en"))
+E       AssertionError: assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('¿Atlas está activa?', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'})
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(False)
+
+tests\test_c03_window_state_facts.py:80: AssertionError
+_ test_conditional_question_or_reported_question_is_not_a_current_assertion[You asked whether Atlas is active.] _
+
+text = 'You asked whether Atlas is active.'
+
+    @pytest.mark.parametrize("text", [
+        "If Atlas is active, the shortcut goes to it.",
+        "Si Atlas está activa, el atajo le llega a ella.",
+        "Is Atlas active?", "¿Atlas está activa?",
+        "You asked whether Atlas is active.",
+        "Preguntaste si Atlas está activa.",
+    ])
+    def test_conditional_question_or_reported_question_is_not_a_current_assertion(text):
+>       assert not _payload_fact_defect(text, _compose_situation_payload(situation(False), "en"))
+E       AssertionError: assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('You asked whether Atlas is active.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'})
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(False)
+
+tests\test_c03_window_state_facts.py:80: AssertionError
+_ test_conditional_question_or_reported_question_is_not_a_current_assertion[Preguntaste si Atlas est\xe1 activa.] _
+
+text = 'Preguntaste si Atlas está activa.'
+
+    @pytest.mark.parametrize("text", [
+        "If Atlas is active, the shortcut goes to it.",
+        "Si Atlas está activa, el atajo le llega a ella.",
+        "Is Atlas active?", "¿Atlas está activa?",
+        "You asked whether Atlas is active.",
+        "Preguntaste si Atlas está activa.",
+    ])
+    def test_conditional_question_or_reported_question_is_not_a_current_assertion(text):
+>       assert not _payload_fact_defect(text, _compose_situation_payload(situation(False), "en"))
+E       AssertionError: assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('Preguntaste si Atlas está activa.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'})
+E        +    where {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Atlas', 'is_current_window_for_user_interaction': False, 'state': 'normal'}], 'count': 1}, 'operation': 'window.resolve'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.resolve', 'verified': True, 'succeeded': True, ...} = situation(False)
+
+tests\test_c03_window_state_facts.py:80: AssertionError
+______________ test_uncertainty_does_not_hide_a_later_assertion _______________
+
+    def test_uncertainty_does_not_hide_a_later_assertion():
+        text = "I cannot tell whether Vega is active, but Atlas is active."
+>       assert _payload_fact_defect(text, _compose_situation_payload(situation(False), "en")) == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_window_state_facts.py:85: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_state_facts.py::test_conditional_question_or_reported_question_is_not_a_current_assertion[If Atlas is active, the shortcut goes to it.]
+FAILED tests/test_c03_window_state_facts.py::test_conditional_question_or_reported_question_is_not_a_current_assertion[Si Atlas est\xe1 activa, el atajo le llega a ella.]
+FAILED tests/test_c03_window_state_facts.py::test_conditional_question_or_reported_question_is_not_a_current_assertion[\xbfAtlas est\xe1 activa?]
+FAILED tests/test_c03_window_state_facts.py::test_conditional_question_or_reported_question_is_not_a_current_assertion[You asked whether Atlas is active.]
+FAILED tests/test_c03_window_state_facts.py::test_conditional_question_or_reported_question_is_not_a_current_assertion[Preguntaste si Atlas est\xe1 activa.]
+FAILED tests/test_c03_window_state_facts.py::test_uncertainty_does_not_hide_a_later_assertion
+6 failed, 217 passed in 0.92s

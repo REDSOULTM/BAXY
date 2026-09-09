@@ -1,0 +1,33 @@
+{
+  "correct": 15,
+  "total": 17,
+  "same_original_cohort_correct": 13,
+  "same_original_cohort_total": 14,
+  "previous_same_cohort_correct": 10,
+  "renamed_correct": 2,
+  "renamed_total": 3,
+  "empty": 0,
+  "native_calls": 22,
+  "retry_payload_parity673": 5,
+  "failed_cases": {
+    "topmost-en-true": "Negation of a conjunction remains ambiguous and focus is not independently answered.",
+    "topmost-es-true-renamed": "First draft omits focus and is accepted; no contradiction exists to trigger the current repair."
+  },
+  "source_adopted": false,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 719.93359375,
+    "seconds": 14.23399999999674,
+    "manifest_unchanged": true
+  },
+  "private_hashes": {
+    "panel.json": "12919380c50a87dbe495294d51b07d8f7f03ff0e0511e72ea434c2b9b90e3af1",
+    "requests.jsonl": "cdd1b1cb5b28fb63473228973611cb5d99c33e2047e2f3110459c3eb39d99972",
+    "responses.jsonl": "6e2375c0613e664c695cde2ffe6e55057a47a7f54eae8982a5de696d915c8267",
+    "finals.jsonl": "6657ebf9faea5211db1c0e8868b5367eea2cb02546f9be52a9d5fe8f9213b530",
+    "adjudication.json": "943b0fb56a37cc25cff202532763ec58a88615b8899bd5d7039ecf9c7ddc0411",
+    "RESULT.md": "4be3e9cd963533ce3928b33197accf4a7fe8b3f461163a7789dfc57fabaaeb8e"
+  }
+}

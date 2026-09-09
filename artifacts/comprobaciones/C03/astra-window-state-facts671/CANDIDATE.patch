@@ -1,0 +1,124 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 28df255d..19a333ef 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3435,8 +3435,16 @@ def _compose_situation_payload(
+         ):
+             visible_seen.pop(key, None)
+         if isinstance(visible_seen.get("windows"), list):
++            # The canonical snapshot stays unchanged. Describe its Boolean
++            # meaning to the narrator: the short API label leaked into Spanish
++            # prose. Activation does not establish z-order above topmost windows.
+             visible_seen["windows"] = [
+-                {key: value for key, value in window.items() if key != "windowId"}
++                {
++                    ("is_current_window_for_user_interaction" if key == "foreground"
++                     and isinstance(value, bool) and "is_current_window_for_user_interaction" not in window
++                     else key): value
++                    for key, value in window.items() if key != "windowId"
++                }
+                 if isinstance(window, dict)
+                 else window
+                 for window in visible_seen["windows"]
+diff --git a/src/baxy_mind/window_prose_facts.py b/src/baxy_mind/window_prose_facts.py
+index fb5574f0..e76d8408 100644
+--- a/src/baxy_mind/window_prose_facts.py
++++ b/src/baxy_mind/window_prose_facts.py
+@@ -51,6 +51,87 @@ _UNCERTAINTY = re.compile(
+     r"no\s+puedo\s+(?:saber|confirmar|determinar)|desconozco)\b"
+ )
+ _SEPARATORS = re.compile(r"([.;!?]|\b(?:but|pero|and|y)\b)")
++_FOCUS_ASSERTION = re.compile(
++    r"\b(?P<before>no\s+)?(?P<verb>esta|estan|is|are|isn['’]t|aren['’]t)"
++    r"\s+(?P<after>not\s+)?(?P<state>active|inactive|activ[oa]s?|inactiv[oa]s?|"
++    r"en primer plano|in the foreground)\b|"
++    r"\b(?P<focus_negative>no\s+|does not\s+|doesn['’]t\s+)?"
++    r"(?:tiene|has|have)\s+(?:el\s+)?(?P<focus>foco|focus)\b"
++)
++
++
++def _window_focus_defect(text: str, payload: dict) -> str:
++    """Bind explicit focus assertions to their window, never to display state.
++
++    This bounded check does not prove completeness or resolve ambiguous
++    conjunction negation. Unknown subjects and untyped fields stay unknown.
++    """
++    seen = payload.get("seen")
++    if not str(payload.get("operation", "")).startswith("window.") or not isinstance(seen, dict):
++        return ""
++    windows = seen.get("windows")
++    if not isinstance(windows, list):
++        return ""
++    windows = [window for window in windows if isinstance(window, dict)]
++    asserted = fold(text)
++    subjects: dict[str, set[int]] = {}
++    for index, window in enumerate(windows):
++        for field in ("title", "processName"):
++            name = window.get(field)
++            if isinstance(name, str) and name:
++                subjects.setdefault(fold(name), set()).add(index)
++    for name in sorted(subjects, key=len, reverse=True):
++        indices = subjects[name]
++        if len(indices) != 1:
++            continue
++        index = next(iter(indices))
++        # Replace only a subject occurrence. A title called "Is Active"
++        # must not erase the assertion in "Is Active is active".
++        asserted = re.sub(
++            rf"(?<!\w){re.escape(name)}(?!\w)"
++            r"(?=[\"'»]*\s+(?:window|ventana|is|isn't|has|does|esta|no|tiene)\b)",
++            f"window_subject_{index}", asserted,
++        )
++    clauses = (
++        clause
++        for sentence in re.findall(r"[^.;!?\n]+(?:[.;!?]|$)", asserted)
++        if not sentence.rstrip().endswith("?") and "¿" not in sentence
++        for clause in re.split(r"\b(?:but|pero)\b", sentence)
++    )
++    for clause in clauses:
++        for match in _FOCUS_ASSERTION.finditer(clause):
++            prefix = clause[:match.start()]
++            if _UNCERTAINTY.search(prefix) or re.search(r"\b(?:if|si|whether)\s+", prefix):
++                continue
++            named = list(re.finditer(r"\bwindow_subject_(\d+)\b", prefix))
++            if named:
++                subject = named[-1]
++                # A different intervening subject is not the named window.
++                tail = prefix[subject.end():].strip(' ,\"\'')
++                if tail not in {"", "window", "ventana"}:
++                    continue
++                index = int(subject[1])
++            elif len(windows) == 1 and prefix.strip(' ,\"\'') in {
++                "", "it", "the window", "la ventana", "no, la ventana", "si, la ventana",
++            }:
++                index = 0
++            else:
++                continue
++            window = windows[index]
++            focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
++            if not isinstance(focus, bool):
++                continue
++            negative = bool(match["before"] or match["after"] or match["focus_negative"]
++                            or (match["verb"] and "n't" in match["verb"].replace("’", "'")))
++            if match["state"] and match["state"].startswith("inactiv"):
++                negative = not negative
++            # not(A and B) does not establish not(A). A later explicit
++            # assertion can still be checked on its own.
++            if negative and re.match(r"\s+and\b", clause[match.end():]):
++                continue
++            if (not negative) != focus:
++                return "reversed_result"
++    return ""
+ 
+ 
+ def _seen(payload: dict) -> dict | None:
+@@ -92,6 +173,9 @@ def window_status_assertions(
+ 
+ 
+ def window_fact_defect(text: str, payload: dict) -> str:
++    focus_defect = _window_focus_defect(text, payload)
++    if focus_defect:
++        return focus_defect
+     seen = _seen(payload)
+     if seen is None:
+         return ""
