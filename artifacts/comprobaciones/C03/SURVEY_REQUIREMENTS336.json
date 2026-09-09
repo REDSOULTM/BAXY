@@ -2,7 +2,7 @@
   "records": 742,
   "source": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner-review328-private\\reviewed-records.jsonl",
   "source_sha256": "3a8a51a58a00fbf106fc76d6972304721df67c0c1cbb8a4c89f272ef6605405e",
-  "requirements_sha256": "d3d02fb29a9d91892b6deacb4869ec769018b61fb3a10bab03b316bb1ef96edb",
+  "requirements_sha256": "362c01ac6d1a5dbc4e4e174f321c7acb76d97feab11b07d7f1c5d34927c21676",
   "private_requirements": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl",
   "validated_current": 13,
   "acceptance_frozen": false,
@@ -13,6 +13,6 @@
   },
   "negative_limits": 3,
   "unmarked_limits": 18,
-  "updated_at": "2026-09-09T06:59:58.823485+00:00",
+  "updated_at": "2026-09-09T07:23:39.711358+00:00",
   "status_meaning": "Counts are evidence adjudications, not an estimated product completion rate. No inferred coverage or automatic exclusion by authorship."
 }

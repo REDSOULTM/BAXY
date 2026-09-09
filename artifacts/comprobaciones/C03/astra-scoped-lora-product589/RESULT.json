@@ -1,0 +1,24 @@
+{
+  "adopted": false,
+  "registered_manifest_changed": false,
+  "source_commit": "e2215905b7177dd4000ace66b15b9919e6063bf8",
+  "survey_counts": {
+    "covered": 13,
+    "open": 729,
+    "not_applicable": 0
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3575.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2589.078125,
+    "seconds": 41.922
+  },
+  "finals": 17,
+  "correct": 17,
+  "active_cpu_posts": 12,
+  "explicit_inactive_posts": 21,
+  "no_cpu_actor_repairs": true,
+  "private_report_sha256": "9f48bca5cf4b24ed6c74562a57b038961cb162f06d1ac8fd038317769744362f",
+  "adjudication_sha256": "890e69d2f66d9249caebec6a54d5d052e413b777d224218b10167da57f460a70"
+}

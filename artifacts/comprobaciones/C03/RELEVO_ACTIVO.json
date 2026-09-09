@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T07:14:20.514824+00:00",
+  "confirmedAtUtc": "2026-09-09T07:23:39.718411+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "584 validated2165pass+121subtests,67pass/1STT environmental skip,Fast green. Survey13/729/0.583/585 not adopted;586 promising CPU-only adapter, unpromoted.",
-  "continuation": "Publish584 and actual product587. Adjudicate586; qualify another seed/missions before any adapter implementation/promotion. All remaining C03 criteria stay open.",
+  "checkpoint": "589:17 correct shared-product finals with experimental CPU-only pilot4;586/588 seeds and changed facts qualified. No adapter source or registration yet. Survey13/729/0.",
+  "continuation": "Implement and validate reproducible scoped adapter, then actual product without hook and joint resources. C#/Python adoption requires Full. Remaining C03 criteria stay open.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "1dc8b33dcd60cc1dcc99586d51ac108f7e127ba5",
+  "publishedSourceCommit": "e2215905b7177dd4000ace66b15b9919e6063bf8",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

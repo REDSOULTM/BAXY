@@ -1,0 +1,16 @@
+{
+  "launcher": 90184,
+  "command": [
+    "py",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-scoped-lora-profile589",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-scoped-lora-product589-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-scoped-lora-product589-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

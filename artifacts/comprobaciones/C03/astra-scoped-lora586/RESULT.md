@@ -1,0 +1,7 @@
+# Nativo586 — adaptador sólo para prosa CPU
+
+45EOS: doce entradasCPU por base greedy, base con muestreo oficialQwen2507 y ese mismo muestreo con LoRA piloto4; tres controles de confirmación/nombre mantienen la base con escala0 en los tres perfiles. CPU: base registrada7/12, base documentada8/12, adaptador12/12. La mejora no se atribuye sólo al sampler. Cuatro fixtures explícitamente sintéticos cambian pregunta, uso, conteos y modelo. Algunas cifras se redondean a enteros;25,5→25 cae exactamente en el límite de media unidad admitido por la precisión publicada, sin relajar la guarda. No afirmar preservación de todos los decimales.
+
+Los tres controles fueraCPU dan el mismo texto byte por byte después de peticiones con adaptador. Dos nombres son correctos; la confirmación conserva el ambiguo I remember your name anterior a habilitar memoria. Se acredita aislamiento, no calidad resuelta de confirmación ni memoria. GET inicial muestra escala1 pese al flag; POST/GET verifica0 antes de inferencia y cada petición fija0/1. No nuevo entrenamiento ni promoción. Piloto4e28d7728, Qwen3605803b, b9980/38a9d28e.
+
+GPU3693,563MiB/RAM1030,723MiB,20,296s. LoRA pesa11.806.848bytes y el backend informa11,25MiB de tensoresGPU: el aumento del pico no equivale sólo al peso del archivo. Convertir aFP16 ahorraría pocosMiB de pesos; no se inició esa conversión sin demostrar que compense. Sin UI/voz ni consumo conjunto.

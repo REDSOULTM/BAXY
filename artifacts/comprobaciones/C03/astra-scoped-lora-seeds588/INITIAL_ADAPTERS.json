@@ -1,0 +1,9 @@
+[
+  {
+    "id": 0,
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-training-cdbee75f\\c03-pilot-lora-v4-f32.gguf",
+    "scale": 1.0,
+    "task_name": "",
+    "prompt_prefix": ""
+  }
+]

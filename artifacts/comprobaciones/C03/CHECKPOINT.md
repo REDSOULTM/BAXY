@@ -270,3 +270,35 @@ Baseline54:6fallos/48pass,2,25s. Dueñas finales2165pass+121subtests/0skips,28,2
 583: siete respuestas9B con límite256; seisEOS/una length. Fallan dos EOS (apelativo inventado y sujeto del nombre) y una salida que mezcla deliberación/idioma/count físico falso. Detenido su servidor; nueve errores de transporte inducidos, no semánticos. No adopción.585: roles tool conservan exactamente cuatro errores de sujeto de ocho casos;16EOS, sin mejora, no adopción.
 
 586 nativo completado: adaptador heredado piloto4 sóloCPU corrige el sujeto en12entradas, con redondeo entero en algunas; los tres controles fueraCPU mantienen la base. GPU3693,563MiB/RAM1030,723MiB,20,296s, sin UI/voz. Requiere adjudicación, segunda semilla/misiones y recursos conjuntos antes de implementar o promover. No nuevo entrenamiento ni modificación del runtime registrado. Pendientes resto de encuesta/ocho rutas, UI real, loopback íntegro/AEC por separado, aceptación, Full final y publicación final. C08 humano sólo evidencia/reanudación.
+
+
+# Nativo586 — adaptador sólo para prosa CPU
+
+45EOS: doce entradasCPU por base greedy, base con muestreo oficialQwen2507 y ese mismo muestreo con LoRA piloto4; tres controles de confirmación/nombre mantienen la base con escala0 en los tres perfiles. CPU: base registrada7/12, base documentada8/12, adaptador12/12. La mejora no se atribuye sólo al sampler. Cuatro fixtures explícitamente sintéticos cambian pregunta, uso, conteos y modelo. Algunas cifras se redondean a enteros;25,5→25 cae exactamente en el límite de media unidad admitido por la precisión publicada, sin relajar la guarda. No afirmar preservación de todos los decimales.
+
+Los tres controles fueraCPU dan el mismo texto byte por byte después de peticiones con adaptador. Dos nombres son correctos; la confirmación conserva el ambiguo I remember your name anterior a habilitar memoria. Se acredita aislamiento, no calidad resuelta de confirmación ni memoria. GET inicial muestra escala1 pese al flag; POST/GET verifica0 antes de inferencia y cada petición fija0/1. No nuevo entrenamiento ni promoción. Piloto4e28d7728, Qwen3605803b, b9980/38a9d28e.
+
+GPU3693,563MiB/RAM1030,723MiB,20,296s. LoRA pesa11.806.848bytes y el backend informa11,25MiB de tensoresGPU: el aumento del pico no equivale sólo al peso del archivo. Convertir aFP16 ahorraría pocosMiB de pesos; no se inició esa conversión sin demostrar que compense. Sin UI/voz ni consumo conjunto.
+
+
+# Producto587 — guarda584 efectiva, gramática pendiente
+
+Fuente584 publicadae2215905b7177dd4000ace66b15b9919e6063bf8.17finales sin cortes. La variante Tengo un uso pasa ahora por corrección y publica Tiene un uso del20% en CPU: ya no atribuye el uso al asistente, pero conserva sujeto omitido. H0350 sigue abierto hasta una formulación inequívoca en el candidato integrado. H0065 sigue fallando en gramática: Esto computadora está usando el28,125% de la CPU. No sumar crédito por la guarda ni por otros usos correctos. Topología, los demás usos y controles de nombre/identidad/hora-audio/red conservados.
+
+GPU3497,559MiB/RAM2441,012MiB,44,641s. Sin UI/voz ni consumo conjunto final. Encuesta13/729/0 intacta; original742/rev1248 intacto. Sin cambio de manifiesto.
+
+
+# Nativo588 — otras semillas y misiones de CPU
+
+38EOS: diecinueve casos por semillas17/42, con el mismo adaptador sóloCPU y muestreo documentado. Dieciséis casosCPU por semilla (los doce586 más cuatro capturas de modelo/conteo, incluidas misiones con lecturas ordenadas) conservan hechos y sujeto. Los tres controles fueraCPU mantienen escala0 y el texto base; no se da por resuelta su confirmación. Se verificaron porcentajes exactos o redondeados a la precisión mostrada, físicos/lógicos, modelos, español e inglés. La base no se repitió: está en586. No se escogió sólo seed0 favorable.
+
+GPU3547,559MiB/RAM864,629MiB,18,500s. La variación del pico frente a586 es de una corrida/perfil de solicitudes distinto, no una reducción causal demostrada. No promoción, UI/voz ni cobertura nueva.
+
+
+# Producto589 — candidato CPU con adaptador:17 finales correctos
+
+Fuente584 publicadae2215905b7177dd4000ace66b15b9919e6063bf8, más un override experimental del adaptador piloto4 en la prosa que sólo informaCPU. El hook no altera petición, hechos ni respuestas: selecciona escala1/muestreo documentado dentro del compose CPU y escala0 explícita en todas las otras peticiones. El estado global se verifica0 por GET/POST/GET antes de publicar readiness. La activación usa contexto por hilo y lo restaura al salir. No se ha incorporado ni registrado todavía este mecanismo en el producto.
+
+17finales correctos/sin cortes: seis topologías, siete preguntas de uso y cuatro controles de nombre/identidad/hora-audio/red. Los usos reales incluyen22,875816993→22,9%,13,75%,13,29113924→13,3%,24,375%,35% y46,89655172→46,9%. Desaparecen tanto Estoy/Tengo como Esto computadora. Las doce llamadas de composiciónCPU reciben escala1 y los demás POST escala0; una pregunta inglesa de uso se contesta desde el contexto conversacional previo13,3%, sin fingir una lectura nueva. Las misiones de topología conservan sus lecturas completas. No hubo reintentos CPU de reparación del sujeto en esta corrida.
+
+GPU3575,559MiB/RAM2589,078MiB,41,922s. Son3,49GiB de VRAM y2,53GiB de RAM en conductor sin ventana/voz; no consumo conjunto final. Manifiesto13b971b3 sin cambios. Es la primera verificación integrada de esta selección por rol, no una promoción ni un cierre deC03. H0065/H0350 quedan abiertos en el registro vigente hasta incorporación y verificación sin hook; evidencia candidata enlazada. Encuesta13 cubiertos/729 abiertos/0NA,742/rev1248 intacto. BAXY manual cerrado, ninguna decisión del dueño pendiente.
