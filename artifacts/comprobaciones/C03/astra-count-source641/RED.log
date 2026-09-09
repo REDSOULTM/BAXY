@@ -1,0 +1,534 @@
+................................FFFFFFFFFFFFFFFF........................ [100%]
+================================== FAILURES ===================================
+_ test_named_window_status_preserves_application_scope[How many windows of {name} are open?-Steam] _
+
+name = 'Steam', surface = 'How many windows of {name} are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many windows of {name} are open?-Spotify] _
+
+name = 'Spotify', surface = 'How many windows of {name} are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many windows of {name} are open?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'How many windows of {name} are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many windows of {name} are open?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'How many windows of {name} are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many {name} windows are open?-Steam] _
+
+name = 'Steam', surface = 'How many {name} windows are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many {name} windows are open?-Spotify] _
+
+name = 'Spotify', surface = 'How many {name} windows are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many {name} windows are open?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'How many {name} windows are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[How many {name} windows are open?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'How many {name} windows are open?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-Steam] _
+
+name = 'Steam', surface = '¿Cuántas ventanas de {name} están abiertas?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-Spotify] _
+
+name = 'Spotify', surface = '¿Cuántas ventanas de {name} están abiertas?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = '¿Cuántas ventanas de {name} están abiertas?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = '¿Cuántas ventanas de {name} están abiertas?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-Steam] _
+
+name = 'Steam', surface = 'Baxy, how many windows of {name} are open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-Spotify] _
+
+name = 'Spotify', surface = 'Baxy, how many windows of {name} are open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-Bloc de notas] _
+
+name = 'Bloc de notas'
+surface = 'Baxy, how many windows of {name} are open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+_ test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-\xd3rbita 23] _
+
+name = 'Órbita 23'
+surface = 'Baxy, how many windows of {name} are open please?'
+
+    @pytest.mark.parametrize("name", ["Steam", "Spotify", "Bloc de notas", "Órbita 23"])
+    @pytest.mark.parametrize("surface", [
+        "hay alguna ventana de {name} abierta",
+        "¿Está {name} abierto?",
+        "¿Está abierta la aplicación {name}?",
+        "Baxy, por favor: comprueba si {name} está abierto",
+        "Is {name} open?",
+        "Please check whether {name} is closed",
+        "Are any windows of {name} open?",
+        "Baxy, is {name} open please?",
+        "How many windows of {name} are open?",
+        "How many {name} windows are open?",
+        "¿Cuántas ventanas de {name} están abiertas?",
+        "Baxy, how many windows of {name} are open please?",
+    ])
+    def test_named_window_status_preserves_application_scope(name, surface):
+        from baxy_mind.effect_intent import resolve_application_window_status_name
+    
+        text = surface.format(name=name)
+        applications = (name, "Otra aplicación")
+        intent = resolve_explicit_effects(
+            text, ("window.active", "window.application.status", "app.open"),
+            application_names=applications,
+        )
+>       assert intent is not None
+E       assert None is not None
+
+tests\test_effect_intent.py:55: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many windows of {name} are open?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many windows of {name} are open?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many windows of {name} are open?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many windows of {name} are open?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many {name} windows are open?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many {name} windows are open?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many {name} windows are open?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[How many {name} windows are open?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[\xbfCu\xe1ntas ventanas de {name} est\xe1n abiertas?-\xd3rbita 23]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-Steam]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-Spotify]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-Bloc de notas]
+FAILED tests/test_effect_intent.py::test_named_window_status_preserves_application_scope[Baxy, how many windows of {name} are open please?-\xd3rbita 23]
+16 failed, 56 passed, 1874 deselected in 2.77s

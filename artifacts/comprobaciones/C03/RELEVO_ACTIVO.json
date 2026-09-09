@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T13:17:14.621344+00:00",
+  "confirmedAtUtc": "2026-09-09T13:32:01.311443+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "638 adoptada:513Providers/46integración/51focales+Fast.63911/12;64014/20, referencias/idioma/lectura inglesa pendientes.25/717/0.",
-  "continuation": "638 y evidencia635–640 publicadas, remoto verificado; sin procesos de campaña/modelo/build. Próximo641: How many windows of Steam are open? no conserva la consulta y94devuelve knowledge sin efecto. Revisar effect_intent.py:3589/7434 y puertas de how/how many antes de tocar el compositor. Después localizar pérdida de referencias15–18 de640. Foco inglés: has cuenta sóloES en request_reading.py.25/717/0; UI/voz/recuperación/Fullfinal pendientes.",
+  "checkpoint": "641 validada: 3455 dueñas +121 subpruebas /0 skips, Fast. 642:15/20 con nueva lectura inglesa. 25/717/0.",
+  "continuation": "Publicar 641–642. Después medir candidatos contextuales para seguimientos: shortlist actual no incluye window.application.status en t15/t17. No reescribir historia como mandato ni cambiar composición. Referente de argumentos t18 y detección de idioma has son fronteras separadas. UI/voz/recuperación/encuesta/Full final siguen pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "9e3507cf870446a85fb913722662a690ab532128",
+  "publishedSourceCommit": "pending_publication_of_validated_source641",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
@@ -44,5 +44,5 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Implemented scoped application reads, validated owners/Fast, and product634 exposed the next provider and language boundaries."
+  "previousGoalTurnClassificationReason": "Fresh English quantity read verified in product642; owners and Fast pass."
 }

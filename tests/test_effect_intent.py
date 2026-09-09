@@ -38,6 +38,10 @@ from baxy_mind.effect_intent import (
     "Please check whether {name} is closed",
     "Are any windows of {name} open?",
     "Baxy, is {name} open please?",
+    "How many windows of {name} are open?",
+    "How many {name} windows are open?",
+    "¿Cuántas ventanas de {name} están abiertas?",
+    "Baxy, how many windows of {name} are open please?",
 ])
 def test_named_window_status_preserves_application_scope(name, surface):
     from baxy_mind.effect_intent import resolve_application_window_status_name
@@ -65,6 +69,12 @@ def test_named_window_status_preserves_application_scope(name, surface):
     "Is Spotify running in the background?", "Is it open?",
     "Open Spotify", "Close Steam", "Is Spotify open and close Steam",
     "¿Hay alguna ventana de oportunidad abierta?",
+    "How many windows of Spotify are closed?",
+    "How many windows of opportunity are open?",
+    "How many windows of Spotify are open on my phone?",
+    "Explain how many windows Spotify can open",
+    "How do I open a window of Spotify?",
+    "How many windows of Spotify are open and close Steam",
 ])
 def test_named_window_status_does_not_invent_request_or_scope(text):
     from baxy_mind.effect_intent import resolve_application_window_status_name

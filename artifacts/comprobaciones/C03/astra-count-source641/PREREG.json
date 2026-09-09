@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-09T13:23:36.546168+00:00",
+  "source": 641,
+  "sources": {
+    "src/baxy_mind/effect_intent.py": "b8454d6d105f30ea69831a234a0208208e723fcb77d234666e5faf03397e19ef",
+    "tests/test_effect_intent.py": "b5471d74035ccbb02d282454e34dc04defcd8a41598595c2f70e52501981d7fe",
+    "tests/test_turn_policy.py": "495e8fa52ac1921d80a0cbf7ebf542ac54662558ac1e0aab67d281641b4bae40"
+  },
+  "python_tree_sha256": "6e00cb73fdc65e3bbf9b02d2e77f8db8f4e21702d01590edd4359f28e9418394",
+  "python_files": 404,
+  "test_first": {
+    "failed": 16,
+    "passed": 56
+  },
+  "targeted_passed": 72,
+  "owners": {
+    "passed": 3455,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 67.64
+  },
+  "method": "Preserve bounded quantity questions against dynamic app catalog; the fully matched named-window query supplies its own request act. Do not broaden how generically, invent a count, alter model/prose, or treat closed-window counts as observable.",
+  "criteria": "Fast and current-tree declarations green.642 repeats exact20panel640. T20 must perform a fresh typed window.application.status read. Keep reference and focus-language failures unless evidence actually repairs them. No UI/voice or global coverage claim."
+}

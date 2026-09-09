@@ -3594,7 +3594,7 @@ def resolve_application_window_status_name(
 
     A foreground snapshot cannot establish absence of other windows. Conversely,
     visible windows do not establish background process liveness. Keep this read
-    bounded to open/closed questions about one authenticated application; the
+    bounded to presence/count questions about one authenticated application; the
     model still owns other formulations and unresolved application identities.
     """
     catalog = build_application_catalog_index(application_names)
@@ -3616,6 +3616,9 @@ def resolve_application_window_status_name(
         r"hay\s+(?:(?:alguna|una)\s+)?ventana\s+de\s+"
         r"(?P<target>.+?)\s+abierta",
         r"are\s+(?:any\s+)?windows\s+of\s+(?P<target>.+?)\s+open",
+        r"how\s+many\s+windows\s+of\s+(?P<target>.+?)\s+are\s+open",
+        r"how\s+many\s+(?P<target>.+?)\s+windows\s+are\s+open",
+        r"cuantas\s+ventanas\s+de\s+(?P<target>.+?)\s+estan\s+abiertas",
     )
     for pattern in patterns:
         match = re.fullmatch(pattern, folded)
@@ -7523,12 +7526,14 @@ def _strict_catalog_request(
         )
         >= 2
     )
+    named_window_query = resolve_application_window_status_name(text, application_names)
     if (
         (
             not _is_direct_request(text)
             and not channel_leading_message
             and not bounded_status_question
             and not explicit_catalog_composition
+            and named_window_query is None
         )
         or _is_negative_effect_clause(text)
         or (_is_meta_or_tool_denial(text) and not bounded_routine_catalog_question)
@@ -7557,7 +7562,7 @@ def _strict_catalog_request(
             return None
         return EffectIntent(operations, evidence or tuple(text for _ in operations))
 
-    if resolve_application_window_status_name(text, application_names) is not None:
+    if named_window_query is not None:
         return intent("window.application.status")
 
     if _local_internet_connection_query(text):

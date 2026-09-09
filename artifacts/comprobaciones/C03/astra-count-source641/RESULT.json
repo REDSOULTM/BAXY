@@ -1,0 +1,14 @@
+{
+  "adopted": true,
+  "owners_passed": 3455,
+  "subtests": 121,
+  "owners_skipped": 0,
+  "targeted_passed": 72,
+  "declarations_passed": 12,
+  "declarations_environmental_skipped": 1,
+  "fast_exit": 0,
+  "release_seconds": 24.68,
+  "product642_correct": 15,
+  "product642_total": 20,
+  "goal_complete": false
+}

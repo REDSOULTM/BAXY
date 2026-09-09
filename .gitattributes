@@ -321,3 +321,5 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/astra-enumeration-product639/** -text
 /artifacts/comprobaciones/C03/astra-window-reference-product640/** -text
 /artifacts/comprobaciones/C03/astra-enumeration-source638/** -text
+/artifacts/comprobaciones/C03/astra-count-product642/** -text
+/artifacts/comprobaciones/C03/astra-count-source641/** -text

@@ -1,0 +1,36 @@
+{
+  "source": 641,
+  "correct": 15,
+  "total": 20,
+  "failed_cases": {
+    "focus-en": "English focus question still classified mixed and answered in Spanish.",
+    "reference-new-name-en": "Unnecessary clarification loses the preceding window-status question.",
+    "reference-pronoun-en": "Spotify reference is lost and the answer reports an interpretation failure.",
+    "reference-new-name-es": "Steam follow-up is falsely presented as unsupported.",
+    "reference-pronoun-es": "Application reference is lost; clarification unnecessarily changes the scope to an app in startup."
+  },
+  "english_count_fresh_typed_read": true,
+  "explicit_named_reads_correct": 12,
+  "independent_snapshots_identical": true,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2400.6953125,
+    "seconds": 59.297
+  },
+  "ui_or_voice_credit": false,
+  "whole_window_requirement_accepted": false,
+  "private_hashes": {
+    "panel.json": "ee9a98f177f68b261e8d438d1d35f7274b1a69f32d75f221b138e7d0a6e66f89",
+    "capture/events.jsonl": "dac08483e2e386475d8da998d5bcdde75b0b19ee2dade6e468fc87d27b9beede",
+    "compose-audit.jsonl": "63086ae2012bdef971e67f0da8d7d40a2222ca142ad26d72298c9d0b0e47cd4b",
+    "turn-audit.jsonl": "58be9837a7598ede4ee713e290094f945dc25c5d65a4331308dfd5919720f431",
+    "raw-replies.jsonl": "952ded18d9ee37d40171c3176d5b76e4dc8bc2e1130242cf9b0bf4675cd08f23",
+    "shell-trace.jsonl": "465d6785488de88046ec4c4a1e8964ad69e706b8d269ca23bf6331ad5633163e",
+    "adjudication.json": "637a9fd342006c97122968979b3f753f90cb70277923cd5456a19f88c5bb80c9",
+    "RESULT.md": "0ce6118268de32ba8400c670eb32c6801c08bcec296ae7e8584c614b2b0894f6",
+    "windows-before.json": "cfde6da7ff5408efa949fb658bd2935a0afc06fb66e26f3c2d544be3f14ca396",
+    "windows-after.json": "0a92ef3dfec41a88b5b6c8a8b6e16aff685121a13646b35dbcc26cb88bd89878"
+  }
+}

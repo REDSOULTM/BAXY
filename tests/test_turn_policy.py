@@ -3328,7 +3328,11 @@ def test_application_launch_requires_authenticated_installed_identity() -> None:
 
 
 @pytest.mark.parametrize("name", ["Steam", "Spotify", "Órbita 23", "Bloc de notas"])
-@pytest.mark.parametrize("surface", ["¿Está {name} abierto?", "Is {name} open?"])
+@pytest.mark.parametrize("surface", [
+    "¿Está {name} abierto?", "Is {name} open?",
+    "¿Cuántas ventanas de {name} están abiertas?",
+    "How many windows of {name} are open?",
+])
 def test_window_status_argument_uses_catalog_identity_and_schema(name, surface):
     schema = {
         "type": "object", "properties": {"name": {"type": "string"}},
