@@ -1162,3 +1162,8 @@ La validación de cobertura distingue identificar una ventana («el nombre de la
 Producto681 demuestra el nombre reparado en una llamada y conserva pendientes el caso mixto y las dos lecturas frescas omitidas. Recuento estricto6793/7→6814/7; el5/7anterior omitía el requisito de lectura fresca y queda corregido explícitamente en681. Encuesta26cubiertos/716abiertos/0NA intacta. El primer intento del script de preparación encontró una fila diagnóstica sin trace; se corrigió su acceso opcional antes de sellar679, sin repetir inferencia ni alterar fuente por ello.
 
 Python tree03d2cb9ef539220225bb0efff7fc499cd2707466cf98fb1160d899b5a0ba67d7/405archivos, declaraciones actuales actualizadas y sellos históricos intactos. No Full680: Full651 sigue baseline; otro Full al adoptar C#+Python juntos o candidato final según el encargo. C03 no completo: ocho rutas, encuesta, cien respuestas, UI real, loopback íntegro/AEC separado, recuperación y recursos conjuntos/Full final siguen pendientes.
+
+
+# Publicación680 verificada
+
+Fuente/evidencias publicadas en e2ad0b5c6058d75b077ebc0549273a9945db9d4a, remoto Goal-c03 verificado; main intacto.25pins públicos y de índice, privados, fuente/tree, encuesta y manifiesto auditados. Producto cerrado, sin campañas pendientes. Los logs crudos preservan CRLF y tres espacios finales de pytest; el chequeo de whitespace de fuente/documentación está limpio, no se reescriben logs sellados para cambiar su formato. Siguiente: lectura fresca t3/t5; prosa mixta682 abierta. Encuesta26cubiertos/716abiertos/0NA; C03 EN_CURSO.

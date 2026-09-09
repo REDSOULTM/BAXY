@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T18:21:28.070619+00:00",
+  "confirmedAtUtc": "2026-09-09T18:24:32.475690+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "680 adoptada: nombre de ventana reparado;2589dueñas+121subtests/0skips,600declaraciones/1skip ambiental,Fast0.679 corregido3/7;6814/7;682 diagnóstico nativo completo.",
-  "continuation": "Auditar y publicar680 con evidencias679/681/682; luego reparar t3/t5: el clasificador nativo los trata como conversación sin lectura fresca. Prosa mixta localizada en compositor completo682. Sin nueva encuesta ni cambio de modelo.",
+  "checkpoint": "680 publicadae2ad0b5c6058d75b077ebc0549273a9945db9d4a; título reparado;2589dueñas+121subtests/0skip,600declaraciones/1skip ambiental,Fast0;679 corregido3/7,6814/7,682 completo.",
+  "continuation": "Reparar lectura fresca de t3/t5 sin cambiar sus entradas: effect_intent.py y frontera observation_not_recital en __main__.py. Prosa mixta682 permanece abierta. Encuesta26/716/0 y alcance íntegroC03; no publicación pendiente de fuente680.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "2138d2d6e96d79c2cda025bd9f7c2367744abb3b",
+  "publishedSourceCommit": "e2ad0b5c6058d75b077ebc0549273a9945db9d4a",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "2138d2d6e96d79c2cda025bd9f7c2367744abb3b",
+  "publishedEvidenceCommit": "e2ad0b5c6058d75b077ebc0549273a9945db9d4a",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
