@@ -1,0 +1,23 @@
+{
+  "conclusion": "Ocho respuestas completas. Quitar la causa redundante mejora tres recibos; el nombre sigue narrado mecánicamente. Hereda la identificación incorrecta selector como Label de562. La proyección actual y su test excluyen selector deliberadamente. No se adopta. Faltan español, estados verdaderos y privacidad antes de cualquier cambio de contrato.",
+  "response_count": 8,
+  "adopted": false,
+  "new_training": false,
+  "survey_counts": {
+    "covered": 8,
+    "open": 734,
+    "not_applicable": 0
+  },
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 715.81640625,
+    "seconds": 4.359,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mutation-cause563-private\\RESULT.md",
+  "private_report_sha256": "abb301d46422f76a0fefd6f8e321a0cd315bb25e59e1fed0c5ddc0f374816e15",
+  "limits": "Desarrollo nativo local. No acredita producto integrado, interfaz, voz, reserva ciega ni cobertura adicional de encuesta."
+}

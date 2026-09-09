@@ -1,0 +1,23 @@
+{
+  "conclusion": "Ocho respuestas completas: cuatro recibos por dos brazos. Omitir indicadores falsos y restaurar un supuesto label reduce afirmaciones sobre esos indicadores, pero persiste narración mecánica y duplicada. El campo probado era selector: NO equivale necesariamente a Label. No se adopta ni se autoriza exponer identificadores internos.",
+  "response_count": 8,
+  "adopted": false,
+  "new_training": false,
+  "survey_counts": {
+    "covered": 8,
+    "open": 734,
+    "not_applicable": 0
+  },
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 716.1796875,
+    "seconds": 4.687,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mutation-view562-private\\RESULT.md",
+  "private_report_sha256": "22c379c88903c51433631fdc6f0a10ed41fa21216b786add15229f9bf88de60a",
+  "limits": "Desarrollo nativo local. No acredita producto integrado, interfaz, voz, reserva ciega ni cobertura adicional de encuesta."
+}

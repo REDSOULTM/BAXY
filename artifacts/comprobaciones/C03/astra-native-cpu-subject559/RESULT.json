@@ -1,0 +1,23 @@
+{
+  "conclusion": "Ocho respuestas completas. La instrucción explícita sobre el sujeto conserva Estoy usando en español. Segunda comparación de esta línea sin mejora suficiente: no continuar barriendo instrucciones equivalentes.",
+  "response_count": 8,
+  "adopted": false,
+  "new_training": false,
+  "survey_counts": {
+    "covered": 8,
+    "open": 734,
+    "not_applicable": 0
+  },
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 717.4921875,
+    "seconds": 6.265,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-cpu-subject559-private\\RESULT.md",
+  "private_report_sha256": "b7f9b9a8d494d0d95b169df83d4a365c49e38b24710f1e776c75bfb4fb1f06fb",
+  "limits": "Desarrollo nativo local. No acredita producto integrado, interfaz, voz, reserva ciega ni cobertura adicional de encuesta."
+}

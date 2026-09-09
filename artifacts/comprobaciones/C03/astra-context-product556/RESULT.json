@@ -1,0 +1,26 @@
+{
+  "published": 10,
+  "newly_covered": [
+    "H0078"
+  ],
+  "survey_counts": {
+    "covered": 8,
+    "open": 734,
+    "not_applicable": 0
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2444.421875,
+    "seconds": 39.469
+  },
+  "native_retry_verified": [
+    11,
+    12
+  ],
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-context-product556-private\\RESULT.md",
+  "private_report_sha256": "b87b0c6f43746d3f11d58606157a039b7462e6c19ab86abd2ddc3528611b9935",
+  "adjudication_sha256": "b633e4ffbe469824621ba8205d93e4839b777198309bfd7ddbc1f3ceccf8ddb9",
+  "limitations": "CPU subject remains wrong inSpanish. Headless conductor, no UI/audio credit."
+}

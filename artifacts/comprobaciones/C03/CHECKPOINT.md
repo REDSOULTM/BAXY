@@ -75,3 +75,23 @@ Test-first5 fallos/1pass; focal6pass0,67s. Dueñas iniciales2fallos/1934pass mos
 Encuesta7cubiertos/735abiertos/0NA, sin crédito aún para despedida: falta producto556. Preparada una corrida aislada con contexto CPU/volumen, despedidasES/EN y recuerdo literal, sinUI/voz. No reabrir BAXY manualmente.
 
 554 no llegó a lanzar el modelo: su preflight esperó20 escritores y encontró18 porque la despedida iba por otro resolvedor. Esa diferencia permitió identificar la transformación errónea de555. No se adjudica calidad ni recursos aGemma554; la comparación no se ejecutó y deja de ser el siguiente paso.
+
+
+# Producto556 — reintento contextual verificado
+
+10 finales, exit0/sin cortes. La despedida española genera un eco en direct_answer y análisis en resolved_meaning(native11); la fuente555 ejecuta el reintento directo(native12) y publica su respuesta, sin el análisis interno. Cuatro variantes de cierre ES/EN y control de recuerdo literalSolmira729 completados. CPU española sigue con sujeto equivocado y permanece abierta.
+
+Encuesta8 cubiertos/734 abiertos/0NA; nuevoH0078. GPU3497,559MiB/RAM2444,422MiB,39,469s, sinUI/voz. Fuente555 publicada8027c222. No equivale a cierre deC03 ni a cobertura automática de casos similares.
+
+
+# Handoff C03 — 564
+
+Objetivo activo, sin decisión pendiente del dueño. Fuente555 publicada8027c2220997ee9407f04aac94b383e0647225c4; sin fuente posterior. Producto556 confirma reintento contextual y cubre H0078. Encuesta8 cubiertos/734 abiertos/0 no aplicables; original742/rev1248 intacto. BAXY manual cerrado.
+
+557–564 cerrados documentalmente: Gemma18 EOS rechazada por unidades GPU; dos variantes CPU558/559 sin mejora; LoRA560 preflight falló y561 recuperó escala0 verificada por API antes de54 EOS con escala por petición. LoRA mejora CPU/recibo pero cambia actor de nombre y niega capacidad de memoria: no promoción ni entrenamiento nuevo. Recursos561 GPU3735,563 MiB/RAM1084,434 MiB; nativo, no conjunto final. No procesos pendientes de esas campañas.
+
+562/563 simplifican recibos pero llaman Label a selector, que el almacén mantiene distinto y el test de proyección excluye deliberadamente. No adoptar ni exponer selector.564 cambia sólo confirm por pedido original; reduce algunos fallos, no todos. Cualquier conservación del contexto necesita enlace exacto a PreparedOperation y privacidad. Primera pérdida localizada: MemoryOperationResponseProjection.cs descarta selector deliberadamente; MemoryTurnSession publica resultado sin pedido original. No asumir que recuperar selector sea reparación correcta.
+
+Próximo trabajo: cambiar de estrategia respecto a barridos de instrucciones/renombrados. Reparar la primera transformación demostrada o evaluar una alternativa heredada sobre fallos actuales, sin promover por una respuesta. CPU: uso total mal atribuido a BAXY; capacidad memoria deshabilitada confundida con inexistencia; procesadores lógicos y unidades GPU incorrectos. Quedan encuesta restante, ocho rutas, UI real, loopback completo/AEC como supresión y Full final verde. C08 humano sólo evidencia, no cierre ajeno. Full526 rojo reparado en dueñas528–531; no Full final aún.
+
+Validación fuente555:1936 pass+121 subtests,0 skips; STT12 pass/1 skip ambiental; Fast verde, Release21,57s. Árbol STT5a3d37d79c0e4b7366c3d7857b699a32c9d6e1b84df9d794f89bc3dea890415d/403 archivos. No cambiar sellos históricos. Main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. Informes privados incluyen todas las respuestas y payloads; PINS conserva los públicos.

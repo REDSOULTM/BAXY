@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T04:30:05.482000+00:00",
+  "confirmedAtUtc": "2026-09-09T05:13:19.856459+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "555: internal resolved meaning no longer published;1936pass+121subtests/Fast green; product556 pending.",
-  "continuation": "Publish source555 then verify contextual closings and literal recall in product556. Survey7/735/0; C03 active.",
+  "checkpoint": "564: diagnostics557–564 adjudicated, no promotion. Survey8/734/0; source555 published, product556 verified.",
+  "continuation": "Repair remaining C03 behavior using demonstrated ownership; no equivalent CPU/prompt sweeps. Then survey, desktop, loopback/AEC, joint resources and final Full.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,12 +24,12 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 7,
-    "open": 735,
+    "covered": 8,
+    "open": 734,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "1d08cc297547ebc1d38d98492a41973816423416",
+  "publishedSourceCommit": "8027c2220997ee9407f04aac94b383e0647225c4",
   "blockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

@@ -1,0 +1,23 @@
+{
+  "conclusion": "18 respuestas completas. Perfil Gemma462 thinking/lazy heredado. Mejora sujeto de CPU y estado de memoria, pero transforma los bytes de GPU en 6287,26 GB por tarjeta y llama núcleos a los procesadores lógicos en español. No se promociona.",
+  "response_count": 18,
+  "adopted": false,
+  "new_training": false,
+  "survey_counts": {
+    "covered": 8,
+    "open": 734,
+    "not_applicable": 0
+  },
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 1694.18359375,
+    "ram_peak_mib": 975.8125,
+    "seconds": 62.265,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-gemma-current-writer557-private\\RESULT.md",
+  "private_report_sha256": "935c4dbcb9d94e354b577ac7ec81b54a25bfc95077ab5f43db7249179f259ac9",
+  "limits": "Desarrollo nativo local. No acredita producto integrado, interfaz, voz, reserva ciega ni cobertura adicional de encuesta."
+}

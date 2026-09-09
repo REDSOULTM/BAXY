@@ -1,0 +1,23 @@
+{
+  "conclusion": "Ocho respuestas completas. Sustituir confirm por el pedido de guardado original mejora algunos recibos pero mantiene redundancia y metadatos en la preferencia de entrega. Jordan procede de521; los otros tres pedidos son contrafactuales explícitos, sin efectos reales. No se adopta sin vincular el contexto a la invocación exacta y preservar privacidad.",
+  "response_count": 8,
+  "adopted": false,
+  "new_training": false,
+  "survey_counts": {
+    "covered": 8,
+    "open": 734,
+    "not_applicable": 0
+  },
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 720.03515625,
+    "seconds": 5.078,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bound-save-request564-private\\RESULT.md",
+  "private_report_sha256": "dbb66921034b119957a608f782e9e48b4e6d520c2da58285ba07adafcdd524b2",
+  "limits": "Desarrollo nativo local. No acredita producto integrado, interfaz, voz, reserva ciega ni cobertura adicional de encuesta."
+}
