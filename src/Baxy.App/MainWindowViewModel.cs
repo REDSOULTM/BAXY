@@ -2159,7 +2159,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 operationName,
                 route.Text,
                 MindSidecarClient.ArgumentRequestTimeout,
-                cancellationToken);
+                cancellationToken,
+                BuildMindHistory());
 
             if (extraction is null)
             {

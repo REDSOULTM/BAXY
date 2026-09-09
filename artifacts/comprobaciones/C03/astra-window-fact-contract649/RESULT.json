@@ -1,0 +1,16 @@
+{
+  "correct": 4,
+  "total": 11,
+  "failed_cases": [
+    "observed647",
+    "count-contradiction-en",
+    "installation-contradiction-en",
+    "unobserved-negative-en",
+    "count-contradiction-es",
+    "installation-contradiction-es",
+    "unobserved-positive-es"
+  ],
+  "source_modified": false,
+  "model_or_product_credit": false,
+  "private_sha256": "5dd9bf366fd329b2cbddf7a60af2e55fa79e2ebbe16f70ba200cda5b37d947f0"
+}

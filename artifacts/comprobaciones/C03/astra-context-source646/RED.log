@@ -1,0 +1,756 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                           [100%]
+================================== FAILURES ===================================
+____ test_named_followup_reads_the_new_catalog_identity[And {name}?-Steam] ____
+
+name = 'Steam', surface = 'And {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+___ test_named_followup_reads_the_new_catalog_identity[And {name}?-Spotify] ___
+
+name = 'Spotify', surface = 'And {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[And {name}?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'And {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[And {name}?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'And {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+___ test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-Steam] ___
+
+name = 'Steam', surface = '¿Y {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+__ test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-Spotify] __
+
+name = 'Spotify', surface = '¿Y {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = '¿Y {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = '¿Y {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[What about {name}?-Steam] _
+
+name = 'Steam', surface = 'What about {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[What about {name}?-Spotify] _
+
+name = 'Spotify', surface = 'What about {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[What about {name}?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = 'What about {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[What about {name}?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = 'What about {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-Steam] _
+
+name = 'Steam', surface = '¿Qué hay de {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-Spotify] _
+
+name = 'Spotify', surface = '¿Qué hay de {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-\xd3rbita 23] _
+
+name = 'Órbita 23', surface = '¿Qué hay de {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-Bloc de notas] _
+
+name = 'Bloc de notas', surface = '¿Qué hay de {name}?'
+
+    @pytest.mark.parametrize("name", APPS)
+    @pytest.mark.parametrize("surface", ["And {name}?", "¿Y {name}?", "What about {name}?", "¿Qué hay de {name}?"])
+    def test_named_followup_reads_the_new_catalog_identity(name, surface):
+        text = surface.format(name=name)
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            text, ["Is Steam open?"], APPS,
+        ) == name
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:23: AttributeError
+_ test_pronoun_retains_the_latest_named_question_through_a_chain[Is it open now?] _
+
+surface = 'Is it open now?'
+
+    @pytest.mark.parametrize("surface", [
+        "Is it open now?", "Is that application closed?", "¿Está abierta esa aplicación?",
+        "¿Esa aplicación tiene alguna ventana abierta?", "¿Está cerrado ese programa?",
+    ])
+    def test_pronoun_retains_the_latest_named_question_through_a_chain(surface):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            surface, ["Is Steam open?", "And Spotify?", "Is it open now?", "¿Y Órbita 23?"], APPS,
+        ) == "Órbita 23"
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:33: AttributeError
+_ test_pronoun_retains_the_latest_named_question_through_a_chain[Is that application closed?] _
+
+surface = 'Is that application closed?'
+
+    @pytest.mark.parametrize("surface", [
+        "Is it open now?", "Is that application closed?", "¿Está abierta esa aplicación?",
+        "¿Esa aplicación tiene alguna ventana abierta?", "¿Está cerrado ese programa?",
+    ])
+    def test_pronoun_retains_the_latest_named_question_through_a_chain(surface):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            surface, ["Is Steam open?", "And Spotify?", "Is it open now?", "¿Y Órbita 23?"], APPS,
+        ) == "Órbita 23"
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:33: AttributeError
+_ test_pronoun_retains_the_latest_named_question_through_a_chain[\xbfEst\xe1 abierta esa aplicaci\xf3n?] _
+
+surface = '¿Está abierta esa aplicación?'
+
+    @pytest.mark.parametrize("surface", [
+        "Is it open now?", "Is that application closed?", "¿Está abierta esa aplicación?",
+        "¿Esa aplicación tiene alguna ventana abierta?", "¿Está cerrado ese programa?",
+    ])
+    def test_pronoun_retains_the_latest_named_question_through_a_chain(surface):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            surface, ["Is Steam open?", "And Spotify?", "Is it open now?", "¿Y Órbita 23?"], APPS,
+        ) == "Órbita 23"
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:33: AttributeError
+_ test_pronoun_retains_the_latest_named_question_through_a_chain[\xbfEsa aplicaci\xf3n tiene alguna ventana abierta?] _
+
+surface = '¿Esa aplicación tiene alguna ventana abierta?'
+
+    @pytest.mark.parametrize("surface", [
+        "Is it open now?", "Is that application closed?", "¿Está abierta esa aplicación?",
+        "¿Esa aplicación tiene alguna ventana abierta?", "¿Está cerrado ese programa?",
+    ])
+    def test_pronoun_retains_the_latest_named_question_through_a_chain(surface):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            surface, ["Is Steam open?", "And Spotify?", "Is it open now?", "¿Y Órbita 23?"], APPS,
+        ) == "Órbita 23"
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:33: AttributeError
+_ test_pronoun_retains_the_latest_named_question_through_a_chain[\xbfEst\xe1 cerrado ese programa?] _
+
+surface = '¿Está cerrado ese programa?'
+
+    @pytest.mark.parametrize("surface", [
+        "Is it open now?", "Is that application closed?", "¿Está abierta esa aplicación?",
+        "¿Esa aplicación tiene alguna ventana abierta?", "¿Está cerrado ese programa?",
+    ])
+    def test_pronoun_retains_the_latest_named_question_through_a_chain(surface):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            surface, ["Is Steam open?", "And Spotify?", "Is it open now?", "¿Y Órbita 23?"], APPS,
+        ) == "Órbita 23"
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:33: AttributeError
+____ test_new_or_unresolved_topic_clears_the_read_reference[Open Spotify] _____
+
+intervening = 'Open Spotify'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+_____ test_new_or_unresolved_topic_clears_the_read_reference[Close Steam] _____
+
+intervening = 'Close Steam'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+__ test_new_or_unresolved_topic_clears_the_read_reference[What is a window?] __
+
+intervening = 'What is a window?'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+____ test_new_or_unresolved_topic_clears_the_read_reference[No abras nada] ____
+
+intervening = 'No abras nada'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+_ test_new_or_unresolved_topic_clears_the_read_reference[Is Steam open and is Spotify closed?] _
+
+intervening = 'Is Steam open and is Spotify closed?'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+__ test_new_or_unresolved_topic_clears_the_read_reference[And Unknown App?] ___
+
+intervening = 'And Unknown App?'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+__ test_new_or_unresolved_topic_clears_the_read_reference[What time is it?] ___
+
+intervening = 'What time is it?'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+___ test_new_or_unresolved_topic_clears_the_read_reference[Spotify is open] ___
+
+intervening = 'Spotify is open'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+_ test_new_or_unresolved_topic_clears_the_read_reference[Is Spotify open on my phone?] _
+
+intervening = 'Is Spotify open on my phone?'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+_ test_new_or_unresolved_topic_clears_the_read_reference[Was Spotify open yesterday?] _
+
+intervening = 'Was Spotify open yesterday?'
+
+    @pytest.mark.parametrize("intervening", [
+        "Open Spotify", "Close Steam", "What is a window?", "No abras nada",
+        "Is Steam open and is Spotify closed?", "And Unknown App?", "What time is it?",
+        "Spotify is open", "Is Spotify open on my phone?", "Was Spotify open yesterday?",
+    ])
+    def test_new_or_unresolved_topic_clears_the_read_reference(intervening):
+>       assert effect_intent.resolve_application_window_followup_name(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "Is it open now?", ["Is Steam open?", intervening], APPS,
+        ) is None
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:44: AttributeError
+_ test_reference_without_a_question_does_not_inherit_an_action[And Spotify?] __
+
+text = 'And Spotify?'
+
+    @pytest.mark.parametrize("text", [
+        "And Spotify?", "Is it open?", "¿Y Steam?", "¿Esa aplicación tiene alguna ventana abierta?",
+    ])
+    def test_reference_without_a_question_does_not_inherit_an_action(text):
+        for history in [[], ["Open Steam"], ["Close Steam"], ["Explain Spotify"]]:
+>           assert effect_intent.resolve_application_window_followup_name(text, history, APPS) is None
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:54: AttributeError
+__ test_reference_without_a_question_does_not_inherit_an_action[Is it open?] __
+
+text = 'Is it open?'
+
+    @pytest.mark.parametrize("text", [
+        "And Spotify?", "Is it open?", "¿Y Steam?", "¿Esa aplicación tiene alguna ventana abierta?",
+    ])
+    def test_reference_without_a_question_does_not_inherit_an_action(text):
+        for history in [[], ["Open Steam"], ["Close Steam"], ["Explain Spotify"]]:
+>           assert effect_intent.resolve_application_window_followup_name(text, history, APPS) is None
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:54: AttributeError
+_ test_reference_without_a_question_does_not_inherit_an_action[\xbfY Steam?] __
+
+text = '¿Y Steam?'
+
+    @pytest.mark.parametrize("text", [
+        "And Spotify?", "Is it open?", "¿Y Steam?", "¿Esa aplicación tiene alguna ventana abierta?",
+    ])
+    def test_reference_without_a_question_does_not_inherit_an_action(text):
+        for history in [[], ["Open Steam"], ["Close Steam"], ["Explain Spotify"]]:
+>           assert effect_intent.resolve_application_window_followup_name(text, history, APPS) is None
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:54: AttributeError
+_ test_reference_without_a_question_does_not_inherit_an_action[\xbfEsa aplicaci\xf3n tiene alguna ventana abierta?] _
+
+text = '¿Esa aplicación tiene alguna ventana abierta?'
+
+    @pytest.mark.parametrize("text", [
+        "And Spotify?", "Is it open?", "¿Y Steam?", "¿Esa aplicación tiene alguna ventana abierta?",
+    ])
+    def test_reference_without_a_question_does_not_inherit_an_action(text):
+        for history in [[], ["Open Steam"], ["Close Steam"], ["Explain Spotify"]]:
+>           assert effect_intent.resolve_application_window_followup_name(text, history, APPS) is None
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:54: AttributeError
+_ test_context_does_not_change_the_current_request[No abras ninguna ventana.] _
+
+text = 'No abras ninguna ventana.'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+_____ test_context_does_not_change_the_current_request[And close Spotify] _____
+
+text = 'And close Spotify'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+__ test_context_does_not_change_the_current_request[Is it open on my phone?] __
+
+text = 'Is it open on my phone?'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+__ test_context_does_not_change_the_current_request[Was it open yesterday?] ___
+
+text = 'Was it open yesterday?'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+______ test_context_does_not_change_the_current_request[Why is it open?] ______
+
+text = 'Why is it open?'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+_ test_context_does_not_change_the_current_request[Is it running in the background?] _
+
+text = 'Is it running in the background?'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+_ test_context_does_not_change_the_current_request[Is it open and close Steam] _
+
+text = 'Is it open and close Steam'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+___ test_context_does_not_change_the_current_request[Thanks for checking.] ____
+
+text = 'Thanks for checking.'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+_ test_context_does_not_change_the_current_request[\xbfEst\xe1 mi puerta abierta?] _
+
+text = '¿Está mi puerta abierta?'
+
+    @pytest.mark.parametrize("text", [
+        "No abras ninguna ventana.", "And close Spotify", "Is it open on my phone?",
+        "Was it open yesterday?", "Why is it open?", "Is it running in the background?",
+        "Is it open and close Steam", "Thanks for checking.", "¿Está mi puerta abierta?",
+    ])
+    def test_context_does_not_change_the_current_request(text):
+>       assert effect_intent.resolve_application_window_followup_name(text, ["Is Steam open?"], APPS) is None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'baxy_mind.effect_intent' has no attribute 'resolve_application_window_followup_name'. Did you mean: 'resolve_application_window_status_name'?
+
+tests\test_window_query_context.py:63: AttributeError
+_____ test_grounding_uses_user_reference_and_revalidates_the_exact_schema _____
+
+    def test_grounding_uses_user_reference_and_revalidates_the_exact_schema():
+        text = "Is it open now?"
+        history = [
+            {"role": "user", "content": "Is Steam open?"},
+            {"role": "assistant", "content": "Spotify is open."},
+            {"role": "user", "content": text},
+        ]
+>       assert _ground_explicit_arguments(
+            "window.application.status", text, SCHEMA, APPS, history=history,
+        ) == {"name": "Steam"}
+E       TypeError: _ground_explicit_arguments() got an unexpected keyword argument 'history'
+
+tests\test_window_query_context.py:73: TypeError
+_______________ test_assistant_text_cannot_supply_the_reference _______________
+
+    def test_assistant_text_cannot_supply_the_reference():
+>       assert _ground_explicit_arguments(
+            "window.application.status", "Is it open?", SCHEMA, APPS,
+            history=[{"role": "assistant", "content": "Is Spotify open?"}],
+        ) is None
+E       TypeError: _ground_explicit_arguments() got an unexpected keyword argument 'history'
+
+tests\test_window_query_context.py:85: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[And {name}?-Steam]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[And {name}?-Spotify]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[And {name}?-\xd3rbita 23]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[And {name}?-Bloc de notas]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-Steam]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-Spotify]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-\xd3rbita 23]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfY {name}?-Bloc de notas]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[What about {name}?-Steam]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[What about {name}?-Spotify]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[What about {name}?-\xd3rbita 23]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[What about {name}?-Bloc de notas]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-Steam]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-Spotify]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-\xd3rbita 23]
+FAILED tests/test_window_query_context.py::test_named_followup_reads_the_new_catalog_identity[\xbfQu\xe9 hay de {name}?-Bloc de notas]
+FAILED tests/test_window_query_context.py::test_pronoun_retains_the_latest_named_question_through_a_chain[Is it open now?]
+FAILED tests/test_window_query_context.py::test_pronoun_retains_the_latest_named_question_through_a_chain[Is that application closed?]
+FAILED tests/test_window_query_context.py::test_pronoun_retains_the_latest_named_question_through_a_chain[\xbfEst\xe1 abierta esa aplicaci\xf3n?]
+FAILED tests/test_window_query_context.py::test_pronoun_retains_the_latest_named_question_through_a_chain[\xbfEsa aplicaci\xf3n tiene alguna ventana abierta?]
+FAILED tests/test_window_query_context.py::test_pronoun_retains_the_latest_named_question_through_a_chain[\xbfEst\xe1 cerrado ese programa?]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[Open Spotify]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[Close Steam]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[What is a window?]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[No abras nada]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[Is Steam open and is Spotify closed?]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[And Unknown App?]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[What time is it?]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[Spotify is open]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[Is Spotify open on my phone?]
+FAILED tests/test_window_query_context.py::test_new_or_unresolved_topic_clears_the_read_reference[Was Spotify open yesterday?]
+FAILED tests/test_window_query_context.py::test_reference_without_a_question_does_not_inherit_an_action[And Spotify?]
+FAILED tests/test_window_query_context.py::test_reference_without_a_question_does_not_inherit_an_action[Is it open?]
+FAILED tests/test_window_query_context.py::test_reference_without_a_question_does_not_inherit_an_action[\xbfY Steam?]
+FAILED tests/test_window_query_context.py::test_reference_without_a_question_does_not_inherit_an_action[\xbfEsa aplicaci\xf3n tiene alguna ventana abierta?]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[No abras ninguna ventana.]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[And close Spotify]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[Is it open on my phone?]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[Was it open yesterday?]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[Why is it open?]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[Is it running in the background?]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[Is it open and close Steam]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[Thanks for checking.]
+FAILED tests/test_window_query_context.py::test_context_does_not_change_the_current_request[\xbfEst\xe1 mi puerta abierta?]
+FAILED tests/test_window_query_context.py::test_grounding_uses_user_reference_and_revalidates_the_exact_schema
+FAILED tests/test_window_query_context.py::test_assistant_text_cannot_supply_the_reference
+46 failed in 2.43s

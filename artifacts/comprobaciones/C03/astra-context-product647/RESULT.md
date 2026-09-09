@@ -1,0 +1,7 @@
+# 647 — referencias verificadas, una afirmación posterior sin respaldo
+
+Mismo panel de20casos642:18 finales acreditados frente a15. Las cuatro referencias t15–t18 ya ejecutan window.application.status con Spotify/Steam correctos y una lectura nueva. Las16lecturas por aplicación conservan nombre y cantidad. No se toca el texto original ni se sustituye el modelo: la selección y la extracción usan la misma referencia acotada de las preguntas del usuario; el shell transporta su historial existente a argumentos.
+
+t15 falla después de leer: «Spotify is installed and running, but no window is currently visible.» El primer borrador publicado añade running; el payload sólo prueba instalación y ausencia de ventanas visibles. No se afirma que Spotify esté detenido: simplemente no se observó su proceso. El foco inglés conserva el fallo mixed→español. H0040 permanece abierto y no se acredita sólo porque las referencias lleguen al provider. No hubo prosa de progreso adicional:20 mensajes visibles corresponden a los20 finales.
+
+Recursos: GPU3497,559MiB, RAM2290,973MiB,91,563s incluyen NativeAOT; sin infracciones. Fuente y registro intactos durante647. La comprobación independiente de WhatsApp se completa con648, que identifica dos procesos del mismo paquete; se conserva explícitamente que esa identidad se consultó después de las instantáneas. No UI/voz conjunta ni mínimo global. Full646 debe concluir verde antes de adoptar el cambio combinado; encuesta25/717/0.

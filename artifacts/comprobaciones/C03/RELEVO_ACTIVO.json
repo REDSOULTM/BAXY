@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T13:41:33.959376+00:00",
+  "confirmedAtUtc": "2026-09-09T15:01:41.358291+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "641 publicada; 642:15/20. 643 contexto general pierde candidatos. 644 selección 3→6/10;645 regla5→6/10 sin reparar ES: no adoptada.25/717/0.",
-  "continuation": "Publicar evidencia643–645 y luego resolver referencia contextual antes de recuperación con texto original conservado. No concatenación general ni más ajuste de prompt645. Argumentos t18 y has inglés siguen separados. BAXY manual cerrado; sin pruebas activas. UI/voz/recuperación/encuesta/Full final pendientes.",
+  "checkpoint": "651Full0:Python10411/3skips+466subtests,.NET4469/1skip;646rojo conservado.25/717/0.",
+  "continuation": "Publicar646–649+651 tras auditoría de bytes.650 diagnóstico factual preparado/no ejecutado, requiereFull651. Después conservar hechos y alcance en compositor, resolver idioma has. UI/voz/encuesta/recuperación/Full final pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,7 +29,7 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "b20bff2472ede886a7edea4a947849328e574672",
+  "publishedSourceCommit": "pending_publication_of_validated_source651",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
@@ -44,5 +44,6 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Published verified count repair and isolated missing-candidate vs native context failures without promoting ineffective rules."
+  "previousGoalTurnClassificationReason": "24 foreground regressions repaired without oracle changes; combined contextual source passes Full.",
+  "activeValidation": null
 }

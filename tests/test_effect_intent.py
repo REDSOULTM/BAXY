@@ -103,6 +103,42 @@ def test_window_mention_does_not_authorize_foreground_substitution(text):
     assert intent is None
 
 
+@pytest.mark.parametrize("text", [
+    "Identify the front window and the keyboard map in use",
+    "Identifica la ventana frontal y la distribución del teclado",
+    "Show the window above the rest and the keyboard map",
+    "Consulta la ventana por encima del resto y el mapa del teclado",
+    "Name window, tabs, key map",
+    "Consulta pestañas, ventana, teclado",
+])
+def test_foreground_read_preserves_composed_domain_order(text):
+    available = ("window.active", "browser.tabs.list", "input.keyboard.status")
+    intent = resolve_explicit_effects(text, available)
+    assert intent is not None
+    if text.startswith("Name window"):
+        expected = available
+    elif text.startswith("Consulta pestañas"):
+        expected = ("browser.tabs.list", "window.active", "input.keyboard.status")
+    else:
+        expected = ("window.active", "input.keyboard.status")
+    assert intent.operations == expected
+    assert unresolved_compound_contract(text, available, resolved_intent=intent) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Show visible windows", "Muestra ventanas visibles",
+    "Show the visible window", "Muestra la ventana visible",
+    "Show the Spotify window", "Muestra la ventana de Steam",
+    "List tabs and windows of Spotify", "Consulta pestañas y ventanas de Steam",
+    "Show my bedroom window", "Muestra la ventana del dormitorio",
+])
+def test_visible_or_named_window_does_not_become_a_foreground_read(text):
+    intent = resolve_explicit_effects(
+        text, ("window.active", "browser.tabs.list"), ("Spotify", "Steam"),
+    )
+    assert intent is None or "window.active" not in intent.operations
+
+
 @pytest.mark.parametrize("prefix", ["Si, ", "Sí, ", "Yes, ", "Okay, "])
 @pytest.mark.parametrize("user_text,operations", [
     ("abre steam", ("app.open",)),

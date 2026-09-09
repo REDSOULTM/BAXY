@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-09T14:32:10.219849+00:00",
+  "sources": {
+    "src/baxy_mind/effect_intent.py": "785a684817e58ba823718fb2c12c91acc60e3d25cb8cbb80e70f7f7e97ec502b",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/MindSidecarClient.cs": "e2196596e51eaa67c471a334dcdfac6d996e26797c809a1d3b952c767d80820e",
+    "src/Baxy.App/MainWindowViewModel.cs": "99bf0691b6abc2ee5b95d146ca574c71ae939f8c941b665c20fa2d82fb419b14",
+    "tests/test_effect_intent.py": "69b810a4768499206ec1268c463f7d60921aa557169548b7db508252a6ec6fd1",
+    "tests/test_window_query_context.py": "89fe89df5d5ea470cdb8dcc9d41ca62a9bae00ee25445dcadf9b74544c8f887e"
+  },
+  "python_tree_sha256": "749fa59fcb7b40ee3e94f3eaddfe2cea5b6d4f724da3625876569c855918a534",
+  "r456_passed": 1408,
+  "scope_passed": 97,
+  "owners_passed": 3521,
+  "owners_subtests": 121,
+  "owners_skipped": 0,
+  "criteria": "Fast/Full still required;646 remains sealed red, adoption of corrected combined source recorded only in651."
+}

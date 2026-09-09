@@ -3637,6 +3637,53 @@ def resolve_application_window_status_name(
     return None
 
 
+def resolve_application_window_followup_name(
+    text: str,
+    previous_requests: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Resolve one bounded read reference from user questions, never answers.
+
+    A new or unresolved subject ends the chain. Previous commands cannot
+    authorize an elliptical read, and assistant assertions cannot establish
+    the application's identity or its current state.
+    """
+    catalog = build_application_catalog_index(application_names)
+
+    def followup(request: str, previous: str | None) -> str | None:
+        if previous is None:
+            return None
+        folded = _strip_request_envelope(_fold(request)).strip(" ¿?¡!.")
+        folded = re.sub(r"\s+(?:por favor|please|ahora|now)$", "", folded)
+        named = re.fullmatch(
+            r"(?:y|and|what\s+about|how\s+about|que\s+hay\s+de)\s+(.+)", folded,
+        )
+        if named is not None:
+            # Reuse the same whole-target catalog resolution as a full query.
+            return resolve_application_window_status_name(
+                f"is {named.group(1)} open", catalog,
+            )
+        entity = r"(?:es[ae]|est[ae])\s+(?:aplicacion|app|programa)"
+        state = r"(?:abiert[oa]|cerrad[oa])"
+        if re.fullmatch(
+            rf"(?:is\s+(?:it|(?:this|that)\s+(?:app|application|program))\s+"
+            rf"(?:still\s+)?(?:open|closed)|"
+            rf"esta\s+(?:{entity}\s+{state}|{state}\s+{entity})|"
+            rf"{entity}\s+tiene\s+(?:alguna|una)\s+ventana\s+abierta)",
+            folded,
+        ):
+            return previous
+        return None
+
+    reference: str | None = None
+    for request in previous_requests:
+        reference = (
+            resolve_application_window_status_name(request, catalog)
+            or followup(request, reference)
+        )
+    return followup(text, reference)
+
+
 def resolve_application_installed_name(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -7876,8 +7923,13 @@ def _strict_catalog_request(
             (
                 "window.active",
                 r"\b(?:ventana|window)\b.{0,48}\b(?:activ[oa]|active|foco|focus|"
-                r"foreground|primer\s+plano|actual|current|frente|keystrokes)\b|"
-                r"\b(?:active|focused|foreground|current)\s+window\b|"
+                r"foreground|primer\s+plano|actual|current|frente|frontal|keystrokes|"
+                r"por\s+encima\s+del\s+resto|above\s+the\s+rest)\b|"
+                r"\b(?:active|focused|foreground|current|front)\s+window\b|"
+                r"(?:^|[,;]\s*|\b(?:y|and)\s+)(?:ventana|window)"
+                r"(?=\s*(?:[,;]|\by\b|\band\b|$))|"
+                r"^(?:name|identify|show|muestra|consulta|identifica)\s+"
+                r"(?:(?:the|la)\s+)?(?:window|ventana)(?=\s*(?:[,;]|$))|"
                 r"\b(?:programa|program|application|app)\b.{0,48}"
                 r"\b(?:teclas|keystrokes|typing\s+focus|foco\s+de\s+escritura)\b",
             ),

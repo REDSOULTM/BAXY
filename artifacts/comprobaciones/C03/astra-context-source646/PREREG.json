@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-09T13:49:43.812976+00:00",
+  "source": 646,
+  "sources": {
+    "src/baxy_mind/effect_intent.py": "1fefddb2d1b6c33fa36c8d8ef6ce53b8794ba35ca13523f90518a3f67ef77299",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/MainWindowViewModel.cs": "99bf0691b6abc2ee5b95d146ca574c71ae939f8c941b665c20fa2d82fb419b14",
+    "src/Baxy.App/MindSidecarClient.cs": "e2196596e51eaa67c471a334dcdfac6d996e26797c809a1d3b952c767d80820e",
+    "tests/test_window_query_context.py": "89fe89df5d5ea470cdb8dcc9d41ca62a9bae00ee25445dcadf9b74544c8f887e"
+  },
+  "python_tree_sha256": "9d8f2af82e91f1565668a3c1af9ec155a7424ffcd58a053da3ce0f0797edf590",
+  "method": "Resolve bounded named/pronominal read follow-ups from user questions only; retain original request. A changed, ambiguous or unresolved subject ends the chain. Same function owns selection and exact-schema grounding. Pass the existing shell history to argument extraction, without a second state store or new model.",
+  "inheritance": "643 rejected global history concatenation;644/645 isolated missing candidate and stale-state recital. arguments messages omitted history despite contextual selection; bounded parser replaces that missing interpretation for explicit window-read references.",
+  "criteria": "Exact20panel642 again; all contextual reads must execute window.application.status with correct name and fresh state. No writes. Preserve negative/missing-value and explicit reads. Owners, Fast and Full required before combined Python/C# adoption. Broader names/topic shifts and voice/UI remain separate evidence.",
+  "test_first": {
+    "failed": 46
+  },
+  "targeted_passed": 50,
+  "model_and_profile_unchanged": true
+}

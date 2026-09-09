@@ -326,3 +326,8 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/astra-context-candidates643/** -text
 /artifacts/comprobaciones/C03/astra-native-context644/** -text
 /artifacts/comprobaciones/C03/astra-native-context645/** -text
+/artifacts/comprobaciones/C03/astra-package-scope648/** -text
+/artifacts/comprobaciones/C03/astra-context-product647/** -text
+/artifacts/comprobaciones/C03/astra-window-fact-contract649/** -text
+/artifacts/comprobaciones/C03/astra-context-source646/** -text
+/artifacts/comprobaciones/C03/astra-window-regression651/** -text

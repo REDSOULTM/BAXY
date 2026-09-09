@@ -1,0 +1,35 @@
+{
+  "source": 646,
+  "correct": 18,
+  "total": 20,
+  "failed_cases": {
+    "focus-en": "English focus question still classified mixed and answered in Spanish.",
+    "reference-new-name-en": "Selection, reference and read are repaired, but first published draft claims Spotify is running. The payload establishes installed=true and visibleWindowCount=0 only; process liveness was not observed."
+  },
+  "named_queries_with_correct_scope_and_count": 16,
+  "contextual_fresh_reads_repaired": 4,
+  "packaged_process_identity_addendum": "astra-package-scope648",
+  "packaged_identity_captured_later": true,
+  "extra_visible_progress_messages": 0,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2290.97265625,
+    "seconds": 91.563
+  },
+  "ui_or_voice_credit": false,
+  "whole_window_requirement_accepted": false,
+  "private_hashes": {
+    "panel.json": "ee9a98f177f68b261e8d438d1d35f7274b1a69f32d75f221b138e7d0a6e66f89",
+    "capture/events.jsonl": "ed27225135d9020e5083945d66e0edcf4bc86b2ef1cb7e0a8fe9fbde573c2b89",
+    "compose-audit.jsonl": "a92e9419e9df996952932283c76bd7bca6c4a29f9ae56846c0338e35d43ae9fe",
+    "turn-audit.jsonl": "cba9897af74505d90ee2487ec426ac0960d90bf63ca2f9b6b6f4a748920ee9c0",
+    "raw-replies.jsonl": "b4f1a9004ff6a617c528525210da81359b3f5e4264325240577bd3a8b9faec76",
+    "shell-trace.jsonl": "06b2aa62a2bb3dd23a17710f1a9343767685a3127a09bff1edb531788f360b1b",
+    "adjudication.json": "de23daf5a0faea49bdabb3dd4f2e048b70839407a7ed627596fb7318e936c56b",
+    "RESULT.md": "eb1ff00f5a76da3ae7415b44c5b727cbc4e068886971370b71b4dbab77a096c4",
+    "windows-before.json": "632922e53ac28ade92701821368587c11eb23911b59685e6eec7ffdddef85a43",
+    "windows-after.json": "9645bb1a4186c85063739abf351c52e2de623e2f39b7fab924fe2e1a95641c09"
+  }
+}

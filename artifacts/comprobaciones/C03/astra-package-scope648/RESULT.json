@@ -1,0 +1,27 @@
+{
+  "aumid": "5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App",
+  "matched_processes": [
+    {
+      "process": "msedgewebview2.exe",
+      "compatible_snapshots": [
+        "before",
+        "after"
+      ]
+    },
+    {
+      "process": "WhatsApp.Root.exe",
+      "compatible_snapshots": [
+        "before",
+        "after"
+      ]
+    }
+  ],
+  "matching_snapshot_window_counts": {
+    "before": 2,
+    "after": 2
+  },
+  "source_changed": false,
+  "errors": 1,
+  "identity_capture_is_later_than647": true,
+  "private_sha256": "923ce9207995a22a06aa7804d23f45d335d43a4a08d1e597fb886554743e5de7"
+}

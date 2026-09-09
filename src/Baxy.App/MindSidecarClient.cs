@@ -608,7 +608,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         string operation,
         string text,
         TimeSpan timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlyList<(string Role, string Content)>? history = null)
     {
         // El grounding de argumentos es un tramo propio: no pertenece ni a la
         // decisión ni al Core, y fundirlo con ellos oculta dónde está el coste.
@@ -618,12 +619,22 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             ShellTraceStages.ArgumentsStart);
         try
         {
+            var historyArray = new JsonArray();
+            foreach ((string role, string content) in history ?? [])
+            {
+                historyArray.Add(new JsonObject
+                {
+                    ["role"] = role,
+                    ["content"] = content,
+                });
+            }
             JsonObject? reply = await RequestAsync(
                 new JsonObject
                 {
                     ["type"] = "arguments",
                     ["operation"] = operation,
                     ["text"] = text,
+                    ["history"] = historyArray,
                 },
                 timeout,
                 cancellationToken).ConfigureAwait(false);

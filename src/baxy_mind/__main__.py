@@ -2597,6 +2597,32 @@ def _previous_user_request(history: list[object], current_request: str) -> str |
     )
 
 
+def _window_query_reference_name(
+    objective: str,
+    history: object,
+    application_names: tuple[str, ...] | ApplicationCatalogIndex,
+) -> str | None:
+    """Read the same bounded user reference during selection and grounding."""
+    if not isinstance(history, list):
+        return None
+    previous = history[-12:]
+    if (
+        previous
+        and isinstance(previous[-1], dict)
+        and previous[-1].get("role") == "user"
+        and previous[-1].get("content") == objective
+    ):
+        previous = previous[:-1]
+    requests = [
+        str(item.get("content") or "")
+        for item in previous
+        if isinstance(item, dict) and item.get("role") == "user"
+    ]
+    return effect_intent.resolve_application_window_followup_name(
+        objective, requests, application_names,
+    )
+
+
 def _history_has_pending_clarification(
     history: object,
     pending_clarification: bool | None = None,
@@ -4922,6 +4948,8 @@ def _ground_explicit_arguments(
     schema: dict[str, object],
     application_names: tuple[str, ...] = (),
     game_catalog: GameCatalogIndex = GameCatalogIndex(),
+    *,
+    history: object = None,
 ) -> dict[str, object] | None:
     """Return a complete schema-grounded literal or abstain without inference."""
 
@@ -4931,6 +4959,10 @@ def _ground_explicit_arguments(
         application_names,
         game_catalog,
     )
+    if explicit is None and operation == "window.application.status":
+        name = _window_query_reference_name(evidence, history, application_names)
+        if name is not None:
+            explicit = {"name": name}
     if explicit is None:
         return None
     if operation == "window.resolve" and not validate_json_schema_instance(
@@ -5827,6 +5859,13 @@ def _prepare_turn_result(
             application_names,
             game_catalog,
             previous_user_text=_previous_user_request(history, objective),
+        )
+        or (
+            EffectIntent(("window.application.status",), (objective,))
+            if "window.application.status" in available_operations
+            and _window_query_reference_name(objective, history, application_names)
+            is not None
+            else None
         )
     )
     # rec5e2e6: the 4B identity verifier withdrew six true colloquial leaves
@@ -7968,6 +8007,7 @@ def _run_sidecar(
                     tool["function"]["parameters"],
                     application_names,
                     game_catalog,
+                    history=message.get("history"),
                 )
                 question = ""
                 if arguments is None:

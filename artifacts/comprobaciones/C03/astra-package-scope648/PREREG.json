@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-09T13:56:59.927178+00:00",
+  "method": "Read current OS AUMID for PIDs already captured in647 native snapshots. Validate that process name and creation time are compatible with each snapshot. Determine whether counting only WhatsApp.Root.exe omitted a second process belonging to the same package. Current metadata is not a contemporaneous647 identity capture; retain that limitation. No window creation, activation, messaging, inference or source changes.",
+  "snapshot_hashes": {
+    "before": "632922e53ac28ade92701821368587c11eb23911b59685e6eec7ffdddef85a43",
+    "after": "9645bb1a4186c85063739abf351c52e2de623e2f39b7fab924fe2e1a95641c09"
+  },
+  "documentation": "https://learn.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getapplicationusermodelid"
+}

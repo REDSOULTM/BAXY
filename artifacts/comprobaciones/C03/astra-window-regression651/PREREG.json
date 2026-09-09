@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-09T14:28:30.768919+00:00",
+  "source": 651,
+  "baseline_sources": {
+    "src/baxy_mind/effect_intent.py": "1fefddb2d1b6c33fa36c8d8ef6ce53b8794ba35ca13523f90518a3f67ef77299",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/MindSidecarClient.cs": "e2196596e51eaa67c471a334dcdfac6d996e26797c809a1d3b952c767d80820e",
+    "src/Baxy.App/MainWindowViewModel.cs": "99bf0691b6abc2ee5b95d146ca574c71ae939f8c941b665c20fa2d82fb419b14"
+  },
+  "baseline_full": "../astra-context-source646/FULL_RED.log",
+  "baseline": {
+    "failed": 24,
+    "passed": 10371,
+    "skipped": 3,
+    "subtests": 466
+  },
+  "cause": "All24 failed R4/R5/R6 cases pass before d5757c69 and fail at d5757c69 and b20bff24 with their original exact operation oracles. Scope633 removed valid foreground synonyms and unqualified singular-window domains in explicit enumerations. Context646 not the first cause.",
+  "repair": "Restore explicit front/frontal/above-rest focus descriptions and bare singular window only inside bounded read enumeration. Preserve named-app and visible-inventory scope controls, exact operation order, all existing oracles. No model/profile/provider changes.",
+  "criteria": "R4/R5/R6 and focused scope controls plus current owners green; update source pins, Fast/Full for combined646+651 before adoption. Preserve original646red sealed as not adopted; no inferred survey coverage."
+}

@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-09T14:32:10.049809+00:00",
+  "adopted": false,
+  "full_exit": 1,
+  "python": {
+    "failed": 24,
+    "passed": 10371,
+    "skipped": 3,
+    "subtests": 466,
+    "seconds": 681.93
+  },
+  "dotnet_passed": 4469,
+  "dotnet_aggregate_skipped": 1,
+  "dotnet_printed_omissions": 16,
+  "owners_passed": 3505,
+  "owners_subtests": 121,
+  "targeted_passed": 50,
+  "sources": {
+    "src/baxy_mind/effect_intent.py": "1fefddb2d1b6c33fa36c8d8ef6ce53b8794ba35ca13523f90518a3f67ef77299",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/MainWindowViewModel.cs": "99bf0691b6abc2ee5b95d146ca574c71ae939f8c941b665c20fa2d82fb419b14",
+    "src/Baxy.App/MindSidecarClient.cs": "e2196596e51eaa67c471a334dcdfac6d996e26797c809a1d3b952c767d80820e",
+    "tests/test_window_query_context.py": "89fe89df5d5ea470cdb8dcc9d41ca62a9bae00ee25445dcadf9b74544c8f887e"
+  },
+  "repair_campaign": 651,
+  "regression_origin": "d5757c69 (633), before contextual646; all24 exact operation oracles pass at parent and fail at633 and641.",
+  "goal_complete": false,
+  "private_hashes": {}
+}

@@ -1,0 +1,119 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+........................................................................ [ 40%]
+........................................................................ [ 46%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+........................................................................ [ 61%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+....................................................................FF.. [ 92%]
+FF...................................................................... [ 97%]
+........................................                                 [100%]
+================================== FAILURES ===================================
+_ test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-57-01-plain] _
+
+row = {'blind_holdout': True, 'case_id': 'r6-composition-57-01-plain', 'case_type': 'composition', 'compatible_effect_operat...tive', 'browser.tabs.list', 'input.keyboard.status', 'clipboard.read.text', 'media.status', 'audio.status', ...]], ...}
+
+    @pytest.mark.parametrize(
+        "row",
+        MIND_ACTION_ROWS,
+        ids=lambda row: str(row["case_id"]),
+    )
+    def test_every_opened_r6_action_has_a_deterministic_contract_oracle(
+        row: dict[str, object],
+    ) -> None:
+        text = str(row["text"])
+        result = resolve_explicit_effects(text, AVAILABLE, APPLICATIONS)
+        accepted = {
+            _terminal_operations(tuple(group))
+            for group in row["compatible_terminal_operation_sets"]
+        }
+    
+>       assert result is not None
+E       assert None is not None
+
+tests\test_generalization_product_r6_development.py:93: AssertionError
+_ test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-57-01-addressed] _
+
+row = {'blind_holdout': True, 'case_id': 'r6-composition-57-01-addressed', 'case_type': 'composition', 'compatible_effect_op...tive', 'browser.tabs.list', 'input.keyboard.status', 'clipboard.read.text', 'media.status', 'audio.status', ...]], ...}
+
+    @pytest.mark.parametrize(
+        "row",
+        MIND_ACTION_ROWS,
+        ids=lambda row: str(row["case_id"]),
+    )
+    def test_every_opened_r6_action_has_a_deterministic_contract_oracle(
+        row: dict[str, object],
+    ) -> None:
+        text = str(row["text"])
+        result = resolve_explicit_effects(text, AVAILABLE, APPLICATIONS)
+        accepted = {
+            _terminal_operations(tuple(group))
+            for group in row["compatible_terminal_operation_sets"]
+        }
+    
+>       assert result is not None
+E       assert None is not None
+
+tests\test_generalization_product_r6_development.py:93: AssertionError
+_ test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-59-01-plain] _
+
+row = {'blind_holdout': True, 'case_id': 'r6-composition-59-01-plain', 'case_type': 'composition', 'compatible_effect_operat... [['system.status', 'network.status', 'audio.status', 'media.status', 'window.active', 'browser.tabs.list', ...]], ...}
+
+    @pytest.mark.parametrize(
+        "row",
+        MIND_ACTION_ROWS,
+        ids=lambda row: str(row["case_id"]),
+    )
+    def test_every_opened_r6_action_has_a_deterministic_contract_oracle(
+        row: dict[str, object],
+    ) -> None:
+        text = str(row["text"])
+        result = resolve_explicit_effects(text, AVAILABLE, APPLICATIONS)
+        accepted = {
+            _terminal_operations(tuple(group))
+            for group in row["compatible_terminal_operation_sets"]
+        }
+    
+>       assert result is not None
+E       assert None is not None
+
+tests\test_generalization_product_r6_development.py:93: AssertionError
+_ test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-59-01-addressed] _
+
+row = {'blind_holdout': True, 'case_id': 'r6-composition-59-01-addressed', 'case_type': 'composition', 'compatible_effect_op... [['system.status', 'network.status', 'audio.status', 'media.status', 'window.active', 'browser.tabs.list', ...]], ...}
+
+    @pytest.mark.parametrize(
+        "row",
+        MIND_ACTION_ROWS,
+        ids=lambda row: str(row["case_id"]),
+    )
+    def test_every_opened_r6_action_has_a_deterministic_contract_oracle(
+        row: dict[str, object],
+    ) -> None:
+        text = str(row["text"])
+        result = resolve_explicit_effects(text, AVAILABLE, APPLICATIONS)
+        accepted = {
+            _terminal_operations(tuple(group))
+            for group in row["compatible_terminal_operation_sets"]
+        }
+    
+>       assert result is not None
+E       assert None is not None
+
+tests\test_generalization_product_r6_development.py:93: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_generalization_product_r6_development.py::test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-57-01-plain]
+FAILED tests/test_generalization_product_r6_development.py::test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-57-01-addressed]
+FAILED tests/test_generalization_product_r6_development.py::test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-59-01-plain]
+FAILED tests/test_generalization_product_r6_development.py::test_every_opened_r6_action_has_a_deterministic_contract_oracle[r6-composition-59-01-addressed]
+4 failed, 1404 passed in 8.08s

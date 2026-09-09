@@ -772,3 +772,78 @@ Recursos del servidor aislado: GPU 3497.559 MiB, RAM 731.832 MiB, 41.281 s, sin 
 Siguiente trabajo: resolver la referencia de la petición antes de recuperar, conservando el texto original y la frontera de autorización. Reutilizar la lectura contextual existente; comprobar si basta una expansión acotada basada en peticiones del usuario, sin revivir acciones anteriores ni introducir estado paralelo. Aún no hay diseño o fuente adoptados. Leer `request_reading.py:622`, `__main__.py:535,5952` y `_previous_user_request`; evaluar cambios de tema, varios referentes y negación junto con nombres nuevos ES/EN. La pérdida posterior de argumentos en t18 y la clasificación inglesa `has` son defectos distintos. No cerrar por disponibilidad de candidata solamente.
 
 643 no ejecutó modelo ni efectos. 644/645 sólo servidor, sin dispatch: GPU 3497,559 MiB; RAM 741,863/731,832 MiB; 31,437/41,281 s; sin infracciones y registro intacto. No sumar esos números a crédito de UI/voz. Full630 sigue siendo línea base histórica; faltan encuesta, rutas de prosa, UI real, loopback/AEC, recuperación y Full final. Ninguna decisión pendiente del dueño.
+
+
+## Candidato 646 — continuidad de consulta y argumentos
+
+46 rojos iniciales; 50 focales verdes tras resolver referencias de preguntas del usuario. Se pasa el historial existente a argumentos; identidad y esquema se verifican otra vez. No se transforma el texto original ni se revive una orden previa. Falta producto647 y Full para adoptar Python+C#. Encuesta25/717/0.
+
+
+## 647/648 — referencias recuperadas, prosa pendiente; Full activo
+
+647 terminó exit0: las cuatro referencias ejecutan window.application.status con Spotify/Steam correctos. t15 añade running sin observación de procesos; foco inglés sigue español.18/20 finales provisionales. GPU3497,559MiB/RAM2290,973MiB;91,563s con NativeAOT.648 muestra que el conteo previo por nombre de proceso omitía un msedgewebview2.exe con AUMID de WhatsApp: con identidad de paquete son2ventanas tanto antes como después. La identidad se consultó posteriormente y se verificó nombre/creación compatibles con ambas instantáneas; no se disfraza de captura simultánea. Full646 activo, sesión75236, TEMP/c03-context646-full.log y full-exit.txt. Fuente congelada;25/717/0.
+
+
+# 648 — el conteo de un paquete incluye todos sus procesos
+
+647 observó dos ventanas de WhatsApp. La comprobación independiente que contaba sólo WhatsApp.Root.exe encontraba una, porque otra ventana pertenece a msedgewebview2.exe con exactamente el mismo AUMID del paquete. Al agrupar los handles de las instantáneas por esa identidad, ambas contienen dos. La consulta de identidad se hizo después de647; los procesos mantienen nombres y tiempos de creación compatibles con ambas instantáneas. No se presenta esa identidad como una captura simultánea. Un PID ajeno ya había terminado; se conserva el error y no se atribuye a ningún actor.
+
+No cambia el provider ni la fuente. El error era usar el nombre del ejecutable como comprobación independiente de una identidad empaquetada. Futuras instantáneas deben registrar AUMID junto al HWND/PID en el momento de captura. Sin nuevas ventanas, activación, mensajes, modelo ni crédito de UI/voz.
+
+
+# 647 — referencias verificadas, una afirmación posterior sin respaldo
+
+Mismo panel de20casos642:18 finales acreditados frente a15. Las cuatro referencias t15–t18 ya ejecutan window.application.status con Spotify/Steam correctos y una lectura nueva. Las16lecturas por aplicación conservan nombre y cantidad. No se toca el texto original ni se sustituye el modelo: la selección y la extracción usan la misma referencia acotada de las preguntas del usuario; el shell transporta su historial existente a argumentos.
+
+t15 falla después de leer: «Spotify is installed and running, but no window is currently visible.» El primer borrador publicado añade running; el payload sólo prueba instalación y ausencia de ventanas visibles. No se afirma que Spotify esté detenido: simplemente no se observó su proceso. El foco inglés conserva el fallo mixed→español. H0040 permanece abierto y no se acredita sólo porque las referencias lleguen al provider. No hubo prosa de progreso adicional:20 mensajes visibles corresponden a los20 finales.
+
+Recursos: GPU3497,559MiB, RAM2290,973MiB,91,563s incluyen NativeAOT; sin infracciones. Fuente y registro intactos durante647. La comprobación independiente de WhatsApp se completa con648, que identifica dos procesos del mismo paquete; se conserva explícitamente que esa identidad se consultó después de las instantáneas. No UI/voz conjunta ni mínimo global. Full646 debe concluir verde antes de adoptar el cambio combinado; encuesta25/717/0.
+
+
+# 649 — el contrato no conserva todavía instalación, ventanas y alcance
+
+El validador actual acepta las once respuestas ensayadas. Cuatro respetan los hechos y siete no, por lo que el contrato acierta 4/11. Un caso es el borrador real publicado en647; los otros diez son controles declarados, no resultados generados por un modelo ni turnos de producto.
+
+Con installed=true y visibleWindowCount=0, pasan tanto «Spotify is not installed» como cifras de dos/tres ventanas. También pasan afirmaciones de que el proceso está ejecutándose y de que no está ejecutándose, aunque no se observó liveness en ningún sentido. Las respuestas que se limitan a instalación/ventanas o reconocen que no se comprobaron procesos se aceptan correctamente. Los controles se repiten en español e inglés.
+
+La siguiente reparación debe conservar esos campos y el alcance de la observación. Bloquear únicamente running no resolvería las contradicciones de los otros casos. Herencia directa: `_payload_fact_defect` ya protege nombre de cuenta, volumen y reloj; las nuevas observaciones de aplicación aún no tienen una comprobación equivalente. Sin cambiar fuente, modelo, perfil, umbrales ni cobertura; encuesta25/717/0. Full646 continúa separado.
+
+
+## Estado vigente — Full646 terminado en rojo
+
+Sesión75236 ya recogida, exit1. Python24fallos/10371pass/3skips +466subpruebas en681,93s; .NET4469pass/1skip agregado y16omisiones impresas aparte. Todos los fallos pertenecen a composiciones R6. No adoptar646 ni ejecutar c03-close-context646.py. Próximo: aislar la regresión de front window/ventana frontal y otros textos; preservar las expectativas correctas sin relajar pruebas. Encuesta25/717/0. Ninguna decisión pendiente del dueño; autorización histórica536 ratificada por el último mensaje.
+
+
+## 651 — causa de los 24 rojos aislada
+
+Corrección del resumen anterior: son R4(2), R5(8), R6(14), no todos R6. Sus24oráculos originales pasan antes de d5757c69 y fallan desde ese commit633, también en641;646no inicia la regresión. Restaurar sinónimos inequívocos de primer plano y el singular ventana en enumeraciones acotadas, conservando la separación de aplicación/ventanas visibles. Full646 se conserva rojo;651 necesitará Full nuevo antes de adoptar el conjunto.
+
+
+# 646: Full rojo conservado; fuente combinada pendiente
+
+Python: 24 fallos, 10371 pases, 3 skips y 466 subpruebas (681,93 s). .NET: 4469 pases, 1 skip agregado y 16 omisiones opt-in impresas por separado. Las dueñas3505 y50focales habían pasado, pero no bastaron: no se adopta el conjunto C#+Python con este resultado.
+
+Los fallos pertenecen a R4(2), R5(8) y R6(14). Los24oráculos originales pasan antes de d5757c69 y fallan desde ese commit633 y en641. Se perdieron sinónimos de primer plano y lecturas singulares dentro de enumeraciones al restringir el alcance de ventana. La referencia contextual646 no es la primera transformación que los rompe.651 repara y vuelve a validar el conjunto; este rojo no se reescribe como verde.
+
+647 conserva18/20finales, incluidas4referencias recuperadas, pero falta la prosa veraz y el idioma. Encuesta25cubiertos/717abiertos/0NA. No cierre deC03 ni crédito deUI/voz conjunta.
+
+
+## Full651 activo — sesión1464
+
+3521dueñas+121subpruebas/0skips en67,18s;1408R4/R5/R6;97scope;17declaraciones/1skip. Fast exit0, Release4,66s/0warnings/0errors. Full651en curso, TEMP/c03-window651-full.log y full-exit.txt. Fuente congelada; no inferencia/build concurrentes. Recoger1464, no reiniciar por timeout. Cierre preparado c03-close-window651.py NOejecutado; cierre646obsoleto no ejecutar,646sellado rojo.25/717/0.
+
+
+## Herramienta de escritorio disponible
+
+La búsqueda de herramientas encuentra mcp__node_repl__js, distinta de mcp__cua_repl. Skill computer-use leída completa junto a guidance.md y confirmations.md. Inicialización oficial import("@oai/sky") correcta; sky.list_windows() respondió. No se abrió/activó ninguna ventana ni se capturó pantalla. BAXY no figura en las ventanas devueltas. La futura prueba de UI puede usar esta API; no afirmar indisponibilidad por la restricción de native CUA. Leer docs/api.md antes de operar; elegir sólo una ventana realmente devuelta, observar y realizar una acción por captura. Full651 sigue en1464; no lanzar BAXY o inferencia hasta su final.
+
+
+# 651: regresión de ventanas reparada; conjunto con646 validado
+
+La restricción633 perdió24peticiones de R4/R5/R6. Todas pasan antes de d5757c69 y fallan desde ese commit, conservando sus oráculos originales. Se recuperan front window, ventana frontal, por encima del resto y las lecturas del singular ventana en enumeraciones y sus cláusulas de lectura. Visible, plural, nombre de aplicación o ventana física no se convierten en foco. No se cambian expectativas, catálogo, modelo, perfil ni provider.
+
+Validación:1408pruebas R4/R5/R6;97controles focales;3521dueñas+121subpruebas/0skips (67,18s). Declaraciones17pases/1skip ambiental. Fast exit0. Full exit0: Python10411pases/3skips+466subpruebas (732.07s); .NET4469pases/1skip agregado y16omisiones opt-in impresas aparte. No se cuentan skips como pases. La fuente permanece idéntica duranteFull.
+
+Incluye646: la referencia se resuelve desde preguntas del usuario y se conserva hasta los argumentos, usando el historial existente del shell, sin estado nuevo ni frases visibles fijas.647, ejecutado antes de651, verificó18/20finales y4referencias recuperadas; no es una nueva corrida sobre651. Sus2defectos siguen abiertos: running sin observación del proceso y foco inglés respondido en español.649 conserva7fallos del contrato factual.646 queda sellado con su Full rojo original; la adopción del conjunto corregido se acredita aquí.
+
+Encuesta25cubiertos/717abiertos/0NA. Sin cierre global, mínimo deRAM/VRAM ni crédito conjunto deUI/voz. Próximo:650 sobre primer borrador factual, reparación de alcance del compositor; idioma, encuesta, UI real, loopback/AEC, recuperación yFull final siguen pendientes. Ninguna decisión pendiente del dueño.

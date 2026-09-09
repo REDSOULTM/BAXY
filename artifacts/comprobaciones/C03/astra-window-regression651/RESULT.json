@@ -1,0 +1,100 @@
+{
+  "utc": "2026-09-09T15:01:41.272927+00:00",
+  "adopted": true,
+  "full_exit": 0,
+  "python": {
+    "passed": 10411,
+    "skipped": 3,
+    "subtests": 466,
+    "seconds": 732.07
+  },
+  "dotnet": [
+    {
+      "failed": 0,
+      "passed": 60,
+      "skipped": 0,
+      "total": 60,
+      "duration": "305 ms",
+      "suite": "Baxy.Contracts.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 3279,
+      "skipped": 1,
+      "total": 3280,
+      "duration": "10 m 18 s",
+      "suite": "Baxy.Integration.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 140,
+      "skipped": 0,
+      "total": 140,
+      "duration": "1 s",
+      "suite": "Baxy.Kernel.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 513,
+      "skipped": 0,
+      "total": 513,
+      "duration": "49 s",
+      "suite": "Baxy.Providers.Windows.Tests.dll"
+    },
+    {
+      "failed": 0,
+      "passed": 477,
+      "skipped": 0,
+      "total": 477,
+      "duration": "1 m 26 s",
+      "suite": "Baxy.Setup.Tests.dll"
+    }
+  ],
+  "dotnet_printed_omissions": 16,
+  "r456_passed": 1408,
+  "scope_passed": 97,
+  "owners": {
+    "passed": 3521,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 67.18
+  },
+  "declarations": {
+    "passed": 17,
+    "environmental_skipped": 1
+  },
+  "fast_exit": 0,
+  "source_unchanged_during_full": true,
+  "source_files": {
+    "src/baxy_mind/effect_intent.py": "785a684817e58ba823718fb2c12c91acc60e3d25cb8cbb80e70f7f7e97ec502b",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/MindSidecarClient.cs": "e2196596e51eaa67c471a334dcdfac6d996e26797c809a1d3b952c767d80820e",
+    "src/Baxy.App/MainWindowViewModel.cs": "99bf0691b6abc2ee5b95d146ca574c71ae939f8c941b665c20fa2d82fb419b14",
+    "tests/test_effect_intent.py": "69b810a4768499206ec1268c463f7d60921aa557169548b7db508252a6ec6fd1",
+    "tests/test_window_query_context.py": "89fe89df5d5ea470cdb8dcc9d41ca62a9bae00ee25445dcadf9b74544c8f887e"
+  },
+  "git_source_files_lf": {
+    "src/baxy_mind/effect_intent.py": "785a684817e58ba823718fb2c12c91acc60e3d25cb8cbb80e70f7f7e97ec502b",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/MindSidecarClient.cs": "e2196596e51eaa67c471a334dcdfac6d996e26797c809a1d3b952c767d80820e",
+    "src/Baxy.App/MainWindowViewModel.cs": "99bf0691b6abc2ee5b95d146ca574c71ae939f8c941b665c20fa2d82fb419b14",
+    "tests/test_effect_intent.py": "918e941050ac90fe01707590df06b6492874e4a394117231487b97aabeba985a",
+    "tests/test_window_query_context.py": "89fe89df5d5ea470cdb8dcc9d41ca62a9bae00ee25445dcadf9b74544c8f887e"
+  },
+  "source_encoding_note": "source_files pins the validated worktree bytes; git_source_files_lf pins the LF repository representation required by existing .gitattributes. No semantic source edit follows Full.",
+  "context646_included": true,
+  "original_full646_preserved_red": true,
+  "product647": {
+    "correct": 18,
+    "total": 20,
+    "contextual_reads_repaired": 4,
+    "before651": true
+  },
+  "goal_complete": false,
+  "survey": {
+    "covered": 25,
+    "open": 717,
+    "not_applicable": 0
+  },
+  "private_hashes": {}
+}
