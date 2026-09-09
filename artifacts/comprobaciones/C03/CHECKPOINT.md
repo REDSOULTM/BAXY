@@ -915,3 +915,19 @@ Las16 lecturas por aplicación, cantidades y cuatro referencias siguen correctas
 La palabra compartida «has» deja de contarse como exclusivamente española. Las tablas existentes incorporan participios frecuentes inequívocos para conservar preguntas españolas y mixtas. No se añaden nombres de apps, reglas por sufijo, modelo, reintento ni prosa fija. Es una corrección del vocabulario finito existente, no detección universal de idioma.
 
 Baseline13 fallos/27 pases en40 controles cruzados ES/EN/historia; dueña300 pases. Integradas3942 pases+121 subpruebas/0 skips,71,00s. Declaraciones22 pases/1 skip ambiental,2,56s. Fast0,Release27,65s,sin advertencias/errores. Producto655: panel original20/20; ampliado23/24, inglés reparado y una variante española con jerga pendiente. Se adopta la fuente del lector; contrato factual649 sigue abierto. Full651 es línea base anterior, no Full654 ni cierre. Encuesta26/716/0, ninguna decisión del dueño pendiente.
+
+
+## Fuente654 publicada y contraste factual656
+
+ Fuente654 publicada en b8a7399b1b1d39c701941ef24bc67f86db8f2fcf, remoto verificado. Dueñas3942 pases+121 subpruebas/0 skips, declaraciones22 pases/1 skip ambiental, Fast0. Producto655: original20/20, ampliado23/24; inglés del foco reparado, variante española con jerga pendiente. Contrato factual649 sigue abierto. Encuesta26/716/0. Full651 es línea base anterior, no Full654; sin cierre global ni crédito UI/voz conjunta. 
+
+656 nativo activo72764:31 casos ×2 perfiles,11 del contrato649 y20 controles declarados de generalización. Clasifica apoyo/contradicción/desconocido contra observaciones. No sustituye el validador, no mide estilo ni suficiencia, no crédito de producto. Contraste MiniCheck/encuesta de autocorrección y receta Qwen enlazados en PREREG656. Registrar todos los aciertos y falsos rechazos, incluso si no mejora.
+
+
+# 656 — el mismo modelo no basta como juez factual
+
+Dos perfiles de Qwen2507, greedy y receta documentada, producen las mismas decisiones:26/31 etiquetas exactas y27/31 decisiones de aceptar/rechazar. Ningún falso rechazo, pero cuatro falsas aceptaciones: dos afirmaciones de estado de proceso sin observar, otra con una aplicación llamada Running, y una afirmación sobre Chrome cuando la observación corresponde a Orbit23. También llama contradicción a un estado de proceso desconocido en el borrador real647. Los62 resultados terminan por EOS; no son cortes.
+
+Sobre los11 controles originales649 mejora de4/11 a9/11 decisiones binarias, pero sigue aceptando dos errores. Los20 añadidos incluyen nombres, cantidades, rangos, negaciones, abstenciones, sujeto distinto, unidades y lecturas frente a efectos. Su baseline_defect bruto puede incluir idioma/estilo por texto vacío; no se usa como comparación factual equivalente. Los perfiles no cambian los cuatro errores. No se incorpora este juez ni se añade su llamada al producto.
+
+Medianas cercanas a0,25s por clasificación; GPU3497,559MiB,RAM734,102MiB,18,953s de campaña,sin infracciones. Son recursos del servidor diagnóstico, no incremento ni mínimo de BAXY. Registro y fuentes intactos. La comprobación sólo evaluó apoyo factual, no naturalidad ni suficiencia. El contrato649 y la jerga de655 siguen pendientes; encuesta26/716/0. Próxima estrategia: contrastar verificación factual entrenada y representación explícita de observaciones, con casos bilingües y recursos medidos, antes de otra regla por frase o una capa de runtime. No repetir este juez con otro seed buscando un verde.

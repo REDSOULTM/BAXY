@@ -1,0 +1,77 @@
+{
+  "utc": "2026-09-09T15:47:16.665953+00:00",
+  "cases": 31,
+  "arms": 2,
+  "calls": 62,
+  "method": "Native local Qwen2507 entailment classification of a fixed draft and structured observations. Two sampling profiles, otherwise identical. No writer, retries, kernel, product or validator changes. Not a BAXY acceptance run.",
+  "criteria": "Exact three-way label against preregistered manual expectations; also report supported/unsupported decision and false acceptance/rejection separately. All responses and cuts retained. No promotion solely from this panel. Style and completeness outside this diagnostic.",
+  "inheritance": "649 existing validator4/11;650/652/653 improve generation without repairing factual guard. Finite regex checks do not cover process scope/installation/count. Probe a semantic alternative before adding phrase filters or an extra runtime layer.",
+  "research": [
+    {
+      "url": "https://aclanthology.org/2024.emnlp-main.499/",
+      "finding": "Grounded fact checking can use compact trained entailment models; published benchmarks are not evidence of Spanish/runtime-field accuracy here."
+    },
+    {
+      "url": "https://aclanthology.org/2024.tacl-1.78/",
+      "finding": "Self-correction needs careful evaluation and reliable feedback. The writer is not presumed to be a reliable judge."
+    },
+    {
+      "url": "https://github.com/Liyan06/MiniCheck",
+      "finding": "Dedicated fact-checking alternative would require model loading and its own local bilingual/resource evaluation; not downloaded or ranked in this run."
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507",
+      "finding": "Existing documented non-thinking profile T0.7/top_p0.8/top_k20/min_p0 compared with deterministic task profile T0, fixed seed0; not a global optimality claim."
+    }
+  ],
+  "research_date": "2026-09-09",
+  "command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "56785",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-fact-judge656-private\\server.log"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+  "server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+  "source_sha256": "e6993ddb155b9586dd178e5814604eb4ec25f7baf853d68a9c855d3d6e41de45",
+  "panel_sha256": "d24f51ab44f23f8c894646f2f0a333851f16997777920616b5df5106265772e3",
+  "source_modified": false,
+  "limits": {
+    "gpu_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "seconds": 240
+  }
+}

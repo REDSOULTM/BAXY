@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-09T15:23:51.142627+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "654 adoptada;655 panel original20/20, ampliado23/24. Idioma inglés reparado; jerga española y contrato649 pendientes.",
-  "continuation": "Auditar/publicar654/655; continuar contrato factual649 y prosa sin jerga. Encuesta26/716/0. No campañas activas.",
+  "checkpoint": "654 publicada;655 original20/20 y ampliado23/24.656 juez nativo rechazado:4 falsas aceptaciones por perfil. Encuesta26/716/0.",
+  "continuation": "Contrato factual649: contrastar verificación entrenada/representación de hechos antes de modificar runtime. Reparar jerga española655. Ninguna decisión pendiente ni proceso activo.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "d9fdf54ef75d8a0c686f44b124df2ef9334d7019",
+  "publishedSourceCommit": "b8a7399b1b1d39c701941ef24bc67f86db8f2fcf",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "d9fdf54ef75d8a0c686f44b124df2ef9334d7019",
+  "publishedEvidenceCommit": "b8a7399b1b1d39c701941ef24bc67f86db8f2fcf",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
