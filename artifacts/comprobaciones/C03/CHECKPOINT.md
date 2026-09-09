@@ -2,7 +2,7 @@
 
 **Estado vigente,2026-09-09:** goal activo; **ninguna decisión pendiente del dueño**. La [autorización536](AUTORIZACION_DUENO_536.md) permite usar históricos, encuesta y casos nuevos con generalización ES/EN. Los bloqueos534 descritos abajo son históricos y quedaron resueltos.
 
-Fuente633 validada, publicación pendiente. Dueñas3425pass+121subpruebas/0omisiones;17pass/1omisión de declaraciones;Fast exit0. Producto63410/12:selección de lecturas10/10, pero inventario de Bloc de notas e idioma del foco pendientes.25cubiertos/717abiertos/0NA. Full630 es línea base anterior, no Full633. Estado en HANDOFF.md y RELEVO_ACTIVO.json. Los tramos históricos no describen automáticamente la fuente actual.
+Fuente633 publicada en d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d; remoto verificado y main intacto. Dueñas3425pass+121subpruebas/0omisiones;17pass/1omisión de declaraciones;Fast exit0. Producto63410/12:selección de lecturas10/10, pero inventario de Bloc de notas e idioma del foco pendientes.25cubiertos/717abiertos/0NA. Full630 es línea base anterior, no Full633. Estado en HANDOFF.md y RELEVO_ACTIVO.json. Los tramos históricos no describen automáticamente la fuente actual.
 
 ## Registro histórico — fuente120713be y auditoría534
 
@@ -665,3 +665,8 @@ Dueñas:3425pass+121subpruebas/0omisiones en64,10s; declaraciones de fuentes17pa
 Dos fallos impiden acreditar el requisito completo: Bloc de notas figura sin ventanas en window.application.status y luego aparece como ventana activa; Which window has focus? llega al compositor con idioma mixed y publica El ventana con enfoque… en español. La primera contradicción está en Inventory del provider, antes del modelo. Su reconocimiento usa tokens del nombre visible/ejecutables del AppID; el nombre localizado Bloc de notas y Microsoft.WindowsNotepad_8wekyb3d8bbwe!App no identifican el proceso empaquetado Notepad. Esta es una causa candidata que requiere reproducción y reparación; no basta admitir el texto del modelo.
 
 Recursos634:3497,559MiB GPU,1840,527MiB RAM del árbol medido,28,344s, sin infracciones. Es conductor oculto sin voz física: no acredita UI/voz conjunta ni el mínimo de BAXY. Encuesta25cubiertos/717abiertos/0NA; H0040 sigue abierto porque la generalización expuso el defecto de inventario. Fuente633 se adopta como corrección de alcance, no como cierre de ventanas niC03. Siguiente: identidad de aplicaciones empaquetadas en WindowsInstalledApplicationOpenProvider.cs:1011/1150 y después clasificación de idioma de foco.
+
+
+## Publicación633–634
+
+Fuente y evidencia publicadas en d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d. Auditoría de índice: 2 campañas, 15 pines íntegros. Las advertencias de whitespace de diff --check global corresponden a CRLF de evidencia y espacios de contexto del patch preservados byte a byte; el chequeo de fuente/tests/scripts/scratchpad/experiments pasó. No se alteraron los sellos. H0040 sigue abierto y enlaza634; SHA del registro privado afba54e3c585a8c79224f729d9cb4defad426bb7cd601b4a9187b587c40f4c75. Sin procesos de campaña activos.

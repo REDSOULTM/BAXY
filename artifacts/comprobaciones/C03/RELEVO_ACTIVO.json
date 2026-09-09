@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-09T12:37:58.775636+00:00",
+  "confirmedAtUtc": "2026-09-09T12:40:34.729053+00:00",
   "branch": "Goal-c03",
   "checkpoint": "633 adoptada:3425pass+121subtests/0skips;17pass/1skip de declaraciones;Fast exit0.63410/12:alcance10/10, inventarioNotepad e idioma foco pendientes.25/717/0.",
-  "continuation": "Publicar633/634 y verificar remoto/main. Después reproducir fallo de identidad empaquetada en WindowsInstalledApplicationOpenProvider.cs:1011/1150; no ampliar coincidencias por título sin autoridad. Then focus-en language. UI/voz/recuperación/717requisitos yFullfinal pendientes.",
+  "continuation": "633/634 publicadas y remoto verificado, main intacto. Siguiente: reproducir identidad empaquetada en WindowsInstalledApplicationOpenProvider.cs:1011/1150. El AppID real de Bloc de notas es Microsoft.WindowsNotepad_8wekyb3d8bbwe!App y el proceso Notepad vive en WindowsApps. No ampliar títulos o prefijos sin identidad autenticada. Después reparar idioma de Which window has focus? (mixed). No procesos de campaña activos.25/717/0; UI/voz/recuperación/Full final pendientes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "pending_publication_of_validated_source633",
+  "publishedSourceCommit": "d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "d9222a7e6614078ddf09bfb5765f84288d2f7237",
+  "publishedEvidenceCommit": "d5757c69f3f20a20f6c2ecadc7a1ff7f5dd68b3d",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
