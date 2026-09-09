@@ -1,0 +1,16 @@
+{
+  "adopted": false,
+  "evaluable_finals": 0,
+  "collected_rows": 12,
+  "conclusion": "Calificación detenida. Primera confirmación agotó180 segundos sin final. El servidor fue detenido deliberadamente durante el segundo caso; el reinicio de conexión y los diez errores de conexión posteriores son consecuencias del corte, no diez fallos semánticos del modelo. Cero finales evaluables. El campo completed de RESOURCES describe sólo la terminación del bucle de colección. Perfil con19 capas GPU y un slot8192: GPU3426,148MiB/RAM3037,359MiB; no promoción ni demostración de incapacidad semántica. No reutilizar el timeout como respuesta equivocada.",
+  "private_report_sha256": "731f0a97ba780ef63eec840b59c151f73076c81af15c489cd35dca782d47ee1e",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3426.1484375,
+    "ram_peak_mib": 3037.359375,
+    "seconds": 243.813,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  }
+}

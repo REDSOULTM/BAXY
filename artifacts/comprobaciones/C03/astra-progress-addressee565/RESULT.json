@@ -1,0 +1,16 @@
+{
+  "adopted": false,
+  "evaluable_finals": 16,
+  "collected_rows": 16,
+  "conclusion": "No adoptado. Cambiar sólo el destinatario de la fase elimina la tercera persona española, pero la respuesta inglesa afirma que no ha habido progreso. Los seis controles de otras fases son idénticos entre brazos y no prueban tratamientos independientes.16 EOS; no barrer más redacciones de esta fase.",
+  "private_report_sha256": "2b8837a69cd7fd2b16f541cb33ee661642d600b85e6536d6dd6c3b5a321b9bf9",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 720.046875,
+    "seconds": 8.156,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  }
+}

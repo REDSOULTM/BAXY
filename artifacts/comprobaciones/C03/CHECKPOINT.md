@@ -95,3 +95,16 @@ Objetivo activo, sin decisión pendiente del dueño. Fuente555 publicada8027c222
 Próximo trabajo: cambiar de estrategia respecto a barridos de instrucciones/renombrados. Reparar la primera transformación demostrada o evaluar una alternativa heredada sobre fallos actuales, sin promover por una respuesta. CPU: uso total mal atribuido a BAXY; capacidad memoria deshabilitada confundida con inexistencia; procesadores lógicos y unidades GPU incorrectos. Quedan encuesta restante, ocho rutas, UI real, loopback completo/AEC como supresión y Full final verde. C08 humano sólo evidencia, no cierre ajeno. Full526 rojo reparado en dueñas528–531; no Full final aún.
 
 Validación fuente555:1936 pass+121 subtests,0 skips; STT12 pass/1 skip ambiental; Fast verde, Release21,57s. Árbol STT5a3d37d79c0e4b7366c3d7857b699a32c9d6e1b84df9d794f89bc3dea890415d/403 archivos. No cambiar sellos históricos. Main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. Informes privados incluyen todas las respuestas y payloads; PINS conserva los públicos.
+
+
+# C03 — 569: consulta de conexión local
+
+Producto568 separó un fallo de interpretación: la pregunta inglesa sobre este PC adquiría web.search por la palabra internet. El nuevo reconocimiento de la cláusula completa preserva network.status, el catálogo ausente no sustituye operación, y otra petición no desaparece. Misma arquitectura y modelo, sin respuestas fijas. Baseline final22 casos:13 fallos/9pass,0,80s; focal22pass,0,57s. Dueñas2604pass+121subtests,0skips,58,07s. STT12pass/1skip ambiental,1,21s. Fast verde, Release20,32s,0advertencias/errores. Sólo Python; Full final pendiente.
+
+Durante la reproducción de baseline Windows devolvió OSError22 al restaurar el archivo candidato. Baseline quedó íntegro y el patch se reaplicó antes de las dueñas/Fast; no quedó fuente antigua ni vacío. Árbol actual90b2fedd464bb3a639860d4d91a2912c84915a2b35132cc5907fe440185fdb8a/403archivos. Sellos históricos intactos.
+
+Encuesta11cubiertos/731abiertos/0NA tras568: nuevosH0063,H0073,H0057. Producto56815finales, GPU3497,559MiB/RAM2420,844MiB,42,016s, sinUI/voz. H0037 no demuestra ausencia de descarga; H0080 inglés falla antes de esta reparación. Falta producto570 con fuente569. Otro defecto localizado: llm.py9410 declara muted ausente al mirar sólo observed superior, aunque los resultados de misión lo contienen y _merged_observed ya lo conserva; reparar en tramo posterior.
+
+565 cambia destinatario de progreso y produce ausencia de progreso inglesa no demostrada; no adoptado.566 restringe la distinción configuración/capacidad a su operación, pero no generaliza continuidad entre sesiones; no adoptado.567 Qwen9Bthinking: primer caso180s sin final, corte deliberado durante el segundo. GPU3426,148MiB/RAM3037,359MiB. Cero finales semánticamente evaluables; los errores de conexión posteriores pertenecen al corte, no al modelo. No fuentes ni perfiles de estas campañas promovidos.
+
+Siguiente: publicar569 con dueñas verdes y comprobar red local en producto570; reparar contradicción de observaciones de audio por su owner. Después continúan CPU/VRAM/capacidad/otros casos, ocho rutas, encuesta, UI real, loopback completo/AEC supresión, recursos conjuntos y Full final. No decisión del dueño pendiente; BAXY manual cerrado; goal activo y main intacto.

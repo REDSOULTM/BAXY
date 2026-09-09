@@ -1,0 +1,5 @@
+{
+  "utc": "2026-09-09T05:23:58.666589+00:00",
+  "reason": "First confirmation timed out180s without final content; stop expensive profile qualification. No semantic inability inferred; subsequent connection errors caused by deliberate stop are not model failures.",
+  "pid": 14888
+}

@@ -1,0 +1,75 @@
+{
+  "method": "Twelve unchanged current writer captures557/566 on existing Qwen3.5-9B Q4_K_M with documented general thinking profile. No instructions540/565/566 or modified observations. Prior482 was nonthinking;453 thinking covered4B/Gemma, not9B. Evaluate actual final content, not reasoning. No model promotion from one seed.",
+  "sources": [
+    "https://huggingface.co/Qwen/Qwen3.5-9B#best-practices",
+    "https://github.com/ggml-org/llama.cpp/pull/28068",
+    "astra-qwen9b-profile482/PLAN.md"
+  ],
+  "profile_rationale": "Official general thinking T1,p.95,k20,min0,presence1.5,repeat1. No intermediate cutoff;6144 total output tokens within8192 context for these short prompts. Manufacturer recommends more for complex benchmarks: a length finish here is censored, never scored as semantic inability. Native diagnostic may exceed product latency and is not production-ready by implication.",
+  "resources_rationale": "NGL19,one8192slot versus482 NGL14,three4096slots: move weights into available VRAM and reduce recurrent state to fit currently available RAM. Preserve b10865 GDN fix,q8 KV,FA,b2048,ub256,no-mmap/cache0. This is profile qualification, not attribution to one flag.",
+  "criteria": "Correct user/assistant subject, CPU logical qualifier and percent owner, bytes/units and no physical GPU count inferred from adapter rows; memory state versus capability, truthful receipts and natural progress. Stop/length/error and per-request timing recorded; no UI/voice/effects/survey credit. No global settings changed.",
+  "server_command": [
+    "D:\\BAXYRuntime\\assets\\llama-b10865-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen35-9b-03b74727\\Qwen3.5-9B-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "53600",
+    "-ngl",
+    "19",
+    "-c",
+    "8192",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "1",
+    "--jinja",
+    "--reasoning",
+    "on",
+    "--reasoning-budget",
+    "-1",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--reasoning-format",
+    "deepseek",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-qwen9b-thinking567-private\\server.log"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "profiles": [
+    [
+      "documented-thinking-seed0",
+      {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "presence_penalty": 1.5,
+        "repeat_penalty": 1.0,
+        "seed": 0,
+        "max_tokens": 6144,
+        "reasoning_budget_tokens": -1
+      }
+    ]
+  ],
+  "case_count": 12,
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 1200,
+    "request_seconds": 180
+  }
+}

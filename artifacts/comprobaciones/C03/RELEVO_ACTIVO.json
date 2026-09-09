@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-09T05:13:19.856459+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "564: diagnostics557–564 adjudicated, no promotion. Survey8/734/0; source555 published, product556 verified.",
-  "continuation": "Repair remaining C03 behavior using demonstrated ownership; no equivalent CPU/prompt sweeps. Then survey, desktop, loopback/AEC, joint resources and final Full.",
+  "checkpoint": "569: local internet query repaired;2604pass+121subtests/Fast green. Survey11/731/0. Product570 pending.",
+  "continuation": "Publish569, verify shared network product570, then repair audio merged-observation contradiction; C03 remains active.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -24,8 +24,8 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 8,
-    "open": 734,
+    "covered": 11,
+    "open": 731,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,

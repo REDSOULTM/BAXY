@@ -1,0 +1,95 @@
+FFFFFFFFFFFF.........F                                                   [100%]
+================================== FAILURES ===================================
+_ test_local_internet_connection_question_reads_only_connectivity[Is this computer connected to the internet?] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_local_internet_connection_question_reads_only_connectivity[Is my PC connected to the internet right now?] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_local_internet_connection_question_reads_only_connectivity[Is the computer connected to internet?] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_local_internet_connection_question_reads_only_connectivity[Am I connected to the internet?] _
+tests\test_c03_internet_state.py:24: in test_local_internet_connection_question_reads_only_connectivity
+    assert result is not None
+E   assert None is not None
+_ test_local_internet_connection_question_reads_only_connectivity[Is this machine online?] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_local_internet_connection_question_reads_only_connectivity[\xbfEst\xe1 este equipo conectado a internet?] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_local_internet_connection_question_reads_only_connectivity[\xbfEst\xe1 mi PC conectado a internet ahora?] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_local_internet_connection_question_reads_only_connectivity[Revisa si mi computador est\xe1 conectado a internet.] _
+tests\test_c03_internet_state.py:24: in test_local_internet_connection_question_reads_only_connectivity
+    assert result is not None
+E   assert None is not None
+_ test_local_internet_connection_question_reads_only_connectivity[Comprueba si este equipo est\xe1 conectado a internet.] _
+tests\test_c03_internet_state.py:24: in test_local_internet_connection_question_reads_only_connectivity
+    assert result is not None
+E   assert None is not None
+_ test_local_internet_connection_question_reads_only_connectivity[Check whether this computer is connected to the internet.] _
+tests\test_c03_internet_state.py:25: in test_local_internet_connection_question_reads_only_connectivity
+    assert result.operations == ("network.status",)
+E   AssertionError: assert ('web.search',) == ('network.status',)
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff
+_ test_missing_connectivity_operation_does_not_substitute_web_search[Is this computer connected to the internet?] _
+tests\test_c03_internet_state.py:33: in test_missing_connectivity_operation_does_not_substitute_web_search
+    assert resolve_explicit_effects(user_text, AVAILABLE - {"network.status"}) is None
+E   AssertionError: assert EffectIntent(operations=('web.search',), evidence=('is this computer connected to the internet',)) is None
+E    +  where EffectIntent(operations=('web.search',), evidence=('is this computer connected to the internet',)) = resolve_explicit_effects('Is this computer connected to the internet?', ({'network.status', 'note.create', 'system.time', 'web.search', 'wifi.status'} - {'network.status'}))
+_ test_missing_connectivity_operation_does_not_substitute_web_search[\xbfEst\xe1 este equipo conectado a internet?] _
+tests\test_c03_internet_state.py:33: in test_missing_connectivity_operation_does_not_substitute_web_search
+    assert resolve_explicit_effects(user_text, AVAILABLE - {"network.status"}) is None
+E   AssertionError: assert EffectIntent(operations=('web.search',), evidence=('esta este equipo conectado a internet',)) is None
+E    +  where EffectIntent(operations=('web.search',), evidence=('esta este equipo conectado a internet',)) = resolve_explicit_effects('¿Está este equipo conectado a internet?', ({'network.status', 'note.create', 'system.time', 'web.search', 'wifi.status'} - {'network.status'}))
+_____ test_connectivity_question_does_not_swallow_another_requested_read ______
+tests\test_c03_internet_state.py:64: in test_connectivity_question_does_not_swallow_another_requested_read
+    assert result is None or result.operations == ("network.status", "system.time")
+E   AssertionError: assert (EffectIntent(operations=('web.search', 'system.time'), evidence=('is this computer connected to the internet', 'time is it?')) is None or ('web.search', 'system.time') == ('network.sta...'system.time')
+E     
+E     At index 0 diff: 'web.search' != 'network.status'
+E     Use -v to get more diff)
+=========================== short test summary info ===========================
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Is this computer connected to the internet?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Is my PC connected to the internet right now?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Is the computer connected to internet?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Am I connected to the internet?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Is this machine online?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[\xbfEst\xe1 este equipo conectado a internet?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[\xbfEst\xe1 mi PC conectado a internet ahora?]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Revisa si mi computador est\xe1 conectado a internet.]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Comprueba si este equipo est\xe1 conectado a internet.]
+FAILED tests/test_c03_internet_state.py::test_local_internet_connection_question_reads_only_connectivity[Check whether this computer is connected to the internet.]
+FAILED tests/test_c03_internet_state.py::test_missing_connectivity_operation_does_not_substitute_web_search[Is this computer connected to the internet?]
+FAILED tests/test_c03_internet_state.py::test_missing_connectivity_operation_does_not_substitute_web_search[\xbfEst\xe1 este equipo conectado a internet?]
+FAILED tests/test_c03_internet_state.py::test_connectivity_question_does_not_swallow_another_requested_read
+13 failed, 9 passed in 0.80s

@@ -1,0 +1,5 @@
+{
+  "free_ram_mib": 4271.3515625,
+  "required_mib": 4000,
+  "estimate": "482 native model buffers CUDA2444/CPU2963MiB at14layers. Five extra layers move roughly600MiB to GPU, one slot lowers recurrent state; estimated own RAM near3100MiB plus768MiB guard. This is an estimate to be measured, not proof."
+}

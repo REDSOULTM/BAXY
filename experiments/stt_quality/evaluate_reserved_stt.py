@@ -75,11 +75,11 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # STT/TTS/wake. No acredita una nueva aceptacion de voz.
 # C03 Astra: hora AM/PM, tema y causa anidada conservados; lectura de explain.
 # Prosa: conocimiento separado de observaciones, sin saludo recortado ni intro fija.
-# C03 555: contextual interpretation is not a visible-answer fallback.
+# C03 569: current local connectivity questions preserve their catalog operation.
 # Historical STT/wake campaign pins remain unchanged; this declaration does
 # not claim new audio acceptance.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "5a3d37d79c0e4b7366c3d7857b699a32c9d6e1b84df9d794f89bc3dea890415d"
+    "90b2fedd464bb3a639860d4d91a2912c84915a2b35132cc5907fe440185fdb8a"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

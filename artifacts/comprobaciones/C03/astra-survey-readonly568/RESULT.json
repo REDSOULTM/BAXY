@@ -1,0 +1,23 @@
+{
+  "published": 15,
+  "newly_covered": [
+    "H0063",
+    "H0073",
+    "H0057"
+  ],
+  "survey_counts": {
+    "covered": 11,
+    "open": 731,
+    "not_applicable": 0
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2420.84375,
+    "seconds": 42.016
+  },
+  "private_report_sha256": "bbc155bb1e03b5199b4cc09417cb20d53758b297b8b0181a820aafc60d15a485",
+  "adjudication_sha256": "3c9dee8572c6d124dade3a8afbe2edc5401ce94185ed3787f4c30dc31966c644",
+  "limits": "No UI/voz. H0037/H0080 abiertos. Fuente555; reparación posterior569 no se atribuye a568."
+}

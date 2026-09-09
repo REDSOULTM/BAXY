@@ -4782,6 +4782,24 @@ def _other_device_effect_scope(text: str) -> bool:
     )
 
 
+def _local_internet_connection_query(text: str) -> bool:
+    """A current local connection check is not a request for internet content."""
+    machine_en = r"(?:this|the|my)\s+(?:computer|pc|machine)"
+    machine_es = r"(?:este|el|mi)\s+(?:equipo|pc|computador(?:a)?|ordenador)"
+    state_en = r"(?:connected\s+to\s+(?:the\s+)?internet|online)"
+    state_es = r"conectad[oa]\s+a\s+internet"
+    return re.fullmatch(
+        rf"[¿?\s]*(?:"
+        rf"(?:is\s+{machine_en}|am\s+i)\s+{state_en}|"
+        rf"(?:check|verify)\s+(?:whether|if)\s+{machine_en}\s+is\s+{state_en}|"
+        rf"esta\s+{machine_es}\s+{state_es}|"
+        rf"(?:comprueba|revisa|verifica)\s+si\s+{machine_es}\s+esta\s+{state_es}"
+        r")(?:\s+(?:right\s+now|now|ahora|actualmente))?[.!?\s]*",
+        text,
+        re.IGNORECASE,
+    ) is not None
+
+
 def _network_status_domain(text: str) -> bool:
     if _has(
         text,
@@ -7317,7 +7335,7 @@ def _is_direct_request(text: str) -> bool:
         rf"whether|si|is|are|name|time|current|local|hora|fecha|"
         rf"{_STATE_QUERY_HEAD})"
     )
-    return _has(
+    return _local_internet_connection_query(text) or _has(
         text,
         rf"^[¿?¡!\s]*{_REQUEST_PREFIX}"
         rf"(?:(?:primero|first)\s*[,;:]?[¿?¡!\s]+)?"
@@ -7450,6 +7468,12 @@ def _strict_catalog_request(
         if not operations or not set(operations) <= available_operations:
             return None
         return EffectIntent(operations, evidence or tuple(text for _ in operations))
+
+    if _local_internet_connection_query(text):
+        # The generic internet domain below means web content, not this local
+        # observation. Match the whole clause so a second task is not dropped;
+        # a missing catalog operation must not become an unrelated web search.
+        return intent("network.status")
 
     if (
         not deferred_effect

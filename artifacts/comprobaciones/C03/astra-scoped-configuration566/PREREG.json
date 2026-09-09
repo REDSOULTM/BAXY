@@ -1,0 +1,65 @@
+{
+  "method": "Reuse the exact configuration/existence instruction measured540, restricted to typed memory.status with boolean observed enabled. No change to other routes or wording. Eighteen frozen current native captures557 plus8 counterfactual state/control variants ES/EN, enable polarity and counts. All receipts, confirmations, progress and hardware packets remain byte-identical controls; no effects are executed.",
+  "inheritance": "540 narrowed false capability denial to accurate inactive state but was rejected because its GLOBAL instruction changed save/enable receipts. This tests ownership scoping instead of another global prompt. 537 descriptors and558/559 CPU wording remain rejected; no repetition of their changes.",
+  "criteria": "Preserve actual enabled state and counts; do not deny existence solely because disabled; no invented effects or private values. All out-of-scope payloads must remain identical to baseline. Native success still requires current composer, product variants and source gates; no survey credit yet.",
+  "server_command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "63625",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching",
+    "--verbosity",
+    "4",
+    "--log-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-scoped-configuration566-private\\server.log"
+  ],
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "profiles": [
+    [
+      "baseline",
+      {
+        "seed": 0
+      }
+    ],
+    [
+      "scoped-configuration",
+      {
+        "seed": 0
+      }
+    ]
+  ],
+  "case_count": 26,
+  "limits": {
+    "gpu_stop_mib": 3800,
+    "free_ram_mib": 768,
+    "total_seconds": 360,
+    "request_seconds": 60
+  }
+}

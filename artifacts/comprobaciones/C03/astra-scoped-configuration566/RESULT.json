@@ -1,0 +1,16 @@
+{
+  "adopted": false,
+  "evaluable_finals": 52,
+  "collected_rows": 52,
+  "conclusion": "No adoptado. Limitar la instrucción540 a memory.status conserva los otros17 paquetes, pero el nuevo caso español de continuidad sigue negando memoria entre sesiones, incluso con una lectura real del estado. Los resultados ingleses mejoran algunas contradicciones; no basta para generalizar.52 EOS. No se cambia prompt ni se añaden vetos.",
+  "private_report_sha256": "260d68653ace00adb6bca7b1c242de3ced2c4f53e78135d34f6a1357e7bbe901",
+  "resources": {
+    "completed": true,
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "ram_peak_mib": 722.66796875,
+    "seconds": 23.172,
+    "manifest_unchanged": true,
+    "server_exit_after_intentional_cleanup": 15
+  }
+}

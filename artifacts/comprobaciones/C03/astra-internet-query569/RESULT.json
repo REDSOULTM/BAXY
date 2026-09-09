@@ -1,0 +1,22 @@
+{
+  "adopted": true,
+  "owners": {
+    "passed": 2604,
+    "subtests": 121,
+    "skips": 0,
+    "seconds": 58.07
+  },
+  "fast": "passed",
+  "release_seconds": 20.32,
+  "stt": {
+    "passed": 12,
+    "environmental_skips": 1,
+    "seconds": 1.21
+  },
+  "product": "pending570",
+  "survey_counts": {
+    "covered": 11,
+    "open": 731,
+    "not_applicable": 0
+  }
+}
