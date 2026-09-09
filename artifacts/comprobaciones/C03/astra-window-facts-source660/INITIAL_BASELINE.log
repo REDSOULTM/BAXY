@@ -1,0 +1,1448 @@
+FFF...FFFFFFFFF......FFFFFFFFF.........FFFFFF.F.F.F.F.FFF..FF.F.F.F.FF.F [ 92%]
+FFF.F.                                                                   [100%]
+================================== FAILURES ===================================
+_ test_typed_installation_visibility_and_process_scope[{name} is installed and running, but no window is currently visible.-False-Spotify] _
+
+name = 'Spotify'
+reply = '{name} is installed and running, but no window is currently visible.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify is installed and running, but no window is currently visible.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify is installed and running, but no window is currently visible.' = <built-in method format of str object at 0x000001FE6CF8E2C0>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6CF8E2C0> = '{name} is installed and running, but no window is currently visible.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is installed and running, but no window is currently visible.-False-Orbit 23] _
+
+name = 'Orbit 23'
+reply = '{name} is installed and running, but no window is currently visible.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 is installed and running, but no window is currently visible.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 is installed and running, but no window is currently visible.' = <built-in method format of str object at 0x000001FE6CF8E2C0>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6CF8E2C0> = '{name} is installed and running, but no window is currently visible.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is installed and running, but no window is currently visible.-False-Running] _
+
+name = 'Running'
+reply = '{name} is installed and running, but no window is currently visible.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running is installed and running, but no window is currently visible.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running is installed and running, but no window is currently visible.' = <built-in method format of str object at 0x000001FE6CF8E2C0>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6CF8E2C0> = '{name} is installed and running, but no window is currently visible.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} has two visible windows.-False-Spotify] _
+
+name = 'Spotify', reply = '{name} has two visible windows.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify has two visible windows.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify has two visible windows.' = <built-in method format of str object at 0x000001FE6CFB6290>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6CFB6290> = '{name} has two visible windows.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} has two visible windows.-False-Orbit 23] _
+
+name = 'Orbit 23', reply = '{name} has two visible windows.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has two visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 has two visible windows.' = <built-in method format of str object at 0x000001FE6CFB6290>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6CFB6290> = '{name} has two visible windows.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} has two visible windows.-False-Running] _
+
+name = 'Running', reply = '{name} has two visible windows.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running has two visible windows.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running has two visible windows.' = <built-in method format of str object at 0x000001FE6CFB6290>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6CFB6290> = '{name} has two visible windows.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is not installed.-False-Spotify] _
+
+name = 'Spotify', reply = '{name} is not installed.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify is not installed.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify is not installed.' = <built-in method format of str object at 0x000001FE6CFB62E0>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6CFB62E0> = '{name} is not installed.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is not installed.-False-Orbit 23] _
+
+name = 'Orbit 23', reply = '{name} is not installed.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 is not installed.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 is not installed.' = <built-in method format of str object at 0x000001FE6CFB62E0>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6CFB62E0> = '{name} is not installed.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is not installed.-False-Running] _
+
+name = 'Running', reply = '{name} is not installed.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running is not installed.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running is not installed.' = <built-in method format of str object at 0x000001FE6CFB62E0>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6CFB62E0> = '{name} is not installed.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is not running.-False-Spotify] _
+
+name = 'Spotify', reply = '{name} is not running.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify is not running.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify is not running.' = <built-in method format of str object at 0x000001FE6D0FAAF0>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6D0FAAF0> = '{name} is not running.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is not running.-False-Orbit 23] _
+
+name = 'Orbit 23', reply = '{name} is not running.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 is not running.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 is not running.' = <built-in method format of str object at 0x000001FE6D0FAAF0>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6D0FAAF0> = '{name} is not running.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} is not running.-False-Running] _
+
+name = 'Running', reply = '{name} is not running.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running is not running.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running is not running.' = <built-in method format of str object at 0x000001FE6D0FAAF0>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6D0FAAF0> = '{name} is not running.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} tiene tres ventanas visibles.-False-Spotify] _
+
+name = 'Spotify', reply = '{name} tiene tres ventanas visibles.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify tiene tres ventanas visibles.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify tiene tres ventanas visibles.' = <built-in method format of str object at 0x000001FE6CFB6380>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6CFB6380> = '{name} tiene tres ventanas visibles.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} tiene tres ventanas visibles.-False-Orbit 23] _
+
+name = 'Orbit 23', reply = '{name} tiene tres ventanas visibles.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 tiene tres ventanas visibles.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 tiene tres ventanas visibles.' = <built-in method format of str object at 0x000001FE6CFB6380>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6CFB6380> = '{name} tiene tres ventanas visibles.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} tiene tres ventanas visibles.-False-Running] _
+
+name = 'Running', reply = '{name} tiene tres ventanas visibles.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running tiene tres ventanas visibles.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running tiene tres ventanas visibles.' = <built-in method format of str object at 0x000001FE6CFB6380>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6CFB6380> = '{name} tiene tres ventanas visibles.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} no est\xe1 instalado.-False-Spotify] _
+
+name = 'Spotify', reply = '{name} no está instalado.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify no está instalado.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify no está instalado.' = <built-in method format of str object at 0x000001FE6C613C30>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6C613C30> = '{name} no está instalado.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} no est\xe1 instalado.-False-Orbit 23] _
+
+name = 'Orbit 23', reply = '{name} no está instalado.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 no está instalado.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 no está instalado.' = <built-in method format of str object at 0x000001FE6C613C30>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6C613C30> = '{name} no está instalado.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} no est\xe1 instalado.-False-Running] _
+
+name = 'Running', reply = '{name} no está instalado.', valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running no está instalado.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running no está instalado.' = <built-in method format of str object at 0x000001FE6C613C30>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6C613C30> = '{name} no está instalado.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} est\xe1 ejecut\xe1ndose en segundo plano.-False-Spotify] _
+
+name = 'Spotify', reply = '{name} está ejecutándose en segundo plano.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Spotify está ejecutándose en segundo plano.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Spotify está ejecutándose en segundo plano.' = <built-in method format of str object at 0x000001FE6CF8E3A0>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6CF8E3A0> = '{name} está ejecutándose en segundo plano.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} est\xe1 ejecut\xe1ndose en segundo plano.-False-Orbit 23] _
+
+name = 'Orbit 23', reply = '{name} está ejecutándose en segundo plano.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 está ejecutándose en segundo plano.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Orbit 23 está ejecutándose en segundo plano.' = <built-in method format of str object at 0x000001FE6CF8E3A0>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6CF8E3A0> = '{name} está ejecutándose en segundo plano.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[{name} est\xe1 ejecut\xe1ndose en segundo plano.-False-Running] _
+
+name = 'Running', reply = '{name} está ejecutándose en segundo plano.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Running está ejecutándose en segundo plano.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'Running está ejecutándose en segundo plano.' = <built-in method format of str object at 0x000001FE6CF8E3A0>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6CF8E3A0> = '{name} está ejecutándose en segundo plano.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[I cannot tell whether {name} is running; it is running in the background.-False-Spotify] _
+
+name = 'Spotify'
+reply = 'I cannot tell whether {name} is running; it is running in the background.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('I cannot tell whether Spotify is running; it is running in the background.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'I cannot tell whether Spotify is running; it is running in the background.' = <built-in method format of str object at 0x000001FE6D0F0D30>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6D0F0D30> = 'I cannot tell whether {name} is running; it is running in the background.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[I cannot tell whether {name} is running; it is running in the background.-False-Orbit 23] _
+
+name = 'Orbit 23'
+reply = 'I cannot tell whether {name} is running; it is running in the background.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('I cannot tell whether Orbit 23 is running; it is running in the background.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'I cannot tell whether Orbit 23 is running; it is running in the background.' = <built-in method format of str object at 0x000001FE6D0F0D30>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6D0F0D30> = 'I cannot tell whether {name} is running; it is running in the background.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[I cannot tell whether {name} is running; it is running in the background.-False-Running] _
+
+name = 'Running'
+reply = 'I cannot tell whether {name} is running; it is running in the background.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('I cannot tell whether Running is running; it is running in the background.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'I cannot tell whether Running is running; it is running in the background.' = <built-in method format of str object at 0x000001FE6D0F0D30>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6D0F0D30> = 'I cannot tell whether {name} is running; it is running in the background.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[No s\xe9 si {name} est\xe1 ejecut\xe1ndose, pero est\xe1 ejecut\xe1ndose en segundo plano.-False-Spotify] _
+
+name = 'Spotify'
+reply = 'No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('No sé si Spotify está ejecutándose, pero está ejecutándose en segundo plano.', {'seen': {'requestedName': 'Spotify', 'displayName': 'Spotify', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'No sé si Spotify está ejecutándose, pero está ejecutándose en segundo plano.' = <built-in method format of str object at 0x000001FE6D0E2B80>(name='Spotify')
+E        +      where <built-in method format of str object at 0x000001FE6D0E2B80> = 'No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[No s\xe9 si {name} est\xe1 ejecut\xe1ndose, pero est\xe1 ejecut\xe1ndose en segundo plano.-False-Orbit 23] _
+
+name = 'Orbit 23'
+reply = 'No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('No sé si Orbit 23 está ejecutándose, pero está ejecutándose en segundo plano.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'No sé si Orbit 23 está ejecutándose, pero está ejecutándose en segundo plano.' = <built-in method format of str object at 0x000001FE6D0E2B80>(name='Orbit 23')
+E        +      where <built-in method format of str object at 0x000001FE6D0E2B80> = 'No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_typed_installation_visibility_and_process_scope[No s\xe9 si {name} est\xe1 ejecut\xe1ndose, pero est\xe1 ejecut\xe1ndose en segundo plano.-False-Running] _
+
+name = 'Running'
+reply = 'No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.'
+valid = False
+
+    @pytest.mark.parametrize("name", ["Spotify", "Orbit 23", "Running"])
+    @pytest.mark.parametrize("reply, valid", [
+        ("{name} is installed and running, but no window is currently visible.", False),
+        ("{name} is installed but has no visible window.", True),
+        ("{name} has two visible windows.", False),
+        ("{name} is not installed.", False),
+        ("{name} is not running.", False),
+        ("{name} is installed with no visible window; background processes were not checked.", True),
+        ("{name} está instalado, pero no tiene ventanas visibles.", True),
+        ("{name} tiene tres ventanas visibles.", False),
+        ("{name} no está instalado.", False),
+        ("{name} está ejecutándose en segundo plano.", False),
+        ("{name} está instalado y no tiene ventanas visibles; no comprobé sus procesos.", True),
+        ("I cannot tell whether {name} is running from this observation.", True),
+        ("No sé si {name} sigue ejecutándose; sólo comprobé sus ventanas visibles.", True),
+        ("I cannot tell whether {name} is running; it is running in the background.", False),
+        ("No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.", False),
+    ])
+    def test_typed_installation_visibility_and_process_scope(name, reply, valid):
+        payload = _compose_situation_payload(situation(name), "en", "Is it open?")
+>       assert (not _payload_fact_defect(reply.format(name=name), payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('No sé si Running está ejecutándose, pero está ejecutándose en segundo plano.', {'seen': {'requestedName': 'Running', 'displayName': 'Running', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where 'No sé si Running está ejecutándose, pero está ejecutándose en segundo plano.' = <built-in method format of str object at 0x000001FE6D0E2B80>(name='Running')
+E        +      where <built-in method format of str object at 0x000001FE6D0E2B80> = 'No sé si {name} está ejecutándose, pero está ejecutándose en segundo plano.'.format
+
+tests\test_c03_window_facts.py:46: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has 23 visible windows.-False] _
+
+count = 3, reply = 'Orbit 23 has 23 visible windows.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has 23 visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has at most two visible windows.-False] _
+
+count = 3, reply = 'Orbit 23 has at most two visible windows.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has at most two visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has fewer than three visible windows.-False] _
+
+count = 3, reply = 'Orbit 23 has fewer than three visible windows.'
+valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has fewer than three visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-\xd3rbita 23 tiene como m\xe1ximo dos ventanas visibles.-False] _
+
+count = 3, reply = 'Órbita 23 tiene como máximo dos ventanas visibles.'
+valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Órbita 23 tiene como máximo dos ventanas visibles.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-\xd3rbita 23 tiene menos de tres ventanas visibles.-False] _
+
+count = 3, reply = 'Órbita 23 tiene menos de tres ventanas visibles.'
+valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Órbita 23 tiene menos de tres ventanas visibles.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has no visible windows.-False] _
+
+count = 3, reply = 'Orbit 23 has no visible windows.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has no visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[3-\xd3rbita 23 no tiene ventanas visibles.-False] _
+
+count = 3, reply = 'Órbita 23 no tiene ventanas visibles.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Órbita 23 no tiene ventanas visibles.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[0-Orbit 23 has visible windows.-False] _
+
+count = 0, reply = 'Orbit 23 has visible windows.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[0-\xd3rbita 23 tiene ventanas visibles.-False] _
+
+count = 0, reply = 'Órbita 23 tiene ventanas visibles.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Órbita 23 tiene ventanas visibles.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[125-Orbit 23 has 126 visible windows.-False] _
+
+count = 125, reply = 'Orbit 23 has 126 visible windows.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Orbit 23 has 126 visible windows.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_cardinality_is_qualified_by_windows_not_digits_in_names[2-Three windows of Orbit 23 are open.-False] _
+
+count = 2, reply = 'Three windows of Orbit 23 are open.', valid = False
+
+    @pytest.mark.parametrize("count, reply, valid", [
+        (3, "Orbit 23 has three visible windows.", True),
+        (3, "Orbit 23 has 23 visible windows.", False),
+        (3, "Orbit 23 has at least two visible windows.", True),
+        (3, "Orbit 23 has at most two visible windows.", False),
+        (3, "Orbit 23 has more than two visible windows.", True),
+        (3, "Orbit 23 has fewer than three visible windows.", False),
+        (3, "Órbita 23 tiene al menos dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene como máximo dos ventanas visibles.", False),
+        (3, "Órbita 23 tiene más de dos ventanas visibles.", True),
+        (3, "Órbita 23 tiene menos de tres ventanas visibles.", False),
+        (3, "Orbit 23 has no visible windows.", False),
+        (3, "Órbita 23 no tiene ventanas visibles.", False),
+        (3, "Orbit 23 has visible windows.", True),
+        (3, "Órbita 23 tiene ventanas visibles.", True),
+        (0, "Orbit 23 has visible windows.", False),
+        (0, "Órbita 23 tiene ventanas visibles.", False),
+        (125, "Orbit 23 has 125 visible windows.", True),
+        (125, "Orbit 23 has 126 visible windows.", False),
+        (2, "Two windows of Orbit 23 are open.", True),
+        (2, "Three windows of Orbit 23 are open.", False),
+    ])
+    def test_cardinality_is_qualified_by_windows_not_digits_in_names(count, reply, valid):
+        payload = _compose_situation_payload(situation(count=count), "en", "How many windows are open?")
+>       assert (not _payload_fact_defect(reply, payload)) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Three windows of Orbit 23 are open.', {'seen': {'requestedName': 'Orbit 23', 'displayName': 'Orbit 23', 'installed': True, 'hasVisibleWindow': True, ...}, 'operation': 'window.application.status'})
+
+tests\test_c03_window_facts.py:73: AssertionError
+_ test_installation_polarity_is_observed_not_assumed[False-Br\xfajula est\xe1 instalada.-False] _
+
+installed = False, reply = 'Brújula está instalada.', valid = False
+
+    @pytest.mark.parametrize("installed, reply, valid", [
+        (False, "Brújula no está instalada.", True),
+        (False, "Brújula está instalada.", False),
+        (False, "Brújula is not installed.", True),
+        (False, "Brújula is installed.", False),
+        (True, "Brújula isn't installed.", False),
+        (False, "Brújula isn't installed.", True),
+    ])
+    def test_installation_polarity_is_observed_not_assumed(installed, reply, valid):
+>       assert (not _payload_fact_defect(reply, _compose_situation_payload(situation("Brújula", installed), "en"))) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Brújula está instalada.', {'seen': {'requestedName': 'Brújula', 'displayName': None, 'installed': False, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where {'seen': {'requestedName': 'Brújula', 'displayName': None, 'installed': False, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.application.status', 'polarity': 'success', 'verified': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.application.status', 'polarity': 'success', 'verified': True, ...} = situation('Brújula', False)
+
+tests\test_c03_window_facts.py:85: AssertionError
+_ test_installation_polarity_is_observed_not_assumed[False-Br\xfajula is installed.-False] _
+
+installed = False, reply = 'Brújula is installed.', valid = False
+
+    @pytest.mark.parametrize("installed, reply, valid", [
+        (False, "Brújula no está instalada.", True),
+        (False, "Brújula está instalada.", False),
+        (False, "Brújula is not installed.", True),
+        (False, "Brújula is installed.", False),
+        (True, "Brújula isn't installed.", False),
+        (False, "Brújula isn't installed.", True),
+    ])
+    def test_installation_polarity_is_observed_not_assumed(installed, reply, valid):
+>       assert (not _payload_fact_defect(reply, _compose_situation_payload(situation("Brújula", installed), "en"))) is valid
+E       AssertionError: assert not '' is False
+E        +  where '' = _payload_fact_defect('Brújula is installed.', {'seen': {'requestedName': 'Brújula', 'displayName': None, 'installed': False, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where {'seen': {'requestedName': 'Brújula', 'displayName': None, 'installed': False, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.application.status', 'polarity': 'success', 'verified': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.application.status', 'polarity': 'success', 'verified': True, ...} = situation('Brújula', False)
+
+tests\test_c03_window_facts.py:85: AssertionError
+_ test_installation_polarity_is_observed_not_assumed[True-Br\xfajula isn't installed.-False] _
+
+installed = True, reply = "Brújula isn't installed.", valid = False
+
+    @pytest.mark.parametrize("installed, reply, valid", [
+        (False, "Brújula no está instalada.", True),
+        (False, "Brújula está instalada.", False),
+        (False, "Brújula is not installed.", True),
+        (False, "Brújula is installed.", False),
+        (True, "Brújula isn't installed.", False),
+        (False, "Brújula isn't installed.", True),
+    ])
+    def test_installation_polarity_is_observed_not_assumed(installed, reply, valid):
+>       assert (not _payload_fact_defect(reply, _compose_situation_payload(situation("Brújula", installed), "en"))) is valid
+E       assert not '' is False
+E        +  where '' = _payload_fact_defect("Brújula isn't installed.", {'seen': {'requestedName': 'Brújula', 'displayName': 'Brújula', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'})
+E        +    where {'seen': {'requestedName': 'Brújula', 'displayName': 'Brújula', 'installed': True, 'hasVisibleWindow': False, ...}, 'operation': 'window.application.status'} = _compose_situation_payload({'kind': 'operation', 'operation': 'window.application.status', 'polarity': 'success', 'verified': True, ...}, 'en')
+E        +      where {'kind': 'operation', 'operation': 'window.application.status', 'polarity': 'success', 'verified': True, ...} = situation('Brújula', True)
+
+tests\test_c03_window_facts.py:85: AssertionError
+_ test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 is installed and running, but no window is currently visible.] _
+
+bad = 'Orbit 23 is installed and running, but no window is currently visible.'
+
+    @pytest.mark.parametrize("bad", [
+        "Orbit 23 is installed and running, but no window is currently visible.",
+        "Orbit 23 is not running.",
+        "Orbit 23 has two visible windows.",
+        "Orbit 23 is not installed.",
+    ])
+    def test_actual_compositor_retries_bad_fact_without_publishing_it(bad):
+        good = "Orbit 23 is installed but has no visible window."
+        client = Recorder([bad, good, good])
+>       assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == good
+E       AssertionError: assert 'Orbit 23 is ...ntly visible.' == 'Orbit 23 is ...sible window.'
+E         
+E         - Orbit 23 is installed but has no visible window.
+E         + Orbit 23 is installed and running, but no window is currently visible.
+
+tests\test_c03_window_facts.py:97: AssertionError
+_ test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 is not running.] _
+
+bad = 'Orbit 23 is not running.'
+
+    @pytest.mark.parametrize("bad", [
+        "Orbit 23 is installed and running, but no window is currently visible.",
+        "Orbit 23 is not running.",
+        "Orbit 23 has two visible windows.",
+        "Orbit 23 is not installed.",
+    ])
+    def test_actual_compositor_retries_bad_fact_without_publishing_it(bad):
+        good = "Orbit 23 is installed but has no visible window."
+        client = Recorder([bad, good, good])
+>       assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == good
+E       AssertionError: assert 'Orbit 23 is not running.' == 'Orbit 23 is ...sible window.'
+E         
+E         - Orbit 23 is installed but has no visible window.
+E         + Orbit 23 is not running.
+
+tests\test_c03_window_facts.py:97: AssertionError
+_ test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 has two visible windows.] _
+
+bad = 'Orbit 23 has two visible windows.'
+
+    @pytest.mark.parametrize("bad", [
+        "Orbit 23 is installed and running, but no window is currently visible.",
+        "Orbit 23 is not running.",
+        "Orbit 23 has two visible windows.",
+        "Orbit 23 is not installed.",
+    ])
+    def test_actual_compositor_retries_bad_fact_without_publishing_it(bad):
+        good = "Orbit 23 is installed but has no visible window."
+        client = Recorder([bad, good, good])
+>       assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == good
+E       AssertionError: assert 'Orbit 23 has...ible windows.' == 'Orbit 23 is ...sible window.'
+E         
+E         - Orbit 23 is installed but has no visible window.
+E         + Orbit 23 has two visible windows.
+
+tests\test_c03_window_facts.py:97: AssertionError
+_ test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 is not installed.] _
+
+bad = 'Orbit 23 is not installed.'
+
+    @pytest.mark.parametrize("bad", [
+        "Orbit 23 is installed and running, but no window is currently visible.",
+        "Orbit 23 is not running.",
+        "Orbit 23 has two visible windows.",
+        "Orbit 23 is not installed.",
+    ])
+    def test_actual_compositor_retries_bad_fact_without_publishing_it(bad):
+        good = "Orbit 23 is installed but has no visible window."
+        client = Recorder([bad, good, good])
+>       assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == good
+E       AssertionError: assert 'Orbit 23 is not installed.' == 'Orbit 23 is ...sible window.'
+E         
+E         - Orbit 23 is installed but has no visible window.
+E         + Orbit 23 is not installed.
+
+tests\test_c03_window_facts.py:97: AssertionError
+_ test_valid_draft_does_not_spend_another_inference[I cannot tell whether Orbit 23 is running from this observation.] _
+
+reply = 'I cannot tell whether Orbit 23 is running from this observation.'
+
+    @pytest.mark.parametrize("reply", [
+        "Orbit 23 is installed but has no visible window.",
+        "I cannot tell whether Orbit 23 is running from this observation.",
+    ])
+    def test_valid_draft_does_not_spend_another_inference(reply):
+        client = Recorder([reply])
+>       assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == reply
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_window_facts.py:107: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10132: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9202: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_facts.Recorder object at 0x000001FE6D03ED50>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...": 0}, "operation": "window.application.status"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.payloads.append(payload)
+>       return {"choices": [{"message": {"content": next(self.replies)}, "finish_reason": "stop"}]}
+                                                    ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_facts.py:23: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is installed and running, but no window is currently visible.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is installed and running, but no window is currently visible.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is installed and running, but no window is currently visible.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} has two visible windows.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} has two visible windows.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} has two visible windows.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is not installed.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is not installed.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is not installed.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is not running.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is not running.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} is not running.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} tiene tres ventanas visibles.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} tiene tres ventanas visibles.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} tiene tres ventanas visibles.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} no est\xe1 instalado.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} no est\xe1 instalado.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} no est\xe1 instalado.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} est\xe1 ejecut\xe1ndose en segundo plano.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} est\xe1 ejecut\xe1ndose en segundo plano.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[{name} est\xe1 ejecut\xe1ndose en segundo plano.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[I cannot tell whether {name} is running; it is running in the background.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[I cannot tell whether {name} is running; it is running in the background.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[I cannot tell whether {name} is running; it is running in the background.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[No s\xe9 si {name} est\xe1 ejecut\xe1ndose, pero est\xe1 ejecut\xe1ndose en segundo plano.-False-Spotify]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[No s\xe9 si {name} est\xe1 ejecut\xe1ndose, pero est\xe1 ejecut\xe1ndose en segundo plano.-False-Orbit 23]
+FAILED tests/test_c03_window_facts.py::test_typed_installation_visibility_and_process_scope[No s\xe9 si {name} est\xe1 ejecut\xe1ndose, pero est\xe1 ejecut\xe1ndose en segundo plano.-False-Running]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has 23 visible windows.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has at most two visible windows.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has fewer than three visible windows.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-\xd3rbita 23 tiene como m\xe1ximo dos ventanas visibles.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-\xd3rbita 23 tiene menos de tres ventanas visibles.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-Orbit 23 has no visible windows.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[3-\xd3rbita 23 no tiene ventanas visibles.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[0-Orbit 23 has visible windows.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[0-\xd3rbita 23 tiene ventanas visibles.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[125-Orbit 23 has 126 visible windows.-False]
+FAILED tests/test_c03_window_facts.py::test_cardinality_is_qualified_by_windows_not_digits_in_names[2-Three windows of Orbit 23 are open.-False]
+FAILED tests/test_c03_window_facts.py::test_installation_polarity_is_observed_not_assumed[False-Br\xfajula est\xe1 instalada.-False]
+FAILED tests/test_c03_window_facts.py::test_installation_polarity_is_observed_not_assumed[False-Br\xfajula is installed.-False]
+FAILED tests/test_c03_window_facts.py::test_installation_polarity_is_observed_not_assumed[True-Br\xfajula isn't installed.-False]
+FAILED tests/test_c03_window_facts.py::test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 is installed and running, but no window is currently visible.]
+FAILED tests/test_c03_window_facts.py::test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 is not running.]
+FAILED tests/test_c03_window_facts.py::test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 has two visible windows.]
+FAILED tests/test_c03_window_facts.py::test_actual_compositor_retries_bad_fact_without_publishing_it[Orbit 23 is not installed.]
+FAILED tests/test_c03_window_facts.py::test_valid_draft_does_not_spend_another_inference[I cannot tell whether Orbit 23 is running from this observation.]
+46 failed, 32 passed in 1.27s

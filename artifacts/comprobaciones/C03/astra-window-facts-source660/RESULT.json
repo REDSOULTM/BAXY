@@ -1,0 +1,33 @@
+{
+  "adopted": true,
+  "sources": {
+    "src/baxy_mind/llm.py": "61c9da7e0975dabd54f0698f20eef06ade160988b4d8b64b8621516cdd454300",
+    "src/baxy_mind/window_prose_facts.py": "9c72a3719adf363287786bafeac87827cbf06f3cd9b429c8b38b9c7668b40b3e",
+    "tests/test_c03_window_facts.py": "c169e47e69066115be984608cb50f01d40d8c721cf396395d8665ff244d3473e"
+  },
+  "python_tree_sha256": "f59d75eef59e777ce8288c74630198576bad062b4a398ac229fee3aa341f9c0d",
+  "same_cohort_baseline": {
+    "failed": 60,
+    "passed": 44
+  },
+  "focal_passed": 104,
+  "owners": {
+    "passed": 4046,
+    "subtests": 121,
+    "skipped": 0,
+    "seconds": 70.46
+  },
+  "declarations": {
+    "passed": 22,
+    "environmental_skipped": 1,
+    "seconds": 2.01
+  },
+  "fast_exit": 0,
+  "release_seconds": 27.99,
+  "full_baseline": 651,
+  "full660_run": false,
+  "product661_correct": 23,
+  "product661_total": 24,
+  "goal_complete": false,
+  "private_hashes": {}
+}

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-09T16:19:22.062927+00:00",
+  "source": 660,
+  "adopted": false,
+  "sources": {
+    "src/baxy_mind/llm.py": "61c9da7e0975dabd54f0698f20eef06ade160988b4d8b64b8621516cdd454300",
+    "src/baxy_mind/window_prose_facts.py": "9c72a3719adf363287786bafeac87827cbf06f3cd9b429c8b38b9c7668b40b3e",
+    "tests/test_c03_window_facts.py": "c169e47e69066115be984608cb50f01d40d8c721cf396395d8665ff244d3473e"
+  },
+  "python_tree_sha256": "f59d75eef59e777ce8288c74630198576bad062b4a398ac229fee3aa341f9c0d",
+  "python_files": 405,
+  "inheritance": "649 checked only compose_visible_defect, not the entire publishability predicate. The production compositor also runs _payload_fact_defect. New Recorder tests confirm four bad drafts pass the full old path. Keep both guards at their actual owners; no second model.",
+  "research_reused": [
+    "astra-native-fact-judge656",
+    "astra-nli-fact-probe658",
+    "astra-nli-native-parity659"
+  ],
+  "design": "Extend the existing fact contract with field-qualified installation/cardinality/process assertions. Reuse ES/EN cardinal vocabulary; preserve ranges, names, uncertainty and other operations. A complete window answer may mention an unknown process state without becoming a failed window read. An unknown process statement alone still cannot answer the window question.",
+  "test_refinement": "The initial publication test offered only process uncertainty as a response to Is Orbit23 open. It was refined to include a real window answer, and a separate regression now requires rejecting uncertainty alone. Initial46fail/32pass log is retained, not treated as the baseline for the final104-case cohort. Same final tests run against published654 bytes in an isolated module.",
+  "focal_final": {
+    "passed": 104,
+    "seconds": 0.68
+  },
+  "next": "Owner suites, current declarations, Fast, exact24-case product655 regression661. Prose foreground defect remains separate; do not award global C03 closure from field tests."
+}

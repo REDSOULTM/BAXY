@@ -1,0 +1,7 @@
+# 660 — hechos de ventanas conservados en el compositor
+
+Se adopta una extensión delimitada del contrato factual existente: contrasta instalación, cantidades/rangos y afirmaciones de proceso con los campos tipados de window.application.status. Mantiene nombres, negaciones, desconocimiento explícito y otras operaciones. Una aclaración legítima sobre procesos no convierte una respuesta completa de ventanas en fallo; una respuesta que sólo desconoce el proceso sigue siendo insuficiente. No se añade modelo, inferencia ni respuesta visible fija.
+
+Misma cohorte104: fuente publicada65460 fallos/44 pases; candidata104 pases. Incluye compositor completo con transporte simulado: cuatro borradores incorrectos se rechazan y reintentan; respuestas válidas salen en una llamada. Esto corrige la evidencia parcial649, que sólo llamaba compose_visible_defect. Se conservan baseline inicial, refinamiento de una respuesta incompleta y controles expandidos, sin cambiar el criterio para aprobar. No es prueba semántica universal: gramática acotada, sin cobertura universal de sujetos ajenos o todas las formas numéricas.
+
+Dueñas4046 pases+121 subpruebas,0 skips,70,46s. Declaraciones22 pases/1 skip ambiental,2,01s. Fast exit0,Release27,99s,0 advertencias/errores. Producto661 conserva23/24 y todos los finales655, incluida la jerga española pendiente. Full651 sigue siendo línea base anterior; no Full660 ni cierre global. Encuesta26/716/0. Siguiente: aislar fuga del metadato en prosa de foco y seguir cobertura, UI/voz, recuperación y Full final.

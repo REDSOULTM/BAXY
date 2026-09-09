@@ -76,6 +76,7 @@ from .request_reading import (
     starts_new_definition_topic,
 )
 from .time_budget import remaining_seconds
+from .window_prose_facts import window_fact_defect, window_status_assertions
 
 
 MAX_CONTEXT_TOKENS = 4096
@@ -3723,6 +3724,9 @@ def _payload_fact_defect(text: str, payload: dict) -> str:
 
     if not isinstance(payload, dict) or not payload:
         return ""
+    window_defect = window_fact_defect(text, payload)
+    if window_defect:
+        return window_defect
     folded = _reading_fold(text)
     seen = payload.get("seen")
     # A verified account read must survive composition. UI264 returned the
@@ -4481,7 +4485,9 @@ def compose_visible_defect(
     elif (
         cause != "acting"
         and kind not in {"welcome", "confirmation", "clarification"}
-        and _asserts_failure(stripped)
+        and _asserts_failure(window_status_assertions(stripped, {
+            "operation": situation.get("operation"), "seen": _merged_observed(situation),
+        }, require_window_answer=True))
         and not (
             kind == "conversation"
             and _looks_like_knowledge_question(user_text)

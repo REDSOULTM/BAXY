@@ -955,3 +955,24 @@ Pico RSS1006,707MiB y21,781s de proceso nativo, sin infracciones. No se presenta
 ## Estado al terminar659
 
 657/658/659 terminados y sellados, sesiones77561/51876 recogidas;658 terminal directo exit0. Ningún proceso activo. NLI pequeño21/31binarias con9rechazos falsos; paridad nativa31/31. No incorporado. Fuente654 publicada, encuesta26/716/0. Publicar evidencia657–659; siguiente: reparar límites factuales en el contrato existente y aislar fuga de metadatos en prosa655. No tercera colección de clasificadores ni barrido de seeds sobre estos errores.
+
+
+## Candidata660 — conservación de hechos en el compositor completo
+
+104 controles finales pasan: cantidades/rangos,nombres,instalación,procesos desconocidos y reintento real del compositor con transporte simulado. La comprobación649 era parcial; esta baseline verifica además la frontera completa de publicación. Se conserva la prueba inicial y su refinamiento explícito sobre respuesta incompleta. No LLM/kernel/UI en tests. Sin modelo ni llamada adicional. Fuente660 aún NOadoptada; faltan dueñas/declaraciones/Fast y producto661. Contrato delimitado, no prueba universal. Fuente654 publicada; encuesta26/716/0.
+
+
+# 661 — contrato factual sin regresión en el panel de producto
+
+Las24 respuestas finales coinciden literalmente con655. Se revisaron individualmente contra las22 observaciones y capturas independientes antes/después:23/24 correctas,16 lecturas de aplicaciones y cuatro referencias preservadas. Sigue el fallo de naturalidad español «foreground» en t24; no se considera reparado. Las24 actividades coinciden con los24 finales. AUMID sin errores y cantidades/foco estables entre capturas, sin crédito de observación continua.
+
+GPU3497,559MiB, RAM2192,313MiB y38,875s, sin infracciones. No medición conjunta de UI/voz, mínimo global ni comparación emparejada de ahorro. Fuente/modelo/registro intactos durante la corrida. Este panel prueba ausencia de regresión observada; la mejora del rechazo factual se demuestra en660 con el compositor y transporte simulado, no mediante borradores inyectados en este producto. Encuesta26/716/0, sin nueva cobertura individual.
+
+
+# 660 — hechos de ventanas conservados en el compositor
+
+Se adopta una extensión delimitada del contrato factual existente: contrasta instalación, cantidades/rangos y afirmaciones de proceso con los campos tipados de window.application.status. Mantiene nombres, negaciones, desconocimiento explícito y otras operaciones. Una aclaración legítima sobre procesos no convierte una respuesta completa de ventanas en fallo; una respuesta que sólo desconoce el proceso sigue siendo insuficiente. No se añade modelo, inferencia ni respuesta visible fija.
+
+Misma cohorte104: fuente publicada65460 fallos/44 pases; candidata104 pases. Incluye compositor completo con transporte simulado: cuatro borradores incorrectos se rechazan y reintentan; respuestas válidas salen en una llamada. Esto corrige la evidencia parcial649, que sólo llamaba compose_visible_defect. Se conservan baseline inicial, refinamiento de una respuesta incompleta y controles expandidos, sin cambiar el criterio para aprobar. No es prueba semántica universal: gramática acotada, sin cobertura universal de sujetos ajenos o todas las formas numéricas.
+
+Dueñas4046 pases+121 subpruebas,0 skips,70,46s. Declaraciones22 pases/1 skip ambiental,2,01s. Fast exit0,Release27,99s,0 advertencias/errores. Producto661 conserva23/24 y todos los finales655, incluida la jerga española pendiente. Full651 sigue siendo línea base anterior; no Full660 ni cierre global. Encuesta26/716/0. Siguiente: aislar fuga del metadato en prosa de foco y seguir cobertura, UI/voz, recuperación y Full final.

@@ -1,0 +1,19 @@
+.F                                                                       [100%]
+================================== FAILURES ===================================
+_ test_valid_draft_does_not_spend_another_inference[I cannot tell whether Orbit 23 is running from this observation.] _
+tests\test_c03_window_facts.py:107: in test_valid_draft_does_not_spend_another_inference
+    assert client.compose_user_message("Is Orbit 23 open?", "status", {"situation": situation()}) == reply
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:10132: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9202: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+tests\test_c03_window_facts.py:23: in _post
+    return {"choices": [{"message": {"content": next(self.replies)}, "finish_reason": "stop"}]}
+                                                ^^^^^^^^^^^^^^^^^^
+E   StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_facts.py::test_valid_draft_does_not_spend_another_inference[I cannot tell whether Orbit 23 is running from this observation.]
+1 failed, 1 passed, 76 deselected in 0.68s

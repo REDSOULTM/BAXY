@@ -33,3 +33,20 @@ Desktop disponible mediante tools.mcp__node_repl__js y @oai/sky; skill computer-
 ## Siguiente trabajo tras la publicación de este tramo
 
 Este handoff acompaña la evidencia657–659 en su commit; comprobar HEAD/remoto al reanudar, sin repetir las campañas ni sus scripts de cierre. La fuente de producto vigente es654. Seguir con el contrato factual existente y la fuga de metadatos en655/t24. Encuesta26/716/0 y goal activo, sin decisión pendiente ni proceso activo. No se ha probado el cierre global.
+
+## Candidata660 — validación en curso, manda sobre el siguiente anterior
+
+Evidencia657–659 publicada en a29366714de57505f2685e8632515ce4cf6f6907. Fuente660 aún no adoptada: módulo window_prose_facts integrado en el contrato existente, sin otra inferencia. Cohorte final104: publicado654 produce60 fallos/44 pases; candidato104 pases. Dueñas4046 pases+121 subpruebas, sin skips,70,46s. Declaraciones22 pases/1 skip ambiental,2,01s. Fast activo sesión85214, TEMP/c03-window-facts660-fast.log. Dueñas79799 recogida exit0. Preparación660 ya ejecutada; no repetir. Preflight661 confirma cinco capas compiladas sin lanzar producto ni capturar ventanas. Siguiente: recoger Fast y ejecutar una vez scratchpad/c03-window-facts-product661.py, mismas24 consultas655. Adjudicar todos los mensajes y capturas. La jerga foreground española sigue abierta por separado. Encuesta26/716/0 intacta; ninguna decisión del dueño pendiente. Goal activo y sin cierre global.
+
+
+## Adopción660/661 — vigente
+
+# 660 — hechos de ventanas conservados en el compositor
+
+Se adopta una extensión delimitada del contrato factual existente: contrasta instalación, cantidades/rangos y afirmaciones de proceso con los campos tipados de window.application.status. Mantiene nombres, negaciones, desconocimiento explícito y otras operaciones. Una aclaración legítima sobre procesos no convierte una respuesta completa de ventanas en fallo; una respuesta que sólo desconoce el proceso sigue siendo insuficiente. No se añade modelo, inferencia ni respuesta visible fija.
+
+Misma cohorte104: fuente publicada65460 fallos/44 pases; candidata104 pases. Incluye compositor completo con transporte simulado: cuatro borradores incorrectos se rechazan y reintentan; respuestas válidas salen en una llamada. Esto corrige la evidencia parcial649, que sólo llamaba compose_visible_defect. Se conservan baseline inicial, refinamiento de una respuesta incompleta y controles expandidos, sin cambiar el criterio para aprobar. No es prueba semántica universal: gramática acotada, sin cobertura universal de sujetos ajenos o todas las formas numéricas.
+
+Dueñas4046 pases+121 subpruebas,0 skips,70,46s. Declaraciones22 pases/1 skip ambiental,2,01s. Fast exit0,Release27,99s,0 advertencias/errores. Producto661 conserva23/24 y todos los finales655, incluida la jerga española pendiente. Full651 sigue siendo línea base anterior; no Full660 ni cierre global. Encuesta26/716/0. Siguiente: aislar fuga del metadato en prosa de foco y seguir cobertura, UI/voz, recuperación y Full final.
+
+Sesiones79799/85214/6196 recogidas exit0; ninguna activa. Close660-661 ejecutado, no repetir. Publicar antes de nueva fuente.
