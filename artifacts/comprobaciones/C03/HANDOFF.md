@@ -50,3 +50,10 @@ Misma cohorte104: fuente publicada65460 fallos/44 pases; candidata104 pases. Inc
 Dueñas4046 pases+121 subpruebas,0 skips,70,46s. Declaraciones22 pases/1 skip ambiental,2,01s. Fast exit0,Release27,99s,0 advertencias/errores. Producto661 conserva23/24 y todos los finales655, incluida la jerga española pendiente. Full651 sigue siendo línea base anterior; no Full660 ni cierre global. Encuesta26/716/0. Siguiente: aislar fuga del metadato en prosa de foco y seguir cobertura, UI/voz, recuperación y Full final.
 
 Sesiones79799/85214/6196 recogidas exit0; ninguna activa. Close660-661 ejecutado, no repetir. Publicar antes de nueva fuente.
+
+
+## Publicación660 verificada — estado vigente
+
+Fuente660 publicada en db47edca6f521e29ca102b830b2134f3489337b9, remoto verificado y main intacto. Contrato factual acotado: misma cohorte104 mejora60 fallos/44 pases a104 pases; compositor completo con transporte simulado, sin otro modelo ni inferencia. Dueñas4046 pases+121 subpruebas/0 skips; declaraciones22 pases/1 skip ambiental; Fast0. Producto661 mantiene23/24 y las24 respuestas655 sin cambios; jerga española pendiente. Full651 es línea base anterior, no Full660 ni cierre global. Encuesta26/716/0; UI/voz conjunta, cobertura y Full final siguen pendientes.
+
+Sesiones79799/85214/6196 terminadas y recogidas exit0. BAXY manual cerrado; no campaña activa. Prepare660,close660-661,record-publication660 ejecutados: no repetir. Auditoría660-661 de sólo lectura:19 pins públicos y fuentes/privados/registro/encuesta/main verificados; índice auditado antes del commit. Siguiente: diagnóstico de la fuga foreground con el primer borrador real t24 de655/661 y controles ES/EN, conservando todos los hechos; sin vetar una palabra ni añadir respuestas fijas. Índice de biblioteca y títulos revisados; falta contraste acotado y prueba nativa para ese siguiente defecto. No se ha iniciado ni editado otra fuente.

@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-09T15:23:51.142627+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "660 adoptada;661 conserva23/24. Contrato factual acotado verificado. Encuesta26/716/0.",
-  "continuation": "Auditar/publicar660–661. Seguir fuga foreground655/661, encuesta y cierreC03. Ninguna decisión pendiente ni proceso activo.",
+  "checkpoint": "Fuente660 publicada en db47edca6f521e29ca102b830b2134f3489337b9, remoto verificado y main intacto. Contrato factual acotado: misma cohorte104 mejora60 fallos/44 pases a104 pases; compositor completo con transporte simulado, sin otro modelo ni inferencia. Dueñas4046 pases+121 subpruebas/0 skips; declaraciones22 pases/1 skip ambiental; Fast0. Producto661 mantiene23/24 y las24 respuestas655 sin cambios; jerga española pendiente. Full651 es línea base anterior, no Full660 ni cierre global. Encuesta26/716/0; UI/voz conjunta, cobertura y Full final siguen pendientes.",
+  "continuation": "Aislar fuga del metadato foreground en prosa655/661 con payload y primera petición reales. Después continuar encuesta y cierreC03. No decisiones pendientes ni procesos activos.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": false,
@@ -29,11 +29,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "b8a7399b1b1d39c701941ef24bc67f86db8f2fcf",
+  "publishedSourceCommit": "db47edca6f521e29ca102b830b2134f3489337b9",
   "workStatus": "resumed_by_explicit_owner_instruction",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "a29366714de57505f2685e8632515ce4cf6f6907",
+  "publishedEvidenceCommit": "db47edca6f521e29ca102b830b2134f3489337b9",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -44,6 +44,6 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "24 foreground regressions repaired without oracle changes; combined contextual source passes Full.",
+  "previousGoalTurnClassificationReason": "Contrato factual660 adoptado y publicado;104 focales,4046 dueñas+121 subpruebas,Fast verde; producto661 sin regresión observada.",
   "activeValidation": null
 }
