@@ -1,0 +1,222 @@
+{
+  "utc": "2026-09-10T09:21:26.567142+00:00",
+  "complete": true,
+  "historical_verdicts_joined": false,
+  "method": "Root manual reading against frozen699 criteria; independent full read facts06/09/14/15; no default pass for unread cases.",
+  "cases": {
+    "facts-01": {
+      "correct": true,
+      "reason": "15 GiB used; unnecessary JSON/analysis but no required output format and the calculation is correct."
+    },
+    "facts-02": {
+      "correct": true,
+      "reason": "Installed16 and free5.1 correctly associated."
+    },
+    "facts-03": {
+      "correct": false,
+      "reason": "Correct75% is accompanied by the false equation200/150*100=75%; material arithmetic contradiction."
+    },
+    "facts-04": {
+      "correct": false,
+      "reason": "Correct opening followed by invented smoke/heater facts, unrelated multilingual text and leaked markers."
+    },
+    "facts-05": {
+      "correct": false,
+      "reason": "Invents that the application loaded or created a window; the unverified attempt does not establish that."
+    },
+    "facts-06": {
+      "correct": true,
+      "reason": "Current temperature remains unknown and18C is correctly dated10:00; irrelevant awkward prose recorded separately, does not reverse the fact."
+    },
+    "facts-07": {
+      "correct": false,
+      "reason": "Does not report requestedCPU7/battery82; instead invents a diagnostic plan and claims analysis activity."
+    },
+    "facts-08": {
+      "correct": false,
+      "reason": "Does not explain that silencing failed; incoherent reinterpretation of the false mute flag."
+    },
+    "facts-09": {
+      "correct": false,
+      "reason": "Asserts Internet is currently confirmed despite timeout, and truncates at4096tokens. Full text independently read."
+    },
+    "facts-10": {
+      "correct": false,
+      "reason": "Correct initialsur.txt21KB followed by inventeddu measurement, unrelated calculations and a final3."
+    },
+    "facts-11": {
+      "correct": true,
+      "reason": "Correct descending order980/310/220 and names; minor mixed wording is understandable."
+    },
+    "facts-12": {
+      "correct": false,
+      "reason": "Asks for values already supplied; neither2.5GiB nor37.5% answered."
+    },
+    "facts-13": {
+      "correct": true,
+      "reason": "7.5GiB used, correct English calculation."
+    },
+    "facts-14": {
+      "correct": true,
+      "reason": "Keeps save status unverified; proposes a check, does not infer definite save/non-save."
+    },
+    "facts-15": {
+      "correct": true,
+      "reason": "Not charging according to report; hypothetical causes do not replace the observed state."
+    },
+    "facts-16": {
+      "correct": true,
+      "reason": "25% complete."
+    },
+    "facts-17": {
+      "correct": true,
+      "reason": "8 folders; verbose but correct and no brevity format was requested."
+    },
+    "facts-18": {
+      "correct": false,
+      "reason": "Treats historical noon40% as confirmed current usage, plus leaked marker."
+    },
+    "facts-19": {
+      "correct": false,
+      "reason": "Says0GB free instead of the supplied125GB."
+    },
+    "facts-20": {
+      "correct": false,
+      "reason": "Denies muted state despite mutedtrue."
+    },
+    "knowledge-01": {
+      "correct": false,
+      "reason": "Material false claims about RAM/disk and unrelated text; not a brief accurate explanation."
+    },
+    "knowledge-02": {
+      "correct": false,
+      "reason": "Unnecessary clarification for an answerable WiFi-versus-Internet question."
+    },
+    "knowledge-03": {
+      "correct": false,
+      "reason": "Claims ice is denser/more compact than liquid water and uses that to explain floating."
+    },
+    "knowledge-04": {
+      "correct": false,
+      "reason": "Unrelated invented animal/article story, never derives green for Luma."
+    },
+    "knowledge-06": {
+      "correct": false,
+      "reason": "Replaces not-responding-versus-closed with unrelated VM/labels discussion and English finale."
+    },
+    "knowledge-07": {
+      "correct": false,
+      "reason": "Violates explicit one-or-two-sentence request; lengthy internal analysis and leaked marker, with vague memory power claims."
+    },
+    "knowledge-05": {
+      "correct": false,
+      "reason": "States15:25 but later contradicts arithmetic and repeats incoherent text; truncated at4096tokens. Full text independently read."
+    },
+    "knowledge-08": {
+      "correct": false,
+      "reason": "Derivesround but repeats and truncates at4096tokens; no complete final. Full text independently read."
+    },
+    "knowledge-09": {
+      "correct": true,
+      "reason": "09:48+27min=10:15, correct English answer."
+    },
+    "knowledge-10": {
+      "correct": false,
+      "reason": "Correct read-only explanation followed by the false categorical claim that writing to a read-only file raisesIsADirectoryError."
+    },
+    "instruction-01": {
+      "correct": false,
+      "reason": "Preserves permission failure but adds unsupported page-registration impossibility and an instruction to register; not a faithful brief rewrite."
+    },
+    "instruction-02": {
+      "correct": false,
+      "reason": "Invents stable performance and non-excessive memory requirements from8GB/2GB free."
+    },
+    "instruction-03": {
+      "correct": true,
+      "reason": "Only the three names comma-separated, correct."
+    },
+    "instruction-04": {
+      "correct": false,
+      "reason": "Refuses a harmless requested translation."
+    },
+    "instruction-05": {
+      "correct": true,
+      "reason": "Cobre only, correct repeated name."
+    },
+    "instruction-06": {
+      "correct": true,
+      "reason": "Correct decimal conversion and ascending order800MB/1.2GB/2.5GB."
+    },
+    "instruction-07": {
+      "correct": false,
+      "reason": "Omits the open-window fact; the requested rewrite must preserve both facts."
+    },
+    "instruction-08": {
+      "correct": false,
+      "reason": "Adds false filesystem/BOOT explanations and incoherent text to the otherwise correct initial meaning."
+    },
+    "instruction-09": {
+      "correct": true,
+      "reason": "27 only, correct."
+    },
+    "instruction-10": {
+      "correct": true,
+      "reason": "Correct download-failed translation without invented cause; missing accent is minor."
+    },
+    "context-01": {
+      "correct": false,
+      "reason": "Says0 free while10-8=2."
+    },
+    "context-02": {
+      "correct": false,
+      "reason": "SelectsBosque instead of seconditemLuna."
+    },
+    "context-03": {
+      "correct": false,
+      "reason": "Retains14 rather than correcting usedmemory to13."
+    },
+    "context-04": {
+      "correct": true,
+      "reason": "English preserves historical42% and need for a newer reading."
+    },
+    "context-05": {
+      "correct": false,
+      "reason": "Answersyes and announcesclosing despite the prior prohibition and no action."
+    },
+    "context-06": {
+      "correct": false,
+      "reason": "Requests opening all instead of clarifying the ambiguous other application."
+    },
+    "context-07": {
+      "correct": true,
+      "reason": "Beta120MB uses less thanAlpha300MB, English."
+    },
+    "context-08": {
+      "correct": false,
+      "reason": "Says18:55 instead of17:55 for17:10+45min."
+    },
+    "context-09": {
+      "correct": true,
+      "reason": "States no deletion has occurred; preserves no-action context."
+    },
+    "context-10": {
+      "correct": true,
+      "reason": "English preserves RAMtemporary/storagepersistent distinction."
+    }
+  },
+  "review_disagreement": {
+    "instruction-01": {
+      "root_correct": false,
+      "second_reader_correct": true,
+      "root_reason": "A rewrite adds a separate unsupported impossibility about registering a page and an instruction to register it; this changes the requested message beyond minor wording.",
+      "second_reader_reason": "Core permission/openingfailure remains intact, brief and attempts friendliness; extra registration wording treated as minor.",
+      "sensitivity_correct_total": 20
+    }
+  },
+  "totals": {
+    "correct": 19,
+    "failed": 31,
+    "total": 50
+  }
+}

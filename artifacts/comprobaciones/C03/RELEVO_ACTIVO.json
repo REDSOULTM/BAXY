@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T03:41:59.322753+00:00",
+  "confirmedAtUtc": "2026-09-10T09:26:27.940831+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "703adoptada de forma delimitada:188dueñaspass+4fixturesresueltas por11controlesfinales,Fast0.704mismos73:50correctos/23fallos,32ganancias/0pérdidas; confirmación deja de capturar39pedidos. Encuesta26/716/0.",
-  "continuation": "703/704 publicadasc11007b0, remotoverificado. Siguiente: primeras transformaciones de identidad de ventana y selección/frescura, con propiedadPython+C#si corresponde. Conservar23fallos704 y26/716/0. No nuevas campañas niFullsin causa; no scriptsde705creados aún. Sinprocesosactivos.",
+  "checkpoint": "731 completed50 pairs: K2 native high38/50 versus enable_thinkingFalse19/50 (sensitivity20).3gains/22losses; actual template change verified. No model/source adoption.730 C#83owners passed; Python pending. Full5 original2timeouts and survey26/716/0 remain.",
+  "continuation": "Prepare an experimental K2 product adapter preserving native reasoning/profile across roles and inspect exact requests before paired integration. Reuse699/700/731; do not repeat disabled-thinking campaign.730 Python integration remains pending. No live process.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
-  "workStatus": "continuity703_published_status704_reviewed",
+  "workStatus": "unadopted_product_diagnostic728_running_original_tests_restored",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
@@ -48,8 +48,35 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "703implementada/validada y704completaadjudicada:32respuestasrecuperadas,sin pérdidas,confirmaciónya no absorbe39pedidos. C03completo siguependiente.",
-  "activeValidation": null,
+  "previousGoalTurnClassificationReason": "Withdrew narrowed acceptance prototypes, restored both original tests, measured native process exit identities, and moved full73-turn product diagnosis ahead of the still-required adoption gate.",
+  "activeValidation": {
+    "utc": "2026-09-10T05:21:34.442267+00:00",
+    "sessionId": 88138,
+    "status": "terminal_failed",
+    "exit_code": 1,
+    "candidate_sources_unchanged": true,
+    "dotnet": {
+      "passed": 4531,
+      "failed": 1,
+      "aggregate_skipped": 1,
+      "integration": {
+        "passed": 3335,
+        "failed": 1,
+        "aggregate_skipped": 1,
+        "duration": "23m26s"
+      },
+      "other_projects": {
+        "contracts": 60,
+        "kernel": 140,
+        "providers": 519,
+        "setup": 477
+      }
+    },
+    "python_full": "not run: gate stops after dotnet-tests failure",
+    "failure": "MindShellEndToEndTests.SlotOrUncertainReplyRetainsTheExactPendingConfirmation(\"la segunda\"): IsReady=false/HasStartupError=true after11s, before test body. Cause not yet captured.",
+    "adopted": false,
+    "new_coverage": 0
+  },
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
   "ownerMethodology": "Maximum efficient throughput without quality loss; all742 registry and shared causes. Do not repeat completed baseline/publication solely because the same authority was restated.",
@@ -506,5 +533,192 @@
         "raw_results_sha256": "dc966c7753e1a39e26c27dddd71895a68638e09c7cb790f31e663c0bdae81d2b"
       }
     }
+  },
+  "preparedNextProduct": {
+    "name": "product706",
+    "script": "scratchpad/c03-status-batch706.py",
+    "observer": "scratchpad/c03-status706-hook/sitecustomize.py",
+    "started": false
+  },
+  "nextWindowDomainProbe": {
+    "path": "artifacts/comprobaciones/C03/astra-window-domain-probe707",
+    "cases": 60,
+    "baseline_correct": 28,
+    "candidate_correct": 42,
+    "gains": 15,
+    "losses": 1,
+    "adopted": false,
+    "coverage_added": 0
+  },
+  "nextProductBlocker": {
+    "evidence": "artifacts/comprobaciones/C03/astra-window-inventory-gap708/RESULT.json",
+    "kind": "missing_typed_window_inventory",
+    "supersedes": "Treating H0023 as a correct executable read removed only by lexical domain veto",
+    "next": "Implement bounded typed global window inventory708, preserving exact selectors, identity, cancellation and honest pagination/errors. Then measure native proposal and first wrong transformation; do not simply remove the domain guard."
+  },
+  "activeDiagnostic": {
+    "sessionId": 46516,
+    "status": "terminal_failed_as_expected_diagnostic",
+    "script": "scratchpad/c03-fixture-startup-probe709.py",
+    "public": "artifacts/comprobaciones/C03/astra-fixture-startup-probe709",
+    "private": "%LOCALAPPDATA%/BAXY/C03-fixture-startup709-private",
+    "temporary_sources": [
+      "tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs",
+      "tests/Baxy.Integration.Tests/TemporaryStartupProbe709.cs"
+    ],
+    "model_inference": false,
+    "coverage_added": 0,
+    "exit_code": 1,
+    "fixture_restored": true,
+    "temporary_helper_removed": true
+  },
+  "activeCatalogProbe": {
+    "sessionId": 73101,
+    "status": "terminal_completed",
+    "script": "scratchpad/c03-catalog-phases710.py",
+    "public": "artifacts/comprobaciones/C03/astra-catalog-phases710",
+    "exit_code": 0
+  },
+  "singleEnumerationProbe": {
+    "sessionId": 86021,
+    "status": "terminal_completed",
+    "exit_code": 0,
+    "result": "artifacts/comprobaciones/C03/astra-catalog-single-enumeration711/RESULT.json",
+    "all_entries_identical": true,
+    "completed_pairs": 3
+  },
+  "catalogCandidate": {
+    "source": "artifacts/comprobaciones/C03/astra-catalog-source712/CANDIDATE.json",
+    "adopted": false,
+    "startup_probe": "scratchpad/c03-fixture-startup-probe713.py",
+    "startup_probe_started": true,
+    "startup_probe_session": 56033,
+    "startup_probe_status": "terminal_tests_passed_cleanup_repaired",
+    "startup_probe_wrapper_exit": 1,
+    "startup_ready_count": 50,
+    "startup_failed_count": 0,
+    "fixture_restored_sha256": "628ab599ecae26227707d479220bbab41a06f17e9a3980c828c8dd6c45119ae3",
+    "provider_owners": {
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0,
+      "sessionId": 85662,
+      "exit_code": 0
+    }
+  },
+  "currentIntegratedFull": {
+    "sessionId": 65777,
+    "status": "terminal_failed",
+    "observed_at_utc": "2026-09-10T06:49:24+00:00",
+    "progress": "Terminal exit1: .NET4532 passed/0 failed/1 aggregate skip; Python11135 passed/2 failed/3 skips,466 subtests. Original packaging45s and sidecar3s timeouts; no Full6 yet.",
+    "candidate": "artifacts/comprobaciones/C03/astra-catalog-source712/CANDIDATE.json",
+    "log": "%TEMP%/c03-catalog712-full5.log",
+    "exit_record": "%TEMP%/c03-catalog712-full5-exit.json",
+    "model_inference": false,
+    "coverage_added": 0,
+    "exit_code": 1,
+    "terminal_at_utc": "2026-09-10T07:00:24.0214040Z",
+    "result": "artifacts/comprobaciones/C03/astra-catalog-source712/FULL5_RESULT.json"
+  },
+  "activeOwnerDiagnostics": {
+    "status": "terminal",
+    "last_probe": 727,
+    "session": 27178,
+    "wrapper_exit": 0,
+    "acceptance_credit": false,
+    "candidate724": "withdrawn"
+  },
+  "activeProductDiagnostic": {
+    "batch": 729,
+    "session": 94146,
+    "status": "terminal_adjudicated",
+    "exit_code": 0,
+    "correct": 49,
+    "failed": 24,
+    "comparison704": {
+      "gains": 0,
+      "losses": [
+        "H0655"
+      ]
+    },
+    "result": "astra-status-batch729/RESULT.json",
+    "full_gate_passed": false,
+    "adopted": false,
+    "coverage_added": 0,
+    "processes_closed": true
+  },
+  "lastGoalTurn": {
+    "utc": "2026-09-10T09:26:27.940831+00:00",
+    "classification": "progress",
+    "goal_status": "active",
+    "completed": "Measured and adjudicated all50 isolated K2 thinking-override pairs; deterministic template change and38to19 quality difference established in local profile; original source/runtime preserved.",
+    "remaining": "Fair K2 product adapter/integration, C03 generalization742,8routes,reserve100,UI/voice/loopbackAEC,recovery,combinedresources,Full originaltimeouts,continuity.",
+    "next": "Prepare an experimental K2 product adapter preserving native reasoning/profile across roles and inspect exact requests before paired integration. Reuse699/700/731; do not repeat disabled-thinking campaign.730 Python integration remains pending. No live process."
+  },
+  "activeWindowInventory730": {
+    "utc": "2026-09-10T09:00:04.474774+00:00",
+    "status": "candidate_csharp_owners_passed",
+    "provider_first": "compile failed CS8604, no tests run; private normalizer now accepts nullable input and retains its validation",
+    "provider_final": {
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 932,
+      "exit_code": 0
+    },
+    "scope": "Includes controlled native Windows global enumeration, title literal*, *.exe not global, page counts/offset/complete, identity/cancellation/absence/failure. Does not certify user prose.",
+    "python_unchanged_this_stage": true,
+    "full_gate_passed": false,
+    "adopted": false,
+    "coverage_added": 0,
+    "kernel": {
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 174,
+      "exit_code": 0,
+      "session_id": 1999
+    },
+    "core": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 285,
+      "exit_code": 0,
+      "session_id": 1999
+    },
+    "next": "Verify model integration compatibility in response to owner concern before further model batches; Python inventory integration remains pending.",
+    "source_sha256": {
+      "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "e5cbfd254108b80bc3fb18147fd132bc4db7c2cadd2016a6fe6559a705b3a827",
+      "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "ba7456425f07d8fc9e39e84c275810510d8ee96e497fc2e28d3ee9162d71c95f",
+      "src/Baxy.Core/Operations/WindowControlHandlers.cs": "faae9e5f356284e4de92d5a0ff4579ab71653ac7785d23de0419bd9972b6d3c4",
+      "src/Baxy.Kernel/Operations/ProductCatalog.cs": "837ac551fac21f3da5b98cf9c2254008a342cf87d2a22422e1c1814c91f324cd",
+      "tests/Baxy.Providers.Windows.Tests/WindowInventoryProviderTests.cs": "5d1795af0fc6eece27ef5ac0841d0a135352341cad4467def1f824e39924ddae",
+      "tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs": "2da1415c1c5ac1aa6d501ab1d389dc3a17319599b980787de0bc8b1aaa5cbac5",
+      "tests/Baxy.Providers.Windows.Tests/WindowTitleResolutionTests.cs": "1fdbe34b49c78dd4efed166402dd82ce4f2de2ee2541c2ccb03da5458c9c0fc3",
+      "tests/Baxy.Integration.Tests/MvpLocalTransientHandlerMatrixTests.cs": "35a5b88241adfa6db85d17c43fe436e6935f9ac4013c817c1eaf625c0d055b4a",
+      "tests/Baxy.Kernel.Tests/ProductCatalogTests.cs": "0e773ffd758d89dd4d9ee463b6e8a3f72220e7c2f3c9d5e19d8dc372f53398e5"
+    }
+  },
+  "activeModelAdapter731": {
+    "sessionId": 42807,
+    "status": "terminal_adjudicated",
+    "log": "%TEMP%/c03-k2-adapter731.log",
+    "exit_record": "%TEMP%/c03-k2-adapter731-exit.json",
+    "source_frozen": "llm.py and731 script remain unchanged during execution",
+    "scope": "50 native699 same tasks, only K2 enable_thinking=False; no product/model adoption or survey credit",
+    "utc": "2026-09-10T09:07:46.157511+00:00",
+    "exit_code": 0,
+    "finished_at_utc": "2026-09-10T09:18:33.3484265Z",
+    "resources": "K2_HORIZON_ADAPTER731/RESOURCES.json",
+    "adjudication": "K2_HORIZON_ADAPTER731/ADJUDICATION.json",
+    "summary": "K2_HORIZON_ADAPTER731/SUMMARY.json",
+    "before_correct": 38,
+    "after_correct": 19,
+    "sensitivity_correct": 20,
+    "gains": 3,
+    "losses": 22,
+    "processes_closed": true,
+    "adopted": false
   }
 }

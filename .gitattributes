@@ -389,3 +389,6 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/astra-status-batch704/** -text
 /artifacts/comprobaciones/C03/astra-continuity-source703/** -text
 /artifacts/comprobaciones/C03/STATUS_BATCH704_PLAN.json -text
+/artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/** -text
+/scratchpad/c03-k2-adapter731.py -text
+/scratchpad/c03-report-adapter731.py -text

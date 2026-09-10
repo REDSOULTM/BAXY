@@ -1,0 +1,519 @@
+{
+  "utc": "2026-09-10T09:23:37.538937+00:00",
+  "case_count": 50,
+  "before_correct": 38,
+  "after_correct": 19,
+  "sensitivity_after_correct": 20,
+  "gains": [
+    "facts-01",
+    "facts-14",
+    "context-10"
+  ],
+  "losses": [
+    "facts-03",
+    "facts-07",
+    "facts-08",
+    "facts-10",
+    "facts-12",
+    "facts-19",
+    "facts-20",
+    "knowledge-01",
+    "knowledge-02",
+    "knowledge-05",
+    "knowledge-08",
+    "knowledge-10",
+    "instruction-01",
+    "instruction-02",
+    "instruction-04",
+    "instruction-07",
+    "instruction-08",
+    "context-01",
+    "context-02",
+    "context-03",
+    "context-05",
+    "context-08"
+  ],
+  "shared_failures": [
+    "facts-04",
+    "facts-05",
+    "facts-09",
+    "facts-18",
+    "knowledge-03",
+    "knowledge-04",
+    "knowledge-06",
+    "knowledge-07",
+    "context-06"
+  ],
+  "timings_native_high": {
+    "final_median_seconds": 8.828499999999622,
+    "final_maximum_seconds": 74.78200000000288,
+    "first_visible_median_seconds": 6.07799999999952,
+    "first_visible_samples": 50,
+    "finish_reasons": {
+      "stop": 50
+    }
+  },
+  "timings_thinking_disabled": {
+    "final_median_seconds": 2.194999999999709,
+    "final_maximum_seconds": 129.20300000000134,
+    "first_visible_median_seconds": 0.28100000000267755,
+    "first_visible_samples": 50,
+    "finish_reasons": {
+      "stop": 47,
+      "length": 3
+    }
+  },
+  "resources_native_high": {
+    "gpu_peak_mib": 3444.23046875,
+    "ram_peak_mib": 787.55859375,
+    "seconds": 778.2819999999992,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "resources_thinking_disabled": {
+    "gpu_peak_mib": 3444.23046875,
+    "ram_peak_mib": 787.09765625,
+    "seconds": 678.2969999999987,
+    "violations": [],
+    "manifest_unchanged": true,
+    "source_unchanged": true,
+    "backend_exit": 1
+  },
+  "actual_server_template_native_matches_historical": 50,
+  "actual_server_template_only_adds_thinking_close": 50,
+  "actual_post_native_bodies_unchanged": 50,
+  "payload_pairs_equal_except_thinking_flag": 50,
+  "by_input_language": {
+    "es": {
+      "cases": 30,
+      "before_correct": 22,
+      "after_correct": 8
+    },
+    "en": {
+      "cases": 15,
+      "before_correct": 12,
+      "after_correct": 9
+    },
+    "mix": {
+      "cases": 5,
+      "before_correct": 4,
+      "after_correct": 2
+    }
+  },
+  "rows": [
+    {
+      "id": "facts-01",
+      "before": false,
+      "after": true,
+      "change": "gain",
+      "reason": "15 GiB used; unnecessary JSON/analysis but no required output format and the calculation is correct.",
+      "answer_sha256": "d8411df48960279ef1d608852135da88f936fead480adb2f80214733704bfb5d"
+    },
+    {
+      "id": "facts-02",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Installed16 and free5.1 correctly associated.",
+      "answer_sha256": "1bf2e270f42e5c146e4bcad1f5b996efc87eccaf11df35b2b953e1c49029ec9f"
+    },
+    {
+      "id": "facts-03",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Correct75% is accompanied by the false equation200/150*100=75%; material arithmetic contradiction.",
+      "answer_sha256": "9496a0140c84a0da683bc20536d47630e3ff4794dcee98ce89ebe1de00304abe"
+    },
+    {
+      "id": "facts-04",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Correct opening followed by invented smoke/heater facts, unrelated multilingual text and leaked markers.",
+      "answer_sha256": "68269c77eff1fd4b41ee95f366d53c8f19a2abe9dc9ef2f018720a9aa0de5717"
+    },
+    {
+      "id": "facts-05",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Invents that the application loaded or created a window; the unverified attempt does not establish that.",
+      "answer_sha256": "4f3550d7c49ee46a27dc6a5b2b0a607e27cbb59c485bd55cc6ae7f3377ad07dd"
+    },
+    {
+      "id": "facts-06",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Current temperature remains unknown and18C is correctly dated10:00; irrelevant awkward prose recorded separately, does not reverse the fact.",
+      "answer_sha256": "0fa0764abb6b1d30ec7d17f8e6dee6cf2e6d647d31ab1bd20d2f9095df649d67"
+    },
+    {
+      "id": "facts-07",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Does not report requestedCPU7/battery82; instead invents a diagnostic plan and claims analysis activity.",
+      "answer_sha256": "a51fcac6ea45017687ff81acf742e4a3f7385ec1a008640e331b2789e4742bee"
+    },
+    {
+      "id": "facts-08",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Does not explain that silencing failed; incoherent reinterpretation of the false mute flag.",
+      "answer_sha256": "859f8b2d909f96862f11ae5b0a3dde68a7b51e9fa5b819a802cc19c39c31a23b"
+    },
+    {
+      "id": "facts-09",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Asserts Internet is currently confirmed despite timeout, and truncates at4096tokens. Full text independently read.",
+      "answer_sha256": "2bc92ebb05fb8f9b5da09e2a0a90c852af7e26494357e837c6bbf686f09eb7be"
+    },
+    {
+      "id": "facts-10",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Correct initialsur.txt21KB followed by inventeddu measurement, unrelated calculations and a final3.",
+      "answer_sha256": "502c4d73f72736e4c12845421ccaab6bae8f57ad200553ab04fa2936babcad09"
+    },
+    {
+      "id": "facts-11",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Correct descending order980/310/220 and names; minor mixed wording is understandable.",
+      "answer_sha256": "30f8f5338ad7dc3da43f23ba46287ad3570101e9b4540bc828ad54b12b242b40"
+    },
+    {
+      "id": "facts-12",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Asks for values already supplied; neither2.5GiB nor37.5% answered.",
+      "answer_sha256": "a1475aac02635c54430e4e31a005846404df43d0bd9078829f0c46511ed7b69b"
+    },
+    {
+      "id": "facts-13",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "7.5GiB used, correct English calculation.",
+      "answer_sha256": "14e4a796c1ec9dad45b3189a6283088af373e208ebd7332fd553602fc5ceb114"
+    },
+    {
+      "id": "facts-14",
+      "before": false,
+      "after": true,
+      "change": "gain",
+      "reason": "Keeps save status unverified; proposes a check, does not infer definite save/non-save.",
+      "answer_sha256": "72d0f5c3b76be2060eda723ecb04ec237e7b62698416c055482992e82cb98d08"
+    },
+    {
+      "id": "facts-15",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Not charging according to report; hypothetical causes do not replace the observed state.",
+      "answer_sha256": "caa01ab35ef4256ee412dbdb3feebb7116fef22410cc00a142a3a7cd474f825f"
+    },
+    {
+      "id": "facts-16",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "25% complete.",
+      "answer_sha256": "05dc9131de87bbfbec5d4d333023386a0eb0c0c0df7eaae12ccfedb06c39937a"
+    },
+    {
+      "id": "facts-17",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "8 folders; verbose but correct and no brevity format was requested.",
+      "answer_sha256": "a8b563a0356d0bfad9e2a9fc07e1cfcc92a396a67aa7b4857f2f09cf656d5517"
+    },
+    {
+      "id": "facts-18",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Treats historical noon40% as confirmed current usage, plus leaked marker.",
+      "answer_sha256": "7a733fb616633288dc9926aa82b3cf5f19a10b905ad365fd689c1f611a130728"
+    },
+    {
+      "id": "facts-19",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Says0GB free instead of the supplied125GB.",
+      "answer_sha256": "e4ad7bf1700a02e0762cf2d10308fc9e636610bdcb7b73d75b684004b78ad10d"
+    },
+    {
+      "id": "facts-20",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Denies muted state despite mutedtrue.",
+      "answer_sha256": "3f18ee105f21e7bebe80e611a046c735dbb949bd14c7e9dbc42a55d96cbcff64"
+    },
+    {
+      "id": "knowledge-01",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Material false claims about RAM/disk and unrelated text; not a brief accurate explanation.",
+      "answer_sha256": "9be5b082edc47c48c84d2dc13d9ce17838d1522c39512a33b4265d169630bd5f"
+    },
+    {
+      "id": "knowledge-02",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Unnecessary clarification for an answerable WiFi-versus-Internet question.",
+      "answer_sha256": "7f00c05a29194cf1ee4b6980977dff92fac362867c191dceb7509f4a49c9cfe8"
+    },
+    {
+      "id": "knowledge-03",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Claims ice is denser/more compact than liquid water and uses that to explain floating.",
+      "answer_sha256": "5ab0d06c111e93ae677b52f09bfb9d96db9a5018ef78e583a13d63884090f247"
+    },
+    {
+      "id": "knowledge-04",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Unrelated invented animal/article story, never derives green for Luma.",
+      "answer_sha256": "122920db6ba3860fa9126a2201890fe4260215d4b9c956ff62b95192ba2c7afe"
+    },
+    {
+      "id": "knowledge-05",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "States15:25 but later contradicts arithmetic and repeats incoherent text; truncated at4096tokens. Full text independently read.",
+      "answer_sha256": "b337d6a6c2579935daa5a0687ca326739561f3bbf96ac55020f4fd04ed3f3d1c"
+    },
+    {
+      "id": "knowledge-06",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Replaces not-responding-versus-closed with unrelated VM/labels discussion and English finale.",
+      "answer_sha256": "1501c0c3be5062ec2cee925f276a3ca68b041ccfe8603ea40684531c98c776f9"
+    },
+    {
+      "id": "knowledge-07",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Violates explicit one-or-two-sentence request; lengthy internal analysis and leaked marker, with vague memory power claims.",
+      "answer_sha256": "86eccc8b61ee8ae47342b1100fe35dc73e79b2556d1246b3ee9106fda037bb4a"
+    },
+    {
+      "id": "knowledge-08",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Derivesround but repeats and truncates at4096tokens; no complete final. Full text independently read.",
+      "answer_sha256": "338763fcb7e5734ff0a3dc6b4be848d60de2585685c87d96eb79ffd1f27a3c5a"
+    },
+    {
+      "id": "knowledge-09",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "09:48+27min=10:15, correct English answer.",
+      "answer_sha256": "8f94622d90eb9774ec93cb86603221e5d1e6371c134cf975b27a5e68dcb4385b"
+    },
+    {
+      "id": "knowledge-10",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Correct read-only explanation followed by the false categorical claim that writing to a read-only file raisesIsADirectoryError.",
+      "answer_sha256": "4553ccd689c0050a62720d3f7628e20afa60bfb2554d5a5abc4eeed4e9cdc4af"
+    },
+    {
+      "id": "instruction-01",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Preserves permission failure but adds unsupported page-registration impossibility and an instruction to register; not a faithful brief rewrite.",
+      "answer_sha256": "b115834da7ccf444d7713a3632443bf7c696cd0ea7e08e8fa2ae6cc05095aaa8"
+    },
+    {
+      "id": "instruction-02",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Invents stable performance and non-excessive memory requirements from8GB/2GB free.",
+      "answer_sha256": "3be76630cd2b1c34221be1f542366270f0fe1c27e4505abfb419d2a316181472"
+    },
+    {
+      "id": "instruction-03",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Only the three names comma-separated, correct.",
+      "answer_sha256": "6ac641b378e6336c4bb2df202a1b597bd528f97fb7798f4765da43158f6f22e7"
+    },
+    {
+      "id": "instruction-04",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Refuses a harmless requested translation.",
+      "answer_sha256": "d3cd9dc4bd814cf085c6418b4ac2d9d396de380677d55de065146ed6b837e3fc"
+    },
+    {
+      "id": "instruction-05",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Cobre only, correct repeated name.",
+      "answer_sha256": "037fe5fbe2d41815946835dfad051923e7b3a7a819862088ca7ce52b6c3cfee6"
+    },
+    {
+      "id": "instruction-06",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Correct decimal conversion and ascending order800MB/1.2GB/2.5GB.",
+      "answer_sha256": "11fc861c930bcb20fc28ff58a74b28feb7f2b079ef0e59a190b9d96248013c4b"
+    },
+    {
+      "id": "instruction-07",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Omits the open-window fact; the requested rewrite must preserve both facts.",
+      "answer_sha256": "664c8bd354d9eb2e7f1bb45afafa77940892cc90ccd7dd4a1d2a2991551f3434"
+    },
+    {
+      "id": "instruction-08",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Adds false filesystem/BOOT explanations and incoherent text to the otherwise correct initial meaning.",
+      "answer_sha256": "93d721347e3e762d48df9c20b6e9f7e2a784df8db13069dc12090863cbca4469"
+    },
+    {
+      "id": "instruction-09",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "27 only, correct.",
+      "answer_sha256": "670671cd97404156226e507973f2ab8330d3022ca96e0c93bdbdb320c41adcaf"
+    },
+    {
+      "id": "instruction-10",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Correct download-failed translation without invented cause; missing accent is minor.",
+      "answer_sha256": "deefb38f17dc5b5e2f5270c55ae9f22a2c8b92f16f2ba1c417a14c64f6cfc3e0"
+    },
+    {
+      "id": "context-01",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Says0 free while10-8=2.",
+      "answer_sha256": "8d2a3cb9f0408e023643c40150b6cd96ee1980400bd997dc7a1fc0c8a40554c2"
+    },
+    {
+      "id": "context-02",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "SelectsBosque instead of seconditemLuna.",
+      "answer_sha256": "0d219864a909ba0d74af79a96f03e19eaa751b2f357304c3c2c3396f2b79338c"
+    },
+    {
+      "id": "context-03",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Retains14 rather than correcting usedmemory to13.",
+      "answer_sha256": "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61"
+    },
+    {
+      "id": "context-04",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "English preserves historical42% and need for a newer reading.",
+      "answer_sha256": "2b0b9544cda0b6d1e3149a469c87821397624b4eaf09307b3e6d9ed0a897e635"
+    },
+    {
+      "id": "context-05",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Answersyes and announcesclosing despite the prior prohibition and no action.",
+      "answer_sha256": "2268299d66860f75b576f54116d2e680a77b9fbc629c16fdb803b5812bc79c6c"
+    },
+    {
+      "id": "context-06",
+      "before": false,
+      "after": false,
+      "change": "unchanged",
+      "reason": "Requests opening all instead of clarifying the ambiguous other application.",
+      "answer_sha256": "f907d339e9580ff5c79b2c5ff865e2b7a061fee43c57b93fb6da231c5ee56bfe"
+    },
+    {
+      "id": "context-07",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "Beta120MB uses less thanAlpha300MB, English.",
+      "answer_sha256": "7a05ff2f6ed6b4c1520e3ad79f372456766ff1b2590c7f24262a52402cc00fb7"
+    },
+    {
+      "id": "context-08",
+      "before": true,
+      "after": false,
+      "change": "loss",
+      "reason": "Says18:55 instead of17:55 for17:10+45min.",
+      "answer_sha256": "da10dc13bb570dba56f960bfaf074b3de0a4322784645c6f6e74ba74bf9fdd1e"
+    },
+    {
+      "id": "context-09",
+      "before": true,
+      "after": true,
+      "change": "unchanged",
+      "reason": "States no deletion has occurred; preserves no-action context.",
+      "answer_sha256": "061b779b07bb19cfb128c6b427802b16a1a7ae19765f2af88c5fe81d69fbe483"
+    },
+    {
+      "id": "context-10",
+      "before": false,
+      "after": true,
+      "change": "gain",
+      "reason": "English preserves RAMtemporary/storagepersistent distinction.",
+      "answer_sha256": "785cc76811b217304f04a8c64bd1acaadecf651dfca5d4f3fa059c08a5013df1"
+    }
+  ],
+  "adopted": false,
+  "coverage_added": 0,
+  "limits": "Historical single-seed control and practical8k/4096output profile. One payload flag changes; no full BAXY integration or unquantized-backend parity. This does not rank K2 against Qwen or test other BAXY layers. Server process-tree memory samples250ms, excludingUI/TTS and shorter unsampled peaks. Native server terminated by the driver after all50 responses: backend_exit1 is deliberate Windows termination, not a spontaneous model crash.",
+  "hashes": {
+    "prereg": "391bdffcbe4e892fb37d10d733972c33d154c6dd66ba613fb72cfcf14d6e8ee5",
+    "adjudication": "445bf654239743b706db9f2a791671f979e6c26a6241111d83ce45f56419b198",
+    "results": "e35ebbf882908f72cd1a51670c4f4797f3925221f0c965fb1bf78a475a643f3c",
+    "requests": "60aa88816ece345614a74ca3bd4a42c312c82c4148fb5f0d56a9eb71e157cd9f",
+    "rendered_prompts": "8c853206cefa709372d8e7444443a5ea465e713c8c69525e6a53f0d413f4d6b4",
+    "reference_adjudication": "9d7eddff62ee769fc9909ad96f3dfdfc626c61203d8c7106ee8038fe20352c2e",
+    "reference_results": "dc966c7753e1a39e26c27dddd71895a68638e09c7cb790f31e663c0bdae81d2b",
+    "panel": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443"
+  }
+}

@@ -1,8 +1,10 @@
 # C03 — estado actual y registro de tramos
 
-**Estado vigente,2026-09-09:** goal activo; **ninguna decisión pendiente del dueño**. La [autorización536](AUTORIZACION_DUENO_536.md) permite usar históricos, encuesta y casos nuevos con generalización ES/EN. Los bloqueos534 descritos abajo son históricos y quedaron resueltos.
+**Estado vigente,2026-09-10:** goal activo, ninguna decisión pendiente. Rama Goal-c03; última fuente adoptada703/producto704 c11007b0, control publicado anterior83fef92c. Fuentes705+712 y730 sin adoptar. Encuesta742/rev1248: **26 cubiertos,716 abiertos,0NA**.
 
-Fuente638 publicada en 9e3507cf870446a85fb913722662a690ab532128; remoto verificado y main intacto. Identidad empaquetada y todos los handles visibles corregidos.513pass Providers/4opt-in impresas aparte;46pass integración;Fast exit0.63911/12 y64014/20: referencias, idioma del foco y lectura inglesa de cantidad siguen abiertos.25cubiertos/717abiertos/0NA. Full630 es línea base anterior, no Full638. HANDOFF.md y RELEVO_ACTIVO.json contienen la reanudación. Las cifras históricas no describen automáticamente la fuente actual.
+731 terminó50/50 conexit0: el mismo K2 high práctico pasó38/50→19/50 al añadir únicamente enable_thinking=False;20/50 si se acepta un caso fronterizo documentado.3mejoras/22pérdidas. Plantillas nativas50/50 idénticas al control699; el flag sólo añade cierre anticipado del razonamiento. Mediana final8,828→2,195s, máximo74,782→129,203s,3corteslength;3444,23MiB VRAM/787,10MiB RAM del servidor. SinUI/voz, sinadopción/cobertura. Sesión42807 terminal; no sondearla. Informe K2_HORIZON_ADAPTER731/REPORT.md. Siguiente: adaptador experimental K2 que conserve receta nativa y comparación de integración por capas; no repetir la opción descartada.
+
+730: inventario global explícito en window.resolve con paginación, recuento observado y lectura parcial. Dueñas C#:41proveedor/37catálogo/5Core,0fallos/0skips;1999terminal. Falta integración Python/prosa y producto.729 sigue49correctos/24fallos,0ganancias/1pérdida contra704. ÚltimoFull5 rojo por packaging45s y sidecar3s originales;724retirado/726restauró pruebas. No inferencia ni suites en curso; BAXY manual cerrado. C03 no está terminado.
 
 ## Registro histórico — fuente120713be y auditoría534
 
@@ -1538,3 +1540,158 @@ Pico del diagnóstico704:3499,5586MiBGPU y2444,0742MiBRAM,272,687s,sin infraccio
 ## Publicación703/704 confirmada
 
 Fuente y evidencia publicadasc11007b0, pushorigin/Goal-c03 verificado. Auditoría15pins públicos, hashesprivados,6fuentes disco/índice, árbol406, plan/observador, encuesta/runtime/main ysellos702 intactos. X05yG03C.06 incorporan evidencia disponible deC05/C07 sin cambiar estados. Ningún requisito de los26cubiertos aparece entrelos23fallos704; encuesta26/716/0conservada. Sin inferencia/test/build activo. Fuente705 aún no editada; siguienteprimera transformación deidentidad/selección/frescura. C03EN_CURSO.
+
+
+## Candidato705 — nombres observados frente a vocabulario interno
+
+Se implementa una exención limitada al segmento exacto de títulos/procesos de ventanas con operación, succeeded y verified verdaderos. No altera la respuesta ni las comprobaciones fácticas. Los pasos de misión conservan su propio sobre; títulos de raíz, diálogos y observaciones sin verificar no autorizan vocabulario. Baseline43fallos/6passPython y7fallos/11passApp; focal373Python/113App verdes,0skips. Se corrigió antes del baseline la expectativa de6fixtures negativas: agotamiento devuelve vacío, noValueError; logs originales conservados. Dueñas ampliadas en97801/26335; Full requerido antes de adopción conjunta. Encuesta26/716/0; no nueva cobertura ni inferencia.
+
+
+## Candidato705 — Full en curso
+
+691 pruebas Python y167 pruebas App pasan,0skips. La primera dueña ampliadaPython dejó689pass/1fallo: un nombre de archivo observado en minúscula se rechazaba como prosa lowercase. El mismo tratamiento de identidad se aplicó a esa comprobación léxica, conservando minúsculas fuera del nombre como fallo; se añadió el control y no se retiró ninguno. CANDIDATE2.json conserva la fuente actual y407archivosPython; PREREG preserva la anterior. Las huellasSTT se actualizan como declaración de código, no aceptación de audio.
+
+Full705 inició en sesión61066 tras dueñas verdes, con logsTEMP/c03-window-vocabulary705-full.log yfull-exit.json. No hay inferencia ni producto nuevo. Replay técnico privado de borradores nativos:694H0104 tenía18ocurrencias/2borradores únicos;12ahora pasan idénticas y6siguen fallando por gramática. Las18ocurrencias/1borrador de ventanal704 siguen fallando. No es una nueva campaña LLM ni cobertura de encuesta. Fuente705 no adoptada ni publicada todavía; fuente703 sigue siendo la última adoptada. Encuesta26/716/0 yC03activo.
+
+Exploración independiente704: H0023 sí sale del modelo comoaction/window.resolve; domain_grounding lo retira y domain_confirmation pide aclaración. Dueño __main__.py1537–1564/6210–6285. H0359 no llega a decisión:turn_runtime_failure, requiere causa interna con correlación correcta. H0532 ya sale del modelo comoconversation/knowledge, sin lectura y con17.18GB no observado; no atribuir ese último caso a una operación retirada. No aplicar prototype695 ni añadir alias del literal histórico.
+
+
+Full705intento1 terminóexit1 antes de suites por5diagnósticosWHITESPACE del inicializadorJSON de la prueba nueva. Se conservanFULL1.log/EXIT y bytesdeltestanteriores. Se corrigió sóloespacio, tokensidénticos yfuentesproductivasintactas. CANDIDATE3 conserva hashfinal;Full2activo16657,TEMP/c03-window-vocabulary705-full2.log/full2-exit.json.691Python/167Appdueñaspass,0skip. No adoptado.
+
+
+## Full705: incidencia de arranque y siguiente regresión
+
+Full2 continúa en16657. Ya registra un timeout de10s en CoreSession.StartAsync de LargeNotesListIsBoundedPaginatedAndLeavesProtocolResponsive, antes de paginar. No se ha cambiado el límite ni atribuido la causa a la RAM sin prueba. RAM libre medida1.72GiB; se pidió cierre normal de Opera (20procesos,1708.7MiB sumados), terminó completo y se observaron2.28GiB libres. No se cerró Codex ni se modificó seguridad del sistema. Esperar resultado íntegro antes de reproducir el test concreto. Producto706 está preparado con los mismos73turnos y observador transparente de704, sólo otra carpeta; aún no se ejecuta y exige Full verde. REPORT.md y replay privadoREPLAY.md dejan lectura humana; sin adopción ni cobertura nueva.
+
+
+## Revisión705: límite de identidad incompleto
+
+Se demostró en3fixtures que los bordes basados sólo en\w permiten enmascarar el prefijo de un identificador más largo (Atlas.route,Core.schema yRouter notes-extra), ampliando aceptación indebidamente. TOKEN_BOUNDARY_DEFECT.json conserva las salidas; no son inferencias nuevas. El patrónC#equivalente requiere el mismo control. Fuente sigue congelada mientrasFull2/16657 termina. Antes de adopción hay que corregir ambos límites, comprobar puntuación de fin de frase y códigos compuestos, volver a dueñas yFull sobre candidato final. No basta repetirFull por el timeout anterior.
+
+
+## Full705 interrumpido y regresión del límite
+
+Full2/16657 fue detenido intencionadamente por candidato con defecto demostrado y fallos de inicio; terminal exit1 confirmado. FULL2.log/EXIT/INTERRUPTION conservan evidencia, no es Full completo. Observados3fallos (CoreNotes y2MindShell). El fixtureMindShell usa Pythonstdlib independiente: no importa llm.py ni el helper nuevo; ModuleNotFound descartado como explicación de esos tests. Causa de arranque aún no demostrada. Baseline de nuevos límitesPython5fallos/69pass; no se retiró ningún test. Fuente705 sigue sin adoptar; encuesta26/716/0.
+
+
+## Candidato705 final y Full4
+
+CANDIDATE4 corrige límites de títulos ante identificadores compuestos, conserva puntuación y hechos originales. Python706pass/0skip. App190seleccionadas:188pass/2fallos/0skip (expectativa uppercase de fixture y memoria sin entrada en outbox); final37pass/0skip incluye ambos, con controles explícitos de segmento completo y código minúsculo. No sumar como227casosúnicos. Los3fallos de arranqueFull2 pasaron en la ampliada, causa aún no demostrada. REPLAY4 conserva36ocurrencias/3borradoresúnicos y12aceptaciones idénticas; no inferencia nueva. Full3/94418 inició por error tras un OSError al registrar huellas (ambos archivosSTT quedaron idénticos aCANDIDATE3); detenido antes de suites, terminal1. Se actualizaron huellas conapply_patch, se sellóCANDIDATE4 y se comprobaron todas antesdeFull4/88138, ahora vivo. No adopción. Encuesta26/716/0.
+
+
+## Sonda707 durante Full4: pluralizar no basta
+
+Sonda707 de60textos sintéticos, sólo módulo en memoria: pluralizar _window_domain mejora28→42aciertos,15ganancias/1pérdida; quedan17falsosvetos y se acepta house windows como dominio local. Hipótesis no adoptada, fuenteeffect_intent intacta ysinLLM/proveedores. No añade cobertura. Lectura de recuperaciónexistente: llm.py7763–7800 exigeforma completa/uno+selectorcerrado+compatibilidadtotal para recovered; __main__.py2137–2173usa sóloidentidad para una pregunta, con21/84negativosrechazadoshistóricamente, no sirve paraejecución. Próxima pregunta causal: medir la cadena fuerte en los60 antesde añadirvariantesléxicas. Fuente705continúacongelada porFull4/88138;706 preparado ynoejecutado.
+
+
+## Corrección del diagnóstico: falta inventario global de ventanas
+
+Gap708 demostrado por catálogo/handler/provider/tests: window.resolve exigeprocess concreto; nohaymodoall, vacío se rechaza y*noescomodín. window.active sóloforeground. Se corrige la afirmación previa: H0023era propuestadel dominiocorrecto, nolecturaejecutablecorrecta deenumeracióntotal. AntesdeLLMrecovery se necesita inventariotipado real conalcance/truncaciónhonestos; quitarveto noresuelvecapacidadausente. Sonda707 sólo domaining,noéxitosdelproducto. No cambiosfuente/inferencias/coberturas; Full4/88138 continúa.
+
+
+## Full4 rojo: investigar la causa del arranque
+
+Full4 terminó normalmente con exit1; no interrumpido. Estática/Release verdes; .NET4531pass,1fallo y1skip agregado (el log conserva además los opt-in omitidos). Integration3335pass/1fail/1skip,23m26s. El fallo es SlotOrUncertainReplyRetainsTheExactPendingConfirmation("la segunda"), IsReadyfalse/HasStartupErrortrue antes de su cuerpo. PythonFull no corrió porque la compuerta corta ante rojo.NET. CANDIDATE4 sigueidéntico. No adopción ni producto706. Próximo: capturar causa mientras Core siguevivo al timeout. Herramienta oficial dotnet-stack10.0.731102 instalada aislada enTEMP; primer intento sólo viofuenteoffline yfalló, segundo usóapi.nuget.org ypasó. No cambió configuraciónglobalNuGet.
+
+
+## Revisión de método y diagnóstico709 en curso
+
+El ejecutor699 confirma300 respuestas sin instrucciones BAXY: seis perfiles reciben las mismas50 tareas sintéticas, con plantilla y sampler propios. No equivalen a ejecutar pesos originales en backend oficial.700 sólo retira un system y conserva catálogo/historia; no acredita neutralidad de todas las capas. Revisión del dueño en K2_HORIZON_SELECTOR700/REVISION_METODO_PARA_DUENO.md; sin repetir inferencias ni modificar resultados.
+
+Sonda709 usa el fixture MindShell real, incluyendo descubrimiento paralelo de mente, y conserva el timeout10s. Un suscriptor temporal FirstChance captura el Core exacto antes de que la App lo disponga, sólo tras vencer el plazo. Hasta50 arranques, parada al primer fallo, sin pedidos ni LLM. Sesión46516; ejecutor scratchpad/c03-fixture-startup-probe709.py conserva respaldo/hash y restaura fuente al terminar. Estática/Full no se reejecutan todavía. Fuente705 sigue sin adoptar; encuesta26/716/0.
+
+
+## Timeout capturado709; fases710
+
+709 terminóexit1: cinco inicializaciones listas de8,17–9,40s ysexta fallida; NUnit0pass/1fail/0skip. Timeout exacto a10,059s deInitialize; Core vivo, stackposterior enlecturastdin. InventarioPowerShell presente a9,753s delCore y ausente a10,305s: intervaloabarcaelplazo, sin demostrar el awaitexacto. Observador pudoañadircarga. Fixture restaurado byteporbyte, helpertmpretirado, fuentesCANDIDATE4idénticas; binariotests requierebuildantesdevalidarfuenterestaurada.710/73101 compara3paresdel mismoscriptoriginal/conrelojesstderr; sinmodificarproducto niLLM. No adopción/cobertura;26/716/0.
+
+## Catálogo: fases710, comparación711 y candidato712
+
+710 terminó: seis ejecuciones preservan las mismas322entradas. El original tarda5,171–6,406s; Get-StartApps y preparación2,30–2,53s, segundo recorridoShell1,05–1,11s. El resto mezcla arranque/salida; no se atribuye una causa única.711 compara una sola enumeración con el original en3pares: catálogo completo idéntico, medianas6,719→3,890s,2mejoras/1pérdida. No es SLA ni aceptación de todo el producto.
+
+Se implementó el script medido en WindowsInstalledApplicationOpenProvider y se actualizaron sus etiquetas diagnósticas. Microsoft documenta el mismo Name/Path de AppsFolder para AUMID; se conserva el límite10s, caché, ambigüedad y contratos. Candidato conjunto sellado en astra-catalog-source712/CANDIDATE.json; las fuentes705 siguen idénticas. Dueñas provider85662:50pass/0fail/0skip,475ms. Sonda713 en56033 repite exactamente el montaje709 con nuevas carpetas y candidato, hasta50arranques; sinLLM. No adopción aún. Encuesta26/716/0.
+
+## Candidato conjunto705+712: Full5 en curso
+
+713 completó50arranques listos y0fallidos; NUnit1pass/0fail/0skip,8m52s. InitializeAsync mediana6,746s,máximo11,855s; incluye trabajo posterior al saludo, cuyo límite sigue10s. El wrapper56033 salió1 por OSError22 al restaurar el fixture despuésdelaspruebas; el código delprocesoNUnit no llegó a guardarse. Se conservó el error, se comprobó que el archivo seguíaidéntico alinstrumentado, se retiróelbloque conapply_patch y elhash volvió aloriginal628ab599...ae3. Helperretirado, sin cambiarproducto. RESULT713 conserva estas distinciones.
+
+714 falló por preparar un directorio privado anidado; el Core lo rechazó correctamente y el conductor intentó analizar una línea vacía.715 corrigió sólo ese setup: hello6,796s,PIDcorrecto,293nombres de aplicación verified/complete=true,exit0. No son las322entradas crudas: el provider conserva su filtro de nombres utilizables. No se afirma que713 midiese el catálogo en cadaarranque.
+
+Tras guardas de hashes, restauración,50arranques ycatálogo útil, inició Full5/65777. Logs TEMP/c03-catalog712-full5.log yfull5-exit.json; candidato astra-catalog-source712/CANDIDATE.json. Estática incluyendo dotnet-format pasó; Release está en ejecución alcheckpoint. No sourcechanges mientrascorre. Producto706 actualizado al candidato conjunto yFull5, todavía sin ejecutar. Se conserva la referencia4 roja. No adopción,commit ni coberturanueva;26/716/0.
+
+## Revisión de integración y continuidad — 06:20 UTC
+
+Full5 sigue vivo en65777: estática y Release verdes, 0 warnings/0 errores; Contracts60 pass/0 fail/0 skip, integración en curso con omisiones opt-in registradas. No hay resultado terminal ni cambios de fuente.706 fue revisado: mismos73 casos/orden/criterios, observador transparente y guard de todos los hashes de712 más token finalFull y exit0. No se ha lanzado.
+
+El informe REVISION_METODO_PARA_DUENO.md distingue parámetros globales del servidor, thinking, fusión de sistemas, catálogo y filtros que700 no ensayó integrados. La fusión de mensajes de sistema es global; sólo la inserción de lora en el bloque contiguo depende del adaptador CPU. El comentario menciona Qwen3.5, pero eso no demuestra por sí solo perjuicio a K2. Se mantiene la referencia699 sin BAXY y Qwen provisional, sin nuevas inferencias. Encuesta recontada:742 total,26 cubiertos,716 abiertos,0NA; de los abiertos695 esperan capacidad,18 no tienen expectativa y3 son límites negativos. shared_contract es común y no clasifica familias. La auditoría de esquema para708 confirma propiedades planas sin XOR/oneOf; no se ha decidido ni implementado la ampliación del inventario.
+
+## Full5 .NET verde; alcance completo de planificación — 06:36 UTC
+
+Full5/65777 sigue vivo, ahora enPython. Todas las suites.NET pasaron: Contracts60, Integration3336, Kernel140, Providers519, Setup477; total4532pass/0fail/1skip agregado. Integration21m15s, sin el timeout deFull4. El log conserva omisiones opt-in aparte del resumen; no cuentan como pass. Full no está terminado ni se ha adoptado fuente. Se mantiene706 preparado para ejecutarse sólo tras token final de compuerta y exit0.
+
+Se recuperó COVERAGE_WORKBOARD692.json, cuyo hash de registro coincide con742/26/716. La exploración semántica de sus515 filas abiertas needs_context_or_model se partió en260+255: root verificó IDs sin solapamiento, expectativas y ejemplos. COVERAGE_SEMANTIC_SCOPE_NEXT.json guarda ambos informes como planificación, sin adjudicación por fila ni cobertura. Se corrigió una selección inicial345 que cortaba antes de filtrar; no se usa. Tampoco se excluyen positivos por autoría nohumana, autorizados para desarrollo por el dueño; los límites negativos/sin marca conservan su significado. Las categorías de los dos revisores difieren y no se suman como una taxonomía común. Las siguientes acciones concretas siguen siendo706 y el inventario global708.
+
+REPORT708 registra la documentación de Microsoft: EnumWindows distingue fin, parada del callback y error; IsWindowVisible representa estilo de visibilidad. La futura lectura debe informar límite/alcance honestamente. No se ha cambiado el provider de ventanas ni elegido el contrato. Candidato705+712 intacto; no nuevas inferencias, adopción ni cobertura.
+
+## Espera verificada de Full5 — 06:49 UTC
+
+Misma sesión65777 viva, Python73% enlog. PID14344 sigue running,1178s desde creación y408,3sCPU,785,9MiBRSS,sin hijos. La CPU aumentó respecto a71,6s observados antes; no se considera detenido por superar los15m17s del Full693. No se reinicia ni cambia fuente. Falta resultado terminal y706.
+
+La revisión acotada de43 archivos709–715 no halló bloqueantes de publicación: inventarios crudos permanecen privados; fixtures before/instrumented acreditan restauración;709/713/714 conservan sus fallos. Root repasó los diffs y helpers705 sin hallar un nuevo bloqueo. Sin adopción ni crédito de encuesta. Sigue26/716/0.
+
+## Full5 terminal rojo — dos timeouts Python
+
+Full5/65777 terminó normalmente con exit1 a07:00:24UTC; no interrumpido. .NET4532pass/0fail/1skip agregado; Python11135pass/2fail/3skip y466subtests en1823,03s. Fallan test_detached_head_snapshot_is_exact_and_cleanup_removes_it (45s compartidos por creación, validación y limpieza) y test_dispatch_crash_exits_while_redirected_stdin_remains_open (3s desde lanzamiento). No se conoce aún la fase causal. FULL5.log/EXIT/RESULT archivados en astra-catalog-source712; diez fuentes candidatas idénticas. No adopción ni706.
+
+El snapshot fallido estaba ausente y su registro Git era detached/prunable. Tras capturar estado y validar la ruta bajo artifacts/product/build y ausencia de Git activo del UUID, se retiró únicamente ese registro mediante el helper de producto. No se podaron otros worktrees. El residuo no identifica la causa. Se ejecutan los dos owners sin cambios en7487, con log/exit enTEMP/c03-full5-timeout-owners*. Un pass aislado no demostrará una reparación.
+
+Se instaló py-spy0.4.2 sólo enTEMP/c03-pyspy712 y se capturó una pila sin locales del pytest durante Full. Estaba en test_source_quality_mode_is_canonicalized esperando aPowerShell, que no es uno de los fallidos. No se atribuye el rojo a esa observación. La herramienta no cambió fuente ni dependencias del producto; mecanismo documentado en https://github.com/benfred/py-spy. NEXT_CANDIDATE.md de708 concreta el próximo diseño a ensayar, sin implementación ni crédito. Encuesta26/716/0.
+
+## Diagnóstico cerrado y candidato de pruebas724
+
+Owners7487 terminó0 pass/2 fail en57,96s.716 apuntó al launcher y no obtuvo pila;717 capturó al intérprete en prepare_resampler/SciPy antes de hello.719 mostró que aplazar la precarga puede atascar la primera carga BLAS con el receptor abierto. Su conductor salió1 al esperar disposición de un hijo; pila/log preservan el cuarto timeout aunque no llegó al JSON. Búsqueda posterior por hash no encontró procesos restantes.721 cambió sólo el syscall privado a ReadFile y tampoco resolvió el DSP;723 probó OPENBLAS_NUM_THREADS=1 sin resolverlo, sin certificar backend efectivo. No se adoptó ninguna de esas hipótesis ni se cambió el audio, protocolo o entorno productivo.
+
+718 attempt2:53,281s total,38,776s creando copia y6,882s retirándola; comprobación de árbol0,605s. La demora no está en las validaciones de reparse points. Repositorio19727 archivos. El primer718 falló en setup al mover PSScriptRoot; se conserva, no es fallo productivo.720 probó dos pares originales/workers2 con el mismo HEAD íntegro: todos vencieron45s, una mejora/una pérdida. No se cambia Git ni se adopta el ajuste.
+
+Se corrigieron dos fixtures en724. El test de snapshot usa el HEAD completo de un repositorio controlado y añade verificación de bytes/inventario/estado sucio conservado/registro eliminado, con su mismo45s de PowerShell. El test de crash espera hello10s y después exige salida en3s ante una petición explícita, comprobando segunda lectura bloqueada; el test DSP vecino conserva10s. Se deja explícitamente de medir intérprete+precarga+crash juntos en3s, acorde con la conducta de salida que la prueba pretende acreditar. No se presenta como aceleración ni como reparación de la carga nativa.
+
+Primer owner packaging falló por Get-FileHash no disponible; se reutilizó Get-BaxySha256 y pasó1/0 en38,67s. Dos owners sidecar pasaron2/0 en10,34s. Ruff check verde, reformateo no relacionado retirado. Tres suites completas corren en62763, logs TEMP/c03-full5-timeout-repair724-owners*. CANDIDATE724 conserva las10 fuentes712 y añade los dos tests; REPORT724 guarda la metodología y límites. Falta ese resultado y Full6 antes de adoptar705+712+724 y ejecutar706 con guard actualizado. Modelo sin cambios; encuesta26/716/0, goal activo.
+
+## Suites724 terminales rojas; observación725
+
+62763 terminó exit1:66 pass/1 fail/0 skips,5 subtests,322,55s. Crash vuelve a vencer3s tras hello y disparador; packaging/protocolo no fallan. OWNERS.log/EXIT y OWNER_STATUS724 archivados. No repetir Full: Full6 no iniciado, candidato sin adoptar y706 sigue sin ejecutar.
+
+725/81591 terminó wrapper0 con tres passes y un fallo en el cuarto intento. Mismo test y deadlines; observador sólo actúa después de TimeoutExpired. Al enumerar tras ese plazo3s sólo aparece launcher PID25188,4,45MiB/1hilo, sin intérprete descendiente visible. py-spy no consigue versión Python; stderr contiene RuntimeError: forced_dispatch_crash. No hay pila causal ni prueba de que el intérprete terminase dentro del plazo. Siguiente: preservar identidad/handle del intérprete antes del trigger y separar sus tiempos de salida del launcher, sin ampliar relojes ni repetir hipótesis descartadas. Todas las sesiones anteriores terminales; no proceso de inferencia ni fuente nueva adoptada. Encuesta26/716/0.
+
+## Fidelidad restaurada726 y avance de producto728
+
+Se retiró724 como candidato: usar repo pequeño y desplazar el reloj no conservaba la aceptación original exigida por el goal.726 preservó ambos prototipos y restauró exactamente los tests desde HEAD;712 conserva sus10 hashes. No se declara reparación ni se repite Full todavía.727 sólo utiliza el prototipo archivado como sonda de fases con handles nativos y tiempos de salida:5 passes, intérprete/launcher separados, intermitencia no reproducida. No satisface ni sustituye los3s originales desde lanzamiento.
+
+La exploración de Git y de otro resampler quedó en lectura:4228 objetos sueltos35,83MiB,5 packs127,20MiB,fscache=true; sin mantenimiento. No antecedente indexado de soxr, sin dependencia alternativa instalada ni descarga. Compatibilidad de wheel/API documentada, equivalencia de audio y coste no medida; no adopción.
+
+Se cambió explícitamente la secuencia para avanzar también en conducta C03:728 en20681 ejecuta el panel congelado de73 turnos con fuente705+712 sin adoptar y parámetros idénticos. STATUS_BATCH728_SEQUENCE/PLAN preservan Full5 rojo y ningún crédito de aceptación/UI/voz/cobertura. No se modifica ni usa706; su guard antiguo queda. Full verde sigue condición de adopción y cierre. Fuentes congeladas durante la corrida y sin otras pruebas/inferencias. Revisar todos los turnos originales/hechos/finales antes de comparar704. Goal activo,26/716/0.
+
+
+## Tramo728 — diagnóstico inválido por ruta del observador
+
+20681 terminó exit0;72 composition_failed y1 filtered sin respuesta,73 terminales. La instrumentación conservó por error la ruta706, inexistente, y produjo FileNotFoundError antes de la llamada original. No son fallos atribuibles al modelo o a fuente712. Plan/hook/logs quedan intactos; INVALIDATION.json y REPORT.md conservan causa y límites. Encuesta26cubiertos/716abiertos/0NA.729 preparado corrige sólo destino, exige preflight de escritura y transparencia con llamadas stub antes de inferencia; ningún cambio de producto/modelo/presets/criterios. Full5 sigue rojo, no adopción.
+
+
+## Tramo729 — observación reparada,73 adjudicados sin promoción
+
+Preflight de la ruta y transparencia del hook pasó antes de inferencia. Corrige sólo destino706→729, mismos73 inputs/orden/criterios/fuente712/modelo/perfiles/techo.94146 terminó exit0;224 peticiones/respuestasHTTP,22entradas/salidasdecide,0fallos del observador. Root revisó finales, hechos y discrepancias antes de leer las etiquetas704.49correctos/24fallos. Comparación exacta de73IDs:0ganancias,1pérdidaH0655; antes separaba total/libre/uso/instalada y ahora llama disponible al total utilizable. No se demuestra causa del cambio con un solo par y PC dinámico.
+
+729 mide3499.5586MiBGPU/2468.5703MiBRAM,327.39s sin violaciones, sólo árbol del diagnóstico sinUI/voz. RESULT.json,COMPARISON704.json y REPORT.md en astra-status-batch729; informe literal/payloads privado729. Todos los procesos BAXY/Core/llama terminaron. Encuesta26/716/0 sin crédito nuevo.705+712 sigue sin adoptar, Full5 rojo, noFull6.
+
+La salida de decide_turn para inventario apunta a window.resolve, luego domain_grounding la transforma; no equivale a una invocación válida porque falta selector global en el contrato. Reanudar implementación708 antes de relajar filtros. La revisión de método para el dueño se amplió y su apertura en Codex quedó queued: no afirmar que ya fue visible. El objetivo continúa activo y este tramo fue progreso; todavía no cierre.
+
+
+## Tramo730 — capacidad tipada de inventario, dueñas C# en curso
+
+Se implementa process=* explícito previo a normalizar .exe; ventana/título concretos conservados. Enumeración completa cuenta observables reteniendo sólo la página solicitada; resultados separan count/observedCount/totalCount desconocido si parcial, límites, siguiente página y consistencia de lectura nueva. Cancelación y falloAPI no simulan inventario completo; no se emiten IDs sin verificar identidad. Primera compilación CS8604 corregida conservando validación de selector. Provider2:41pass/0fail/0skip,932ms,exit0; incluye ventanas Win32 reales creadas y destruidas por los tests. Kernel y Core dueñas en curso. Aún sin cambios Python en esta etapa, no promoción ni Full6, encuesta26/716/0.
+
+## Tramo731 — compatibilidad de K2 medida antes de integración
+
+Sólo se añadió enable_thinking=False al perfil native699 high práctico. Se conservaron50casos, pesos/backend porhash, muestreo, contexto/salida, orden y semilla. Captura del selector real prueba que BAXY emite esa opción; captura de _post no cambia los50payloads nativos. /apply-template demuestra el cierre anticipado. Juicios sellados antes de comparar:38→19,3ganancias/22pérdidas/9falloscompartidos; discrepancia instruction-01 permitiría20. No todos los fallos son nuevos ni todas las reglas están afinadas paraQwen. La integración completa sigue pendiente.
+
+Una revisión sólolectura sugirió que718 mezclaba checkout y validaciones; el script y attempt2/RESULT.json la refutan: add38,776s,tree0,605s,status0,282s,remove6,882s. No se eliminan verificaciones ni se repite esa hipótesis. Los dos tests originales siguen intactos y bloquean Full.

@@ -1,0 +1,9 @@
+{
+  "gpu_peak_mib": 3444.23046875,
+  "ram_peak_mib": 787.09765625,
+  "seconds": 678.2969999999987,
+  "violations": [],
+  "manifest_unchanged": true,
+  "source_unchanged": true,
+  "backend_exit": 1
+}

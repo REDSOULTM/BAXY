@@ -1,0 +1,47 @@
+# Separar el modelo de las reglas de BAXY
+
+La observación del dueño es válida: integrar otro modelo con adaptaciones hechas para Qwen puede perjudicar su respuesta. Una comparación dentro de BAXY mide el conjunto y no basta para atribuir el fallo al modelo.
+
+Se volvió a contrastar el informe con los ejecutores, sin repetir inferencias. La primera comparación conservaba instrucciones BAXY; la rectificación permanece en los informes originales. En la referencia699 posterior, cada uno de seis perfiles recibió las mismas 50 tareas, no la mitad para cada modelo. Los 300 payloads sólo admitían mensajes user/assistant y excluían system de BAXY, catálogo, herramientas y schema. Se usaron plantilla y muestreo por modelo. Las tareas eran sintéticas, una semilla; no acreditan cobertura de la encuesta.
+
+Trazabilidad: `scratchpad/c03-prepare-neutral699.py:74–92`; `scratchpad/c03-k2-smoke696.py:132–140,235–275`; `K2_HORIZON_NATIVE699/REPORTE699.md`. Las llamadas no usan el wrapper de la mente. Siguen siendo ejecuciones locales con llama.cpp, cuantización declarada y las correcciones de compatibilidad del backend K2; no se presentan como equivalencia demostrada con la ejecución BF16 oficial.
+
+La comparación700 retira sólo un mensaje de sistema y conserva catálogo e historia. Aísla el efecto de esa instrucción, no todas las reglas de BAXY. Trazabilidad: `scratchpad/c03-prepare-selector-ablation700.py:27–62`; controles de igualdad en `scratchpad/c03-k2-smoke696.py:142–179,252–254`; `REPORTE700.md`.
+
+No se ha demostrado que todo BAXY sea neutral para K2. La elección de Qwen permanece provisional para los perfiles medidos; tampoco atribuye automáticamente al modelo los errores del producto. Al integrar un candidato se deben comprobar sus parámetros efectivos y localizar la primera transformación incorrecta al añadir cada componente. Las garantías del catálogo, veracidad y confirmación siguen siendo contratos del producto, mientras que las adaptaciones de plantilla, roles y razonamiento se verifican por modelo.
+
+La revisión del código concreta el riesgo. El servidor de BAXY fija `--reasoning off` y presupuesto 0 para cualquier GGUF (`src/baxy_mind/llm.py:5210–5264`); el selector añade `enable_thinking: false` (`:6037–6053`). Además, `_post` fusiona los mensajes iniciales de sistema para todos los modelos (`:5859–5878`), aunque el comentario explica su origen en Qwen3.5. Sólo la inserción de `lora` en ese tramo depende del adaptador CPU. Son decisiones que la prueba700 no valida dentro del producto y cuya compatibilidad debe medirse con la plantilla efectiva de cada candidato.
+
+También quedan fuera de esa prueba el catálogo reducido por recuperación, las validaciones y los vetos posteriores (`src/baxy_mind/__main__.py:5901–6101,6162–6225`), así como el análisis integrado de llamadas a herramientas (`src/baxy_mind/llm.py:6054–6100`). En el ámbito revisado, la condición explícita por nombre `qwen3-4b-instruct-2507` encontrada afecta sólo al muestreo de una reparación del sujeto de la frase (`:358–372`). Esto no demuestra que todas las reglas estén ajustadas a Qwen, ni que las reglas globales sean neutrales: su efecto requiere comparar la entrada y salida de cada etapa sobre los mismos casos.
+
+La selección provisional se apoya en los perfiles locales medidos por separado. No se descarta K2 por un fallo de la integración. Una integración futura debe conservar el perfil nativo ya comprobado, verificar sus parámetros efectivos y añadir las capas del producto identificando la primera que cambie una respuesta correcta. Los contratos de veracidad, catálogo y confirmación se mantienen; un rechazo incorrecto de una propuesta válida se trata como un defecto de BAXY.
+
+Esta revisión no cambia modelo, código productivo, resultados ni cobertura: el registro privado se recontó y conserva 26 cubiertos, 716 abiertos y 0 no aplicables. El candidato712 reduce la consulta duplicada de aplicaciones. Full5 terminó con .NET verde y dos timeouts Python: copia de empaquetado y arranque del sidecar. Son pruebas sin llamadas al modelo; no se presentan como fallos o mejoras de un LLM. El candidato continúa sin adoptar.
+
+[Informe con resultados](INFORME_PARA_DUENO.md) · [300 respuestas sin instrucciones BAXY](../K2_HORIZON_NATIVE699/REPORTE699.md).
+
+## Comprobación posterior de las fronteras729
+
+La instrumentación de728 falló al escribir en una carpeta inexistente y esa corrida quedó invalidada.729 corrigió sólo el destino, pasó un preflight aislado y completó73 casos con registros de entrada/salida:49 correctos y24 fallos del conjunto, sin promover fuentes ni modelos. Estos números no son una nueva comparación K2–Qwen.
+
+En H0023, la salida de decide_turn propone window.resolve y el filtro de dominio la transforma; el catálogo actual, además, no ofrece argumentos para enumerar todas las ventanas. Eso demuestra por qué hay que separar propuesta, capacidad real y validación. No permite afirmar que la propuesta ya era una invocación válida o que un modelo distinto arreglaría el hueco. El diagnóstico y sus límites están en [resultado729](../astra-status-batch729/REPORT.md).
+
+## Aclaración actual del dueño: la integración también es una variable
+
+Comprobación2026-09-10, sin nuevas inferencias ni cambios de modelo. La distinción importante es **modelo local por separado**, **adaptador específico del modelo** y **producto BAXY completo**. Que el último falle no identifica automáticamente al primero. Tampoco se ha demostrado que todas las reglas de BAXY se diseñaran exclusivamente para Qwen.
+
+699 conservó `--reasoning on`, presupuesto-1 y `reasoning_effort=high` para los perfiles K2 high; verificó además su prefijo de plantilla efectivo. Qwen2507 usó su receta no-thinking. Los controles están en `scratchpad/c03-k2-smoke696.py:79–100,132–179,235–268`; cada perfil recibió los mismos50 casos. Por tanto, esa referencia no puso K2 bajo el perfil integrado de Qwen. Sigue siendo la combinación local de pesos cuantizados/backend declarados, no una certificación de equivalencia con el backend BF16 oficial.
+
+En contraste, el selector del producto construye temperatura0, máximo256tokens y `enable_thinking=False` (`src/baxy_mind/llm.py:6037–6053`); el arranque propio fuerza razonamiento off/presupuesto0 (`:5210–5264`). La receta oficial de K2 grande recomienda high, T1/p0.95 y al menos32768tokens de salida; la ficha de Qwen2507 declara que es no-thinking. Fuentes primarias consultadas de nuevo hoy: [K2](https://huggingface.co/IFM/K2-Horizon-3.7B#best-practices), [Qwen](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#model-overview). Es una incompatibilidad entre recetas que debe resolverse o declararse antes de una evaluación integrada justa; aún no cuantifica cuánto daño hace cada ajuste ni prueba que256tokens sean insuficientes en todos los turnos.
+
+La siguiente comparación conservará los mismos casos y criterios en ambos modelos y distinguirá dos preguntas: qué consigue cada perfil adecuado por separado y qué efecto añade cada componente de BAXY. En cada modelo, el contraste entre etapas mantendrá constantes pesos, backend y receta efectiva para atribuir diferencias a la etapa añadida. Se verificará primero el adaptador (roles, plantilla, razonamiento, muestreo, salida y parser), después identidad/instrucciones, catálogo/contexto y finalmente validación, reintentos y publicación. Se reutilizan699/700 donde responden a la pregunta; no se presentan como evaluación de capas que no ejecutaron. Cuando no haya un par comparable ya registrado, se congela ese contraste antes de medirlo.
+
+Si una respuesta correcta se rechaza o transforma incorrectamente, el defecto se asignará al primer componente responsable. Si el modelo ya recibe hechos equivocados, se repara el productor de esos hechos. Si falta una capacidad real, cambiar el modelo no la crea. Se conservan los contratos de catálogo, veracidad y confirmación y se corrige su implementación cuando rechaza indebidamente. No se añaden frases especiales para aprobar los ejemplos del dueño.
+
+La elección final queda abierta hasta comprobar calidad integrada, latencia y recursos con la receta apropiada. Esta revisión no adopta K2 ni certifica Qwen. La corrección730 del inventario de Windows tiene dueñas C# verdes (41proveedor,37catálogo,5Core;0fallos/0skips), pero sigue sin adopción, integración Python ni crédito conversacional. Encuesta26/716/0; Full5 y el resto de C03 siguen pendientes.
+
+## Resultado731: el riesgo de configuración ya tiene una medida local
+
+El contraste terminó: el mismo K2 high práctico pasó de38/50 a19/50 (20 con una reescritura fronteriza) al añadir únicamente enable_thinking=False. Hubo3mejoras y22pérdidas; los prefijos nativos actuales coinciden con los50 históricos y el único cambio del prefijo modificado es cerrar el razonamiento. La mediana final bajó8,828→2,195s, pero el máximo subió74,782→129,203s y aparecieron3finales truncados. VRAM3444,23MiB, RAM787,10MiB del servidor, sinUI/voz. Control histórico de una semilla, no comparación universal ni prueba completa de BAXY.
+
+Esto exige conservar la receta nativa de K2 al preparar su adaptador. No se ha integrado todavía ni cambiado el runtime del producto. Se mantienen las garantías de catálogo/veracidad/confirmación. [Informe731 con pares, límites y respuestas completas](../K2_HORIZON_ADAPTER731/REPORT.md). La comparación de integración continúa pendiente; la adopción de un modelo y el cierre de C03 no se deducen de esta prueba.

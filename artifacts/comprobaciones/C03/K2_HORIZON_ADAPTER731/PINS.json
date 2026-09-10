@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T09:27:41.641955+00:00",
+  "files": {
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/PREREG.json": "391bdffcbe4e892fb37d10d733972c33d154c6dd66ba613fb72cfcf14d6e8ee5",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/PROCESS.json": "fa12c359e0ac97280dd22e13eba07046c25cc9c4425def5379952f93a57b9f90",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/TEMPLATE_PARITY.jsonl": "62a083eeea14837a940eac181c48750f6c78b6755d351a5b2a087f4418f5bd59",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/RESOURCES.json": "2d76eb55d0323680910e85f5b53a49a704524a8158b73a68f36f77b411d62031",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/RUN.log": "2f2d455530ee32d4eb61fc85cd8939d963106c00d44853290805dfe6f1e9f58b",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/EXIT.json": "ded036a9346c67587bb3bbbdf0ffa2690a9dcc512dc6562e59b5fa65992566d9",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/ADJUDICATION.json": "445bf654239743b706db9f2a791671f979e6c26a6241111d83ce45f56419b198",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/SUMMARY.json": "a46fdb6deff139205bc237d817c2d97c1f0c2dacfdf7efc97ff786213062e401",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/REPORT.md": "9f009fd6f12c425b5f461c7dc7967510fa343d9d25448a6f403c926e511002d8",
+    "artifacts/comprobaciones/C03/K2_HORIZON_ADAPTER731/RESPUESTAS.md": "c3c68dce4ad0938a672220b0f8e134235229299eeb2f5b97d767e72c6d7f6e36",
+    "scratchpad/c03-k2-adapter731.py": "c059fe2e58172a1ba145e88b60c9c15a771d6d75fd3be14ea95187ac1d8fb97d",
+    "scratchpad/c03-report-adapter731.py": "d8954b146fe017e970ffb2f5e7f8b2833d598e7230e55ac0de38cd0f0d1738dc"
+  },
+  "scope": "Diagnostic731 only; no production source/model adoption; source hashes checked against pre-run registration."
+}

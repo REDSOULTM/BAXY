@@ -1,39 +1,40 @@
-# Handoff C03 — continuidad703 adoptada;50/73 en producto704
+# Handoff — C03 — 2026-09-10 — tramo731
 
-Goal íntegro C03 activo. Leer el adjunto goal-objective.md SHA621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86. RamaGoal-c03, mainintacto. Encuesta742/rev1248:26cubiertos/716abiertos/0NA, ninguna decisión pendiente del dueño. BAXY cerrado; no inferencia, test o build activo. Estado anterior del goal turn:progress, con implementación, validación y32respuestas recuperadas.
+## Siguiente acción y estado actual
 
-## Fuente actual703
+731 finalizado y adjudicado,42807terminalexit0: K2high práctico38/50→19/50 con sólo enable_thinkingFalse (20confronterizo).3ganancias/22pérdidas/9falloscompartidos. K2_HORIZON_ADAPTER731/{PREREG,SUMMARY,ADJUDICATION,REPORT,RESPUESTAS} y scripts c03-k2-adapter731.py/c03-report-adapter731.py. La fuente llm y runtime registrado quedaron intactos; el driver terminó su servidor después de50respuestas (backend_exit1 es terminación deliberadaWindows). No procesos BAXY/llama/testhost vivos, no sondear42807ni1999.
 
-MainWindowViewModel reutiliza la decisión ordinaria para distinguir una petición nueva de una respuesta a confirmación, sin clasificarla dos veces. MindPlanSession comparte la transición de cancelación segura: resolver outbox y luego limpiar el plan; sólo cuando hay confirmación sin reconciliación ni efecto incierto. Fragmentos conservan identidad, nuevas acciones obtienen nuevosIDs, efectos inciertos no se abandonan. Sin cambio de modelo,Python,catálogo niRiskPolicy. No permitirSensitive/External en bloque; varias operaciones escriben/envían datos.
+La siguiente acción es preparar un adaptador experimental de K2 para el producto que conserve su receta nativa en todos los roles antes de la comparación integrada. Verificar parámetros/plantilla/parser efectivos y primera transformación errónea;699/700/731 ya responden al modelo separado, una instrucción y thinkingfalse: no repetirlos. No afirmar que K2 ya esté integrado ni que las demás capas sean neutrales. El selector impone ademásT0/max256 y startupoff/budget0; _post fusiona múltiples systems, que la plantilla K2 sí representa. Las dos peticiones de696 afectadas por la fusión son writer521-8/16; los20selectores tenían sólo1system.
 
-Fuente703 en astra-continuity-source703/{PREREG,VALIDATED,RESULT,PINS}. DosC#productivos y dosficheros de pruebas. Python sigue6a01540ccabb4121cb90e6d8f3dea527e0feefde0cd6868e8b3a38e03e028fe4/406archivos; fuente702 intacta. 18focales iniciales; dueñas192seleccionadas:188pass/4fallosdefixture/0skip. Las4fixtures usaban token no canónico yfecha sinO exacto. Sólo esos valores se corrigieron; validación enfocada final11pass/0skip incluye4arregladas+7controles repetidos. No sumar199tests únicos. Fuentes productivas idénticas entre ejecuciones. Fast0,0warnings/errors,Release25,21s. NoFull703:Full693 es línea base anterior; Full cuando se adopte C#+Python productivos juntos y Full final.
+Fuente705+712+730 sinadoptar; Full5 sigue rojo en dos plazos originales, noFull6. Conservar730 C# y sus83pases, pendientePython/prosa. Encuesta26/716/0. Goal activo; ninguna consulta pendiente. Publicar diagnóstico731 separado de fuentes noadoptadas. Para empaquetado, no reutilizar la hipótesis de validaciones incluidas enadd718: attempt2/RESULT.json las separó,tree0,605s frenteadd38,776s/remove6,882s.
 
-## Producto704 completado y sellado
+## Actualización730 — precede al estado729 conservado abajo
 
-Mismos73textos/orden/criterios689/694/702.50correctos/23fallos;32ganancias/0pérdidas respecto702. La misma selección equivocada de tabs en t6 genera confirmación, pero los39pedidos siguientes ya no quedan atrapados:35hacen lectura y32terminan correctamente. No aprobar la tanda entera ni dar cobertura automática. Leídos todos los finales y todas las etapascompose; segundo revisor confirmó índices45–72.
+C# inventario de ventanas implementado, sin adopción. Proveedor41pass/catalogo37pass/Core5pass,0fail/0skip;1999 terminalexit0. Logs, resultados y9hashes en astra-window-inventory730/OWNER_STATUS.json. No inferencia ni tests vivos. Python no está conectado aún: __main__ sólo deriva títulos literales y effect_intent no entiende inventario plural/global; no ampliar regex ni dar cobertura por el contrato solo.
 
-Público astra-status-batch704/{MANUAL_REVIEW,RESULT,PINS}; privadoLOCALAPPDATA/BAXY/C03-status-batch704-private/{review.json,verdicts.json,adjudication.json,RESULT.md,http-posts.jsonl,decision-boundary.jsonl}. No reejecutar adjudicadores/selladores. EXIT0/manifiesto intacto,3499,5586MiBGPU/2444,0742MiBRAM,272,687s. SinUI/voz, no consumo total certificado. No presentar tiempo global como aceleración: ahora sí ejecuta35lecturas antes bloqueadas.
+La aclaración actual del dueño pone primero la compatibilidad por modelo.699 realmente usa plantilla/razonamiento/muestreo propios sin BAXY;700 retira sólo el primer system. El runtime integrado todavía impone reasoning off/budget0, selector256tokens/temperatura0/enable_thinkingFalse y fusiona prefijos system globalmente. Eso es diferencia de configuración demostrada, no una regresión cuantificada de K2. Revisión vigente en K2_HORIZON_SELECTOR700/REVISION_METODO_PARA_DUENO.md. Conservar el perfil nativo y aislar transformaciones antes de otra comparación integrada. No nueva decisión pendiente.
 
-## Publicación
+## Objetivo y estado
 
-703adoptada de forma delimitada y publicada enc11007b0; push origin/Goal-c03 confirmado. Auditoría scratchpad/c03-audit-continuity703-704.py comprueba disco/índice,privados,6fuentes,árbol,plan/observador,encuesta/runtime/main y sellos702. Predecesores:7ceeef70fuente702,4d55b449estado,10f16319fuente693,a8eaf976comparación. Preservar APLAZADOS/prototype695 y ghosts de índiceK2; no restaurarlos ni incluirlos de paso.
+Completar íntegramente C03 según el goal adjunto; goal activo, ninguna decisión pendiente. Rama Goal-c03, HEAD/remoto83fef92c; main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. Última fuente adoptada703/producto704 c11007b0. Encuesta742/rev1248: **26 cubiertos,716 abiertos,0NA**. BAXY manual cerrado.
 
-## Bloqueos siguientes
+**729/94146 terminalexit0 y adjudicado:**49correctos/24fallos;704tenía50/23.0ganancias,1pérdidaH0655 (perdió distinción total/libre/instalada); no causa demostrada. `astra-status-batch729/{RESULT.json,COMPARISON704.json,REPORT.md}`.224 paresHTTP/22decide,0fallos del observador.3499.56MiBGPU/2468.57MiBRAM,327.39s, sinUI/voz. Fuente712 intacta. No procesos BAXY/Core/llama vivos. No repetir ni sondear94146/20681.
 
-704falla:4enumeraciones de ventanas→aclaración;windows-all-en→browser.tabs.list/confirmación;windows-focus-mixed→18rechazosmissing_fact de borrador correcto con ventanal;3datos históricos sin lectura(disk-used-es,H0532,H0675);RAMH0539/H0508confunde utilizable/instalada/disponible;7lecturas soportadas no seleccionadas(H0359,cpu-order-es,H0450,H0499,H0602,clock-date-en,audio-order-es);3alcancesredfalsos;2rankingsCPUacumulados/conmiembrosalterados.
+## Decisiones y evidencia
 
-Identidades: window_prose_facts107–267 reconoce títulos/procesos pero omite estructuras naturales. UserMessagePolicy156–275 yModelMessageComposer56–62/127–208 vetan términos internos incluso dentro de títulos observados; Pythonllm9587–9645también. Corregir la frontera de identidad verificada en ambos extremos, no permitir jerga globalmente ni añadir excepciones por títuloQwen. H0104funciona704porque ahora el título esChatGPT, no porque se reparó el veto. Requiere Full si se adoptaC#+Python.
+-705+712 permanece sin adoptar: sus10 hashes están en `astra-catalog-source712/CANDIDATE.json`.705 preserva los nombres observados frente a vetos léxicos;712 elimina una consulta duplicada del catálogo de aplicaciones. No cambiar fuentes durante729.
+-728/20681 terminó exit0 pero es **inválido**:72 composition_failed+1filtered sin respuesta. Hook apuntaba a privado706 inexistente y fallaba antes de llamar al modelo. `astra-status-batch728/INVALIDATION.json` conserva causa;729 cambia sólo ese destino y verifica transparencia antes del arranque. No atribuir728 al modelo/producto.
+-724 retirado: cambiaba el alcance de dos pruebas.726 restauró ambos tests exactamente aHEAD, guardó prototipos en `astra-test-fidelity726/`; no ejecutar sellador724.727 observó5 passes de fases con el prototipo retirado; no acredita el plazo original.
+-Modelos699: seis perfiles×50 casos,300 sin BAXY.700 sólo retira un system, no todas las capas. Qwen provisional. Ajustes globales de plantilla/razonamiento y validaciones aún necesitan atribución por etapa. `K2_HORIZON_SELECTOR700/REVISION_METODO_PARA_DUENO.md` es el reporte vigente.
 
-Frescura: prototype695rechazado por activar lecturas para conocimiento/otra persona/discoD. No aplicarlo ni repetir sus50literales. Los valores históricos no sustituyen lectura nueva; conservar contexto de referencias. HerenciaREGISTRO_DE_MANTENIBILIDAD1109–1128,1582–1600,2678–2703. Correlacionar selector por texto exacto,pid,time dentro de decision-boundary; HTTPid/request_id/turnoid son contadores distintos. Una exploración por ordinal confundiót5cont6 y fue rechazada; no es defecto probado del producto.
+## Validación y bloqueos
 
-H0732sigueFAIL: NetworkInformationStatusProbe sólo cuenta interfacesUp, no verificaInternet. Wifi.status.connected:false no demuestra ausencia deEthernet. Procesos requieren revisar compose posterior alprogreso; totalProcessorSeconds es acumulado, no CPUactual. H0655 se acepta bajo el mismo criterio contextual694 por sus cantidadesfree/used/installed explícitas; el término disponibleentotal sigue mejorable. No modificar sellos históricos por estas notas.
+Full5 (`astra-catalog-source712/FULL5_RESULT.json`) terminalexit1: estática/Release verdes; .NET4532pass/0fail/1skip agregado; Python11135pass/2fail/3skips+466subtests en1823,03s. Fallan snapshot real de empaquetado45s y crash sidecar3s desde lanzamiento. No Full6. No relajarlos.
 
-## Comparación de modelos terminada
+No repetir sin nueva causa: checkout.workers=2 (720), quitar prewarmSciPy (719), ReadFile aplazado (721), envOPENBLAS1 (723). No resolvieron. Conservar prepare_resampler y protocolo.727 no reprodujo el fallo intermitente. Soxr sólo investigado, no instalado/adoptado. Detalles y terminales históricos en HANDOFF_BEFORE729.md.
 
-InformeK2_HORIZON_SELECTOR700/INFORME_PARA_DUENO.md, publicadoa8eaf976; open_in_codex devolvióqueued,no afirmar que se vio.300respuestas independientes699:6perfiles×50mismas preguntas,sinBAXY/system/tools/schema. PrácticosQwen40/50,1,352s;K2high38/50,8,8285s. Sólo servidorQwen3165,55MiBGPU/715,38RAM,K2high3444,23/787,56. K2gana6,pierde8;no superioridad universal. ReferenciasQwen40,K2BF16pequeño33,K2grande39. Sinpromoción.
+## Siguiente acción
 
-700quitauna instrucción en20selectores/modelo:Qwen7→5,K2high10→8;efecto mixto, recupera una horaK2. Historial/catálogo conservados,no prueba todas lascapas. Mantenerseparados fallosdelmodelo ydelproducto. RuntimeQwen4B2507Q4/b9980,manifest13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed. K2backendexterno35999d1/tokenizer285/285,no paridadlogitsHF completa. No reabrir campaña sincausa.
+Implementar la capacidad de inventario global tipado708 según `astra-window-inventory-gap708/NEXT_CANDIDATE.md`, conservando selección exacta/identidad/paginación/errores. Python debe medir propuesta nativa y primera transformación errónea después de existir contrato real: no basta retirar domain_grounding. `WindowsWindowControlProvider.cs:71–123,462–476,616–649`, contratos34–61, handlers12–23/124–141, catálogo1601–1612. Mantener pruebas originales; Full verde obligatorio antes de adoptar el conjunto C#+Python y al cierre. Restan generalización742,8rutas,reserva100,UI/voz real,loopback/AEC,recuperaciones,recursos conjuntos≤4GiB,matriz y continuidadC04–C09.
 
-## Cierre íntegro pendiente
-
-Generalización742,ocho rutas,reserva100,averías/restauración,UIreal/voz/loopback/AEC,recursosconjuntos,matriz yFullfinal. MantenerC03EN_CURSO. Continuarautónomamente con causas compartidas; no preguntar otra vez por históricos/autorización ya concedidos.
+Preservar2líneas ajenasAPLAZADOS,3scripts K2 con diff aparente y prototipo695. Ningún commit nuevo en este tramo. Históricos sellados y encuesta intactos; no perder pruebas rechazadas.
