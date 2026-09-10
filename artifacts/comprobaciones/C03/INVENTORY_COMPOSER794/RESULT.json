@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-10T22:20:51.302800+00:00",
+  "cases_completed": 50,
+  "cases_registered": 50,
+  "fatal": null,
+  "violations": [],
+  "seconds": 136.5159999999887,
+  "gpu_peak_mib": 3499.55859375,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 764.421875,
+  "source_pins_unchanged": true,
+  "sources_unchanged": true,
+  "manifest_unchanged": true,
+  "driver_unchanged": true,
+  "quality_adjudicated": false
+}

@@ -1,0 +1,1726 @@
+....................FFFFFF........FFFFFF........FFFFFF.................. [ 34%]
+........................................................................ [ 69%]
+................FFFFFFFFFFFFFFFFFFFFFFFF......FFFFFFFFFFFFFFFFFF         [100%]
+================================== FAILURES ===================================
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-La lista {neg}representa todas las ventanas del inventario.-no ] _
+
+pattern = 'La lista {neg}representa todas las ventanas del inventario.'
+negative = 'no ', count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('La lista no representa todas las ventanas del inventario.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-Estas p\xe1ginas {neg}representan todas las ventanas del inventario.-no ] _
+
+pattern = 'Estas páginas {neg}representan todas las ventanas del inventario.'
+negative = 'no ', count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('Estas páginas no representan todas las ventanas del inventario.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-La lista {neg}abarca todas las ventanas del inventario.-no ] _
+
+pattern = 'La lista {neg}abarca todas las ventanas del inventario.'
+negative = 'no ', count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('La lista no abarca todas las ventanas del inventario.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-This list {neg}represent all the windows in the inventory.-does not ] _
+
+pattern = 'This list {neg}represent all the windows in the inventory.'
+negative = 'does not ', count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('This list does not represent all the windows in the inventory.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-These pages {neg}represent all the windows in the inventory.-do not ] _
+
+pattern = 'These pages {neg}represent all the windows in the inventory.'
+negative = 'do not ', count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('These pages do not represent all the windows in the inventory.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-This list {neg}cover all the windows in the inventory.-does not ] _
+
+pattern = 'This list {neg}cover all the windows in the inventory.'
+negative = 'does not ', count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('This list does not cover all the windows in the inventory.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-La lista {neg}representa todas las ventanas del inventario.-no ] _
+
+pattern = 'La lista {neg}representa todas las ventanas del inventario.'
+negative = 'no ', count = 3, total = 3, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+>           assert _payload_fact_defect(negated, payload) == "reversed_result"
+E           AssertionError: assert '' == 'reversed_result'
+E             
+E             - reversed_result
+
+tests\test_c03_inventory_scope_polarity.py:64: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-Estas p\xe1ginas {neg}representan todas las ventanas del inventario.-no ] _
+
+pattern = 'Estas páginas {neg}representan todas las ventanas del inventario.'
+negative = 'no ', count = 3, total = 3, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+>           assert _payload_fact_defect(negated, payload) == "reversed_result"
+E           AssertionError: assert '' == 'reversed_result'
+E             
+E             - reversed_result
+
+tests\test_c03_inventory_scope_polarity.py:64: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-La lista {neg}abarca todas las ventanas del inventario.-no ] _
+
+pattern = 'La lista {neg}abarca todas las ventanas del inventario.'
+negative = 'no ', count = 3, total = 3, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+>           assert _payload_fact_defect(negated, payload) == "reversed_result"
+E           AssertionError: assert '' == 'reversed_result'
+E             
+E             - reversed_result
+
+tests\test_c03_inventory_scope_polarity.py:64: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-This list {neg}represent all the windows in the inventory.-does not ] _
+
+pattern = 'This list {neg}represent all the windows in the inventory.'
+negative = 'does not ', count = 3, total = 3, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+>           assert _payload_fact_defect(negated, payload) == "reversed_result"
+E           AssertionError: assert '' == 'reversed_result'
+E             
+E             - reversed_result
+
+tests\test_c03_inventory_scope_polarity.py:64: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-These pages {neg}represent all the windows in the inventory.-do not ] _
+
+pattern = 'These pages {neg}represent all the windows in the inventory.'
+negative = 'do not ', count = 3, total = 3, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+>           assert _payload_fact_defect(negated, payload) == "reversed_result"
+E           AssertionError: assert '' == 'reversed_result'
+E             
+E             - reversed_result
+
+tests\test_c03_inventory_scope_polarity.py:64: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-This list {neg}cover all the windows in the inventory.-does not ] _
+
+pattern = 'This list {neg}cover all the windows in the inventory.'
+negative = 'does not ', count = 3, total = 3, complete = True
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+>           assert _payload_fact_defect(negated, payload) == "reversed_result"
+E           AssertionError: assert '' == 'reversed_result'
+E             
+E             - reversed_result
+
+tests\test_c03_inventory_scope_polarity.py:64: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-La lista {neg}representa todas las ventanas del inventario.-no ] _
+
+pattern = 'La lista {neg}representa todas las ventanas del inventario.'
+negative = 'no ', count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('La lista no representa todas las ventanas del inventario.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-Estas p\xe1ginas {neg}representan todas las ventanas del inventario.-no ] _
+
+pattern = 'Estas páginas {neg}representan todas las ventanas del inventario.'
+negative = 'no ', count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('Estas páginas no representan todas las ventanas del inventario.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-La lista {neg}abarca todas las ventanas del inventario.-no ] _
+
+pattern = 'La lista {neg}abarca todas las ventanas del inventario.'
+negative = 'no ', count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('La lista no abarca todas las ventanas del inventario.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-This list {neg}represent all the windows in the inventory.-does not ] _
+
+pattern = 'This list {neg}represent all the windows in the inventory.'
+negative = 'does not ', count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('This list does not represent all the windows in the inventory.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-These pages {neg}represent all the windows in the inventory.-do not ] _
+
+pattern = 'These pages {neg}represent all the windows in the inventory.'
+negative = 'do not ', count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('These pages do not represent all the windows in the inventory.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-This list {neg}cover all the windows in the inventory.-does not ] _
+
+pattern = 'This list {neg}cover all the windows in the inventory.'
+negative = 'does not ', count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern,negative", [
+        ("La lista {neg}incluye todas las ventanas del inventario.", "no "),
+        ("Esta página {neg}contiene todas las ventanas del inventario.", "no "),
+        ("La lista {neg}muestra todas las ventanas del inventario.", "no "),
+        ("Estas {neg}son todas las ventanas.", "no "),
+        ("This list {neg}include all the windows in the inventory.", "does not "),
+        ("This list {neg}show all the windows in the inventory.", "doesn't "),
+        ("This page {neg}contain all the windows in the inventory.", "does not "),
+        ("These are {neg}all of them.", "not "),
+        ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+        ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+        ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+        ("This list {neg}represent all the windows in the inventory.", "does not "),
+        ("These pages {neg}represent all the windows in the inventory.", "do not "),
+        ("This list {neg}cover all the windows in the inventory.", "does not "),
+    ])
+    @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
+    def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
+        payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+        positive = pattern.format(neg="")
+        if positive.startswith("This "):
+            positive = positive.replace(" include ", " includes ").replace(" show ", " shows ").replace(" contain ", " contains ")
+        negated = pattern.format(neg=negative)
+        if not complete and count == total:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+            assert _payload_fact_defect(negated, payload) == "extra_claim"
+        elif count == total:
+            assert not _payload_fact_defect(positive, payload)
+            assert _payload_fact_defect(negated, payload) == "reversed_result"
+        else:
+            assert _payload_fact_defect(positive, payload) == "extra_claim"
+>           assert not _payload_fact_defect(negated, payload)
+E           AssertionError: assert not 'extra_claim'
+E            +  where 'extra_claim' = _payload_fact_defect('This list does not cover all the windows in the inventory.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_scope_polarity.py:67: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.] _
+
+pattern = 'Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.'
+count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('Tienes abiertas 2 ventanas: "Atlas 0", "Atlas 1". Se observaron 7 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.] _
+
+pattern = '{count} ventanas abiertas: {names}. Se observaron {total} ventanas.'
+count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('2 ventanas abiertas: "Atlas 0", "Atlas 1". Se observaron 7 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-You have {count} open windows: {names}. {total} windows were observed.] _
+
+pattern = 'You have {count} open windows: {names}. {total} windows were observed.'
+count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('You have 2 open windows: "Atlas 0", "Atlas 1". 7 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-{count} open windows: {names}. {total} windows were observed.] _
+
+pattern = '{count} open windows: {names}. {total} windows were observed.'
+count = 2, total = 7, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('2 open windows: "Atlas 0", "Atlas 1". 7 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': 7, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.] _
+
+pattern = 'Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.'
+count = 3, total = 8, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('Tienes abiertas 3 ventanas: "Atlas 0", "Atlas 1", "Atlas 2". Se observaron 8 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...as 2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.] _
+
+pattern = '{count} ventanas abiertas: {names}. Se observaron {total} ventanas.'
+count = 3, total = 8, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('3 ventanas abiertas: "Atlas 0", "Atlas 1", "Atlas 2". Se observaron 8 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...as 2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-You have {count} open windows: {names}. {total} windows were observed.] _
+
+pattern = 'You have {count} open windows: {names}. {total} windows were observed.'
+count = 3, total = 8, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('You have 3 open windows: "Atlas 0", "Atlas 1", "Atlas 2". 8 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...as 2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-{count} open windows: {names}. {total} windows were observed.] _
+
+pattern = '{count} open windows: {names}. {total} windows were observed.'
+count = 3, total = 8, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('3 open windows: "Atlas 0", "Atlas 1", "Atlas 2". 8 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...as 2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.] _
+
+pattern = 'Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.'
+count = 5, total = 11, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('Tienes abiertas 5 ventanas: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". Se observaron 11 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'... 4', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': 11, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.] _
+
+pattern = '{count} ventanas abiertas: {names}. Se observaron {total} ventanas.'
+count = 5, total = 11, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('5 ventanas abiertas: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". Se observaron 11 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'... 4', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': 11, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-You have {count} open windows: {names}. {total} windows were observed.] _
+
+pattern = 'You have {count} open windows: {names}. {total} windows were observed.'
+count = 5, total = 11, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('You have 5 open windows: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". 11 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'... 4', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': 11, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-{count} open windows: {names}. {total} windows were observed.] _
+
+pattern = '{count} open windows: {names}. {total} windows were observed.'
+count = 5, total = 11, complete = True
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('5 open windows: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". 11 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'... 4', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': 11, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.] _
+
+pattern = 'Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.'
+count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('Tienes abiertas 2 ventanas: "Atlas 0", "Atlas 1". Se observaron 7 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.] _
+
+pattern = '{count} ventanas abiertas: {names}. Se observaron {total} ventanas.'
+count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('2 ventanas abiertas: "Atlas 0", "Atlas 1". Se observaron 7 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-You have {count} open windows: {names}. {total} windows were observed.] _
+
+pattern = 'You have {count} open windows: {names}. {total} windows were observed.'
+count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('You have 2 open windows: "Atlas 0", "Atlas 1". 7 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-{count} open windows: {names}. {total} windows were observed.] _
+
+pattern = '{count} open windows: {names}. {total} windows were observed.'
+count = 2, total = 7, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('2 open windows: "Atlas 0", "Atlas 1". 7 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}], 'count': 2, 'observedCount': 7, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.] _
+
+pattern = 'Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.'
+count = 3, total = 8, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('Tienes abiertas 3 ventanas: "Atlas 0", "Atlas 1", "Atlas 2". Se observaron 8 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.] _
+
+pattern = '{count} ventanas abiertas: {names}. Se observaron {total} ventanas.'
+count = 3, total = 8, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('3 ventanas abiertas: "Atlas 0", "Atlas 1", "Atlas 2". Se observaron 8 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-You have {count} open windows: {names}. {total} windows were observed.] _
+
+pattern = 'You have {count} open windows: {names}. {total} windows were observed.'
+count = 3, total = 8, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('You have 3 open windows: "Atlas 0", "Atlas 1", "Atlas 2". 8 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-{count} open windows: {names}. {total} windows were observed.] _
+
+pattern = '{count} open windows: {names}. {total} windows were observed.'
+count = 3, total = 8, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('3 open windows: "Atlas 0", "Atlas 1", "Atlas 2". 8 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...2', 'processName': 'Viewer'}], 'count': 3, 'observedCount': 8, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.] _
+
+pattern = 'Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.'
+count = 5, total = 11, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('Tienes abiertas 5 ventanas: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". Se observaron 11 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.] _
+
+pattern = '{count} ventanas abiertas: {names}. Se observaron {total} ventanas.'
+count = 5, total = 11, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('5 ventanas abiertas: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". Se observaron 11 ventanas.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-You have {count} open windows: {names}. {total} windows were observed.] _
+
+pattern = 'You have {count} open windows: {names}. {total} windows were observed.'
+count = 5, total = 11, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('You have 5 open windows: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". 11 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-{count} open windows: {names}. {total} windows were observed.] _
+
+pattern = '{count} open windows: {names}. {total} windows were observed.'
+count = 5, total = 11, complete = False
+
+    @pytest.mark.parametrize("pattern", [
+        "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+        "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+        "You have {count} open windows: {names}. {total} windows were observed.",
+        "{count} open windows: {names}. {total} windows were observed.",
+    ])
+    @pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+    @pytest.mark.parametrize("complete", [True, False])
+    def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+        source = observation(count, total, complete)
+        names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        reply = pattern.format(count=count, total=total, names=names)
+>       assert not _payload_fact_defect(reply, payload, 'List the windows.')
+E       assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('5 open windows: "Atlas 0", "Atlas 1", "Atlas 2", "Atlas 3", "Atlas 4". 11 windows were observed.', {'seen': {'windows': [{'title': 'Atlas 0', 'processName': 'Viewer'}, {'title': 'Atlas 1', 'processName': 'Viewer'}, {'...', 'processName': 'Viewer'}], 'count': 5, 'observedCount': 11, 'totalCount': None, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_scope_polarity.py:195: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-There are no open windows currently visible.-] _
+
+lead = '', reply = 'There are no open windows currently visible.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'There are no...ntly visible.'
+E         
+E         - There are no open windows currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-There are no open windows currently visible.-Currently, ] _
+
+lead = 'Currently, ', reply = 'There are no open windows currently visible.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Currently, T...ntly visible.'
+E         
+E         - Currently, There are no open windows currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-There are no open windows currently visible.-Right now, ] _
+
+lead = 'Right now, ', reply = 'There are no open windows currently visible.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Right now, T...ntly visible.'
+E         
+E         - Right now, There are no open windows currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are currently visible.-] _
+
+lead = '', reply = 'No open windows are currently visible.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'No open wind...ntly visible.'
+E         
+E         - No open windows are currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are currently visible.-Currently, ] _
+
+lead = 'Currently, ', reply = 'No open windows are currently visible.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Currently, N...ntly visible.'
+E         
+E         - Currently, No open windows are currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are currently visible.-Right now, ] _
+
+lead = 'Right now, ', reply = 'No open windows are currently visible.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Right now, N...ntly visible.'
+E         
+E         - Right now, No open windows are currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are visible in the current observation.-] _
+
+lead = '', reply = 'No open windows are visible in the current observation.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'No open wind... observation.'
+E         
+E         - No open windows are visible in the current observation.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are visible in the current observation.-Currently, ] _
+
+lead = 'Currently, '
+reply = 'No open windows are visible in the current observation.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Currently, N... observation.'
+E         
+E         - Currently, No open windows are visible in the current observation.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are visible in the current observation.-Right now, ] _
+
+lead = 'Right now, '
+reply = 'No open windows are visible in the current observation.'
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Right now, N... observation.'
+E         
+E         - Right now, No open windows are visible in the current observation.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-There are no open windows currently visible.-] _
+
+lead = '', reply = 'There are no open windows currently visible.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'There are no...ntly visible.'
+E         
+E         - There are no open windows currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-There are no open windows currently visible.-Currently, ] _
+
+lead = 'Currently, ', reply = 'There are no open windows currently visible.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Currently, T...ntly visible.'
+E         
+E         - Currently, There are no open windows currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-There are no open windows currently visible.-Right now, ] _
+
+lead = 'Right now, ', reply = 'There are no open windows currently visible.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Right now, T...ntly visible.'
+E         
+E         - Right now, There are no open windows currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are currently visible.-] _
+
+lead = '', reply = 'No open windows are currently visible.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'No open wind...ntly visible.'
+E         
+E         - No open windows are currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are currently visible.-Currently, ] _
+
+lead = 'Currently, ', reply = 'No open windows are currently visible.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Currently, N...ntly visible.'
+E         
+E         - Currently, No open windows are currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are currently visible.-Right now, ] _
+
+lead = 'Right now, ', reply = 'No open windows are currently visible.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Right now, N...ntly visible.'
+E         
+E         - Right now, No open windows are currently visible.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are visible in the current observation.-] _
+
+lead = '', reply = 'No open windows are visible in the current observation.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'No open wind... observation.'
+E         
+E         - No open windows are visible in the current observation.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are visible in the current observation.-Currently, ] _
+
+lead = 'Currently, '
+reply = 'No open windows are visible in the current observation.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Currently, N... observation.'
+E         
+E         - Currently, No open windows are visible in the current observation.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+_ test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are visible in the current observation.-Right now, ] _
+
+lead = 'Right now, '
+reply = 'No open windows are visible in the current observation.'
+request_text = 'List my windows.'
+
+    @pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+    @pytest.mark.parametrize("reply", [
+        'There are no open windows currently visible.',
+        'No open windows are currently visible.',
+        'No open windows are visible in the current observation.',
+    ])
+    @pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+    def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+        answer = lead + reply
+        client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+>       assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+E       AssertionError: assert '' == 'Right now, N... observation.'
+E         
+E         - Right now, No open windows are visible in the current observation.
+
+tests\test_c03_inventory_scope_polarity.py:223: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-La lista {neg}representa todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-Estas p\xe1ginas {neg}representan todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-La lista {neg}abarca todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-This list {neg}represent all the windows in the inventory.-does not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-These pages {neg}represent all the windows in the inventory.-do not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-True-This list {neg}cover all the windows in the inventory.-does not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-La lista {neg}representa todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-Estas p\xe1ginas {neg}representan todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-La lista {neg}abarca todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-This list {neg}represent all the windows in the inventory.-does not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-These pages {neg}represent all the windows in the inventory.-do not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[3-3-True-This list {neg}cover all the windows in the inventory.-does not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-La lista {neg}representa todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-Estas p\xe1ginas {neg}representan todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-La lista {neg}abarca todas las ventanas del inventario.-no ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-This list {neg}represent all the windows in the inventory.-does not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-These pages {neg}represent all the windows in the inventory.-do not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope[2-7-False-This list {neg}cover all the windows in the inventory.-does not ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-You have {count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-2-7-{count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-You have {count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-3-8-{count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-You have {count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[True-5-11-{count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-You have {count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-2-7-{count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-You have {count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-3-8-{count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-{count} ventanas abiertas: {names}. Se observaron {total} ventanas.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-You have {count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_a_quantity_introducing_observed_names_counts_the_page[False-5-11-{count} open windows: {names}. {total} windows were observed.]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-There are no open windows currently visible.-]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-There are no open windows currently visible.-Currently, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-There are no open windows currently visible.-Right now, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are currently visible.-]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are currently visible.-Currently, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are currently visible.-Right now, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are visible in the current observation.-]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are visible in the current observation.-Currently, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List all open windows.-No open windows are visible in the current observation.-Right now, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-There are no open windows currently visible.-]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-There are no open windows currently visible.-Currently, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-There are no open windows currently visible.-Right now, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are currently visible.-]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are currently visible.-Currently, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are currently visible.-Right now, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are visible in the current observation.-]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are visible in the current observation.-Currently, ]
+FAILED tests/test_c03_inventory_scope_polarity.py::test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction[List my windows.-No open windows are visible in the current observation.-Right now, ]
+60 failed, 148 passed in 2.07s

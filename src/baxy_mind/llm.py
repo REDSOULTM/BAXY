@@ -4425,7 +4425,7 @@ def compose_visible_defect(
         r"observed\.app|name every observed|menciona cada|título o paso|"
         r"nombre la nota|must appear|debe aparecer|the seen app|"
         r"note title must|observed app|progress only|progress continues|"
-        r"no listo|no open|no closed|name the window|state closed|"
+        r"no listo|^no (?:open|closed)[.!]?$|name the window|state closed|"
         r"one sentence of progress|una frase de que sigues|still in progress|"
         r"without the result|sin el resultado|progress, without|"
         r"in progress, without|no result claimed|without claiming|"
@@ -9670,8 +9670,25 @@ class LlmRuntime:
             or len(required_facts) >= 8
             or sum(len(fact) for fact in required_facts) >= 512
         )
-        if dense_fact_contract:
+        inventory_seen = visible_situation.get("seen")
+        inventory_windows = (
+            inventory_seen.get("windows") if isinstance(inventory_seen, dict) else None
+        )
+        dense_inventory = (
+            situation.get("operation") == "window.resolve"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(inventory_windows, list)
+            and (
+                len(inventory_windows) >= 8
+                or len(json.dumps(inventory_windows, ensure_ascii=False, separators=(",", ":"))) >= 512
+            )
+        )
+        # Inventory facts travel in situation, outside requiredFacts. Reuse
+        # the dense output allowance, keeping their existing prompt unchanged.
+        if dense_fact_contract or dense_inventory:
             payload["max_tokens"] = 512
+        if dense_fact_contract:
             instruct(
                 "\nEste resultado contiene muchos hechos obligatorios. Usa una "
                 "introducción breve y una lista compacta si hace falta; conserva "

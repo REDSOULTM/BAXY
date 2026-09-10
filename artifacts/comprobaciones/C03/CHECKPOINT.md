@@ -1,3 +1,11 @@
+794 completada:36/50 correctos,4 recuperaciones y0 pérdidas frente792A; cuatro primeros borradores entregados exactos en1petición.3134pass/1skipSTT+121subtests,Fast0. Se adopta793 con787/789/791 heredados; fuente lista para publicar.136,516s;3499,56MiBVRAM/764,42MiBRSS compositor.56452terminal0 recogida, sin inferencia. Qwen elegido; siguiente categoría process.list795, sólo bloqueantes. Encuesta28/714/0.
+
+794 categoría completa activa56452:50casos con Qwen registrado, primeros payloads iguales788, sólo nuevos vetos793. Modelo ya elegido, sin ablation ni otros modelos.793 validado3134pass/1skipSTT+121subtests,Fast0/Release23,74s;66681recogida.28/714/0.
+
+793 validado3134pass/1skipSTT+121subtests/21,30s;Fast0,66681recogida.4borradores antes vetados se entregan exactos en1stub.13pins preservados,programa4075584f52e. Siguiente794 categoría completa50conQwen ya elegido; no comparación de modelos.28/714/0.
+
+793 sellado: tres falsos vetos reparados;72 controles nuevos,947 pass focalizadas y4 primeros borradores capturados entregados exactos en1 llamada. Primeros payloads intactos. Modelo Qwen elegido; pendientes21 suites/Fast y categoría completa794.28/714/0.
+
 792 terminada y revisada: A32/50 y B32/50;0 ganancias finales al retirar rejected_draft.133 intentos,124 éxitos HTTP,9 errores;100 primeros payloads idénticos,48 primeros brutos emparejados.285,859s;3499,56MiB VRAM/765,25MiB RSS compositor.59555 terminal0 recogida. Dueño ordena cerrar selección: Qwen3-4B-Instruct2507Q4_K_M registrado; continuar sólo bloqueantes, sin más comparativas de modelo.791 validado y preservado sin adoptar;28/714/0.
 
 792 activa sesión59555: mismas50 tareas en cada brazo, A original y B sin rejected_draft en corrección factual; orden AB/BA, primerpayload idéntico y plazos4/9s.791 validado3062pass/1skipSTT+121subtests,Fast0;13fuentes preservadas sin adoptar. No editar fuente.28/714/0.

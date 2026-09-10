@@ -1,0 +1,12 @@
+{
+  "commit": "ae274b8b4c65a90b3f5707e408a6a63c43b4566a",
+  "head_origin_remote_equal": true,
+  "main_unchanged": true,
+  "runtime_source_adopted": false,
+  "model_selection": "Qwen3-4B-Instruct-2507 Q4_K_M registered",
+  "raw_whitespace_preserved": {
+    "RESPUESTAS_CAMBIADAS.md": 24,
+    "SOURCE_PATCH.diff": 7,
+    "baseline.log": 72
+  }
+}

@@ -42,6 +42,12 @@ def test_a_list_quantity_is_bound_to_the_page_not_the_selected_total(pattern, co
     ("This list {neg}show all the windows in the inventory.", "doesn't "),
     ("This page {neg}contain all the windows in the inventory.", "does not "),
     ("These are {neg}all of them.", "not "),
+    ("La lista {neg}representa todas las ventanas del inventario.", "no "),
+    ("Estas páginas {neg}representan todas las ventanas del inventario.", "no "),
+    ("La lista {neg}abarca todas las ventanas del inventario.", "no "),
+    ("This list {neg}represent all the windows in the inventory.", "does not "),
+    ("These pages {neg}represent all the windows in the inventory.", "do not "),
+    ("This list {neg}cover all the windows in the inventory.", "does not "),
 ])
 @pytest.mark.parametrize("count,total,complete", [(2, 7, True), (3, 3, True), (2, 7, False), (2, 2, False)])
 def test_exhaustiveness_is_bound_to_its_negation_and_known_page_scope(pattern, negative, count, total, complete):
@@ -116,3 +122,105 @@ def test_a_faithful_answer_reaches_the_user_without_an_unnecessary_retry(model, 
     client = Recorder(model, reply)
     assert client.compose_user_message(user_text, "status", {"situation": observation()}) == reply
     assert client.calls == 1
+
+
+@pytest.mark.parametrize("pattern", [
+    "Se observaron {total} ventanas. Esta lista incluye {count} ventanas.",
+    "Esta lista incluye {count} ventanas. Se observaron {total} ventanas.",
+    "Se observaron {total} ventanas; esta lista incluye {count} de ellas.",
+    "Observed: {total} windows. This list includes {count} of them.",
+    "This list includes {count} windows. {total} windows were observed.",
+    "Aquí tienes la lista:\n\n- Atlas 0\n\nSe observaron {total} ventanas. Esta página muestra {count} ventanas.",
+    "Here is the list:\n\n- Atlas 0\n\nObserved: {total} windows. This page includes {count} of them.",
+])
+@pytest.mark.parametrize("count,total", [(1, 4), (3, 9), (20, 25)])
+@pytest.mark.parametrize("complete", [True, False])
+def test_two_bound_quantities_disclose_a_subset_without_a_required_phrase(pattern, count, total, complete):
+    # This checks quantity interpretation, not whether all identities are listed.
+    payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+    before = copy.deepcopy(payload)
+    assert not _payload_fact_defect(pattern.format(count=count, total=total), payload)
+    assert _payload_fact_defect(pattern.format(count=count + 1, total=total), payload) == "reversed_result"
+    assert _payload_fact_defect(pattern.format(count=count, total=total + 1), payload) == "reversed_result"
+    assert payload == before
+
+
+@pytest.mark.parametrize("pattern", [
+    "This page shows {count} of the {total} visible windows observed.",
+    "Esta página muestra {count} de las {total} ventanas observadas.",
+    "The list includes {count} of {total} observed windows.",
+])
+@pytest.mark.parametrize("count,total", [(1, 4), (3, 9), (20, 25)])
+@pytest.mark.parametrize("complete", [True, False])
+def test_a_fraction_can_refer_to_observed_windows_without_asserting_global_total(pattern, count, total, complete):
+    payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")
+    assert not _payload_fact_defect(pattern.format(count=count, total=total), payload)
+    assert _payload_fact_defect(pattern.format(count=count + 1, total=total), payload) == "reversed_result"
+    assert _payload_fact_defect(pattern.format(count=count, total=total + 1), payload) == "reversed_result"
+
+
+@pytest.mark.parametrize("reply", [
+    "This page shows 2 of 7 windows.",
+    "Esta lista muestra 2 de las 7 ventanas.",
+    "The total is 7 windows. This page shows 2 windows.",
+    "El total es 7 ventanas. Esta lista muestra 2 ventanas.",
+])
+def test_observed_denominators_do_not_authorize_unqualified_unknown_totals(reply):
+    payload = _compose_situation_payload(observation(2, 7, False), "en", "List the windows.")
+    assert _payload_fact_defect(reply, payload) == "extra_claim"
+
+
+@pytest.mark.parametrize("reply", [
+    "This list includes 2 windows.", "Esta lista incluye 2 ventanas.",
+    "This list includes 2 of them.", "Esta lista incluye 2 de ellas.",
+])
+def test_page_quantity_alone_still_does_not_disclose_the_larger_inventory(reply):
+    payload = _compose_situation_payload(observation(), "en", "List the windows.")
+    assert _payload_fact_defect(reply, payload) == "missing_fact"
+
+
+@pytest.mark.parametrize("pattern", [
+    "Tienes abiertas {count} ventanas: {names}. Se observaron {total} ventanas.",
+    "{count} ventanas abiertas: {names}. Se observaron {total} ventanas.",
+    "You have {count} open windows: {names}. {total} windows were observed.",
+    "{count} open windows: {names}. {total} windows were observed.",
+])
+@pytest.mark.parametrize("count,total", [(2, 7), (3, 8), (5, 11)])
+@pytest.mark.parametrize("complete", [True, False])
+def test_a_quantity_introducing_observed_names_counts_the_page(pattern, count, total, complete):
+    source = observation(count, total, complete)
+    names = ', '.join('"' + window['title'] + '"' for window in source['observed']['windows'])
+    payload = _compose_situation_payload(source, 'en', 'List the windows.')
+    reply = pattern.format(count=count, total=total, names=names)
+    assert not _payload_fact_defect(reply, payload, 'List the windows.')
+    bad = pattern.format(count=count + 1, total=total, names=names)
+    assert _payload_fact_defect(bad, payload, 'List the windows.') == 'reversed_result'
+
+
+@pytest.mark.parametrize("reply", [
+    'Hay dos ventanas en total: "Atlas 0", "Atlas 1". Se observaron siete ventanas.',
+    'In total there are two windows: "Atlas 0", "Atlas 1". Seven windows were observed.',
+    'Hay dos ventanas. Esta página muestra "Atlas 0", "Atlas 1"; se observaron siete ventanas.',
+    'There are two windows. This page shows "Atlas 0", "Atlas 1"; seven windows were observed.',
+    'Hay dos ventanas: no puedo identificarlas. Esta página muestra "Atlas 0", "Atlas 1"; se observaron siete ventanas.',
+    'There are two windows: I cannot identify them. This page shows "Atlas 0", "Atlas 1"; seven windows were observed.',
+])
+def test_a_later_list_does_not_relabel_an_explicit_or_unbound_global_count(reply):
+    payload = _compose_situation_payload(observation(), 'en', 'List the windows.')
+    assert _payload_fact_defect(reply, payload, 'List the windows.') == 'reversed_result'
+
+
+@pytest.mark.parametrize("lead", ['', 'Currently, ', 'Right now, '])
+@pytest.mark.parametrize("reply", [
+    'There are no open windows currently visible.',
+    'No open windows are currently visible.',
+    'No open windows are visible in the current observation.',
+])
+@pytest.mark.parametrize("request_text", ['List all open windows.', 'List my windows.'])
+def test_verified_empty_inventory_is_factual_prose_not_a_copied_instruction(lead, reply, request_text):
+    answer = lead + reply
+    client = Recorder('Qwen3-4B-Instruct-2507-Q4_K_M.gguf', answer)
+    assert client.compose_user_message(request_text, 'status', {'situation': observation(0, 0)}) == answer
+    assert client.calls == 1
+    payload = _compose_situation_payload(observation(2, 2), 'en', request_text)
+    assert _payload_fact_defect(answer, payload, request_text)

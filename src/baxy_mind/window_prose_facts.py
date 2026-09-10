@@ -6,6 +6,7 @@ explicit admission of unknown process state are not process assertions.
 """
 from __future__ import annotations
 
+from collections import Counter
 import re
 
 from .effect_intent import _PERCENTAGE_WORD_VALUES, _strip_request_envelope, window_inventory_arguments
@@ -124,6 +125,21 @@ def window_fact_feedback(text: str, payload: dict, user_text: str = "") -> dict 
             "unsupported_claim": {"predicate": "window_opening_chronology", "observed": False},
             "rejected_draft": text,
         }
+    if inventory is not None:
+        expected, mentioned, grouped, _ = _inventory_identity_counts(text, inventory)
+        excessive = {name: {"observed": count, "draft_claim": grouped[name]}
+                     for name, count in expected.items() if grouped[name] > count}
+        if excessive:
+            return {"contradiction": {"predicate": "window_inventory_identity_counts", "identities": excessive},
+                    "rejected_draft": text}
+        identity_request = window_inventory_arguments(user_text) is not None and not re.search(
+            r"\b(?:cuantas|how\s+many|cuenta|count)\b", fold(user_text),
+        )
+        missing = {name: {"observed": count, "identified_in_draft": mentioned[name]}
+                   for name, count in expected.items() if identity_request and mentioned[name] < count}
+        if missing:
+            return {"missing_answer": {"predicate": "window_inventory_identity_counts", "identities": missing},
+                    "rejected_draft": text}
     seen = payload.get("seen")
     if not str(payload.get("operation", "")).startswith("window.") or not isinstance(seen, dict):
         return None
@@ -390,25 +406,28 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
 
 _PAGE_CONTEXT = re.compile(r"\b(?:pagina|page|lista|list|listad[oa]|listed|mostrad[oa]s?|shown|"
                            r"muestro|muestra|showing|displayed|devuelt[oa]s?|returned)\b")
-_OBSERVATION_CONTEXT = re.compile(r"\b(?:observad[oa]s?|observed|encontrad[oa]s?|found|"
+_OBSERVATION_CONTEXT = re.compile(r"\b(?:observ(?:ad[oa]s?|a(?:n|mos|ron)?|o|e)|observed|encontrad[oa]s?|found|"
                                   r"detectad[oa]s?|detected|identificad[oa]s?|identified)\b")
 _TOTAL_CONTEXT = re.compile(r"\b(?:en\s+total|in\s+total|total\s+of|total\s+de)\b")
 _INVENTORY_LIMIT = re.compile(r"\b(?:pagina|page|parcial|partial|limite|limited|"
                              r"al\s+menos|at\s+least|mas\s+ventanas|more\s+windows)\b")
+_INVENTORY_REFERENCE_COUNT = re.compile(rf"\b(?P<number>{_NUMBER})\s+(?:of\s+them|de\s+ellas)\b")
 _ALL_WINDOWS = re.compile(
     r"\b(?:todas\s+las\s+ventanas|all\s+(?:the\s+)?windows|"
     r"son\s+todas|all\s+of\s+them|no\s+hay\s+mas\s+ventanas|no\s+other\s+windows)\b"
 )
 _NEGATED_INVENTORY_INCLUSION = re.compile(
     r"\b(?:no|not|isn['’]t|aren['’]t|doesn['’]t|don['’]t)\s+"
-    r"(?:(?:incluy[ea]n?|contien[ea]n?|muestr[ae]n?|enumer[ae]n?|"
-    r"inclu(?:de|des)|contain(?:s)?|show(?:s)?|list(?:s)?|have|has)\s+)?$"
+    r"(?:(?:incluy[ea]n?|contien[ea]n?|muestr[ae]n?|enumer[ae]n?|represent[ae]n?|abarc[ae]n?|"
+    r"inclu(?:de|des)|contain(?:s)?|show(?:s)?|list(?:s)?|represent(?:s)?|cover(?:s)?|have|has)\s+)?$"
 )
 _INVENTORY_FRACTION = re.compile(
     rf"\b(?P<page>{_NUMBER})\s*"
     r"(?:(?:open\s+|visible\s+)?(?:windows?|ventanas?)\s+)?"
     r"(?:de|of|out\s+of)\s+(?:(?:las|the|un\s+total\s+de|a\s+total\s+of)\s+)?"
-    rf"(?P<total>{_NUMBER})(?:\s+(?:open\s+|visible\s+)?(?:windows?|ventanas?))?\b"
+    rf"(?P<total>{_NUMBER})(?:\s+(?:open\s+|visible\s+)?"
+    r"(?P<observed_before>observed\s+|observadas?\s+)?(?:windows?|ventanas?))?"
+    r"(?P<observed_after>\s+(?:observed|observadas?))?\b"
 )
 _WINDOW_CHRONOLOGY = re.compile(
     r"\b(?:(?:mas|menos)\s+(?:recientes?|nuev[oa]s?|antigu[oa]s?)|"
@@ -456,6 +475,112 @@ def _inventory_chronology_claim(text: str, seen: dict) -> bool:
     return False
 
 
+def _inventory_quantity_scope(clause: str, start: int, end: int) -> str:
+    """Bind a quantity to its nearby noun/modifier, not a remote list heading."""
+    contexts = [
+        (max(start - match.end(), match.start() - end, 0),
+         0 if match.start() >= end else 1, scope)
+        for scope, pattern in (
+            ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT)
+        )
+        for match in pattern.finditer(clause)
+    ]
+    return min(contexts)[2] if contexts else ""
+
+
+def _inventory_identity_counts(text: str, seen: dict) -> tuple[Counter, Counter, Counter, str]:
+    """Bind explicit group cardinalities to opaque observed names.
+
+    Repeating an entry or stating its group size can convey multiplicity.
+    A quantity attached to a title is not a quantity of the whole inventory.
+    The returned text is for factual checks only; the draft is never rewritten.
+    """
+    expected: Counter = Counter()
+    processes: dict[str, set[str]] = {}
+    for window in seen["windows"]:
+        if not isinstance(window, dict):
+            continue
+        name = window.get("title")
+        if not isinstance(name, str) or not name.strip():
+            name = window.get("processName")
+        if isinstance(name, str) and name.strip():
+            name = fold(name)
+            expected[name] += 1
+            process = window.get("processName")
+            if isinstance(process, str) and process.strip():
+                processes.setdefault(name, set()).add(fold(process))
+    asserted = "\n".join(fold(line) for line in text.splitlines())
+    if not expected:
+        return expected, Counter(), Counter(), asserted
+    prefix = "window_identity_"
+    while prefix in asserted:
+        prefix += "_"
+    names = sorted(expected, key=len, reverse=True)
+    tokens = {name: prefix + str(index) for index, name in enumerate(names)}
+    identifiers = {value: name for name, value in tokens.items()}
+    asserted = re.sub(r"(?<!\w)(?:" + "|".join(re.escape(name) for name in names) + r")(?!\w)",
+                      lambda match: tokens[match[0]], asserted)
+    # Longest-name matching keeps Atlas 2 from also counting as Atlas.
+    # Retain quotes and prose punctuation for the other factual checks.
+    identity = re.escape(prefix) + r"\d+\b"
+    quoted_identity = rf"[\"'«»“”‘’*]*{identity}[\"'«»“”‘’*]*"
+
+    def process_annotation(match: re.Match) -> str:
+        owner = identifiers[match["owner"]]
+        content = re.sub(
+            identity,
+            lambda token: "window_process_annotation" if identifiers[token[0]] in processes.get(owner, set()) else token[0],
+            match["content"],
+        )
+        start, end = match.start("content") - match.start(), match.end("content") - match.start()
+        return match[0][:start] + content + match[0][end:]
+
+    # A known process in its window's annotation identifies that window's
+    # process; it is not a separate entry for another window without a title.
+    asserted = re.sub(
+        rf"(?P<owner>{identity})[\"'«»“”‘’*]*\s*(?:[—–-]\s*)?\((?P<content>[^()]*)\)",
+        process_annotation, asserted,
+    )
+    unit = r"(?:windows?|ventanas?|instances?|instancias?)"
+    number = rf"(?P<number>{_NUMBER})"
+    group_names = rf"(?P<names>{quoted_identity}(?:\s*(?:,\s*(?:(?:and|y)\s+)?|\b(?:and|y)\b\s*){quoted_identity})*)"
+    single_name = rf"(?P<names>{quoted_identity})"
+    separator = r"\s*(?:[:(—–-]\s*)?"
+    patterns = [
+        # The explicit distributive quantifier applies to every named title.
+        group_names + separator + number + rf"\s+{unit}\s+(?:each|cada\s+una|de\s+cada\s+titulo)\b\)?",
+        single_name + separator + r"[x×]\s*" + number + r"\b",
+        single_name + separator + number + rf"\s+{unit}\b\)?",
+        number + rf"\s+{unit}\s+(?:de|of|named|titled|llamadas?)\s+{single_name}",
+        number + rf"\s+{single_name}\s+{unit}\b",
+        number + rf"\s*[x×]\s*{single_name}",
+    ]
+    grouped: Counter = Counter()
+
+    def bind(match: re.Match) -> str:
+        raw = re.sub(r"[\s-]+", " ", match["number"])
+        value = int(raw) if raw.isdecimal() else _CARDINALS[raw]
+        for token in re.findall(identity, match["names"]):
+            grouped[identifiers[token]] += value
+        return "inventory_identity_group"
+
+    for pattern in patterns:
+        asserted = re.sub(pattern, bind, asserted)
+    mentioned = grouped.copy()
+    for clause in re.split(r"[,;\n]|[.!?](?=\s|$)|\b(?:and|y)\b", asserted):
+        # Separate list entries count separately; a descriptive reference
+        # such as "Atlas is active" is not another instance of Atlas.
+        entry = re.search(rf"(?P<name>{identity})[\"'«»“”‘’*]*\s*(?:\([^()]*\))?\s*[.!]?\s*$", clause)
+        if entry:
+            mentioned[identifiers[entry["name"]]] += 1
+    for token in re.findall(identity, asserted):
+        name = identifiers[token]
+        if expected[name] == 1:
+            mentioned[name] = max(mentioned[name], 1)
+    asserted = re.sub(identity, lambda match: identifiers[match[0]], asserted)
+    return expected, mentioned, grouped, asserted
+
+
 def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
     seen = _inventory_seen(payload)
     if seen is None:
@@ -463,6 +588,7 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
     if _inventory_chronology_claim(text, seen):
         return "extra_claim"
     asserted = fold(window_status_assertions(text, payload))
+    identities, _, _, asserted = _inventory_identity_counts(asserted, seen)
     # Quoted observed names are data, including names containing cardinality
     # or punctuation. Keep the original draft and observation untouched.
     for window in seen["windows"]:
@@ -479,6 +605,8 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
     partial_page = entire_inventory is not True
     count_question = re.search(r"\b(?:cuantas|how\s+many|cuenta|count)\b", fold(user_text))
     stated_subset = False
+    stated_page_count = False
+    stated_inventory_count = False
     for clause in re.split(r"[,;.!?]|\b(?:pero|but|and|y)\b", asserted):
         if _UNCERTAINTY.search(clause) or re.search(r"^\s*(?:si|if)\b", clause):
             continue
@@ -489,34 +617,61 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
             page_value, total_value = [int(n) if n.isdecimal() else _CARDINALS[n] for n in numbers]
             if page_value != seen["count"]:
                 return "reversed_result"
-            if total is None:
+            denominator = (
+                seen["observedCount"]
+                if fraction["observed_before"] or fraction["observed_after"] else total
+            )
+            if denominator is None:
                 return "extra_claim"
-            if total_value != total:
+            if total_value != denominator:
                 return "reversed_result"
             stated_subset = True
             clause = clause[:fraction.start()] + "window_subset" + clause[fraction.end():]
         value = (total if _TOTAL_CONTEXT.search(clause) else
                  seen["count"] if _PAGE_CONTEXT.search(clause) else
                  seen["observedCount"] if _OBSERVATION_CONTEXT.search(clause) else total)
-        for match in _COUNT.finditer(clause):
+        quantities = list(_COUNT.finditer(clause))
+        if _PAGE_CONTEXT.search(clause):
+            quantities.extend(_INVENTORY_REFERENCE_COUNT.finditer(clause))
+        for match in quantities:
+            quantity_scope = _inventory_quantity_scope(clause, match.start(), match.end())
+            if not quantity_scope:
+                # A colon followed by an observed identity introduces the
+                # enumerated page. Explicit total/observation modifiers above
+                # still win; a later list cannot rebind an earlier total.
+                enumeration = re.match(
+                    r"\s*(?:(?:abiertas?|visibles?|open|visible)\s*)?:\s*[\"'«]?(.+)",
+                    clause[match.end():],
+                )
+                named_entry = enumeration and re.match(
+                    r"(?:" + "|".join(["window_name", *(re.escape(name) for name in identities)]) + r")(?!\w)",
+                    enumeration[1],
+                )
+                quantity_scope = "page" if named_entry else "total"
+            quantity_value = {
+                "page": seen["count"], "observed": seen["observedCount"], "total": total,
+            }[quantity_scope]
             raw = re.sub(r"[\s-]+", " ", match["number"])
             number = int(raw) if raw.isdecimal() else _CARDINALS[raw]
-            bound = match["bound"]
-            if value is None:
+            bound = match.groupdict().get("bound")
+            if quantity_value is None:
                 valid = (
                     seen["observedCount"] >= number if bound in {"at least", "al menos"} else
                     seen["observedCount"] > number if bound in {"more than", "mas de"} else False
                 )
             else:
                 valid = (
-                    value >= number if bound in {"at least", "al menos"} else
-                    value <= number if bound in {"at most", "como maximo"} else
-                    value > number if bound in {"more than", "mas de"} else
-                    value < number if bound in {"less than", "fewer than", "menos de"} else
-                    value == number
+                    quantity_value >= number if bound in {"at least", "al menos"} else
+                    quantity_value <= number if bound in {"at most", "como maximo"} else
+                    quantity_value > number if bound in {"more than", "mas de"} else
+                    quantity_value < number if bound in {"less than", "fewer than", "menos de"} else
+                    quantity_value == number
                 )
             if not valid:
-                return "extra_claim" if value is None else "reversed_result"
+                return "extra_claim" if quantity_value is None else "reversed_result"
+            if bound is None:
+                stated_page_count |= quantity_scope == "page"
+                stated_inventory_count |= quantity_scope in {"observed", "total"}
         if _NO_WINDOWS.search(clause) and value != 0:
             return "extra_claim" if value is None else "reversed_result"
         if _HAS_WINDOWS.search(_NO_WINDOWS.sub("", clause)) and value == 0:
@@ -533,6 +688,9 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 return "reversed_result" if negative else "extra_claim"
             if negative:
                 stated_subset = True
+    # Reporting both the smaller page and the larger observed/known inventory
+    # explicitly discloses the subset, even without the adjective "partial".
+    stated_subset |= stated_page_count and stated_inventory_count and seen["count"] < seen["observedCount"]
     if partial_page and not (count_question and total is not None) and not (
         stated_subset or _INVENTORY_LIMIT.search(asserted) or _UNCERTAINTY.search(asserted)
     ):

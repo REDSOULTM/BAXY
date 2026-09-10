@@ -1,0 +1,568 @@
+{
+  "utc": "2026-09-10T22:23:04.711174+00:00",
+  "summary": {
+    "pass": 36,
+    "fail": 14,
+    "quality_gains_over792A": 4,
+    "quality_losses_over792A": 0,
+    "recovered_in_one_request": [
+      "inventory785-1-3",
+      "inventory785-1-4",
+      "inventory785-2-2",
+      "inventory785-4-1"
+    ],
+    "first_payload_parity": 50,
+    "attempt_events": {
+      "started": 59,
+      "succeeded": 57,
+      "failed": 2
+    },
+    "effective_params_verified": 57,
+    "new_raw_outputs": 0,
+    "changed_finals_read": 5,
+    "exact_final_outcomes": 45,
+    "timeouts": 2,
+    "empty_finals": 3
+  },
+  "rows": [
+    {
+      "case_id": "H0023",
+      "passed": false,
+      "reason": "No final answer within the unchanged product deadline; empty or timeout does not fulfill the available read.",
+      "defects": [
+        "timeout"
+      ],
+      "same_final_as792A": true,
+      "seconds": 9.0,
+      "attempts": 2,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM"
+    },
+    {
+      "case_id": "H0103",
+      "passed": false,
+      "reason": "No final answer within the unchanged product deadline; empty or timeout does not fulfill the available read.",
+      "defects": [
+        "timeout"
+      ],
+      "same_final_as792A": true,
+      "seconds": 9.0,
+      "attempts": 3,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM"
+    },
+    {
+      "case_id": "H0539",
+      "passed": false,
+      "reason": "Llama disponible a 16,54 GB utilizables; los disponibles son aproximadamente 1,98 GB. Tengo también atribuye al narrador la RAM del PC.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.5469999999913853,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "H0655",
+      "passed": false,
+      "reason": "Disponible en total no distingue la capacidad utilizable de la memoria libre, que es aproximadamente 1,97 GB; además dice Tengo.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.5930000000080327,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "H0508",
+      "passed": false,
+      "reason": "La versión observada de Windows se conserva; llama disponible a 16,54 GB utilizables, frente a aproximadamente 1,97 GB disponibles. Tengo cambia el sujeto.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 1.235000000000582,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "passed": false,
+      "reason": "La hora 16:34 es correcta, pero los tres brazos conservan Marka. No cumple el criterio de prosa de C03.",
+      "defects": [
+        "spelling"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.4529999999940628,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.45300000000861473,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "passed": false,
+      "reason": "El inventario vacío es correcto, pero No tengo atribuye al narrador las ventanas por las que preguntó el usuario.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.40599999998812564,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "passed": true,
+      "reason": "Root reviewed the complete captured first draft against typed identities/counts/scope. It now reaches the user unchanged in one request. REPLAY793 proves the same captured draft was rejected before the repair.",
+      "defects": [],
+      "same_final_as792A": false,
+      "seconds": 0.46900000001187436,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "passed": true,
+      "reason": "Root reviewed the complete captured first draft against typed identities/counts/scope. It now reaches the user unchanged in one request. REPLAY793 proves the same captured draft was rejected before the repair.",
+      "defects": [],
+      "same_final_as792A": false,
+      "seconds": 0.42199999999138527,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 1.3910000000032596,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "passed": true,
+      "reason": "Root reviewed the complete captured first draft against typed identities/counts/scope. It now reaches the user unchanged in one request. REPLAY793 proves the same captured draft was rejected before the repair.",
+      "defects": [],
+      "same_final_as792A": false,
+      "seconds": 1.264999999999418,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "passed": true,
+      "reason": "Complete faithful first answer already seen in792B; both identities and2/7 page scope preserved. Quality unchanged; first-generation variation not attributed to793.",
+      "defects": [],
+      "same_final_as792A": false,
+      "seconds": 1.5160000000032596,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 1.5619999999908032,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 2.2030000000086147,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 2.687999999994645,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 2.7660000000032596,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 2.875,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "passed": true,
+      "reason": "Root reviewed the complete captured first draft against typed identities/counts/scope. It now reaches the user unchanged in one request. REPLAY793 proves the same captured draft was rejected before the repair.",
+      "defects": [],
+      "same_final_as792A": false,
+      "seconds": 5.264999999999418,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "passed": false,
+      "reason": "All three attempts returned, but no publishable final. Original chronology/identity omission or false count veto remains; rejection does not satisfy the request.",
+      "defects": [
+        "empty_final",
+        "unrepaired_inventory"
+      ],
+      "same_final_as792A": true,
+      "seconds": 7.562999999994645,
+      "attempts": 3,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 4.968000000008033,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 4.89100000000326,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 7.60899999999674,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "passed": false,
+      "reason": "All three attempts returned, but no publishable final. Original chronology/identity omission or false count veto remains; rejection does not satisfy the request.",
+      "defects": [
+        "empty_final",
+        "unrepaired_inventory"
+      ],
+      "same_final_as792A": true,
+      "seconds": 8.875,
+      "attempts": 3,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 7.860000000000582,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 7.4689999999973224,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 7.702999999994063,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "passed": false,
+      "reason": "All three attempts returned, but no publishable final. Original chronology/identity omission or false count veto remains; rejection does not satisfy the request.",
+      "defects": [
+        "empty_final",
+        "unrepaired_inventory"
+      ],
+      "same_final_as792A": true,
+      "seconds": 7.328000000008615,
+      "attempts": 3,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 7.75,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 7.421999999991385,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-1-1",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.3899999999994179,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-1-2",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.45300000000861473,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-1-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.40699999999196734,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-1-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.4220000000059372,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-2-1",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.4210000000020955,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-2-2",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.4379999999946449,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-2-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.45300000000861473,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-2-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.4379999999946449,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-3-1",
+      "passed": false,
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.9060000000026776,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-3-2",
+      "passed": false,
+      "reason": "Disponible cero es correcto, pero toda la memoria instalada confunde 32 GB instalados con 31,6 GB utilizables y usados.",
+      "defects": [
+        "measurement_label"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.5310000000026776,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-3-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.7189999999973224,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-3-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.42199999999138527,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-4-1",
+      "passed": false,
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.34300000000803266,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-4-2",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.42199999999138527,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-4-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.4380000000091968,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-4-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.42199999999138527,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-5-1",
+      "passed": false,
+      "reason": "No afirma instalada: 12 GB es capacidad utilizable, con 3,5 libres y 8,5 usados. Disponible en total queda ambiguo; se rechaza por Tengo, sin inventar una afirmación de capacidad instalada.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_final_as792A": true,
+      "seconds": 0.8590000000112923,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-5-2",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.42199999999138527,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-5-3",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.4220000000059372,
+      "attempts": 1,
+      "error": null
+    },
+    {
+      "case_id": "memory785-5-4",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_final_as792A": true,
+      "seconds": 0.42199999999138527,
+      "attempts": 1,
+      "error": null
+    }
+  ],
+  "method": "Frozen785/792 whole-answer criteria;45 exact finals inherit judgment, five changed finals read by root. All successful raw responses already present792. Four recovered drafts independently replayed through the changed composer.",
+  "candidate793_adopted": true,
+  "model_selection_closed": true,
+  "coverage_added": 0,
+  "limits": "Directed integration panel, not native-model ranking, live provider/UI/voice acceptance or full survey coverage.14 failures remain."
+}

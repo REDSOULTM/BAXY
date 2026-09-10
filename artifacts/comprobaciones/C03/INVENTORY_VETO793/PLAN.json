@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-10T22:16:10.192331+00:00",
+  "head": "ae274b8b4c65a90b3f5707e408a6a63c43b4566a",
+  "inherits_unadopted": [
+    "INVENTORY_BUDGET787",
+    "INVENTORY_IDENTITY789",
+    "INVENTORY_IDENTITY791"
+  ],
+  "cause": "Three demonstrated false veto causes in captured792 first drafts: factual no-open phrase, page enumeration quantity, and negated representation of all windows.",
+  "change": "Anchor no-open/no-closed instruction fragments as whole replies; bind quantity introducing observed names to page only without explicit scope; conserve negation of represent/cover/abarcar. No prompt changes.",
+  "new_controls": 72,
+  "baseline": {
+    "failed": 60,
+    "passed": 148
+  },
+  "targeted": {
+    "passed": 947,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 6.21
+  },
+  "first_request_messages_sampling_model_or_deadlines_changed": false,
+  "coverage_added": 0,
+  "candidate_adopted": false,
+  "full_new": false,
+  "full_reason": "Python-only candidate; final Full and Full upon joint C#/Python adoption remain required.",
+  "next": "Validate21 owners/integrity suites and Fast, then the same50 complete integration tasks794 with registered Qwen. Model selection closed; no more model comparison.",
+  "owner_methodology": "Every model first uses its own native template and documented recipe on all identical tasks; BAXY is then added component by component. Integrated Qwen diagnostics do not select a winner over K2."
+}

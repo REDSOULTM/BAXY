@@ -1,0 +1,30 @@
+{
+  "source": "792 captured first drafts; synthetic cases",
+  "inference": false,
+  "rows": [
+    {
+      "id": "inventory785-1-3",
+      "calls": 1,
+      "same_first_payload": true,
+      "delivers_exact_first": true
+    },
+    {
+      "id": "inventory785-1-4",
+      "calls": 1,
+      "same_first_payload": true,
+      "delivers_exact_first": true
+    },
+    {
+      "id": "inventory785-2-2",
+      "calls": 1,
+      "same_first_payload": true,
+      "delivers_exact_first": true
+    },
+    {
+      "id": "inventory785-4-1",
+      "calls": 1,
+      "same_first_payload": true,
+      "delivers_exact_first": true
+    }
+  ]
+}

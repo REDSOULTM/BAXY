@@ -150,6 +150,8 @@ def test_inventory_cannot_establish_opening_times_or_chronology(claim, count, to
 ])
 def test_unknown_chronology_and_page_positions_are_not_recency_claims(reply):
     payload = _compose_situation_payload(observation(), "en", "List the windows.")
+    # Keep the chronology assertion under test in a complete list answer.
+    reply += '\n- "Órbita 0"\n- "Órbita 1"'
     assert not _payload_fact_defect(reply, payload, "List the windows.")
     assert window_fact_feedback(reply, payload) is None
 

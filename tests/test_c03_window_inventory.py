@@ -157,7 +157,7 @@ def test_page_count_and_observed_count_remain_distinct(complete, observed, langu
     ("No hay ventanas visibles.", False, False),
     ("There are no visible windows.", True, False),
     ("This page shows two windows; Example is running in the background.", True, False),
-    ("Esta página muestra dos ventanas; no comprobé los procesos en segundo plano.", False, True),
+    ("Esta página muestra dos ventanas: Atlas y Vega; no comprobé los procesos en segundo plano.", False, True),
 ])
 def test_inventory_claims_preserve_page_total_and_uncertainty(reply, complete, valid):
     payload = _compose_situation_payload(situation(complete=complete), "en")

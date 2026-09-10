@@ -1,0 +1,20 @@
+{
+  "owner": "system.process.list",
+  "human_cases": [
+    "H0133",
+    "H0158",
+    "H0169",
+    "H0470",
+    "H0669",
+    "H0678"
+  ],
+  "not_in_this_read_only_category": {
+    "H0334": "Also requests file creation; requires composed-operation verification."
+  },
+  "plan": "Use existing status-batch772 conductor driver with >=50 cases including the six confirmed historical requirements and varied Spanish/English queries. Actual provider reads, count/list or declared CPU/RAM metric. No new capability, model comparison, or automatic coverage.",
+  "driver": "scratchpad/c03-status-batch772.py",
+  "owner_arguments": "src/baxy_mind/__main__.py:4598",
+  "owner_intent": "src/baxy_mind/effect_intent.py:9611",
+  "status": "scope_only_not_executed",
+  "covered_added": 0
+}

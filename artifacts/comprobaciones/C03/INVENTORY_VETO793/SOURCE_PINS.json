@@ -1,0 +1,15 @@
+{
+  "src/baxy_mind/llm.py": "16b3b078d61673fed9b28276d645b79e341c5c4b8f0632cc40cc2e7c6cf8bbea",
+  "src/baxy_mind/window_prose_facts.py": "9e63d1ead815217a44809694ece3a1b7a4c4f2da9f02234cc56cca841048651e",
+  "tests/test_c03_inventory_output_budget.py": "51b27642eb79d3b5fabb29b3f2aa807dd8c8461d0b07b6b0d10c42125deca522",
+  "tests/test_c03_inventory_scope_polarity.py": "61409d4a47b925a26eb46ef979fe52abf0d4029e7cdd24fe911c77c78cce2554",
+  "tests/data/c03_inventory_completion786.json": "b5c2f879d5ddd427bbad045bb49a52836552074cb44d905fd5cf07a2b99da32c",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "c082aaeee72c0822ccf90e99866939e9ecf074433af56aaaad5352863ec6e593",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "5685d79bc66e46f6d2dadf8152a4fb0d0cbd002704d757763192c3967466f648",
+  "tests/test_price_v8_veto_damage_by_cause.py": "d3a1b27b48f6a6479814de32f3fd0df89785f28eab8d36a9801a28163115ea7f",
+  "src/baxy_mind/__main__.py": "1f651f36f7c755c47c78bfb8b2b7f3b859d886c72aaf8bfdf53907e315871211",
+  "src/baxy_mind/effect_intent.py": "6eb1c5322607aa915d143af811e954b106d164f36091c967fadfcf788a1b1af5",
+  "tests/test_c03_inventory_identity_coverage.py": "25e4a65aa3e86e92c844944ab9db5fe529e8e5a497a7abbbfaa9e98ac3bd9166",
+  "tests/test_c03_inventory_semantic_projection.py": "d05b8c9f817cacc2dd90272002cca5316724e112957d324fab7d773efc284375",
+  "tests/test_c03_window_inventory.py": "5a03ed070cb53c57e41f840621cb905553c04a74644e56ed850fccdbd0dec81a"
+}
