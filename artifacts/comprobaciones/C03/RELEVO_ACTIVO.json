@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T18:25:40.187425+00:00",
+  "confirmedAtUtc": "2026-09-10T18:29:22.413039+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "773 adoptado: preposición española conserva scope local y límites de condicional/dueño ajeno. 2121pass/1skipSTT/79,73s,55nuevos; Fast0/Release21,94s, sesiones42128/36710 recogidas. 6pins intactos; programa407=7862ae1effb430cff9cbb057fa83912786bca493faba55b5c9636b5cd7181b18. Publicar y ejecutar774 categoría batería completa7+10variantes, no inferencia activa.26/716/0.",
-  "continuation": "Publish773, run prepared774 complete battery category and10 development variants. Require all guards then manually adjudicate fresh observations.",
+  "checkpoint": "774 terminada0/21331 recogida,17 consultas con lectura fresca:16pass/1wrong_actor H0665(Tengo). H0359 correcto433,305ms; todas guardas intactas.3495,56MiB/2151,49MiB/35,25s. Registro5referencias,SHA=e170fc33bdf15b57961588fd33afe3dbbda7dd82f33b56b0178a1a6d59ecb17f,26/716/0. Siguiente aislar sujeto bateria reutilizando reparación CPU573–582 y medir valores/carga/ausencia en fixtures declarados. No inferencia activa.",
+  "continuation": "Reuse existing CPU wrong-actor detection/correction for battery only after locating cause; prepare declared synthetic percentage/charging/absence generalization. No model promotion or coverage yet.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "098bfd06bc0a7e428675d7a563fe160fd730fe27",
-  "workStatus": "machine_scope773_adopted_pending_publication",
+  "publishedSourceCommit": "481c2f411aa7eaaf00cc78665953bfdf7bd01586",
+  "workStatus": "battery774_adjudicated_actor_and_value_generalization_pending",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "098bfd06bc0a7e428675d7a563fe160fd730fe27",
+  "publishedEvidenceCommit": "481c2f411aa7eaaf00cc78665953bfdf7bd01586",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

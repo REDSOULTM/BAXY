@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-10T18:29:22.413039+00:00",
+  "before_sha256": "728ea559efbbe511e6af5d9210569fe3b58393750d7230378b1b7f31710071b4",
+  "after_sha256": "e170fc33bdf15b57961588fd33afe3dbbda7dd82f33b56b0178a1a6d59ecb17f",
+  "snapshot_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-status-batch774-private\\requirements-before774.jsonl",
+  "changed_rows": 5,
+  "fields_changed": [
+    "verification_evidence",
+    "verification_reason",
+    "verification_updated_at"
+  ],
+  "coverage_added": 0,
+  "counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "all_protected_fields_unchanged": true
+}

@@ -1,3 +1,7 @@
+774 terminada0/21331 recogida,17 consultas con lectura fresca:16pass/1wrong_actor H0665(Tengo). H0359 correcto433,305ms; todas guardas intactas.3495,56MiB/2151,49MiB/35,25s. Registro5referencias,SHA=e170fc33bdf15b57961588fd33afe3dbbda7dd82f33b56b0178a1a6d59ecb17f,26/716/0. Siguiente aislar sujeto bateria reutilizando reparación CPU573–582 y medir valores/carga/ausencia en fixtures declarados. No inferencia activa.
+
+773 publicada 481c2f411aa7eaaf00cc78665953bfdf7bd01586; HEAD=origin=remoto,6fuentes/15evidencias verificadas.774 activo21331,17casos categoria bateria completa+10variantes,launcher32920. No editar fuente ni reiniciar.26/716/0.
+
 773 adoptado: preposición española conserva scope local y límites de condicional/dueño ajeno. 2121pass/1skipSTT/79,73s,55nuevos; Fast0/Release21,94s, sesiones42128/36710 recogidas. 6pins intactos; programa407=7862ae1effb430cff9cbb057fa83912786bca493faba55b5c9636b5cd7181b18. Publicar y ejecutar774 categoría batería completa7+10variantes, no inferencia activa.26/716/0.
 
 773 candidato: preposición a+determinante deja de vetar lectura local; condicional quedar y dueño ajeno explícito conservan límites. Baseline30fail/22pass; primer2094pass/2fallos de frontera reparados,55controles finales pass. Programa407 y6pins sellados. Faltan owners/integridad/Fast y publicación;774 preparado con categoría batería7+10variantes. No inferencia activa,26/716/0.

@@ -1,0 +1,173 @@
+{
+  "utc": "2026-09-10T18:29:22.413039+00:00",
+  "source_commit": "481c2f411aa7eaaf00cc78665953bfdf7bd01586",
+  "status": "complete_battery_category_adjudicated",
+  "cases": 17,
+  "original_category_cases": 7,
+  "added_development_variants": 10,
+  "correct": 16,
+  "failed": 1,
+  "fresh_reads": 17,
+  "coverage_added": 0,
+  "method": "Root manually compared every full reply with this turn's fresh battery payload and frozen criterion.",
+  "resources": {
+    "utc": "2026-09-10T18:26:58.633757+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2151.48828125,
+    "seconds": 35.25,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "verdicts": [
+    {
+      "case_id": "H0037",
+      "group": "battery",
+      "turn_id": "t1",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "H0144",
+      "group": "battery",
+      "turn_id": "t2",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "H0359",
+      "group": "battery",
+      "turn_id": "t3",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "H0379",
+      "group": "battery",
+      "turn_id": "t4",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "H0665",
+      "group": "battery",
+      "turn_id": "t5",
+      "correct": false,
+      "category": "wrong_actor",
+      "reason": "Tengo el100% de batería atribuye al asistente una propiedad observada del PC; el porcentaje es fiel pero el sujeto no."
+    },
+    {
+      "case_id": "battery-charge-en",
+      "group": "battery",
+      "turn_id": "t6",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-level-es",
+      "group": "battery",
+      "turn_id": "t7",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-01",
+      "group": "battery",
+      "turn_id": "t8",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-02",
+      "group": "battery",
+      "turn_id": "t9",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-03",
+      "group": "battery",
+      "turn_id": "t10",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-04",
+      "group": "battery",
+      "turn_id": "t11",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-05",
+      "group": "battery",
+      "turn_id": "t12",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-06",
+      "group": "battery",
+      "turn_id": "t13",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-07",
+      "group": "battery",
+      "turn_id": "t14",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-08",
+      "group": "battery",
+      "turn_id": "t15",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-09",
+      "group": "battery",
+      "turn_id": "t16",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    },
+    {
+      "case_id": "battery-variant774-10",
+      "group": "battery",
+      "turn_id": "t17",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Porcentaje o estado de carga fiel a la lectura fresca, con sujeto y lenguaje apropiados."
+    }
+  ],
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "limits": "All observations were100%,present,true AC/not charging. No changed-value or absent-battery evidence, UI/voice credit or model ranking.",
+  "diagnosis": "H0359 now invokes fresh battery read and answers faithfully in433.305ms. H0665 receives fresh data but says Tengo, a separate output-actor defect.",
+  "evidence_sha256": {
+    "review.json": "ef2bf53e627d4b01e9e940853845ca28ef0e03c10ea774db234a1f54be60656e",
+    "compose-audit.jsonl": "f1ea38f6334286b954af16b6c663b33f83c9add4c924894abfa819fc88bd11db",
+    "turn-audit.jsonl": "63b6e68e3f6d2077cac73b5fc4d8bf40ec34898ef90c5a2c2aeba1cc4869cdcb",
+    "shell-trace.jsonl": "1f18ef8423162cebd049db6f7b31e3b8b6dc42c52323adad09c45a6fab65d7b9"
+  }
+}
