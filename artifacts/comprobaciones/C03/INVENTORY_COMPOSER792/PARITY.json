@@ -1,0 +1,64 @@
+{
+  "executions": 100,
+  "posts": 124,
+  "attempt_states": {
+    "started": 133,
+    "succeeded": 124,
+    "failed": 9
+  },
+  "first_payload_parity": 100,
+  "first_raw_pair_parity": 48,
+  "first_raw_different_cases": [
+    "H0103",
+    "inventory785-2-3"
+  ],
+  "effective_params_verified": 124,
+  "paired_final_different_cases": [
+    "inventory785-2-3",
+    "inventory785-5-2"
+  ],
+  "changed_from790": [
+    {
+      "id": "H0023",
+      "arm": "A"
+    },
+    {
+      "id": "H0023",
+      "arm": "B"
+    },
+    {
+      "id": "H0103",
+      "arm": "B"
+    },
+    {
+      "id": "H0103",
+      "arm": "A"
+    },
+    {
+      "id": "inventory785-2-2",
+      "arm": "B"
+    },
+    {
+      "id": "inventory785-2-2",
+      "arm": "A"
+    },
+    {
+      "id": "inventory785-2-3",
+      "arm": "A"
+    },
+    {
+      "id": "inventory785-4-1",
+      "arm": "A"
+    },
+    {
+      "id": "inventory785-4-1",
+      "arm": "B"
+    },
+    {
+      "id": "inventory785-5-2",
+      "arm": "B"
+    }
+  ],
+  "novel_raw_outputs": 9,
+  "B_attempts_with_intervention": 10
+}

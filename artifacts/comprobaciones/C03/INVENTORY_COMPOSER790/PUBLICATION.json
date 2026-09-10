@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-10T21:46:21.539128+00:00",
+  "commit": "345fe1e5513b0893c87751ca645c3145e8ab9435",
+  "origin_tracking": "345fe1e5513b0893c87751ca645c3145e8ab9435",
+  "remote_ref": "345fe1e5513b0893c87751ca645c3145e8ab9435",
+  "main_unchanged": true,
+  "evidence_hashes_verified_in_git": 31,
+  "candidate789_worktree_pins_verified": 13,
+  "candidate789_adopted": false,
+  "runtime_source_changes_in_commit": [],
+  "no_inference_or_product_process": true,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

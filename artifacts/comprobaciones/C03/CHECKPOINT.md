@@ -1,3 +1,13 @@
+792 terminada y revisada: A32/50 y B32/50;0 ganancias finales al retirar rejected_draft.133 intentos,124 éxitos HTTP,9 errores;100 primeros payloads idénticos,48 primeros brutos emparejados.285,859s;3499,56MiB VRAM/765,25MiB RSS compositor.59555 terminal0 recogida. Dueño ordena cerrar selección: Qwen3-4B-Instruct2507Q4_K_M registrado; continuar sólo bloqueantes, sin más comparativas de modelo.791 validado y preservado sin adoptar;28/714/0.
+
+792 activa sesión59555: mismas50 tareas en cada brazo, A original y B sin rejected_draft en corrección factual; orden AB/BA, primerpayload idéntico y plazos4/9s.791 validado3062pass/1skipSTT+121subtests,Fast0;13fuentes preservadas sin adoptar. No editar fuente.28/714/0.
+
+791 validado: 3062 pass, 1 skip ambiental STT y 121 subtests en 19,52 s; Fast exit 0. Sesión87557 terminada y recogida. 13 huellas intactas y snapshot preservado; fuente candidata sin adoptar. Preparada792: mismas50 tareas por brazo, elimina solo rejected_draft en B; no comparación nativa de modelos. Encuesta28/714/0.
+
+791 candidato sellado: reparados los dos errores reproducidos del verificador de inventario; 72 controles nuevos, baseline 72 fallos/89 pass, focalizadas 808 pass/0 skips. Primer prompt, modelo, sampler y plazos intactos. Pendientes 21 suites y Fast. El dueño recalca separar el modelo nativo de las transformaciones BAXY; 792 será una ablación de integración, no ranking de modelos. Encuesta 28/714/0.
+
+790evidencia publicada 345fe1e5513b0893c87751ca645c3145e8ab9435:HEAD=origin=remoto;31huellas evidencia/13candidato789verificadas,mainintacto.789preservado sinadoptar;33/50finales,0recuperaciones de multiplicidad,2contraejemplos delchecker demostrados. Sesiones44316/18978/98591terminal0recogidas;sinprocesos.28/714/0.
+
 790 terminado0/44316recogida:33/50correctos,17fallos;8vacíos,0timeouts;67intentos completos/success67.50primerpayloadsiguales788,49primerbrutoigual. Treslistas incompletas ahora vetadas pero0recuperadas;33vs32 ligado a velocidad/retry4-1,noatribuir a789.3499,56MiBVRAM/761,77MiBRSS;93,844s.789validado pero sinadoptar;feedback cuenta0enúltimotítulo seguido de otra frase, corregir antes.28/714/0.
 
 790 activo44316:50casos idénticos788, primerpayload completo comprobado igual (incluido512denso), modelo/perfil/servidor fijos.789validado2990pass/1STTskip+121subtests yFast0; no editar fuente durante corrida. Cada intento se registra antes de HTTP con outcome de éxito/error.28/714/0.

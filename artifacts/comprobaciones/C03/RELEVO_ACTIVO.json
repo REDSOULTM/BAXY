@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-10T20:35:47.442315+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "790 terminado0/44316recogida:33/50correctos,17fallos;8vacíos,0timeouts;67intentos completos/success67.50primerpayloadsiguales788,49primerbrutoigual. Treslistas incompletas ahora vetadas pero0recuperadas;33vs32 ligado a velocidad/retry4-1,noatribuir a789.3499,56MiBVRAM/761,77MiBRSS;93,844s.789validado pero sinadoptar;feedback cuenta0enúltimotítulo seguido de otra frase, corregir antes.28/714/0.",
-  "continuation": "Preserve789 and790 before edits. Fix measured final-title counting and process-annotation ambiguity under a new candidate; then isolate why factual repair repeats incomplete drafts. No further unchanged batch, no adoption or survey credit from empty finals.",
+  "checkpoint": "792 terminada y revisada: A32/50 y B32/50;0 ganancias finales al retirar rejected_draft.133 intentos,124 éxitos HTTP,9 errores;100 primeros payloads idénticos,48 primeros brutos emparejados.285,859s;3499,56MiB VRAM/765,25MiB RSS compositor.59555 terminal0 recogida. Dueño ordena cerrar selección: Qwen3-4B-Instruct2507Q4_K_M registrado; continuar sólo bloqueantes, sin más comparativas de modelo.791 validado y preservado sin adoptar;28/714/0.",
+  "continuation": "Publish791/792. Repair demonstrated shared false vetoes (empty inventory, page quantity/exhaustiveness) and then run whole categories. RO agents locate causes and next survey family; root implements. Do not add another prompt or hardcoded process alias.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "63fc4f56f4a90fb434773b58fefffbfbec3c1e07",
-  "workStatus": "inventory_composer790_adjudicated_candidate789_held",
+  "workStatus": "model_selected_qwen_continue_c03_blockers",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "64b493889d030133be42461d467cde85def856c3",
+  "publishedEvidenceCommit": "345fe1e5513b0893c87751ca645c3145e8ab9435",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Previous turn completed788 adjudication, proved baseline veto attribution, preserved787 source and published evidence64b49388. Current turn repairs the identified coverage gap with89 controls and2973 owner passes.",
+  "previousGoalTurnClassificationReason": "Preserved789 and790; implemented two demonstrated checker repairs and72 controls,808 targeted passes. Native/integrated methodology reviewed against699 and737.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
@@ -124,7 +124,7 @@
     "adjudication": "52correct/21failures; no coverage/UI/voice credit; report pending"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
-  "ownerPriority": "Complete fair native K2 adaptation before integrated comparison; do not blame model for BAXY transforms.",
+  "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
   "k2Comparison": {
     "weightsVerified": 5,
     "weights": "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/WEIGHTS.json",
@@ -842,5 +842,6 @@
     "sourceAdopted": false,
     "surveyCredit": 0,
     "report": "artifacts/comprobaciones/C03/PROSE_SAMPLING785/REPORT.md"
-  }
+  },
+  "selectedModel": "Qwen3-4B-Instruct-2507 Q4_K_M registered"
 }

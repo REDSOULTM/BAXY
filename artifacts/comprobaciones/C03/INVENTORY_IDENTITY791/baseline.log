@@ -1,0 +1,1772 @@
+........................................................................ [ 44%]
+...............FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 89%]
+FFFFFFFFFFFFFFF..                                                        [100%]
+================================== FAILURES ===================================
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, ending = '.'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2, ending = '.'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2, ending = '.'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, ending = '.'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4, ending = '.'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4, ending = '.'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, ending = '!'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2, ending = '!'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2, ending = '!'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, ending = '!'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4, ending = '!'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4, ending = '!'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, ending = '?'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2, ending = '?'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2, ending = '?'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, ending = '?'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4, ending = '?'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4, ending = '?'
+tail = 'Algunas ventanas se repiten.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, ending = '.'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2, ending = '.'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2, ending = '.'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, ending = '.'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4, ending = '.'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4, ending = '.'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, ending = '!'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2, ending = '!'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2, ending = '!'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, ending = '!'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4, ending = '!'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4, ending = '!'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, ending = '?'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2, ending = '?'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2, ending = '?'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, ending = '?'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4, ending = '?'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4, ending = '?'
+tail = 'Some windows occur more than once.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [2, 4])
+    @pytest.mark.parametrize("ending", [".", "!", "?"])
+    @pytest.mark.parametrize("tail", ["Algunas ventanas se repiten.", "Some windows occur more than once."])
+    def test_sentence_after_the_final_title_does_not_erase_its_one_mention(names, repeat, ending, tail):
+        source = observation(names, repeat)
+        reply = ', '.join('"' + name + '"' for name in names) + ending + ' ' + tail
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        feedback = window_fact_feedback(reply, payload, 'List the windows.')
+        missing = feedback['missing_answer']['identities']
+        assert len(missing) == len(names)
+>       assert {item['identified_in_draft'] for item in missing.values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         Use -v to get more diff
+
+tests\test_c03_inventory_identity_coverage.py:123: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})--Companion] _
+
+process = 'Companion', title = '', pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})--Reader.2026] _
+
+process = 'Reader.2026', title = '', pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})--Agent (helper)] _
+
+process = 'Agent (helper)', title = '', pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-   -Companion] _
+
+process = 'Companion', title = '   ', pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-   -Reader.2026] _
+
+process = 'Reader.2026', title = '   ', pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-   -Agent (helper)] _
+
+process = 'Agent (helper)', title = '   ', pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-None-Companion] _
+
+process = 'Companion', title = None, pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-None-Reader.2026] _
+
+process = 'Reader.2026', title = None, pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-None-Agent (helper)] _
+
+process = 'Agent (helper)', title = None, pattern = 'Atlas ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})--Companion] _
+
+process = 'Companion', title = '', pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})--Reader.2026] _
+
+process = 'Reader.2026', title = '', pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})--Agent (helper)] _
+
+process = 'Agent (helper)', title = '', pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-   -Companion] _
+
+process = 'Companion', title = '   ', pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-   -Reader.2026] _
+
+process = 'Reader.2026', title = '   ', pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-   -Agent (helper)] _
+
+process = 'Agent (helper)', title = '   '
+pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-None-Companion] _
+
+process = 'Companion', title = None, pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-None-Reader.2026] _
+
+process = 'Reader.2026', title = None, pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-None-Agent (helper)] _
+
+process = 'Agent (helper)', title = None, pattern = 'Atlas (process: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})--Companion] _
+
+process = 'Companion', title = '', pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})--Reader.2026] _
+
+process = 'Reader.2026', title = '', pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})--Agent (helper)] _
+
+process = 'Agent (helper)', title = '', pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-   -Companion] _
+
+process = 'Companion', title = '   ', pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-   -Reader.2026] _
+
+process = 'Reader.2026', title = '   ', pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-   -Agent (helper)] _
+
+process = 'Agent (helper)', title = '   '
+pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-None-Companion] _
+
+process = 'Companion', title = None, pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-None-Reader.2026] _
+
+process = 'Reader.2026', title = None, pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-None-Agent (helper)] _
+
+process = 'Agent (helper)', title = None, pattern = 'Atlas (proceso: {process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})--Companion] _
+
+process = 'Companion', title = '', pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})--Reader.2026] _
+
+process = 'Reader.2026', title = '', pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})--Agent (helper)] _
+
+process = 'Agent (helper)', title = '', pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-   -Companion] _
+
+process = 'Companion', title = '   ', pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-   -Reader.2026] _
+
+process = 'Reader.2026', title = '   ', pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-   -Agent (helper)] _
+
+process = 'Agent (helper)', title = '   ', pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-None-Companion] _
+
+process = 'Companion', title = None, pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-None-Reader.2026] _
+
+process = 'Reader.2026', title = None, pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+_ test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-None-Agent (helper)] _
+
+process = 'Agent (helper)', title = None, pattern = 'Atlas — ({process})'
+
+    @pytest.mark.parametrize("process", ['Companion', 'Reader.2026', 'Agent (helper)'])
+    @pytest.mark.parametrize("title", ['', '   ', None])
+    @pytest.mark.parametrize("pattern", [
+        'Atlas ({process})', 'Atlas (process: {process})',
+        'Atlas (proceso: {process})', 'Atlas — ({process})',
+    ])
+    def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(process, title, pattern):
+        source = observation(['Atlas', title], 1)
+        for window in source['observed']['windows']:
+            window['processName'] = process
+        payload = _compose_situation_payload(source, 'en', 'List the windows.')
+        incomplete = pattern.format(process=process) + '.'
+        complete = pattern.format(process=process) + ', "' + process + '".'
+>       assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:141: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-.-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-!-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Algunas ventanas se repiten.-?-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-.-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-!-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_sentence_after_the_final_title_does_not_erase_its_one_mention[Some windows occur more than once.-?-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})--Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})--Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})--Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-   -Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-   -Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-   -Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-None-Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-None-Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas ({process})-None-Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})--Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})--Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})--Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-   -Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-   -Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-   -Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-None-Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-None-Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (process: {process})-None-Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})--Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})--Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})--Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-   -Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-   -Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-   -Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-None-Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-None-Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas (proceso: {process})-None-Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})--Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})--Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})--Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-   -Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-   -Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-   -Agent (helper)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-None-Companion]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-None-Reader.2026]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_annotated_process_does_not_supply_an_independent_unnamed_window[Atlas \u2014 ({process})-None-Agent (helper)]
+72 failed, 89 passed in 1.75s

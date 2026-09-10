@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-10T21:56:44.899944+00:00",
+  "head": "345fe1e5513b0893c87751ca645c3145e8ab9435",
+  "inherits_unadopted": [
+    "INVENTORY_BUDGET787",
+    "INVENTORY_IDENTITY789"
+  ],
+  "cause": "Two reproduced checker errors in INVENTORY_COMPOSER790/REVIEW_FINDINGS.json.",
+  "change": "Count a title before sentence-ending punctuation after protecting opaque names; exclude a known process annotation from the count of independent unnamed windows.",
+  "new_controls": 72,
+  "baseline": {
+    "failed": 72,
+    "passed": 89
+  },
+  "targeted": {
+    "passed": 808,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 5.3
+  },
+  "first_request_messages_sampling_model_or_deadlines_changed": false,
+  "coverage_added": 0,
+  "candidate_adopted": false,
+  "full_new": false,
+  "full_reason": "Python-only candidate; final Full and Full upon joint C#/Python adoption remain required.",
+  "next": "Validate all21 owners/integrity suites and Fast, then paired diagnostic792 removes only rejected_draft from factual repair at the outgoing HTTP boundary. No runtime prompt adoption without evidence.",
+  "owner_methodology": "Every model first uses its own native template and documented recipe on all identical tasks; BAXY is then added component by component. Integrated Qwen diagnostics do not select a winner over K2."
+}

@@ -1,0 +1,17 @@
+{
+  "runtime_review": "Root inspected existing helper changes. Names are made opaque before punctuation splitting; only the observed process of the owner window is excluded inside its annotation. No generated visible response or model-specific branch added.",
+  "paired_driver_review": {
+    "reviewer": "k2_role_recipe737 read-only",
+    "path": "scratchpad/c03-inventory-composer792.py",
+    "conclusion": "Same50 tasks in both arms, first payload parity, identical recipe/backend/deadlines, attempt counter per case and arm. B removes only rejected_draft with original and actual payloads logged.",
+    "limitations": "One counterbalanced pass on a persistent backend is a directed integration diagnosis; it is not independent replication or native model ranking."
+  },
+  "native_evidence_review": {
+    "reviewer": "k2_parser737 read-only",
+    "references": [
+      "K2_HORIZON_NATIVE699/REPORTE699.md:3-26",
+      "FACTS_PROMPT737/REPORT.md:3-32"
+    ],
+    "conclusion": "699 isolates BAXY;696-698 did not.737 attributes three paired losses to the complete writer prompt, not to a specific clause or all product layers."
+  }
+}
