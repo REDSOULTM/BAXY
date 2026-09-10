@@ -1,0 +1,23 @@
+{
+  "files": {
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/ADJUDICATION.json": "7b973233e465aedd7ffc7882555e991823103a0eee2243c72e2a2fc848548f01",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/PARITY.json": "d55c8672dc27017637559811b950c8b3220af3e3eb00bbdbeb8386bf4a923e5f",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/PREREG.json": "81084f001929d65ef5957f9e54e70b65a1e9c857df024f84dc821ca4cefc8dee",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/PRIVATE_PINS.json": "ff0c58b41f9498d77cb27dfeffb9a2527903e1355face15ae92270da8a2b04a5",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/READY.json": "9750497f276aa391116f42ff2047cfaedd046157cfa94cec5509f993b7f8af37",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/REPORT.md": "1dc12f3030a089fa5126abfd069b9a0470381c3ac9bdb8183eed1975d1c37c1d",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/RESPUESTAS_SINTETICAS.md": "7e206f49c5a923f61b3db270e2197c0eea5974f25dc65a1a10ed8fe1bc3bc52c",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/RESULT.json": "5326969ddf1fe9b9982f8d2a62f42f2bf6bb37fc51dae292d946eef386534b6b",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER788/VALIDATOR_ATTRIBUTION.json": "73e06dced4107a419c193c9c4effd4affb95e43e5faa792a3a86de0ef0310359",
+    "scratchpad/c03-inventory-budget786.py": "7c69e9bf53d4b2afa84d7ecfbef81a3f8b3802e3b5db47e6ba0466cb4a72c3ac",
+    "scratchpad/c03-prepare-inventory-budget786.py": "9b2e3a25daca185e9651b4967060e6381162d1c408024f2aea0f90dd44510cd3",
+    "scratchpad/c03-record-inventory-budget786.py": "e127a59e75229679f5c97fc4e319eb02f0ffb27ff5718a3a56f80698d61baecd",
+    "scratchpad/c03-seal-inventory-budget787.py": "d3e1a49f77ac444300e37bcc7de8326965cbe11003b30a643d10db4a888ffac9",
+    "scratchpad/c03-preserve-candidate787.py": "69e393274532c40b30ca01b3796efcb02756199500827697a0d80fcfa1bc8a9f",
+    "scratchpad/c03-prepare-composer788.py": "ae2c79d8892792c7765b63fab0f55a5e1ee3ab9fc542a89bf4d4359fe9026884",
+    "scratchpad/c03-inventory-composer788.py": "2f234c1d13be18e59b4193f6c9d075028378ce5e727f43cbde46b18e524849e2",
+    "scratchpad/c03-inventory787-veto-attribution.py": "5412a85c4d37c5c0c086c477987ec570fbeda86985b9377d4c903cf5672231a1",
+    "scratchpad/c03-record-composer788.py": "b3cc7e16d7861706ca1fb2b637346a44a2d2df00bb85ed81f338395b6c08b200",
+    "scratchpad/c03-prepare-evidence-publication788.py": "f791c0cafb09e03f7823dad2382f4d069e274b378ffa7eec94771cf30b717298"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "files": {
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/CANDIDATE.json": "291def21e4691b24ce50497960c840a646f6c46efe4671f3999f10d2ca74a012",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/PLAN.json": "6aa660acb28f7e6d9728f3a42f2a4b957d7ffec7473921fbff209212846d0aee",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/PROGRAM.json": "cad79de47d1d1abc2a9480ecbc634da0eaee181ea2ccc39ff2f69f56ea054c47",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/REPORT.md": "9253080464c9399759957172b8e44bb0f28a281a5b117fd9af29faec7b4d62e8",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/SOURCE_PATCH.diff": "aeb88dc97f1a04e7993d574d0996387ec3f16834a01f74c3d779b79e592a24cc",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/SOURCE_PINS.json": "1156cc13b47bfa936565bf0317ebf737742b5f342af4d7193267d26c41527594",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/SOURCE_SNAPSHOT.json": "3904740c85feb74b73b0bfa64a35657fcdccca711b58c0d4efff4f24fb55be40",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/VALIDATION.json": "891cc1a2a7359f774f7d2c0f6f0b55a15c9cee8a8676cd4f623c49737f1234d7",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/baseline.log": "e088ed7b6ce863162e87f74e89e294ad4ef9ee70f06e5f19048ca74ad6cec4c4",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/collection-error.log": "8a62bb1d853f765df3ee67c0e2667280a9ff098bab95752a6078d4d2f48a6c91",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/fast.log": "02ea9eda0a3dd6b8f0d6f0f6697b4d0f3ea6f1c3c541cc7eba9324a59028215c",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/first-failure.log": "2aad1c082f630729edefce126dbe0d75ba5176170e605234ea35c124494d6b3f",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/fixed.log": "1e951ea6da772b1565195e3f073278bdbcb1649432a26deada21da4fd0208888",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/owners-fixed.log": "adda84f439171c0ce85f2ddcb5e3a5a3ae5084d5c1b5fd3be160044e5565c307",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/owners.log": "87760044255659ced798c105db038dadf27c27116fedcdd4dbc078fd863d083f",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/scope-first.log": "8d9a6e488338d2ca480d19aadba72b32178f32873ea2f7693310ef657db5e7c7",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/scope-second.log": "d77f1a8972021ccd619d1481cd4e5e0ae507a30acaa0c43fe63a8d2a5dae5b53",
+    "artifacts/comprobaciones/C03/INVENTORY_BUDGET787/validated.log": "dab3073118cd39d1aa24828f21e187020de92fd29c6781b76e6abbb3c57314f2"
+  }
+}

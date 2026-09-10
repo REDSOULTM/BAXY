@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+_________ ERROR collecting tests/test_c03_inventory_output_budget.py __________
+tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR tests/test_c03_inventory_output_budget.py - Failed: tests/test_c03_inve...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.62s

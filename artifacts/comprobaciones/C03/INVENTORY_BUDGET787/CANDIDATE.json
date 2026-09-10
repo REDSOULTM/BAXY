@@ -1,0 +1,19 @@
+{
+  "status": "candidate_not_adopted",
+  "source": [
+    "src/baxy_mind/llm.py"
+  ],
+  "new_tests": 50,
+  "baseline": {
+    "failed": 22,
+    "passed": 28
+  },
+  "after_budget": {
+    "failed": 5,
+    "passed": 45
+  },
+  "cause": "786 yields six correct complete replies; five are rejected by existing inventory fact checks: missing_fact for 5-1/3/4, reversed_result for6-1, extra_claim for6-4.6-3delivers.",
+  "no_source_sealed": true,
+  "next": "Repair existing inventory quantity/page-scope interpretation with general controls, preserve false-claim rejection. Do not add prompts or literal response substitutions.",
+  "inference_active": false
+}

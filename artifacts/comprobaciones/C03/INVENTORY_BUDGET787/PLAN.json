@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T20:51:58.919928+00:00",
+  "cause": "786: six correct512 completions versus six256 cuts; first composer replay exposed five false scope/quantity vetoes.",
+  "changes": [
+    "Reuse existing512 cap only for dense verified inventory; original messages/sampler unchanged.",
+    "Replace clause-wide numeric context with per-quantity binding; observed-qualified denominator is not an unknown global total; two correct page/inventory quantities disclose a subset."
+  ],
+  "controls": 118,
+  "focused": {
+    "passed": 1681,
+    "subtests_passed": 121,
+    "failed": 0,
+    "skipped": 0
+  },
+  "root_review": "Six recorded full answers now delivered exactly in one stub each with original786 messages; false counts, unknown global totals and undisclosed subsets remain rejected.",
+  "source_kind": "Python only; C#764 timeout unchanged. No Full needed until combined source or final closure.",
+  "pending": "Sealed owners/integrity/Fast then real full composer50 cases with raw requests and retry records. No survey credit yet."
+}

@@ -1,0 +1,426 @@
+............FFFFFFFFFFFF..FFFF..............FFFFFF                       [100%]
+================================== FAILURES ===================================
+_ test_only_dense_inventories_use_the_existing_larger_budget[8-512-Lista las ventanas.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', user_text = 'Lista las ventanas.'
+count = 8, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[8-512-Lista las ventanas.-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', user_text = 'Lista las ventanas.'
+count = 8, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[8-512-List the windows.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', user_text = 'List the windows.'
+count = 8, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[8-512-List the windows.-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', user_text = 'List the windows.'
+count = 8, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[20-512-Lista las ventanas.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', user_text = 'Lista las ventanas.'
+count = 20, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[20-512-Lista las ventanas.-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', user_text = 'Lista las ventanas.'
+count = 20, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[20-512-List the windows.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', user_text = 'List the windows.'
+count = 20, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[20-512-List the windows.-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', user_text = 'List the windows.'
+count = 20, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[50-512-Lista las ventanas.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', user_text = 'Lista las ventanas.'
+count = 50, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[50-512-Lista las ventanas.-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', user_text = 'Lista las ventanas.'
+count = 50, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[50-512-List the windows.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', user_text = 'List the windows.'
+count = 50, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_only_dense_inventories_use_the_existing_larger_budget[50-512-List the windows.-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', user_text = 'List the windows.'
+count = 50, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('user_text', ['Lista las ventanas.', 'List the windows.'])
+    @pytest.mark.parametrize('count,expected', [(0, 256), (1, 256), (7, 256), (8, 512), (20, 512), (50, 512)])
+    def test_only_dense_inventories_use_the_existing_larger_budget(model, user_text, count, expected):
+        payload = first_request(model, observation(count), user_text)
+>       assert payload['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:55: AssertionError
+_ test_long_identity_uses_projected_character_boundary_without_ascii_inflation[512-512-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', size = 512, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('size,expected', [(511, 256), (512, 512), (800, 512)])
+    def test_long_identity_uses_projected_character_boundary_without_ascii_inflation(model, size, expected):
+        situation = observation(1)
+        window = situation['observed']['windows'][0]
+        window['title'] = ''
+        base = len(json.dumps([window], ensure_ascii=False, separators=(',', ':')))
+        window['title'] = 'á' * (size - base)
+>       assert first_request(model, situation)['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:68: AssertionError
+_ test_long_identity_uses_projected_character_boundary_without_ascii_inflation[512-512-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', size = 512, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('size,expected', [(511, 256), (512, 512), (800, 512)])
+    def test_long_identity_uses_projected_character_boundary_without_ascii_inflation(model, size, expected):
+        situation = observation(1)
+        window = situation['observed']['windows'][0]
+        window['title'] = ''
+        base = len(json.dumps([window], ensure_ascii=False, separators=(',', ':')))
+        window['title'] = 'á' * (size - base)
+>       assert first_request(model, situation)['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:68: AssertionError
+_ test_long_identity_uses_projected_character_boundary_without_ascii_inflation[800-512-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', size = 800, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('size,expected', [(511, 256), (512, 512), (800, 512)])
+    def test_long_identity_uses_projected_character_boundary_without_ascii_inflation(model, size, expected):
+        situation = observation(1)
+        window = situation['observed']['windows'][0]
+        window['title'] = ''
+        base = len(json.dumps([window], ensure_ascii=False, separators=(',', ':')))
+        window['title'] = 'á' * (size - base)
+>       assert first_request(model, situation)['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:68: AssertionError
+_ test_long_identity_uses_projected_character_boundary_without_ascii_inflation[800-512-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', size = 800, expected = 512
+
+    @pytest.mark.parametrize('model', MODELS)
+    @pytest.mark.parametrize('size,expected', [(511, 256), (512, 512), (800, 512)])
+    def test_long_identity_uses_projected_character_boundary_without_ascii_inflation(model, size, expected):
+        situation = observation(1)
+        window = situation['observed']['windows'][0]
+        window['title'] = ''
+        base = len(json.dumps([window], ensure_ascii=False, separators=(',', ':')))
+        window['title'] = 'á' * (size - base)
+>       assert first_request(model, situation)['max_tokens'] == expected
+E       assert 256 == 512
+
+tests\test_c03_inventory_output_budget.py:68: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-1] _
+
+case = {'case_id': 'inventory785-5-1', 'request': 'Lista las ventanas.', 'situation': {'kind': 'operation', 'operation': 'win...ita 4-4 (Viewer1)  \n\nSe observaron 25 ventanas en total. Esta lista incluye 20 ventanas, y hay más por ver.'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Aquí tienes ... más por ver.'
+E         
+E         - Aquí tienes la lista de ventanas visibles:
+E         - 
+E         - - Órbita 4-0 (Viewer0)  
+E         - - Órbita 4-1 (Viewer1)  
+E         - - Órbita 4-2 (Viewer2)  
+E         - - Órbita 4-3 (Viewer0)  ...
+E         
+E         ...Full output truncated (18 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-3] _
+
+case = {'case_id': 'inventory785-5-3', 'request': 'List all open windows.', 'situation': {'kind': 'operation', 'operation': '...ita 4-4 (Viewer1)  \n\nTotal observed: 25 windows. This list includes 20 of them, and there are more to show.'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Here are the...more to show.'
+E         
+E         - Here are the open windows:  
+E         - - Órbita 4-0 (Viewer0)  
+E         - - Órbita 4-1 (Viewer1)  
+E         - - Órbita 4-2 (Viewer2)  
+E         - - Órbita 4-3 (Viewer0)  
+E         - - Órbita 4-4 (Viewer1)  ...
+E         
+E         ...Full output truncated (17 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-4] _
+
+case = {'case_id': 'inventory785-5-4', 'request': 'Mostrame my open windows.', 'situation': {'kind': 'operation', 'operation'...ta 4-2 (Viewer0)  \n- Órbita 4-3 (Viewer1)  \n- Órbita 4-4 (Viewer2)  \n- Órbita 4-0 (Viewer0)  \n- Órbita 4-'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Here are you...more to show.'
+E         
+E         - Here are your open windows:  
+E         - - Órbita 4-0 (Viewer0)  
+E         - - Órbita 4-1 (Viewer1)  
+E         - - Órbita 4-2 (Viewer2)  
+E         - - Órbita 4-3 (Viewer0)  
+E         - - Órbita 4-4 (Viewer1)  ...
+E         
+E         ...Full output truncated (17 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-6-1] _
+
+case = {'case_id': 'inventory785-6-1', 'request': 'Lista las ventanas.', 'situation': {'kind': 'operation', 'operation': 'win... 5-4 (Viewer1)  \n\nSe han observado 25 ventanas, se muestran 20 en esta página. Hay más ventanas por listar.'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Aquí tienes ...s por listar.'
+E         
+E         - Aquí tienes la lista de ventanas visibles:
+E         - 
+E         - - Órbita 5-0 (Viewer0)  
+E         - - Órbita 5-1 (Viewer1)  
+E         - - Órbita 5-2 (Viewer2)  
+E         - - Órbita 5-3 (Viewer0)  ...
+E         
+E         ...Full output truncated (18 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-6-3] _
+
+case = {'case_id': 'inventory785-6-3', 'request': 'List all open windows.', 'situation': {'kind': 'operation', 'operation': '...and may not include all windows. A total count is not yet available. There are more windows beyond this page.'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Here are the...nd this page.'
+E         
+E         - Here are the open windows currently visible:  
+E         - - Órbita 5-0 (Viewer0)  
+E         - - Órbita 5-1 (Viewer1)  
+E         - - Órbita 5-2 (Viewer2)  
+E         - - Órbita 5-3 (Viewer0)  
+E         - - Órbita 5-4 (Viewer1)  ...
+E         
+E         ...Full output truncated (17 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-6-4] _
+
+case = {'case_id': 'inventory785-6-4', 'request': 'Mostrame my open windows.', 'situation': {'kind': 'operation', 'operation'...ta 5-2 (Viewer0)  \n- Órbita 5-3 (Viewer1)  \n- Órbita 5-4 (Viewer2)  \n- Órbita 5-0 (Viewer0)  \n- Órbita 5-'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Here are you...dows to show.'
+E         
+E         - Here are your open windows:  
+E         - - Órbita 5-0 (Viewer0)  
+E         - - Órbita 5-1 (Viewer1)  
+E         - - Órbita 5-2 (Viewer2)  
+E         - - Órbita 5-3 (Viewer0)  
+E         - - Órbita 5-4 (Viewer1)  ...
+E         
+E         ...Full output truncated (17 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[8-512-Lista las ventanas.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[8-512-Lista las ventanas.-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[8-512-List the windows.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[8-512-List the windows.-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[20-512-Lista las ventanas.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[20-512-Lista las ventanas.-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[20-512-List the windows.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[20-512-List the windows.-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[50-512-Lista las ventanas.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[50-512-Lista las ventanas.-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[50-512-List the windows.-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_only_dense_inventories_use_the_existing_larger_budget[50-512-List the windows.-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_long_identity_uses_projected_character_boundary_without_ascii_inflation[512-512-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_long_identity_uses_projected_character_boundary_without_ascii_inflation[512-512-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_long_identity_uses_projected_character_boundary_without_ascii_inflation[800-512-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_long_identity_uses_projected_character_boundary_without_ascii_inflation[800-512-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-1]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-3]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-4]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-6-1]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-6-3]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-6-4]
+22 failed, 28 passed in 1.42s

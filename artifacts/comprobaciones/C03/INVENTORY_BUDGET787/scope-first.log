@@ -1,0 +1,67 @@
+.............................................FF......................... [ 17%]
+........................................................................ [ 35%]
+........................................................................ [ 53%]
+........................................................................ [ 71%]
+........................................................................ [ 89%]
+............................................                             [100%]
+================================== FAILURES ===================================
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-3] _
+
+case = {'case_id': 'inventory785-5-3', 'request': 'List all open windows.', 'situation': {'kind': 'operation', 'operation': '...ita 4-4 (Viewer1)  \n\nTotal observed: 25 windows. This list includes 20 of them, and there are more to show.'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Here are the...more to show.'
+E         
+E         - Here are the open windows:  
+E         - - Órbita 4-0 (Viewer0)  
+E         - - Órbita 4-1 (Viewer1)  
+E         - - Órbita 4-2 (Viewer2)  
+E         - - Órbita 4-3 (Viewer0)  
+E         - - Órbita 4-4 (Viewer1)  ...
+E         
+E         ...Full output truncated (17 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+_ test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-4] _
+
+case = {'case_id': 'inventory785-5-4', 'request': 'Mostrame my open windows.', 'situation': {'kind': 'operation', 'operation'...ta 4-2 (Viewer0)  \n- Órbita 4-3 (Viewer1)  \n- Órbita 4-4 (Viewer2)  \n- Órbita 4-0 (Viewer0)  \n- Órbita 4-'}}}, ...}
+
+    @pytest.mark.parametrize('case', RECORDED, ids=lambda c: c['case_id'])
+    def test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change(case):
+        client = Capture(MODELS[0])
+    
+        def replay(payload):
+            client.requests.append(copy.deepcopy(payload))
+            arm = 'B_output_512' if payload['max_tokens'] >= 512 else 'A_original_256'
+            return {'choices': [copy.deepcopy(case['replies'][arm])]}
+    
+        client._post = replay
+        result = client.compose_user_message(case['request'], 'status', {'situation': case['situation']})
+>       assert result == case['replies']['B_output_512']['message']['content']
+E       AssertionError: assert '' == 'Here are you...more to show.'
+E         
+E         - Here are your open windows:  
+E         - - Órbita 4-0 (Viewer0)  
+E         - - Órbita 4-1 (Viewer1)  
+E         - - Órbita 4-2 (Viewer2)  
+E         - - Órbita 4-3 (Viewer0)  
+E         - - Órbita 4-4 (Viewer1)  ...
+E         
+E         ...Full output truncated (17 lines hidden), use '-vv' to show
+
+tests\test_c03_inventory_output_budget.py:101: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-3]
+FAILED tests/test_c03_inventory_output_budget.py::test_recorded_complete_inventory_is_delivered_without_retry_or_prompt_change[inventory785-5-4]
+2 failed, 402 passed in 3.71s

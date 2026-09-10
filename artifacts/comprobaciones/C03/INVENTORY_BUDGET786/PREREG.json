@@ -1,0 +1,83 @@
+{
+  "utc": "2026-09-10T20:34:51.494937+00:00",
+  "calls": 100,
+  "cases": 50,
+  "command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "62903",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching"
+  ],
+  "model": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  },
+  "backend": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "source_pins": {
+    "src/baxy_mind/llm.py": "bbf7f502408463b516de5cc95fb3ad2fc20cf50f8ea6b059b24048715c123253",
+    "tests/test_c03_named_clock.py": "8fdeeb1089f00a1dc164edad5e6b6b677b41c11d402cb697271dba28559ef270",
+    "tests/test_c03_request_preservation.py": "bfbd4ebb73562c576dc1ad87bb25ab62955c013e0f581b8731da1ba655dfb89f",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "2d1a5447e9070dd643e2e6f3bb8ba11c32899e48918d3b9d2b3113be1edeaaf3",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "193db66a1d7450cb28bb11eb983351d6ec08eab76309fc45167ecd134cab2002",
+    "tests/test_price_v8_veto_damage_by_cause.py": "c092e58d6795a216933867b2d974c6af163f06a68a27a782deb9d8d185474a3d",
+    "src/baxy_mind/__main__.py": "1f651f36f7c755c47c78bfb8b2b7f3b859d886c72aaf8bfdf53907e315871211",
+    "src/baxy_mind/effect_intent.py": "6eb1c5322607aa915d143af811e954b106d164f36091c967fadfcf788a1b1af5",
+    "src/Baxy.App/MindSidecarClient.cs": "41e4060a4404823e9c888c7eb744f8b956106aeb1714c1b130096ffdbf59deac",
+    "tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs": "2b80853b78f20cab1e674cf7f7601fb2d2c5e9209136767990d298b5f4a7169f"
+  },
+  "driver_sha256": "7c69e9bf53d4b2afa84d7ecfbef81a3f8b3802e3b5db47e6ba0466cb4a72c3ac",
+  "planned_sha256": "310ab083a7d20d4d8a9ae2f7427f66239a9160f1b7f5de5ac74729dc7d58489b",
+  "cases_sha256": "b10194b60ec34632bc4c14501bbd505301b4de85cd0c574fa32abee8d485c334",
+  "reference_cases_sha256": "b10194b60ec34632bc4c14501bbd505301b4de85cd0c574fa32abee8d485c334",
+  "reference_adjudication_sha256": "786168549c448f8823254a32df246dd769ee41ae50e74e156d0c57910b13feb8",
+  "intervention": "Same50 frozen785 cases and exact A_registered_greedy HTTP bodies. A max_tokens256 versus B max_tokens512; only output cap differs. Alternating arm order. Product source/prompt/sampler unchanged.",
+  "inheritance": "785 found17 length cuts across3arms and sampler alone did not resolve the category.754-759/768/771 showed limits of additional prompt wording.764 supplies dense-inventory9s model/10s app time, distinct from Python output cap256.",
+  "limits": {
+    "observe_seconds_per_call": 15,
+    "output_caps": [
+      256,
+      512
+    ],
+    "gpu_stop_mib": 3800,
+    "free_ram_min_mib": 768,
+    "wall_seconds": 900
+  },
+  "criterion": "Same frozen785 criteria and whole-answer adjudication policy: requested facts, title/process identities and exact multiplicity, scope, quantities, subject, language and no unsupported chronology. Keep truncation, omissions, subject and value errors separate. No relaxation for a longer response.",
+  "scope": "First-draft BAXY-context output-budget diagnostic; not native-model ranking, recommended-recipe reference, complete product/UI/voice/reserve acceptance or automatic survey credit. No product adoption. All user data stays local.",
+  "environment_defaults": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false"
+  }
+}

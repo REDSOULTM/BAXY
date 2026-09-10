@@ -1,0 +1,1325 @@
+{
+  "utc": "2026-09-10T20:39:50.271044+00:00",
+  "quality_adjudicated": true,
+  "method": "94 answers byte-identical to root-adjudicated785A with identical cases/criteria; six new complete answers manually reviewed by root. No validator as oracle.",
+  "summary": {
+    "A_original_256": {
+      "pass": 30,
+      "fail": 20,
+      "finish_reasons": {
+        "stop": 44,
+        "length": 6
+      },
+      "final_seconds_p50": 0.4919999999983702,
+      "final_seconds_max": 3.5160000000032596,
+      "completion_tokens_max": 256
+    },
+    "B_output_512": {
+      "pass": 36,
+      "fail": 14,
+      "finish_reasons": {
+        "stop": 50
+      },
+      "final_seconds_p50": 0.48399999999674037,
+      "final_seconds_max": 4.547000000005937,
+      "completion_tokens_max": 340
+    }
+  },
+  "paired": {
+    "gains": [
+      "inventory785-5-1",
+      "inventory785-5-3",
+      "inventory785-5-4",
+      "inventory785-6-1",
+      "inventory785-6-3",
+      "inventory785-6-4"
+    ],
+    "regressions": [],
+    "both_pass": 30,
+    "both_fail": 14
+  },
+  "source_adopted": false,
+  "survey_credit": 0,
+  "rows": [
+    {
+      "case_id": "H0023",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Conserva las 20 entradas y el total 25, pero inventa que las 20 son las más recientes; no hay tiempos de apertura.",
+      "defects": [
+        "unsupported_chronology"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.687000000005355,
+      "completion_tokens": 182,
+      "answer_sha256": "715ac098d59147bc4760b6820476638678669f0a7247ad48bba252e701ac3e99"
+    },
+    {
+      "case_id": "H0023",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Conserva las 20 entradas y el total 25, pero inventa que las 20 son las más recientes; no hay tiempos de apertura.",
+      "defects": [
+        "unsupported_chronology"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.5930000000080327,
+      "completion_tokens": 182,
+      "answer_sha256": "715ac098d59147bc4760b6820476638678669f0a7247ad48bba252e701ac3e99"
+    },
+    {
+      "case_id": "H0103",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Resume categorías con varias instancias sin sus cantidades; omite identidades observadas. El alcance 20/25 no sustituye una lista completa de la página.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.125,
+      "completion_tokens": 153,
+      "answer_sha256": "499cef6c50d1e7d41d109635f3a4d84488eea2a99eb2213ca06eb2d5e4a8f8e6"
+    },
+    {
+      "case_id": "H0103",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Resume categorías con varias instancias sin sus cantidades; omite identidades observadas. El alcance 20/25 no sustituye una lista completa de la página.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.2189999999973224,
+      "completion_tokens": 153,
+      "answer_sha256": "499cef6c50d1e7d41d109635f3a4d84488eea2a99eb2213ca06eb2d5e4a8f8e6"
+    },
+    {
+      "case_id": "H0539",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Llama disponible a 16,54 GB utilizables; los disponibles son aproximadamente 1,98 GB. Tengo también atribuye al narrador la RAM del PC.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 14,
+      "answer_sha256": "cc7d672f82faca2ff6dac97ee1f0ed049097932d2aa78d2f18b4918f49e7c6c4"
+    },
+    {
+      "case_id": "H0539",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Llama disponible a 16,54 GB utilizables; los disponibles son aproximadamente 1,98 GB. Tengo también atribuye al narrador la RAM del PC.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 14,
+      "answer_sha256": "cc7d672f82faca2ff6dac97ee1f0ed049097932d2aa78d2f18b4918f49e7c6c4"
+    },
+    {
+      "case_id": "H0655",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Disponible en total no distingue la capacidad utilizable de la memoria libre, que es aproximadamente 1,97 GB; además dice Tengo.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "completion_tokens": 16,
+      "answer_sha256": "0c6caed393a462c5809473cb3ae33975a3ef59d57324373cfa47f727b43d8e80"
+    },
+    {
+      "case_id": "H0655",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Disponible en total no distingue la capacidad utilizable de la memoria libre, que es aproximadamente 1,97 GB; además dice Tengo.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.3120000000053551,
+      "completion_tokens": 16,
+      "answer_sha256": "0c6caed393a462c5809473cb3ae33975a3ef59d57324373cfa47f727b43d8e80"
+    },
+    {
+      "case_id": "H0508",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "La versión observada de Windows se conserva; llama disponible a 16,54 GB utilizables, frente a aproximadamente 1,97 GB disponibles. Tengo cambia el sujeto.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.6560000000026776,
+      "completion_tokens": 44,
+      "answer_sha256": "61e0d02ba2bf50bbca20e63e0368df34247e7880b2ebd7818f609e441cfcb01b"
+    },
+    {
+      "case_id": "H0508",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "La versión observada de Windows se conserva; llama disponible a 16,54 GB utilizables, frente a aproximadamente 1,97 GB disponibles. Tengo cambia el sujeto.",
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.6719999999913853,
+      "completion_tokens": 44,
+      "answer_sha256": "61e0d02ba2bf50bbca20e63e0368df34247e7880b2ebd7818f609e441cfcb01b"
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "La hora 16:34 es correcta, pero los tres brazos conservan Marka. No cumple el criterio de prosa de C03.",
+      "defects": [
+        "spelling"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "completion_tokens": 11,
+      "answer_sha256": "28620807278237b6c8c10f1e835dacfc81308ef9219fc7a96dac0427f3e21458"
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "La hora 16:34 es correcta, pero los tres brazos conservan Marka. No cumple el criterio de prosa de C03.",
+      "defects": [
+        "spelling"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28200000000651926,
+      "completion_tokens": 11,
+      "answer_sha256": "28620807278237b6c8c10f1e835dacfc81308ef9219fc7a96dac0427f3e21458"
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.3129999999946449,
+      "completion_tokens": 11,
+      "answer_sha256": "0dd71898380f2e4f861adbcd97a1a0d0247723df3880b21d4ba8a6a95df8551f"
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.3120000000053551,
+      "completion_tokens": 11,
+      "answer_sha256": "0dd71898380f2e4f861adbcd97a1a0d0247723df3880b21d4ba8a6a95df8551f"
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "El inventario vacío es correcto, pero No tengo atribuye al narrador las ventanas por las que preguntó el usuario.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "completion_tokens": 9,
+      "answer_sha256": "d8465d90771a5d0fe7009e4e3dd60c15ab31624d5e349427e6d58f9346d071d7"
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "El inventario vacío es correcto, pero No tengo atribuye al narrador las ventanas por las que preguntó el usuario.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 9,
+      "answer_sha256": "d8465d90771a5d0fe7009e4e3dd60c15ab31624d5e349427e6d58f9346d071d7"
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "completion_tokens": 12,
+      "answer_sha256": "2a621744f0551e05c914d32fa13a77a672d489aeaeef69a5ad656aad1a66baf9"
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2970000000059372,
+      "completion_tokens": 12,
+      "answer_sha256": "2a621744f0551e05c914d32fa13a77a672d489aeaeef69a5ad656aad1a66baf9"
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 8,
+      "answer_sha256": "2f046bfb43b475d37b584aa713f827da85b595e5318f92ff8764eb9cafd2c29c"
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "completion_tokens": 8,
+      "answer_sha256": "2f046bfb43b475d37b584aa713f827da85b595e5318f92ff8764eb9cafd2c29c"
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.8589999999967404,
+      "completion_tokens": 57,
+      "answer_sha256": "7939ada1f22572131e7fe4b2dc929d1ef4eda9ca740d9be9155718893c7c9008"
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.8589999999967404,
+      "completion_tokens": 57,
+      "answer_sha256": "7939ada1f22572131e7fe4b2dc929d1ef4eda9ca740d9be9155718893c7c9008"
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.7660000000032596,
+      "completion_tokens": 51,
+      "answer_sha256": "1fa9d2ba6032a9f32980de86060fa4ad126ad771b0520a5f24ed0b295529fa48"
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.7819999999919673,
+      "completion_tokens": 51,
+      "answer_sha256": "1fa9d2ba6032a9f32980de86060fa4ad126ad771b0520a5f24ed0b295529fa48"
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.9370000000053551,
+      "completion_tokens": 64,
+      "answer_sha256": "24c1b5c49407e140e060d8c1a2f4c5610e321ab16076a93035a5e204d6a1e493"
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.9370000000053551,
+      "completion_tokens": 64,
+      "answer_sha256": "24c1b5c49407e140e060d8c1a2f4c5610e321ab16076a93035a5e204d6a1e493"
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.9530000000086147,
+      "completion_tokens": 65,
+      "answer_sha256": "7e4b2ab46f115c73989f996635b15e54418b315523bb005b098b5d20f7dffcd8"
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.9369999999908032,
+      "completion_tokens": 65,
+      "answer_sha256": "7e4b2ab46f115c73989f996635b15e54418b315523bb005b098b5d20f7dffcd8"
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.2969999999913853,
+      "completion_tokens": 91,
+      "answer_sha256": "fda645ee7cb0391e2873967313c3fa90f1a6db59745299af77c973ec89996948"
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.3130000000091968,
+      "completion_tokens": 91,
+      "answer_sha256": "fda645ee7cb0391e2873967313c3fa90f1a6db59745299af77c973ec89996948"
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.5939999999973224,
+      "completion_tokens": 116,
+      "answer_sha256": "682c6fc1f917f57ebd3690bb5fae3a4d7f91ff5a8ac45e56e61637e2870e3370"
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.5939999999973224,
+      "completion_tokens": 116,
+      "answer_sha256": "682c6fc1f917f57ebd3690bb5fae3a4d7f91ff5a8ac45e56e61637e2870e3370"
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.6560000000026776,
+      "completion_tokens": 119,
+      "answer_sha256": "eb5e6c4dfd22ddf79dfbbbd7c2839a99973da9282cf600f3d23f6b71dd8e8823"
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.687999999994645,
+      "completion_tokens": 119,
+      "answer_sha256": "eb5e6c4dfd22ddf79dfbbbd7c2839a99973da9282cf600f3d23f6b71dd8e8823"
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.7339999999967404,
+      "completion_tokens": 126,
+      "answer_sha256": "964ec3638d916073e1852b4c1583a174efd5d42ef63f7bcf472ac2f3954ff762"
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.7339999999967404,
+      "completion_tokens": 126,
+      "answer_sha256": "964ec3638d916073e1852b4c1583a174efd5d42ef63f7bcf472ac2f3954ff762"
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 3.1560000000026776,
+      "completion_tokens": 237,
+      "answer_sha256": "2f8ab415fe4a4bc9a52b4f2f2aec260e5f82d107b99dfab74cbf447d8b253cb8"
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 3.1410000000032596,
+      "completion_tokens": 237,
+      "answer_sha256": "2f8ab415fe4a4bc9a52b4f2f2aec260e5f82d107b99dfab74cbf447d8b253cb8"
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Da cinco títulos y algunas se repiten, sin multiplicidades 3,3,2,2,2 de las doce entradas.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.4369999999908032,
+      "completion_tokens": 98,
+      "answer_sha256": "c82de9334de3a79e828fbe99c6d6c4b9b30c83a3b526e17e42c27dec4c9b78bb"
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Da cinco títulos y algunas se repiten, sin multiplicidades 3,3,2,2,2 de las doce entradas.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.437000000005355,
+      "completion_tokens": 98,
+      "answer_sha256": "c82de9334de3a79e828fbe99c6d6c4b9b30c83a3b526e17e42c27dec4c9b78bb"
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.9530000000086147,
+      "completion_tokens": 221,
+      "answer_sha256": "f1a7abe7b13f3d89fd79684b75e157a0e88d273ab763c0fedcd05a1dfc8707e8"
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.9530000000086147,
+      "completion_tokens": 221,
+      "answer_sha256": "f1a7abe7b13f3d89fd79684b75e157a0e88d273ab763c0fedcd05a1dfc8707e8"
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.8910000000032596,
+      "completion_tokens": 213,
+      "answer_sha256": "d75e653305ccebbd79b643bb641feeb0ad8248e72e4df051893ed5555ce5d64c"
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 2.8439999999973224,
+      "completion_tokens": 213,
+      "answer_sha256": "d75e653305ccebbd79b643bb641feeb0ad8248e72e4df051893ed5555ce5d64c"
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "length",
+      "seconds": 3.4839999999967404,
+      "completion_tokens": 256,
+      "answer_sha256": "69b04dd1593e1f3b12ca3fc1dd2cc5c9a3425b5032d8cc111b056d890bd09304"
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_answer_as785_A": false,
+      "finish_reason": "stop",
+      "seconds": 4.514999999999418,
+      "completion_tokens": 339,
+      "answer_sha256": "e7c7e812600302eaa1343377c213d3bd82f07f91d3b5bc114899bef7d67eea47"
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.625,
+      "completion_tokens": 107,
+      "answer_sha256": "e3f5d7bfbbf32a71f5d11dceeb84d88fad5851e4f6f51e75f64ccc4990187dee"
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.6410000000032596,
+      "completion_tokens": 107,
+      "answer_sha256": "e3f5d7bfbbf32a71f5d11dceeb84d88fad5851e4f6f51e75f64ccc4990187dee"
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "length",
+      "seconds": 3.485000000000582,
+      "completion_tokens": 256,
+      "answer_sha256": "8b5f053b2da65ad22021f9b2d837dbc6f38cd1d871a5278368ff4e93ab02b852"
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_answer_as785_A": false,
+      "finish_reason": "stop",
+      "seconds": 4.437999999994645,
+      "completion_tokens": 332,
+      "answer_sha256": "410a9d38eacc1f57deefe126cf82a53e93d2ab3d7f656912feb761448502eaf0"
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "length",
+      "seconds": 3.5160000000032596,
+      "completion_tokens": 256,
+      "answer_sha256": "66b012100484b08105cbcb2bde2688885c6b202bce9ecab4ff62dc60cd73bc60"
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_answer_as785_A": false,
+      "finish_reason": "stop",
+      "seconds": 4.438000000009197,
+      "completion_tokens": 332,
+      "answer_sha256": "17291315e418309989240399f9ca066e4cbb67975311c263bc800e9795d2dc6f"
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "completion_tokens": 256,
+      "answer_sha256": "2a7cd5dc5ffe146ed1d51f977f1aa1fd14661f46f475153c02eddfd5e396c0bc"
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_answer_as785_A": false,
+      "finish_reason": "stop",
+      "seconds": 4.547000000005937,
+      "completion_tokens": 340,
+      "answer_sha256": "57fcd821b635613a5de9e047ad6afc4f167f15605f0e5e6e160d663dce4ed085"
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.625,
+      "completion_tokens": 105,
+      "answer_sha256": "251e3170d2dd11b1ad78e4dba44945013f26ca8d0f67d62b975cb39359606586"
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 1.610000000000582,
+      "completion_tokens": 105,
+      "answer_sha256": "251e3170d2dd11b1ad78e4dba44945013f26ca8d0f67d62b975cb39359606586"
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "completion_tokens": 256,
+      "answer_sha256": "77a08b947f354aeb9526545c9ebb7e944416916c58a0e65eaea62593bbfff42d"
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_answer_as785_A": false,
+      "finish_reason": "stop",
+      "seconds": 4.531999999991967,
+      "completion_tokens": 339,
+      "answer_sha256": "fdbeb1ac66305cee63f007f8d7a431e3f6cbdacc519a80ac1a1ded83e49c5d23"
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "completion_tokens": 256,
+      "answer_sha256": "14e288d156d061f926e0d0b4ed3a1dbc37001f98e68530b228556cfc034d9786"
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Root read complete answer: all20 identities/multiplicities and true partial scope; no chronology invented. Exact old cut prefix preserved, followed by completion.",
+      "defects": [],
+      "same_answer_as785_A": false,
+      "finish_reason": "stop",
+      "seconds": 4.437000000005355,
+      "completion_tokens": 330,
+      "answer_sha256": "9c435ebf7d1b4415576b87917c58a85ba6235a6c68910fbaf6388f6c2a4ab362"
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.23500000000058208,
+      "completion_tokens": 11,
+      "answer_sha256": "e1fac45a55ce278ba26ec513dc4494b177b3d75a15786438d8e59a97cf9513da"
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.23500000000058208,
+      "completion_tokens": 11,
+      "answer_sha256": "e1fac45a55ce278ba26ec513dc4494b177b3d75a15786438d8e59a97cf9513da"
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2970000000059372,
+      "completion_tokens": 14,
+      "answer_sha256": "3d62929c5c5369e2c328c49aef370fcca28948ad33db002874433ddc09e199a8"
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28199999999196734,
+      "completion_tokens": 14,
+      "answer_sha256": "3d62929c5c5369e2c328c49aef370fcca28948ad33db002874433ddc09e199a8"
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 13,
+      "answer_sha256": "5447558f599a1aaed029825e6cc41fc24ab787b29bc4917871ffbe1f5fb5750a"
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 13,
+      "answer_sha256": "5447558f599a1aaed029825e6cc41fc24ab787b29bc4917871ffbe1f5fb5750a"
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "fb925ec8318030b592384f8121d6d487a4a17589c85ac6c11bb7759170172323"
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 12,
+      "answer_sha256": "fb925ec8318030b592384f8121d6d487a4a17589c85ac6c11bb7759170172323"
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "completion_tokens": 12,
+      "answer_sha256": "1002bc97f884b42627d2f11916aba824f5e26c9ab1b0ca7ca9d7a97c11787d2d"
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 12,
+      "answer_sha256": "1002bc97f884b42627d2f11916aba824f5e26c9ab1b0ca7ca9d7a97c11787d2d"
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 13,
+      "answer_sha256": "a00c8c5025872798584cab686680012a17a3b5d23fefc48595c508146196f52b"
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "completion_tokens": 13,
+      "answer_sha256": "a00c8c5025872798584cab686680012a17a3b5d23fefc48595c508146196f52b"
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 14,
+      "answer_sha256": "7a051c6225809cc1d463aeb6403b18eb0fb8390403f1085e9a8be3fa2aa493c3"
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "completion_tokens": 14,
+      "answer_sha256": "7a051c6225809cc1d463aeb6403b18eb0fb8390403f1085e9a8be3fa2aa493c3"
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "completion_tokens": 12,
+      "answer_sha256": "dc2279235128a5412d154db186c525dcbaa9da18e0fd3a1739b3835f71a0407e"
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "dc2279235128a5412d154db186c525dcbaa9da18e0fd3a1739b3835f71a0407e"
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.5620000000053551,
+      "completion_tokens": 37,
+      "answer_sha256": "308213c204c54605bc4dcc8bdcc58dcb7b3c5100eb83a630179198a3cd61b8d7"
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.5469999999913853,
+      "completion_tokens": 37,
+      "answer_sha256": "308213c204c54605bc4dcc8bdcc58dcb7b3c5100eb83a630179198a3cd61b8d7"
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Disponible cero es correcto, pero toda la memoria instalada confunde 32 GB instalados con 31,6 GB utilizables y usados.",
+      "defects": [
+        "measurement_label"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.34300000000803266,
+      "completion_tokens": 19,
+      "answer_sha256": "4bbc708c75867f20da9fa3a9fa62f4c7dadbef19d6b1288dad7661251bb9944d"
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Disponible cero es correcto, pero toda la memoria instalada confunde 32 GB instalados con 31,6 GB utilizables y usados.",
+      "defects": [
+        "measurement_label"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.34400000001187436,
+      "completion_tokens": 19,
+      "answer_sha256": "4bbc708c75867f20da9fa3a9fa62f4c7dadbef19d6b1288dad7661251bb9944d"
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.46899999999732245,
+      "completion_tokens": 28,
+      "answer_sha256": "40142053985b25e989428d3b7c95d5c9a86653ba85e9be646e6aafc10227b644"
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.4369999999908032,
+      "completion_tokens": 28,
+      "answer_sha256": "40142053985b25e989428d3b7c95d5c9a86653ba85e9be646e6aafc10227b644"
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "7dcb0c09a62969ccbcdba1660eed1f65bbfa29f8e344018b15151e50c9178e3e"
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "7dcb0c09a62969ccbcdba1660eed1f65bbfa29f8e344018b15151e50c9178e3e"
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.21800000000803266,
+      "completion_tokens": 9,
+      "answer_sha256": "67954185e216b71ef7a1133c7a0e197c80ed1ed66199a68b4f1d38361cf470b4"
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.21899999999732245,
+      "completion_tokens": 9,
+      "answer_sha256": "67954185e216b71ef7a1133c7a0e197c80ed1ed66199a68b4f1d38361cf470b4"
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2659999999887077,
+      "completion_tokens": 13,
+      "answer_sha256": "187636c066cabe06d631cb9394c1d6c5626969b7d37c7f5e3c274f90e400ab32"
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "completion_tokens": 13,
+      "answer_sha256": "187636c066cabe06d631cb9394c1d6c5626969b7d37c7f5e3c274f90e400ab32"
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 13,
+      "answer_sha256": "8789a008d4b47a478579277ffa5d8261c0acddd0db965aa507813aa7a00aeb66"
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 13,
+      "answer_sha256": "8789a008d4b47a478579277ffa5d8261c0acddd0db965aa507813aa7a00aeb66"
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "4ea7577b6c98d79a776ddd359f08e8face48cb14066f3cc9d2ed56d2422c2bf1"
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "4ea7577b6c98d79a776ddd359f08e8face48cb14066f3cc9d2ed56d2422c2bf1"
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "A_original_256",
+      "passed": false,
+      "reason": "No afirma instalada: 12 GB es capacidad utilizable, con 3,5 libres y 8,5 usados. Disponible en total queda ambiguo; se rechaza por Tengo, sin inventar una afirmación de capacidad instalada.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.5149999999994179,
+      "completion_tokens": 34,
+      "answer_sha256": "3aace587e2797933c8b49c2f921ba2ee40dd26b01d880bfa6e76ca795d230b66"
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "B_output_512",
+      "passed": false,
+      "reason": "No afirma instalada: 12 GB es capacidad utilizable, con 3,5 libres y 8,5 usados. Disponible en total queda ambiguo; se rechaza por Tengo, sin inventar una afirmación de capacidad instalada.",
+      "defects": [
+        "wrong_subject"
+      ],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.5310000000026776,
+      "completion_tokens": 34,
+      "answer_sha256": "3aace587e2797933c8b49c2f921ba2ee40dd26b01d880bfa6e76ca795d230b66"
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28200000000651926,
+      "completion_tokens": 13,
+      "answer_sha256": "40034d665349cd18ea96c97f8ca5bcf46e0ae790518c6587ed38a8a6ca9ffeee"
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.2659999999887077,
+      "completion_tokens": 13,
+      "answer_sha256": "40034d665349cd18ea96c97f8ca5bcf46e0ae790518c6587ed38a8a6ca9ffeee"
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 14,
+      "answer_sha256": "50e975200633a133adcaa04c3989126401ce5e7d4d9225e9f0460d204cf66ee1"
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28099999998812564,
+      "completion_tokens": 14,
+      "answer_sha256": "50e975200633a133adcaa04c3989126401ce5e7d4d9225e9f0460d204cf66ee1"
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "A_original_256",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "completion_tokens": 12,
+      "answer_sha256": "1ef34846dc2ef2f4f9c79712d8434882a98670284fef3e8eff0a7366412b1433"
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "B_output_512",
+      "passed": true,
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "defects": [],
+      "same_answer_as785_A": true,
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "completion_tokens": 12,
+      "answer_sha256": "1ef34846dc2ef2f4f9c79712d8434882a98670284fef3e8eff0a7366412b1433"
+    }
+  ]
+}

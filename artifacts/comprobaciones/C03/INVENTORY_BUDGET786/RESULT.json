@@ -1,0 +1,12 @@
+{
+  "calls_completed": 100,
+  "calls_planned": 100,
+  "seconds": 125.79700000000594,
+  "gpu_peak_mib": 3499.55859375,
+  "ram_peak_mib": 724.80078125,
+  "violations": [],
+  "driver_unchanged": true,
+  "sources_unchanged": true,
+  "quality_adjudicated": false,
+  "scope": "First-draft BAXY-context output-budget diagnostic; not native-model ranking, recommended-recipe reference, complete product/UI/voice/reserve acceptance or automatic survey credit. No product adoption. All user data stays local."
+}

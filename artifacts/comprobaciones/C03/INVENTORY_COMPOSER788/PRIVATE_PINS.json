@@ -1,0 +1,11 @@
+{
+  "directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-inventory-composer788-private",
+  "files": {
+    "cases.json": "b10194b60ec34632bc4c14501bbd505301b4de85cd0c574fa32abee8d485c334",
+    "expected-first.json": "5945e7f34ca3ce22d332f64156803aeeab49b5d36accff8d847bb0a432870ee3",
+    "posts.jsonl": "900b9448d8a6fd7bfe046135f91da76c38bba3d7a47d734790f8b798941c32bb",
+    "replies.jsonl": "35da146b2fad3924d30da33e8a1f8c4d501734eab12451c84c62e11bfcb58962",
+    "compose-audit.jsonl": "4741614e017286e67dcaeddfa0799eccf7e33c997eb143e746687a6efc0ae777",
+    "RESPUESTAS.md": "c11c45684ca4d71f8dba6682299852c09e594499fd025a087a58c1d4a14b82e8"
+  }
+}

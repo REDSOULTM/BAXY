@@ -1,3 +1,19 @@
+788 adjudicado:32/50correctos,18fallos;6inventarios antes cortados completos en1post/7,42–7,67s.59HTTPexitosos(no todos los intentos),4timeouts/2vacíos.4vetos a brutos correctos preexistían.5-2ahoraentrega lista incompleta:787validado pero adopciónretenida hasta multiplicidad.3499,56MiBVRAM/763,57MiBRSScompositor.26847terminal0recogida;sinprocesosactivos.28/714/0.
+
+788 activo26847:compositor real50casos idénticos785, primeros50mensajes comprobados iguales salvo presupuesto denso512. Deadline4/9s existenteC#764; servidor registrado igual772salvopuerto ycwdinterpreter igual786. Fuente787sellada,2901pass/1skipSTT+121subtests,Fast0. No editar durante corrida.28/714/0.
+
+787 validado:2901pass/1skipSTT+121subtests/15,96s;Fast0/Release19,70s,71509recogida0.118controles nuevos,10pins intactos. Preparado788 con mismos50casos785, instrucciones/sampleridénticos ydeadlineC#764(4/9s). Faltan ejecución/adjudicación real antes de adopción.28/714/0.
+
+787 candidato sellado:118controles nuevos,1681pass+121subtests/0skip/8,58s;seis finales786seentregan1stub con mensajesidénticos. Reusa512en inventario denso y repara ligadura cantidad/alcance sin nuevas instrucciones.10pins/programa407 sellados. Faltan owners/integridad/Fast finales y788compositorreal50casos. Sin fuente adoptada,28/714/0.
+
+787 candidato presupuesto:50controles;baseline22fail/28pass,trasbudget45pass/5fail.786tiene6brutoscorrectos,pero checker veta5:5-1/3/4 missing_fact(disclosure doscantidades),6-1 reversed_result(contexto lista lejano domina observadas),6-4 extra_claim(fracción sobre observadas leída totaldesconocido).6-3seentrega. No fuente sellada/adoptada,noinferencia. Reparar semántica de cantidades/alcance existente con controles, no otra frase de prompt.28/714/0.
+
+786 terminada0/78684 recogida:100 respuestas, A30/50 B36/50; seis cortes completados correctamente a512, cero regresiones.50A y44B idénticas785; seisB prolongan prefijo exacto del corte.125,797s;3499,56MiB VRAM/724,80MiB RSS servidor;100slots efectivos y10fuentes intactas. Sin proceso activo ni fuente adoptada.28/714/0. Siguiente reutilizar512 sólo para inventario denso, sin instrucción nueva, validar compositor.
+
+786 activa78684:50casos congelados785×2brazos, A256/B512; sólo cambia max_tokens. Mismo Qwen registrado, mensajes/hechos/sampler/comando salvo puerto; source783intacta. C#764ya da9s densos; Python sólo extiende a512por requiredFacts/partialMission, no inventario. No editar durante inferencia.785publicada1e997b9c,28/714/0.
+
+785 evidencia publicada 1e997b9c1f2312b13d69e7d8e242f9cde663c1c9; HEAD=origin=remoto,11pins evidencia/10fuente verificados enGit;main intacto.150adjudicadas A30/B32/C33,17cortes,slots150/150. Sin fuente adoptada ni cobertura:28/714/0. Sin procesos activos. Ver PROSE_SAMPLING785/REPORT.md para metodología nativa699/prompt737 y siguiente aislamiento del presupuesto.
+
 785 terminada y adjudicada:150 respuestas/50 casos, A30/50 B32/50 C33/50; mensajes/hechos/presupuesto256 iguales. Slots efectivos150/150,17 cortes de salida,10 huellas intactas.178,547s;3499,56MiB VRAM/723,36MiB RSS servidor.10660 recogida0, sin procesos activos. No adopción ni cobertura nueva:28/714/0. Auditoría de método:699 es nativa50×6;860 previas conservaban BAXY;737 aísla prompt K2;785 no compara modelos. Fuente783 sigue publicada63fc4f56. Siguiente aislar presupuesto de salida de inventarios, no otra regla de prompt.
 
 785 en curso10660:50casos×3perfiles de primer borrador (T0,recetaQwen conseed0y17),150peticiones,50preguntas/hechos idénticos porbrazo. Sin fuente/prompt/backend/modelo editados. Slots confirman parámetros efectivos; referencia oficial revisada2026-09-10.772entrega inventario yRAMcorrectos antesde redacción;nootrareglaprompttras768/771. Fuente783publicada,28/714/0.

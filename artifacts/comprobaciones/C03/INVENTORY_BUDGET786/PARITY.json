@@ -1,0 +1,1819 @@
+{
+  "source": "PROSE_SAMPLING785",
+  "case_parity": 50,
+  "exact_A_payload_parity": 50,
+  "A_raw_response_parity": 50,
+  "B_raw_response_parity": 44,
+  "B_extends_exact_cut_prefix": [
+    "inventory785-5-1",
+    "inventory785-5-3",
+    "inventory785-5-4",
+    "inventory785-6-1",
+    "inventory785-6-3",
+    "inventory785-6-4"
+  ],
+  "only_changed_request_field": "max_tokens",
+  "effective_parameters_verified": 100,
+  "effective": [
+    {
+      "case_id": "H0023",
+      "arm": "A_original_256",
+      "id_task": 0,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0023",
+      "arm": "B_output_512",
+      "id_task": 184,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0103",
+      "arm": "A_original_256",
+      "id_task": 523,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0103",
+      "arm": "B_output_512",
+      "id_task": 368,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0539",
+      "arm": "A_original_256",
+      "id_task": 678,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0539",
+      "arm": "B_output_512",
+      "id_task": 694,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0655",
+      "arm": "A_original_256",
+      "id_task": 728,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0655",
+      "arm": "B_output_512",
+      "id_task": 710,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0508",
+      "arm": "A_original_256",
+      "id_task": 746,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "H0508",
+      "arm": "B_output_512",
+      "id_task": 792,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "A_original_256",
+      "id_task": 851,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "B_output_512",
+      "id_task": 838,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "A_original_256",
+      "id_task": 864,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "B_output_512",
+      "id_task": 877,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "A_original_256",
+      "id_task": 901,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "B_output_512",
+      "id_task": 890,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "A_original_256",
+      "id_task": 912,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "B_output_512",
+      "id_task": 926,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "A_original_256",
+      "id_task": 950,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "B_output_512",
+      "id_task": 940,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "A_original_256",
+      "id_task": 960,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "B_output_512",
+      "id_task": 1019,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "A_original_256",
+      "id_task": 1131,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "B_output_512",
+      "id_task": 1078,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "A_original_256",
+      "id_task": 1184,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "B_output_512",
+      "id_task": 1250,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "A_original_256",
+      "id_task": 1383,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "B_output_512",
+      "id_task": 1316,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "A_original_256",
+      "id_task": 1450,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "B_output_512",
+      "id_task": 1543,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "A_original_256",
+      "id_task": 1754,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "B_output_512",
+      "id_task": 1636,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "A_original_256",
+      "id_task": 1872,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "B_output_512",
+      "id_task": 1993,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "A_original_256",
+      "id_task": 2242,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "B_output_512",
+      "id_task": 2114,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "A_original_256",
+      "id_task": 2370,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "B_output_512",
+      "id_task": 2609,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "A_original_256",
+      "id_task": 2948,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "B_output_512",
+      "id_task": 2848,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "A_original_256",
+      "id_task": 3048,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "B_output_512",
+      "id_task": 3271,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "A_original_256",
+      "id_task": 3709,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "B_output_512",
+      "id_task": 3494,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "A_original_256",
+      "id_task": 3924,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "B_output_512",
+      "id_task": 4182,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "A_original_256",
+      "id_task": 4632,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "B_output_512",
+      "id_task": 4523,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "A_original_256",
+      "id_task": 4741,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "B_output_512",
+      "id_task": 4999,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "A_original_256",
+      "id_task": 5667,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "B_output_512",
+      "id_task": 5333,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "A_original_256",
+      "id_task": 5925,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "B_output_512",
+      "id_task": 6183,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "A_original_256",
+      "id_task": 6632,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "B_output_512",
+      "id_task": 6525,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "A_original_256",
+      "id_task": 6739,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "B_output_512",
+      "id_task": 6997,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "A_original_256",
+      "id_task": 7670,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "B_output_512",
+      "id_task": 7338,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "A_original_256",
+      "id_task": 7928,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "B_output_512",
+      "id_task": 7941,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "A_original_256",
+      "id_task": 7970,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "B_output_512",
+      "id_task": 7954,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "A_original_256",
+      "id_task": 7986,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "B_output_512",
+      "id_task": 8001,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "A_original_256",
+      "id_task": 8030,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "B_output_512",
+      "id_task": 8016,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "A_original_256",
+      "id_task": 8044,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "B_output_512",
+      "id_task": 8058,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "A_original_256",
+      "id_task": 8087,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "B_output_512",
+      "id_task": 8072,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "A_original_256",
+      "id_task": 8102,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "B_output_512",
+      "id_task": 8118,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "A_original_256",
+      "id_task": 8148,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "B_output_512",
+      "id_task": 8134,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "A_original_256",
+      "id_task": 8162,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "B_output_512",
+      "id_task": 8201,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "A_original_256",
+      "id_task": 8261,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "B_output_512",
+      "id_task": 8240,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "A_original_256",
+      "id_task": 8282,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "B_output_512",
+      "id_task": 8312,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "A_original_256",
+      "id_task": 8356,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "B_output_512",
+      "id_task": 8342,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "A_original_256",
+      "id_task": 8370,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "B_output_512",
+      "id_task": 8381,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "A_original_256",
+      "id_task": 8407,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "B_output_512",
+      "id_task": 8392,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "A_original_256",
+      "id_task": 8422,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "B_output_512",
+      "id_task": 8437,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "A_original_256",
+      "id_task": 8466,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "B_output_512",
+      "id_task": 8452,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "A_original_256",
+      "id_task": 8480,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "B_output_512",
+      "id_task": 8516,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "A_original_256",
+      "id_task": 8567,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "B_output_512",
+      "id_task": 8552,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "A_original_256",
+      "id_task": 8582,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "B_output_512",
+      "id_task": 8598,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "A_original_256",
+      "id_task": 8628,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 256,
+        "n_predict": 256
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "B_output_512",
+      "id_task": 8614,
+      "params": {
+        "temperature": 0.0,
+        "top_k": 40,
+        "top_p": 0.949999988079071,
+        "min_p": 0.05000000074505806,
+        "seed": 4294967295,
+        "presence_penalty": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 512,
+        "n_predict": 512
+      },
+      "n_ctx": 4096,
+      "cache_tokens": 0
+    }
+  ]
+}

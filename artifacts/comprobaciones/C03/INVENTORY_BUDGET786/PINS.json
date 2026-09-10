@@ -1,0 +1,13 @@
+{
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/PREREG.json": "13282782e871ac524d2c4f93a4525675052ba8e0655b507d9249a9e97ca30d4a",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/PROCESS.json": "2518bc8614c489517cfc4238a6b8c3aa63e59adb3cd0c0ed7b94e69bf4b2d749",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/RESULT.json": "74e6ecaf736a56da986f7a9f34551949584ee71fd354c6dce9926fff1d36d729",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/ADJUDICATION.json": "3e0b6036e1ab0b020dabe1fc39e2dfdf0b99eccfab3ce586f6923f682affbf9c",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/PARITY.json": "bd64aa58421e44e87300129644d700d70034e0332dcafcd88b4a7d8aec7b6862",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/PRIVATE_PINS.json": "9b3143c647b8e21118ae36e77ed022a528b6ed3d91aaf4b55f05a00825434a62",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/RESPUESTAS_CAMBIADAS.md": "062d00536a2aa7039823cae3c720f417ba5cbee326281e4fc3a82ce41d894f4e",
+  "artifacts/comprobaciones/C03/INVENTORY_BUDGET786/REPORT.md": "838629b26da4c3204a259a3a871fe34e2af24aa2403cb89bc2021be4ffd941b2",
+  "scratchpad/c03-prepare-inventory-budget786.py": "9b2e3a25daca185e9651b4967060e6381162d1c408024f2aea0f90dd44510cd3",
+  "scratchpad/c03-inventory-budget786.py": "7c69e9bf53d4b2afa84d7ecfbef81a3f8b3802e3b5db47e6ba0466cb4a72c3ac",
+  "scratchpad/c03-record-inventory-budget786.py": "e127a59e75229679f5c97fc4e319eb02f0ffb27ff5718a3a56f80698d61baecd"
+}
