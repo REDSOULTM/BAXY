@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T02:28:26.510035+00:00",
+  "confirmedAtUtc": "2026-09-10T02:31:20.069539+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Fuente693 adoptada tras Full existente verificado y adjudicacion694 completa:45/73correctos,28fallos. Publicacion en preparacion; C03 EN_CURSO; encuesta26/716/0.",
-  "continuation": "Publicar693 y evidencia690-694 sin repetir inferencia ni Full. Despues reparar primeras transformaciones erroneas694: validacion de identidad de ventanas/actor WLAN, lecturas actuales copiadas del historial y alcance/orden de procesos. Modelo Qwen candidato retenido tras comparacion independiente699/700 terminada. No aplicar prototype695.",
+  "checkpoint": "Fuente693 y evidencia690-694 publicadas en10f16319, origin/Goal-c03. Full693 y auditoria de indice verdes;45/73correctos,28fallos; C03 activo, encuesta26/716/0.",
+  "continuation": "Reparar las primeras transformaciones erroneas de694 por familias: validacion de identidad de ventanas/actor WLAN, frescura de lecturas y alcance/ranking de procesos. Comparacion699/700 terminada, Qwen candidato retenido. No repetir publicaciones, Full693 ni inferencias concluidas; no aplicar prototype695.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "d7ddd926a2b382acade4f9c9b69818490b44c68e",
-  "workStatus": "source693_adopted_publication",
+  "publishedSourceCommit": "10f16319f53356be5c306a6880c01f09675da0f7",
+  "workStatus": "shared_status_blockers_after_694",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "a8eaf976",
+  "publishedEvidenceCommit": "10f16319f53356be5c306a6880c01f09675da0f7",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
