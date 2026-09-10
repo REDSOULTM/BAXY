@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-10T15:43:40.393297+00:00",
+  "source751_pins_verified": 8,
+  "new_public_pins": 44,
+  "product_source_edited": false,
+  "source_tests_rerun": false,
+  "reason": "Evidence-only diagnostics; prior source validation unchanged.",
+  "main_unchanged": true,
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "goal_complete": false
+}

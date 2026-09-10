@@ -1,0 +1,12 @@
+{
+  "calls_completed": 2,
+  "calls_planned": 2,
+  "gpu_peak_mib": 3495.55859375,
+  "ram_peak_mib": 718.0625,
+  "seconds": 9.375,
+  "violations": [],
+  "driver_unchanged": true,
+  "source_unchanged": true,
+  "scope": "757 projection completed20 entries but omitted partial-page scope. This paired probe holds that projection constant and adds the unchanged754 page-writing clause only to the second arm. Inspect all identities and page scope under fixed256output tokens. Offline observation15s does not change any product deadline or the4s success reference. Server cwd remains binary folder rather than product sidecar folder; not a complete product timing replica or adoption.",
+  "quality_adjudicated": false
+}

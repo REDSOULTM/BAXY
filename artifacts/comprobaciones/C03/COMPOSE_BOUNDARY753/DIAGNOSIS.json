@@ -1,0 +1,146 @@
+{
+  "status": "cause_demonstrated_not_repaired",
+  "product_exit": {
+    "utc": "2026-09-10T15:13:43.697774+00:00",
+    "exit_code": 0,
+    "manifest_unchanged": true,
+    "sources_unchanged": true,
+    "source751_unchanged": true,
+    "runner_unchanged": true,
+    "observer_unchanged": true,
+    "app_dll_unchanged": true,
+    "quality_adjudicated": false
+  },
+  "terminals": [
+    {
+      "kind": "filtered",
+      "final": null
+    }
+  ],
+  "http_stages": {
+    "request": 10,
+    "response": 4,
+    "failure": 6
+  },
+  "compose_stages": {
+    "input": 8,
+    "output": 2,
+    "failure": 6
+  },
+  "responses": [
+    {
+      "id": 1,
+      "seconds": 0.375,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 9,
+        "prompt_tokens": 192,
+        "total_tokens": 201,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 192,
+        "prompt_ms": 183.461,
+        "prompt_per_token_ms": 0.9555260416666668,
+        "prompt_per_second": 1046.5439521206142,
+        "predicted_n": 9,
+        "predicted_ms": 135.575,
+        "predicted_per_token_ms": 15.063888888888888,
+        "predicted_per_second": 66.3839203392956
+      }
+    },
+    {
+      "id": 3,
+      "seconds": 3.922000000005937,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 1533,
+        "total_tokens": 1789,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 1533,
+        "prompt_ms": 556.951,
+        "prompt_per_token_ms": 0.3633078930202218,
+        "prompt_per_second": 2752.4863048993534,
+        "predicted_n": 256,
+        "predicted_ms": 3347.169,
+        "predicted_per_token_ms": 13.07487890625,
+        "predicted_per_second": 76.48254390501346
+      }
+    },
+    {
+      "id": 8,
+      "seconds": 0.28100000000267755,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 15,
+        "prompt_tokens": 249,
+        "total_tokens": 264,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 249,
+        "prompt_ms": 88.407,
+        "prompt_per_token_ms": 0.35504819277108435,
+        "prompt_per_second": 2816.51905392107,
+        "predicted_n": 15,
+        "predicted_ms": 180.071,
+        "predicted_per_token_ms": 12.004733333333332,
+        "predicted_per_second": 83.30047592338578
+      }
+    },
+    {
+      "id": 10,
+      "seconds": 3.937000000005355,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 1533,
+        "total_tokens": 1789,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 1533,
+        "prompt_ms": 547.587,
+        "prompt_per_token_ms": 0.3571996086105675,
+        "prompt_per_second": 2799.555139183363,
+        "predicted_n": 256,
+        "predicted_ms": 3369.974,
+        "predicted_per_token_ms": 13.1639609375,
+        "predicted_per_second": 75.96497777134185
+      }
+    }
+  ],
+  "failure_types": {
+    "TimeoutError": 6
+  },
+  "finding": "The first inventory response generates256tokens and ends length, after narrating unrequested geometry/state before all20identities/page scope. First call3.922s; retry cannot obtain endpoint within existing4s budget. Not a context overflow:1533prompt+256completion tokens versus4096slot. Later repeats also exhaust the same budget. No deadline/model change.",
+  "private_hashes": {
+    "panel.json": "31501ccf20f6cea7f5e45cce4e7c1ee3ff49b3577879e86c25afa8c24492e684",
+    "http-posts.jsonl": "19afa5f7eee40e86385f4488d4d86dd7b4ebb46a674e92668d13bd869c264961",
+    "compose-boundary.jsonl": "c9a8e238b033a1ad7fdab1bd9726c390a8b40d46612f15af888bfcb385fdbdd1",
+    "compose-audit.jsonl": "79ff66e54b9e0ba307fda96e7376abf58130da4b98fa917d6d9aa55fc39ca557",
+    "capture/events.jsonl": "ec2c5d4dff331925c0e434768945e3b30fbb9664ce43db5636d99f47714453b2"
+  },
+  "next": "Prompt-only paired754 using the exact captured observation; same backend/sampler/max256/4s, one additional identity/scope instruction.",
+  "coverage_added": 0,
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "calls_completed": 2,
+  "calls_planned": 2,
+  "gpu_peak_mib": 3495.55859375,
+  "ram_peak_mib": 718.1640625,
+  "seconds": 11.375,
+  "violations": [],
+  "driver_unchanged": true,
+  "source_unchanged": true,
+  "scope": "Prompt-only diagnostic on frozen facts, not product/model promotion or survey/UI/voice credit.",
+  "quality_adjudicated": false
+}

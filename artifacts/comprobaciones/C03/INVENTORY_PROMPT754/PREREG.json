@@ -1,0 +1,61 @@
+{
+  "utc": "2026-09-10T15:18:18.208019+00:00",
+  "calls": 2,
+  "command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "49742",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching"
+  ],
+  "source": "COMPOSE_BOUNDARY753 HTTP request3, same frozen20-window observation",
+  "change": " For a window list, give each returned window identity concisely: preserve its exact title when present, otherwise its exact process name. Omit coordinates, dimensions, state, focus and identifiers unless the person asks for them. State the page count and its scope before the list. Do not drop returned windows or invent a complete inventory from one page.",
+  "all_other_payload_fields_equal": true,
+  "model": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  },
+  "backend": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "driver_sha256": "225c6388d06314d42ae1b7be7164adc7554157319f6618093e44561b6931116f",
+  "source_llm_sha256": "1ab5900c774df5fade2cb0724d27e7c4581f2c9686faf16ac7e05a7b91d234a8",
+  "planned_sha256": "20c11e1166288e0b55606efb4425830756487f3cefcc3ecf0a09f423911447b2",
+  "source_requests_sha256": "19afa5f7eee40e86385f4488d4d86dd7b4ebb46a674e92668d13bd869c264961",
+  "limits": {
+    "request_seconds": 4,
+    "max_tokens": 256,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "criterion": "Complete untruncated final within unchanged4s; preserve all returned identities, count and page scope. No shrinking the list, no factual invention, no changed validator.",
+  "scope": "Prompt-only diagnostic on frozen facts, not product/model promotion or survey/UI/voice credit."
+}

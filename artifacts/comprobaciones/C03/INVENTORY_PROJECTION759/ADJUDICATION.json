@@ -1,0 +1,46 @@
+{
+  "rows": [
+    {
+      "arm": "identity_projection",
+      "seconds": 3.577999999994063,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 153,
+        "prompt_tokens": 678,
+        "total_tokens": 831,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "within4s": true,
+      "original_validator_defect": "missing_fact",
+      "returned_identity_entries": 20,
+      "expected_identity_entries": 20,
+      "response_sha256": "fba3087bd790509e0628c38803824eacba98727795603e5442a6b0a8dd7f20e7"
+    },
+    {
+      "arm": "explicit_page_semantics",
+      "seconds": 3.9530000000086147,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 174,
+        "prompt_tokens": 718,
+        "total_tokens": 892,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "within4s": true,
+      "original_validator_defect": "",
+      "returned_identity_entries": 20,
+      "expected_identity_entries": 20,
+      "response_sha256": "ee073842845159f79ca66f03c666fde644588f2b4bfdb0de9f9c74ed16d53595"
+    }
+  ],
+  "all_responses_manually_read": true,
+  "manual_verdict": "Both retain20 identities. Baseline omits partial-page disclosure. Candidate states partial20/24 but invents that these are the most recent windows. Provider does not observe recency or chronological ordering. Candidate rejected even if lexical validator accepts it.",
+  "accepted_product_repairs": 0,
+  "survey_credit": 0,
+  "private_planned_sha256": "8bf66367619fb1313a71083f2c1b5ab31b592c2f354d6c922968c94e7fed3931",
+  "private_results_sha256": "c77b6529f4548d9adc57c1d27ed4d8a343e40871984e6e6309f77845d45006b3"
+}

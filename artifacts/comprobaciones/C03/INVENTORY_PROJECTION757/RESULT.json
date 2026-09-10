@@ -1,0 +1,12 @@
+{
+  "calls_completed": 2,
+  "calls_planned": 2,
+  "gpu_peak_mib": 3495.55859375,
+  "ram_peak_mib": 717.9765625,
+  "seconds": 13.139999999999418,
+  "violations": [],
+  "driver_unchanged": true,
+  "source_unchanged": true,
+  "scope": "Projection intervention after instruction-only754-756 did not complete either list. Inspect all identities and page scope under fixed256output tokens. Offline observation15s does not change any product deadline or the4s success reference. Server cwd remains binary folder rather than product sidecar folder; not a complete product timing replica or adoption.",
+  "quality_adjudicated": false
+}

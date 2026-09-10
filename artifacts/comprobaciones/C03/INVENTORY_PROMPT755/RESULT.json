@@ -1,0 +1,12 @@
+{
+  "calls_completed": 2,
+  "calls_planned": 2,
+  "gpu_peak_mib": 3495.55859375,
+  "ram_peak_mib": 718.1015625,
+  "seconds": 10.889999999999418,
+  "violations": [],
+  "driver_unchanged": true,
+  "source_unchanged": true,
+  "scope": "Prompt-only diagnostic with registered runtime environment defaults restored; not product/model promotion or survey/UI/voice credit.",
+  "quality_adjudicated": false
+}

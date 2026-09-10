@@ -1,0 +1,12 @@
+{
+  "calls_completed": 2,
+  "calls_planned": 2,
+  "gpu_peak_mib": 3497.55859375,
+  "ram_peak_mib": 718.79296875,
+  "seconds": 10.562000000005355,
+  "violations": [],
+  "driver_unchanged": true,
+  "source_unchanged": true,
+  "scope": "757 identity projection completed20 entries but omitted partial-page scope.758 writing clause still stated20 visible vs24 total ambiguously. New hypothesis: explain the distinction in the factual projection itself, without an additional prompt clause or changing original metadata. Inspect all identities and page scope under fixed256output tokens. Offline observation15s does not change any product deadline or the4s success reference. Server cwd remains binary folder rather than product sidecar folder; not a complete product timing replica or adoption.",
+  "quality_adjudicated": false
+}

@@ -1,0 +1,45 @@
+{
+  "arms": [
+    {
+      "arm": "captured",
+      "finish_reason": "length",
+      "seconds": 6.546999999991385,
+      "within4s": false,
+      "usage": {
+        "completion_tokens": 256,
+        "prompt_tokens": 1533,
+        "total_tokens": 1789,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "unchanged_validator_defect": "missing_fact",
+      "listed_entries": 13,
+      "observed_entries": 20,
+      "reply_sha256": "b5413c1dd63b8630dbfdf113eb64aaf75d30f59cb3154e063af1eb2f6a90941c"
+    },
+    {
+      "arm": "identity_projection",
+      "finish_reason": "stop",
+      "seconds": 3.75,
+      "within4s": true,
+      "usage": {
+        "completion_tokens": 153,
+        "prompt_tokens": 678,
+        "total_tokens": 831,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "unchanged_validator_defect": "missing_fact",
+      "listed_entries": 20,
+      "observed_entries": 20,
+      "reply_sha256": "fba3087bd790509e0628c38803824eacba98727795603e5442a6b0a8dd7f20e7"
+    }
+  ],
+  "manual_adjudication": {
+    "captured": "Truncated mid-list; no complete page or page-scope disclosure.",
+    "identity_projection": "All20 entries and multiplicity represented, including shell identities rendered as Explorador de archivos. Total24 preserved, but no explicit disclosure that this is a partial20-entry page: still missing_fact, not an accepted answer."
+  },
+  "conclusion": "Projection removes unrequested detail and truncation, but has not repaired complete truthfulness. No product adoption or survey credit."
+}
