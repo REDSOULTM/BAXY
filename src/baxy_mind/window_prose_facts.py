@@ -353,6 +353,14 @@ def _inventory_seen(payload: dict) -> dict | None:
     return seen
 
 
+def _inventory_is_entire(seen: dict) -> bool | None:
+    total = seen["totalCount"] if seen["complete"] else None
+    return (
+        seen["offset"] == 0 and seen["count"] == total if total is not None else
+        False if seen["offset"] > 0 or seen["count"] < seen["observedCount"] else None
+    )
+
+
 def project_window_inventory(payload: dict, user_text: str) -> dict:
     """Describe page scope without confusing enumeration completion with a full list.
 
@@ -364,15 +372,11 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
     if seen is None:
         return payload
     total = seen["totalCount"] if seen["complete"] else None
-    entire_inventory = (
-        seen["offset"] == 0 and seen["count"] == total if total is not None else
-        False if seen["offset"] > 0 or seen["count"] < seen["observedCount"] else None
-    )
     projected = dict(seen)
     projected["returnedPageScope"] = {
         "windowsListedOnThisPage": seen["count"],
         "totalWindowsInSelectedInventory": total,
-        "thisListIncludesEveryWindowInSelectedInventory": entire_inventory,
+        "thisListIncludesEveryWindowInSelectedInventory": _inventory_is_entire(seen),
         "windowOpeningTimesObserved": False,
     }
     if window_inventory_arguments(user_text) is not None:
@@ -384,13 +388,22 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
     return {**payload, "seen": projected}
 
 
-_PAGE_CONTEXT = re.compile(r"\b(?:pagina|page|listad[oa]|listed|mostrad[oa]s?|shown|"
+_PAGE_CONTEXT = re.compile(r"\b(?:pagina|page|lista|list|listad[oa]|listed|mostrad[oa]s?|shown|"
                            r"muestro|muestra|showing|displayed|devuelt[oa]s?|returned)\b")
 _OBSERVATION_CONTEXT = re.compile(r"\b(?:observad[oa]s?|observed|encontrad[oa]s?|found|"
                                   r"detectad[oa]s?|detected|identificad[oa]s?|identified)\b")
 _TOTAL_CONTEXT = re.compile(r"\b(?:en\s+total|in\s+total|total\s+of|total\s+de)\b")
 _INVENTORY_LIMIT = re.compile(r"\b(?:pagina|page|parcial|partial|limite|limited|"
                              r"al\s+menos|at\s+least|mas\s+ventanas|more\s+windows)\b")
+_ALL_WINDOWS = re.compile(
+    r"\b(?:todas\s+las\s+ventanas|all\s+(?:the\s+)?windows|"
+    r"son\s+todas|all\s+of\s+them|no\s+hay\s+mas\s+ventanas|no\s+other\s+windows)\b"
+)
+_NEGATED_INVENTORY_INCLUSION = re.compile(
+    r"\b(?:no|not|isn['’]t|aren['’]t|doesn['’]t|don['’]t)\s+"
+    r"(?:(?:incluy[ea]n?|contien[ea]n?|muestr[ae]n?|enumer[ae]n?|"
+    r"inclu(?:de|des)|contain(?:s)?|show(?:s)?|list(?:s)?|have|has)\s+)?$"
+)
 _INVENTORY_FRACTION = re.compile(
     rf"\b(?P<page>{_NUMBER})\s*"
     r"(?:(?:open\s+|visible\s+)?(?:windows?|ventanas?)\s+)?"
@@ -462,7 +475,8 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
     if _PROCESS_STATE.search(asserted):
         return "extra_claim"
     total = seen["totalCount"] if seen["complete"] else None
-    partial_page = total is None or seen["count"] < total
+    entire_inventory = _inventory_is_entire(seen)
+    partial_page = entire_inventory is not True
     count_question = re.search(r"\b(?:cuantas|how\s+many|cuenta|count)\b", fold(user_text))
     stated_subset = False
     for clause in re.split(r"[,;.!?]|\b(?:pero|but|and|y)\b", asserted):
@@ -507,11 +521,18 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
             return "extra_claim" if value is None else "reversed_result"
         if _HAS_WINDOWS.search(_NO_WINDOWS.sub("", clause)) and value == 0:
             return "reversed_result"
-        if partial_page and not _PAGE_CONTEXT.search(clause) and re.search(
-            r"\b(?:todas\s+las\s+ventanas|all\s+(?:the\s+)?windows|"
-            r"son\s+todas|all\s+of\s+them|no\s+hay\s+mas\s+ventanas|no\s+other\s+windows)\b", clause,
-        ):
-            return "extra_claim"
+        for claim in _ALL_WINDOWS.finditer(clause):
+            # "All windows shown on this page" quantifies the returned page;
+            # a page as the subject does not restrict "contains all windows".
+            if _PAGE_CONTEXT.search(clause[claim.end():]):
+                continue
+            negative = bool(_NEGATED_INVENTORY_INCLUSION.search(clause[:claim.start()]))
+            if entire_inventory is None:
+                return "extra_claim"
+            if (not negative) != entire_inventory:
+                return "reversed_result" if negative else "extra_claim"
+            if negative:
+                stated_subset = True
     if partial_page and not (count_question and total is not None) and not (
         stated_subset or _INVENTORY_LIMIT.search(asserted) or _UNCERTAINTY.search(asserted)
     ):

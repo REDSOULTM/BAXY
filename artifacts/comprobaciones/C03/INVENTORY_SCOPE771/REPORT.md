@@ -1,0 +1,11 @@
+# Cantidades y negación ligadas a su observación
+
+El verificador de inventarios distingue ahora la cantidad de una lista/página del total seleccionado y la afirmación de exhaustividad de su negación. Reutiliza el mismo dato derivado de página completa que recibe el modelo; no inventa un total cuando la enumeración es incompleta. Tener una página como sujeto no autoriza afirmar que contiene todas las ventanas del inventario, mientras que «todas las ventanas mostradas en esta página» limita el cuantificador a esa página.
+
+La corrección de cronología incorpora exactamente la explicación explícita medida en770C. Se conserva el borrador, que aquella variante utilizó para mantener las20identidades, y un único constructor reemplaza la duplicación entre segundo y tercer intento. La explicación se añade sólo cuando la validación detecta cronología no observada; no se cambia primer intento, modelo, sampler ni presupuesto.
+
+68 controles nuevos cubren español/inglés, cantidades y totales distintos, páginas completas/parciales y alcance desconocido, afirmaciones/negaciones, nombres observados opacos y ambas rutas de modelo.986 pruebas dueñas pasan; integridad de ventanas y pins1011pass/1skip ambiental por datos STT privados ausentes. Las suites se solapan. Fast pasó con Release25,94s, cero advertencias y errores. Fuente y declaraciones permanecen selladas.
+
+Una reproducción controlada acepta literalmente C/D capturadas en770, en una llamada simulada cada una, y comprueba que el nuevo segundo request es idéntico al que generó C con inferencia real. El borrador que inventa recencia sigue rechazado. Se conserva la limitación de entrada: el sobre se reconstruyó con payload proyectado idéntico porque audit.situation está truncado. No es una nueva sesión real de BAXY ni una certificación del tiempo total de reintento.
+
+El fallo770B sigue abierto: omitía una ventana repetida aunque el verificador aceptaba. Ninguna cobertura se acredita con esa variante. También quedan interpretación del inventario, foco, lecturas ausentes y otros bloqueos del panel.772 ejecutará los73casos completos con el runtime registrado tras publicar esta fuente. Encuesta26cubiertos/716abiertos/0NA; sin crédito UI/voz/reserva ni cierre C03. Full final pendiente.

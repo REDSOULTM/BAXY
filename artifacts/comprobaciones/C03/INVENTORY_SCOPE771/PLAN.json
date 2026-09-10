@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-10T17:57:50.431258+00:00",
+  "source_parent": "803f211d514106f86c69a906432d17e3b73a66fa",
+  "diagnosis": "770C/D contain all20 identities with truthful20/25 scope but fail page-subject and negative-exhaustiveness checks. Explicit cause improves CvsA and DvsB.",
+  "changes": [
+    "Reuse the existing derived full-page fact in projection and validation; bind lista/list quantity to the page.",
+    "Bind the all-windows statement to its explicit negation and known full/partial/unknown scope; a page subject alone does not restrict a global all-windows claim.",
+    "Reuse one correction builder for retry/third and add exactly the explicit-cause system clause measured in770C, only for the observed chronology defect."
+  ],
+  "no_new_layer_or_model_condition": true,
+  "first_attempt_sampler_budget_unchanged": true,
+  "validation_completed": "986 owner tests pass/0skip,6.20s;68 new scope/polarity/composition cases. Exact capturedC/D pass in1stub; reconstructed retry equals measured770C payload byte-for-value.",
+  "initial_test_collection_error": "New test used reserved pytest parameter request; renamed user_text before collection. Original error log retained; no product failure.",
+  "validation_pending": "Current-pin/window integrity and Fast on sealed source. Publish after green and run prepared772 complete73.",
+  "known_open": "770B omitted one repeated window but checker accepted; no acceptance/coverage from that arm. Other global inventory routing/focus issues remain.",
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

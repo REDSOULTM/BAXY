@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # Historical STT/wake campaign pins remain unchanged; this declaration does
 # not claim new audio acceptance.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "ba7851452608e5e8fb1d6bb5601764fe0cfe02069379cd8369654a6f8936e3de"
+    "cadb63073d8ea75694fa1a477aada8c336a76a72db4ac9f5c899e7a9d0c183f8"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

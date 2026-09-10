@@ -1,0 +1,19 @@
+{
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/CAPTURED_REPLAY.json": "b9cad13c2144b99656664948c804080501998a367228a68b90e2cc81e2c0ff63",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/SOURCE_PINS.json": "8034dbb85b68a314f77a8bf59872e502af7a8b0aa38a1073dce8c9387e83e5e8",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/PROGRAM.json": "d3e8fd6c9e9bc74ea21e162666e2fccbff573352f7a9f70f64c77f0354c0755e",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/PLAN.json": "37840accc0e9f1cc29ce1faf84187beef74b0ac1c3462c64dac9a3bf997001da",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/owners-collection-error.log": "94bf4b68c675316d125d3fc7f94d1485629569609493b37d1a4470be9bff23ba",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/owners-scope.log": "8272d6158c9996a64b4ee704d10877ed33b774c94285b45402aaa18b33ee048b",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/owners.log": "a29df0c7fff89a01e2b6c4de83ec07313bfb055321ceb74a18d9fe57f8222bbc",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/integrity.log": "a5b5145646f8c486a495c76e76b839ace4e7b4c57fc230a83b09d0102835cc38",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/fast.log": "c30f658442f3e4f9d98f816b819d29cbeb5e521e508df341afe7699ad7f39236",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/VALIDATION.json": "608cd65e7b1f54e779772daf014f50fabd985257680e728c1dca61ed9e873f26",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/ADOPTION.json": "8a5a6183615057499af78393a80f52861aaa4a6144ce3868f40b48b19fc36be7",
+  "artifacts/comprobaciones/C03/INVENTORY_SCOPE771/REPORT.md": "8e72427a6b70785e9f41436e5a02ffe7bf452ab83a6a996ad426ec80c4f04b43",
+  "scratchpad/c03-replay-inventory771.py": "547cf6b6f51a3abd10bda7cba82bd2378fad61ee86a308a3ef97044d16793473",
+  "scratchpad/c03-prepare-inventory771.py": "f6a40828e2c2f7f732f97651e7b5486fb2f79ae02c0930daa800674e2b5ef457",
+  "scratchpad/c03-adopt-inventory771.py": "0418065328d7208abb5a7f5640fba0680d5eb70598535b6b6c021b01676401de",
+  "scratchpad/c03-status-batch772.py": "49fe5905506071db0df9d1c4fdf3b6fd45ee93fa0a537a6b61ceda9d7f5a8625",
+  "scratchpad/c03-review-status772.py": "74cabcbeb7d116b808f4c056571a8069dca8d74a07ab7b68dc27d3d47a08abf8"
+}

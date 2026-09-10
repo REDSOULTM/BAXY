@@ -1,0 +1,32 @@
+{
+  "measured770C_request_exactly_equal_to_candidate_retry": true,
+  "checks": [
+    {
+      "arm": "C_explicit_cause",
+      "exact_captured_reply_published": true,
+      "stub_calls": 1
+    },
+    {
+      "arm": "D_no_draft_explicit_cause",
+      "exact_captured_reply_published": true,
+      "stub_calls": 1
+    }
+  ],
+  "wrong_recency_still_rejected": true,
+  "second_attempt_returns_exact_measured_C": true,
+  "input_reconstructed_with_equal_projected_payload": true,
+  "raw_product_input_byte_identity": false,
+  "new_inference_calls": 0,
+  "survey_coverage_added": 0,
+  "source_pins": {
+    "src/baxy_mind/llm.py": "ba862eed41908014436f9710df3cabafc16d75565eaf1bed3325c3356b0337a0",
+    "src/baxy_mind/window_prose_facts.py": "f6396ef1c7a644abee1d763db70866eb9886ea6bcca0697c4ff059342da669a4"
+  },
+  "evidence_sha256": {
+    "results.json": "641092b3fffa008e94a3504eaa35bca0294c0c4fe83e3bf80e934017633bf036",
+    "planned.json": "5725fce8a9e9e08cb118d97aee9bbcc1ff690ac28c3ece3efb062356d3b77bcb",
+    "reconstructed.json": "1ddaea25adf6a25269f323cad8e692d0464e00cad21b4de2c890ab9a17567027"
+  },
+  "known_remaining_failure": "770B still omits one repeated identity; manual completeness fails even if the fact checker accepts. No credit from that arm.",
+  "scope": "Controlled replay of exact captured outputs with reconstructed verified facts, not a new real product session. Registered regression still required."
+}

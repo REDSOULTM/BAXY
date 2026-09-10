@@ -10043,6 +10043,21 @@ class LlmRuntime:
             "Preserve the requested list and its page scope. No JSON. No codes."
             if inventory_answer else "One sentence. No JSON. No codes."
         )
+
+        def correct_window_facts(candidate: str, system: str, user: str) -> tuple[str, str]:
+            correction = window_fact_feedback(candidate, visible_situation, user_text)
+            if correction is None:
+                return system, user
+            user += "\nVerified factual correction: " + json.dumps(correction, ensure_ascii=False)
+            if correction.get("unsupported_claim", {}).get("predicate") == "window_opening_chronology":
+                explanation = (
+                    " The observation contains no window opening times, so it does not establish "
+                    "which windows are newest or oldest. Correct that claim using only the observed facts."
+                )
+                system += explanation
+                sent_instructions.append(explanation)
+            return system, user
+
         repair_machine_actor = defect == "wrong_machine_actor" or (
             defect == "wrong_actor"
             and not _looks_like_capability_question(user_text)
@@ -10189,9 +10204,7 @@ class LlmRuntime:
         )
         retry_system = f"{retry_system_base}\n{correction}"
         retry_user = _compose_user_content(user_text, prompt_facts, "", include_request=cause != "acting")
-        factual_correction = window_fact_feedback(text, visible_situation, user_text)
-        if factual_correction is not None:
-            retry_user += "\nVerified factual correction: " + json.dumps(factual_correction, ensure_ascii=False)
+        retry_system, retry_user = correct_window_facts(text, retry_system, retry_user)
         retry_payload["messages"] = [
             {"role": "system", "content": retry_system},
             {"role": "user", "content": retry_user},
@@ -10234,9 +10247,7 @@ class LlmRuntime:
             + (correction_format if inventory_answer else "One sentence. First person. No JSON. No codes.")
         )
         third_user = _compose_user_content(user_text, prompt_facts, "", include_request=cause != "acting")
-        factual_correction = window_fact_feedback(retry_text, visible_situation, user_text)
-        if factual_correction is not None:
-            third_user += "\nVerified factual correction: " + json.dumps(factual_correction, ensure_ascii=False)
+        third_system, third_user = correct_window_facts(retry_text, third_system, third_user)
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},

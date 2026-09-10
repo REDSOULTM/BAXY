@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+_________ ERROR collecting tests/test_c03_inventory_scope_polarity.py _________
+tests/test_c03_inventory_scope_polarity.py::test_a_faithful_answer_reaches_the_user_without_an_unnecessary_retry: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR tests/test_c03_inventory_scope_polarity.py - Failed: tests/test_c03_inv...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.48s
