@@ -1,0 +1,638 @@
+{
+  "utc": "2026-09-10T17:20:41.972483+00:00",
+  "source_commit": "21cb408063c65a285ecd605863ef9f68aadb1a95",
+  "status": "complete_registered_regression_adjudicated",
+  "cases": 73,
+  "correct": 51,
+  "not_accredited": 22,
+  "substantive_failures": 22,
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "method": "All73 complete records against their own fresh observations and frozen689/729 criteria; root t1-7 plus bounded read-only reviews t8-40 and t41-73. No terminal-status-only scoring.",
+  "interpretation_sensitive": 2,
+  "interpretation_sensitivity": "H0383/audio-status-en retain prior acceptance of the measured default endpoint without requiring an unrequested literal endpoint name/percent symbol. H0655 now fails: its complete wording mislabels usable RAM as available.",
+  "comparison_limit": "Different machine observations and prose prevent attributing score changes to766.765 also failed its DLL seal. Native model comparison remains699, paired prompt diagnosis737.",
+  "resources": {
+    "utc": "2026-09-10T17:06:12.993562+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2489.3125,
+    "seconds": 218.734,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "panel_sha256": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+  "failure_categories": {
+    "inventory_draft_rejected": 2,
+    "global_inventory_interpretation": 3,
+    "no_fresh_read": 3,
+    "memory_total_labelled_available": 3,
+    "supported_read_not_selected": 6,
+    "cpu_percent_scaled_twice": 1,
+    "internet_not_observed": 1,
+    "wifi_scope_expanded": 1,
+    "cpu_process_metric_and_membership": 2
+  },
+  "verdicts": [
+    {
+      "case_id": "H0023",
+      "group": "windows",
+      "turn_id": "t1",
+      "correct": false,
+      "category": "inventory_draft_rejected",
+      "reason": "No final inventory. First draft names all20 returned identities but asserts unobserved recency; later drafts omit or duplicate identities. False short-word rejection repaired766 does not justify accepting chronology."
+    },
+    {
+      "case_id": "H0103",
+      "group": "windows",
+      "turn_id": "t2",
+      "correct": false,
+      "category": "inventory_draft_rejected",
+      "reason": "No final inventory. First draft groups20 windows into10 labels without preserving identities/multiplicities and adds unobserved visibility; later text confuses page20 with total25."
+    },
+    {
+      "case_id": "H0104",
+      "group": "windows",
+      "turn_id": "t3",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh foreground observation supports WhatsApp identity. Accepted wording uses ventana, not the older rejected ventanal form; no causal repair credited."
+    },
+    {
+      "case_id": "H0209",
+      "group": "windows",
+      "turn_id": "t4",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory reaches Core; clarification does not fulfill the supported inventory request. English request also receives Spanish clarification."
+    },
+    {
+      "case_id": "H0663",
+      "group": "windows",
+      "turn_id": "t5",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory reaches Core; clarification does not fulfill the supported inventory request. English request also receives Spanish clarification."
+    },
+    {
+      "case_id": "windows-all-en",
+      "group": "windows",
+      "turn_id": "t6",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory reaches Core; clarification does not fulfill the supported inventory request. English request also receives Spanish clarification."
+    },
+    {
+      "case_id": "windows-focus-mixed",
+      "group": "windows",
+      "turn_id": "t7",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh foreground observation supports WhatsApp identity. Accepted wording uses ventana, not the older rejected ventanal form; no causal repair credited."
+    },
+    {
+      "case_id": "windows-focus-reference-es",
+      "group": "windows",
+      "turn_id": "t8",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh foreground observation supports WhatsApp identity. Accepted wording uses ventana, not the older rejected ventanal form; no causal repair credited."
+    },
+    {
+      "case_id": "H0025",
+      "group": "disk",
+      "turn_id": "t9",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0207",
+      "group": "disk",
+      "turn_id": "t10",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0384",
+      "group": "disk",
+      "turn_id": "t11",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0442",
+      "group": "disk",
+      "turn_id": "t12",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0644",
+      "group": "disk",
+      "turn_id": "t13",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "disk-free-en",
+      "group": "disk",
+      "turn_id": "t14",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "disk-used-es",
+      "group": "disk",
+      "turn_id": "t15",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0026",
+      "group": "gpu",
+      "turn_id": "t16",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0087",
+      "group": "gpu",
+      "turn_id": "t17",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0114",
+      "group": "gpu",
+      "turn_id": "t18",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0194",
+      "group": "gpu",
+      "turn_id": "t19",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0370",
+      "group": "gpu",
+      "turn_id": "t20",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0625",
+      "group": "gpu",
+      "turn_id": "t21",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "gpu-identity-en",
+      "group": "gpu",
+      "turn_id": "t22",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "gpu-usage-es",
+      "group": "gpu",
+      "turn_id": "t23",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0111",
+      "group": "memory",
+      "turn_id": "t24",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0156",
+      "group": "memory",
+      "turn_id": "t25",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0162",
+      "group": "memory",
+      "turn_id": "t26",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0342",
+      "group": "memory",
+      "turn_id": "t27",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0532",
+      "group": "memory",
+      "turn_id": "t28",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "Memory capacity asserted without a fresh Core read."
+    },
+    {
+      "case_id": "H0539",
+      "group": "memory",
+      "turn_id": "t29",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "16.5GB usable RAM is labelled available; measured available is1.9235GB, installed17.1799GB, usable16.5395GB."
+    },
+    {
+      "case_id": "H0655",
+      "group": "memory",
+      "turn_id": "t30",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "Only16.54GB available is asserted; available is1.9033GB, usable16.5395GB. Unlike765 the complete reply does not distinguish those quantities."
+    },
+    {
+      "case_id": "H0508",
+      "group": "memory",
+      "turn_id": "t31",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "OS observation is correct but16.54GB usable RAM is labelled available; measured available1.8964GB."
+    },
+    {
+      "case_id": "memory-total-en",
+      "group": "memory",
+      "turn_id": "t32",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "memory-free-mixed",
+      "group": "memory",
+      "turn_id": "t33",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "memory-used-es",
+      "group": "memory",
+      "turn_id": "t34",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0037",
+      "group": "battery",
+      "turn_id": "t35",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0144",
+      "group": "battery",
+      "turn_id": "t36",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0359",
+      "group": "battery",
+      "turn_id": "t37",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "Supported requested fresh reading not obtained; no accredited answer."
+    },
+    {
+      "case_id": "H0379",
+      "group": "battery",
+      "turn_id": "t38",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0665",
+      "group": "battery",
+      "turn_id": "t39",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "battery-charge-en",
+      "group": "battery",
+      "turn_id": "t40",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "battery-level-es",
+      "group": "battery",
+      "turn_id": "t41",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0065",
+      "group": "cpu",
+      "turn_id": "t42",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0350",
+      "group": "cpu",
+      "turn_id": "t43",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "cpu-usage-en",
+      "group": "cpu",
+      "turn_id": "t44",
+      "correct": false,
+      "category": "cpu_percent_scaled_twice",
+      "reason": "Measured usagePercent0.6622516556291391 becomes66.2% in repeated drafts. Rejected as wrong_machine_value; no final answer."
+    },
+    {
+      "case_id": "cpu-order-es",
+      "group": "cpu",
+      "turn_id": "t45",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0126",
+      "group": "clock",
+      "turn_id": "t46",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0180",
+      "group": "clock",
+      "turn_id": "t47",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0223",
+      "group": "clock",
+      "turn_id": "t48",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0449",
+      "group": "clock",
+      "turn_id": "t49",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0450",
+      "group": "clock",
+      "turn_id": "t50",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "Supported requested fresh reading not obtained; no accredited answer."
+    },
+    {
+      "case_id": "H0498",
+      "group": "clock",
+      "turn_id": "t51",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0499",
+      "group": "clock",
+      "turn_id": "t52",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "Supported requested fresh reading not obtained; no accredited answer."
+    },
+    {
+      "case_id": "H0586",
+      "group": "clock",
+      "turn_id": "t53",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0600",
+      "group": "clock",
+      "turn_id": "t54",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0602",
+      "group": "clock",
+      "turn_id": "t55",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "Supported requested fresh reading not obtained; no accredited answer."
+    },
+    {
+      "case_id": "H0700",
+      "group": "clock",
+      "turn_id": "t56",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0727",
+      "group": "clock",
+      "turn_id": "t57",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "clock-date-en",
+      "group": "clock",
+      "turn_id": "t58",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "Supported requested fresh reading not obtained; no accredited answer."
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "group": "clock",
+      "turn_id": "t59",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "group": "clock",
+      "turn_id": "t60",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0127",
+      "group": "network",
+      "turn_id": "t61",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0433",
+      "group": "network",
+      "turn_id": "t62",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "H0732",
+      "group": "network",
+      "turn_id": "t63",
+      "correct": false,
+      "category": "internet_not_observed",
+      "reason": "InterfacesUp alone does not establish Internet connectivity; final asserts PC online."
+    },
+    {
+      "case_id": "network-wifi-en",
+      "group": "network",
+      "turn_id": "t64",
+      "correct": false,
+      "category": "wifi_scope_expanded",
+      "reason": "Observed WLAN disconnected is expanded to disconnected from every network."
+    },
+    {
+      "case_id": "network-internet-es",
+      "group": "network",
+      "turn_id": "t65",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "Internet absence asserted without a fresh Core read."
+    },
+    {
+      "case_id": "H0364",
+      "group": "processes",
+      "turn_id": "t66",
+      "correct": false,
+      "category": "cpu_process_metric_and_membership",
+      "reason": "Process lifetime TotalProcessorSeconds is presented as current CPU ranking; process instances also do not establish aggregate app ranking."
+    },
+    {
+      "case_id": "H0650",
+      "group": "processes",
+      "turn_id": "t67",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh RAM ranking is correctly descending: python875, ChatGPT838, llama769, msedge519, ChatGPT402MB; distinct observed process instances retained."
+    },
+    {
+      "case_id": "H0675",
+      "group": "processes",
+      "turn_id": "t68",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "Python RAM amount asserted without a fresh process reading."
+    },
+    {
+      "case_id": "processes-top3-en",
+      "group": "processes",
+      "turn_id": "t69",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "processes-top2-es",
+      "group": "processes",
+      "turn_id": "t70",
+      "correct": false,
+      "category": "cpu_process_metric_and_membership",
+      "reason": "Process lifetime TotalProcessorSeconds is presented as current CPU ranking; process instances also do not establish aggregate app ranking."
+    },
+    {
+      "case_id": "H0383",
+      "group": "audio",
+      "turn_id": "t71",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "audio-status-en",
+      "group": "audio",
+      "turn_id": "t72",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Complete reply checked against this turn's fresh observation and original semantic criterion."
+    },
+    {
+      "case_id": "audio-order-es",
+      "group": "audio",
+      "turn_id": "t73",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "Supported requested fresh reading not obtained; no accredited answer."
+    }
+  ],
+  "evidence_sha256": {
+    "review.json": "56eaa8ec460ae330d481ffeb6f55800765f5a656424f69198f9e7a73e70a9dfb",
+    "panel.json": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+    "launch.log": "d8272d8fb8fab4b57b4b175f4ae709976e5967251bc27f7415bab6043d75254c",
+    "capture/events.jsonl": "1fe07186bf3d99bc1e41fb9cf4a8e972e2ceb6feab8f59a3331af9f51d1b7abb",
+    "compose-audit.jsonl": "4ebf2325918422b231a4a03e8f1e674180ff8bdcf0348c1b229c48ee8d6f13b0",
+    "shell-trace.jsonl": "778948335f03fb378915bf59d0968538b537fc14a36f0c68e298a6fe88b0d030",
+    "turn-audit.jsonl": "509b621503135abd28404d17e93a6be09f2d5166c735f6abe6bf7b2c899fc6ad",
+    "raw-replies.jsonl": "afd1e7860cd0eeb6b1cffc371989c8d6938e94a12708aa10e261768076480026",
+    "processes.json": "24e792910f6373b12b6719445dd1ae25f1b85006e39c7e500d3a9602804fccbc",
+    "memory-samples.jsonl": "617601f81c4c652295aa1e837ba962ebc67058a930d29c1e4abaa57ce24e8269"
+  }
+}

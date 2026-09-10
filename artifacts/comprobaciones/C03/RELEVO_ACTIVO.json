@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T17:01:35.427954+00:00",
+  "confirmedAtUtc": "2026-09-10T17:20:41.972483+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "766adoptado: comparación de palabras completas usa mínimo5 en fuente yrespuesta; sin excepciones deapps/modelos. 457owners pass/0skips/2,87s,343integridad pass/1skip ambiental/3,85s,Fast exit0/Release11,04s/0warnings/errors. Reproducción controlada deH0023 devuelveborrador exacto en1stub, no modelo real; primera entradaaudittruncada conservada. 765=diagnóstico52/73 por DLL reconstruidoantesdelconductor. Publicar yseguir767 conprebuild antesdesello.26/716/0.",
-  "continuation": "Publish766 then run prepared767 complete73; verify postbuild DLL seal and all exits before acceptance.",
+  "checkpoint": "767 terminada/adjudicada:51/73 acreditadas,22 fallos; todos los EXIT guards true, sin violaciones. 3499,56MiB VRAM/2489,31MiB RSS/218,734s, sin UI/voz.50 referencias de encuesta añadidas,26/716/0; SHA=dd88ee5458ef8cb0637993ba33429ae42fc4bc67974b656ce0e046eadacc40f4. Fuente766 publicada21cb4080. Sesión79389 terminal0 recogida, no proceso activo. Siguiente: corregir pérdida de causa factual en retry de inventario y exigencia de una frase; no relajar verdad ni cambiar modelo.",
+  "continuation": "Repair factual correction in window_prose_facts.py and llm.py; preserve full list without unobserved chronology.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "295be2b7d813683bcf8042302ae08a9573038852",
-  "workStatus": "truncation766_adopted_pending_publication",
+  "publishedSourceCommit": "21cb408063c65a285ecd605863ef9f68aadb1a95",
+  "workStatus": "status767_adjudicated_inventory_correction_pending",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "295be2b7d813683bcf8042302ae08a9573038852",
+  "publishedEvidenceCommit": "21cb408063c65a285ecd605863ef9f68aadb1a95",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -116,13 +116,12 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "product765",
-    "sessionId": 79148,
+    "name": "product767",
+    "sessionId": 79389,
     "exitCode": 0,
     "turns": 73,
-    "appDllUnchanged": false,
-    "status": "semantic_diagnosis_only_binary_seal_failed",
-    "adjudication": "52semantically correct/21failures; no acceptance or coverage"
+    "appDllUnchanged": true,
+    "adjudication": "51correct/22failures; no coverage or UI/voice credit"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Complete fair native K2 adaptation before integrated comparison; do not blame model for BAXY transforms.",
