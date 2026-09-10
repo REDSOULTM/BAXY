@@ -1,3 +1,7 @@
+772 terminada0/5226 recogida,73 adjudicados:52 pass/21 fallos; todas guardas true. 3499,56MiB VRAM/2476,46MiB RSS/268,719s. Sin mejora global; inventarios siguen fallando con otra observación. Registro50 referencias,26/716/0; SHA=728ea559efbbe511e6af5d9210569fe3b58393750d7230378b1b7f31710071b4. Siguiente773: corregir falso hardware ajeno por a+determinante español; diagnóstico de H0359 confirmado, no request-head. No inferencia activa.
+
+771 publicada 098bfd06bc0a7e428675d7a563fe160fd730fe27; HEAD=origin=remoto,6fuentes/17evidencias Git verificadas.772 activo sesión5226,73casos registrados,launcher5996. No editar fuente ni reiniciar. Encuesta26/716/0.
+
 771 adoptado: alcance de cantidad/polaridad de exhaustividad y causa explícita770C.986owners/0skip/6,20s, 1011integridad/1skipSTT/7,61s;Fast0/87564 recogida/Release25,94s.6pinsintactos. C/Dexactasaceptadas1stub;retryigual770C. Publicar yejecutar772 completo73, no procesoactivo. Omisiónrepetida770B sigueabierta.26/716/0.
 
 771 candidato: cantidad ligada a lista/página y negación de exhaustividad reparadas; misma causa explícita770C en retry/third. 986owners/0skip/6,20s,68nuevos; replay C/D exactos1stub y retry igual770C.6pins fuente/declaraciones congelados. Faltan integridad/Fast, publicar y772completo73.770B omisión repetida sigueabierta. No inferenciaactiva.26/716/0.

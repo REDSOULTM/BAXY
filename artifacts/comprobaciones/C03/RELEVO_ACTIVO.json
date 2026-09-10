@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T18:02:48.747768+00:00",
+  "confirmedAtUtc": "2026-09-10T18:15:09.243375+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "771 adoptado: alcance de cantidad/polaridad de exhaustividad y causa explícita770C.986owners/0skip/6,20s, 1011integridad/1skipSTT/7,61s;Fast0/87564 recogida/Release25,94s.6pinsintactos. C/Dexactasaceptadas1stub;retryigual770C. Publicar yejecutar772 completo73, no procesoactivo. Omisiónrepetida770B sigueabierta.26/716/0.",
-  "continuation": "Publish771 then run prepared772 complete73 with registered Python. Require all EXIT guards, adjudicate actual replies/observations before credit.",
+  "checkpoint": "772 terminada0/5226 recogida,73 adjudicados:52 pass/21 fallos; todas guardas true. 3499,56MiB VRAM/2476,46MiB RSS/268,719s. Sin mejora global; inventarios siguen fallando con otra observación. Registro50 referencias,26/716/0; SHA=728ea559efbbe511e6af5d9210569fe3b58393750d7230378b1b7f31710071b4. Siguiente773: corregir falso hardware ajeno por a+determinante español; diagnóstico de H0359 confirmado, no request-head. No inferencia activa.",
+  "continuation": "Publish772 evidence, repair Spanish preposition versus English indefinite article in existing hardware-scope veto; validate generalized positive/negative cases before product regression.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "e6937520569170eaa03dfde335ac5f41fcb6cb33",
-  "workStatus": "inventory_scope771_adopted_pending_publication",
+  "publishedSourceCommit": "098bfd06bc0a7e428675d7a563fe160fd730fe27",
+  "workStatus": "status772_adjudicated_next_input_scope773",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "e6937520569170eaa03dfde335ac5f41fcb6cb33",
+  "publishedEvidenceCommit": "098bfd06bc0a7e428675d7a563fe160fd730fe27",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,

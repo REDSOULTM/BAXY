@@ -1,0 +1,629 @@
+{
+  "utc": "2026-09-10T18:15:09.243375+00:00",
+  "source_commit": "098bfd06bc0a7e428675d7a563fe160fd730fe27",
+  "status": "complete_registered_regression_adjudicated",
+  "cases": 73,
+  "correct": 52,
+  "not_accredited": 21,
+  "substantive_failures": 21,
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "method": "Fresh manual review of all73: bounded read-only agents t1-25/t26-50 and root t51-73; all frozen criteria retained.",
+  "comparison_limit": "Same73 panel/runtime but live observations differ;52/73 equals769 without causal improvement. Mixed focus now passes with another wording; H0655 now fails available/usable labeling.",
+  "resources": {
+    "utc": "2026-09-10T18:08:13.526592+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2476.4609375,
+    "seconds": 268.719,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "panel_sha256": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+  "failure_categories": {
+    "inventory_draft_rejected": 2,
+    "global_inventory_interpretation": 3,
+    "no_fresh_read": 3,
+    "memory_total_labelled_available": 3,
+    "supported_read_not_selected": 6,
+    "internet_not_observed": 1,
+    "wifi_scope_expanded": 1,
+    "cpu_process_metric_and_membership": 2
+  },
+  "verdicts": [
+    {
+      "case_id": "H0023",
+      "group": "windows",
+      "turn_id": "t1",
+      "correct": false,
+      "category": "inventory_draft_rejected",
+      "reason": "Fresh20/25 inventory reaches composition but no final list is delivered. Unobserved recency remains in drafts; no generalization gain from the fixed770 observation."
+    },
+    {
+      "case_id": "H0103",
+      "group": "windows",
+      "turn_id": "t2",
+      "correct": false,
+      "category": "inventory_draft_rejected",
+      "reason": "Fresh20/25 inventory reaches composition but no final list is delivered. Grouped drafts lose identities and exact multiplicity, and use a processName as a window title; repeated invented veto."
+    },
+    {
+      "case_id": "H0104",
+      "group": "windows",
+      "turn_id": "t3",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0209",
+      "group": "windows",
+      "turn_id": "t4",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory read; clarification does not fulfill the available explicit read. windows-all-en additionally changes language and narrows scope to foreground."
+    },
+    {
+      "case_id": "H0663",
+      "group": "windows",
+      "turn_id": "t5",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory read; clarification does not fulfill the available explicit read. windows-all-en additionally changes language and narrows scope to foreground."
+    },
+    {
+      "case_id": "windows-all-en",
+      "group": "windows",
+      "turn_id": "t6",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory read; clarification does not fulfill the available explicit read. windows-all-en additionally changes language and narrows scope to foreground."
+    },
+    {
+      "case_id": "windows-focus-mixed",
+      "group": "windows",
+      "turn_id": "t7",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "windows-focus-reference-es",
+      "group": "windows",
+      "turn_id": "t8",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0025",
+      "group": "disk",
+      "turn_id": "t9",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0207",
+      "group": "disk",
+      "turn_id": "t10",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0384",
+      "group": "disk",
+      "turn_id": "t11",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0442",
+      "group": "disk",
+      "turn_id": "t12",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0644",
+      "group": "disk",
+      "turn_id": "t13",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "disk-free-en",
+      "group": "disk",
+      "turn_id": "t14",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "disk-used-es",
+      "group": "disk",
+      "turn_id": "t15",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0026",
+      "group": "gpu",
+      "turn_id": "t16",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0087",
+      "group": "gpu",
+      "turn_id": "t17",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0114",
+      "group": "gpu",
+      "turn_id": "t18",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0194",
+      "group": "gpu",
+      "turn_id": "t19",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0370",
+      "group": "gpu",
+      "turn_id": "t20",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0625",
+      "group": "gpu",
+      "turn_id": "t21",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "gpu-identity-en",
+      "group": "gpu",
+      "turn_id": "t22",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "gpu-usage-es",
+      "group": "gpu",
+      "turn_id": "t23",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0111",
+      "group": "memory",
+      "turn_id": "t24",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0156",
+      "group": "memory",
+      "turn_id": "t25",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0162",
+      "group": "memory",
+      "turn_id": "t26",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0342",
+      "group": "memory",
+      "turn_id": "t27",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0532",
+      "group": "memory",
+      "turn_id": "t28",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "A current machine fact is asserted without a fresh Core observation."
+    },
+    {
+      "case_id": "H0539",
+      "group": "memory",
+      "turn_id": "t29",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "The reply calls16.54GB available although that is total_usable; fresh available is about1.98GB. H0508 has a faithful Windows version but the RAM claim remains wrong."
+    },
+    {
+      "case_id": "H0655",
+      "group": "memory",
+      "turn_id": "t30",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "The reply calls16.54GB available although that is total_usable; fresh available is about1.98GB. H0508 has a faithful Windows version but the RAM claim remains wrong."
+    },
+    {
+      "case_id": "H0508",
+      "group": "memory",
+      "turn_id": "t31",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "The reply calls16.54GB available although that is total_usable; fresh available is about1.98GB. H0508 has a faithful Windows version but the RAM claim remains wrong."
+    },
+    {
+      "case_id": "memory-total-en",
+      "group": "memory",
+      "turn_id": "t32",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "memory-free-mixed",
+      "group": "memory",
+      "turn_id": "t33",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "memory-used-es",
+      "group": "memory",
+      "turn_id": "t34",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0037",
+      "group": "battery",
+      "turn_id": "t35",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0144",
+      "group": "battery",
+      "turn_id": "t36",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0359",
+      "group": "battery",
+      "turn_id": "t37",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The available requested read is not invoked; rejection, clarification or failed composition does not fulfill it."
+    },
+    {
+      "case_id": "H0379",
+      "group": "battery",
+      "turn_id": "t38",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0665",
+      "group": "battery",
+      "turn_id": "t39",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "battery-charge-en",
+      "group": "battery",
+      "turn_id": "t40",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "battery-level-es",
+      "group": "battery",
+      "turn_id": "t41",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0065",
+      "group": "cpu",
+      "turn_id": "t42",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0350",
+      "group": "cpu",
+      "turn_id": "t43",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "cpu-usage-en",
+      "group": "cpu",
+      "turn_id": "t44",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "cpu-order-es",
+      "group": "cpu",
+      "turn_id": "t45",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0126",
+      "group": "clock",
+      "turn_id": "t46",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0180",
+      "group": "clock",
+      "turn_id": "t47",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0223",
+      "group": "clock",
+      "turn_id": "t48",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0449",
+      "group": "clock",
+      "turn_id": "t49",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0450",
+      "group": "clock",
+      "turn_id": "t50",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The available requested read is not invoked; rejection, clarification or failed composition does not fulfill it."
+    },
+    {
+      "case_id": "H0498",
+      "group": "clock",
+      "turn_id": "t51",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0499",
+      "group": "clock",
+      "turn_id": "t52",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The available requested read is not invoked; rejection, clarification or failed composition does not fulfill it."
+    },
+    {
+      "case_id": "H0586",
+      "group": "clock",
+      "turn_id": "t53",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0600",
+      "group": "clock",
+      "turn_id": "t54",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0602",
+      "group": "clock",
+      "turn_id": "t55",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The available requested read is not invoked; rejection, clarification or failed composition does not fulfill it."
+    },
+    {
+      "case_id": "H0700",
+      "group": "clock",
+      "turn_id": "t56",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0727",
+      "group": "clock",
+      "turn_id": "t57",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "clock-date-en",
+      "group": "clock",
+      "turn_id": "t58",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The available requested read is not invoked; rejection, clarification or failed composition does not fulfill it."
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "group": "clock",
+      "turn_id": "t59",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "group": "clock",
+      "turn_id": "t60",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0127",
+      "group": "network",
+      "turn_id": "t61",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0433",
+      "group": "network",
+      "turn_id": "t62",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0732",
+      "group": "network",
+      "turn_id": "t63",
+      "correct": false,
+      "category": "internet_not_observed",
+      "reason": "The observed network online field reflects interface availability, not a verified Internet connection."
+    },
+    {
+      "case_id": "network-wifi-en",
+      "group": "network",
+      "turn_id": "t64",
+      "correct": false,
+      "category": "wifi_scope_expanded",
+      "reason": "A disconnected Wi-Fi observation is expanded to absence of any network connection."
+    },
+    {
+      "case_id": "network-internet-es",
+      "group": "network",
+      "turn_id": "t65",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "No read is made, but the reply asserts no Internet and an invented failed connection attempt."
+    },
+    {
+      "case_id": "H0364",
+      "group": "processes",
+      "turn_id": "t66",
+      "correct": false,
+      "category": "cpu_process_metric_and_membership",
+      "reason": "Lifetime totalProcessorSeconds is presented as current CPU consumption; grouping distinct process instances also changes the requested ranking."
+    },
+    {
+      "case_id": "H0650",
+      "group": "processes",
+      "turn_id": "t67",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "H0675",
+      "group": "processes",
+      "turn_id": "t68",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "A current machine fact is asserted without a fresh Core observation."
+    },
+    {
+      "case_id": "processes-top3-en",
+      "group": "processes",
+      "turn_id": "t69",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "processes-top2-es",
+      "group": "processes",
+      "turn_id": "t70",
+      "correct": false,
+      "category": "cpu_process_metric_and_membership",
+      "reason": "Lifetime totalProcessorSeconds is presented as current CPU consumption; grouping distinct process instances also changes the requested ranking."
+    },
+    {
+      "case_id": "H0383",
+      "group": "audio",
+      "turn_id": "t71",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "audio-status-en",
+      "group": "audio",
+      "turn_id": "t72",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The complete reply fulfills its frozen criterion against this turn's fresh observation, with faithful scope, values and language."
+    },
+    {
+      "case_id": "audio-order-es",
+      "group": "audio",
+      "turn_id": "t73",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The available requested read is not invoked; rejection, clarification or failed composition does not fulfill it."
+    }
+  ],
+  "evidence_sha256": {
+    "review.json": "ef7760c1d5734bf08e4f4181ec0908df761e987d19047eaca781c26d55039a8b",
+    "compose-audit.jsonl": "bacac832c31aafc0865897ffd170c4cd451d0be48639b4094f0a2d4b7d440560",
+    "turn-audit.jsonl": "ebf5436c9ffcd24dd922433dbed75c46aa5f1573ab2c3bbf8f0595eb9092405b",
+    "shell-trace.jsonl": "f7c4a9c47d37492479bcbe247db0edac385dc53efe3d68f54643482110bc5bd5"
+  }
+}

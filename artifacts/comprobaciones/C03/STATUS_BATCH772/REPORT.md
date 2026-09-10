@@ -1,0 +1,9 @@
+# Tanda772: sin mejora global de entrega
+
+Los73casos completos se revisaron contra sus propias observaciones y criterios congelados:52respuestas acreditadas y21fallos. Todas las guardas de fuente, runtime, conductor y DLL permanecieron intactas. Sesión5226 terminó0 y fue recogida. Pico3499,56MiB de VRAM y2476,46MiB de RAM residente sumada;268,719s, sin violaciones. La medida corresponde al árbol del conductor y no acredita interfaz ni voz simultáneas.
+
+771 permite aceptar las respuestas correctas C/D de770, pero los dos inventarios reales772 todavía fallan. El nuevo contenido observado es diferente y vuelve a aparecer recencia no medida. No se acredita generalización a partir del éxito sobre una entrada fija. El foco mixto pasa esta vez con otra forma de redacción; H0655 vuelve a llamar disponible a la RAM utilizable. El52/73 no demuestra una mejora causal respecto de769.
+
+Las21fallas se distribuyen entre interpretación que impide lecturas, hechos inventados o desactualizados, confusión de magnitudes y entrega de inventarios. La siguiente reparación localizada es una falsa clasificación de hardware ajeno: la preposición española «a» seguida de determinante se interpreta como artículo indefinido inglés. La comprobación determinística de H0359 confirma request=true, scope=battery, pero knowledge_or_diagnosis=true y grounding=false. Es un error de integración independiente del modelo.
+
+Se añadieron50referencias al registro privado manteniendo procedencia, expectativas, literales y estados:26cubiertos/716abiertos/0NA. Las respuestas, payloads y adjudicación legible están en C03-status-batch772-private. C03 sigue activo. No repetir otro ajuste de prompt de inventario como siguiente paso tras dos tandas sin mejora; conservar el defecto para aislar representación de hechos en una comparación controlada posterior.
