@@ -1,0 +1,14 @@
+{
+  "path": "tests/test_c03_request_preservation.py",
+  "validated_raw_sha256": "3d774c7b0cd2e3ed03efa97a950842f0038faf415656ec7b02b5e656008c1a44",
+  "published_lf_sha256": "bfbd4ebb73562c576dc1ad87bb25ab62955c013e0f581b8731da1ba655dfb89f",
+  "private_validated_snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock-values784-private\\test_c03_request_preservation.before-lf.py",
+  "only_CRLF_to_LF": true,
+  "runtime_sources_unchanged": true,
+  "reason": "Repository .gitattributes text=auto eol=lf. Original SOURCE_PINS remains unchanged; publication pins name the canonical test bytes.",
+  "owner_passed": 202,
+  "owner_failed": 0,
+  "owner_skipped": 0,
+  "owner_seconds": 1.77,
+  "command": "registered Python -X utf8 -m pytest tests/test_c03_request_preservation.py -q"
+}

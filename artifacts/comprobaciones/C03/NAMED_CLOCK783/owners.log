@@ -1,0 +1,58 @@
+.........F.F.F.........F.F...F.F........................................ [ 17%]
+........................................................................ [ 35%]
+........................................................................ [ 52%]
+........................................................................ [ 70%]
+........................................................................ [ 87%]
+...................................................                      [100%]
+================================== FAILURES ===================================
+____ test_named_clock_preserves_the_observation[12:00-It is noon.-visible] ____
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+____ test_named_clock_preserves_the_observation[12:00-It's noon.-visible] _____
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+_ test_named_clock_preserves_the_observation[12:00-The local time is noon.-visible] _
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+__ test_named_clock_preserves_the_observation[00:00-It is midnight.-visible] __
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+_ test_named_clock_preserves_the_observation[00:00-The time is midnight.-visible] _
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+_ test_named_clock_preserves_the_observation[00:00-The time is 12:00 AM.-visible] _
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+_ test_named_clock_preserves_the_observation[12:00-The time is 12:00 PM.-visible] _
+tests\test_c03_named_clock.py:39: in test_named_clock_preserves_the_observation
+    assert defect == ""
+E   AssertionError: assert 'wrong_language' == ''
+E
+E     + wrong_language
+=========================== short test summary info ===========================
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[12:00-It is noon.-visible]
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[12:00-It's noon.-visible]
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[12:00-The local time is noon.-visible]
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[00:00-It is midnight.-visible]
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[00:00-The time is midnight.-visible]
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[00:00-The time is 12:00 AM.-visible]
+FAILED tests/test_c03_named_clock.py::test_named_clock_preserves_the_observation[12:00-The time is 12:00 PM.-visible]
+7 failed, 404 passed in 3.32s

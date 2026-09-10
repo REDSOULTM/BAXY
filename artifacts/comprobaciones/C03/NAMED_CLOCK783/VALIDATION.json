@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-10T19:55:35.517587+00:00",
+  "passed": 1523,
+  "failed": 0,
+  "environmental_skips": 1,
+  "skip": "Private STT inputs absent; no voice pass.",
+  "seconds": 10.23,
+  "new_controls": 75,
+  "command": "registered Python -X utf8 -m pytest tests/test_c03_named_clock.py tests/test_c03_request_preservation.py tests/test_compose_contract.py tests/test_goal06_voice.py tests/test_turn_policy.py tests/test_c03_calendar_date.py tests/test_price_v8_veto_damage_by_cause.py tests/test_stt_quality_evaluators.py tests/test_validate_physical_wake_v17_program.py -q",
+  "fast_command": "scripts/test_source_quality.ps1 -Mode Fast",
+  "fast_exit_code": 0,
+  "session": 81828,
+  "terminal_collected": true,
+  "release_seconds": 18.99,
+  "warnings": 0,
+  "errors": 0,
+  "source_pins_unchanged": true,
+  "full_new": false,
+  "full_reason": "Python-only candidate; final Full remains required."
+}

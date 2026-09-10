@@ -1,0 +1,10 @@
+{
+  "src/baxy_mind/llm.py": "bbf7f502408463b516de5cc95fb3ad2fc20cf50f8ea6b059b24048715c123253",
+  "tests/test_c03_named_clock.py": "8fdeeb1089f00a1dc164edad5e6b6b677b41c11d402cb697271dba28559ef270",
+  "tests/test_c03_request_preservation.py": "bfbd4ebb73562c576dc1ad87bb25ab62955c013e0f581b8731da1ba655dfb89f",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "2d1a5447e9070dd643e2e6f3bb8ba11c32899e48918d3b9d2b3113be1edeaaf3",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "193db66a1d7450cb28bb11eb983351d6ec08eab76309fc45167ecd134cab2002",
+  "tests/test_price_v8_veto_damage_by_cause.py": "c092e58d6795a216933867b2d974c6af163f06a68a27a782deb9d8d185474a3d",
+  "src/baxy_mind/__main__.py": "1f651f36f7c755c47c78bfb8b2b7f3b859d886c72aaf8bfdf53907e315871211",
+  "src/baxy_mind/effect_intent.py": "6eb1c5322607aa915d143af811e954b106d164f36091c967fadfcf788a1b1af5"
+}

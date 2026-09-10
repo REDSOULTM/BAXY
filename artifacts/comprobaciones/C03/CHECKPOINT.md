@@ -1,3 +1,9 @@
+783 adoptada, publicación pendiente:1523pass/1skipSTT/10,23s;Fast0/Release18,99s. 784:50/50correctos,50posts,0retries;50primeros payloads idénticos780,49finalesiguales ycaso35conserva bruto correcto mediodía antes vetado. 3497,56MiB/757,21MiB/17,219s,guardas intactas.81828/37453recogidas0;sinprocesosactivos.28/714/0.
+
+783 candidato: extractor compartido de valores de reloj reconoce mediodía/medianoche exactos y conserva contradicciones. 425pass/0skip/3,90s;75controles nuevos. Dos stubs conservan borrador correcto con1post. 8pins sellados; faltan dueñas completas/integridad/Fast y784 mismos50fixtures780. Modelo/prompt/receta intactos.28/714/0.
+
+781 publicada f6f037cfb16f3adafc32b1571abb7c68fa688eb0; HEAD=origin=remoto,8fuentes/24evidencias verificadas enGit;main intacto.782:73/74correctos,74lecturas. Encuesta28/714/0. Ningún proceso activo. Siguiente: falso veto de mediodía en parser compartido.
+
 781 adoptada, publicación pendiente:3403pass/1skipSTT/67,45s;Fast0/Release18,82s. 782:73/74correctos,74lecturas,24/24continuaciones; t50 reparado375,295ms, t46Marka persiste. H0180/H0499 fecha acreditados explícitamente con779/780/782;28/714/0, registroSHA=3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b. Sesiones47671/81959 recogidas0; ningún proceso activo. Siguiente publicar781/782 y reparar falso veto de mediodía en llm.py.
 
 781 validado: 3403 pass/1 skip STT/67,45s; Fast0/Release18,82s, sesión47671 recogida. 782 activo81959: mismo panel50 de779 más24turnos encadenados. Fuente sellada sin cambios.26/716/0.

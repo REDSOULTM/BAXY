@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-10T19:52:56.281038+00:00",
+  "parent": "f6f037cfb16f3adafc32b1571abb7c68fa688eb0",
+  "cause": "780-35 raw correct noon wording rejected by missing_name. Both clock gates recognized only numeric/spoken hour+minute.",
+  "change": "One clock value extractor and one fact check shared by both gates. Named exact noon/midnight use assertion frames and complete endings; all contradicting values retained, including12AM/PM.",
+  "baseline": "39fail/34pass; first owner run7fail/404pass identified7 English visible fixtures with Spanish questions. Corrected fixture language only; no language veto relaxed.",
+  "focused_fixed": "425pass/0skip/3.90s including voice clock projection;75new controls and two one-post composer stub replays.",
+  "pending": "Complete owner/integrity/Fast then identical50 fixture784 with local model and every raw response retained.",
+  "unchanged": "Model, backend, template, prompts, sampler, token budgets, context781, providers. No spelling filter.",
+  "coverage_added": 0,
+  "survey": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

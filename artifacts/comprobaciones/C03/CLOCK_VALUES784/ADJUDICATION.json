@@ -1,0 +1,309 @@
+{
+  "utc": "2026-09-10T19:58:24.519395+00:00",
+  "correct": 50,
+  "failed": 0,
+  "posts": 50,
+  "real_retries": 0,
+  "all_first_http_payloads_identical_to780": true,
+  "same_cases_ids_values_criteria": true,
+  "first_raw_equals_final": 50,
+  "unchanged_finals": 49,
+  "changed_final_ids": [
+    "clock780-35"
+  ],
+  "noon_repair": {
+    "case_id": "clock780-35",
+    "raw_before_and_after": "Son las 12 del mediodía.",
+    "before780": "missing_name then retry Son las 12:00.",
+    "after784": "Published the first correct raw draft; no repair."
+  },
+  "method": "Root reviewed all50 finals against all expected local values; all inputs and first HTTP payloads compared exactly to780. One pass; no native model ranking.",
+  "latency_seconds": {
+    "p50": 0.28149999999732245,
+    "max": 0.35899999999674037
+  },
+  "resources": {
+    "utc": "2026-09-10T19:56:07.234010+00:00",
+    "cases_completed": 50,
+    "cases_registered": 50,
+    "fatal": null,
+    "violations": [],
+    "seconds": 17.218999999997322,
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 757.2109375,
+    "source_pins_unchanged": true,
+    "sources_unchanged": true,
+    "manifest_unchanged": true,
+    "driver_unchanged": true,
+    "quality_adjudicated": false
+  },
+  "terminal_session": 37453,
+  "terminal_collected": true,
+  "exit_code": 0,
+  "scope": "Local BAXY composer only. No provider, UI, voice, reserve or final combined memory credit. Context781 differs from780 but is not used by this direct composer; first HTTP requests identical.",
+  "coverage_added": 0,
+  "survey": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "private_pins": {
+    "cases.json": "268ff30bfc159d6d2c41a0b08eb475693b95212bc5cf4e45278ec51de9a148dd",
+    "replies.jsonl": "fc49b49e03c494687db8598bceeb1674670aada2f145fd4b452c9bd4d02cf73f",
+    "posts.jsonl": "466b07bc7780c0b27117cae33a18686b2c67b749fd61b5db824379ab82ebf250",
+    "compose-audit.jsonl": "e7117e2078ed5eaf28275647c67bf38ee9647344e45b5a6063912e90425c2d5c"
+  },
+  "verdicts": [
+    {
+      "case_id": "clock780-01",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-02",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-03",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-04",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-05",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-06",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-07",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-08",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-09",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-10",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-11",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-12",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-13",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-14",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-15",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-16",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-17",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-18",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-19",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-20",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-21",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-22",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-23",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-24",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-25",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-26",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-27",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-28",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-29",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-30",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-31",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-32",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-33",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-34",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-35",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-36",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-37",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-38",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-39",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-40",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-41",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-42",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-43",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-44",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-45",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-46",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-47",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-48",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-49",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    },
+    {
+      "case_id": "clock780-50",
+      "correct": true,
+      "reason": "Complete final preserves requested local date/time and adds no unsupported claim."
+    }
+  ]
+}

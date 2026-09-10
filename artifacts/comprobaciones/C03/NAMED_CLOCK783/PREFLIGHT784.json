@@ -1,0 +1,5 @@
+{
+  "before_inference": true,
+  "cause": "Busy-process preflight matched the word pytest inside the parent PowerShell command that also recorded VALIDATION; no pytest was actually running.",
+  "resolution": "Launched the unchanged driver in its own command; guard then passed. No guard relaxed, no source changed, no earlier fixture executed."
+}

@@ -1063,6 +1063,25 @@ def test_observed_spoken_clock_draft_does_not_exhaust_valid_composition() -> Non
     assert len(client.payloads) == 1
 
 
+@pytest.mark.parametrize("clock, draft", [
+    ("12:00", "Son las 12 del mediodía."),
+    ("00:00", "Es medianoche."),
+])
+def test_exact_named_clock_draft_survives_without_a_repair(clock: str, draft: str) -> None:
+    client = Recorder([draft])
+    reply = client.compose_user_message(
+        "¿Qué hora es?", "status",
+        {"situation": json.dumps({
+            "kind": "operation", "operation": "system.time", "polarity": "success",
+            "verified": True, "observed": {
+                "utc": f"2026-09-10T{clock}:00Z", "localUtcOffsetMinutes": 0,
+            },
+        })},
+    )
+    assert reply == draft
+    assert len(client.payloads) == 1
+
+
 @pytest.mark.parametrize(
     "draft",
     [

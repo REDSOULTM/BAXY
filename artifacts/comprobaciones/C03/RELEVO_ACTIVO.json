@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T19:45:23.501583+00:00",
+  "confirmedAtUtc": "2026-09-10T19:58:24.519395+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "781 adoptada, publicación pendiente:3403pass/1skipSTT/67,45s;Fast0/Release18,82s. 782:73/74correctos,74lecturas,24/24continuaciones; t50 reparado375,295ms, t46Marka persiste. H0180/H0499 fecha acreditados explícitamente con779/780/782;28/714/0, registroSHA=3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b. Sesiones47671/81959 recogidas0; ningún proceso activo. Siguiente publicar781/782 y reparar falso veto de mediodía en llm.py.",
-  "continuation": "Publish781+782, then repair shared clock value extraction for noon/midnight false veto. Preserve typo; no literal filter. Inventory strategy must change after768/771.",
+  "checkpoint": "783 adoptada, publicación pendiente:1523pass/1skipSTT/10,23s;Fast0/Release18,99s. 784:50/50correctos,50posts,0retries;50primeros payloads idénticos780,49finalesiguales ycaso35conserva bruto correcto mediodía antes vetado. 3497,56MiB/757,21MiB/17,219s,guardas intactas.81828/37453recogidas0;sinprocesosactivos.28/714/0.",
+  "continuation": "Publish783/784. Remaining clock issue is model raw spelling; attribute without literal veto. Inventory strategy must change after768/771; then whole categories of C03.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "82ae68912a47a588b99ba77d20c8b47a45b8029c",
-  "workStatus": "clock_context781_adopted_pending_publication",
+  "publishedSourceCommit": "f6f037cfb16f3adafc32b1571abb7c68fa688eb0",
+  "workStatus": "named_clock783_adopted_pending_publication",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "82ae68912a47a588b99ba77d20c8b47a45b8029c",
+  "publishedEvidenceCommit": "f6f037cfb16f3adafc32b1571abb7c68fa688eb0",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Context regression repaired,74 complete product turns adjudicated, two date requirements explicitly covered.",
+  "previousGoalTurnClassificationReason": "Published781/782, covered2date requirements, repaired false noon veto with identical50 first HTTP requests and no retries.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",

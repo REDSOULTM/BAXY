@@ -1,0 +1,11 @@
+# BAXY deja pasar una hora que el modelo ya había expresado bien
+
+El caso780-35 produjo «Son las 12 del mediodía.» para una observación12:00. BAXY lo rechazó con missing_name y pidió otra respuesta. El parser compartido ahora representa los valores de hora y minuto de formas numéricas, habladas y expresiones exactas de mediodía/medianoche. Los dos validadores usan la misma comprobación; se conserva la detección de valores contradictorios, minutos distintos y12AM/PM. Las nuevas expresiones requieren una afirmación completa: una mención relativa, negada o de un evento no basta. No se añade ninguna respuesta visible fija.
+
+75controles nuevos, incluidos dos recorridos completos de composición con borrador simulado y una sola petición. Regresión final:1.523pass,1skip ambiental de STT,10,23s. Fast0, Release18,99s,0advertencias/errores;81828 recogida0. El primer conjunto tenía siete fixtures en inglés con pregunta española: se corrigió el idioma de las preguntas sin relajar el validador. Las trazas de fallo se conservan. No nuevo Full para esta reparación exclusivamente Python; Full final pendiente.
+
+784 repite50casos sintéticos780: mismos IDs, observaciones, criterios y50peticiones HTTP iniciales byte-equivalentes como objetos JSON. Las50respuestas finales son correctas;49coinciden con el final anterior. El caso35 entrega ahora el mismo primer borrador correcto que780 había rechazado. Se reduce de51a50peticiones; cero reintentos. Modelo, backend, plantilla, prompt, sampler y presupuestos intactos. Esto demuestra una reparación del validador de BAXY, sin atribuir ese fallo al modelo ni promover candidatos.
+
+17,219s incluyendo arranque, pico3497,56MiB VRAM y757,21MiB RSS del árbol del compositor. No son recursos conjuntos finales ni validación de UI/voz/provider/reserva. Todas las guardas intactas;37453 recogida0. Un preflight previo se detuvo antes de inferencia porque encontró la palabra pytest en el comando padre que registraba validación; el mismo ejecutor pasó al lanzarse por separado, sin relajar guardas.
+
+Encuesta28cubiertos/714abiertos/0NA; sin crédito adicional. «Marka» permanece como defecto de ortografía medido en782; no se oculta con reemplazos literales. C03 sigue activo.

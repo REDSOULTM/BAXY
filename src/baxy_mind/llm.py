@@ -3136,23 +3136,25 @@ _SPOKEN_CLOCK_TOKENS = re.compile(
 )
 
 
-def _clock_tokens(text: str) -> list[re.Match[str]]:
-    # The spoken form needs a clock frame: two item counts joined by "y" are
-    # not an observed time. Both forms retain hour/minute/AM-PM as groups 1–3.
-    folded = _accent_folded_with_punctuation(text)
-    return [*_CLOCK_TOKENS.finditer(folded), *_SPOKEN_CLOCK_TOKENS.finditer(folded)]
+_NAMED_CLOCK_TOKENS = re.compile(
+    r"(?:^|[.!?;,]\s*|(?P<alternative>\b(?:o|or)\s+))"
+    r"(?:"
+    r"(?P<noon>(?:(?:es(?:\s+el)?|it's|it\s+is|the\s+(?:local\s+)?time\s+is)\s+)?"
+    r"(?:mediodia|noon)|son\s+las\s+(?:12|doce)\s+del\s+mediodia|12\s+noon)"
+    r"|(?:(?:es|it's|it\s+is|the\s+(?:local\s+)?time\s+is)\s+)?"
+    r"(?:medianoche|midnight)|son\s+las\s+(?:12|doce)\s+de\s+la\s+noche|12\s+midnight"
+    r")(?=\s*(?:$|[.!?;,]|\b(?:o|or)\b))",
+    re.IGNORECASE,
+)
 
 
-def _clock_appears(text: str, hhmm: str) -> bool:
-    """Match an observed clock without changing its half of the day."""
-
-    try:
-        hour_text, minute_text = hhmm.split(":", 1)
-        hour = int(hour_text)
-        minute = int(minute_text)
-    except (TypeError, ValueError):
-        return False
-    for match in _clock_tokens(text or ""):
+def _clock_values(text: str) -> list[tuple[int, int]]:
+    """Extract exact clock assertions, retaining every conflicting value."""
+    folded = _accent_folded_with_punctuation(text).strip()
+    # End positions tie an alternative to an already asserted clock. Bare
+    # references such as "before noon" and negated statements supply no value.
+    tokens: list[tuple[int, tuple[int, int]]] = []
+    for match in [*_CLOCK_TOKENS.finditer(folded), *_SPOKEN_CLOCK_TOKENS.finditer(folded)]:
         values = [
             int(part)
             if part.isdecimal()
@@ -3163,11 +3165,27 @@ def _clock_appears(text: str, hhmm: str) -> bool:
         marker = match[3]
         if marker:
             if not 1 <= named_hour <= 12:
+                tokens.append((match.end(), (-1, -1)))
                 continue
             named_hour = named_hour % 12 + (12 if marker.lower() == "p" else 0)
-        if named_hour == hour and named_minute == minute:
-            return True
-    return False
+        tokens.append((match.end(), (named_hour, named_minute)))
+    for match in _NAMED_CLOCK_TOKENS.finditer(folded):
+        if match["alternative"] and not any(end <= match.start() for end, _ in tokens):
+            continue
+        tokens.append((match.end(), (12 if match["noon"] else 0, 0)))
+    return [value for _, value in tokens]
+
+
+def _clock_fact_defect(text: str, hhmm: str, *, required: bool = True) -> str:
+    try:
+        hour_text, minute_text = hhmm.split(":", 1)
+        observed = (int(hour_text), int(minute_text))
+    except (TypeError, ValueError):
+        return "missing_name"
+    values = _clock_values(text)
+    if required and observed not in values:
+        return "missing_name"
+    return "reversed_result" if any(value != observed for value in values) else ""
 
 
 # Familias del catálogo activo, no una lista fija del corpus. El shell manda
@@ -3762,10 +3780,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "missing_name"
     clock = payload.get("clock")
     if isinstance(clock, str) and clock:
-        if not _clock_appears(text, clock):
-            return "missing_name"
-        if any(not _clock_appears(match[0], clock) for match in _clock_tokens(text)):
-            return "reversed_result"
+        clock_defect = _clock_fact_defect(text, clock)
+        if clock_defect:
+            return clock_defect
     calendar_date = payload.get("date")
     if isinstance(calendar_date, str) and calendar_date:
         try:
@@ -4771,12 +4788,10 @@ def compose_visible_defect(
         clock_required = not date_requested or re.search(
             r"\b(?:hora|time)\b", user_text, re.IGNORECASE
         )
-        if clock and clock_required and not _clock_appears(folded, clock):
-            return "missing_name"
-        if clock and any(
-            not _clock_appears(match[0], clock) for match in _clock_tokens(stripped)
-        ):
-            return "reversed_result"
+        if clock:
+            clock_defect = _clock_fact_defect(stripped, clock, required=bool(clock_required))
+            if clock_defect:
+                return clock_defect
         if clock and re.search(
             r"\bset (?:the )?clock\b|\bconfigure\b|ponga el reloj",
             folded,
