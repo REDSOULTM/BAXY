@@ -9,6 +9,26 @@ public sealed class WindowsSystemStatusProviderTests
 {
     private const ulong Gibibyte = 1024UL * 1024 * 1024;
 
+    [TestCase(null)]
+    [TestCase(0UL)]
+    [TestCase(8UL)]
+    [TestCase(15UL)]
+    [TestCase(16UL)]
+    [TestCase(32UL)]
+    public async Task InstalledCapacityDoesNotReplaceUsableMemory(ulong? installedGiB)
+    {
+        var probe = new FakeSystemStatusProbe
+        {
+            Memory = new MemoryReading(15 * Gibibyte, 3 * Gibibyte, installedGiB * Gibibyte),
+        };
+        SystemStatusSnapshot snapshot = await CreateProvider(probe).GetStatusAsync(
+            SystemStatusScope.Memory, CancellationToken.None);
+
+        Assert.That(snapshot.Failures, Is.Empty);
+        Assert.That(snapshot.Memory, Is.EqualTo(new MemoryStatus(
+            15 * Gibibyte, 3 * Gibibyte, installedGiB >= 15 ? installedGiB * Gibibyte : null)));
+    }
+
     [Test]
     public async Task FullSnapshotReturnsOnlyCorroboratedMeasurements()
     {

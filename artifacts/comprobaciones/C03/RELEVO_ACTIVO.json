@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T02:10:30.587301+00:00",
+  "confirmedAtUtc": "2026-09-10T02:28:26.510035+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Comparison699/700 complete:300 original outputs+40 paired; retain Qwen working candidate, no model promotion or C03 acceptance. Resume694/693. Survey26/716/0.",
-  "continuation": "Decisión K2/Qwen provisional por aclaración metodológica del dueño. Las 860 respuestas previas usaron instrucciones de BAXY mediante API nativa, con muestreo y esfuerzo específicos del modelo; no son una referencia independiente. Primero comparar modelos con plantilla oficial sin instrucciones de BAXY; después añadir capas con tareas emparejadas para localizar regresiones. 693/694 siguen pausados. Runtime intacto; encuesta 26 cubiertos/716 abiertos/0 NA; C03 activo.",
+  "checkpoint": "Fuente693 adoptada tras Full existente verificado y adjudicacion694 completa:45/73correctos,28fallos. Publicacion en preparacion; C03 EN_CURSO; encuesta26/716/0.",
+  "continuation": "Publicar693 y evidencia690-694 sin repetir inferencia ni Full. Despues reparar primeras transformaciones erroneas694: validacion de identidad de ventanas/actor WLAN, lecturas actuales copiadas del historial y alcance/orden de procesos. Modelo Qwen candidato retenido tras comparacion independiente699/700 terminada. No aplicar prototype695.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "d7ddd926a2b382acade4f9c9b69818490b44c68e",
-  "workStatus": "independent_model_comparison_699",
+  "workStatus": "source693_adopted_publication",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "d7ddd926a2b382acade4f9c9b69818490b44c68e",
+  "publishedEvidenceCommit": "a8eaf976",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "ReporteK2 entregado y dueño ordenó priorizar ejecución comparativa; backend/descargas reales iniciados.",
+  "previousGoalTurnClassificationReason": "Adjudicados73finales contra payload; fuente693 conserva Full verde y aporta mejoras de cantidades sin acreditar encuesta.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
@@ -72,7 +72,8 @@
     "exitCode": 0,
     "turns": 73,
     "manifestUnchanged": true,
-    "adjudication": "pending"
+    "adjudication": "completed:45correct,28failed; RESULT.json sealed",
+    "result": "artifacts/comprobaciones/C03/astra-status-batch694/RESULT.json"
   },
   "k2Report": "artifacts/comprobaciones/C03/K2_HORIZON_SELECTOR700/INFORME_PARA_DUENO.md",
   "ownerPriority": "Comparison complete; resume C03 product blockers with registered Qwen candidate, preserving independent model versus BAXY-layer methodology.",

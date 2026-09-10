@@ -1,0 +1,49 @@
+{
+  "adopted": true,
+  "sources": {
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "b9f7925d441b7140264c1b3cde2ea5adcdaabfa5e8ace64338c2f47d1f6dcd64",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "9aa4cf1e9563158e8513d98dae15a17e15e94e8302451ce8cfe1209715729893",
+    "src/Baxy.Core/Operations/CoreOperationModels.cs": "852dfb6b02cbc38bf57b6836aa2834306ce0baa8933ba89dcd8923da829c256f",
+    "src/Baxy.Core/Operations/SystemStatusHandler.cs": "82dcc0cb35cde20a125a43b70d03f99ad5942b78a90d2d209b5f6064e4762997",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "f2e3164d018dc94699b66476bbac60ca580563fd4e25ef47b1ab848f26570a03",
+    "src/Baxy.Providers.Windows/SystemStatus/SystemStatusContracts.cs": "66f8e4aaa788d10fc1058910f5ac8e872c472d2f1d7057e0b63e69f1c15e7769",
+    "src/Baxy.Providers.Windows/SystemStatus/WindowsSystemStatusProbe.cs": "e346cc4307e0e0c74f156b963c761923c54d94e18c84504fcde2340cddcf7c9b",
+    "src/Baxy.Providers.Windows/SystemStatus/WindowsSystemStatusProvider.cs": "cdf6ba2948cdc2a881f5cb938cb12680434a6aafdc1d516c8eee77432c2138c8",
+    "src/baxy_mind/llm.py": "47373573c0d50327f026fb9a76345a26a5e5805baf326a2c9c8041dcc770c154",
+    "tests/Baxy.Integration.Tests/Goal05CatalogObservation.cs": "03bacd217ec40b5c8b231e795afdbe9bf6bb2a61d575901f59352b0ffc36fede",
+    "tests/Baxy.Integration.Tests/SystemStatusHandlerTests.cs": "3252842695f847c37bb161067a50a588ac5245cc05e50dc4323dcf13ded3ef3f",
+    "tests/Baxy.Kernel.Tests/ProductCatalogTests.cs": "32f99ef0c8b56d04f985c4d85012e5e4d7538777a6556e24af9d5915481bc460",
+    "tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsSystemStatusProviderTests.cs": "92490146356381d740b5984f95822b9db35f28e887e0bc4a3aa9e884b6d2380a",
+    "tests/test_price_v8_veto_damage_by_cause.py": "209253656524b0fe4cf74aab55a3763f86fee600a904c5f316bd8c10e2be1faa",
+    "src/baxy_mind/measurement_prose_projection.py": "19f2a491888fc1234e92d32ee48792cbc9e95016f0d547642add33f4a0ca2c6d",
+    "tests/test_system_measurement_prose_projection.py": "44579b1f4acac4c5171f6e9410edaeb8b0cfe9c3b0d6e56a870b3448ee3a6040"
+  },
+  "python_tree_sha256": "79701619cda32892fe5cadc14a5ea36efd05412250abe6de108b2da1fa014140",
+  "python_files": 406,
+  "focal_python_passed": 29,
+  "full_exit": 0,
+  "dotnet": {
+    "passed": 4480,
+    "aggregate_skipped": 1,
+    "optional_omissions": "Separate opt-in omissions remain in raw log; never counted as passes."
+  },
+  "python": {
+    "passed": 11051,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "raw_summary": "11051 passed, 3 skipped, 466 subtests passed in 917.35s (0:15:17)"
+  },
+  "product694": {
+    "counts": {
+      "failed": 28,
+      "correct_observed_run": 45
+    },
+    "total": 73,
+    "result_sha256": "f69cd4eba0ce3342787f07b21959b57677953ba03c48c53bc62b7751360026c0"
+  },
+  "previous_full": "Interrupted by owner for professor demonstration; raw log preserved, no pass claimed.",
+  "model_and_runtime_unchanged": true,
+  "survey_coverage_added": 0,
+  "goal_complete": false,
+  "private_hashes": {}
+}

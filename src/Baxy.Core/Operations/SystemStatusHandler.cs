@@ -474,7 +474,8 @@ internal sealed class SystemStatusHandler : IOperationHandler
                 ? null
                 : new SystemStatusMemoryResult(
                     snapshot.Memory.TotalBytes,
-                    snapshot.Memory.AvailableBytes),
+                    snapshot.Memory.AvailableBytes,
+                    snapshot.Memory.InstalledBytes),
             snapshot.SystemDisk is null
                 ? null
                 : new SystemStatusDiskResult(
@@ -551,7 +552,8 @@ internal sealed class SystemStatusHandler : IOperationHandler
         && IsValidOptionalText(status.Model, 512);
 
     private static bool IsValid(MemoryStatus status) =>
-        status.TotalBytes > 0 && status.AvailableBytes <= status.TotalBytes;
+        status.TotalBytes > 0 && status.AvailableBytes <= status.TotalBytes
+        && (status.InstalledBytes is null || status.InstalledBytes >= status.TotalBytes);
 
     private static bool IsValid(SystemDiskStatus status) =>
         status.TotalBytes > 0

@@ -13,6 +13,48 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class SystemStatusHandlerTests
 {
+    [TestCase(null)]
+    [TestCase(15UL)]
+    [TestCase(16UL)]
+    [TestCase(32UL)]
+    public async Task InstalledCapacitySurvivesTheTypedResultAsAnIndependentMeasurement(ulong? installedGiB)
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.Memory) with
+        {
+            Memory = new MemoryStatus(15UL * GiB, 3UL * GiB, installedGiB * GiB),
+        };
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"memory\"}"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True);
+        Assert.That(outcome.Verified, Is.True);
+        JsonElement memory = outcome.Result!.Value.GetProperty("memory");
+        Assert.That(memory.GetProperty("totalBytes").GetUInt64(), Is.EqualTo(15UL * GiB));
+        Assert.That(memory.GetProperty("availableBytes").GetUInt64(), Is.EqualTo(3UL * GiB));
+        if (installedGiB.HasValue)
+        {
+            Assert.That(memory.GetProperty("installedBytes").GetUInt64(), Is.EqualTo(installedGiB * GiB));
+        }
+        else
+        {
+            Assert.That(memory.GetProperty("installedBytes").ValueKind, Is.EqualTo(JsonValueKind.Null));
+        }
+    }
+
+    [Test]
+    public async Task InstalledCapacityBelowUsableMemoryCannotBecomeVerified()
+    {
+        SystemStatusSnapshot snapshot = Complete(SystemStatusScope.Memory) with
+        {
+            Memory = new MemoryStatus(15UL * GiB, 3UL * GiB, 8UL * GiB),
+        };
+        OperationOutcome outcome = await Handler(new StubProvider(snapshot)).ExecuteAsync(
+            Invocation("{\"scope\":\"memory\"}"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.False);
+        Assert.That(outcome.Verified, Is.False);
+    }
+
     [Test]
     public void DefinitionIsReadOnly()
     {

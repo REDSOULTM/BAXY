@@ -16,7 +16,8 @@ internal readonly record struct CpuTimeSample(
 
 internal readonly record struct MemoryReading(
     ulong TotalBytes,
-    ulong AvailableBytes);
+    ulong AvailableBytes,
+    ulong? InstalledBytes = null);
 
 internal readonly record struct DiskReading(
     long TotalBytes,
@@ -214,7 +215,15 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
             throw CreateLastWin32Exception("Windows did not return memory status.");
         }
 
-        return new MemoryReading(status.TotalPhysical, status.AvailablePhysical);
+        // SMBIOS reports installed capacity; GlobalMemoryStatusEx reports what
+        // Windows can use after hardware reservations. A failed optional read
+        // must not turn usable memory into a claim about installed capacity.
+        ulong? installedBytes = GetPhysicallyInstalledSystemMemory(out ulong installedKilobytes) != 0
+            && installedKilobytes <= ulong.MaxValue / 1024
+            && installedKilobytes * 1024 >= status.TotalPhysical
+                ? installedKilobytes * 1024
+                : null;
+        return new MemoryReading(status.TotalPhysical, status.AvailablePhysical, installedBytes);
     }
 
     public DiskReading ReadSystemDisk()
@@ -365,6 +374,9 @@ internal sealed partial class WindowsSystemStatusProbe : ISystemStatusProbe
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial int GlobalMemoryStatusEx(ref NativeMemoryStatus buffer);
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial int GetPhysicallyInstalledSystemMemory(out ulong totalMemoryInKilobytes);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     private static partial int GetSystemPowerStatus(out NativePowerStatus systemPowerStatus);

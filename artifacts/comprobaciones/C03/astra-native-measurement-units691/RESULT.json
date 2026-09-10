@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-09T19:49:49.291736+00:00",
+  "cases": 30,
+  "responses": 60,
+  "all_finish_stop": true,
+  "exact_control_reproductions": 30,
+  "counts_by_arm": {
+    "binary_quantities": {
+      "correct_observed_fixture": 21,
+      "failed": 7,
+      "needs_verification": 2
+    },
+    "decimal_quantities": {
+      "correct_observed_fixture": 24,
+      "needs_verification": 6
+    }
+  },
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 720.44921875,
+    "seconds": 40.14100000000326,
+    "manifest_unchanged": true
+  },
+  "source_adopted_by_this_experiment": false,
+  "survey_coverage_added": 0,
+  "ui_or_voice_credit": false,
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "44c365cb655995aa1a305c3d26f05b9eb392d5a1554f288c9034215eb55a6007",
+    "requests.jsonl": "06d0f76940e837958f172e1377a5489e67581fc486186be26b185a4539a1ae94",
+    "responses.jsonl": "ba507a646598c7383e36e12b81ee14035ef5c6033544c4fb8d65609e9adebbcd",
+    "adjudication.json": "11a20024e4c35f35492ff6548636faee4b0e2563347d7a73804c950ed53b44db",
+    "RESULT.md": "ef9fd981ba96402de71cfd172b303f8ca2f2024fa3f4fb05d6117c510006c7fd"
+  }
+}

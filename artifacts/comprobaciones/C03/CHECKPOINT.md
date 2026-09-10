@@ -1423,3 +1423,35 @@ Comparison699/700 complete:300 original outputs+40 paired; retain Qwen working c
 Referencias: BF16 pequeño33/50, Qwen40/50, K2grande39/50. Prácticos: Qwen40/50 (1.352s,3165.55MiB GPU/715.38MiB RAM); K2low28/50; K2high38/50 (8.8285s,3444.23MiB GPU/787.56MiB RAM). Son picos del servidor, no del producto.
 
 Quitar sólo el system: Qwen7→5/20, K2high10→8/20; K2recupera hora y abstención pero pierde4casos. Un caso sin herramienta deInternet no concede capacidad. Todas340salidas nuevas revisadas; paridad50effort+40system. EVIDENCE_VALIDATION700 verifica coherencia/hashes/compilación; no nuevo Full deproducto ni cobertura. Informes viejos698 son históricos rectificados; CLOSURE700 es la decisión más reciente.
+
+
+# Producto694: revisión completa, 45 de 73 respuestas verificadas
+
+Revisión de los 73 finales completos contra petición, payload tipado y criterio original689. 28 fallan; no se omiten agotamientos, falsas incapacidades, datos del historial ni afirmaciones no verificadas. Los textos e historias permanecen privados en LOCALAPPDATA; RESULT.json publica categorías, conteos y hashes.
+
+Transiciones respecto de689: {'failed -> failed': 24, 'correct_observed_run -> failed': 2, 'correct_observed_run -> correct_observed_run': 33, 'failed -> correct_observed_run': 8, 'needs_verification -> correct_observed_run': 4, 'needs_verification -> failed': 2}. Mejoran a correcto: H0384, H0026, H0114, gpu-usage-es, H0111, H0162, H0342, H0655, memory-total-en, memory-used-es, H0383, audio-status-en. Pasan de correcto a fallo: H0104, H0732. Son dos corridas con estados Windows cambiantes, no una atribución causal automática de cada transición a693.
+
+La proyección compartida conserva unidades y distingue capacidad instalada, utilizable, libre y usada; quedan errores de interpretación del modelo. Los fallos de ventanas, frescura, alcance de red y procesos continúan. H0732 no se acredita como Internet: el provider sólo observa interfaces Up. La segunda revisión inicialmente aceptó H0732 y network-wifi-en; raíz revisó el provider y rechazó ambos por alcance de evidencia. H0065 conserva una incorrección gramatical sin alterar el porcentaje; no demuestra calidad lingüística general.
+
+El conductor terminó exit0 con manifiesto intacto. Pico de la corrida diagnóstica3499,5586MiB GPU y2485,0547MiB RAM; sin infracciones del monitor. No hubo UI/voz simultáneas: no es consumo total certificado de BAXY. Full693 existente:11051 Pythonpass/3 skips ambientales/466 subtests y4480.NETpass/1skip agregado; opt-ins separados. No se ha ejecutado otro Full ni se cuentan skips como pases.
+
+Encuesta742/rev1248:26 cubiertos/716 abiertos/0NA. Esta revisión agrega cero cobertura; C03 continúa EN_CURSO. Comparación de modelos699/700 completada y publicada en a8eaf976; Qwen sigue candidato, no producto aceptado. Siguiente: decidir adopción limitada de693 por sus mediciones propias y reparar primeras transformaciones erróneas, sin aplicar prototype695.
+
+
+# Adopción limitada de fuente693
+
+Se adopta la fuente compartida para representar cantidades observadas con unidad explícita, medir RAM instalada independientemente de la RAM utilizable y permitir la lectura local de estado Wi-Fi sin confirmación innecesaria. No se adopta un modelo ni se declara aceptado C03. Los bytes originales permanecen en el resultado canónico; la proyección de prosa deriva libre/usado y distingue motor GPU de ocupación VRAM sin inventar mediciones ausentes.
+
+Herencia y contraste:690 comparó30fixtures de bytes frente a cantidades tipadas (14→21correctos);691 comparó las mismas30cantidades binarias frente a decimales (21→24correctos,6pendientes de verificación,0fallos adjudicados en el brazo decimal). Las cantidades decimales evitan etiquetar GiB como GB. La observación independiente de RAM instalada cubre el vacío de evidencia, sin redondear RAM utilizable a una capacidad nominal supuesta. API documentada en PREREG.json; el estado de Wi-Fi conserva su doble lectura y no expone SSID/credenciales.
+
+Validación:29pruebas Python dueñas. Full693 completo exit0:11051Pythonpass,3skipsambientales y466subtests;4480.NETpass y1skip agregado, con omisiones opt-in aparte. Se verifica la misma fuente y árbol por hash antes de adopción; no es necesario repetir ese Full sin cambios. Las dos actualizaciones de huella STT y la de prueba histórica son declaraciones del árbol ejecutado, sin aceptación nueva de voz ni modificación de sus sellos históricos.
+
+Producto694 contiene los mismos73turnos, orden y criterios689, con observación HTTP transparente:45correctos y28fallos. Doce casos pasan de fallo/pendiente a correcto; dos pasan de correcto a fallo. Las lecturas y estados Windows difieren entre corridas, por lo que no se atribuye cada transición a693. Las mejoras de cantidades se respaldan además en690/691. H0104 falla ahora por la validación del título observado, una ruta no modificada aquí. H0732 corrige una sobreacreditación anterior: el provider sólo mide interfaces Up y la respuesta no verifica Internet. Es una corrección de adjudicación, no evidencia de regresión causada por693. Los resultados anteriores se conservan íntegros.
+
+Persisten errores de significado de campos en H0539/H0508 y de frescura en H0532; esto no certifica la familia de RAM. La clasificación ReadOnly evita una confirmación de lectura, pero el castellano de Wi-Fi aún agota composición, y la identidad SSID solicitada sigue siendo una capacidad pendiente cuando hay conexión. Ningún umbral de la campaña se rebaja ni ningún fallo se convierte en pase.
+
+La encuesta continúa26cubiertos/716abiertos/0NA. GPU3499,5586MiB y RAM2485,0547MiB son picos de la corrida diagnóstica sin UI/voz, no una certificación del producto completo. Se publica esta mejora parcial validada en Goal-c03 y se continúa con las primeras transformaciones incorrectas de694; prototype695 permanece rechazado.
+
+## Publicación de fuente693 — revisión de índice completada
+
+Se verificaron28archivos públicos sellados, hashes privados,16fuentes tanto en disco como en blobs del índice, árbolPython406, plan694 y observador, encuesta y manifiesto intactos. BAXY y servidor cerrados. c03-audit-status690-694.py exit0;20Python modificados compilan; chequeo de whitespace de fuentes/diagnósticos exit0. No se repitió inferencia ni Full:693 conserva exactamente las fuentes de su Full verde. La primera auditoría extendida detectó normalización de saltos del plan694 en el índice; se preservaron sus bytes originales con atributo -text y se repitió correctamente la auditoría, sin modificar el plan ni los resultados.

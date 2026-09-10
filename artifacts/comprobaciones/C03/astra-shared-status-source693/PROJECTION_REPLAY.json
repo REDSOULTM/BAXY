@@ -1,0 +1,5 @@
+{
+  "fixtures": 30,
+  "same_numeric_projection_as_decimal691": true,
+  "difference": "New source explicitly represents unknown installed RAM as null; compare existing numeric fields after removing only that new unknown field. No inference, validators or provider calls."
+}

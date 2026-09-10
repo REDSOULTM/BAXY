@@ -1,0 +1,38 @@
+{
+  "utc": "2026-09-10T02:26:01.386731+00:00",
+  "reviewed": 73,
+  "counts": {
+    "failed": 28,
+    "correct_observed_run": 45
+  },
+  "transitions": {
+    "failed -> failed": 24,
+    "correct_observed_run -> failed": 2,
+    "correct_observed_run -> correct_observed_run": 33,
+    "failed -> correct_observed_run": 8,
+    "needs_verification -> correct_observed_run": 4,
+    "needs_verification -> failed": 2
+  },
+  "gains": [
+    "H0384",
+    "H0026",
+    "H0114",
+    "gpu-usage-es",
+    "H0111",
+    "H0162",
+    "H0342",
+    "H0655",
+    "memory-total-en",
+    "memory-used-es",
+    "H0383",
+    "audio-status-en"
+  ],
+  "losses": [
+    "H0104",
+    "H0732"
+  ],
+  "private_review_sha256": "582f4063fe35c860f40b972c0bffecc45c43e7beaae3fcfce8c27f3133b3f160",
+  "root_review": "All visible finals and typed facts read; partial independent second review38-72. Disagreements and noncausal comparisons disclosed in RESULT.md.",
+  "source_adopted": false,
+  "new_coverage": 0
+}

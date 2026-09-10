@@ -214,7 +214,10 @@ public sealed class WindowsSystemStatusProvider : ISystemStatusProvider
 
     private static MemoryStatus? CreateMemoryStatus(MemoryReading reading) =>
         reading.TotalBytes > 0 && reading.AvailableBytes <= reading.TotalBytes
-            ? new MemoryStatus(reading.TotalBytes, reading.AvailableBytes)
+            ? new MemoryStatus(
+                reading.TotalBytes,
+                reading.AvailableBytes,
+                reading.InstalledBytes >= reading.TotalBytes ? reading.InstalledBytes : null)
             : null;
 
     private static SystemDiskStatus? CreateDiskStatus(DiskReading reading) =>

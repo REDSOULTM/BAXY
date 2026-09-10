@@ -126,7 +126,8 @@ internal sealed record SystemStatusCpuResult(
 
 internal sealed record SystemStatusMemoryResult(
     ulong TotalBytes,
-    ulong AvailableBytes);
+    ulong AvailableBytes,
+    ulong? InstalledBytes);
 
 internal sealed record SystemStatusDiskResult(
     long TotalBytes,

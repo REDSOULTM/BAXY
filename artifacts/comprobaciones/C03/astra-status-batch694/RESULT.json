@@ -1,0 +1,100 @@
+{
+  "requirements": 50,
+  "variants": 23,
+  "total": 73,
+  "counts": {
+    "failed": 28,
+    "correct_observed_run": 45
+  },
+  "by_group": {
+    "audio": {
+      "correct_observed_run": 2,
+      "failed": 1
+    },
+    "battery": {
+      "correct_observed_run": 6,
+      "failed": 1
+    },
+    "clock": {
+      "correct_observed_run": 11,
+      "failed": 4
+    },
+    "cpu": {
+      "correct_observed_run": 3,
+      "failed": 1
+    },
+    "disk": {
+      "correct_observed_run": 6,
+      "failed": 1
+    },
+    "gpu": {
+      "correct_observed_run": 8
+    },
+    "memory": {
+      "correct_observed_run": 8,
+      "failed": 3
+    },
+    "network": {
+      "failed": 5
+    },
+    "processes": {
+      "failed": 5
+    },
+    "windows": {
+      "failed": 7,
+      "correct_observed_run": 1
+    }
+  },
+  "transitions689": {
+    "failed -> failed": 24,
+    "correct_observed_run -> failed": 2,
+    "correct_observed_run -> correct_observed_run": 33,
+    "failed -> correct_observed_run": 8,
+    "needs_verification -> correct_observed_run": 4,
+    "needs_verification -> failed": 2
+  },
+  "cause_groups": {
+    "unnecessary_clarification": 5,
+    "false_composition_rejection": 4,
+    "historical_observation_without_fresh_read": 3,
+    "measurement_field_meaning": 2,
+    "available_read_not_selected": 7,
+    "link_state_not_internet_verification": 1,
+    "observation_scope_expansion": 1,
+    "unverified_state_claim": 1,
+    "missing_process_observation": 1,
+    "process_ranking_not_preserved": 3
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2485.0546875,
+    "seconds": 209.5
+  },
+  "plan_sha256": "9ad4be0bab0727839b7a0ffb40d8214a26f0a05c1854fdc3c2c516498cfbb7f9",
+  "transparent_observation_added": true,
+  "same_inputs_order_and_criteria689": true,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "new_coverage": 0,
+  "ui_or_voice_credit": false,
+  "goal_complete": false,
+  "private_hashes": {
+    "panel.json": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+    "turns.jsonl": "1fab903bc1f389aec047d3ffecadd1c74e254eea3b75681329c92cc9c80a5e05",
+    "capture/events.jsonl": "d2901bdcaf2573eec403eee324c600627f3568cfc88283780d37068fe5495818",
+    "compose-audit.jsonl": "05383e443615433eff6530fa720c2dfa53bbc8b9c40e056477eca0f08ef3fcca",
+    "turn-audit.jsonl": "3a3cd70b95f0e78bcb7736b277ebbc726b99fd39107a0a9eefeb95ad5490982a",
+    "shell-trace.jsonl": "440a528f4ebadee00f28d9c8d8c5968309d55b318cd597ab97c688eee8f882ed",
+    "raw-replies.jsonl": "673c9f94fdf39c3febe269e69253cadd1dfc990c67568ce43621cfc071aabf5d",
+    "http-posts.jsonl": "a6e8eda7b600602e735d09f1f7fde278f0451573cd827382cf2d8bcfa007a3bc",
+    "decision-boundary.jsonl": "8b1dea15cab4f6dc2351dd9e5c601da560696c8b03bb6608f25c68601e935d51",
+    "verdicts.json": "dc27b3caa6a952b303faed066df5ae5e00e4e9a82bffe40c984bf08ce5ad4fa1",
+    "adjudication.json": "9684368507d0470ee9ba7452c01ab8f1dbf6de519ae14b6b065a40409cd2d3ef",
+    "RESULT.md": "a868b2803a76e08abbc5edb092a511f242fec559ee61ae98167e9abbd6043e2f"
+  }
+}

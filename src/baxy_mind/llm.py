@@ -45,6 +45,7 @@ from .effect_intent import (
     explicit_non_action_body,
 )
 from .cpu_prose_adapter import CpuProseAdapter, applies_to_cpu_prose
+from .measurement_prose_projection import project_system_measurements
 from .llm_transport import (
     ChatCompletionCancellation,
     ChatCompletionConnectionPool,
@@ -3264,7 +3265,7 @@ def _compose_situation_payload(
     *,
     _reason_depth: int = 0,
 ) -> dict:
-    """Hechos que el generador puede ver: sólo lo observado, nunca deducido.
+    """Hechos observados y cantidades derivadas de esas mismas mediciones.
 
     Esta función presentaba el pedido como si fuera un efecto medido: del verbo
     «close» sacaba `effect=closed` y `seen.window=true` sin ninguna observación,
@@ -3409,6 +3410,8 @@ def _compose_situation_payload(
             payload["seen"] = {"online": bool(online)}
     elif merged_seen:
         visible_seen = dict(merged_seen)
+        if operation == "system.status":
+            visible_seen = project_system_measurements(visible_seen)
         if (
             situation.get("verified") is True
             and situation.get("succeeded") is True

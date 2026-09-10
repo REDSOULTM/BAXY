@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-09T21:31:04.892504+00:00",
+  "method": "Shared candidate source693 product after Full693, registered runtime, built-in diagnostics plus transparent local HTTP/decision observation declared in STATUS_BATCH694_PLAN.json. Fifty frozen positive survey requirements plus23 development variants across ten PC-status groups. Original literals and owner notes unchanged; fresh reads required. Exact regression689 after shared quantities, installed RAM and wifi read policy changes; no automatic survey coverage. Same dialogue session, exact panel order. No parameter, payload, classification, draft or output replacement. No adapter override. This is development regression, not blind acceptance.",
+  "criteria": "Read every final and progress against the individual panel criterion; correct language, natural response and no invented facts or effects. Every literal receives an individual verdict; common family does not grant coverage by itself. Generalization variants support only their declared group. No UI or voice credit from this hidden conductor.",
+  "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "panel_sha256": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+  "sources": {
+    "src/baxy_mind/measurement_prose_projection.py": "19f2a491888fc1234e92d32ee48792cbc9e95016f0d547642add33f4a0ca2c6d",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "f2e3164d018dc94699b66476bbac60ca580563fd4e25ef47b1ab848f26570a03",
+    "src/Baxy.Providers.Windows/SystemStatus/WindowsSystemStatusProbe.cs": "e346cc4307e0e0c74f156b963c761923c54d94e18c84504fcde2340cddcf7c9b",
+    "src/Baxy.Core/Operations/SystemStatusHandler.cs": "82dcc0cb35cde20a125a43b70d03f99ad5942b78a90d2d209b5f6064e4762997",
+    "src/baxy_mind/window_prose_facts.py": "e126d859b850f66d96e03a573ec01d844f51b486c6b6fa8b68f69fda2fb50211",
+    "src/baxy_mind/effect_intent.py": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+    "src/baxy_mind/cpu_prose_adapter.py": "e0ff545eb8f8ffcec0bc5163629a42b018476feb050c1bd8462232c4e207e1e0",
+    "src/baxy_mind/llm.py": "47373573c0d50327f026fb9a76345a26a5e5805baf326a2c9c8041dcc770c154",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll": "d16a2073f7313394a355b7a52074a635d65a9f2ccaa2bd003053a21ee485633f"
+  },
+  "private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-status-batch694-private",
+  "case_count": 73,
+  "resource_limits": {
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768,
+    "wall_time_seconds": 900
+  }
+}

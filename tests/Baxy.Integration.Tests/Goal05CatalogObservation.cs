@@ -214,7 +214,7 @@ internal static class Goal05CatalogObservation
                 "Mutaría la radio WLAN del usuario; no restaurable."),
             "wifi.ensure.connected" or "wifi.profile.list" or "wifi.status" => Unverifiable(
                 descriptor,
-                "WLAN netsh/WlanApi puede leerse, pero wifi.status es privacy_sensitive y exige confirmación; no se afirma un SSID ni se toma un pending como pass."),
+                "WLAN netsh/WlanApi es de lectura; esta sonda no la ejecuta ni acredita conectividad o SSID sin observación."),
             "window.active" or "window.application.status" or "window.resolve" => Observed(
                 descriptor,
                 "Identidad HWND: proceso, visibilidad y geometría observados, sin mutar.",

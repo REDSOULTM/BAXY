@@ -1,0 +1,11 @@
+# Producto694: revisión completa, 45 de 73 respuestas verificadas
+
+Revisión de los 73 finales completos contra petición, payload tipado y criterio original689. 28 fallan; no se omiten agotamientos, falsas incapacidades, datos del historial ni afirmaciones no verificadas. Los textos e historias permanecen privados en LOCALAPPDATA; RESULT.json publica categorías, conteos y hashes.
+
+Transiciones respecto de689: {'failed -> failed': 24, 'correct_observed_run -> failed': 2, 'correct_observed_run -> correct_observed_run': 33, 'failed -> correct_observed_run': 8, 'needs_verification -> correct_observed_run': 4, 'needs_verification -> failed': 2}. Mejoran a correcto: H0384, H0026, H0114, gpu-usage-es, H0111, H0162, H0342, H0655, memory-total-en, memory-used-es, H0383, audio-status-en. Pasan de correcto a fallo: H0104, H0732. Son dos corridas con estados Windows cambiantes, no una atribución causal automática de cada transición a693.
+
+La proyección compartida conserva unidades y distingue capacidad instalada, utilizable, libre y usada; quedan errores de interpretación del modelo. Los fallos de ventanas, frescura, alcance de red y procesos continúan. H0732 no se acredita como Internet: el provider sólo observa interfaces Up. La segunda revisión inicialmente aceptó H0732 y network-wifi-en; raíz revisó el provider y rechazó ambos por alcance de evidencia. H0065 conserva una incorrección gramatical sin alterar el porcentaje; no demuestra calidad lingüística general.
+
+El conductor terminó exit0 con manifiesto intacto. Pico de la corrida diagnóstica3499,5586MiB GPU y2485,0547MiB RAM; sin infracciones del monitor. No hubo UI/voz simultáneas: no es consumo total certificado de BAXY. Full693 existente:11051 Pythonpass/3 skips ambientales/466 subtests y4480.NETpass/1skip agregado; opt-ins separados. No se ha ejecutado otro Full ni se cuentan skips como pases.
+
+Encuesta742/rev1248:26 cubiertos/716 abiertos/0NA. Esta revisión agrega cero cobertura; C03 continúa EN_CURSO. Comparación de modelos699/700 completada y publicada en a8eaf976; Qwen sigue candidato, no producto aceptado. Siguiente: decidir adopción limitada de693 por sus mediciones propias y reparar primeras transformaciones erróneas, sin aplicar prototype695.

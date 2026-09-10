@@ -223,7 +223,7 @@ public sealed class ProductCatalogTests
     }
 
     [Test]
-    public void WifiStatusIsPrivacySensitiveClosedAndDoubleReadVerified()
+    public void WifiStatusIsReadOnlyClosedAndDoubleReadVerified()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("wifi.status");
         using JsonDocument empty = JsonDocument.Parse("{}");
@@ -231,7 +231,10 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(
+                RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), operation: descriptor.Name),
+                Is.EqualTo(PolicyDecision.Allow));
             Assert.That(descriptor.ToolExposure, Is.EqualTo(ToolExposure.Public));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("wifi.status.netsh.wlan.secondread.v1"));

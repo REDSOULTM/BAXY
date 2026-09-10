@@ -31,7 +31,8 @@ public sealed record CpuStatus(
 
 public sealed record MemoryStatus(
     ulong TotalBytes,
-    ulong AvailableBytes);
+    ulong AvailableBytes,
+    ulong? InstalledBytes = null);
 
 public sealed record SystemDiskStatus(
     long TotalBytes,

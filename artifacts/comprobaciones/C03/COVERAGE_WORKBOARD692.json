@@ -1,0 +1,7314 @@
+{
+  "updated_at": "2026-09-09T19:35:33.769382+00:00",
+  "records": 742,
+  "verification_counts": {
+    "open": 716,
+    "covered": 26
+  },
+  "method": "Read-only planning index over every survey row using existing request reading and bounded explicit-effect resolver against statically declared catalog names. No model inference, provider calls or effects. Standalone resolution lacks original dialogue/application catalog; unresolved does not mean unsupported, resolved does not mean correct or covered. Planning only; preserve individual evidence and owner notes in private source.",
+  "owner_direction": "Prioritize maximum coverage across the entire742 registry. Batch by shared causes and complete affected categories; do not treat small experimental panels as delivery units.",
+  "requirements_sha256": "237c14900a9e36e2e5f6071f132ad916a234ecb39a77e0dd497ef2565eceb2b7",
+  "catalog_sha256": "6651ac1b649418f6cd0da3a5891aac94f87e65ddd6e52f7b826863e717e9b85c",
+  "catalog_names": 170,
+  "group_counts": {
+    "needs_context_or_model": 530,
+    "system": 41,
+    "app": 34,
+    "audio": 19,
+    "media": 14,
+    "note": 12,
+    "notification": 11,
+    "streaming": 10,
+    "reminder": 10,
+    "conversation:knowledge": 8,
+    "message": 7,
+    "conversation:identity,knowledge": 5,
+    "wifi": 5,
+    "conversation:negative_constraint": 4,
+    "window": 4,
+    "browser+web": 4,
+    "capture+ocr": 3,
+    "bluetooth": 3,
+    "web": 3,
+    "task": 2,
+    "capture": 2,
+    "browser": 2,
+    "filesystem": 2,
+    "conversation:capability,knowledge": 2,
+    "game": 1,
+    "conversation:capability": 1,
+    "app+browser+capture+web": 1,
+    "clipboard": 1,
+    "conversation:identity": 1
+  },
+  "open_group_counts": {
+    "needs_context_or_model": 515,
+    "system": 38,
+    "app": 34,
+    "audio": 18,
+    "media": 14,
+    "note": 12,
+    "notification": 11,
+    "streaming": 10,
+    "reminder": 10,
+    "conversation:knowledge": 8,
+    "message": 7,
+    "wifi": 5,
+    "window": 4,
+    "browser+web": 4,
+    "capture+ocr": 3,
+    "bluetooth": 3,
+    "conversation:negative_constraint": 3,
+    "web": 3,
+    "task": 2,
+    "capture": 2,
+    "browser": 2,
+    "filesystem": 2,
+    "conversation:capability,knowledge": 2,
+    "game": 1,
+    "conversation:capability": 1,
+    "app+browser+capture+web": 1,
+    "clipboard": 1
+  },
+  "measured_batch689_cause_counts": {
+    "window_enumeration": 5,
+    "identity_verification": 1,
+    "requested_measurement": 3,
+    "fresh_read_scope": 8,
+    "measurement_semantics": 3,
+    "memory_units_review": 6,
+    "read_confirmation": 2,
+    "pending_confirmation": 10
+  },
+  "rows": [
+    {
+      "case_id": "H0001",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0002",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0003",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0004",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0005",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0006",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0007",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0008",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0009",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0010",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0011",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0012",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0013",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0014",
+      "coverage": "open",
+      "expectation_kind": "negative_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0015",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0016",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0017",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0018",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0019",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0020",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "task",
+      "standalone_explicit_operations": [
+        "task.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0021",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0022",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0023",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "window_enumeration"
+      }
+    },
+    {
+      "case_id": "H0024",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0025",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "en",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0026",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status",
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "measurement_semantics"
+      }
+    },
+    {
+      "case_id": "H0027",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0028",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0029",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0030",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0031",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0032",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0033",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0034",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0035",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0036",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0037",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0038",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "capture+ocr",
+      "standalone_explicit_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0039",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0040",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0041",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0042",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0043",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "task",
+      "standalone_explicit_operations": [
+        "task.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0044",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0045",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0046",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.control"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0047",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0048",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0049",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0050",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0051",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0052",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0053",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0054",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0055",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0056",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0057",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:negative_constraint",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0058",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0059",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0060",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0061",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0062",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0063",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0064",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0065",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0066",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0067",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0068",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0069",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0070",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0071",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "bluetooth",
+      "standalone_explicit_operations": [
+        "bluetooth.radio.set"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0072",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0073",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0074",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0075",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0076",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0077",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0078",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0079",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time",
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0080",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0081",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0082",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0083",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "game",
+      "standalone_explicit_operations": [
+        "game.launch"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0084",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0085",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0086",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0087",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0088",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0089",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0090",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0091",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0092",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0093",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "capture",
+      "standalone_explicit_operations": [
+        "capture.screenshot"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0094",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0095",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0096",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0097",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0098",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0099",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0100",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0101",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0102",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0103",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "window_enumeration"
+      }
+    },
+    {
+      "case_id": "H0104",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "window",
+      "standalone_explicit_operations": [
+        "window.active"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0105",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0106",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0107",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0108",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0109",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0110",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0111",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "needs_verification",
+        "cause_group": "memory_units_review"
+      }
+    },
+    {
+      "case_id": "H0112",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0113",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0114",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "measurement_semantics"
+      }
+    },
+    {
+      "case_id": "H0115",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0116",
+      "coverage": "open",
+      "expectation_kind": "negative_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0117",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0118",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0119",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0120",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:identity,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0121",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0122",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0123",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0124",
+      "coverage": "open",
+      "expectation_kind": "negative_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0125",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0126",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0127",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "wifi",
+      "standalone_explicit_operations": [
+        "wifi.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "read_confirmation"
+      }
+    },
+    {
+      "case_id": "H0128",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0129",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0130",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0131",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0132",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0133",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0134",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0135",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0136",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0137",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0138",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0139",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0140",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0141",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0142",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0143",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0144",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0145",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:identity,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0146",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0147",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0148",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0149",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0150",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0151",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0152",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0153",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0154",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.mute"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0155",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0156",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0157",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0158",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0159",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0160",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0161",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0162",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "needs_verification",
+        "cause_group": "memory_units_review"
+      }
+    },
+    {
+      "case_id": "H0163",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0164",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0165",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0166",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0167",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0168",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0169",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0170",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0171",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0172",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0173",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0174",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0175",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0176",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0177",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0178",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0179",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "bluetooth",
+      "standalone_explicit_operations": [
+        "bluetooth.radio.set"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0180",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0181",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0182",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0183",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0184",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0185",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0186",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0187",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0188",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0189",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0190",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0191",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0192",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0193",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0194",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0195",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0196",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0197",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0198",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0199",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0200",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0201",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0202",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0203",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0204",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0205",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0206",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "browser+web",
+      "standalone_explicit_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0207",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0208",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0209",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "window_enumeration"
+      }
+    },
+    {
+      "case_id": "H0210",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0211",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0212",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0213",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0214",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0215",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0216",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0217",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0218",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0219",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0220",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0221",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0222",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0223",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "en",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0224",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0225",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0226",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0227",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0228",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0229",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0230",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0231",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0232",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0233",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0234",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0235",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0236",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0237",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0238",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0239",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0240",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0241",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0242",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0243",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0244",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0245",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0246",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0247",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0248",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0249",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0250",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0251",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0252",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0253",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0254",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0255",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0256",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0257",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0258",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0259",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0260",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0261",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0262",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0263",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0264",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0265",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0266",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0267",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "browser",
+      "standalone_explicit_operations": [
+        "browser.navigate"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0268",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0269",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0270",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0271",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0272",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0273",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0274",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0275",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0276",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "browser",
+      "standalone_explicit_operations": [
+        "browser.navigate.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0277",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0278",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0279",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0280",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0281",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0282",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0283",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0284",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0285",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0286",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0287",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0288",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0289",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0290",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0291",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "window",
+      "standalone_explicit_operations": [
+        "window.maximize"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0292",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0293",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0294",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0295",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0296",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0297",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0298",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0299",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0300",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0301",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0302",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "wifi",
+      "standalone_explicit_operations": [
+        "wifi.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0303",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0304",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0305",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0306",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0307",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0308",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0309",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0310",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0311",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0312",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0313",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0314",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0315",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0316",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0317",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0318",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0319",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0320",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0321",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0322",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0323",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0324",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "wifi",
+      "standalone_explicit_operations": [
+        "wifi.disconnect"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0325",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0326",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0327",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0328",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0329",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "filesystem",
+      "standalone_explicit_operations": [
+        "filesystem.known.search"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0330",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0331",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0332",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0333",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0334",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0335",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0336",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0337",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0338",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0339",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0340",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0341",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0342",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "requested_measurement"
+      }
+    },
+    {
+      "case_id": "H0343",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0344",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0345",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0346",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0347",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0348",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0349",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0350",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0351",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0352",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0353",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0354",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0355",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0356",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0357",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0358",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0359",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "fresh_read_scope"
+      }
+    },
+    {
+      "case_id": "H0360",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "browser+web",
+      "standalone_explicit_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0361",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0362",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0363",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0364",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.process.list"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "pending_confirmation"
+      }
+    },
+    {
+      "case_id": "H0365",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0366",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0367",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0368",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0369",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0370",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0371",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0372",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0373",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0374",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0375",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0376",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0377",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0378",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0379",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0380",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0381",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0382",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0383",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "pending_confirmation"
+      }
+    },
+    {
+      "case_id": "H0384",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "requested_measurement"
+      }
+    },
+    {
+      "case_id": "H0385",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0386",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0387",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0388",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0389",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0390",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0391",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0392",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0393",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0394",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0395",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0396",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0397",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0398",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0399",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0400",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0401",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0402",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0403",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0404",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0405",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0406",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0407",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0408",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0409",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0410",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0411",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0412",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0413",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0414",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0415",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0416",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0417",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0418",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0419",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0420",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.microphone.mute"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0421",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0422",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0423",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0424",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0425",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0426",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0427",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0428",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0429",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:capability",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0430",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0431",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0432",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0433",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "wifi",
+      "standalone_explicit_operations": [
+        "wifi.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "pending_confirmation"
+      }
+    },
+    {
+      "case_id": "H0434",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0435",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0436",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0437",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0438",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0439",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0440",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0441",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0442",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0443",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0444",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0445",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0446",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0447",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:negative_constraint",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0448",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0449",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0450",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "fresh_read_scope"
+      }
+    },
+    {
+      "case_id": "H0451",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0452",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0453",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0454",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0455",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0456",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0457",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0458",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0459",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0460",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0461",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0462",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0463",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "web",
+      "standalone_explicit_operations": [
+        "web.search"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0464",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0465",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0466",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0467",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0468",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0469",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0470",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0471",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0472",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0473",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0474",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0475",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0476",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0477",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0478",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0479",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0480",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0481",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0482",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0483",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0484",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0485",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0486",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0487",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0488",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0489",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0490",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0491",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0492",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0493",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0494",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0495",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0496",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0497",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0498",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0499",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "fresh_read_scope"
+      }
+    },
+    {
+      "case_id": "H0500",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0501",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0502",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:identity,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0503",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0504",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0505",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0506",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0507",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0508",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "needs_verification",
+        "cause_group": "memory_units_review"
+      }
+    },
+    {
+      "case_id": "H0509",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0510",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0511",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.list"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0512",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0513",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0514",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0515",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0516",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app+browser+capture+web",
+      "standalone_explicit_operations": [
+        "web.search",
+        "browser.navigate.named",
+        "capture.screenshot",
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0517",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:identity,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0518",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "clipboard",
+      "standalone_explicit_operations": [
+        "clipboard.read.text"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0519",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0520",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0521",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0522",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0523",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0524",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0525",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0526",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0527",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0528",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0529",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0530",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0531",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0532",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "fresh_read_scope"
+      }
+    },
+    {
+      "case_id": "H0533",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0534",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0535",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0536",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0537",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "bluetooth",
+      "standalone_explicit_operations": [
+        "bluetooth.radio.set"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0538",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0539",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "needs_verification",
+        "cause_group": "memory_units_review"
+      }
+    },
+    {
+      "case_id": "H0540",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "message",
+      "standalone_explicit_operations": [
+        "message.recipient.resolve",
+        "message.send"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0541",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0542",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0543",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0544",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0545",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0546",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0547",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0548",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0549",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.mute"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0550",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:negative_constraint",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0551",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0552",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0553",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "browser+web",
+      "standalone_explicit_operations": [
+        "web.search",
+        "browser.navigate.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0554",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0555",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0556",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0557",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0558",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0559",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0560",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.youtube"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0561",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0562",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0563",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0564",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0565",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0566",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0567",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0568",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0569",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0570",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0571",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0572",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0573",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0574",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0575",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0576",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0577",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0578",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0579",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.query"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0580",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0581",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0582",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0583",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0584",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0585",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0586",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "en",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0587",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:capability,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0588",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0589",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0590",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0591",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0592",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0593",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0594",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "capture",
+      "standalone_explicit_operations": [
+        "capture.screenshot"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0595",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0596",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0597",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0598",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0599",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0600",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0601",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0602",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "fresh_read_scope"
+      }
+    },
+    {
+      "case_id": "H0603",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0604",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0605",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0606",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0607",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0608",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0609",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "mixed",
+      "batch689": null
+    },
+    {
+      "case_id": "H0610",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0611",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0612",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0613",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0614",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.play.youtube"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0615",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0616",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "capture+ocr",
+      "standalone_explicit_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0617",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0618",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "web",
+      "standalone_explicit_operations": [
+        "web.search"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0619",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0620",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0621",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0622",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0623",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0624",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0625",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0626",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0627",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0628",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "window",
+      "standalone_explicit_operations": [
+        "window.minimize"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0629",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0630",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0631",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0632",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0633",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0634",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0635",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0636",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0637",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "media",
+      "standalone_explicit_operations": [
+        "media.control"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0638",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0639",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0640",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0641",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0642",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0643",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0644",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "en",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0645",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0646",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0647",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "wifi",
+      "standalone_explicit_operations": [
+        "wifi.status"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0648",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0649",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0650",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.process.list"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "pending_confirmation"
+      }
+    },
+    {
+      "case_id": "H0651",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0652",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0653",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0654",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "streaming",
+      "standalone_explicit_operations": [
+        "streaming.play.named"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0655",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "needs_verification",
+        "cause_group": "memory_units_review"
+      }
+    },
+    {
+      "case_id": "H0656",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0657",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:identity,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0658",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0659",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0660",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0661",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0662",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0663",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "window_enumeration"
+      }
+    },
+    {
+      "case_id": "H0664",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0665",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.status"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0666",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0667",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0668",
+      "coverage": "open",
+      "expectation_kind": "unmarked_limit",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0669",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.process.list"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0670",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0671",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0672",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0673",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "note",
+      "standalone_explicit_operations": [
+        "note.create"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0674",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0675",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "failed",
+        "cause_group": "pending_confirmation"
+      }
+    },
+    {
+      "case_id": "H0676",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0677",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0678",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0679",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0680",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0681",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "window",
+      "standalone_explicit_operations": [
+        "window.active",
+        "window.maximize"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0682",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0683",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0684",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "audio",
+      "standalone_explicit_operations": [
+        "audio.volume"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0685",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:negative_constraint",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0686",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0687",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0688",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0689",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0690",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0691",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0692",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0693",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.close"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0694",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0695",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0696",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0697",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0698",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "filesystem",
+      "standalone_explicit_operations": [
+        "filesystem.known.search"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0699",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0700",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0701",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0702",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0703",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0704",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0705",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0706",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0707",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0708",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "web",
+      "standalone_explicit_operations": [
+        "web.search"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0709",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "capture+ocr",
+      "standalone_explicit_operations": [
+        "capture.screenshot",
+        "ocr.read"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0710",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "notification",
+      "standalone_explicit_operations": [
+        "notification.schedule"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0711",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0712",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "en",
+      "batch689": null
+    },
+    {
+      "case_id": "H0713",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0714",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.power"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0715",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "reminder",
+      "standalone_explicit_operations": [
+        "reminder.create"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0716",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0717",
+      "coverage": "covered",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:identity",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0718",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0719",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0720",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0721",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0722",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0723",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "browser+web",
+      "standalone_explicit_operations": [
+        "web.search",
+        "browser.navigate"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0724",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0725",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0726",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0727",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "system",
+      "standalone_explicit_operations": [
+        "system.time"
+      ],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0728",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0729",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "app",
+      "standalone_explicit_operations": [
+        "app.open"
+      ],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0730",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0731",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "conversation:capability,knowledge",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0732",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": {
+        "verdict": "correct_observed_run",
+        "cause_group": null
+      }
+    },
+    {
+      "case_id": "H0733",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0734",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0735",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0736",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0737",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0738",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0739",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0740",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0741",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    },
+    {
+      "case_id": "H0742",
+      "coverage": "open",
+      "expectation_kind": "positive",
+      "planning_group": "needs_context_or_model",
+      "standalone_explicit_operations": [],
+      "language": "es",
+      "batch689": null
+    }
+  ]
+}

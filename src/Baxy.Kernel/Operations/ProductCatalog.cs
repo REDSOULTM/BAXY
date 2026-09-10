@@ -1532,7 +1532,7 @@ public static class ProductCatalog
         Descriptor(
             "wifi.status",
             EmptySchema(),
-            OperationRisks.PrivacySensitive,
+            OperationRisks.ReadOnly,
             "wifi.status.netsh.wlan.secondread.v1",
             ToolExposure.Public,
             "Lee dos veces el estado WLAN actual y devuelve conexión e identidad opaca del perfil sin exponer SSID ni credenciales."),
