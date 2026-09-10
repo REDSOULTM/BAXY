@@ -2,7 +2,7 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T11:09:30.682470+00:00",
+  "confirmedAtUtc": "2026-09-10T11:11:52.718003+00:00",
   "branch": "Goal-c03",
   "checkpoint": "Diagnostic736 complete with K2 RAM interruption50/73 and Qwen73/73; matched50 K211/Qwen35. Same source/adapters/App/Core. REPORT and PINS preserved. No adoption/promotion/coverage.",
   "continuation": "All sessions63813/48438/84322/5502 terminal; never poll or rerun. Follow NATIVE_PRODUCT736/HANDOFF.md. Isolate facts-to-prose native role settings against captured payloads and identify BAXY transformations before another integrated campaign. Preserve23 unmeasured K2 cases, Full5 red, survey26/716/0.",
@@ -37,7 +37,7 @@
   "workStatus": "native_product736_k2_running",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "58f45e270451dbaf6c285ae56e5207f29a9f70e2",
+  "publishedEvidenceCommit": "2bbb41d49ca15850b9a32b7cbfc0cf25b925bff1",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -115,7 +115,7 @@
     "adjudication": "49correct,24failed",
     "result": "artifacts/comprobaciones/C03/astra-status-batch729/RESULT.json"
   },
-  "k2Report": "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/REPORT.md",
+  "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Complete fair native K2 adaptation before integrated comparison; do not blame model for BAXY transforms.",
   "k2Comparison": {
     "weightsVerified": 5,
@@ -570,10 +570,19 @@
     "next": "Implement bounded typed global window inventory708, preserving exact selectors, identity, cancellation and honest pagination/errors. Then measure native proposal and first wrong transformation; do not simply remove the domain guard."
   },
   "activeDiagnostic": {
-    "name": "Native product736 K2",
-    "sessionId": 63813,
-    "status": "running",
-    "output": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/k2"
+    "name": "Native product736 comparison",
+    "status": "terminal_adjudicated_k2_incomplete",
+    "live_sessions": [],
+    "terminal_sessions": [
+      63813,
+      48438,
+      84322,
+      5502
+    ],
+    "output": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736",
+    "k2_completed": 50,
+    "k2_pending": 23,
+    "qwen_completed": 73
   },
   "activeCatalogProbe": {
     "sessionId": 73101,
@@ -632,19 +641,27 @@
     "candidate724": "withdrawn"
   },
   "activeProductDiagnostic": {
-    "batch": 729,
-    "session": 94146,
-    "status": "terminal_adjudicated",
-    "exit_code": 0,
-    "correct": 49,
-    "failed": 24,
-    "comparison704": {
-      "gains": 0,
-      "losses": [
-        "H0655"
-      ]
+    "batch": 736,
+    "status": "terminal_adjudicated_k2_incomplete",
+    "k2": {
+      "completed": 50,
+      "correct": 11,
+      "failed": 39,
+      "not_evaluated": 23,
+      "exit_code": 1,
+      "cause": "free_ram_bound"
     },
-    "result": "astra-status-batch729/RESULT.json",
+    "qwen": {
+      "completed": 73,
+      "correct": 48,
+      "failed": 25,
+      "exit_code": 0
+    },
+    "matched50": {
+      "k2_correct": 11,
+      "qwen_correct": 35
+    },
+    "result": "NATIVE_PRODUCT736/COMPARISON.json",
     "full_gate_passed": false,
     "adopted": false,
     "coverage_added": 0,
@@ -752,6 +769,32 @@
     },
     "report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
     "handoff": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/HANDOFF.md",
-    "memory_startup_observed": false
+    "memory_startup_observed": false,
+    "publication": {
+      "commit": "2bbb41d49ca15850b9a32b7cbfc0cf25b925bff1",
+      "remote_equal": true,
+      "committed_byte_seals_verified": 31,
+      "main_unchanged": true,
+      "report_open_status": "queued; not claimed visible"
+    }
+  },
+  "previousProductDiagnostic729": {
+    "batch": 729,
+    "session": 94146,
+    "status": "terminal_adjudicated",
+    "exit_code": 0,
+    "correct": 49,
+    "failed": 24,
+    "comparison704": {
+      "gains": 0,
+      "losses": [
+        "H0655"
+      ]
+    },
+    "result": "astra-status-batch729/RESULT.json",
+    "full_gate_passed": false,
+    "adopted": false,
+    "coverage_added": 0,
+    "processes_closed": true
   }
 }
