@@ -11838,8 +11838,9 @@ class _ProposedLeafLlm:
 
 @pytest.mark.parametrize("echo_current", [False, True])
 @pytest.mark.parametrize("user_text", ["y la fecha?", "and the date?"])
+@pytest.mark.parametrize("prior_followups", [[], ["y la fecha?"], ["y la fecha?", "and the time?"]])
 def test_contextual_date_uses_prior_user_clock_not_current_history_echo(
-    user_text: str, echo_current: bool,
+    user_text: str, echo_current: bool, prior_followups: list[str],
 ) -> None:
     class ClockContextRuntime(_ProposedLeafLlm):
         def decide_turn(self, *_args: object, **_kwargs: object) -> dict[str, object]:
@@ -11849,6 +11850,11 @@ def test_contextual_date_uses_prior_user_clock_not_current_history_echo(
         {"role": "user", "content": "Dime que hora es"},
         {"role": "assistant", "content": "Son las 18:13."},
     ]
+    for prior in prior_followups:
+        history.extend([
+            {"role": "user", "content": prior},
+            {"role": "assistant", "content": "A reply cannot authorize a clock read."},
+        ])
     if echo_current:
         history.append({"role": "user", "content": user_text})
     tool = _goal03c_catalog_tool("system.time")

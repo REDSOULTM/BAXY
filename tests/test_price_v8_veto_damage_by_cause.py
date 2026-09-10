@@ -101,7 +101,7 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # CPU actor/quantity repairs; consumed V8 evidence and verdict remain unchanged.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "a890dcd845f5cd1d1684af41e73e7e39a6366f1dfba90b2aff107a128fac882c"
+        "1f651f36f7c755c47c78bfb8b2b7f3b859d886c72aaf8bfdf53907e315871211"
     ),
     "src/baxy_mind/llm.py": (
         "88706a515ca716ed01014975002938a3b4c6b881ef9043c1b33961debc7f518b"

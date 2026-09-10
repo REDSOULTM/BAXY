@@ -1,3 +1,11 @@
+781 adoptada, publicación pendiente:3403pass/1skipSTT/67,45s;Fast0/Release18,82s. 782:73/74correctos,74lecturas,24/24continuaciones; t50 reparado375,295ms, t46Marka persiste. H0180/H0499 fecha acreditados explícitamente con779/780/782;28/714/0, registroSHA=3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b. Sesiones47671/81959 recogidas0; ningún proceso activo. Siguiente publicar781/782 y reparar falso veto de mediodía en llm.py.
+
+781 validado: 3403 pass/1 skip STT/67,45s; Fast0/Release18,82s, sesión47671 recogida. 782 activo81959: mismo panel50 de779 más24turnos encadenados. Fuente sellada sin cambios.26/716/0.
+
+781 candidato de contexto: antecedente humano a través de elipsis contiguas, con corte al cambiar tema. 67controles enfocados pass, baseline44fail; fuente/receta LLM sin cambios. 8pins yprograma407 sellados; faltan dueñas completas/Fast y782 panel50+24. Mediodía yMarka siguen abiertos.26/716/0.
+
+778 publicada 82ae68912a47a588b99ba77d20c8b47a45b8029c; HEAD=origin=remoto, 5 fuentes y 42 evidencias verificadas contra Git; main intacto. 779: 15/15 originales y 48/50 total; 780: 50/50 finales, con un veto falso a mediodía. 2298 pass/1 skip STT, Fast0. Sin procesos activos. Siguiente: cadena de elipsis y veto missing_name; no filtro literal de Marka. Encuesta 26/716/0.
+
 778 adoptada, pendiente de publicación:2298pass/1skipSTT/62,08s,Fast0/Release1,77s;104controles. 77915/15originales,48/50total,49lecturas; fallos t46Marka y t50segundaelipsis sin lectura. 78050/50valores,49raw=final,1reintento por veto falso missing_name a12del mediodía. Guardas intactas;65474/21475 recogidas0, sin procesos activos. RegistroSHA=7b60937e2a3b22d9d887d4e01849b3d0cb6225d0bf4fb78b9ccbde1eaf372d32;26/716/0. Siguiente: contexto de cadenas de elipsis y veto falso de mediodía, no filtro literal de ortografía.
 
 778 candidato2: preflight77949/50 reconocidos detectó pasarme; envoltorio correcto, infinitivo con clítico ausente. Familia morfológica compartida corregida24pass;104controles totales. Candidato1 conservado2274pass/1skipSTT/Fast0. Pendientes finales/integridad/Fast y mismo panel779sin modificar.26/716/0.

@@ -562,6 +562,24 @@ def _direct_current_time_request(folded: str) -> bool:
     ) is not None
 
 
+def datetime_followup_antecedent(
+    text: str, previous_requests: Iterable[str],
+) -> str | None:
+    """Find a clock antecedent through contiguous human ellipses, newest first.
+
+    A change of subject ends the chain. Assistant responses and remembered
+    clock values are deliberately absent: the next turn still needs a read.
+    """
+    if not _nominal_datetime_query(_strip_request_envelope(_fold(text))):
+        return None
+    for request in previous_requests:
+        folded = _strip_request_envelope(_fold(request))
+        if _nominal_datetime_query(folded):
+            continue
+        return request if _direct_current_time_request(folded) else None
+    return None
+
+
 def _direct_media_discovery_or_play_request(folded: str) -> bool:
     """Recognize one requested audio title or bounded audio discovery query."""
 

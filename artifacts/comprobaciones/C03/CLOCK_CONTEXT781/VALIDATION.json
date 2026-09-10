@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-10T19:45:23.501583+00:00",
+  "passed": 3403,
+  "failed": 0,
+  "environmental_skips": 1,
+  "skip": "Private STT campaign inputs absent; no voice pass.",
+  "seconds": 67.45,
+  "new_controls": 62,
+  "command": "registered Python -X utf8 -m pytest tests/test_c03_clock_context.py tests/test_turn_policy.py tests/test_effect_intent.py tests/test_c03_local_clock_scope.py tests/test_c03_request_preservation.py tests/test_price_v8_veto_damage_by_cause.py tests/test_stt_quality_evaluators.py tests/test_validate_physical_wake_v17_program.py -q",
+  "fast_command": "scripts/test_source_quality.ps1 -Mode Fast",
+  "fast_exit_code": 0,
+  "session": 47671,
+  "terminal_collected": true,
+  "release_seconds": 18.82,
+  "warnings": 0,
+  "errors": 0,
+  "source_pins_unchanged": true,
+  "full_new": false,
+  "full_reason": "Python-only change; authority requires new Full for combined C#+Python adoption and final closure.",
+  "product_session": 81959,
+  "product_terminal_collected": true,
+  "product_exit_code": 0
+}

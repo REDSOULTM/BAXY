@@ -1,0 +1,643 @@
+{
+  "utc": "2026-09-10T19:45:23.501583+00:00",
+  "source_parent_commit": "82ae68912a47a588b99ba77d20c8b47a45b8029c",
+  "source_pins": "CLOCK_CONTEXT781/SOURCE_PINS.json",
+  "source_adoption": "Containing commit",
+  "cases": 74,
+  "correct": 73,
+  "failed": 1,
+  "original_category_correct": 15,
+  "original_category_total": 15,
+  "preserved779_panel_correct": 49,
+  "preserved779_panel_total": 50,
+  "new_chained_correct": 24,
+  "fresh_reads": 74,
+  "real_retries": 0,
+  "method": "Root reviewed all complete replies against fresh observations. Same50 cases/order/criteria as779 plus24 declared chained turns. Development, not native model ranking.",
+  "resources": {
+    "utc": "2026-09-10T19:35:11.559881+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2470.3828125,
+    "seconds": 55.563,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "latency_ms": {
+    "p50": 429.59549999999945,
+    "max": 1734.1080000000002
+  },
+  "fixed_t50": {
+    "before779_ms": 2567.8039999999964,
+    "after782_ms": 375.29499999999825,
+    "before_fresh_read": false,
+    "after_fresh_read": true
+  },
+  "verdicts": [
+    {
+      "case_id": "H0126",
+      "turn_id": "t1",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0180",
+      "turn_id": "t2",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0223",
+      "turn_id": "t3",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0449",
+      "turn_id": "t4",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0450",
+      "turn_id": "t5",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0498",
+      "turn_id": "t6",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0499",
+      "turn_id": "t7",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0586",
+      "turn_id": "t8",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0600",
+      "turn_id": "t9",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0602",
+      "turn_id": "t10",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0700",
+      "turn_id": "t11",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "H0727",
+      "turn_id": "t12",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-date-en",
+      "turn_id": "t13",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "turn_id": "t14",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "turn_id": "t15",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-01",
+      "turn_id": "t16",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-02",
+      "turn_id": "t17",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-03",
+      "turn_id": "t18",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-04",
+      "turn_id": "t19",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-05",
+      "turn_id": "t20",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-06",
+      "turn_id": "t21",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-07",
+      "turn_id": "t22",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-08",
+      "turn_id": "t23",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-09",
+      "turn_id": "t24",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-10",
+      "turn_id": "t25",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-11",
+      "turn_id": "t26",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-12",
+      "turn_id": "t27",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-13",
+      "turn_id": "t28",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-14",
+      "turn_id": "t29",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-15",
+      "turn_id": "t30",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-16",
+      "turn_id": "t31",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-17",
+      "turn_id": "t32",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-18",
+      "turn_id": "t33",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-19",
+      "turn_id": "t34",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-20",
+      "turn_id": "t35",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-21",
+      "turn_id": "t36",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-22",
+      "turn_id": "t37",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-23",
+      "turn_id": "t38",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-24",
+      "turn_id": "t39",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-25",
+      "turn_id": "t40",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-26",
+      "turn_id": "t41",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-27",
+      "turn_id": "t42",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-28",
+      "turn_id": "t43",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-29",
+      "turn_id": "t44",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-30",
+      "turn_id": "t45",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "turn_id": "t46",
+      "group": "clock",
+      "correct": false,
+      "category": "spelling_naturalness",
+      "reason": "Hora correcta; Marka es una falta de ortografía retenida como fallo, sin reemplazo ni veto literal."
+    },
+    {
+      "case_id": "clock-variant779-32",
+      "turn_id": "t47",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-33",
+      "turn_id": "t48",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-34",
+      "turn_id": "t49",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-variant779-35",
+      "turn_id": "t50",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-01-1",
+      "turn_id": "t51",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-01-2",
+      "turn_id": "t52",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-01-3",
+      "turn_id": "t53",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-01-4",
+      "turn_id": "t54",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-02-1",
+      "turn_id": "t55",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-02-2",
+      "turn_id": "t56",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-02-3",
+      "turn_id": "t57",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-02-4",
+      "turn_id": "t58",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-03-1",
+      "turn_id": "t59",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-03-2",
+      "turn_id": "t60",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-03-3",
+      "turn_id": "t61",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-03-4",
+      "turn_id": "t62",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-04-1",
+      "turn_id": "t63",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-04-2",
+      "turn_id": "t64",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-04-3",
+      "turn_id": "t65",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-04-4",
+      "turn_id": "t66",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-05-1",
+      "turn_id": "t67",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-05-2",
+      "turn_id": "t68",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-05-3",
+      "turn_id": "t69",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-05-4",
+      "turn_id": "t70",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-06-1",
+      "turn_id": "t71",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-06-2",
+      "turn_id": "t72",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-06-3",
+      "turn_id": "t73",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    },
+    {
+      "case_id": "clock-chain782-06-4",
+      "turn_id": "t74",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel al dato pedido y a su lectura fresca; respeta el idioma o presentación explícita. Las continuaciones conservan el antecedente humano."
+    }
+  ],
+  "coverage_added": 2,
+  "survey": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "limits": "No UI, voice, reserve or final combined resource credit. Real clock crosses16:34 to16:35 at t57. Values780 is separate synthetic composer evidence, not repeated after781; llm.py unchanged.",
+  "private_pins": {
+    "review.json": "63689f6f1d3ec9a6ca65e1713766da089d31a59429b1b2747e3f02631d099f84",
+    "compose-audit.jsonl": "2b337e20ab02c37184692db80a53f3f810ae5b38090af3b45d9d8f24dd6c9ccc",
+    "turn-audit.jsonl": "f0c6cda6a33d21ae0b90a62331617b74f3178a79ad07c0f5c245e30f1b001a07",
+    "shell-trace.jsonl": "ad5be8e1457eda77ef0549dbf262629e894cb5cd42a1a9ab625f67d0f8c35900"
+  }
+}

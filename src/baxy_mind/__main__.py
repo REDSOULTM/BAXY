@@ -2578,7 +2578,7 @@ def _explicit_social_turn_decision(
 
 
 def _previous_user_request(history: list[object], current_request: str) -> str | None:
-    """Read the preceding user turn, allowing the shell's trailing current echo."""
+    """Read the user antecedent, preserving contiguous clock continuations."""
     previous = history
     if (
         history
@@ -2587,14 +2587,14 @@ def _previous_user_request(history: list[object], current_request: str) -> str |
         and history[-1].get("content") == current_request
     ):
         previous = history[:-1]
-    return next(
-        (
-            str(item.get("content") or "")
-            for item in reversed(previous)
-            if isinstance(item, dict) and item.get("role") == "user"
-        ),
-        None,
-    )
+    requests = [
+        str(item.get("content") or "")
+        for item in reversed(previous)
+        if isinstance(item, dict) and item.get("role") == "user"
+    ]
+    if not requests:
+        return None
+    return effect_intent.datetime_followup_antecedent(current_request, requests) or requests[0]
 
 
 def _window_query_reference_name(

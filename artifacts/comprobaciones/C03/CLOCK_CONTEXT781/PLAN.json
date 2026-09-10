@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-10T19:31:38.892905+00:00",
+  "parent": "82ae68912a47a588b99ba77d20c8b47a45b8029c",
+  "evidence": [
+    "STATUS_BATCH779/RESULT.json t50",
+    "tests/test_turn_policy.py:11839-11877",
+    "CLOCK_VALUES780/ADJUDICATION.json"
+  ],
+  "cause": "The prior user text was re-resolved without its antecedent. Full human history already exists; only the last text was selected.",
+  "change": "Resolve a clock antecedent through a contiguous chain of human nominal clock requests; stop at the first other subject. All other requests retain the immediate previous user text. No assistant prose or remembered clock value grants authority.",
+  "baseline": "44fail/22pass/1049deselected,2.07s",
+  "focused": "67pass/1048deselected,1.29s",
+  "new_controls": 62,
+  "full_new_required": false,
+  "pending": "Whole owner regression/current integrity/Fast, then frozen74 product782. No native model comparison or UI/voice/reserve credit.",
+  "unchanged": "LLM/prompt/recipe/clock-value validator. False noon veto780 and Marka spelling remain open; do not hide them in this context change.",
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

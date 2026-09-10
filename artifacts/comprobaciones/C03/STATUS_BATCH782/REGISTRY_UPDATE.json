@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-10T19:45:23.501583+00:00",
+  "before_sha256": "7b60937e2a3b22d9d887d4e01849b3d0cb6225d0bf4fb78b9ccbde1eaf372d32",
+  "after_sha256": "3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b",
+  "snapshot_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-status-batch782-private\\requirements-before782.jsonl",
+  "changed_rows": 12,
+  "new_covered_case_ids": [
+    "H0180",
+    "H0499"
+  ],
+  "fields_changed": [
+    "generalization_status",
+    "verification_evidence",
+    "verification_reason",
+    "verification_status",
+    "verification_updated_at"
+  ],
+  "all_protected_fields_unchanged": true,
+  "coverage_added": 2,
+  "counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "decision": "Conscious root sufficiency adjudication for date-only requirements, using779/780/782 and owner boundary tests. Remaining hour defects do not contradict either date requirement."
+}
