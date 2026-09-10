@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T18:51:01.163290+00:00",
+  "confirmedAtUtc": "2026-09-10T19:20:17.702369+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "775 adoptado tras483pass/1skipSTT/5,63s,Fast0/20,67s y77717/17 con reparación real H0665(Tengo→Tiene)737,301ms. 77650fixtures=46pass/4causalidad añadida interpretativamente sensible; todosdatoscorrectos,0reintentos. 777todasguardastrue,3497,56MiB/2167,32MiB/32,437s. RegistroSHA=72fae04c61cdf7d8cdf57fddf86220cce46bc9628014fdc9f383eb450fca750a;26/716/0. Sesiones30493/20301 terminal0 recogidas, no procesoactivo. Publicar775/776/777; conservar cuatro hallazgos de causalidad y seguir bloqueos de lectura completos.",
-  "continuation": "Publish775 source plus776/777 evidence. Battery actor defect repaired; preserve4 unsupported causal relations in776. Next bounded blocker is shared current-date/time request gates; entire clock category, no another inventory prompt tweak.",
+  "checkpoint": "778 adoptada, pendiente de publicación:2298pass/1skipSTT/62,08s,Fast0/Release1,77s;104controles. 77915/15originales,48/50total,49lecturas; fallos t46Marka y t50segundaelipsis sin lectura. 78050/50valores,49raw=final,1reintento por veto falso missing_name a12del mediodía. Guardas intactas;65474/21475 recogidas0, sin procesos activos. RegistroSHA=7b60937e2a3b22d9d887d4e01849b3d0cb6225d0bf4fb78b9ccbde1eaf372d32;26/716/0. Siguiente: contexto de cadenas de elipsis y veto falso de mediodía, no filtro literal de ortografía.",
+  "continuation": "Publish778+779+780; then inspect prior clock context for chained nominal follow-up and missing_name false veto of noon wording. Preserve Marka spelling defect without literal filter. Inventory strategy must change after768/771.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "481c2f411aa7eaaf00cc78665953bfdf7bd01586",
-  "workStatus": "battery_actor775_adopted_pending_publication",
+  "publishedSourceCommit": "6a17d1c7e801375f6bd3744d2c417cdbc11d84b4",
+  "workStatus": "clock_scope778_adopted_pending_publication",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "aa5f7b6a2b83b75e8507b40a7d21eeab993c08f1",
+  "publishedEvidenceCommit": "6a17d1c7e801375f6bd3744d2c417cdbc11d84b4",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Published773 input-scope repair, adjudicated774 complete battery category and located independent actor defect; no owner blocker.",
+  "previousGoalTurnClassificationReason": "Shared input-scope repair restores four real clock reads;100 declared product/composer turns adjudicated, remaining failures preserved.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",

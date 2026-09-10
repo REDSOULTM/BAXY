@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-10T19:20:17.702369+00:00",
+  "status": "adopted_shared_input_scope_improvement",
+  "commit": "Containing commit",
+  "source_pins": "SOURCE_PINS.json",
+  "coverage_added": 0,
+  "evidence": "772 four original clock reads absent;779 all15 originals read fresh and answer correctly.78050 synthetic values preserved.",
+  "open": "779 variant31 spelling Marka; variant35 second consecutive nominal follow-up missing fresh read.780-35 valid noon wording falsely rejected missing_name."
+}

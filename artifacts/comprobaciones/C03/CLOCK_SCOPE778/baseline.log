@@ -1,0 +1,5 @@
+
+=========================== short test summary info ===========================
+ERROR tests/test_c03_local_clock_scope.py - Failed: tests/test_c03_local_cloc...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.47s

@@ -1,0 +1,7 @@
+{
+  "src/baxy_mind/effect_intent.py": "c4ba80c02a027bb098299df7aaf1ea998c2a034362e76d7d024acaa3c6709cc3",
+  "tests/test_c03_local_clock_scope.py": "c59a763f3642227d2ade135a5e8dceb4da87cf80ccf2061f131ce34b5acfd2df",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "d6747716b8729b74ffc9020ebc3bcfa0c5e0681cdb9dcc2c83a14010778bbc8a",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "861385d30364be275b6e2045a5475be4d74faf16504689821cad41ab3d072236",
+  "src/baxy_mind/llm.py": "88706a515ca716ed01014975002938a3b4c6b881ef9043c1b33961debc7f518b"
+}

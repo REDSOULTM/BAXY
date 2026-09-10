@@ -1,0 +1,443 @@
+{
+  "utc": "2026-09-10T19:20:17.702369+00:00",
+  "source_parent_commit": "6a17d1c7e801375f6bd3744d2c417cdbc11d84b4",
+  "source_pins": "CLOCK_SCOPE778/SOURCE_PINS.json",
+  "source_adoption": "Containing commit",
+  "cases": 50,
+  "correct": 48,
+  "failed": 2,
+  "original_category_correct": 15,
+  "original_category_total": 15,
+  "baseline772_original_correct": 11,
+  "fresh_reads": 49,
+  "real_retries": 0,
+  "method": "Root read all50 complete replies and projected facts; retained typo and second-ellipsis missing read. Development, not native model ranking.",
+  "resources": {
+    "utc": "2026-09-10T19:13:38.523549+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2493.90234375,
+    "seconds": 52.328,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "latency_ms": {
+    "p50": 453.6045000000013,
+    "max": 2567.8039999999964
+  },
+  "verdicts": [
+    {
+      "case_id": "H0126",
+      "turn_id": "t1",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0180",
+      "turn_id": "t2",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0223",
+      "turn_id": "t3",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0449",
+      "turn_id": "t4",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0450",
+      "turn_id": "t5",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0498",
+      "turn_id": "t6",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0499",
+      "turn_id": "t7",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0586",
+      "turn_id": "t8",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0600",
+      "turn_id": "t9",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0602",
+      "turn_id": "t10",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0700",
+      "turn_id": "t11",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "H0727",
+      "turn_id": "t12",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-date-en",
+      "turn_id": "t13",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "turn_id": "t14",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "turn_id": "t15",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-01",
+      "turn_id": "t16",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-02",
+      "turn_id": "t17",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-03",
+      "turn_id": "t18",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-04",
+      "turn_id": "t19",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-05",
+      "turn_id": "t20",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-06",
+      "turn_id": "t21",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-07",
+      "turn_id": "t22",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-08",
+      "turn_id": "t23",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-09",
+      "turn_id": "t24",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-10",
+      "turn_id": "t25",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-11",
+      "turn_id": "t26",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-12",
+      "turn_id": "t27",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-13",
+      "turn_id": "t28",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-14",
+      "turn_id": "t29",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-15",
+      "turn_id": "t30",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-16",
+      "turn_id": "t31",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-17",
+      "turn_id": "t32",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-18",
+      "turn_id": "t33",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-19",
+      "turn_id": "t34",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-20",
+      "turn_id": "t35",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-21",
+      "turn_id": "t36",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-22",
+      "turn_id": "t37",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-23",
+      "turn_id": "t38",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-24",
+      "turn_id": "t39",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-25",
+      "turn_id": "t40",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-26",
+      "turn_id": "t41",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-27",
+      "turn_id": "t42",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-28",
+      "turn_id": "t43",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-29",
+      "turn_id": "t44",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-30",
+      "turn_id": "t45",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "turn_id": "t46",
+      "group": "clock",
+      "correct": false,
+      "category": "spelling_naturalness",
+      "reason": "La hora coincide, pero Marka es una falta de ortografía en la salida; se conserva como defecto de naturalidad, sin filtro literal."
+    },
+    {
+      "case_id": "clock-variant779-32",
+      "turn_id": "t47",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-33",
+      "turn_id": "t48",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-34",
+      "turn_id": "t49",
+      "group": "clock",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta al dato pedido, con fecha/hora fiel a la lectura fresca; se respeta idioma o instrucción explícita de presentación."
+    },
+    {
+      "case_id": "clock-variant779-35",
+      "turn_id": "t50",
+      "group": "clock",
+      "correct": false,
+      "category": "missing_fresh_read_chained_ellipsis",
+      "reason": "Tras hora explícita→fecha elíptica, la segunda elipsis pierde la lectura fresca; la incertidumbre publicada no satisface una consulta normal al reloj."
+    }
+  ],
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "limits": "No visible UI, voice, reserve or final combined resource credit. All observed dates/times are one real local minute/date. Values780 is separate synthetic composer evidence.",
+  "private_pins": {
+    "review.json": "e13c728ef5099978db5f4c152dad558fd025ca6b1bbfae855aca0c10340e33c1",
+    "compose-audit.jsonl": "99f5e2b51c92037150a54aca8234d79d4925431aa18d50d90b42702059753b7a",
+    "turn-audit.jsonl": "3c2ec1ef8c203b44f141ac96cc2d5ba672c44107eb3efbd07444dfb684e902af",
+    "shell-trace.jsonl": "7943bf364a3707663426f19a562c37b19851abccace4e8ea3b97214d88a6294a"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-10T19:20:17.702369+00:00",
+  "passed": 2298,
+  "failed": 0,
+  "environmental_skips": 1,
+  "skip": "Private blind STT campaign inputs absent; not a voice pass.",
+  "seconds": 62.08,
+  "new_controls": 104,
+  "command": "registered Python -X utf8 -m pytest tests/test_c03_local_clock_scope.py tests/test_effect_intent.py tests/test_c03_calendar_date.py tests/test_c03_request_preservation.py tests/test_stt_quality_evaluators.py tests/test_validate_physical_wake_v17_program.py -q",
+  "fast_command": "scripts/test_source_quality.ps1 -Mode Fast",
+  "fast_exit_code": 0,
+  "fast_session": 70616,
+  "fast_terminal_collected": true,
+  "release_seconds": 1.77,
+  "warnings": 0,
+  "errors": 0,
+  "all_current_source_pins_unchanged_after_validation": true,
+  "full_new": false,
+  "product": "77915/15originals,48/50total; two explicit failures retained.",
+  "synthetic": "78050/50",
+  "adoption_scope": "Input-scope improvement only; no whole clock category or C03 completion."
+}

@@ -1,3 +1,11 @@
+778 adoptada, pendiente de publicación:2298pass/1skipSTT/62,08s,Fast0/Release1,77s;104controles. 77915/15originales,48/50total,49lecturas; fallos t46Marka y t50segundaelipsis sin lectura. 78050/50valores,49raw=final,1reintento por veto falso missing_name a12del mediodía. Guardas intactas;65474/21475 recogidas0, sin procesos activos. RegistroSHA=7b60937e2a3b22d9d887d4e01849b3d0cb6225d0bf4fb78b9ccbde1eaf372d32;26/716/0. Siguiente: contexto de cadenas de elipsis y veto falso de mediodía, no filtro literal de ortografía.
+
+778 candidato2: preflight77949/50 reconocidos detectó pasarme; envoltorio correcto, infinitivo con clítico ausente. Familia morfológica compartida corregida24pass;104controles totales. Candidato1 conservado2274pass/1skipSTT/Fast0. Pendientes finales/integridad/Fast y mismo panel779sin modificar.26/716/0.
+
+778 candidato: tres puertas de reloj unificadas, envoltorios y fronteras de cláusula compartidos. 80 controles nuevos; baseline50fail/30pass. Primera regresión2051pass/6fail; límites corregidos6pass. Pendientes dueñas completas/integridad/Fast y779 categoría completa15+35variantes. No fuente adoptada ni cobertura nueva;26/716/0.
+
+775 publicada 6a17d1c7e801375f6bd3744d2c417cdbc11d84b4; HEAD=origin=remoto,5fuentes/31evidencias verificadas,main intacto.77717/17 con reparación actor real;77646/50 con4relaciones causales sin acreditar.483pass/1skipSTT,Fast0. No procesos activos. Siguiente778: puertas compartidas de fecha/hora, cuatro fallos de lectura confirmados.26/716/0.
+
 775 adoptado tras483pass/1skipSTT/5,63s,Fast0/20,67s y77717/17 con reparación real H0665(Tengo→Tiene)737,301ms. 77650fixtures=46pass/4causalidad añadida interpretativamente sensible; todosdatoscorrectos,0reintentos. 777todasguardastrue,3497,56MiB/2167,32MiB/32,437s. RegistroSHA=72fae04c61cdf7d8cdf57fddf86220cce46bc9628014fdc9f383eb450fca750a;26/716/0. Sesiones30493/20301 terminal0 recogidas, no procesoactivo. Publicar775/776/777; conservar cuatro hallazgos de causalidad y seguir bloqueos de lectura completos.
 
 776 terminado0/30493 recogida:50fixtures,46pass/4causalidad añadida interpretativamente sensible(12/18/22/24); todosporcentajes/estados coinciden.50raw=final,0repairs; no acredita reparación actor.3495,56MiB/758,21MiB/18,735s. 777 producto activo20301,17casos idénticos774,candidato775. No editar fuente ni reiniciar.26/716/0.

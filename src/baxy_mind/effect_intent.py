@@ -514,36 +514,52 @@ def _nominal_datetime_query(folded: str) -> bool:
     ) is not None
 
 
-def _direct_current_time_request(folded: str) -> bool:
-    """Recognize a direct request for the computer's current local time."""
+_CLOCK_READ_HEAD = (
+    r"(?:dime|decime|decir(?:me)?|muestra(?:me)?|mostra(?:r)?(?:me)?|"
+    r"ensena(?:r)?(?:me)?|pasa(?:r)?(?:me)?|dame|dar(?:me)?|"
+    r"indica(?:r)?(?:me)?|consulta(?:r)?|comprueba|comprobar|revisa(?:r)?|"
+    r"tell\s+me|show(?:\s+me)?|give\s+me|check)"
+)
 
-    return (
-        re.fullmatch(
-            (
-                r"(?:"
-                r"(?:(?:i\s+)?(?:need|want)\s+to\s+know\s+)?"
-                r"(?:the\s+)?time\s+(?:right\s+now|now)"
-                r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"
-                r"what\s+(?:time\s+is\s+it|is\s+the\s+time)(?:\s+right\s+now)?|"
-                r"(?:necesito|quiero)\s+saber\s+(?:la\s+)?hora\s+(?:ahora|actual)|"
-                r"(?:que|cual)\s+es\s+(?:la\s+)?hora\s+(?:ahora|actual)?"
-                r")"
-            )
-            + r"[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-        or re.fullmatch(
-            r"(?:search|look|busca)\s+(?:to\s+)?(?:find|encontrar)\s+"
-            r"(?:(?:the|la)\s+)?(?:current|actual)\s+(?:local\s+)?"
-            r"(?:time|hora)(?:\s+(?:and|y)\s+(?:time\s+zone|zona\s+horaria))?"
-            r"[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
+
+def _direct_current_time_request(folded: str) -> bool:
+    """Recognize a whole request for the local clock, shared by all three gates.
+
+    Only present/local modifiers belong to this reading. Event dates, elapsed
+    CPU time, other places and literal content must not match a trailing noun.
+    """
+
+    current = r"(?:actual|local|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
+    nominal = (
+        r"(?:(?:la|el|the)\s+)?"
+        r"(?:(?:current|local)\s+){0,2}(?:hora|fecha|time|date)"
+        rf"(?:\s+{current}){{0,2}}|today(?:['’]s)?\s+date"
     )
+    observation = (
+        rf"(?:{_CLOCK_READ_HEAD}|"
+        r"(?:necesito|quiero|quisiera)\s+saber|"
+        r"(?:i\s+)?(?:need|want)\s+to\s+know)"
+    )
+    return re.fullmatch(
+        rf"(?:{observation}\s+(?:{nominal})|"
+        rf"(?:what\s+is\s+(?=(?:the|current|local|today)\b)|"
+        rf"(?:que|cual)\s+es\s+)(?:{nominal})|"
+        rf"(?:{observation}\s+)?(?:"
+        r"que\s+(?:hora|fecha)\s+es(?:\s+(?:ahora|hoy))?|"
+        r"what\s+(?:time|date)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
+        rf"(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
+        rf"today(?:['’]s)?\s+date|(?:{observation}\s+)?"
+        r"(?:the\s+)?time\s+(?:right\s+now|now)"
+        r"(?:\s*[,;:]?\s*what\s+is\s+it)?|"
+        r"que\s+hora\s+(?:marca|muestra|tiene)\s+(?:este|el|mi)\s+"
+        r"(?:computador|equipo|pc)|"
+        r"what\s+time\s+does\s+(?:this|the|my)\s+(?:computer|pc)\s+(?:show|display)|"
+        r"(?:search|look|busca)\s+(?:to\s+)?(?:find|encontrar)\s+"
+        r"(?:(?:the|la)\s+)?(?:current|actual)\s+(?:local\s+)?"
+        r"(?:time|hora)(?:\s+(?:and|y)\s+(?:time\s+zone|zona\s+horaria))?)",
+        _strip_request_envelope(folded).strip(" ¿?¡!."),
+        re.IGNORECASE,
+    ) is not None
 
 
 def _direct_media_discovery_or_play_request(folded: str) -> bool:
@@ -1556,26 +1572,9 @@ def _curated_domain_is_grounded(
         # The contextual policy selects the operation; this one-sided veto must
         # not require the person to repeat a verb in an elliptical follow-up.
         # A qualified date (an event, person or historical date) is not covered.
-        if _nominal_datetime_query(folded):
-            return True
-        return _has(
-            folded,
-            (
-                r"\b(?:time now|hora (?:actual|local)|(?:current|local) time|fecha de hoy|today(?:'s)? date|"
-                r"que hora es(?: ahora)?|what time is it(?: now)?|"
-                r"que fecha es(?: hoy)?|what date is it|dime la hora(?: local)?|"
-                r"tell me the (?:local )?time|"
-                r"que hora (?:marca|muestra|tiene) (?:este|el|mi) (?:computador|equipo|pc)|"
-                r"what time does (?:this|the|my) (?:computer|pc) (?:show|display))\b"
-                r"[\s?!.]*$"
-                r"|\b(?:time now|hora (?:actual|local)|(?:current|local) time|fecha de hoy|today(?:'s)? date|"
-                r"que hora es(?: ahora)?|what time is it(?: now)?|"
-                r"que fecha es(?: hoy)?|what date is it|dime la hora(?: local)?|"
-                r"tell me the (?:local )?time|"
-                r"que hora (?:marca|muestra|tiene) (?:este|el|mi) (?:computador|equipo|pc)|"
-                r"what time does (?:this|the|my) (?:computer|pc) (?:show|display))\b"
-                r"(?=\s*(?:[,;]?\s+)?(?:y|and|luego|despues|then)\b)"
-            ),
+        return _nominal_datetime_query(folded) or any(
+            _direct_current_time_request(clause)
+            for clause in _request_clauses(folded)
         )
     if operation == "system.status":
         request = _strip_request_envelope(folded)
@@ -6640,7 +6639,7 @@ _SEARCH = r"(?:busca|buscar|encuentra|search|find|look\s+up)"
 # resolved, the whole deterministic path abstains instead of executing a
 # recognized prefix and silently dropping the rest of the request.
 _COVERAGE_ACTION_HEAD = (
-    rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
+    rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CLOCK_READ_HEAD}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
     r"haz|toma|captura|take|capture|dejar|put|"
     r"sube|baja|bajalo|subelo|aumenta|"
     r"pone|arranca|cambiar|get rid|"
@@ -9598,26 +9597,7 @@ def _review_system_and_network_effects(
 ) -> None:
     """Append read-only system, network, and nearby-device effects."""
 
-    if _head_is(
-        head,
-        r"(?:que|what|dime|decime|show|muestra|tell|time|current|local|hora|fecha)",
-    ) and _has(
-        folded,
-        (
-            r"\b(?:time\s+now|que\s+hora\s+es(?:\s+ahora)?|what\s+time\s+is\s+it"
-            r"(?:\s+now)?|(?:dime|decime|muestra|show(?:\s+me)?|tell\s+me)\s+"
-            r"(?:(?:la|the)\s+)?(?:local\s+)?(?:hora|fecha|time|date)"
-            r"(?:\s+local)?|"
-            r"hora\s+(?:actual|local)|(?:current|local)\s+time|"
-            r"que\s+fecha\s+es(?:\s+hoy)?|"
-            r"fecha\s+(?:de\s+)?hoy|today(?:'s)?\s+date|"
-            r"what\s+date\s+is\s+it|tell\s+me\s+the\s+(?:local\s+)?time|"
-            r"que\s+hora\s+(?:marca|muestra|tiene)\s+(?:este|el|mi)\s+"
-            r"(?:computador|equipo|pc)|"
-            r"what\s+time\s+does\s+(?:this|the|my)\s+(?:computer|pc)\s+"
-            r"(?:show|display))\b[\s?!.]*$"
-        ),
-    ):
+    if _direct_current_time_request(folded):
         _append(matches, folded, "system.time", r"\b(?:hora|time|fecha|date)\b")
     process_domain = _process_list_domain(folded)
     direct_process_inventory = (

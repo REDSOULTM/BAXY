@@ -1,0 +1,299 @@
+{
+  "utc": "2026-09-10T19:20:17.702369+00:00",
+  "correct": 50,
+  "failed": 0,
+  "posts": 51,
+  "raw_equals_final": 49,
+  "repairs": 1,
+  "finish_stop": 51,
+  "temperature": 0,
+  "max_tokens": 256,
+  "source_pins_unchanged": true,
+  "method": "Root semantic review of every final and expected local value, plus independent RO review recalculating all50 UTC+offset values. One pass; all attempts retained.",
+  "false_veto": {
+    "case_id": "clock780-35",
+    "draft": "Son las 12 del mediodía.",
+    "reason": "missing_name",
+    "expected": "12:00",
+    "final": "Son las 12:00.",
+    "assessment": "Valid first draft falsely rejected; both drafts correct, integration defect remains open."
+  },
+  "scope": "BAXY composer with25 UTC/offset fixtures,25time+25date, ES/EN/mixed; no selector/provider/UI/voice/reserve credit.",
+  "preflight": "First pre-server attempt stopped before directories or inference: observed has version in addition to UTC/offset. Retained version1 and changed only UTC/offset before the single executed pass.",
+  "max_call_seconds": 0.5460000000020955,
+  "resources": {
+    "utc": "2026-09-10T19:14:59.427643+00:00",
+    "cases_completed": 50,
+    "cases_registered": 50,
+    "fatal": null,
+    "violations": [],
+    "seconds": 16.281000000002678,
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 757.51953125,
+    "source_pins_unchanged": true,
+    "sources_unchanged": true,
+    "manifest_unchanged": true,
+    "driver_unchanged": true,
+    "quality_adjudicated": false
+  },
+  "private_pins": {
+    "cases.json": "268ff30bfc159d6d2c41a0b08eb475693b95212bc5cf4e45278ec51de9a148dd",
+    "replies.jsonl": "00a5470e44ab45ec9babfb5975692f0d9f619577d0f4f51dbe8163c44a03bdc8",
+    "posts.jsonl": "0e9c6c2ea8351f3e4c03186809c16ce64d5278098ea59f23884762d9275124ec",
+    "compose-audit.jsonl": "b313e7ab9d202188dbaeeafcd50fa81f2799cad72ba6372a1d55037246d8713e"
+  },
+  "verdicts": [
+    {
+      "case_id": "clock780-01",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-02",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-03",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-04",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-05",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-06",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-07",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-08",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-09",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-10",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-11",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-12",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-13",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-14",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-15",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-16",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-17",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-18",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-19",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-20",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-21",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-22",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-23",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-24",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-25",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-26",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-27",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-28",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-29",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-30",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-31",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-32",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-33",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-34",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-35",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-36",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-37",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-38",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-39",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-40",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-41",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-42",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-43",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-44",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-45",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-46",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-47",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-48",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-49",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    },
+    {
+      "case_id": "clock780-50",
+      "correct": true,
+      "reason": "Requested local date/time faithful to supplied UTC plus offset."
+    }
+  ],
+  "coverage_added": 0
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-10T19:05:50.328446+00:00",
+  "parent": "6a17d1c7e801375f6bd3744d2c417cdbc11d84b4",
+  "evidence": [
+    "STATUS_BATCH772/RESULT.json",
+    "tests/test_effect_intent.py:3210-3222,4322-4398",
+    "tests/test_c03_calendar_date.py"
+  ],
+  "diagnosis": "Three overlapping but inconsistent closed clock readers veto or omit actual local reads before inference.",
+  "change": "One whole-request clock grammar shared by direct selection, clause read selection and domain gate. Reuse request envelope; share its action heads with clause boundaries. Retain contextual nominal clock gate.",
+  "baseline": "50 failures/30 passes in80 new controls; earlier collection failed because pytest reserves request as a parameter name, renamed utterance.",
+  "initial_owners": "2051pass/6fail. Repaired definition/embedded question/legacy need-to-know/splitter regressions. Two prohibition fixtures lacked the prohibited operations needed by the existing disjoint-operation proof; supplied those catalog operations, no source negation change.",
+  "boundary": "6pass/2036deselected,1.12s; full owners still required.",
+  "pending": "Owners/current integrity/Fast then50 product turns. No native model comparison, UI, voice or reserve credit.",
+  "model_prompt_sampler_budget_changes": false,
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

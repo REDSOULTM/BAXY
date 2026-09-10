@@ -1,0 +1,63 @@
+........................................................................ [  3%]
+...F..FF................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+.........................F.F............................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+............................F........................................... [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.........................................                                [100%]
+================================== FAILURES ===================================
+_ test_clock_clauses_preserve_other_requests_and_prohibitions[Revisa la bater\xeda y pasame la fecha-expected1] _
+tests\test_c03_local_clock_scope.py:63: in test_clock_clauses_preserve_other_requests_and_prohibitions
+    assert result is not None
+E   assert None is not None
+_ test_clock_clauses_preserve_other_requests_and_prohibitions[Mostrame la fecha y no abras Steam-expected4] _
+tests\test_c03_local_clock_scope.py:63: in test_clock_clauses_preserve_other_requests_and_prohibitions
+    assert result is not None
+E   assert None is not None
+_ test_clock_clauses_preserve_other_requests_and_prohibitions[Give me the local time and do not mute the audio-expected5] _
+tests\test_c03_local_clock_scope.py:63: in test_clock_clauses_preserve_other_requests_and_prohibitions
+    assert result is not None
+E   assert None is not None
+_ test_qualified_or_nonrequested_datetime_is_not_the_local_clock[what is time?] _
+tests\test_effect_intent.py:4382: in test_qualified_or_nonrequested_datetime_is_not_the_local_clock
+    assert operation_domain_is_grounded(text, "system.time") is False
+E   AssertionError: assert True is False
+E    +  where True = operation_domain_is_grounded('what is time?', 'system.time')
+_ test_datetime_followup_inherits_only_a_resolved_user_clock_request[y la fecha?-Dime que hora es-True] _
+tests\test_effect_intent.py:4398: in test_datetime_followup_inherits_only_a_resolved_user_clock_request
+    assert (result is not None) is expected
+E   assert (None is not None) is True
+_ test_relative_public_reads_and_audio_requests_have_stable_authority[I need to know the time right now, what is it?-system.time] _
+tests\test_effect_intent.py:5910: in test_relative_public_reads_and_audio_requests_have_stable_authority
+    assert result is not None
+E   assert None is not None
+=========================== short test summary info ===========================
+FAILED tests/test_c03_local_clock_scope.py::test_clock_clauses_preserve_other_requests_and_prohibitions[Revisa la bater\xeda y pasame la fecha-expected1]
+FAILED tests/test_c03_local_clock_scope.py::test_clock_clauses_preserve_other_requests_and_prohibitions[Mostrame la fecha y no abras Steam-expected4]
+FAILED tests/test_c03_local_clock_scope.py::test_clock_clauses_preserve_other_requests_and_prohibitions[Give me the local time and do not mute the audio-expected5]
+FAILED tests/test_effect_intent.py::test_qualified_or_nonrequested_datetime_is_not_the_local_clock[what is time?]
+FAILED tests/test_effect_intent.py::test_datetime_followup_inherits_only_a_resolved_user_clock_request[y la fecha?-Dime que hora es-True]
+FAILED tests/test_effect_intent.py::test_relative_public_reads_and_audio_requests_have_stable_authority[I need to know the time right now, what is it?-system.time]
+6 failed, 2051 passed in 58.69s
