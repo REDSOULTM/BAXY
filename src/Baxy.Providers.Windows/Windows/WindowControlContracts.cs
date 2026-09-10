@@ -35,7 +35,16 @@ public sealed record WindowResolveResult(
     bool Succeeded,
     bool Verified,
     IReadOnlyList<WindowCandidate> Windows,
-    string? ErrorCode);
+    string? ErrorCode,
+    WindowInventoryPage? Page = null);
+
+// Each request enumerates again. Offset does not bind later pages to a snapshot.
+public sealed record WindowInventoryPage(
+    int Limit,
+    int Offset,
+    int ObservedCount,
+    bool Complete,
+    int? NextOffset);
 
 public sealed record WindowActionResult(
     bool Succeeded,
@@ -58,7 +67,8 @@ public interface IWindowControlProvider
         string processName,
         int limit,
         CancellationToken cancellationToken,
-        bool byTitle = false);
+        bool byTitle = false,
+        int offset = 0);
 
     ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,

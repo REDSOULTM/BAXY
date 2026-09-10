@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-10T13:48:28.924172+00:00",
+  "parent_commit": "1492ce42d6673dae967206d2a044470cb4c4e473",
+  "source_files": 25,
+  "candidate_components": [
+    705,
+    712,
+    730,
+    738,
+    740,
+    744
+  ],
+  "validated_by": "../FULL7_745/ADJUDICATION.json",
+  "source_manifest_sha256": "d900f7719b35f187f37ad37416aa45f7ccffd6f4ecbdca63163cde09b27cf2ce",
+  "full_adjudication_sha256": "b6512c386dd13dd4cc745129b034443f64d2caca81b075ce0d6f5bf3d9b8c3d0",
+  "adoption": "Validated source is adopted in the commit containing this receipt. Git history identifies that commit; no self-referential commit hash is embedded.",
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "model_promoted": false,
+  "goal_complete": false
+}

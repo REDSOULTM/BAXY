@@ -11,6 +11,65 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class WindowTitleResolutionTests
 {
     [Test]
+    public void GlobalAndPagedNativeReadsPreserveLiteralTitleAndProcessSelectors()
+    {
+        string prefix = "BaxyInventory-" + Guid.NewGuid().ToString("N");
+        string[] titles = [prefix + " Uno", prefix + " Dos", prefix + " Tres", "*"];
+        var handles = new List<nint>();
+        try
+        {
+            foreach (string title in titles)
+            {
+                nint handle = CreateWindowEx(0, "STATIC", title, 0x10CF0000,
+                    60 + handles.Count * 20, 60, 240, 120, 0, 0, 0, 0);
+                Assert.That(handle, Is.Not.EqualTo(nint.Zero));
+                handles.Add(handle);
+            }
+
+            var provider = new WindowsWindowControlProvider();
+            WindowResolveResult first = provider.ResolveAsync(prefix, 2, CancellationToken.None, byTitle: true)
+                .AsTask().GetAwaiter().GetResult();
+            WindowResolveResult last = provider.ResolveAsync(prefix, 2, CancellationToken.None, byTitle: true, offset: 2)
+                .AsTask().GetAwaiter().GetResult();
+            WindowResolveResult literal = provider.ResolveAsync("*", 50, CancellationToken.None, byTitle: true)
+                .AsTask().GetAwaiter().GetResult();
+            WindowResolveResult extension = provider.ResolveAsync("*.exe", 50, CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+            var globalTitles = new HashSet<string?>();
+            int? offset = 0;
+            do
+            {
+                WindowResolveResult page = provider.ResolveAsync("*", 50, CancellationToken.None, offset: offset.Value)
+                    .AsTask().GetAwaiter().GetResult();
+                Assert.That(page.Succeeded && page.Verified, Is.True, page.ErrorCode);
+                Assert.That(page.Windows.Count, Is.LessThanOrEqualTo(50));
+                Assert.That(page.Page!.ObservedCount, Is.GreaterThanOrEqualTo(page.Windows.Count));
+                globalTitles.UnionWith(page.Windows.Select(window => window.Title));
+                offset = page.Page.NextOffset;
+            } while (offset.HasValue && !titles.All(globalTitles.Contains));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(first.Succeeded && last.Succeeded, Is.True);
+                Assert.That(first.Page!.ObservedCount, Is.EqualTo(3));
+                Assert.That(first.Page.NextOffset, Is.EqualTo(2));
+                Assert.That(last.Page!.NextOffset, Is.Null);
+                Assert.That(first.Windows.Concat(last.Windows).Select(window => window.Title),
+                    Is.EquivalentTo(titles.Take(3)));
+                Assert.That(literal.Windows.Select(window => window.Title), Has.All.EqualTo("*"));
+                Assert.That(literal.Windows.Any(window => window.ProcessId == Environment.ProcessId), Is.True);
+                Assert.That(extension.Windows, Is.Empty);
+                Assert.That(extension.Succeeded, Is.False, "*.exe must not acquire global scope after normalization.");
+                Assert.That(globalTitles, Is.SupersetOf(titles));
+            });
+        }
+        finally
+        {
+            foreach (nint handle in handles) _ = DestroyWindow(handle);
+        }
+    }
+
+    [Test]
     public void VisibleTitlesDistinguishWindowsSharingAnOwnerWithoutLosingProcessLookup()
     {
         string prefix = "BaxyC03-" + Guid.NewGuid().ToString("N");

@@ -78,6 +78,7 @@ from .request_reading import (
 )
 from .time_budget import remaining_seconds
 from .window_prose_facts import window_fact_defect, window_focus_feedback, window_status_assertions
+from .observed_response_literals import without_observed_window_names
 
 
 MAX_CONTEXT_TOKENS = 4096
@@ -4058,9 +4059,10 @@ def compose_visible_defect(
         for source in identifier_sources
         for match in _IDENTIFIER_TOKEN.findall(source)
     }
+    vocabulary_text = without_observed_window_names(stripped, _situation_from_facts(facts))
     without_user_identifiers = _IDENTIFIER_TOKEN.sub(
         lambda match: "" if match[0].casefold() in user_identifiers else match[0],
-        stripped,
+        vocabulary_text,
     )
     if (
         _SNAKE_CODE.search(without_user_identifiers) is not None
@@ -4141,7 +4143,7 @@ def compose_visible_defect(
         return "internal_code"
     if re.search(r"\bsoy by\b", stripped.casefold()) is not None:
         return "invented"
-    if re.search(r"\bqwen\b", stripped.casefold()) is not None:
+    if re.search(r"\bqwen\b", vocabulary_text.casefold()) is not None:
         return "internal_code"
     if "baxy is at" in stripped.casefold():
         return "extra_claim"
@@ -4677,7 +4679,7 @@ def compose_visible_defect(
         r"\bhola\b.*\bhola\b", folded
     ):
         return "welcome_repeat"
-    lead = stripped.lstrip("¿¡\"'")
+    lead = vocabulary_text.lstrip("¿¡\"'")
     if lead and lead[0].isalpha() and lead[0].islower():
         return "lowercase"
     if re.search(r"\bla volumen\b", folded):
@@ -9634,7 +9636,8 @@ class LlmRuntime:
             if intent == "status" and _starts_with_request_imperative(text):
                 return False
             folded = text.casefold()
-            if any(term.casefold() in folded for term in forbidden_terms):
+            vocabulary = without_observed_window_names(text, situation).casefold()
+            if any(term.casefold() in vocabulary for term in forbidden_terms):
                 return False
             if any(
                 not re.search(
@@ -9725,7 +9728,7 @@ class LlmRuntime:
                         "los marcadores verbales deben ser exactamente "
                         f"{action_marker_contract}"
                     )
-                folded_scaffold = scaffold.casefold()
+                folded_scaffold = without_observed_window_names(scaffold, situation).casefold()
                 folded_intro = intro.casefold()
                 observed_forbidden = next(
                     (
@@ -9917,7 +9920,8 @@ class LlmRuntime:
             if intent == "status" and _starts_with_request_imperative(candidate):
                 return "imperative_echo"
             folded_candidate = candidate.casefold()
-            if any(term.casefold() in folded_candidate for term in forbidden_terms):
+            vocabulary = without_observed_window_names(candidate, situation).casefold()
+            if any(term.casefold() in vocabulary for term in forbidden_terms):
                 return "forbidden_term"
             if any(
                 not re.search(
@@ -10011,7 +10015,8 @@ class LlmRuntime:
             """Nombrar lo que falta: un reintento a ciegas repite el fallo."""
 
             folded = (candidate or "").casefold()
-            present = [term for term in forbidden_terms if term.casefold() in folded]
+            vocabulary = without_observed_window_names(candidate, situation).casefold()
+            present = [term for term in forbidden_terms if term.casefold() in vocabulary]
             if present:
                 return "No incluyas ninguno de estos terminos: " + ", ".join(present)
             missing_actions = [

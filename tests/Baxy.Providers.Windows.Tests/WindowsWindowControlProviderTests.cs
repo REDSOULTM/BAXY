@@ -230,11 +230,16 @@ public sealed class WindowsWindowControlProviderTests
             ? new WindowSnapshot(_identity, _state, true, _bounds)
             : null;
 
-        public IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit, bool byTitle = false)
+        public WindowEnumeration FindVisibleWindows(string processName, int limit,
+            bool byTitle = false, int offset = 0, bool allWindows = false,
+            CancellationToken cancellationToken = default)
         {
             Assert.That(processName, Is.EqualTo("notepad").IgnoreCase);
             Assert.That(limit, Is.EqualTo(10));
-            return [new WindowSnapshot(_identity, _state, _foreground, _bounds)];
+            Assert.That(offset, Is.Zero);
+            Assert.That(allWindows, Is.False);
+            cancellationToken.ThrowIfCancellationRequested();
+            return new WindowEnumeration([new WindowSnapshot(_identity, _state, _foreground, _bounds)], 1, true);
         }
 
         public WindowSnapshot Observe(WindowIdentity identity)

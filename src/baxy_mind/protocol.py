@@ -11,11 +11,13 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from dataclasses import dataclass
 from typing import Any, Callable
 
 MAX_LINE_BYTES = 1024 * 1024
 _READ_CHUNK_BYTES = 64 * 1024
+_PIPE_RETRY_SECONDS = 0.01
 PROTOCOL = "baxy.mind.v1"
 
 
@@ -92,6 +94,11 @@ class _BoundedFileDescriptorLineReader:
             try:
                 chunk = self._read(self._descriptor, maximum_read)
             except InterruptedError:
+                continue
+            except BlockingIOError:
+                # An empty nonblocking pipe is not EOF. Yield between reads
+                # so idle input consumes no busy loop or native blocking read.
+                time.sleep(_PIPE_RETRY_SECONDS)
                 continue
             if chunk:
                 if len(chunk) > maximum_read:

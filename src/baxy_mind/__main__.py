@@ -12,6 +12,7 @@ import json
 import os
 import queue
 import re
+import stat
 import sys
 import threading
 import time
@@ -112,7 +113,6 @@ from .router import (
 )
 from .turn_evidence import TurnEvidenceService
 from .voice import VoiceEngine
-from .voice_aec import prepare_resampler
 
 _write_lock = threading.Lock()
 _turn_audit_lock = threading.Lock()
@@ -8180,7 +8180,13 @@ def _receive_protocol_messages(
 def _open_protocol_reader() -> Callable[[], dict[str, Any] | None]:
     """Own one incremental raw-stdin reader for the receiver lifetime."""
 
-    stream = protocol._BoundedFileDescriptorLineReader(sys.stdin.fileno())
+    descriptor = sys.stdin.fileno()
+    if os.name == "nt" and stat.S_ISFIFO(os.fstat(descriptor).st_mode):
+        # A synchronous pipe read can stall cold native DSP loading on Windows.
+        # Python 3.12 supports nonblocking pipes; the bounded reader waits only
+        # when no bytes are available, leaving EOF and real errors distinct.
+        os.set_blocking(descriptor, False)
+    stream = protocol._BoundedFileDescriptorLineReader(descriptor)
     return partial(protocol.read_message, stream)
 
 
@@ -8230,10 +8236,10 @@ def _run_control_plane(lifecycle: _SidecarLifecycle) -> int:
         name="baxy-mind-protocol-receiver",
         daemon=True,
     )
-    # The receiver intentionally has process lifetime. Python cannot portably
-    # cancel a blocking redirected-stdin read, and BufferedReader's lock can
-    # block interpreter shutdown. Normal EOF/shutdown returns; after a dispatch
-    # failure, process teardown is the cancellation boundary.
+    # The receiver intentionally has process lifetime. Windows pipe reads are
+    # nonblocking and never hold BufferedReader's shutdown lock. Normal
+    # EOF/shutdown returns; after a dispatch failure, process teardown is the
+    # cancellation boundary, including for other stdin descriptor types.
     receiver_thread.start()
 
     while True:
@@ -8337,7 +8343,6 @@ def main() -> int:
     result: int | None = None
     completed = False
     try:
-        prepare_resampler()
         result = _run_control_plane(lifecycle)
         completed = True
         return result

@@ -1603,13 +1603,14 @@ public static class ProductCatalog
                 [
                     Boolean("byTitle"),
                     Integer("limit", 1, 50),
+                    Integer("offset", 0, int.MaxValue),
                     String("process", maximumLength: 260, nonWhitespace: true),
                 ],
                 ["process"]),
             OperationRisks.ReadOnly,
-            "window.resolve.identity.snapshot.v1",
+            "window.resolve.identity.inventory.v2",
             ToolExposure.Public,
-            "Resuelve ventanas visibles: process contiene el nombre del proceso; con byTitle=true contiene el título visible de la ventana o aplicación. Devuelve títulos e identificadores efimeros; varias coincidencias requieren elegir la ventana."),
+            "Lee ventanas de nivel superior con estilo visible: process='*' y byTitle=false enumeran todas; otro process busca ese proceso, y byTitle=true busca un título o aplicación. limit limita la página (1–50, defecto20), offset empieza en0. count cuenta la página; observedCount cuenta las observadas; complete=false implica lectura parcial y totalCount desconocido. nextOffset continúa sólo las observadas. Cada página vuelve a enumerar y puede cambiar: no es una foto estable ni prueba de que las ventanas estén descubiertas en pantalla. Devuelve títulos e identificadores efímeros; para modificar una ventana hay que elegir su identificador."),
         Descriptor(
             "window.restore",
             WindowIdSchema(),

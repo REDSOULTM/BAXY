@@ -1,0 +1,10 @@
+{
+  "current_sources": {
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "faae9e5f356284e4de92d5a0ff4579ab71653ac7785d23de0419bd9972b6d3c4",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "837ac551fac21f3da5b98cf9c2254008a342cf87d2a22422e1c1814c91f324cd",
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "e5cbfd254108b80bc3fb18147fd132bc4db7c2cadd2016a6fe6559a705b3a827",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "ba7456425f07d8fc9e39e84c275810510d8ee96e497fc2e28d3ee9162d71c95f"
+  },
+  "owner_evidence_sha256": "78b4b1bb7197754ddbbd9a182691aa64e6bc056c3bdb1b4b1bd8cd22eefc3260",
+  "report_sha256": "503eae974c278b760f530689c4f00549dfcbbd743142216f9b3625793c774415"
+}

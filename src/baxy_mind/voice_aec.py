@@ -43,15 +43,6 @@ def _resample(audio: np.ndarray, source_rate: int) -> np.ndarray:
         return np.interp(positions, np.arange(mono.size), mono).astype(np.int16)
 
 
-def prepare_resampler() -> None:
-    """Initialize native DSP before the sidecar starts reading redirected stdin.
-
-    On Windows, cold SciPy/BLAS loading can stall while another thread blocks
-    on that pipe. Warm the existing resampling path without opening audio.
-    """
-    _resample(np.zeros(48, dtype=np.int16), 48_000)
-
-
 class LoopbackReference:
     """WASAPI reference ring indexed by samples from its first native ADC timestamp."""
 

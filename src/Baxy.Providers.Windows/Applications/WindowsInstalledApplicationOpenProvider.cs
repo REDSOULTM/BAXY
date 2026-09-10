@@ -817,33 +817,36 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         $ErrorActionPreference='Stop'
         $utf8=[System.Text.UTF8Encoding]::new($false)
         [Console]::OutputEncoding=$utf8; $OutputEncoding=$utf8
-        $apps=@(Get-StartApps)
-        $duplicateIds=@{}
-        $apps | Group-Object Name | Where-Object Count -GT 1 | ForEach-Object {
-            $_.Group | ForEach-Object { $duplicateIds[$_.AppID]=$true }
-        }
-        $targets=@{}
-        if ($duplicateIds.Count -gt 0) {
-            $shell=$null; $folder=$null
+        $shell=$null; $folder=$null
+        try {
+            $shell=New-Object -ComObject Shell.Application
+            $folder=$shell.NameSpace('shell:AppsFolder')
+            if ($null -eq $folder) { throw 'The application namespace is unavailable.' }
+            $apps=@(foreach ($item in $folder.Items()) {
+                [pscustomobject]@{ Name=$item.Name; AppID=$item.Path; ShellItem=$item }
+            })
+            $duplicateIds=@{}
+            $apps | Group-Object Name | Where-Object Count -GT 1 | ForEach-Object {
+                $_.Group | ForEach-Object { $duplicateIds[$_.AppID]=$true }
+            }
+            $targets=@{}
             try {
-                $shell=New-Object -ComObject Shell.Application
-                $folder=$shell.NameSpace('shell:AppsFolder')
-                foreach ($item in $folder.Items()) {
-                    if ($duplicateIds.ContainsKey($item.Path)) {
-                        $targets[$item.Path]=$item.ExtendedProperty('System.Link.TargetParsingPath')
+                foreach ($app in $apps) {
+                    if ($duplicateIds.ContainsKey($app.AppID)) {
+                        $targets[$app.AppID]=$app.ShellItem.ExtendedProperty('System.Link.TargetParsingPath')
                     }
                 }
             } catch {
                 # Missing Shell metadata preserves the original ambiguity.
                 $targets=@{}
-            } finally {
-                if ($null -ne $folder) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($folder) }
-                if ($null -ne $shell) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($shell) }
             }
+            @($apps | ForEach-Object {
+                [pscustomobject]@{ Name=$_.Name; AppID=$_.AppID; TargetPath=$targets[$_.AppID] }
+            }) | ConvertTo-Json -Compress
+        } finally {
+            if ($null -ne $folder) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($folder) }
+            if ($null -ne $shell) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($shell) }
         }
-        @($apps | ForEach-Object {
-            [pscustomobject]@{ Name=$_.Name; AppID=$_.AppID; TargetPath=$targets[$_.AppID] }
-        }) | ConvertTo-Json -Compress
         """;
 
     public async ValueTask<IReadOnlyList<InstalledApplicationEntry>> ReadCatalogAsync(
@@ -894,7 +897,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         catch (DecoderFallbackException exception)
         {
             throw new InvalidDataException(
-                "Get-StartApps did not emit valid UTF-8.",
+                "The application catalog did not emit valid UTF-8.",
                 exception);
         }
 
@@ -903,7 +906,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         if (process.ExitCode != 0)
         {
             throw new InvalidOperationException(
-                string.IsNullOrWhiteSpace(error) ? "Get-StartApps failed." : error.Trim());
+                string.IsNullOrWhiteSpace(error) ? "The application catalog failed." : error.Trim());
         }
 
         if (string.IsNullOrWhiteSpace(output))
@@ -914,7 +917,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         if (output.Contains('\uFFFD', StringComparison.Ordinal))
         {
             throw new InvalidDataException(
-                "Get-StartApps emitted a Unicode replacement character.");
+                "The application catalog emitted a Unicode replacement character.");
         }
 
         using JsonDocument document = JsonDocument.Parse(output);

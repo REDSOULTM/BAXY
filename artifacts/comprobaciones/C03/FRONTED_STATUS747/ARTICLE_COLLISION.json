@@ -1,0 +1,14 @@
+[
+  {
+    "text": "respecto a cpu, comprueba que modelo tengo.",
+    "match": "a cpu",
+    "start": 9,
+    "end": 14
+  },
+  {
+    "text": "en cuanto a gpu, muestrame que modelo esta instalado.",
+    "match": "a gpu",
+    "start": 10,
+    "end": 15
+  }
+]

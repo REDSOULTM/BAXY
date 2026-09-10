@@ -1,0 +1,850 @@
+{
+  "counts": {
+    "cases": 70,
+    "before_correct": 23,
+    "after_correct": 57,
+    "gains": 34,
+    "losses": 0,
+    "false_vetoes": 13,
+    "false_domains": 0
+  },
+  "rows": [
+    {
+      "id": "P1-1",
+      "text": "Del disco C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "del disco c",
+        "dime cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "P1-2",
+      "text": "Sobre mi disco C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi disco c",
+        "dime cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "P1-3",
+      "text": "Respecto a disco C, comprueba cuánto espacio está ocupado.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "respecto a disco c",
+        "comprueba cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "P1-4",
+      "text": "En cuanto a disco C, muéstrame cuánto espacio está ocupado.",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "en cuanto a disco c",
+        "muestrame cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "P1-5",
+      "text": "Baxy, por favor: sobre disco C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "baxy, por favor: sobre disco c",
+        "dime cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "P1-6",
+      "text": "About my disk C, tell me how much space is occupied.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my disk c",
+        "tell me how much space is occupied."
+      ]
+    },
+    {
+      "id": "P1-7",
+      "text": "Regarding the disk C, show me how much space is occupied.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "regarding the disk c",
+        "show me how much space is occupied."
+      ]
+    },
+    {
+      "id": "P1-8",
+      "text": "As for this disk C, check how much space is occupied.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "as for this disk c",
+        "check how much space is occupied."
+      ]
+    },
+    {
+      "id": "P1-9",
+      "text": "Sobre mi disco C, tell me how much space is occupied.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre mi disco c",
+        "tell me how much space is occupied."
+      ]
+    },
+    {
+      "id": "P1-10",
+      "text": "About the disk C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about the disk c",
+        "dime cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "P2-1",
+      "text": "Del RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "del ram",
+        "dime cuanta memoria queda libre."
+      ]
+    },
+    {
+      "id": "P2-2",
+      "text": "Sobre mi RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi ram",
+        "dime cuanta memoria queda libre."
+      ]
+    },
+    {
+      "id": "P2-3",
+      "text": "Respecto a RAM, comprueba cuánta memoria queda libre.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "respecto a ram",
+        "comprueba cuanta memoria queda libre."
+      ]
+    },
+    {
+      "id": "P2-4",
+      "text": "En cuanto a RAM, muéstrame cuánta memoria queda libre.",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "en cuanto a ram",
+        "muestrame cuanta memoria queda libre."
+      ]
+    },
+    {
+      "id": "P2-5",
+      "text": "Baxy, por favor: sobre RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "baxy, por favor: sobre ram",
+        "dime cuanta memoria queda libre."
+      ]
+    },
+    {
+      "id": "P2-6",
+      "text": "About my RAM, tell me how much memory is free.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my ram",
+        "tell me how much memory is free."
+      ]
+    },
+    {
+      "id": "P2-7",
+      "text": "Regarding the RAM, show me how much memory is free.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "regarding the ram",
+        "show me how much memory is free."
+      ]
+    },
+    {
+      "id": "P2-8",
+      "text": "As for this RAM, check how much memory is free.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "as for this ram",
+        "check how much memory is free."
+      ]
+    },
+    {
+      "id": "P2-9",
+      "text": "Sobre mi RAM, tell me how much memory is free.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre mi ram",
+        "tell me how much memory is free."
+      ]
+    },
+    {
+      "id": "P2-10",
+      "text": "About the RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about the ram",
+        "dime cuanta memoria queda libre."
+      ]
+    },
+    {
+      "id": "P3-1",
+      "text": "Del CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "del cpu",
+        "dime que modelo tengo."
+      ]
+    },
+    {
+      "id": "P3-2",
+      "text": "Sobre mi CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi cpu",
+        "dime que modelo tengo."
+      ]
+    },
+    {
+      "id": "P3-3",
+      "text": "Respecto a CPU, comprueba qué modelo tengo.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "respecto a cpu",
+        "comprueba que modelo tengo."
+      ]
+    },
+    {
+      "id": "P3-4",
+      "text": "En cuanto a CPU, muéstrame qué modelo tengo.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "en cuanto a cpu",
+        "muestrame que modelo tengo."
+      ]
+    },
+    {
+      "id": "P3-5",
+      "text": "Baxy, por favor: sobre CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "baxy, por favor: sobre cpu",
+        "dime que modelo tengo."
+      ]
+    },
+    {
+      "id": "P3-6",
+      "text": "About my CPU, tell me which model I have.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about my cpu",
+        "tell me which model i have."
+      ]
+    },
+    {
+      "id": "P3-7",
+      "text": "Regarding the CPU, show me which model I have.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "regarding the cpu",
+        "show me which model i have."
+      ]
+    },
+    {
+      "id": "P3-8",
+      "text": "As for this CPU, check which model I have.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "as for this cpu",
+        "check which model i have."
+      ]
+    },
+    {
+      "id": "P3-9",
+      "text": "Sobre mi CPU, tell me which model I have.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi cpu",
+        "tell me which model i have."
+      ]
+    },
+    {
+      "id": "P3-10",
+      "text": "About the CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about the cpu",
+        "dime que modelo tengo."
+      ]
+    },
+    {
+      "id": "P4-1",
+      "text": "Del GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "del gpu",
+        "dime que modelo esta instalado."
+      ]
+    },
+    {
+      "id": "P4-2",
+      "text": "Sobre mi GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi gpu",
+        "dime que modelo esta instalado."
+      ]
+    },
+    {
+      "id": "P4-3",
+      "text": "Respecto a GPU, comprueba qué modelo está instalado.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "respecto a gpu",
+        "comprueba que modelo esta instalado."
+      ]
+    },
+    {
+      "id": "P4-4",
+      "text": "En cuanto a GPU, muéstrame qué modelo está instalado.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "en cuanto a gpu",
+        "muestrame que modelo esta instalado."
+      ]
+    },
+    {
+      "id": "P4-5",
+      "text": "Baxy, por favor: sobre GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "baxy, por favor: sobre gpu",
+        "dime que modelo esta instalado."
+      ]
+    },
+    {
+      "id": "P4-6",
+      "text": "About my GPU, tell me which model is installed.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about my gpu",
+        "tell me which model is installed."
+      ]
+    },
+    {
+      "id": "P4-7",
+      "text": "Regarding the GPU, show me which model is installed.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "regarding the gpu",
+        "show me which model is installed."
+      ]
+    },
+    {
+      "id": "P4-8",
+      "text": "As for this GPU, check which model is installed.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "as for this gpu",
+        "check which model is installed."
+      ]
+    },
+    {
+      "id": "P4-9",
+      "text": "Sobre mi GPU, tell me which model is installed.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi gpu",
+        "tell me which model is installed."
+      ]
+    },
+    {
+      "id": "P4-10",
+      "text": "About the GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about the gpu",
+        "dime que modelo esta instalado."
+      ]
+    },
+    {
+      "id": "P5-1",
+      "text": "Del batería, dime cuánta carga queda.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "del bateria",
+        "dime cuanta carga queda."
+      ]
+    },
+    {
+      "id": "P5-2",
+      "text": "Sobre mi batería, dime cuánta carga queda.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "sobre mi bateria",
+        "dime cuanta carga queda."
+      ]
+    },
+    {
+      "id": "P5-3",
+      "text": "Respecto a batería, comprueba cuánta carga queda.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "respecto a bateria",
+        "comprueba cuanta carga queda."
+      ]
+    },
+    {
+      "id": "P5-4",
+      "text": "En cuanto a batería, muéstrame cuánta carga queda.",
+      "expected": true,
+      "before": true,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "en cuanto a bateria",
+        "muestrame cuanta carga queda."
+      ]
+    },
+    {
+      "id": "P5-5",
+      "text": "Baxy, por favor: sobre batería, dime cuánta carga queda.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "baxy, por favor: sobre bateria",
+        "dime cuanta carga queda."
+      ]
+    },
+    {
+      "id": "P5-6",
+      "text": "About my battery, tell me how much charge remains.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my battery",
+        "tell me how much charge remains."
+      ]
+    },
+    {
+      "id": "P5-7",
+      "text": "Regarding the battery, show me how much charge remains.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "regarding the battery",
+        "show me how much charge remains."
+      ]
+    },
+    {
+      "id": "P5-8",
+      "text": "As for this battery, check how much charge remains.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "as for this battery",
+        "check how much charge remains."
+      ]
+    },
+    {
+      "id": "P5-9",
+      "text": "Sobre mi batería, tell me how much charge remains.",
+      "expected": true,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre mi bateria",
+        "tell me how much charge remains."
+      ]
+    },
+    {
+      "id": "P5-10",
+      "text": "About the battery, dime cuánta carga queda.",
+      "expected": true,
+      "before": false,
+      "after": true,
+      "fronted_request": true,
+      "original_clauses": [
+        "about the battery",
+        "dime cuanta carga queda."
+      ]
+    },
+    {
+      "id": "N1",
+      "text": "Del disco C, borra el archivo carta.txt.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "del disco c",
+        "borra el archivo carta.txt."
+      ]
+    },
+    {
+      "id": "N2",
+      "text": "Sobre mi RAM, ayer había más libre.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre mi ram, ayer habia mas libre."
+      ]
+    },
+    {
+      "id": "N3",
+      "text": "About my CPU, tell me what model I had last year.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my cpu",
+        "tell me what model i had last year."
+      ]
+    },
+    {
+      "id": "N4",
+      "text": "Regarding the battery, show me how much charge it will have tomorrow.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "regarding the battery",
+        "show me how much charge it will have tomorrow."
+      ]
+    },
+    {
+      "id": "N5",
+      "text": "Sobre la batería de mi auto, dime cuánta carga queda.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre la bateria de mi auto",
+        "dime cuanta carga queda."
+      ]
+    },
+    {
+      "id": "N6",
+      "text": "About my phone CPU, tell me which model I have.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my phone cpu",
+        "tell me which model i have."
+      ]
+    },
+    {
+      "id": "N7",
+      "text": "De mi memoria del colegio, dime qué recuerdo queda.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "de mi memoria del colegio",
+        "dime que recuerdo queda."
+      ]
+    },
+    {
+      "id": "N8",
+      "text": "Sobre el disco de música, dime cuánto dura.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre el disco de musica",
+        "dime cuanto dura."
+      ]
+    },
+    {
+      "id": "N9",
+      "text": "Sobre mi GPU, dime cuál me recomiendas comprar.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre mi gpu",
+        "dime cual me recomiendas comprar."
+      ]
+    },
+    {
+      "id": "N10",
+      "text": "Del disco C, no me digas cuánto espacio está ocupado.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "del disco c",
+        "no me digas cuanto espacio esta ocupado."
+      ]
+    },
+    {
+      "id": "N11",
+      "text": "Respecto a RAM, no compruebes cuánta queda libre.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "respecto a ram",
+        "no compruebes cuanta queda libre."
+      ]
+    },
+    {
+      "id": "N12",
+      "text": "About my CPU, do not check the current load.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my cpu",
+        "do not check the current load."
+      ]
+    },
+    {
+      "id": "N13",
+      "text": "Repite: «Del disco C, dime cuánto espacio está ocupado».",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "repite: «del disco c, dime cuanto espacio esta ocupado»."
+      ]
+    },
+    {
+      "id": "N14",
+      "text": "Translate 'About my CPU, tell me which model I have'.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "translate 'about my cpu, tell me which model i have'."
+      ]
+    },
+    {
+      "id": "N15",
+      "text": "«Del disco C, dime cuánto espacio está ocupado».",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "«del disco c, dime cuanto espacio esta ocupado»."
+      ]
+    },
+    {
+      "id": "N16",
+      "text": "Del disco C, «dime cuánto espacio está ocupado».",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "del disco c, «dime cuanto espacio esta ocupado»."
+      ]
+    },
+    {
+      "id": "N17",
+      "text": "Sobre la red neuronal, dime cómo está la conexión.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre la red neuronal",
+        "dime como esta la conexion."
+      ]
+    },
+    {
+      "id": "N18",
+      "text": "About my CPU, explain how processors work.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "about my cpu, explain how processors work."
+      ]
+    },
+    {
+      "id": "N19",
+      "text": "Sobre RAM, si fuera otro equipo dime cuánta tendría.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre ram, si fuera otro equipo dime cuanta tendria."
+      ]
+    },
+    {
+      "id": "N20",
+      "text": "Sobre GPU, escribe una nota que diga cuánto se está usando.",
+      "expected": false,
+      "before": false,
+      "after": false,
+      "fronted_request": false,
+      "original_clauses": [
+        "sobre gpu",
+        "escribe una nota que diga cuanto se esta usando."
+      ]
+    }
+  ],
+  "source_unchanged": true,
+  "adopted": false,
+  "coverage_added": 0,
+  "model_inference": false
+}

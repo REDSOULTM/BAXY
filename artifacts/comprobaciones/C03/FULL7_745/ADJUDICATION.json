@@ -1,0 +1,59 @@
+{
+  "utc": "2026-09-10T13:46:36.567397+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 1543.5469999999987,
+  "dotnet_projects": [
+    {
+      "project": "Baxy.Contracts.Tests.dll",
+      "failed": 0,
+      "passed": 60,
+      "aggregate_skipped": 0,
+      "duration": "239 ms"
+    },
+    {
+      "project": "Baxy.Integration.Tests.dll",
+      "failed": 0,
+      "passed": 3339,
+      "aggregate_skipped": 1,
+      "duration": "9 m 40 s"
+    },
+    {
+      "project": "Baxy.Kernel.Tests.dll",
+      "failed": 0,
+      "passed": 152,
+      "aggregate_skipped": 0,
+      "duration": "1 s"
+    },
+    {
+      "project": "Baxy.Providers.Windows.Tests.dll",
+      "failed": 0,
+      "passed": 546,
+      "aggregate_skipped": 0,
+      "duration": "40 s"
+    },
+    {
+      "project": "Baxy.Setup.Tests.dll",
+      "failed": 0,
+      "passed": 477,
+      "aggregate_skipped": 0,
+      "duration": "1 m 18 s"
+    }
+  ],
+  "dotnet_passed": 4574,
+  "dotnet_failed": 0,
+  "dotnet_aggregate_skipped": 1,
+  "explicit_opt_in_omission_log_lines": 16,
+  "python_passed": 11399,
+  "python_failed": 0,
+  "python_environmental_skipped": 3,
+  "python_subtests_passed": 466,
+  "python_seconds": 706.7,
+  "sources_unchanged": true,
+  "source_count": 1233,
+  "private_raw_log_sha256": "bf52a98f11a8782c2bfa6f9e5d9b21fbc5195e231428be0bddf6618c7d849080",
+  "public_lf_log_sha256": "1e05fc386a04258a9a100439f0d5faaee84304c97084013e5c72a98389eb03a1",
+  "eligible_for_source_adoption": true,
+  "goal_complete": false,
+  "coverage_added": 0,
+  "limitations": "Environmental skips and opt-in omissions are not passes; no UI, physical audio, full-resource or survey acceptance is inferred."
+}

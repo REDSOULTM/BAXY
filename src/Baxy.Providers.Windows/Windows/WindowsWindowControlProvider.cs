@@ -72,23 +72,28 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         string processName,
         int limit,
         CancellationToken cancellationToken,
-        bool byTitle = false)
+        bool byTitle = false,
+        int offset = 0)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        // Recognize this before normalizing .exe; "*.exe" remains a process
+        // selector and byTitle=true always keeps title matching semantics.
+        bool allWindows = !byTitle && string.Equals(processName?.Trim(), "*", StringComparison.Ordinal);
         string? selector = byTitle
             ? (!string.IsNullOrWhiteSpace(processName) && processName.Length <= 260
                 && !processName.Contains('\0') ? processName.Trim() : null)
             : NormalizeProcessName(processName);
-        if (selector is null || limit is < 1 or > 50)
+        if (selector is null || limit is < 1 or > 50 || offset < 0)
         {
             return ValueTask.FromResult(new WindowResolveResult(
                 false, false, [], WindowControlErrorCodes.InvalidSelector));
         }
 
-        IReadOnlyList<WindowSnapshot> snapshots;
+        WindowEnumeration enumeration;
         try
         {
-            snapshots = _platform.FindVisibleWindows(selector, limit, byTitle);
+            enumeration = _platform.FindVisibleWindows(
+                selector, limit, byTitle, offset, allWindows, cancellationToken);
         }
         catch (Exception exception) when (exception is Win32Exception
             or InvalidOperationException
@@ -98,7 +103,9 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 false, false, [], WindowControlErrorCodes.InventoryFailed));
         }
 
-        if (snapshots.Count == 0)
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<WindowSnapshot> snapshots = enumeration.Windows;
+        if (!allWindows && enumeration.ObservedCount == 0)
         {
             return ValueTask.FromResult(new WindowResolveResult(
                 false, false, [], WindowControlErrorCodes.WindowNotFound));
@@ -120,7 +127,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             candidates.Add(candidate);
         }
 
-        return ValueTask.FromResult(new WindowResolveResult(true, true, candidates, null));
+        int? nextOffset = (long)offset + snapshots.Count < enumeration.ObservedCount
+            ? offset + snapshots.Count
+            : null;
+        var page = new WindowInventoryPage(limit, offset,
+            enumeration.ObservedCount, enumeration.Complete, nextOffset);
+        return ValueTask.FromResult(new WindowResolveResult(true, true, candidates, null, page));
     }
 
     public async ValueTask<WindowActionResult> ExecuteAsync(
@@ -459,7 +471,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
     }
 
-    private static string? NormalizeProcessName(string value)
+    private static string? NormalizeProcessName(string? value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > 260
             || value.IndexOfAny(['\\', '/', ':', '\0']) >= 0)
@@ -561,11 +573,18 @@ internal sealed record WindowSnapshot(
     WindowBounds Bounds,
     string? Title = null);
 
+internal sealed record WindowEnumeration(
+    IReadOnlyList<WindowSnapshot> Windows,
+    int ObservedCount,
+    bool Complete);
+
 internal interface IWindowControlPlatform
 {
     DateTimeOffset UtcNow { get; }
     WindowSnapshot? FindForegroundWindow();
-    IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit, bool byTitle = false);
+    WindowEnumeration FindVisibleWindows(string processName, int limit,
+        bool byTitle = false, int offset = 0, bool allWindows = false,
+        CancellationToken cancellationToken = default);
     WindowSnapshot Observe(WindowIdentity identity);
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
@@ -613,40 +632,59 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return Observe(identity);
     }
 
-    public IReadOnlyList<WindowSnapshot> FindVisibleWindows(string processName, int limit, bool byTitle = false)
+    public WindowEnumeration FindVisibleWindows(string processName, int limit,
+        bool byTitle = false, int offset = 0, bool allWindows = false,
+        CancellationToken cancellationToken = default)
     {
-        var result = new List<WindowSnapshot>();
+        var result = new List<WindowSnapshot>(limit);
+        int observedCount = 0;
+        bool complete = true;
         string selector = InstalledApplicationResolver.Normalize(processName);
         EnumWindowsProc callback = (handle, _) =>
         {
+            if (cancellationToken.IsCancellationRequested)
+                return false;
             if (!IsWindowVisible(handle))
                 return true;
             GetWindowThreadProcessId(handle, out uint owner);
             if (owner == 0 || owner > int.MaxValue)
+            {
+                complete = false;
                 return true;
+            }
             try
             {
                 using Process process = Process.GetProcessById(checked((int)owner));
                 string title = ReadWindowTitle(handle);
-                bool matches = byTitle
-                    ? WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
-                        InstalledApplicationResolver.Normalize(title), selector)
-                    : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase);
+                bool matches = allWindows || (byTitle
+                    ? string.Equals(title.Trim(), processName, StringComparison.OrdinalIgnoreCase)
+                        || selector.Length > 0 && WindowsInstalledApplicationPlatform.WindowTitleIdentifiesApplication(
+                            InstalledApplicationResolver.Normalize(title), selector)
+                    : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
                 if (!matches)
                     return true;
                 var identity = new WindowIdentity(handle, process.Id,
                     process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
-                result.Add(Observe(identity));
+                WindowSnapshot snapshot = Observe(identity);
+                if (observedCount >= offset && result.Count < limit)
+                    result.Add(snapshot);
+                observedCount++;
             }
             catch (Exception exception) when (exception is Win32Exception
                 or InvalidOperationException or NotSupportedException or ArgumentException)
             {
                 // A window or its owner can disappear during enumeration.
+                complete = false;
             }
-            return result.Count < limit;
+            // Count the rest without retaining another page or issuing handles.
+            return true;
         };
-        _ = EnumWindows(callback, nint.Zero);
-        return result;
+        bool enumerated = EnumWindows(callback, nint.Zero);
+        int error = Marshal.GetLastPInvokeError();
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!enumerated)
+            throw new Win32Exception(error);
+        return new WindowEnumeration(result, observedCount, complete);
     }
 
     public WindowSnapshot Observe(WindowIdentity identity)
@@ -741,7 +779,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     [UnmanagedFunctionPointer(CallingConvention.Winapi)]
     private delegate bool EnumWindowsProc(nint window, nint lParam);
 
-    [LibraryImport("user32.dll")]
+    [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
 

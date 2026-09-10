@@ -1,0 +1,134 @@
+[
+  {
+    "id": "P1-3",
+    "head": "comprueba",
+    "failed": [
+      "head"
+    ],
+    "scopes": [
+      "disk"
+    ]
+  },
+  {
+    "id": "P1-6",
+    "head": "tell",
+    "failed": [
+      "no_meta"
+    ],
+    "scopes": [
+      "disk"
+    ]
+  },
+  {
+    "id": "P1-9",
+    "head": "tell",
+    "failed": [
+      "no_meta"
+    ],
+    "scopes": [
+      "disk"
+    ]
+  },
+  {
+    "id": "P2-3",
+    "head": "comprueba",
+    "failed": [
+      "head"
+    ],
+    "scopes": [
+      "memory"
+    ]
+  },
+  {
+    "id": "P2-6",
+    "head": "tell",
+    "failed": [
+      "no_meta"
+    ],
+    "scopes": [
+      "memory"
+    ]
+  },
+  {
+    "id": "P2-9",
+    "head": "tell",
+    "failed": [
+      "no_meta"
+    ],
+    "scopes": [
+      "memory"
+    ]
+  },
+  {
+    "id": "P3-3",
+    "head": "comprueba",
+    "failed": [
+      "head",
+      "domain"
+    ],
+    "scopes": [
+      "cpu"
+    ]
+  },
+  {
+    "id": "P3-4",
+    "head": "muestrame",
+    "failed": [
+      "domain"
+    ],
+    "scopes": [
+      "cpu"
+    ]
+  },
+  {
+    "id": "P4-3",
+    "head": "comprueba",
+    "failed": [
+      "head",
+      "domain"
+    ],
+    "scopes": [
+      "gpu"
+    ]
+  },
+  {
+    "id": "P4-4",
+    "head": "muestrame",
+    "failed": [
+      "domain"
+    ],
+    "scopes": [
+      "gpu"
+    ]
+  },
+  {
+    "id": "P5-3",
+    "head": "comprueba",
+    "failed": [
+      "head"
+    ],
+    "scopes": [
+      "battery"
+    ]
+  },
+  {
+    "id": "P5-6",
+    "head": "tell",
+    "failed": [
+      "no_meta"
+    ],
+    "scopes": [
+      "battery"
+    ]
+  },
+  {
+    "id": "P5-9",
+    "head": "tell",
+    "failed": [
+      "no_meta"
+    ],
+    "scopes": [
+      "battery"
+    ]
+  }
+]

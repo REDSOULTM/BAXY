@@ -9,6 +9,31 @@ namespace Baxy.Kernel.Tests;
 [TestFixture]
 public sealed class ProductCatalogTests
 {
+    [TestCase("{\"process\":\"*\"}", true)]
+    [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
+    [TestCase("{\"process\":\"*\",\"byTitle\":true}", true)]
+    [TestCase("{\"process\":\"editor.exe\",\"offset\":0}", true)]
+    [TestCase("{}", false)]
+    [TestCase("{\"process\":\"\"}", false)]
+    [TestCase("{\"process\":\" \"}", false)]
+    [TestCase("{\"process\":\"*\",\"offset\":-1}", false)]
+    [TestCase("{\"process\":\"*\",\"offset\":0.5}", false)]
+    [TestCase("{\"process\":\"*\",\"limit\":51}", false)]
+    [TestCase("{\"process\":\"*\",\"limit\":0}", false)]
+    [TestCase("{\"all\":true}", false)]
+    public void WindowInventoryRemainsAReadOnlyBoundedOperationWithAnExplicitSelector(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("window.resolve");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+            Assert.That(descriptor.VerifierContractId, Is.EqualTo("window.resolve.identity.inventory.v2"));
+        });
+    }
+
     [Test]
     public void CatalogHasStableUniqueCompleteToolDescriptors()
     {

@@ -1,0 +1,15 @@
+{
+  "public": {
+    "PREREG.json": "a755d20b02ce5ea224645262343ed68ded719e5fc41eceadf1c66183d587ed91",
+    "RESULT.json": "6f7a79242f4a45cbb5f8881706d8673a681b5244d389262f090c89b2a53faaf1",
+    "FAILURE_CAUSES.json": "820dfb6a32590f70c01b70cccb1045fce71ead5fef59659e230c3c67c80d31a8",
+    "ARTICLE_COLLISION.json": "c3d5f88b1dbcbf8e32b5da0a035c40ed8cffb2c1b68d3fecfc9349c675b1a907",
+    "REPORT.md": "ebd0bab570e41f935da41075f7979f71e8872b99df2b22042a195237aaffc612"
+  },
+  "script": {
+    "scratchpad/c03-fronted-status747.py": "9607f72a7de279fc8549fc2065d624aef9a0db48f8239a5afcfa9563784813c9"
+  },
+  "current_source": {
+    "src/baxy_mind/effect_intent.py": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778"
+  }
+}

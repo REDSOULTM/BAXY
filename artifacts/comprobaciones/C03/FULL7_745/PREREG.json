@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-10T13:20:52.953539+00:00",
+  "parent_commit": "1492ce42d6673dae967206d2a044470cb4c4e473",
+  "command": "powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/test_source_quality.ps1 -Mode Full",
+  "source_count": 1233,
+  "source_manifest_sha256": "ebd3f30813fb3c1fa2dbd23b40b955722264b830d26f78c075d0a12f81302459",
+  "reason": "Full6 terminal:4574 .NET pass,11398 Python pass,only stale current __main__ allowlist pin failed. 744 updates that current pin and canonicalizes live Python LF plus current STT tree declarations. 111 owner tests passed,1 environmental skip. Revalidate combined705+712+730+738+740+744 before adoption.",
+  "unchanged_acceptance": "No deadline, test, gate threshold, skip or environment opt-in changed for this run.",
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "log": "%LOCALAPPDATA%/BAXY/C03-full7-745-private/full.log",
+  "goal_complete": false,
+  "runner": "scratchpad/c03-full7-745.py reuses unchanged frozen Full6 runner; only output locations and this preregistration reason differ.",
+  "metadata_correction": {
+    "utc": "2026-09-10T13:36:12.668832+00:00",
+    "field": "log",
+    "previous_value": "%LOCALAPPDATA%/BAXY/C03-full6-742-private/full.log",
+    "reason": "Inherited Full6 runner uses overridden PRIVATE correctly for execution; its preregistration label was a fixed string. Corrected descriptive metadata only, with no runner or tested-source change."
+  }
+}

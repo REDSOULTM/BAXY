@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T13:17:19.752647+00:00",
+  "confirmedAtUtc": "2026-09-10T13:48:29.030577+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Full6 terminal exit1: .NET4574pass/0fail/1skip agregado; Python11398pass/1fail/3skip+466subtests. Único fallo es pin actual de __main__ anterior a740. Originales sidecar3s y packaging45s pasaron.744 normalizó LF de voice_aec y declaraciones STT, recalculó programa407 y actualizó sólo el pin actual V8. Evidencia histórica intacta; validación nueva pendiente. Encuesta26/716/0.",
-  "continuation": "Run 744 owner checks, preserve publication bytes, then next integrated Full before adopting the combined WIP.",
+  "checkpoint": "Full7 terminal41560 exit0: .NET4574pass/0fail/1skip agregado; Python11399pass/0fail/3skip+466subtests.1233fuentes idénticas. Se adopta fuente integrada748 en commit pendiente inmediato.747 sólo diagnóstico incompleto. Encuesta26/716/0.",
+  "continuation": "Commit and push the25 validated source files plus Full7/adoption748/checkpoint and documentation746/747. Verify index and commit bytes against pins. Then implement structural topic/request correction guided by747; no further identical Full run.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
-  "workStatus": "full6_failed_current_pin_repaired_744",
+  "workStatus": "source748_validated_ready_for_commit",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "a296db0b060dd1857d9339638df89d39b15e3635",
+  "publishedEvidenceCommit": "1492ce42d6673dae967206d2a044470cb4c4e473",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,40 +48,70 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "739 demonstrated nonblocking improvement;740 source passed89owners andFast;741 original packaging passed;742 Full6 launched on1233 frozen files.",
+  "previousGoalTurnClassificationReason": "Collected terminal Full6; repaired sole current-file pin and canonical LF publication;111 owner passes/1 environmental skip; published1492ce42; Full7 running frozen1233. Readonly root continuity review746 updates matrix without closing other owners.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
   "ownerMethodology": "Maximum efficient throughput without quality loss; all742 registry and shared causes. Do not repeat completed baseline/publication solely because the same authority was restated.",
   "lastValidation": {
-    "name": "Full6/742",
-    "status": "failed",
-    "session": 3835,
-    "exit_code": 1,
-    "elapsed_seconds": 1519.4680000000008,
-    "dotnet": {
-      "passed": 4574,
-      "failed": 0,
-      "aggregate_skipped": 1,
-      "explicit_opt_in_omission_log_lines": 16
-    },
-    "python": {
-      "passed": 11398,
-      "failed": 1,
-      "skipped": 3,
-      "subtests_passed": 466,
-      "seconds": 736.77
-    },
-    "failure": "tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported",
-    "cause": "Current __main__.py allowlist pin still precedes source740. Historical V8 evidence hashes and reported numbers are unchanged.",
-    "original_sidecar_and_packaging_tests": "passed in this Full; original test bytes and 3s/45s deadlines unchanged",
+    "name": "Full7/745",
+    "utc": "2026-09-10T13:46:36.567397+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 1543.5469999999987,
+    "dotnet_projects": [
+      {
+        "project": "Baxy.Contracts.Tests.dll",
+        "failed": 0,
+        "passed": 60,
+        "aggregate_skipped": 0,
+        "duration": "239 ms"
+      },
+      {
+        "project": "Baxy.Integration.Tests.dll",
+        "failed": 0,
+        "passed": 3339,
+        "aggregate_skipped": 1,
+        "duration": "9 m 40 s"
+      },
+      {
+        "project": "Baxy.Kernel.Tests.dll",
+        "failed": 0,
+        "passed": 152,
+        "aggregate_skipped": 0,
+        "duration": "1 s"
+      },
+      {
+        "project": "Baxy.Providers.Windows.Tests.dll",
+        "failed": 0,
+        "passed": 546,
+        "aggregate_skipped": 0,
+        "duration": "40 s"
+      },
+      {
+        "project": "Baxy.Setup.Tests.dll",
+        "failed": 0,
+        "passed": 477,
+        "aggregate_skipped": 0,
+        "duration": "1 m 18 s"
+      }
+    ],
+    "dotnet_passed": 4574,
+    "dotnet_failed": 0,
+    "dotnet_aggregate_skipped": 1,
+    "explicit_opt_in_omission_log_lines": 16,
+    "python_passed": 11399,
+    "python_failed": 0,
+    "python_environmental_skipped": 3,
+    "python_subtests_passed": 466,
+    "python_seconds": 706.7,
     "sources_unchanged": true,
     "source_count": 1233,
-    "private_raw_log_sha256": "312c988e201331706123a46de12088be6cb2d60d85244d93a263f69bf7e2e177",
-    "public_lf_log_sha256": "f30dd06eb35eb5e65123899ca00870f89890f60a16406b145cda763a518d3754",
-    "adopted": false,
+    "private_raw_log_sha256": "bf52a98f11a8782c2bfa6f9e5d9b21fbc5195e231428be0bddf6618c7d849080",
+    "public_lf_log_sha256": "1e05fc386a04258a9a100439f0d5faaee84304c97084013e5c72a98389eb03a1",
+    "eligible_for_source_adoption": true,
+    "goal_complete": false,
     "coverage_added": 0,
-    "goal_complete": false
+    "limitations": "Environmental skips and opt-in omissions are not passes; no UI, physical audio, full-resource or survey acceptance is inferred."
   },
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
@@ -788,5 +818,6 @@
     "source_changed": false,
     "first_disk_loss": "direct_request false while disk domain true"
   },
-  "publicationCheck": "PIPE_SOURCE740/PUBLICATION_BYTES.json; normalize live source only after Full terminal; preserve frozen snapshot"
+  "publicationCheck": "PIPE_SOURCE740/PUBLICATION_BYTES.json; normalize live source only after Full terminal; preserve frozen snapshot",
+  "currentGoalTurnProgress": "747 pure probe70:23→57correct,34gains,0losses,13false vetoes/0false domains. No source changes/adoption. Three failures attributed: comprueba missing status head, anchored tell-me-how live-read exception, Spanish preposition a matching English article in a CPU/GPU. Full7 same41560 remains live."
 }

@@ -267,9 +267,14 @@ internal static class UserMessagePolicy
         {
             return "structured_facts_not_prose";
         }
+        if (modelText.Length > 4_096)
+        {
+            return "unsafe_language";
+        }
         // «Un router enruta el tráfico» sólo es jerga si nadie preguntó por un
         // router: sin el pedido, explicar uno era imposible.
-        if (LeakedInternalTerm(modelText, userText, priorUserText) is not null)
+        string vocabularyText = ObservedResponseLiterals.WithoutWindowNames(modelText, draft.Source);
+        if (LeakedInternalTerm(vocabularyText, userText, priorUserText) is not null)
         {
             return "unsafe_language";
         }
@@ -283,7 +288,7 @@ internal static class UserMessagePolicy
             || LooksLikeRestatingDefinitionAsk(FoldForPolicy(modelText))
             || HasRepeatedWord(FoldForPolicy(modelText))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
-            || ContainsInternalCode(modelText, string.Concat(userText, " ", priorUserText))
+            || ContainsInternalCode(vocabularyText, string.Concat(userText, " ", priorUserText))
             || FoldForPolicy(modelText).Contains("hecho ya ocurrido", StringComparison.Ordinal)
             || FoldForPolicy(modelText).Contains("hola saludo", StringComparison.Ordinal))
         {

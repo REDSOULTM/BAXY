@@ -1,3 +1,25 @@
+## Fuente748 adoptada tras Full7
+
+Full7/745 terminó en la sesión41560 con exit0,1543,547s; no hay suite activa. NET4574pass/0fail/1skip agregado (16omisiones opt-in aparte). Python11399pass/0fail/3skips ambientales+466subtests en706,70s.1233fuentes idénticas durante la corrida. No repetir Full por este mismo candidato.
+
+Se adopta el conjunto705+712+730+738+740+744 en el commit que contiene SOURCE_ADOPTION748/ADOPTION.json.25rutas y hashes en SOURCE_PINS.json;programa407=edaa6459d951f43de878d41ae67e1bbd7d5fc108b915d6fc65d451ab306f7491. Runtime/modelo registrado y main intactos. Las omisiones ambientales no son pruebas de UI/voz ni aceptaciones de producto. Full6rojo sigue publicado.
+
+El siguiente bloqueo es semántico:FRONTED_STATUS747/REPORT.md registra70controles,23→57correctos,34ganancias/0regresiones,13falsos rechazos/0falsos dominios. Prototipo no adoptado. Unificar tópico/petición con interpretación estructural conservando evidencia, en lugar de eximir lecturas. Tres causas verificadas:comprueba ausente en cabecera de estado;tell-me-how sólo exceptuado al inicio;preposición española a confundida con artículo inglés. Continúan inventario global Python/prosa paginada y foco faltante738. Encuesta26/716/0. C03 sigue EN_CURSO:reserva,UI/voz,recursos conjuntos,cobertura,matriz y continuidad final pendientes.
+
+## Continuación747 — primera sonda estructural de tópico
+
+Full7/745 sigue vivo en la misma sesión41560/PID31028; última inspección Python75%, sin resultado terminal.1233fuentes sin cambios. No reiniciar ni editar/commitear mientras corre. El turno anterior fue progreso (744corrección,111dueñas,publicación1492ce42,Full7 y matriz746); éste produjo evidencia nueva con747.
+
+FRONTED_STATUS747/REPORT.md:70controles sintéticos puros,23→57correctos,34ganancias,0regresiones/0falsos dominios;13falsos rechazos. Propuesta NO adoptada. No inferencia, efectos, suites adicionales ni edición de fuente. scratchpad/c03-fronted-status747.py contiene el prototipo aislado. Causas con solapamiento:5comprueba(la puerta general lo acepta, _MACHINE_STATUS_HEAD no);6tell-me-how-much(la excepción de lectura exige inicio del turno);4respecto-a/en-cuanto-a CPU/GPU(preposición española coincide con artículo inglés 'a cpu/gpu'). Trazas exactas en FAILURE_CAUSES/ARTICLE_COLLISION. El lector divide tópico/directiva; no basta arreglar un voto para certificar autoridad/argumentos/producto.
+
+Siguiente: recoger Full7 y publicar fuente candidata si pasa; después dar interpretación estructural común al tópico/petición en sus consumidores. No eximir todas las lecturas ni tratar tópico como cortesía.747 es un intento con mejora parcial;no repetir la misma propuesta sin corregir las causas. Encuesta26/716/0;C03 EN_CURSO. Documentación746/747 aún sin commit mientras corre Full.
+
+
+## Continuidad 746 y siguiente reparación
+
+Full7/745 continúa en sesión41560/PID31028;1233huellas sin cambios. No editar fuente ni hacer commit mientras corre. Evidencia739–744 publicada en1492ce42; fuente aún candidata. CONTINUITY746/REPORT.md verifica cuatro fuentes730 y distingue página/total/desaparición/identidad efímera. La matriz incorpora evidencia contractual disponible en G05.01(ownerC04) y G07.01(ownerC05), conservando PENDIENTE. G04.06/G06.06(ownerC03) vuelven a PENDIENTE por WIP actual; no confundir las publicaciones históricas con árbol limpio hoy.
+
+Preparación de reparación, todavía sin código ni prueba nueva:743 localiza veto _window_domain en inventario plural y _is_direct_request en tópico antepuesto de system.status. _strip_request_envelope sólo elimina cortesía, no el tópico semántico. _request_clauses puede separar el tópico de su directiva: conservar texto/alcance, citas, negación, pasado y otro dispositivo. El resolver también usa cabecera anclada (effect_intent.py:9530) y guardas propias (7583/13164), por lo que no basta fabricar un head global ni eximir lecturas. Ventanas requiere selector tipado process='*', grounded contra el pedido, y prosa de count/totalCount/complete, sin alterar la autoridad de acciones. No repetir el plural aislado707; aún no existe parche/prototipo nuevo.
 ## Continuación 744 — Full6 terminal y bytes de publicación
 
 Full6/742 terminó exit1, 1519,468 s: .NET4574pass/0fail/1skip agregado (16 líneas de omisiones opt-in); Python11398pass/1fail/3skip+466subtests. Fuente1233sin cambios durante Full. No sigue activa la sesión3835. Único fallo: pin actual de __main__ en auditoría V8, anterior a740; los originales sidecar3s y packaging45s pasaron. Resultado íntegro en FULL6_742/REPORT.md.

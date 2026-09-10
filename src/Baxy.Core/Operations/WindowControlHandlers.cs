@@ -13,12 +13,13 @@ internal sealed class WindowResolveHandler(IWindowControlProvider provider) : IO
     {
         string process = invocation.Arguments.GetProperty("process").GetString()!;
         int limit = invocation.Arguments.TryGetProperty("limit", out JsonElement value) ? value.GetInt32() : 20;
+        int offset = invocation.Arguments.TryGetProperty("offset", out JsonElement offsetValue) ? offsetValue.GetInt32() : 0;
         bool byTitle = invocation.Arguments.TryGetProperty("byTitle", out JsonElement titleValue)
             && titleValue.GetBoolean();
-        WindowResolveResult result = await provider.ResolveAsync(process, limit, cancellationToken, byTitle)
+        WindowResolveResult result = await provider.ResolveAsync(process, limit, cancellationToken, byTitle, offset)
             .ConfigureAwait(false);
         return result.Succeeded && result.Verified
-            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows))
+            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows, result.Page))
             : OperationOutcome.Failure(result.ErrorCode ?? "window_resolve_failed");
     }
 }
@@ -123,7 +124,7 @@ internal static class WindowControlHandlers
 
 internal static class WindowControlResultJson
 {
-    public static JsonElement Serialize(IReadOnlyList<WindowCandidate> windows)
+    public static JsonElement Serialize(IReadOnlyList<WindowCandidate> windows, WindowInventoryPage? page = null)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -135,6 +136,20 @@ internal static class WindowControlResultJson
             foreach (WindowCandidate window in windows) WriteCandidate(writer, window);
             writer.WriteEndArray();
             writer.WriteNumber("count", windows.Count);
+            if (page is not null)
+            {
+                writer.WriteNumber("limit", page.Limit);
+                writer.WriteNumber("offset", page.Offset);
+                writer.WriteNumber("observedCount", page.ObservedCount);
+                writer.WriteBoolean("complete", page.Complete);
+                if (page.Complete) writer.WriteNumber("totalCount", page.ObservedCount);
+                else writer.WriteNull("totalCount");
+                writer.WriteBoolean("hasMore", page.NextOffset.HasValue);
+                if (page.NextOffset is int nextOffset) writer.WriteNumber("nextOffset", nextOffset);
+                else writer.WriteNull("nextOffset");
+                writer.WriteString("observationScope", "visible_top_level_windows");
+                writer.WriteString("pageConsistency", "fresh_enumeration_per_request");
+            }
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);

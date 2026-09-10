@@ -1,0 +1,48 @@
+{
+  "status": "terminal_passed_with_environmental_omissions",
+  "session": 41560,
+  "pid": 31028,
+  "dotnet_projects": [
+    {
+      "project": "Baxy.Contracts.Tests.dll",
+      "failed": 0,
+      "passed": 60,
+      "aggregate_skipped": 0,
+      "duration": "239 ms"
+    },
+    {
+      "project": "Baxy.Integration.Tests.dll",
+      "failed": 0,
+      "passed": 3339,
+      "aggregate_skipped": 1,
+      "duration": "9 m 40 s"
+    },
+    {
+      "project": "Baxy.Kernel.Tests.dll",
+      "failed": 0,
+      "passed": 152,
+      "aggregate_skipped": 0,
+      "duration": "1 s"
+    },
+    {
+      "project": "Baxy.Providers.Windows.Tests.dll",
+      "failed": 0,
+      "passed": 546,
+      "aggregate_skipped": 0,
+      "duration": "40 s"
+    },
+    {
+      "project": "Baxy.Setup.Tests.dll",
+      "failed": 0,
+      "passed": 477,
+      "aggregate_skipped": 0,
+      "duration": "1 m 18 s"
+    }
+  ],
+  "dotnet_passed": 4574,
+  "dotnet_failed": 0,
+  "dotnet_aggregate_skipped": 1,
+  "explicit_omission_log_lines": 16,
+  "note": "Terminal result in ADJUDICATION.json. Session41560 finished exit0; no Full is still active.",
+  "goal_complete": false
+}

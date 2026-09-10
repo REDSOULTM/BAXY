@@ -51,10 +51,14 @@ _UNCERTAINTY = re.compile(
     r"no\s+puedo\s+(?:saber|confirmar|determinar)|desconozco)\b"
 )
 _SEPARATORS = re.compile(r"([.;!?]|\b(?:but|pero|and|y)\b)")
+_FOCUS_STATE = r"active|inactive|activ[oa]s?|inactiv[oa]s?|en primer plano|in the foreground"
+_FOCUS_COPULA = r"esta|estan|is|are|isn['’]t|aren['’]t"
+_WINDOW_DISPLAY_STATE = r"maximized|maximizad[oa]s?|minimized|minimizad[oa]s?|visible|normal"
 _FOCUS_ASSERTION = re.compile(
-    r"\b(?P<before>no\s+)?(?P<verb>esta|estan|is|are|isn['’]t|aren['’]t)"
-    r"\s+(?P<after>not\s+)?(?P<state>active|inactive|activ[oa]s?|inactiv[oa]s?|"
-    r"en primer plano|in the foreground)\b|"
+    rf"\b(?P<before>no\s+)?(?P<verb>{_FOCUS_COPULA})"
+    rf"\s+(?P<after>not\s+)?(?P<state>{_FOCUS_STATE})\b|"
+    rf"\b(?P<inverted_state>{_FOCUS_STATE})\s+(?P<inverted_before>no\s+)?"
+    rf"(?P<inverted_verb>{_FOCUS_COPULA})\b(?:\s+(?P<inverted_after>not)\b)?|"
     r"\b(?P<focus_negative>no\s+|does not\s+|doesn['’]t\s+)?"
     r"(?:tiene|has|have)\s+(?:el\s+)?(?P<focus>foco|focus)\b"
 )
@@ -65,14 +69,28 @@ def _window_focus_question(user_text: str, window: dict) -> str | None:
     names = {fold(window[key]) for key in ("title", "processName")
              if isinstance(window.get(key), str) and window[key]}
     for name in sorted(names, key=len, reverse=True):
-        question = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", "selected_window", question, count=1)
+        def replace_subject(match: re.Match) -> str:
+            # A process named "Is Active" must not erase the predicate in
+            # "Which window is active?". Quoting or a surrounding predicate
+            # can instead establish that the occurrence is the subject.
+            if _FOCUS_ASSERTION.fullmatch(name) and not (
+                re.search(r"(?:\b(?:is|are|esta|estan|does|do|tiene|has|of|de|named|titled)|[\"'«])\s*$",
+                          question[:match.start()])
+                or re.search(rf"\b(?:is|are|esta|estan)\s+(?:{_WINDOW_DISPLAY_STATE})\s+$",
+                             question[:match.start()])
+                or re.match(r"[\"'»]|\s+(?:window|ventana|is|are|esta|estan|has|tiene)\b",
+                            question[match.end():])
+            ):
+                return match[0]
+            return "selected_window"
+
+        question = re.sub(rf"(?<!\w){re.escape(name)}(?!\w)", replace_subject, question, count=1)
     # A relative clause identifies the subject: asking its name does not
     # also ask whether it has focus. Removing just that clause preserves
     # the main predicate in "Is the window that is maximized active?".
     question = re.sub(
         r"\b(window|ventana)\s+(?:that|which|que)\s+"
-        r"(?:(?:is|esta)\s+(?:active|activa|in the foreground|en primer plano|"
-        r"maximized|maximizada|minimized|minimizada|visible)|"
+        rf"(?:(?:is|esta)\s+(?:{_FOCUS_STATE}|{_WINDOW_DISPLAY_STATE})|"
         r"(?:has|tiene)\s+(?:el\s+)?(?:focus|foco))\b",
         r"\1", question,
     )
@@ -141,19 +159,41 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
             r"[\"'«]" + re.escape(name) + r"[\"'»]", f"window_subject_{index}", asserted,
         )
 
-    def postposed_subject(suffix: str) -> int | None:
+    def window_subject(phrase: str, *, complete: bool = False) -> int | None:
+        noun_prefix = (
+            r"\s*(?:(?:la ventana|the window)\s+(?:(?:de|of)\s+)?|"
+            r"(?:el|la|the)\s+)?"
+        )
         for name in sorted(subjects, key=len, reverse=True):
             indices = subjects[name]
             if len(indices) != 1:
                 continue
             index = next(iter(indices))
-            subject = re.match(
-                r"\s*(?:(?:la ventana|the window)\s+(?:(?:de|of)\s+)?)?[\"'«]*"
-                + rf"(?:{re.escape(name)}|window_subject_{index})(?!\w)", suffix,
+            identity = rf"(?:{re.escape(name)}|window_subject_{index})(?!\w)"
+            apposition = re.match(
+                noun_prefix + r"(?P<label>[^()]+?)\s*\(\s*[\"'«]*"
+                + identity + r"[\"'»]*\s*\)", phrase,
             )
+            subject = apposition or re.match(noun_prefix + r"[\"'«]*" + identity, phrase)
             if subject is None:
                 continue
-            tail = suffix[subject.end():].lstrip(' \"\'»')
+            if apposition:
+                # The parenthesis must name this observed subject, and its
+                # display label must occur in this same window's observation.
+                # Do not invent a translated app alias or accept a different one.
+                label = apposition["label"].strip(' \"\'«»')
+                if not label or (label != f"window_subject_{index}" and not any(
+                    isinstance(windows[index].get(field), str)
+                    and re.search(rf"(?<!\w){re.escape(label)}(?!\w)", fold(windows[index][field]))
+                    for field in ("title", "processName")
+                )):
+                    continue
+            tail = phrase[subject.end():].lstrip(' \"\'»')
+            if tail.startswith("("):
+                # A conflicting parenthetical identity is not decoration.
+                continue
+            if complete and tail not in {"", "window", "ventana"}:
+                continue
             if re.match(r"(?:titulada|titled|named)\b", tail):
                 title = windows[index].get("title")
                 if not isinstance(title, str) or not re.match(
@@ -204,7 +244,13 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
                 continue
             named = list(re.finditer(r"\bwindow_subject_(\d+)\b", prefix))
             identified = False
-            if named:
+            plain_prefix = re.sub(r"\b(?:ahora|actualmente|currently|now)\b", "", prefix).strip(' ,\"\'')
+            if "(" in prefix or ")" in prefix:
+                index = window_subject(plain_prefix, complete=True)
+                if index is None:
+                    continue
+                identified = True
+            elif named:
                 subject = named[-1]
                 # A different intervening subject is not the named window.
                 tail = prefix[subject.end():].strip(' ,\"\'')
@@ -213,9 +259,8 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
                 index = int(subject[1])
                 identified = True
             else:
-                plain_prefix = re.sub(r"\b(?:ahora|actualmente|currently|now)\b", "", prefix).strip(' ,\"\'')
                 suffix = clause[match.end():]
-                index = postposed_subject(suffix) if not plain_prefix else None
+                index = window_subject(suffix) if not plain_prefix else None
                 identified = index is not None
                 if index is None:
                     if len(windows) == 1 and plain_prefix in {
@@ -228,9 +273,12 @@ def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict
             focus = window.get("is_current_window_for_user_interaction", window.get("foreground"))
             if not isinstance(focus, bool):
                 continue
+            verb = match["verb"] or match["inverted_verb"]
+            state = match["state"] or match["inverted_state"]
             negative = bool(match["before"] or match["after"] or match["focus_negative"]
-                            or (match["verb"] and "n't" in match["verb"].replace("’", "'")))
-            if match["state"] and match["state"].startswith("inactiv"):
+                            or match["inverted_before"] or match["inverted_after"]
+                            or (verb and "n't" in verb.replace("’", "'")))
+            if state and state.startswith("inactiv"):
                 negative = not negative
             # not(A and B) does not establish not(A). A later explicit
             # assertion can still be checked on its own.
