@@ -1,0 +1,19 @@
+{
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/PREREG.json": "ff5a35a0b4529ea5260cb3e613ba28c081e303304e798c4d463e6dbd5a251403",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/PROCESS.json": "76bd31bb2589954f983fe593128aed7aab17b834000d2eac9e9fa42a31fc6731",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/RESOURCES.json": "ca83e4f2832df0c32e32cd6555264250ab354cfbf9fd900b4fdc4ec410f4624a",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/EXIT.json": "8245dd63210310789d43d1277f838eb8a515a049398b770368a9810f51ae730e",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/REVIEW_CAPTURE.json": "12d632bb55711467babb044fe07365320fcfe63f87d75a6df9ed9c6f07717701",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/RESULT.json": "c784cc602db4b3c5042c9455e7f81d89162e600bc94931b010461e38fed3dd68",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/REGISTRY_UPDATE.json": "6a7ceb15215a1a8b4c6983ed53bc3fcfce1138849fb00b9a9c8bb6ab30609c57",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/REPORT.md": "5ff2bb86332540a4e8bc089d2ddfd032a07c5c20ab9c95f5ec3d98487f14a436",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752B/RUNNER_SNAPSHOTS.json": "14b575eddb8ad93198489a295e4508c41f37159f919bd41cac34f90783262947",
+  "scratchpad/c03-status-batch752.py": "98185148a7c578da479d9d8d11bc4ccc9240ba1e31c7fc6f90040d4508826db9",
+  "scratchpad/c03-status-batch752b.py": "ca0811dcd35f80f267400521222f5a564634edcffb981caa47a4e74b91308de4",
+  "scratchpad/c03-review-status752b.py": "03c9563515ecca46ffaad29f363407fad56b2b7c5f060ee59349ebe6d31d95a0",
+  "scratchpad/c03-adjudicate-status752b.py": "fd2aa185deb574573cc4cf69edbbb5d700f094da038991bb68c18c21eed0d8a1",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752/PREREG.json": "112c4f80092c633c2cb41074201ac57f87c04418d94e27dce20372c87e4860a3",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752/PROCESS.json": "73997b56479c264f34865ac935d6b0f8af5edc5eb1c7616358481b2f49d4184d",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752/EXIT.json": "b072b28f44e424bda5b2a43b368ac93c89b8b56ea15eef8c80ba73d245d81601",
+  "artifacts/comprobaciones/C03/STATUS_BATCH752/RUNNER.py": "98185148a7c578da479d9d8d11bc4ccc9240ba1e31c7fc6f90040d4508826db9"
+}

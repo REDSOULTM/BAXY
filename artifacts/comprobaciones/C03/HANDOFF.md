@@ -1,3 +1,9 @@
+752B terminal0, sesión91878 ya recogida:73turnos,49acreditados/22fallos sustantivos/2precisión sin acreditar. Fuente751/runtime/DLL intactos, ningún proceso activo. Mediana trazas0,960s;VRAM3499,56MiB/RSS2504,98MiB,sin UI/voz.50filas privadas enlazan evidencia nueva,estados26/716/0. Registro actual SHA f6f2b1ac779c767b59740c3a2da2532b53e1044596eac329597f9b8c1c20ebff;original237c1490 conservado en privado. Fuente no editada,no Full por diagnóstico.752observador fallido preservado,0terminales,árbolpropio cerrado.
+
+Siguiente:capturar petición/error de composiciones inventario t1/t2 después de Core;las auditorías nativas no conservan el payload final fallido. No atribuir aún a prompt/contexto ni repetir73. Veto global probado en t4/t5; t6 selección errónea antes del veto;foco t7 fiel pero gramática lo rechaza18veces. STATUS_BATCH752B/REPORT.md/RESULT.json. Leyenda de cobertura:se permiten históricos/desarrollo para encuesta por decisión posterior;no aplicar exclusión de reserva a toda generalización. CPU4reales correctos, faltan mezcla/referencia y demás dimensiones aplicables. UI/voz/recursos conjuntos/reserva/matriz/Fullfinal siguen pendientes.
+
+Publicación751 confirmada: 4d3885c72dec5499c50f41e2b9a736c9ce62ac8e. HEAD=origin=remoto;8pins fuente y11de evidencia coinciden;main intacto yfuente limpia.
+
 # Handoff — C03 / fuente751 — 2026-09-10
 
 Goal íntegro activo, Goal-c03; main5f572ee1 intacto. Encuesta742/rev1248:26cubiertos/716abiertos/0NA. Ninguna decisión pendiente; BAXY manual cerrado. Qwen registrado intacto, K2 sin promoción.

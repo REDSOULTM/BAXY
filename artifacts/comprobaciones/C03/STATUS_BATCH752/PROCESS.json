@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T14:52:07.510358+00:00",
+  "launcher": 35016,
+  "runner": 18264,
+  "command": [
+    "py",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-status-profile752",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-status-batch752-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-status-batch752-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

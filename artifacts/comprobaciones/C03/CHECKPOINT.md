@@ -1,3 +1,13 @@
+752B terminado y adjudicado:73turnos,49acreditados/22fallos sustantivos/2de precisión conservadoramente sin acreditar. Sesión91878 terminal exit0 recogida; no suites/inferencia activas. Fuente751, runtime, manifiesto, DLL y runner sin cambios. Pico3499,56MiB VRAM y2504,98MiB RSS sumado;267,687s;mediana trazas0,960s. Sin UI/voz ni crédito de consumo conjunto. STATUS_BATCH752B/REPORT.md y RESULT.json separan pérdidas de integración de capacidad nativa;los literales/hechos/borradores están en privado.
+
+Se enlazó evidencia752B a50filas privadas de la encuesta, sin modificar autoría, expectativas, referencias, textos ni estados.26cubiertos/716abiertos/0NA. Registro actual SHA f6f2b1ac779c767b59740c3a2da2532b53e1044596eac329597f9b8c1c20ebff; anterior237c1490 preservado en privado requirements-before752b.jsonl. Históricos y desarrollo sí pueden aportar cobertura de encuesta según autorización posterior; frescura de reserva es distinta. CPU literal/EN/tópico ES y valores están probados, faltan dimensiones de generalización, incluida mezcla/referencia; no conceder crédito por toda la familia.
+
+Siguiente: obtener petición/error de compose para inventario t1/t2, que ejecuta window.resolve pero no deja auditoría final ni respuesta; no atribuir todavía a contexto/prompt. t4/t5 propuestas correctas vetadas por domain_grounding; t6 modelo elige active y luego veto. Parser global5257–5312 no reconoce esas envolturas. t7 hecho de foco correcto,18borradores equivalentes rechazados por gramática window_prose_facts207–313/464–470;18repeticiones no son18casos. Conservados fallos de lecturas/frescura/RAM/red/CPU acumulada. No repetir73 sin cambio ni relajar presupuestos. Los2casos de precisión no desplazan bloqueos de capacidad.
+
+752 inicial se interrumpió por OSError22 del observador al escribir RELEVO antes de medidores y terminales; sólo árbol35016 detenido, código/logs/EXIT preservados.752B eliminó esa escritura del observador; no cambia producto. No editar/promover modelo ni cerrar goal por esta medición. No Full nuevo sin fuente editada; Full final pendiente.
+
+Publicación751 confirmada: 4d3885c72dec5499c50f41e2b9a736c9ce62ac8e. HEAD=origin=remoto;8pins fuente y11de evidencia coinciden;main intacto yfuente limpia.
+
 ## Fuente751 adoptada tras validación final
 
 Fast final57628 exit0;Release1,47s,0advertencias/0errores.8fuentes congeladas sin cambios. Dueñas4194pass+121subtests y finales355pass/1skip ambiental,con solapamiento. Validación/hashes/comandos completos en WINDOW_INVENTORY751. Fuente adoptada en el commit de ADOPTION.json; publicar y comprobar remoto. No suites ni inferencias activas;no sondear20929/26323/57628.

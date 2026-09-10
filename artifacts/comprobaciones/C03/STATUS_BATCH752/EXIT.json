@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-10T14:53:08.814796+00:00",
+  "status": "interrupted_observer_failure",
+  "runner_exit_code": 1,
+  "cause": "OSError22 writing existing RELEVO_ACTIVO after launcher start, before sampler startup",
+  "response": "Stopped only the recorded launcher35016 and descendants with taskkill /T /F; no product/backend process remains. Preserve original inputs, logs and RUNNER.py. New752B omits checkpoint mutation inside observer; parent tools maintain it.",
+  "completed_terminals": 0,
+  "resource_telemetry_available": false,
+  "quality_adjudicated": false,
+  "coverage_added": 0
+}

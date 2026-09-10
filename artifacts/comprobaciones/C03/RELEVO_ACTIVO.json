@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T14:42:47.703205+00:00",
+  "confirmedAtUtc": "2026-09-10T15:04:37.665773+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Fuente751 validada:4194pass+121subtests;finales355pass/1skip;Fast final0,Release1.47s.8pins fuente verificados. Adopción en commit de WINDOW_INVENTORY751/ADOPTION.json; publicar. Encuesta26/716/0.",
-  "continuation": "Publish751 and verify remote/source pins. Next actual73 status-category regression with registered product runtime; do not mistake simulated Qwen/K2 compositor tests for model execution. No active tests/inference. Do not poll20929/26323/57628. Keep focus738 leftovers and all C03 requirements.",
+  "checkpoint": "752B terminal exit0:73turnos,49acreditados/22fallos sustantivos/2sensibles a precisión. Fuente751/runtime/DLL intactos. Pico3499.56MiB VRAM/2504.98MiB RSS, sin UI/voz.50filas de encuesta con evidencia nueva;26/716/0. No inferencia activa.",
+  "continuation": "Capture missing window inventory compose request/error before changing prompts or deadlines. Repair shared interpretation/prose losses established by752B; preserve CPU metric/Internet observation blockers. Do not rerun73 unchanged or poll91878 (terminal). Registry current SHA f6f2b1ac779c767b59740c3a2da2532b53e1044596eac329597f9b8c1c20ebff. Full goal remains active.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "07bbdbb09666e49010f5ae09492f0e14a6d5056e",
-  "workStatus": "source751_adopted_publication_pending",
+  "publishedSourceCommit": "4d3885c72dec5499c50f41e2b9a736c9ce62ac8e",
+  "workStatus": "registered_product752b_adjudicated",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "07bbdbb09666e49010f5ae09492f0e14a6d5056e",
+  "publishedEvidenceCommit": "4d3885c72dec5499c50f41e2b9a736c9ce62ac8e",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Previous turn implemented, validated and published source75007bbdbb0; current turn implements global inventory751 and verifies owner suites.",
+  "previousGoalTurnClassificationReason": "Executed and adjudicated all73 registered product turns; demonstrated integration vetoes, measured resources, linked50survey rows without automatic credit and preserved failed752 observer. No source change.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
@@ -116,13 +116,13 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "product729",
-    "sessionId": 94146,
+    "name": "product752b",
+    "sessionId": 91878,
     "exitCode": 0,
     "turns": 73,
     "manifestUnchanged": true,
-    "adjudication": "49correct,24failed",
-    "result": "artifacts/comprobaciones/C03/astra-status-batch729/RESULT.json"
+    "adjudication": "49accredited,22substantive failures,2precision-sensitive unaccredited",
+    "result": "artifacts/comprobaciones/C03/STATUS_BATCH752B/RESULT.json"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Complete fair native K2 adaptation before integrated comparison; do not blame model for BAXY transforms.",
