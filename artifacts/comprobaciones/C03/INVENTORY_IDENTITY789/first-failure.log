@@ -1,0 +1,26 @@
+F
+================================== FAILURES ===================================
+_ test_unknown_chronology_and_page_positions_are_not_recency_claims[Esta p\xe1gina muestra dos ventanas. No s\xe9 cu\xe1les son las m\xe1s recientes.] _
+
+reply = 'Esta página muestra dos ventanas. No sé cuáles son las más recientes.'
+
+    @pytest.mark.parametrize("reply", [
+        "Esta página muestra dos ventanas. No sé cuáles son las más recientes.",
+        "Esta página muestra dos ventanas. No puedo determinar su orden cronológico.",
+        "This page lists two windows. I cannot tell which are the newest.",
+        "This page lists two windows. Their opening order is unknown.",
+        "Esta página muestra dos ventanas; el orden cronológico no está comprobado.",
+        "This page lists two windows. These are the first two entries of the inventory.",
+        "Esta página contiene las primeras dos entradas del inventario.",
+    ])
+    def test_unknown_chronology_and_page_positions_are_not_recency_claims(reply):
+        payload = _compose_situation_payload(observation(), "en", "List the windows.")
+>       assert not _payload_fact_defect(reply, payload, "List the windows.")
+E       AssertionError: assert not 'missing_fact'
+E        +  where 'missing_fact' = _payload_fact_defect('Esta página muestra dos ventanas. No sé cuáles son las más recientes.', {'seen': {'windows': [{'title': 'Órbita 0', 'processName': 'Viewer0'}, {'title': 'Órbita 1', 'processName': 'Viewer1'}], 'count': 2, 'observedCount': 7, 'offset': 0, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_semantic_projection.py:153: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_semantic_projection.py::test_unknown_chronology_and_page_positions_are_not_recency_claims[Esta p\xe1gina muestra dos ventanas. No s\xe9 cu\xe1les son las m\xe1s recientes.]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 382 deselected in 1.75s

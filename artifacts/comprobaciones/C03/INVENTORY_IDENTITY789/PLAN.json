@@ -1,0 +1,27 @@
+{
+  "utc": "2026-09-10T21:29:48.954300+00:00",
+  "head": "64b493889d030133be42461d467cde85def856c3",
+  "inherits_unadopted": "INVENTORY_BUDGET787",
+  "first_request_messages_and_sampling_changed": false,
+  "cause": "788 lists five titles for twenty observed entries without exact multiplicities. Numeric scope correctness had hidden missing identities.",
+  "change": "Existing window fact feedback conserves requested identity counts; explicit group cardinalities bind to observed names, not global totals. Existing retry gets structured missing/contradictory facts. No new narrator, prompt template or model-specific branch.",
+  "new_controls": 89,
+  "baseline": {
+    "failed": 80,
+    "passed": 3,
+    "later_controls": 6
+  },
+  "owners": {
+    "passed": 2973,
+    "failed": 0,
+    "skipped": 0,
+    "subtests_passed": 121,
+    "seconds": 15.69
+  },
+  "existing_fixture_repairs": "Seven chronology controls and one process-uncertainty control now include observed identities so their positive answer is complete; original factual assertions and expected outcomes unchanged. Initial8 failures preserved.",
+  "validation_pending": "Sealed20 previous suites plus new owner, integrity and Fast; then same50 real composer cases790 with full attempt logging, separately scored.",
+  "coverage_added": 0,
+  "candidate_adopted": false,
+  "full_new": false,
+  "full_reason": "Python-only repair; C#764 unchanged; goal requires final Full and Full on joint C#/Python adoption."
+}

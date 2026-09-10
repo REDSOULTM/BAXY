@@ -1,0 +1,1687 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 86%]
+FFFF...FFFF                                                              [100%]
+================================== FAILURES ===================================
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-1-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 1, request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-1-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 1
+request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-1-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 1
+request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2
+request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2
+request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4
+request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4
+request_text = 'Lista las ventanas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-1-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 1
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-1-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 1
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-1-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 1
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4
+request_text = 'Dime qué ventanas tengo abiertas.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-1-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 1
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-1-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 1
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-1-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 1
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4
+request_text = 'List all open windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-1-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 1, request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-1-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 1
+request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-1-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 1
+request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-2-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 2, request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-2-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 2
+request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-2-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 2
+request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-4-names0] _
+
+names = ('Atlas', 'Atlas 2'), repeat = 4, request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-4-names1] _
+
+names = ('Informe.2026', 'Música (mezcla)'), repeat = 4
+request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-4-names2] _
+
+names = ('Órbita 17', 'Review 3'), repeat = 4
+request_text = 'Lista mis windows.'
+
+    @pytest.mark.parametrize("names", NAMES)
+    @pytest.mark.parametrize("repeat", [1, 2, 4])
+    @pytest.mark.parametrize("request_text", REQUESTS)
+    def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, request_text):
+        payload = _compose_situation_payload(observation(names, repeat), "es", request_text)
+        good = "\n".join('- "' + name + '"' for name in names for _ in range(repeat))
+        bad = "\n".join(good.splitlines()[:-1])
+        assert not _payload_fact_defect(good, payload, request_text)
+>       assert _payload_fact_defect(bad, payload, request_text) == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:32: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" ({count} ventanas)] _
+
+pattern = '"{name}" ({count} ventanas)', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" (2 ventanas); "Atlas 2" (2 ventanas); "Review.1" (2 ventanas)', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...w.1', 'processName': 'Viewer1'}], 'count': 6, 'observedCount': 6, 'totalCount': 6, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" ({count} windows)] _
+
+pattern = '"{name}" ({count} windows)', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" (2 windows); "Atlas 2" (2 windows); "Review.1" (2 windows)', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...w.1', 'processName': 'Viewer1'}], 'count': 6, 'observedCount': 6, 'totalCount': 6, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}": {count} instancias] _
+
+pattern = '"{name}": {count} instancias', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" \u2014 {count} instances] _
+
+pattern = '"{name}" — {count} instances', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" \xd7 {count}] _
+
+pattern = '"{name}" × {count}', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" x{count}] _
+
+pattern = '"{name}" x{count}', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} ventanas de "{name}"] _
+
+pattern = '{count} ventanas de "{name}"', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('2 ventanas de "Atlas"; 2 ventanas de "Atlas 2"; 2 ventanas de "Review.1"', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...w.1', 'processName': 'Viewer1'}], 'count': 6, 'observedCount': 6, 'totalCount': 6, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} windows of "{name}"] _
+
+pattern = '{count} windows of "{name}"', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('2 windows of "Atlas"; 2 windows of "Atlas 2"; 2 windows of "Review.1"', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...w.1', 'processName': 'Viewer1'}], 'count': 6, 'observedCount': 6, 'totalCount': 6, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} "{name}" windows] _
+
+pattern = '{count} "{name}" windows', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} \xd7 "{name}"] _
+
+pattern = '{count} × "{name}"', count = 2
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" ({count} ventanas)] _
+
+pattern = '"{name}" ({count} ventanas)', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" (4 ventanas); "Atlas 2" (4 ventanas); "Review.1" (4 ventanas)', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer1'}, ...], 'count': 12, 'observedCount': 12, 'totalCount': 12, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" ({count} windows)] _
+
+pattern = '"{name}" ({count} windows)', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" (4 windows); "Atlas 2" (4 windows); "Review.1" (4 windows)', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer1'}, ...], 'count': 12, 'observedCount': 12, 'totalCount': 12, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}": {count} instancias] _
+
+pattern = '"{name}": {count} instancias', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" \u2014 {count} instances] _
+
+pattern = '"{name}" — {count} instances', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" \xd7 {count}] _
+
+pattern = '"{name}" × {count}', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" x{count}] _
+
+pattern = '"{name}" x{count}', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} ventanas de "{name}"] _
+
+pattern = '{count} ventanas de "{name}"', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('4 ventanas de "Atlas"; 4 ventanas de "Atlas 2"; 4 ventanas de "Review.1"', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer1'}, ...], 'count': 12, 'observedCount': 12, 'totalCount': 12, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} windows of "{name}"] _
+
+pattern = '{count} windows of "{name}"', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('4 windows of "Atlas"; 4 windows of "Atlas 2"; 4 windows of "Review.1"', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer1'}, ...], 'count': 12, 'observedCount': 12, 'totalCount': 12, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} "{name}" windows] _
+
+pattern = '{count} "{name}" windows', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} \xd7 "{name}"] _
+
+pattern = '{count} × "{name}"', count = 4
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" ({count} ventanas)] _
+
+pattern = '"{name}" ({count} ventanas)', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" (7 ventanas); "Atlas 2" (7 ventanas); "Review.1" (7 ventanas)', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer5'}, ...], 'count': 21, 'observedCount': 21, 'totalCount': 21, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" ({count} windows)] _
+
+pattern = '"{name}" ({count} windows)', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" (7 windows); "Atlas 2" (7 windows); "Review.1" (7 windows)', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer5'}, ...], 'count': 21, 'observedCount': 21, 'totalCount': 21, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}": {count} instancias] _
+
+pattern = '"{name}": {count} instancias', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" \u2014 {count} instances] _
+
+pattern = '"{name}" — {count} instances', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" \xd7 {count}] _
+
+pattern = '"{name}" × {count}', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" x{count}] _
+
+pattern = '"{name}" x{count}', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} ventanas de "{name}"] _
+
+pattern = '{count} ventanas de "{name}"', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('7 ventanas de "Atlas"; 7 ventanas de "Atlas 2"; 7 ventanas de "Review.1"', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer5'}, ...], 'count': 21, 'observedCount': 21, 'totalCount': 21, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} windows of "{name}"] _
+
+pattern = '{count} windows of "{name}"', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+>       assert not _payload_fact_defect(good, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('7 windows of "Atlas"; 7 windows of "Atlas 2"; 7 windows of "Review.1"', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti...rocessName': 'Viewer5'}, ...], 'count': 21, 'observedCount': 21, 'totalCount': 21, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:51: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} "{name}" windows] _
+
+pattern = '{count} "{name}" windows', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} \xd7 "{name}"] _
+
+pattern = '{count} × "{name}"', count = 7
+
+    @pytest.mark.parametrize("pattern", [
+        '"{name}" ({count} ventanas)', '"{name}" ({count} windows)',
+        '"{name}": {count} instancias', '"{name}" — {count} instances',
+        '"{name}" × {count}', '"{name}" x{count}',
+        '{count} ventanas de "{name}"', '{count} windows of "{name}"',
+        '{count} "{name}" windows', '{count} × "{name}"',
+    ])
+    @pytest.mark.parametrize("count", [2, 4, 7])
+    def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
+        names = ["Atlas", "Atlas 2", "Review.1"]
+        payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+        good = "; ".join(pattern.format(name=name, count=count) for name in names)
+        bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
+        assert not _payload_fact_defect(good, payload, "List the windows.")
+>       assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+E       AssertionError: assert '' == 'reversed_result'
+E         
+E         - reversed_result
+
+tests\test_c03_inventory_identity_coverage.py:52: AssertionError
+_ test_an_explicit_shared_count_covers_every_named_identity["Atlas", "Review": cuatro ventanas de cada t\xedtulo.] _
+
+reply = '"Atlas", "Review": cuatro ventanas de cada título.'
+
+    @pytest.mark.parametrize("reply", [
+        '"Atlas", "Review": cuatro ventanas de cada título.',
+        '"Atlas", "Review": four windows each.',
+        '"Atlas" y "Review" (cuatro ventanas cada una).',
+        '"Atlas" and "Review" (four windows each).',
+    ])
+    def test_an_explicit_shared_count_covers_every_named_identity(reply):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert not _payload_fact_defect(reply, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas", "Review": cuatro ventanas de cada título.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti... 'processName': 'Viewer1'}, ...], 'count': 8, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:63: AssertionError
+_ test_an_explicit_shared_count_covers_every_named_identity["Atlas", "Review": four windows each.] _
+
+reply = '"Atlas", "Review": four windows each.'
+
+    @pytest.mark.parametrize("reply", [
+        '"Atlas", "Review": cuatro ventanas de cada título.',
+        '"Atlas", "Review": four windows each.',
+        '"Atlas" y "Review" (cuatro ventanas cada una).',
+        '"Atlas" and "Review" (four windows each).',
+    ])
+    def test_an_explicit_shared_count_covers_every_named_identity(reply):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert not _payload_fact_defect(reply, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas", "Review": four windows each.', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti... 'processName': 'Viewer1'}, ...], 'count': 8, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:63: AssertionError
+_ test_an_explicit_shared_count_covers_every_named_identity["Atlas" y "Review" (cuatro ventanas cada una).] _
+
+reply = '"Atlas" y "Review" (cuatro ventanas cada una).'
+
+    @pytest.mark.parametrize("reply", [
+        '"Atlas", "Review": cuatro ventanas de cada título.',
+        '"Atlas", "Review": four windows each.',
+        '"Atlas" y "Review" (cuatro ventanas cada una).',
+        '"Atlas" and "Review" (four windows each).',
+    ])
+    def test_an_explicit_shared_count_covers_every_named_identity(reply):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert not _payload_fact_defect(reply, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" y "Review" (cuatro ventanas cada una).', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti... 'processName': 'Viewer1'}, ...], 'count': 8, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:63: AssertionError
+_ test_an_explicit_shared_count_covers_every_named_identity["Atlas" and "Review" (four windows each).] _
+
+reply = '"Atlas" and "Review" (four windows each).'
+
+    @pytest.mark.parametrize("reply", [
+        '"Atlas", "Review": cuatro ventanas de cada título.',
+        '"Atlas", "Review": four windows each.',
+        '"Atlas" y "Review" (cuatro ventanas cada una).',
+        '"Atlas" and "Review" (four windows each).',
+    ])
+    def test_an_explicit_shared_count_covers_every_named_identity(reply):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert not _payload_fact_defect(reply, payload, "List the windows.")
+E       assert not 'reversed_result'
+E        +  where 'reversed_result' = _payload_fact_defect('"Atlas" and "Review" (four windows each).', {'seen': {'windows': [{'title': 'Atlas', 'processName': 'Viewer0'}, {'title': 'Atlas', 'processName': 'Viewer1'}, {'ti... 'processName': 'Viewer1'}, ...], 'count': 8, 'observedCount': 8, 'totalCount': 8, ...}, 'operation': 'window.resolve'}, 'List the windows.')
+
+tests\test_c03_inventory_identity_coverage.py:63: AssertionError
+_ test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Algunas se repiten.] _
+
+tail = 'Algunas se repiten.'
+
+    @pytest.mark.parametrize("tail", [
+        "Algunas se repiten.", "Several occur more than once.", "Hay ocho ventanas en total.",
+        "There are eight windows in total.", "Hay cuatro procesos.", "PID4 y PID7.",
+    ])
+    def test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts(tail):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert _payload_fact_defect('"Atlas", "Review". ' + tail, payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:73: AssertionError
+_ test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Several occur more than once.] _
+
+tail = 'Several occur more than once.'
+
+    @pytest.mark.parametrize("tail", [
+        "Algunas se repiten.", "Several occur more than once.", "Hay ocho ventanas en total.",
+        "There are eight windows in total.", "Hay cuatro procesos.", "PID4 y PID7.",
+    ])
+    def test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts(tail):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert _payload_fact_defect('"Atlas", "Review". ' + tail, payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:73: AssertionError
+_ test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Hay ocho ventanas en total.] _
+
+tail = 'Hay ocho ventanas en total.'
+
+    @pytest.mark.parametrize("tail", [
+        "Algunas se repiten.", "Several occur more than once.", "Hay ocho ventanas en total.",
+        "There are eight windows in total.", "Hay cuatro procesos.", "PID4 y PID7.",
+    ])
+    def test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts(tail):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert _payload_fact_defect('"Atlas", "Review". ' + tail, payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:73: AssertionError
+_ test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[There are eight windows in total.] _
+
+tail = 'There are eight windows in total.'
+
+    @pytest.mark.parametrize("tail", [
+        "Algunas se repiten.", "Several occur more than once.", "Hay ocho ventanas en total.",
+        "There are eight windows in total.", "Hay cuatro procesos.", "PID4 y PID7.",
+    ])
+    def test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts(tail):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert _payload_fact_defect('"Atlas", "Review". ' + tail, payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:73: AssertionError
+_ test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Hay cuatro procesos.] _
+
+tail = 'Hay cuatro procesos.'
+
+    @pytest.mark.parametrize("tail", [
+        "Algunas se repiten.", "Several occur more than once.", "Hay ocho ventanas en total.",
+        "There are eight windows in total.", "Hay cuatro procesos.", "PID4 y PID7.",
+    ])
+    def test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts(tail):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert _payload_fact_defect('"Atlas", "Review". ' + tail, payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:73: AssertionError
+_ test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[PID4 y PID7.] _
+
+tail = 'PID4 y PID7.'
+
+    @pytest.mark.parametrize("tail", [
+        "Algunas se repiten.", "Several occur more than once.", "Hay ocho ventanas en total.",
+        "There are eight windows in total.", "Hay cuatro procesos.", "PID4 y PID7.",
+    ])
+    def test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts(tail):
+        payload = _compose_situation_payload(observation(["Atlas", "Review"], 4), "en", "List the windows.")
+>       assert _payload_fact_defect('"Atlas", "Review". ' + tail, payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:73: AssertionError
+________ test_process_identity_is_only_a_fallback_for_an_empty_title[] ________
+
+title = ''
+
+    @pytest.mark.parametrize("title", ["", "   "])
+    def test_process_identity_is_only_a_fallback_for_an_empty_title(title):
+        source = observation(["Atlas", title], 1)
+        source['observed']['windows'][1]['processName'] = 'Companion'
+        payload = _compose_situation_payload(source, "en", "List the windows.")
+        assert not _payload_fact_defect('"Atlas", "Companion".', payload, "List the windows.")
+>       assert _payload_fact_defect('"Viewer0", "Companion".', payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:89: AssertionError
+______ test_process_identity_is_only_a_fallback_for_an_empty_title[   ] _______
+
+title = '   '
+
+    @pytest.mark.parametrize("title", ["", "   "])
+    def test_process_identity_is_only_a_fallback_for_an_empty_title(title):
+        source = observation(["Atlas", title], 1)
+        source['observed']['windows'][1]['processName'] = 'Companion'
+        payload = _compose_situation_payload(source, "en", "List the windows.")
+        assert not _payload_fact_defect('"Atlas", "Companion".', payload, "List the windows.")
+>       assert _payload_fact_defect('"Viewer0", "Companion".', payload, "List the windows.") == "missing_fact"
+E       AssertionError: assert '' == 'missing_fact'
+E         
+E         - missing_fact
+
+tests\test_c03_inventory_identity_coverage.py:89: AssertionError
+_ test_existing_retry_gets_the_missing_facts_and_delivers_the_complete_grouping[Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf'
+
+    @pytest.mark.parametrize("model", ['Qwen3-4B-Instruct-2507-Q4_K_M.gguf', 'K2-Horizon-3.7B-Q4_K_M.gguf'])
+    def test_existing_retry_gets_the_missing_facts_and_delivers_the_complete_grouping(model):
+        client = Recorder(model)
+        source = observation(['Atlas', 'Review'], 4)
+        before = copy.deepcopy(source)
+>       assert client.compose_user_message('Lista las ventanas.', 'status', {'situation': source}) == 'Atlas (cuatro ventanas); Review (cuatro ventanas).'
+E       AssertionError: assert 'Atlas, Revie...s se repiten.' == 'Atlas (cuatr...ro ventanas).'
+E         
+E         - Atlas (cuatro ventanas); Review (cuatro ventanas).
+E         + Atlas, Review. Algunas ventanas se repiten.
+
+tests\test_c03_inventory_identity_coverage.py:108: AssertionError
+_ test_existing_retry_gets_the_missing_facts_and_delivers_the_complete_grouping[K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf'
+
+    @pytest.mark.parametrize("model", ['Qwen3-4B-Instruct-2507-Q4_K_M.gguf', 'K2-Horizon-3.7B-Q4_K_M.gguf'])
+    def test_existing_retry_gets_the_missing_facts_and_delivers_the_complete_grouping(model):
+        client = Recorder(model)
+        source = observation(['Atlas', 'Review'], 4)
+        before = copy.deepcopy(source)
+>       assert client.compose_user_message('Lista las ventanas.', 'status', {'situation': source}) == 'Atlas (cuatro ventanas); Review (cuatro ventanas).'
+E       AssertionError: assert 'Atlas, Revie...s se repiten.' == 'Atlas (cuatr...ro ventanas).'
+E         
+E         - Atlas (cuatro ventanas); Review (cuatro ventanas).
+E         + Atlas, Review. Algunas ventanas se repiten.
+
+tests\test_c03_inventory_identity_coverage.py:108: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-1-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-1-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-1-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista las ventanas.-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-1-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-1-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-1-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Dime qu\xe9 ventanas tengo abiertas.-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-1-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-1-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-1-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[List all open windows.-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-1-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-1-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-1-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-2-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-2-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-2-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-4-names0]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-4-names1]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_each_observed_entry_or_its_explicit_count_is_required[Lista mis windows.-4-names2]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" ({count} ventanas)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" ({count} windows)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}": {count} instancias]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" \u2014 {count} instances]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" \xd7 {count}]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-"{name}" x{count}]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} ventanas de "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} windows of "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} "{name}" windows]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[2-{count} \xd7 "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" ({count} ventanas)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" ({count} windows)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}": {count} instancias]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" \u2014 {count} instances]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" \xd7 {count}]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-"{name}" x{count}]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} ventanas de "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} windows of "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} "{name}" windows]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[4-{count} \xd7 "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" ({count} ventanas)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" ({count} windows)]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}": {count} instancias]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" \u2014 {count} instances]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" \xd7 {count}]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-"{name}" x{count}]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} ventanas de "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} windows of "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} "{name}" windows]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_group_counts_belong_to_the_named_identity_not_the_whole_inventory[7-{count} \xd7 "{name}"]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_explicit_shared_count_covers_every_named_identity["Atlas", "Review": cuatro ventanas de cada t\xedtulo.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_explicit_shared_count_covers_every_named_identity["Atlas", "Review": four windows each.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_explicit_shared_count_covers_every_named_identity["Atlas" y "Review" (cuatro ventanas cada una).]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_an_explicit_shared_count_covers_every_named_identity["Atlas" and "Review" (four windows each).]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Algunas se repiten.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Several occur more than once.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Hay ocho ventanas en total.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[There are eight windows in total.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[Hay cuatro procesos.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_vague_repetitions_or_global_numbers_cannot_replace_per_identity_counts[PID4 y PID7.]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_process_identity_is_only_a_fallback_for_an_empty_title[]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_process_identity_is_only_a_fallback_for_an_empty_title[   ]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_existing_retry_gets_the_missing_facts_and_delivers_the_complete_grouping[Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_identity_coverage.py::test_existing_retry_gets_the_missing_facts_and_delivers_the_complete_grouping[K2-Horizon-3.7B-Q4_K_M.gguf]
+80 failed, 3 passed in 1.17s

@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-10T20:35:47.442315+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "788 adjudicado:32/50correctos,18fallos;6inventarios antes cortados completos en1post/7,42–7,67s.59HTTPexitosos(no todos los intentos),4timeouts/2vacíos.4vetos a brutos correctos preexistían.5-2ahoraentrega lista incompleta:787validado pero adopciónretenida hasta multiplicidad.3499,56MiBVRAM/763,57MiBRSScompositor.26847terminal0recogida;sinprocesosactivos.28/714/0.",
-  "continuation": "Record/preserve787 source snapshot and788 evidence. Repair existing identity/multiplicity gap as a new candidate, retaining frozen787 pins. No inference before recording; no native-model ranking or survey credit.",
+  "checkpoint": "790 terminado0/44316recogida:33/50correctos,17fallos;8vacíos,0timeouts;67intentos completos/success67.50primerpayloadsiguales788,49primerbrutoigual. Treslistas incompletas ahora vetadas pero0recuperadas;33vs32 ligado a velocidad/retry4-1,noatribuir a789.3499,56MiBVRAM/761,77MiBRSS;93,844s.789validado pero sinadoptar;feedback cuenta0enúltimotítulo seguido de otra frase, corregir antes.28/714/0.",
+  "continuation": "Preserve789 and790 before edits. Fix measured final-title counting and process-annotation ambiguity under a new candidate; then isolate why factual repair repeats incomplete drafts. No further unchanged batch, no adoption or survey credit from empty finals.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "63fc4f56f4a90fb434773b58fefffbfbec3c1e07",
-  "workStatus": "inventory_composer788_adjudicated_candidate787_held",
+  "workStatus": "inventory_composer790_adjudicated_candidate789_held",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "1e997b9c1f2312b13d69e7d8e242f9cde663c1c9",
+  "publishedEvidenceCommit": "64b493889d030133be42461d467cde85def856c3",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "786 completed100 paired requests,787 source candidate118 controls with owners2901pass/1STTskip+121subtests and Fast0;788 completed50 real composer cases and baseline validation attribution.",
+  "previousGoalTurnClassificationReason": "Previous turn completed788 adjudication, proved baseline veto attribution, preserved787 source and published evidence64b49388. Current turn repairs the identified coverage gap with89 controls and2973 owner passes.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",

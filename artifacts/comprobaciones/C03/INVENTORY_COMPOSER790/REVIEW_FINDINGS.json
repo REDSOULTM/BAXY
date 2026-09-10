@@ -1,0 +1,107 @@
+{
+  "method": "Root deterministic review on sealed789, synthetic data, no inference. Both findings block adopting789 as complete identity coverage.",
+  "findings": [
+    {
+      "id": "final_title_followed_by_sentence",
+      "situation": {
+        "kind": "operation",
+        "operation": "window.resolve",
+        "verified": true,
+        "succeeded": true,
+        "polarity": "success",
+        "observed": {
+          "windows": [
+            {
+              "title": "Atlas",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Atlas",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Atlas",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Atlas",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Review",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Review",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Review",
+              "processName": "Viewer"
+            },
+            {
+              "title": "Review",
+              "processName": "Viewer"
+            }
+          ],
+          "count": 8,
+          "observedCount": 8,
+          "totalCount": 8,
+          "offset": 0,
+          "complete": true
+        }
+      },
+      "request": "Lista las ventanas.",
+      "reply": "Atlas, Review. Algunas ventanas se repiten.",
+      "actual_feedback": {
+        "missing_answer": {
+          "predicate": "window_inventory_identity_counts",
+          "identities": {
+            "atlas": {
+              "observed": 4,
+              "identified_in_draft": 1
+            },
+            "review": {
+              "observed": 4,
+              "identified_in_draft": 0
+            }
+          }
+        },
+        "rejected_draft": "Atlas, Review. Algunas ventanas se repiten."
+      },
+      "expected": "Review is mentioned once, not zero. Split prose sentence boundaries after opaque names before counting entries; keep periods inside real titles opaque."
+    },
+    {
+      "id": "process_annotation_is_not_an_unnamed_window",
+      "situation": {
+        "kind": "operation",
+        "operation": "window.resolve",
+        "verified": true,
+        "succeeded": true,
+        "polarity": "success",
+        "observed": {
+          "windows": [
+            {
+              "title": "Atlas",
+              "processName": "Companion"
+            },
+            {
+              "title": "",
+              "processName": "Companion"
+            }
+          ],
+          "count": 2,
+          "observedCount": 2,
+          "totalCount": 2,
+          "offset": 0,
+          "complete": true
+        }
+      },
+      "request": "List the windows.",
+      "reply": "Atlas (Companion).",
+      "actual_defect": "",
+      "expected": "missing_fact: Companion is a process annotation on Atlas, not a separate entry identifying the unnamed window. Do not credit nested process mentions as additional windows."
+    }
+  ],
+  "candidate_adopted": false
+}

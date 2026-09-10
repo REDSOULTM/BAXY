@@ -1,3 +1,13 @@
+790 terminado0/44316recogida:33/50correctos,17fallos;8vacíos,0timeouts;67intentos completos/success67.50primerpayloadsiguales788,49primerbrutoigual. Treslistas incompletas ahora vetadas pero0recuperadas;33vs32 ligado a velocidad/retry4-1,noatribuir a789.3499,56MiBVRAM/761,77MiBRSS;93,844s.789validado pero sinadoptar;feedback cuenta0enúltimotítulo seguido de otra frase, corregir antes.28/714/0.
+
+790 activo44316:50casos idénticos788, primerpayload completo comprobado igual (incluido512denso), modelo/perfil/servidor fijos.789validado2990pass/1STTskip+121subtests yFast0; no editar fuente durante corrida. Cada intento se registra antes de HTTP con outcome de éxito/error.28/714/0.
+
+789validado:2990pass/1skipSTT+121subtests/17,35s;Fast0/Release18,24s,18978terminal0recogida.13pins intactos. Preparado790 mismos50casos/payloads788, primerprompt/sampler/cap iguales; identidad/multiplicidad se repara por feedback existente.28/714/0.
+
+789 candidato sellado:89controles nuevos,2973pass/0skip+121subtests/15,69s. Identidades y multiplicidad en verificador existente; grupos exactos y listas completos permitidos, sin cambiar primerprompt/sampler.787histórico preservado;13pins/programa407 nuevos. Pendientes integridad/Fast final y50casos790.28/714/0.
+
+788 evidencia publicada 64b493889d030133be42461d467cde85def856c3: HEAD=origin=remoto;45huellas de evidencia y10del candidato787verificadas,mainintacto.787conservado sin adoptar;32/50finales,6cortes reparados,4vetos previos y brecha multiplicidad5-2 documentados. Sinprocesosactivos.28/714/0.
+
 788 adjudicado:32/50correctos,18fallos;6inventarios antes cortados completos en1post/7,42–7,67s.59HTTPexitosos(no todos los intentos),4timeouts/2vacíos.4vetos a brutos correctos preexistían.5-2ahoraentrega lista incompleta:787validado pero adopciónretenida hasta multiplicidad.3499,56MiBVRAM/763,57MiBRSScompositor.26847terminal0recogida;sinprocesosactivos.28/714/0.
 
 788 activo26847:compositor real50casos idénticos785, primeros50mensajes comprobados iguales salvo presupuesto denso512. Deadline4/9s existenteC#764; servidor registrado igual772salvopuerto ycwdinterpreter igual786. Fuente787sellada,2901pass/1skipSTT+121subtests,Fast0. No editar durante corrida.28/714/0.

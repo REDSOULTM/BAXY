@@ -1,0 +1,21 @@
+{
+  "files": {
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/PREREG.json": "7e80cc04c5bf417535e0b7f8599e94f84fa587ba1da1e8292014b2835bf73cee",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/READY.json": "ee521741d2a85a83dc733febff7fc7944f3a0764e0ca7d98b6cd78697a62a9f0",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/RESULT.json": "4d629143ba33f833e945445a85d33fbbd51b73f2f84667c0a02cba183790e47c",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/ADJUDICATION.json": "afd3d2f72a5742aa9976d2a317a6cca3541e3e208e521513d67f0a6f3d5c52ba",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/PARITY.json": "8991761c24ed90a83e0698cc5edc2ce4de14a24908c5d4b36a4f75836378d643",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/PRIVATE_PINS.json": "5074acee06848b2e758b03f495509ecea00da2d4e1e046b2450769599706f2bf",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/RESPUESTAS_CAMBIADAS.md": "b2160b073b04e7d36c69b1c39426882921fadb8f52d01aa6d1bda17b77ef6e84",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/CAUSAL_REPLAY.json": "9cb3d8c17d6c09d6c99413217cfb26ba3d6a46826d51dd40a08765ae33c8f699",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/REVIEW_FINDINGS.json": "3aea2b38f97cdc59f19f27f2ba0bde61f705efdf278eb090fa444641c867f1a9",
+    "artifacts/comprobaciones/C03/INVENTORY_COMPOSER790/REPORT.md": "881f1c21475d35c4694b7047175f7c1c58b597c3fe403fbe5936c8d51286f9c7",
+    "scratchpad/c03-seal-inventory-identity789.py": "87cdc7373379827937fcd02dad04f5faad90a2f213a6a71724ab6d3f3cd8c9e1",
+    "scratchpad/c03-validate-inventory-identity789.py": "0afd67f0ecfd24a07c84725e07022f11f09bad5c694c18f993bb8cf9b3ac1ee6",
+    "scratchpad/c03-prepare-composer790.py": "e76427104584c22ac41b8717dac068b5f8824d934e4e356f5d686b925844eaa1",
+    "scratchpad/c03-inventory-composer790.py": "b1861959b4961036fe2e104d5883711b2a90e6fd84fcda5559cdd6175ef77979",
+    "scratchpad/c03-record-composer790.py": "ff9803c76b770c80cbf357a93638f012de41b79734ff9ece1c443e7e634d1906",
+    "scratchpad/c03-preserve-candidate789.py": "ddabd4e7e26a2fee98dd4e3124a3b04728d61b6d5dfe421ed3b8d1916eb0e253",
+    "scratchpad/c03-replay-identity790.py": "d3c8b5ccab20bd5150ed858a66fe3061ec4a4dfc04c0060847b1a37a432e4fb0"
+  }
+}
