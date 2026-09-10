@@ -768,6 +768,40 @@ def test_a_payload_key_is_not_a_truncated_word() -> None:
     )
 
 
+@pytest.mark.parametrize("name", ["Atlas", "Opera", "Ágora", "Steam", "Panel", "Notas"])
+@pytest.mark.parametrize("location", ["nested_value", "key_only", "absent"])
+def test_complete_short_fact_words_are_not_truncated_longer_values(name: str, location: str) -> None:
+    window = {"processName": name + "Helper"}
+    facts = {"seen": {"windows": [window]}}
+    if location == "nested_value":
+        window["title"] = name
+    elif location == "key_only":
+        window[name] = "unrelated"
+    assert llm_mod._truncated_fact_word(name, facts) is (location != "nested_value")
+
+
+@pytest.mark.parametrize("name", ["Atlas", "Opera", "Ágora", "Steam", "Panel", "Notas"])
+@pytest.mark.parametrize("question,template", [
+    ("Qué ventanas tengo abiertas", "Hay 1 ventana visible: {name}."),
+    ("Which windows are open?", "There is 1 visible window: {name}."),
+])
+def test_observed_short_window_name_is_published_without_a_truncation_retry(
+    name: str, question: str, template: str,
+) -> None:
+    facts = {"situation": {
+        "kind": "operation", "operation": "window.resolve", "polarity": "success",
+        "verified": True, "succeeded": True, "observed": {
+            "windows": [{"title": name, "processName": name + "Helper"}],
+            "count": 1, "observedCount": 1, "totalCount": 1,
+            "offset": 0, "complete": True, "hasMore": False,
+        },
+    }}
+    answer = template.format(name=name)
+    runtime = _Recorder([answer])
+    assert runtime.compose_user_message(question, "status", facts) == answer
+    assert len(runtime.captured) == 1
+
+
 def test_the_answer_language_is_read_with_the_same_owner() -> None:
     assert (
         compose_visible_defect(

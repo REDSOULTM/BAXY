@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-10T16:53:37.356521+00:00",
+  "change": "Five-letter complete source values join the same token range as the checked draft. No model-specific exception, prompt or budget change.",
+  "diagnosis": "STATUS_BATCH765/REPORT.md",
+  "owners": "457passed/0failed/0skipped,2.99s,30new cases",
+  "validation_pending": "Current pin integrity and Fast; then replay captured correct draft and publish before registered73 regression767.",
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "coverage_added": 0
+}

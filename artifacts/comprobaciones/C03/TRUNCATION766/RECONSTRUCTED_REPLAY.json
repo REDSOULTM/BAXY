@@ -1,0 +1,12 @@
+{
+  "case_id": "H0023",
+  "original_audit_situation_bytes": 2050,
+  "original_audit_situation_characters": 2048,
+  "original_situation_json_truncated": true,
+  "input_reconstructed_from_captured_payload": true,
+  "projected_payload_exactly_equal": true,
+  "exact_draft_returned": true,
+  "stub_calls": 1,
+  "inference_calls": 0,
+  "scope": "Controlled composition replay, not exact full raw-input replay: audit situation is truncated at2048characters. Reconstructed verified window envelope yields identical projected payload. No model/product/UI/voice acceptance. Initial CAPTURED_REPLAY used invalid truncated JSON and is not a product regression."
+}

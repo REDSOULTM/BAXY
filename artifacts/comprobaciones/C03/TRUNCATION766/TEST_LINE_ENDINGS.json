@@ -1,0 +1,10 @@
+{
+  "file": "tests/test_compose_contract.py",
+  "before_sha256": "3af9307d34bd625023c0d268529089bc76ca2cbba73f7fc0803a0caa89e6eeba",
+  "after_sha256": "e6561da26fb07896aae48cbff7880be676f20a058fe46f77529fa7b1ff39e6c5",
+  "only_change": "CRLF to LF to match Git; decoded normalized text identical",
+  "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-truncation766-private\\test_compose_contract.before-lf.py",
+  "after_fast": true,
+  "source_and_declaration_bytes_unchanged": true,
+  "followup": "Rerun affected owner suite; existing Fast remains the source validation, no product source changed after it."
+}

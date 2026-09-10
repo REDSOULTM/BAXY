@@ -1,0 +1,11 @@
+{
+  "case_id": "H0023",
+  "source": "Captured765 first H0023 draft and complete situation",
+  "exact_draft_returned": false,
+  "stub_calls": 3,
+  "truncated_word_after": false,
+  "payload_fact_defect_after": "",
+  "draft_sha256": "af130db1c5c28dc04119cb70ccaf932e1933ed78f633af1b98632e14d6308c81",
+  "inference_calls": 0,
+  "scope": "Offline replay with captured output, not fresh product/model/UI/voice acceptance. H0103 omissions remain unaccredited."
+}

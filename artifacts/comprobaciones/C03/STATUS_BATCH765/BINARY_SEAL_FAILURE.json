@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-10T16:53:37.356521+00:00",
+  "before_sha256": "cd0e3ba9e641c11d13debd12f5f293effae57a167c245e4bdf49503b3e1158bc",
+  "after_sha256": "85b2ac1e554467b3ee8e450a7fda2bef0437cb37224fab30da5b62aa8f759415",
+  "last_write_utc": "2026-09-10T16:40:29.523259+00:00",
+  "observed": "main.py compile_if_needed rebuilt App and published Core before launching the conductor. launch.log records15.43s build. Existing source fingerprint cache did not match; the exact triggering entry and whether differences are only metadata are not proved.",
+  "source": "main.py:204-252",
+  "decision": "765 retained as diagnosis; no sealed candidate acceptance.",
+  "next": "Prepare using the same main.compile_if_needed(force=False) before hashing DLL; then execute actual py main.py --conductor and require unchanged DLL."
+}

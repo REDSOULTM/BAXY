@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T16:39:40.033299+00:00",
+  "confirmedAtUtc": "2026-09-10T17:01:35.427954+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "764adoptado: selector de presupuesto reconoce inventario observado verificado en situation; umbrales8/512 y presupuestosexistentes, sin cambiode modelo/prompt/facts. 136dueñas pass/0fail/0skip y Fast exit0;2fuentes764 y6pins760 intactos. Publicar y ejecutar driver765 preparado con73casos completos, no editar durante la corrida.26/716/0, C03activo.",
-  "continuation": "Publish validated764 then run prepared registered73 driver765; do not edit source during inference.",
+  "checkpoint": "766adoptado: comparación de palabras completas usa mínimo5 en fuente yrespuesta; sin excepciones deapps/modelos. 457owners pass/0skips/2,87s,343integridad pass/1skip ambiental/3,85s,Fast exit0/Release11,04s/0warnings/errors. Reproducción controlada deH0023 devuelveborrador exacto en1stub, no modelo real; primera entradaaudittruncada conservada. 765=diagnóstico52/73 por DLL reconstruidoantesdelconductor. Publicar yseguir767 conprebuild antesdesello.26/716/0.",
+  "continuation": "Publish766 then run prepared767 complete73; verify postbuild DLL seal and all exits before acceptance.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "438bcddee678e4bca4e07bc6e72bb3a9d9231b8c",
-  "workStatus": "dense_inventory764_adopted_pending_publication",
+  "publishedSourceCommit": "295be2b7d813683bcf8042302ae08a9573038852",
+  "workStatus": "truncation766_adopted_pending_publication",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "e3e968b8fe753abf9d342c479922593a8d24194f",
+  "publishedEvidenceCommit": "295be2b7d813683bcf8042302ae08a9573038852",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -116,12 +116,13 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "product761",
-    "sessionId": 16332,
+    "name": "product765",
+    "sessionId": 79148,
     "exitCode": 0,
     "turns": 73,
-    "manifestUnchanged": true,
-    "adjudication": "51accredited/22substantive failures; no automatic coverage"
+    "appDllUnchanged": false,
+    "status": "semantic_diagnosis_only_binary_seal_failed",
+    "adjudication": "52semantically correct/21failures; no acceptance or coverage"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Complete fair native K2 adaptation before integrated comparison; do not blame model for BAXY transforms.",

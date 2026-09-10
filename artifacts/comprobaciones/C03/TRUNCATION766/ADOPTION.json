@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-10T17:01:35.427954+00:00",
+  "status": "adopted_after_owners_integrity_and_fast",
+  "source_pins": "SOURCE_PINS.json",
+  "commit": "Containing commit",
+  "model_prompt_budget_changed": false,
+  "coverage_added": 0,
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

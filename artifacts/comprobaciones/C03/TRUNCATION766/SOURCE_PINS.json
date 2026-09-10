@@ -1,0 +1,7 @@
+{
+  "src/baxy_mind/llm.py": "6d66a6249731e5f5dd721387706898660bf0f013fce7a1f9aa7a85c011e66e3e",
+  "tests/test_compose_contract.py": "e6561da26fb07896aae48cbff7880be676f20a058fe46f77529fa7b1ff39e6c5",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "bd4f8056f1d1d9a10da226abff08a8ec095754dac9de5a879e1df3330d103499",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "a085a8f46acfae1956eab2d1cda2eebeae1cc07011ff1722fa776e58e005fdd4",
+  "tests/test_price_v8_veto_damage_by_cause.py": "c63bb7e281f9a220ece6583bbe861422b00a43f806b8e93e88d1ab46098376c8"
+}

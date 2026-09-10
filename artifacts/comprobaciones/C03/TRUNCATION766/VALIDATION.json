@@ -1,0 +1,31 @@
+{
+  "utc": "2026-09-10T17:01:35.427954+00:00",
+  "owner_command": "Registered Python -X utf8 -m pytest tests/test_compose_contract.py tests/test_c03_request_preservation.py tests/test_c03_inventory_semantic_projection.py -q",
+  "owners": {
+    "passed": 457,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 2.87,
+    "new_cases": 30
+  },
+  "integrity_command": "Registered Python -X utf8 -m pytest tests/test_price_v8_veto_damage_by_cause.py tests/test_stt_quality_evaluators.py tests/test_validate_physical_wake_v17_program.py tests/test_c03_window_inventory.py tests/test_c03_window_facts.py tests/test_c03_observed_window_vocabulary.py -q",
+  "integrity": {
+    "passed": 343,
+    "failed": 0,
+    "environmental_skips": 1,
+    "seconds": 3.85,
+    "skip": "Blind STT campaign inputs absent; not a pass or voice acceptance"
+  },
+  "fast_command": "scripts/test_source_quality.ps1 -Mode Fast",
+  "fast_exit_code": 0,
+  "release_seconds": 11.04,
+  "warnings": 0,
+  "errors": 0,
+  "source_and_declaration_pins_unchanged_after_fast": true,
+  "test_line_endings": "Test file only converted CRLF to LF after Fast, then owners rerun; no source/declaration changes. TEST_LINE_ENDINGS.json records both hashes.",
+  "replay": "RECONSTRUCTED_REPLAY.json: same projected facts and draft accepted in one stub call, no real inference. Initial attempt used audit situation truncated at2048characters and is preserved as an input error.",
+  "full_new": false,
+  "full_reason": "Python-only source adoption; no shared C#+Python change. Final Full remains required.",
+  "coverage_added": 0,
+  "real_product_pending": "Prepared767 registered73 cases with postbuild DLL seal"
+}

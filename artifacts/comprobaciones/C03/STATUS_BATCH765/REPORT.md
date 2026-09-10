@@ -1,0 +1,9 @@
+# Respuesta producida, rechazo posterior
+
+765 terminó73turnos con52 respuestas semánticamente acreditables y21 fallos. La fuente, el modelo, el manifiesto y el runner permanecieron intactos, pero py main.py recompiló Baxy.dll antes del conductor y después del sello inicial. Por eso se conserva como diagnóstico; no acredita una regresión con binario congelado. BINARY_SEAL_FAILURE.json registra hashes, tiempos y límite de atribución. La siguiente corrida preparará la misma compilación del launcher antes de congelar sus entradas.
+
+El presupuesto denso ya llega a composición. H0023 produce una lista fiel de20entradas y alcance20/24, pero la capa que busca palabras cortadas la rechaza: toma un nombre observado de cinco letras por un recorte del nombre largo de su proceso. H0103 también pasa por ese rechazo, aunque su primera lista tiene omisiones adicionales y no debe aprobarse por retirar ese veto. No se presenta como una reparación terminada: los inventarios aún fallan y los reintentos ahora duran53,52s/37,34s.
+
+La comprobación lexical usa valores de hechos de seis letras o más y compara contra palabras de salida desde cinco. Una palabra completa de cinco queda fuera del conjunto válido. La corrección766 iguala ambos mínimos; no añade una lista de aplicaciones ni cambia el modelo, el prompt o un límite de tiempo. El verificador factual y la adjudicación completa siguen siendo necesarios.
+
+El árbol conducido alcanzó3499,56MiB de VRAM y2386,90MiB de RAM residente sumada, sin guarda activada. Duración382,609s incluyendo preparación; no acredita UI/voz ni consumo conjunto final. H0650 ahora ordena bien valores distintos, por lo que el52frente a51de761 no es una ganancia causal. Datos privados completos en C03-status-batch765-private/ADJUDICACION.md y review.json. Encuesta26/716/0; cero cobertura añadida y C03 activo.

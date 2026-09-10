@@ -3818,7 +3818,9 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
     # Nested wire keys such as seen.final.volumePercent are not natural words
     # supplied to the narrator: "volume" is not a truncated "volumePercent".
     values = " ".join(values_only(facts or {})).casefold()
-    fact_words = set(re.findall(r"[a-záéíóúñ]{6,}", values))
+    # Compare the same token lengths on both sides. A complete short name
+    # may also prefix a longer process name in the very same observation.
+    fact_words = set(re.findall(r"[a-záéíóúñ]{5,}", values))
     if not fact_words:
         return False
     for token in re.findall(r"[a-záéíóúñ]{5,}", text.casefold()):
