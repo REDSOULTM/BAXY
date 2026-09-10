@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-10T03:18:54.964092+00:00",
+  "adopted": false,
+  "parent_commit": "4d55b449abdb4b188f33e496ad2111fb951df079",
+  "sources": {
+    "src/Baxy.App/MainWindowViewModel.cs": "e1a291ca87db849f18a083dcc9c97bea5b7b07796213db2cda446a3e724bdd84",
+    "src/Baxy.App/MindPlanSession.cs": "9c3999db6017712f30026dcff5501d1b36794052b93b3c6bf88bad1914c25694",
+    "src/Baxy.App/UserMessagePolicy.cs": "8fd790a33c7f78fc908fdaeab8de362448a5390bceef4bdc902aea51ee5bfa0e",
+    "src/Baxy.App/PlannerExecutionSupport.cs": "8fe1488195fa9300fe62e1d6c65cf4ba41e0cf1a894da8b206d0e61de0a13384",
+    "tests/Baxy.Integration.Tests/MindPlanSessionTests.cs": "abadb3fee82bbf588ef240a48d5920924dfa7d98a77c1d90c0ad6ea956205703",
+    "tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs": "628ab599ecae26227707d479220bbab41a06f17e9a3980c828c8dd6c45119ae3"
+  },
+  "python_tree_sha256": "6a01540ccabb4121cb90e6d8f3dea527e0feefde0cd6868e8b3a38e03e028fe4",
+  "python_files": 406,
+  "design": "Use the ordinary independent typed turn decision once before interpreting unrelated text as a confirmation reply. Explicit private routes stay private. A self-contained request may retire only an unstarted, non-reconciliation confirmation, resolving its durable retry identity before clearing the plan. Reuse that transition for explicit cancellation. Keep fragments, exact confirm/cancel, uncertain effects and reconciliation on their existing bound path. No risk-policy, model, sampler, Python, or catalog changes.",
+  "inheritance": [
+    "MainWindowViewModel pending clarification path and independent turn decision",
+    "MindClarificationPolicy.IsSelfContainedRequest",
+    "MindPlanSession explicit cancellation and durable outbox resolution",
+    "PendingMindPlanExecution.CanAbandonConfirmation",
+    "product702: wrong tabs selection and39subsequent requests captured by pending confirmation"
+  ],
+  "focal": {
+    "passed": 18,
+    "skipped": 0,
+    "scope": "Initial integration tests before four additional durable-state permutations and stronger replacement identity assertions."
+  },
+  "validation_next": "Owners for plan session, shell, planner boundaries and real field conductor, then Fast. Product704 uses the unchanged73inputs/order/criteria of689/694/702 with a separate transparent observer. No automatic coverage from tests or family membership.",
+  "limits": "No claim of resolving uncertain effects by abandoning them. No blanket Sensitive/External policy change. The contract fixture covers existing semantic families, not50new model intents. Full693 is baseline only; Full final still required.",
+  "goal_complete": false,
+  "new_coverage": 0
+}

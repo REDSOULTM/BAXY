@@ -1,0 +1,39 @@
+{
+  "utc": "2026-09-10T03:25:43.714532+00:00",
+  "sources": {
+    "src/Baxy.App/MainWindowViewModel.cs": "e1a291ca87db849f18a083dcc9c97bea5b7b07796213db2cda446a3e724bdd84",
+    "src/Baxy.App/MindPlanSession.cs": "9c3999db6017712f30026dcff5501d1b36794052b93b3c6bf88bad1914c25694",
+    "src/Baxy.App/UserMessagePolicy.cs": "8fd790a33c7f78fc908fdaeab8de362448a5390bceef4bdc902aea51ee5bfa0e",
+    "src/Baxy.App/PlannerExecutionSupport.cs": "8fe1488195fa9300fe62e1d6c65cf4ba41e0cf1a894da8b206d0e61de0a13384",
+    "tests/Baxy.Integration.Tests/MindPlanSessionTests.cs": "c35aed037f0317d858e3d6ab8c8442f23d8968e029227c9558818b2bc3f47d7f",
+    "tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs": "628ab599ecae26227707d479220bbab41a06f17e9a3980c828c8dd6c45119ae3"
+  },
+  "python_tree_sha256": "6a01540ccabb4121cb90e6d8f3dea527e0feefde0cd6868e8b3a38e03e028fe4",
+  "python_files": 406,
+  "owner_results": {
+    "owners": {
+      "failed": 4,
+      "passed": 188,
+      "skipped": 0,
+      "total": 192
+    },
+    "owners2": {
+      "failed": 0,
+      "passed": 11,
+      "skipped": 0,
+      "total": 11
+    }
+  },
+  "fast_exit": 0,
+  "full703_run": false,
+  "fixture_correction": {
+    "file": "tests/Baxy.Integration.Tests/MindPlanSessionTests.cs",
+    "before_sha256": "abadb3fee82bbf588ef240a48d5920924dfa7d98a77c1d90c0ad6ea956205703",
+    "after_sha256": "c35aed037f0317d858e3d6ab8c8442f23d8968e029227c9558818b2bc3f47d7f",
+    "reason": "The test used a noncanonical43-character base64url token and serializer-selected date precision. It now constructs a canonical32-byte token and an explicit round-trip O UTC expiry, as required by the unchanged confirmation parser. All four clean/reconciliation/uncertainty permutations remain."
+  },
+  "adopted": false,
+  "product704_pending": true,
+  "new_coverage": 0,
+  "goal_complete": false
+}

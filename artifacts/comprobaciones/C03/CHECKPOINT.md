@@ -1495,3 +1495,41 @@ Encuesta26cubiertos/716abiertos/0NA. Picos de producto702:3499,5586MiB GPU/2442,
 ## Publicación702 confirmada
 
 Fuente702/evidencia701–702 publicadas7ceeef70 y push origin/Goal-c03 verificado. Auditoría25pins públicos, privados,5fuentes en índice, árbol406, plan/observador, encuesta/runtime/main y sellos693/694 intactos. C03EN_CURSO,26cubiertos/716abiertos/0NA. Sin inferencia ni suites activas. Próximo bloqueo: continuidad de confirmación; fuente703 aún sin editar. No repetir controles701 ni Full693 por rutina.
+
+
+## Candidato703 — continuidad de confirmación
+
+Reutiliza decisión ordinaria del turno nuevo y clasificación de objetivo autocontenido; no ejecuta ni confirma el plan anterior. Sólo retira confirmación sin inicio ni efecto incierto, resolviendo outbox y store mediante la transición existente de cancelación.18focalespass/0skip; se añadieron4controles de persistencia/incertidumbre y binding reforzado para la validación ampliada5175. No cambiaPython/modelo/riesgo/catálogo. Producto704mismos73pendiente. Encuesta26/716/0 yC03activo.
+
+
+703validación:dueñas188pass/4fallosdefixture/0skip; tokenbase64url yfechaO de esos4casos corregidos,11controlesfinalespass/0skip. Fuente productiva idéntica. Fast0,0warnings/errors,Release25,21s. VALIDATED.json conservaambas huellas yresultados. Producto704activo76313/launcher25128, mismos73turnos yobservadoraislado. SinFull703,sincréditodeUI/voz,sin nueva cobertura.
+
+
+# Producto704:50respuestas correctas y23fallos de73
+
+Se revisaron todos los finales y todas las etapas de composición contra los mismos criterios, entradas y orden689/694/702. Respecto702 hay32ganancias y0pérdidas:{'failed -> failed': 23, 'correct_observed_run -> correct_observed_run': 18, 'failed -> correct_observed_run': 32}. Los18aciertos previos se conservan. La tanda completa aún falla y no se acredita cobertura automáticamente.
+
+La misma selección equivocada de browser.tabs.list vuelve a generar confirmación en el sexto turno. Esta vez los39pedidos siguientes dejan de responder a esa confirmación:35hacen una lectura nueva y32terminan correctamente. Tres lecturas todavía se redactan/rechazan mal; cuatro pedidos siguen sin elegir su lectura. La mejora de continuidad se respalda también con pruebas de invocación exacta, outbox, persistencia y retención de efectos inciertos. No se modifica catálogo, riesgo, modelo, muestreo ni fuentePython.
+
+Fallos restantes:4aclaraciones innecesarias de ventanas,1selección de pestañas con confirmación,1rechazo falso del foco,3datos históricos sin lectura,2camposRAM mal interpretados,7lecturas soportadas no seleccionadas,3afirmaciones de red fuera de su evidencia y2rankingsCPU basados en segundos acumulados con miembros alterados. Los hechos de procesos se leen después del progreso; no se diagnostica ausencia por mirar sólo compose[0]. H0655 conserva el criterio contextual694 y su deuda de redacción. Los dos casos GPU compuestos mantienen lecturas redundantes o más amplias de lo necesario.
+
+Validación703:18focales iniciales; dueñas ampliadas188pass/4fallosdefixture/0skip. Los4casos usaban token no canónico y fecha sin formatoO exacto; sólo se corrigió esa construcción. La ejecución enfocada final pasa11controles, incluidos esos4 y sus controles de identidad/reemplazo,0skips. No son199tests únicos: los4fallos de los192seleccionados quedan resueltos y hay7controles repetidos. Fast exit0,0warnings/errors,Release25,21s. Fuente productiva idéntica entre ambas ejecuciones; parser de confirmación intacto. Full693 es línea base, no Full703.
+
+Conductor exit0/manifiesto intacto. GPU3499.55859375MiB,RAM2444.07421875MiB,272.687s, sin infracciones. Esto mide procesos del diagnóstico sin UI/voz simultáneas, no el consumo total certificado de BAXY. Las cifras de memoria global que BAXY lee del PC incluyen otros programas y no son su propio consumo. El tiempo total no se presenta como mejora de latencia: ahora se ejecutan lecturas que antes eran bloqueadas.
+
+Encuesta742/rev1248:26cubiertos/716abiertos/0NA. C03EN_CURSO. Se puede adoptar de forma delimitada la continuidad corregida con sus pruebas y esta comparación; persisten bloqueos de selección, hechos frescos y validador de identidades. No repetir el panel sin una nueva corrección o pregunta causal.
+
+
+# Adopción703: las peticiones nuevas salen de una confirmación pendiente
+
+La App ya no entrega automáticamente todo texto a la confirmación anterior. Reutiliza la decisión ordinaria del mensaje nuevo y la política de objetivo autocontenido que antes sólo atendía aclaraciones. Una petición privada tipada conserva su ruta privada. Si hay una decisión del modelo, se reutiliza al ejecutar: no se clasifica dos veces el mismo pedido.
+
+MindPlanSession sólo retira una confirmación cuyo efecto no empezó ni requiere reconciliación. Primero resuelve la invocación en la cola durable y luego borra el plan persistido; la cancelación explícita comparte esa transición. Un fragmento conserva la confirmación original. Una nueva acción que también exige confirmación recibe nuevos MissionId eInvocationId. Si pudo haber un efecto, se conserva su identidad y evidencia. No se amplía la políticaSensitive/External ni se cambia el catálogo, el modelo, su muestreo o Python.
+
+La validación inicial seleccionó192pruebas:188pasaron y4fixtures nuevas fueron rechazadas por construir token y fecha no canónicos. Se corrigieron sólo esos valores del test, con las huellas originales conservadas. El control final de11casos pasó, incluidos los4arreglados y7controles de sesión/reemplazo/binding;0skips. Las fuentes productivas son idénticas en ambas ejecuciones. Fast0,0advertencias/errores yRelease25,21s. No se presenta esto comoFull703: el Full de cierre continúa pendiente.
+
+Producto704 mantiene los73textos, orden y criterios de702. Vuelve a aparecer la misma confirmación equivocada en el sexto turno; los39pedidos que antes quedaban atrapados ahora continúan de manera independiente.35llegan a su lectura y32finalizan correctamente. Resultado completo:50correctos/23fallos,32ganancias/0pérdidas frente702. La causalidad de continuidad se apoya en ese mismo preestado y en las pruebas de persistencia; no se atribuyen diferencias de valores Windows o de latencia global al parche.
+
+La selección inicial de pestañas sigue siendo incorrecta y otros23resultados no cumplen. Esta adopción no aprueba el panel entero, no certifica la generalización de cada requisito y no cierraC03. No añade respuestas visibles fijas, otra capa de autorización ni reintentos del modelo. La encuesta permanece26cubiertos/716abiertos/0NA.
+
+Pico del diagnóstico704:3499,5586MiBGPU y2444,0742MiBRAM,272,687s,sin infracciones. No hubo UI/voz simultáneas; no es una cifra certificada del producto completo. Siguiente: corregir selección/frescura y la primera transformación errónea de identidades de ventana; no repetir este panel sin una nueva corrección.

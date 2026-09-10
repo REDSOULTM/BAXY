@@ -1,0 +1,13 @@
+# Adopción703: las peticiones nuevas salen de una confirmación pendiente
+
+La App ya no entrega automáticamente todo texto a la confirmación anterior. Reutiliza la decisión ordinaria del mensaje nuevo y la política de objetivo autocontenido que antes sólo atendía aclaraciones. Una petición privada tipada conserva su ruta privada. Si hay una decisión del modelo, se reutiliza al ejecutar: no se clasifica dos veces el mismo pedido.
+
+MindPlanSession sólo retira una confirmación cuyo efecto no empezó ni requiere reconciliación. Primero resuelve la invocación en la cola durable y luego borra el plan persistido; la cancelación explícita comparte esa transición. Un fragmento conserva la confirmación original. Una nueva acción que también exige confirmación recibe nuevos MissionId eInvocationId. Si pudo haber un efecto, se conserva su identidad y evidencia. No se amplía la políticaSensitive/External ni se cambia el catálogo, el modelo, su muestreo o Python.
+
+La validación inicial seleccionó192pruebas:188pasaron y4fixtures nuevas fueron rechazadas por construir token y fecha no canónicos. Se corrigieron sólo esos valores del test, con las huellas originales conservadas. El control final de11casos pasó, incluidos los4arreglados y7controles de sesión/reemplazo/binding;0skips. Las fuentes productivas son idénticas en ambas ejecuciones. Fast0,0advertencias/errores yRelease25,21s. No se presenta esto comoFull703: el Full de cierre continúa pendiente.
+
+Producto704 mantiene los73textos, orden y criterios de702. Vuelve a aparecer la misma confirmación equivocada en el sexto turno; los39pedidos que antes quedaban atrapados ahora continúan de manera independiente.35llegan a su lectura y32finalizan correctamente. Resultado completo:50correctos/23fallos,32ganancias/0pérdidas frente702. La causalidad de continuidad se apoya en ese mismo preestado y en las pruebas de persistencia; no se atribuyen diferencias de valores Windows o de latencia global al parche.
+
+La selección inicial de pestañas sigue siendo incorrecta y otros23resultados no cumplen. Esta adopción no aprueba el panel entero, no certifica la generalización de cada requisito y no cierraC03. No añade respuestas visibles fijas, otra capa de autorización ni reintentos del modelo. La encuesta permanece26cubiertos/716abiertos/0NA.
+
+Pico del diagnóstico704:3499,5586MiBGPU y2444,0742MiBRAM,272,687s,sin infracciones. No hubo UI/voz simultáneas; no es una cifra certificada del producto completo. Siguiente: corregir selección/frescura y la primera transformación errónea de identidades de ventana; no repetir este panel sin una nueva corrección.

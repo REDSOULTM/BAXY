@@ -68,6 +68,19 @@ internal sealed class MindPlanSession
         _store?.Clear();
     }
 
+    internal bool TrySupersedeUnstartedConfirmation(RetryableOperationRegistry registry)
+    {
+        ArgumentNullException.ThrowIfNull(registry);
+        if (_pending is not { CanAbandonConfirmation: true, Confirmation: { } confirmation })
+        {
+            return false;
+        }
+
+        registry.MarkResolved(confirmation.Prepared);
+        Clear();
+        return true;
+    }
+
     internal async Task ExecuteAsync(
         PendingMindPlanExecution execution,
         RetryableOperationRegistry registry,
@@ -315,7 +328,7 @@ internal sealed class MindPlanSession
                         UserMessageEvent.Confirmation);
                     return;
                 case ConfirmationReplyKind.Cancel:
-                    if (!execution.CanAbandonConfirmation)
+                    if (!TrySupersedeUnstartedConfirmation(registry))
                     {
                         Persist(execution);
                         _host.Publish(
@@ -326,8 +339,6 @@ internal sealed class MindPlanSession
                         return;
                     }
 
-                    registry.MarkResolved(confirmation.Prepared);
-                    Clear();
                     _host.Publish(
                         MissionNarration.CreateCancellationMessage(execution),
                         null);

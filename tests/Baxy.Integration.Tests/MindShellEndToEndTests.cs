@@ -725,6 +725,91 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    [TestCase("What is in my task list?", "task.list")]
+    [TestCase("Dime la hora y revisa la CPU", "mission_completed")]
+    [TestCase("Dime la hora actual", "system.time")]
+    [TestCase("and the date?", "system.time")]
+    [TestCase("Explícame la fotosíntesis", "fotosíntesis")]
+    [TestCase("What name have you saved in private memory?", "memory_disabled")]
+    [TestCase("¿Qué nombre tienes guardado en tu memoria privada?", "memory_disabled")]
+    public async Task IndependentRequestSupersedesUnstartedConfirmationWithoutReclassifying(
+        string request, string expected)
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, "Navega Opera a https://example.com/");
+            Assert.That(viewModel.HasPendingPlan, Is.True);
+            string answer = await SubmitAsync(viewModel, request);
+            Assert.Multiple(() =>
+            {
+                Assert.That(answer, Does.Contain(expected));
+                Assert.That(viewModel.HasPendingPlan, Is.False);
+                Assert.That(ReadTrace(tracePath).Count(entry =>
+                    Property(entry, "type") == "turn.decide"
+                    && Property(entry, "text") == request), Is.LessThanOrEqualTo(1),
+                    "The independent decision must be reused, not sent to the model twice.");
+                Assert.That(ReadTrace(tracePath).Count(entry =>
+                    Property(entry, "type") == "arguments"
+                    && Property(entry, "operation") == "browser.navigate.named"), Is.EqualTo(1),
+                    "The old action must not be prepared or resumed again.");
+            });
+            AssertOutboxEmpty(dataRoot);
+        });
+    }
+
+    [TestCase("mañana a las 9")]
+    [TestCase("Opera")]
+    [TestCase("la segunda")]
+    [TestCase("tal vez")]
+    public async Task SlotOrUncertainReplyRetainsTheExactPendingConfirmation(string fragment)
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            _ = await SubmitAsync(viewModel, "Navega Opera a https://example.com/");
+            string outbox = Path.Combine(dataRoot, "shell", "retry-outbox.v1.json");
+            byte[] before = File.ReadAllBytes(outbox);
+            string answer = await SubmitAsync(viewModel, fragment);
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.HasPendingPlan, Is.True);
+                Assert.That(answer, Does.Contain("confirmation"));
+                Assert.That(File.ReadAllBytes(outbox), Is.EqualTo(before),
+                    "A fragment cannot replace the invocation or its durable retry identity.");
+                Assert.That(ReadTrace(tracePath).Count(entry =>
+                    Property(entry, "type") == "arguments"), Is.EqualTo(1));
+            });
+            _ = await SubmitAsync(viewModel, "cancelar");
+            AssertOutboxEmpty(dataRoot);
+        });
+    }
+
+    [Test]
+    public async Task ReplacementRequestGetsItsOwnConfirmationInsteadOfReusingTheOldOne()
+    {
+        await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
+        {
+            const string request = "Navega Opera a https://example.com/";
+            _ = await SubmitAsync(viewModel, request);
+            string outbox = Path.Combine(dataRoot, "shell", "retry-outbox.v1.json");
+            PreparedOperation before = new DurableRetryStore(outbox).Load().Single();
+            string answer = await SubmitAsync(viewModel, request);
+            PreparedOperation after = new DurableRetryStore(outbox).Load().Single();
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.HasPendingPlan, Is.True);
+                Assert.That(answer, Does.Contain("confirmation"));
+                Assert.That(after.InvocationId, Is.Not.EqualTo(before.InvocationId));
+                Assert.That(after.MissionId, Is.Not.EqualTo(before.MissionId));
+                Assert.That(new DurableRetryStore(outbox).Load(), Has.Count.EqualTo(1));
+                Assert.That(ReadTrace(tracePath).Count(entry =>
+                    Property(entry, "type") == "turn.decide"
+                    && Property(entry, "text") == request), Is.EqualTo(2));
+            });
+            _ = await SubmitAsync(viewModel, "cancelar");
+            AssertOutboxEmpty(dataRoot);
+        });
+    }
+
     [Test]
     public async Task ReadOnlyCompositePlanTraversesPlannerAndRealCoreWithoutEffects()
     {

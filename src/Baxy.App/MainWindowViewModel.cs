@@ -642,12 +642,34 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             RetryableOperationRegistry registry = _retryableOperations
                 ?? throw new InvalidOperationException("La cola durable no está disponible.");
-            if (_mindPlans.HasPending
-                && !NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text)
-                && !UserMessagePolicy.IsConnectivityStatusRequest(text))
+            MindTurnDecision? preclassifiedTurn = null;
+            if (_mindPlans.HasPending)
             {
-                await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
-                return;
+                bool startsNewObjective = false;
+                if (_mindPlans.Current is { CanAbandonConfirmation: true }
+                    && ConfirmationReplyParser.Parse(text) == ConfirmationReplyKind.Invalid)
+                {
+                    // Private typed requests stay on their private route. Other
+                    // requests reuse the ordinary independent turn decision;
+                    // a fragment never confirms or replaces the pending action.
+                    startsNewObjective = memory.Outcome is not (MemoryParseOutcome.NoRoute or MemoryParseOutcome.AskToSave)
+                        || NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text)
+                        || UserMessagePolicy.ShouldNotResumePriorObjective(text);
+                    if (!startsNewObjective
+                        && await WaitForMindReadyAsync(cancellationToken) is { } readyMind)
+                    {
+                        preclassifiedTurn = await DecideMindTurnAsync(
+                            readyMind, route, BuildMindHistory(), cancellationToken);
+                        startsNewObjective = preclassifiedTurn is { RecoveryFailureCode: null }
+                            && MindClarificationPolicy.IsSelfContainedRequest(text, preclassifiedTurn);
+                    }
+                }
+
+                if (!startsNewObjective || !_mindPlans.TrySupersedeUnstartedConfirmation(registry))
+                {
+                    await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
+                    return;
+                }
             }
 
             if (!_memoryTurns.HasConfirmation && !_memoryTurns.HasPendingOperation
@@ -862,7 +884,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             bool handledByMind = await TryExecuteWithMindAsync(
                 route,
                 registry,
-                cancellationToken);
+                cancellationToken,
+                preclassifiedTurn: preclassifiedTurn);
             if (handledByMind)
             {
                 return;
@@ -1826,11 +1849,38 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _ => "invalid",
     };
 
+    private async Task<MindTurnDecision?> DecideMindTurnAsync(
+        MindSidecarClient mind,
+        MissionInputRoute route,
+        IReadOnlyList<(string Role, string Content)> decisionHistory,
+        CancellationToken cancellationToken)
+    {
+        StatusDescription = "understanding";
+        string decisionTraceId = _currentTurnTraceId;
+        ShellTraceSink.Record(
+            ShellTraceScopes.Turn,
+            decisionTraceId,
+            ShellTraceStages.DecisionStart);
+        MindTurnDecision? turn = await mind.DecideTurnAsync(
+            route.Text,
+            decisionHistory,
+            MindSidecarClient.TurnDecisionRequestTimeout,
+            cancellationToken,
+            pendingClarification: false);
+        ShellTraceSink.Record(
+            ShellTraceScopes.Turn,
+            decisionTraceId,
+            ShellTraceStages.DecisionReady,
+            turn is null ? "unavailable" : SanitizedTurnKind(turn.Kind));
+        return turn;
+    }
+
     private async Task<bool> TryExecuteWithMindAsync(
         MissionInputRoute route,
         RetryableOperationRegistry registry,
         CancellationToken cancellationToken,
-        string? pendingClarificationObjective = null)
+        string? pendingClarificationObjective = null,
+        MindTurnDecision? preclassifiedTurn = null)
     {
         // A bare numbered reply is meaningful only while a verified
         // disambiguation is pending. Pending choices are handled before this
@@ -1933,29 +1983,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return true;
         }
 
-        StatusDescription = "understanding";
         // A pending objective does not erase facts supplied in conversation.
         // The pendingClarification flag below owns the independent reading;
         // dialogue remains reference data, not permission to resume an effect.
         IReadOnlyList<(string Role, string Content)> decisionHistory = BuildMindHistory();
-        string decisionTraceId = _currentTurnTraceId;
-        ShellTraceSink.Record(
-            ShellTraceScopes.Turn,
-            decisionTraceId,
-            ShellTraceStages.DecisionStart);
-        MindTurnDecision? turn = await mind.DecideTurnAsync(
-            route.Text,
-            decisionHistory,
-            MindSidecarClient.TurnDecisionRequestTimeout,
-            cancellationToken,
-            // Keep this classification independent of the pending objective.
-            // A slot fragment still resumes below through MindClarificationPolicy.
-            pendingClarification: false);
-        ShellTraceSink.Record(
-            ShellTraceScopes.Turn,
-            decisionTraceId,
-            ShellTraceStages.DecisionReady,
-            turn is null ? "unavailable" : SanitizedTurnKind(turn.Kind));
+        MindTurnDecision? turn = preclassifiedTurn ?? await DecideMindTurnAsync(
+            mind, route, decisionHistory, cancellationToken);
         if (turn is null)
         {
             LastMindReplyRejection = "decision_unavailable";
