@@ -1458,3 +1458,35 @@ Se verificaron28archivos públicos sellados, hashes privados,16fuentes tanto en 
 
 
 Fuente693/evidencia690-694 publicadas en10f16319; push origin/Goal-c03 confirmado. Siguiente: bloqueos compartidos694. Sin inferencia activa; BAXY cerrado; C03 EN_CURSO y encuesta26/716/0.
+
+
+## Candidato702 — recuperacion de actor en curso
+
+Reutiliza la recuperacion con borrador real de CPU para conectividad tipada; conserva sujeto del PC, alcance y polaridad.79focales/392duenas yFast0.701:44/50porbrazo,6fallos de alcance preservados;51peticiones y50finales identicos, ningun reintentoWLAN:control de regresion, no ganancia. Producto702sesion25749/launcher15628, 73terminales observados; fuente aun no adoptada. Encuesta26/716/0;C03activo.
+
+
+# Producto702:18respuestas correctas y55fallos de73
+
+Se conservan todos los resultados, con el mismo panel, orden y criterios694. La tanda completa falla: no se sustituye su resultado por los dos casos que mejoran. El sexto turno eligió browser.tabs.list al pedir ventanas y solicitó una confirmación innecesaria. Los39pedidos independientes siguientes quedaron atrapados en esa confirmación; ninguno hizo la lectura solicitada. La hora escapó de ese estado por una excepción preexistente. La causa común está en selección, política y continuidad de BAXY.
+
+Transiciones desde694:{'failed -> failed': 23, 'failed -> correct_observed_run': 5, 'correct_observed_run -> failed': 32, 'correct_observed_run -> correct_observed_run': 13}. Mejoran:H0104, H0127, H0433, H0650, processes-top3-en. Pasan de correcto a fallo:windows-focus-reference-es, H0025, H0207, H0384, H0442, H0644, disk-free-en, H0026, H0087, H0114, H0194, H0370, H0625, gpu-identity-en, gpu-usage-es, H0111, H0156, H0162, H0342, H0655, memory-total-en, memory-free-mixed, memory-used-es, H0037, H0144, H0379, H0665, battery-charge-en, battery-level-es, H0065, H0350, cpu-usage-en. Cambian estado Windows e historial entre corridas; estas transiciones no son una atribución causal automática a la recuperación de actor702. El error de selección aparece antes de usar esa recuperación. H0104 recibe otro título observado, por lo que no acredita corregir el veto de jerga.
+
+H0127/H0433 sí publican el estado Wi-Fi verificado tras un único reintento que conserva el borrador real y los hechos. La comprobación emparejada se documenta aparte al decidir adopción. Los50controles701 por brazo conservaron las51peticiones y50finales idénticos:44correctos/6fallos por brazo, sin activar recuperación WLAN. Son control de regresión, no evidencia de mejora.
+
+Correcciones de diagnóstico: en694 la categoría false_composition_rejection para WLAN era demasiado amplia; el primer borrador tenía un actor incorrecto y lo defectuoso era la recuperación. Para procesos deben leerse todos los compose, no sólo el progreso inicial. H0364 falla aquí por métrica CPU acumulada y miembros del ranking, con hechos presentes en una etapa posterior. No se reescribe el sello694. H0732 sigue fallando: interfaces Up no demuestran Internet. Tampoco se acepta la ampliación Wi-Fi→toda red ni valores históricos sin lectura nueva.
+
+Conductor exit0, manifiesto intacto, GPU3499.55859375MiB/RAM2442.59375MiB y158.813s; sin infracciones. No hubo UI/voz simultáneas ni aceptación del consumo total. Fuente702 tiene79pruebas focales,392dueñas yFast exit0. Full693 es línea base anterior, no un Full702.
+
+Encuesta742/rev1248:26cubiertos/716abiertos/0NA, cero cobertura nueva. C03 EN_CURSO. Siguiente: corregir la causa compartida de confirmación/continuidad conservando autorización del kernel, privacidad y binding exacto, y luego verificar la tanda completa.
+
+# Adopción limitada702: recuperación del sujeto del PC
+
+Se reutiliza la recuperación existente de CPU cuando el borrador confunde al asistente con el PC y existe un Boolean de conectividad observado. Se conservan petición, hechos, alcance Wi-Fi/red y último borrador rechazado. No se añaden reintentos, reglas por frase del dueño, respuestas prefabricadas ni otro modelo; no se relajan validadores. El helper conserva su muestreo cualificado para Qwen2507 y no lo impone a otros modelos.
+
+La entrada HTTP completa y el primer borrador de H0127/H0433 son exactamente iguales en694 y702. Antes se repetía el actor incorrecto hasta agotar; ahora un reintento produce «Este PC no está conectado a ninguna red wifi.». El cambio es el mecanismo existente de recuperación, incluyendo su muestreo: no se atribuye la mejora sólo a una frase de feedback. El progreso previo de H0127 describe trabajo en curso, sin afirmar éxito.
+
+Validación:79focales,392dueñas yFast exit0,0advertencias/errores. Los50controles701 por brazo conservan51peticiones y50finales idénticos,44correctos/6fallos en ambos. No activaron recuperación WLAN y no se presentan como una mejora. Las declaraciones STT actualizan sólo el árbol ejecutado; no certifican audio. Full693 anterior sigue de línea base; no se ejecutó Full702 y el Full final continúa pendiente.
+
+El producto completo702 falla:18correctos/55fallos de73. Una selección equivocada y confirmación pendiente absorbieron39preguntas posteriores antes de llegar a la recuperación editada. Cambiaron estados Windows e historial entre corridas; no se atribuyen automáticamente todas las diferencias al parche. Esta adopción reconoce únicamente la mejora causalmente delimitada y sus controles; no aprueba la tanda, las familias de red/procesos ni C03. Permanecen el alcance falso Wi-Fi/Internet, las lecturas históricas, títulos y continuidad. La reparación de la confirmación es el siguiente bloqueo común.
+
+Encuesta26cubiertos/716abiertos/0NA. Picos de producto702:3499,5586MiB GPU/2442,5938MiB RAM, sin UI/voz. Cero cobertura añadida y ningún modelo promovido. Se conserva la comparación699/700 que separa modelos originales de transformaciones BAXY.

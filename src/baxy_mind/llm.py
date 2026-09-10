@@ -355,7 +355,7 @@ _MACHINE_ACTOR_FEEDBACK = (
 
 
 def _machine_actor_repair_payload(payload: dict, draft: str, gguf: str | None) -> dict:
-    """Use an existing retry to correct the actual rejected CPU claim."""
+    """Use an existing retry to correct the actual rejected machine claim."""
     repaired = dict(payload)
     repaired["messages"] = [
         *payload["messages"],
@@ -10001,6 +10001,11 @@ class LlmRuntime:
         )
         retry_payload = dict(payload)
         defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
+        repair_machine_actor = defect == "wrong_machine_actor" or (
+            defect == "wrong_actor"
+            and not _looks_like_capability_question(user_text)
+            and any(type(_merged_observed(situation).get(key)) is bool for key in ("online", "connected"))
+        )
 
         def contract_hint(candidate: str) -> str:
             """Nombrar lo que falta: un reintento a ciegas repite el fallo."""
@@ -10054,7 +10059,7 @@ class LlmRuntime:
             "wrong_actor": (
                 "Say in first person what you can do, not what the person can do."
                 if _looks_like_capability_question(user_text)
-                else "Say whether this PC is online. Do not ask."
+                else _MACHINE_ACTOR_FEEDBACK
             ),
             "reversed_mute": "Name audio or speakers and the mute state.",
             "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
@@ -10146,7 +10151,7 @@ class LlmRuntime:
             {"role": "user", "content": retry_user},
         ]
         retry_payload.update(compose_sampling)
-        if defect == "wrong_machine_actor":
+        if repair_machine_actor:
             retry_payload = _machine_actor_repair_payload(payload, text, gguf)
             sent_instructions.append(_MACHINE_ACTOR_FEEDBACK)
         retry = post(retry_payload)
@@ -10190,7 +10195,7 @@ class LlmRuntime:
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},
         ]
-        if defect == "wrong_machine_actor":
+        if repair_machine_actor:
             third_payload = _machine_actor_repair_payload(payload, retry_text, gguf)
         third = post(third_payload)
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()

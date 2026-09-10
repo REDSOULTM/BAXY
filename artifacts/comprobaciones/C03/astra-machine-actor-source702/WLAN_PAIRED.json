@@ -1,0 +1,26 @@
+[
+  {
+    "case_id": "H0127",
+    "first_request694": 208,
+    "first_request702": 121,
+    "first_request_exactly_equal": true,
+    "first_request_sha256": "e9faf168929a531d38410e656369f1a52895e2c70cba57c40fcbf33450f01450",
+    "first_draft_sha256": "296ccd49199d98b04a3e12ce98076b4ed0decd5b2b1ac1c45545fc18379bf3bd",
+    "retry702": 122,
+    "retry_sha256": "69c8e86dcee6adf71de22b4d9cf6185d9e9346749f518df7f72c15eea516f45f",
+    "published_response": "Este PC no está conectado a ninguna red wifi.",
+    "qualification": "Same first request and draft; the recovery uses the existing CPU helper, including its qualified Qwen sampling. This does not isolate feedback text from that existing recovery sampler."
+  },
+  {
+    "case_id": "H0433",
+    "first_request694": 227,
+    "first_request702": 123,
+    "first_request_exactly_equal": true,
+    "first_request_sha256": "992a2d556c186647d4cba666bd926ef71608904013c3d73470ae80fdb5ea551b",
+    "first_draft_sha256": "296ccd49199d98b04a3e12ce98076b4ed0decd5b2b1ac1c45545fc18379bf3bd",
+    "retry702": 124,
+    "retry_sha256": "01065106e1c03e0c5a0ad64d80d45dbb6d6416ee2cde7fb13edac285f611e2a5",
+    "published_response": "Este PC no está conectado a ninguna red wifi.",
+    "qualification": "Same first request and draft; the recovery uses the existing CPU helper, including its qualified Qwen sampling. This does not isolate feedback text from that existing recovery sampler."
+  }
+]

@@ -1,0 +1,67 @@
+..FF.................................................................... [ 91%]
+.......                                                                  [100%]
+================================== FAILURES ===================================
+_ test_repair_preserves_original_observations_and_actual_rejected_subject[es-True-wifi.status] _
+
+operation = 'wifi.status', connected = True, language = 'es'
+
+    @pytest.mark.parametrize('operation', ['wifi.status', 'network.status'])
+    @pytest.mark.parametrize('connected', [False, True])
+    @pytest.mark.parametrize('language', ['es', 'en'])
+    def test_repair_preserves_original_observations_and_actual_rejected_subject(operation, connected, language):
+        scope = 'Wi-Fi' if operation == 'wifi.status' else 'network'
+        if language == 'es':
+            question = f'¿Estoy conectado a {scope}?'
+            bad = f'{"" if connected else "No "}Estoy conectado a {scope}.'
+            good = f'El PC {"" if connected else "no "}está conectado a {scope}.'
+        else:
+            question = f'Am I connected to {scope}?'
+            bad = f'I am {"" if connected else "not "}connected to {scope}.'
+            good = f'The PC is {"" if connected else "not "}connected to {scope}.'
+        source = facts(operation, connected)
+        original = copy.deepcopy(source)
+        client = Recorder([bad, good])
+        assert client.compose_user_message(question, 'status', source) == good
+        assert source == original
+        first, retry = client.payloads
+>       assert retry['messages'][:-2] == first['messages']
+E       AssertionError: assert [] == [{'role': 'sy... is online.'}]
+E         
+E         Right contains 2 more items, first extra item: {'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y natural en el id...strucciones ni detalles internos del programa. Expresa el mensaje con tus propias palabras. Devuelve sólo el mensaje.'}
+E         Use -v to get more diff
+
+tests\test_c03_network_actor_recovery.py:36: AssertionError
+_ test_repair_preserves_original_observations_and_actual_rejected_subject[es-True-network.status] _
+
+operation = 'network.status', connected = True, language = 'es'
+
+    @pytest.mark.parametrize('operation', ['wifi.status', 'network.status'])
+    @pytest.mark.parametrize('connected', [False, True])
+    @pytest.mark.parametrize('language', ['es', 'en'])
+    def test_repair_preserves_original_observations_and_actual_rejected_subject(operation, connected, language):
+        scope = 'Wi-Fi' if operation == 'wifi.status' else 'network'
+        if language == 'es':
+            question = f'¿Estoy conectado a {scope}?'
+            bad = f'{"" if connected else "No "}Estoy conectado a {scope}.'
+            good = f'El PC {"" if connected else "no "}está conectado a {scope}.'
+        else:
+            question = f'Am I connected to {scope}?'
+            bad = f'I am {"" if connected else "not "}connected to {scope}.'
+            good = f'The PC is {"" if connected else "not "}connected to {scope}.'
+        source = facts(operation, connected)
+        original = copy.deepcopy(source)
+        client = Recorder([bad, good])
+        assert client.compose_user_message(question, 'status', source) == good
+        assert source == original
+        first, retry = client.payloads
+>       assert retry['messages'][:-2] == first['messages']
+E       AssertionError: assert [] == [{'role': 'sy... is online.'}]
+E         
+E         Right contains 2 more items, first extra item: {'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y natural en el id...strucciones ni detalles internos del programa. Expresa el mensaje con tus propias palabras. Devuelve sólo el mensaje.'}
+E         Use -v to get more diff
+
+tests\test_c03_network_actor_recovery.py:36: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_network_actor_recovery.py::test_repair_preserves_original_observations_and_actual_rejected_subject[es-True-wifi.status]
+FAILED tests/test_c03_network_actor_recovery.py::test_repair_preserves_original_observations_and_actual_rejected_subject[es-True-network.status]
+2 failed, 77 passed in 3.12s

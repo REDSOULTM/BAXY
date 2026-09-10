@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-10T02:46:23.255414+00:00",
+  "arm": "candidate",
+  "cases": 50,
+  "counts": {
+    "correct": 44,
+    "failed": 6
+  },
+  "all51_requests_identical": true,
+  "all50_finals_identical": true,
+  "wlan_network_repair_calls": 0,
+  "source_adopted": false,
+  "survey_coverage_added": 0,
+  "resources": {
+    "complete": true,
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 720.078125,
+    "seconds": 18.593000000000757,
+    "manifest_unchanged": true
+  },
+  "failures": {
+    "wifi.status-0-6": "Wi-Fi connectivity is expanded to the whole PC being online/offline; only WLAN was observed.",
+    "wifi.status-0-8": "Wi-Fi connectivity is expanded to the whole PC being online/offline; only WLAN was observed.",
+    "wifi.status-1-2": "Wi-Fi connectivity is expanded to the whole PC being online/offline; only WLAN was observed.",
+    "wifi.status-1-6": "Wi-Fi connectivity is expanded to the whole PC being online/offline; only WLAN was observed.",
+    "wifi.status-1-8": "Wi-Fi connectivity is expanded to the whole PC being online/offline; only WLAN was observed.",
+    "network.status-1-6": "Says no interface is connected despite the observed active interface; contradicts its own online claim."
+  },
+  "private_hashes": {
+    "panel.json": "c9c1f7e6ea7988fe715ae50814c82d818edbc317e4bf058a9a860ff3f1bd1d56",
+    "finals.jsonl": "9171e9f65dec37c32e673bd374e7f5b603eba4319f07a062439de26dc48001e1",
+    "requests.jsonl": "da97ccbc91c50caade7c23a8b6d7ba0ac5e36dbfbce557bc9591bc6787bd56e3",
+    "responses.jsonl": "ad1ac778eee26908141f560b3a20affab9ddbf3bcb89390661ad36e217e586f1",
+    "adjudication.json": "7dc9a0cf112769d32ca0763fcc10288a523207d30f403c553e448ea4e3db60ce"
+  }
+}

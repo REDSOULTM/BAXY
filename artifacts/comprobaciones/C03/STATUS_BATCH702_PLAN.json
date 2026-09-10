@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T02:47:14.230091+00:00",
+  "parent_plan": "STATUS_BATCH689_PLAN.json",
+  "parent_plan_sha256": "de906be92c73afb24934e36c77b4a11f646a6931a131131b3db354abc5b24ffa",
+  "same73_inputs_and_order": true,
+  "panel_sha256": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+  "requirements_sha256": "237c14900a9e36e2e5f6071f132ad916a234ecb39a77e0dd497ef2565eceb2b7",
+  "survey_counts_before": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "changes": "Candidate702: extend the existing machine-subject recovery to typed network/WLAN observations, keeping the latest rejected draft and original facts. Source693 quantities and policies unchanged. Same model, runtime, per-turn criteria and campaign resource ceilings. No clearing pending state between turns.",
+  "effect_scope": "Read-only status in hidden diagnostic product. No UI/voice credit, no user data sent externally.",
+  "criteria": "Original689 criteria unchanged. Verify requested fields against fresh typed observations, installed/usable distinction, units, unknown adapters and Wi-Fi identity gap. Count all failures; no automatic survey credit.",
+  "instrumentation": "Declared before first702 execution: transparent private _post and decide_turn boundary observers inherited from521. Identical arguments, one original call, identical returned object or exception; no server flags, payload/model/candidate/output changes. Diagnostic latency includes file logging. This adds observation to689 built-in audits without changing its73 inputs/order/criteria.",
+  "instrumentation_sha256": "5a3ac833557e5988f4c87346e0512e28c8a14f0d347d698e7b044ff865e9a814"
+}

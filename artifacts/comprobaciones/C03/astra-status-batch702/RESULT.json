@@ -1,0 +1,100 @@
+{
+  "utc": "2026-09-10T03:02:30.921950+00:00",
+  "total": 73,
+  "requirements": 50,
+  "variants": 23,
+  "counts": {
+    "failed": 55,
+    "correct_observed_run": 18
+  },
+  "transitions694": {
+    "failed -> failed": 23,
+    "failed -> correct_observed_run": 5,
+    "correct_observed_run -> failed": 32,
+    "correct_observed_run -> correct_observed_run": 13
+  },
+  "gains": [
+    "H0104",
+    "H0127",
+    "H0433",
+    "H0650",
+    "processes-top3-en"
+  ],
+  "losses": [
+    "windows-focus-reference-es",
+    "H0025",
+    "H0207",
+    "H0384",
+    "H0442",
+    "H0644",
+    "disk-free-en",
+    "H0026",
+    "H0087",
+    "H0114",
+    "H0194",
+    "H0370",
+    "H0625",
+    "gpu-identity-en",
+    "gpu-usage-es",
+    "H0111",
+    "H0156",
+    "H0162",
+    "H0342",
+    "H0655",
+    "memory-total-en",
+    "memory-free-mixed",
+    "memory-used-es",
+    "H0037",
+    "H0144",
+    "H0379",
+    "H0665",
+    "battery-charge-en",
+    "battery-level-es",
+    "H0065",
+    "H0350",
+    "cpu-usage-en"
+  ],
+  "cause_groups": {
+    "unnecessary_clarification": 4,
+    "wrong_operation_and_unnecessary_confirmation": 1,
+    "pending_confirmation_blocks_new_request": 39,
+    "available_read_not_selected": 5,
+    "link_state_not_internet_verification": 1,
+    "observation_scope_expansion": 1,
+    "unverified_state_claim": 1,
+    "cpu_ranking_metric_and_membership": 2,
+    "historical_observation_without_fresh_read": 1
+  },
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2442.59375,
+    "seconds": 158.813
+  },
+  "plan_sha256": "847164fdc29180690ee492b48670dabca1f285dc6322cec0f1c7d3ed0d81fbd6",
+  "private_hashes": {
+    "panel.json": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+    "turns.jsonl": "1fab903bc1f389aec047d3ffecadd1c74e254eea3b75681329c92cc9c80a5e05",
+    "capture/events.jsonl": "5a7c756eae85072f59d74b9ade7537ae375b38ba005dd89c5d7616ee4436852e",
+    "compose-audit.jsonl": "eaeed372d9fbe23b605945a1c14ec266823ae8118ed334ea287139fe04ae0deb",
+    "turn-audit.jsonl": "6a263ea041be8ee424840f57fbd34699e649848ffc7c887ed679e7e563093621",
+    "shell-trace.jsonl": "293d146ced1c01f713bcae0a1ae391783be2dbc8ad163c621a3f2bcf5d928908",
+    "raw-replies.jsonl": "5955b0f67d5e00c0b1db722635e990d6c83963e206cb6bb72ac13cba51274127",
+    "http-posts.jsonl": "42184192741526fbf6d3a3fbc4467611f963345d12dd5908e5f33f5dde4b549e",
+    "decision-boundary.jsonl": "3196c8923bd0df916e3eccb93a09068b0afa844f3aa790ffbb5331251096dd79",
+    "review.json": "e0496420264937f869375038e8207ac60ff6e0dde9b49c5841127fa28ba5f30d",
+    "verdicts.json": "c4a579f7f1e00613402249cf2175093159c8834079836c9be24f5c6bdf742115",
+    "adjudication.json": "557726196822aa3c8f4cd51dc141472bdc7fdb7b6799c956c564de0ed1f8e962",
+    "RESULT.md": "c6f80a8d18a4ec752c009743966071f877bf9d071b5679d373a436131ddba0fe"
+  },
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "new_coverage": 0,
+  "ui_or_voice_credit": false,
+  "whole_batch_accepted": false,
+  "goal_complete": false
+}

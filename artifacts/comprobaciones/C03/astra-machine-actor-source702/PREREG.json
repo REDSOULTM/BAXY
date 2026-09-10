@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-10T02:44:30.175174+00:00",
+  "adopted": false,
+  "parent_commit": "9aa5a1c8953bd6b3c2f399b0dd3c0c18b6410826",
+  "sources": {
+    "src/baxy_mind/llm.py": "383047581f5ba5347aecd1be384370f19b5bcc20256070780d0cc9ff2aa17c13",
+    "tests/test_c03_network_actor_recovery.py": "d151fa5c0ce5e5837de9f9e99c09b6aa60c02f604f328f2403ff1b4da68bcf55",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "7beb6c0b275eeecf9eff888464f8c25518821a3221eadb213a194438cea0f426",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "0e930592376c5f804e80f5d5b6a26bf0063206b3658774de63990e79974a1aa1",
+    "tests/test_price_v8_veto_damage_by_cause.py": "306caad62ff4698492f1f7b15ceee4f154bb4006d3523becadb5eec1f20c51e9"
+  },
+  "python_tree_sha256": "6a01540ccabb4121cb90e6d8f3dea527e0feefde0cd6868e8b3a38e03e028fe4",
+  "python_files": 406,
+  "design": "Reuse the existing draft-aware CPU machine-actor recovery for non-capability wrong_actor with a typed connectivity Boolean. Preserve the original request, observed scope, polarity and latest rejected draft. No new retry, first prompt, validator, model or backend. Remove the generic online correction for this actor error.",
+  "inheritance": "579/580 qualified the existing recovery for CPU.694WLAN correctly detects the wrong actor, but old retry loses Wi-Fi scope and third retry requests First person.694cause-group false_composition_rejection is an overbroad historical label: detector is correct; recovery is defective.",
+  "focal": {
+    "passed": 79,
+    "skipped": 0,
+    "initial_failed": 2,
+    "initial_test_correction": "Two positive Spanish fixtures copied the entire question and entered extra_claim before actor detection. The scoped transport test now uses a non-echo request and explicitly verifies wrong_actor before checking its recovery; positive/negative states and existing rejection checks remain."
+  },
+  "validation_next": "Fast702/current declarations; same50controls701 and exact73product turns694 with a separate transparent observer.701alone cannot prove WLAN recovery: no baselineWLAN call retried.",
+  "goal_complete": false,
+  "survey_coverage_added": 0
+}
