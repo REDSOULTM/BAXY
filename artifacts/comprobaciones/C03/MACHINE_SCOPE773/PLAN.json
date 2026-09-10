@@ -1,0 +1,45 @@
+{
+  "utc": "2026-09-10T18:22:05.972055+00:00",
+  "parent": "86ad757c108f1134221e924e170901550fd8ea81",
+  "evidence": [
+    "STATUS_BATCH772/RESULT.json H0359",
+    "test_effect_intent.py:4114-4248",
+    "REGISTRO_DE_MANTENIBILIDAD.md:1098-1124"
+  ],
+  "diagnosis": "Spanish a+determiner was treated as English indefinite foreign hardware, preventing a fresh battery read.",
+  "change": "Disambiguate existing indefinite-hardware rule; preserve exclusion of conditional remaining-state verbs and explicit other owner exposed by boundary tests.",
+  "first_baseline": {
+    "failed": 30,
+    "passed": 22,
+    "seconds": 0.93
+  },
+  "first_owner_run": {
+    "failed": 2,
+    "passed": 2094,
+    "seconds": 57.35,
+    "cause": "Removing accidental indefinite-article veto exposed missing conditional quedar and explicit other-person scope boundaries; preserved and repaired."
+  },
+  "boundary_final_before_seal": {
+    "passed": 55,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 1.2
+  },
+  "next": "Run sealed owners/current integrity/Fast, publish source, then registered774 complete battery category and10 development variants.",
+  "unchanged": [
+    "model",
+    "backend",
+    "sampler",
+    "prompts",
+    "budgets",
+    "Core and providers",
+    "V8 declarations",
+    "historical wake seals"
+  ],
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

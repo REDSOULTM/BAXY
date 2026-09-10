@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-10T18:25:40.187425+00:00",
+  "status": "adopted_after_owners_integrity_fast",
+  "source_pins": "SOURCE_PINS.json",
+  "commit": "Containing commit",
+  "changed_layer": "Existing deterministic input-scope rules, independent of model.",
+  "new_model_or_profile": false,
+  "prompts_and_budgets_unchanged": true,
+  "coverage_added": 0
+}

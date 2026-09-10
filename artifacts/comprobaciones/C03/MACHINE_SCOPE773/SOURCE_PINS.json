@@ -1,0 +1,8 @@
+{
+  "src/baxy_mind/effect_intent.py": "caa4f21814d527c3830c51cbc83af288b5ca519aa13b76e0cab82445ff329e9a",
+  "tests/test_c03_machine_preposition_scope.py": "cb117e6aa79510fd857619523898aea41533bffc9d9e38b0f66d85007e5d0943",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "adc21338348bc1064c3673a2af2ca6b298c2c7bb2162ce51e4c9151066b35a33",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "4b9f407c55837c1ae1c81a4a31d86f96e22631e0e74e590f872a662af6ddf622",
+  "src/baxy_mind/llm.py": "ba862eed41908014436f9710df3cabafc16d75565eaf1bed3325c3356b0337a0",
+  "src/baxy_mind/window_prose_facts.py": "f6396ef1c7a644abee1d763db70866eb9886ea6bcca0697c4ff059342da669a4"
+}

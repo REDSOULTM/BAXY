@@ -1,0 +1,17 @@
+{
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/SOURCE_PINS.json": "fa3b4459082d4713f3253a9d36f427156494ab266fb9c4974d5715ec9b78b565",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/PROGRAM.json": "bccefc2682f8869952c56e7cf383780aea9515c6f8374d05cf4a6f9d92abd7bd",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/PLAN.json": "3287e0c2f357d01f0168ef0b3b2477d3ac5a150e42626b3da79809fcda890661",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/baseline-initial.log": "1e3fa62dc024b7d8082b95f881a114748f114ed8a41d6fbd2ae693c6f065e509",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/owners-initial.log": "ab9a106eafb1bafdf5ec68bcd5b556ff2df818230ca830b3e5a245582f67642a",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/boundary-initial.log": "55ec9a83ad75465a9a94395f3217898b77b83c143c4d4e33a386e98729fea049",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/final.log": "6dd40610f9343c16b687b22cfd50b29a45736843b4f8c783b12277b435e35954",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/fast.log": "e6caf8023ea6752525afe1848cb6d66c1e200b7215cc7768aeb9838e9c3568bf",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/VALIDATION.json": "14f19fe7e76823887411e57558123d574c3b8afd69db5034cea34195efc606d7",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/ADOPTION.json": "d234050f8fbc81a7c35621779a72571a3694033a193bdb67152b56d59f52ca87",
+  "artifacts/comprobaciones/C03/MACHINE_SCOPE773/REPORT.md": "66405257b6e87af10f25ae8e43d7bcd84d39c887a3b534ec900a8c14ce224fed",
+  "scratchpad/c03-prepare-machine773.py": "95c395ce098d7b9f46a95a7d07594d278f135f66c4013521684a69c9d2e5f179",
+  "scratchpad/c03-adopt-machine773.py": "1d579e998bb63067d1dace27e54bdeeb9c61b156a0c978bdd870dd9968244c86",
+  "scratchpad/c03-status-batch774.py": "ea88efa65fe363254d9c0eb18f4485dbbadc33ca054e7b822e24c0cf75038275",
+  "scratchpad/c03-review-status774.py": "f4186178a26e52ee6afb322bb4169515a9778d5aea924b4a92958f6fb10dc58a"
+}

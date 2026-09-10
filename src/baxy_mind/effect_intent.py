@@ -4692,7 +4692,7 @@ def _is_past_or_hypothetical_state(text: str) -> bool:
             r"era|eran|fue|fueron|quedaba|quedaban|had|was|were|"
             r"used\s+to)\b|"
             r"\b(?:tendria|tendrias|seria|serian|tuviera|tuvieras|tuviese|"
-            r"abriria|abririas|would|hipoteticamente|"
+            r"abriria|abririas|quedaria(?:s|mos|n)?|would|hipoteticamente|"
             r"hypothetically|supongamos|suponiendo|imagina|imagine)\b|"
             r"\bif\b.{0,64}\b(?:another|other)\s+(?:computer|device)\b|"
             r"\b(?:si|if)\b.{0,64}\b(?:otro|otra|another|other)\s+"
@@ -4789,9 +4789,18 @@ def _is_machine_knowledge_or_diagnosis(text: str) -> bool:
             # equipo: preguntar por su consumo es conocimiento, no medición.
             r"\b(?:qwen|gemma|llama|mistral|mixtral|gpt|claude|deepseek|phi|"
             r"falcon|llm|modelo de lenguaje|language model)\b|"
-            r"\b(?:un|una|a|an|otro|otra|another)\s+(?:\w+\s+){0,2}"
+            # "a la notebook" / "a mi laptop" uses the Spanish preposition,
+            # not the indefinite article in "a small laptop".
+            r"\b(?:un|una|an|otro|otra|another|"
+            r"a(?!\s+(?:el|la|los|las|mi|mis|tu|tus|su|sus|"
+            r"este|esta|estos|estas|ese|esa|esos|esas)\b))"
+            r"\s+(?:\w+\s+){0,2}"
             r"(?:gpu|cpu|pc|notebook|laptop|equipo|computador|computadora|"
             r"juego|game|tarjeta|placa|maquina|machine)\b|"
+            # An explicit other owner does not identify this machine, even
+            # when its noun has a definite article ("la notebook de ...").
+            r"\bde\s+otr[oa]\s+(?:persona|usuario|dueno|propietario)\b|"
+            r"\b(?:someone|somebody)\s+else(?:'s)?\b|"
             # otro dispositivo con batería o consumo propio
             r"\b(?:auto|coche|carro|car|moto|bicicleta|bike|scooter|"
             r"celular|telefono|movil|phone|smartphone|tablet|ipad|"

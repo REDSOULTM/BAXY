@@ -1,3 +1,7 @@
+773 adoptado: preposición española conserva scope local y límites de condicional/dueño ajeno. 2121pass/1skipSTT/79,73s,55nuevos; Fast0/Release21,94s, sesiones42128/36710 recogidas. 6pins intactos; programa407=7862ae1effb430cff9cbb057fa83912786bca493faba55b5c9636b5cd7181b18. Publicar y ejecutar774 categoría batería completa7+10variantes, no inferencia activa.26/716/0.
+
+773 candidato: preposición a+determinante deja de vetar lectura local; condicional quedar y dueño ajeno explícito conservan límites. Baseline30fail/22pass; primer2094pass/2fallos de frontera reparados,55controles finales pass. Programa407 y6pins sellados. Faltan owners/integridad/Fast y publicación;774 preparado con categoría batería7+10variantes. No inferencia activa,26/716/0.
+
 772 terminada0/5226 recogida,73 adjudicados:52 pass/21 fallos; todas guardas true. 3499,56MiB VRAM/2476,46MiB RSS/268,719s. Sin mejora global; inventarios siguen fallando con otra observación. Registro50 referencias,26/716/0; SHA=728ea559efbbe511e6af5d9210569fe3b58393750d7230378b1b7f31710071b4. Siguiente773: corregir falso hardware ajeno por a+determinante español; diagnóstico de H0359 confirmado, no request-head. No inferencia activa.
 
 771 publicada 098bfd06bc0a7e428675d7a563fe160fd730fe27; HEAD=origin=remoto,6fuentes/17evidencias Git verificadas.772 activo sesión5226,73casos registrados,launcher5996. No editar fuente ni reiniciar. Encuesta26/716/0.
