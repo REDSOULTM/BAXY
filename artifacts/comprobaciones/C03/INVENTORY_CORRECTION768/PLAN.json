@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-10T17:25:18.912611+00:00",
+  "source_parent": "b2983c075b98f401fc9f49ba7bcd1980a2e2bf04",
+  "cause": "767 H0023 unobserved chronology is correctly rejected but its cause is dropped; retry forces20-window inventory into one sentence.",
+  "change": "Existing window factual feedback now carries unsupported chronology; inventory retries preserve requested list/page scope. No model condition, names, new response template, deadline or sampler change.",
+  "first_attempt_unchanged": true,
+  "factual_acceptance_rules_unchanged": true,
+  "tests": "24 new ES/EN×2 model paths×3 page sizes×2/3 attempts; existing chronology/uncertainty checks strengthened.775owners pass before canonical-byte preparation.",
+  "initial_test_error": "24 initial failures compared full first/retry user messages despite existing movement of the language instruction to system. Corrected assertion compares request and decoded facts; full replies and rejection assertions unchanged.",
+  "validation_pending": "Owners on sealed bytes, complete window suites, current-pin integrity, Fast. Publish after green, then registered73 regression.",
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

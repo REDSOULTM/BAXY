@@ -1,0 +1,20 @@
+{
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/PLAN.json": "ebf3a6fe32a2c5c4088e17525e9b8f75ee229e5416a91378b752bcb8d735372a",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/PROGRAM.json": "7d308f2a312d3f101c1f8a66184e2c9fe86d8789537db6977839bad13d132598",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/SOURCE_PINS.json": "588bdb991807cc0e303c4947c51aa181015a7281469ac2e542510891a2740d89",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/owners-before-seal.log": "3f0de74482a7bc95c3eebe5f59b6a4c0d23ddd5e6b546b0e0f911d49b8efa90f",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/owners-initial-before-seal.log": "e45e123f7662747d80f03430cf6778bd7dd3a7e09c2f6ee0b6308654557c80b7",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/owners-sealed.log": "8ff1d53239389ac9ab16db6d4272ce972bfc814317ffa28a6ec39a3de489f622",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/integrity.log": "29aa27e62d867a8046f7ad339b8c7a346d3b8821c7434319df87d644be656ed1",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/fast.log": "b7703d51ecda25d26eee8f412e9c133498d3c85fa472c98ce6e1eb10acbee15e",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/CAPTURED_PARITY.json": "7b223add674ee3e66f10443e2f12189f0399237d12ca0d86cd4d54831d59121a",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/VALIDATION.json": "d1bb070c7698dcbecc2e6df70930e80621c47953e29b1d5bebd47357762b10be",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/ADOPTION.json": "582df1ad57e590330e72ba6b6c303f9fa6a525f0801e9deba924c47f451884bf",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/REPORT.md": "7e05e2d5ae79d03358ebe077e2451ce1eabeacfc00dac7d259ace088b715a1d8",
+  "scratchpad/c03-prepare-correction768.py": "a901fa9cc76e3a9050057595f2bb0afa718f6a815ab47d639796b9642f8a7c62",
+  "scratchpad/c03-check-correction768.py": "6ff30448ece329ac34c8e715475a7889fd62efc5d06200bec918329cca4dbe6c",
+  "scratchpad/c03-adopt-correction768.py": "a4cc803b0ba9ffba92c42a46feec5c9fe73acfef10e56abbc48f5f0d767e868a",
+  "scratchpad/c03-status-batch769.py": "71d2e80d7bc5e10a8f519d038e93dff526bdb7cac176c717ba9d534dd09aaa1e",
+  "scratchpad/c03-review-status769.py": "f011e73cc68125d6103fd4288925f44d6d4ba8b9a54c0e0f32d2541a6e16de0f",
+  "artifacts/comprobaciones/C03/INVENTORY_CORRECTION768/LOG_FORMAT.json": "7851f2115727c27a8d0da5336c961872e21968309c3f71f74a05406f1203fbd1"
+}

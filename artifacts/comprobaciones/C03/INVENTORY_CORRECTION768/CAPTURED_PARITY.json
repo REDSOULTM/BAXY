@@ -1,0 +1,15 @@
+{
+  "baseline_commit": "b2983c075b98f401fc9f49ba7bcd1980a2e2bf04",
+  "baseline_window_source_sha256": "60d3a99ebab19466b91e6e5dad8650352e3916b0e46996997ff8059ad831ab8a",
+  "review_sha256": "56eaa8ec460ae330d481ffeb6f55800765f5a656424f69198f9e7a73e70a9dfb",
+  "unique_captured_window_drafts": 9,
+  "decisions_unchanged": true,
+  "outcomes": {
+    "extra_claim": 1,
+    "missing_fact": 3,
+    "reversed_result": 2,
+    "accepted_by_window_facts": 3
+  },
+  "unsupported_chronology_feedback_added": 1,
+  "scope": "Offline deterministic window fact checker only; not new model inference, full response acceptance or coverage."
+}

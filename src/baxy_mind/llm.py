@@ -80,7 +80,7 @@ from .time_budget import remaining_seconds
 from .window_prose_facts import (
     project_window_inventory,
     window_fact_defect,
-    window_focus_feedback,
+    window_fact_feedback,
     window_status_assertions,
 )
 from .observed_response_literals import without_observed_window_names
@@ -10032,6 +10032,17 @@ class LlmRuntime:
         )
         retry_payload = dict(payload)
         defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
+        inventory_answer = (
+            visible_situation.get("operation") == "window.resolve"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("returnedPageScope"), dict)
+        )
+        # A factual correction must preserve the requested result's size. The
+        # original observation already contains every entry; do not duplicate it.
+        correction_format = (
+            "Preserve the requested list and its page scope. No JSON. No codes."
+            if inventory_answer else "One sentence. No JSON. No codes."
+        )
         repair_machine_actor = defect == "wrong_machine_actor" or (
             defect == "wrong_actor"
             and not _looks_like_capability_question(user_text)
@@ -10085,7 +10096,10 @@ class LlmRuntime:
                 else (
                     ""
                     if _looks_like_continue_constraint(user_text)
-                    else "One short sentence of the facts."
+                    else (
+                        "State only what the observation supports."
+                        if inventory_answer else "One short sentence of the facts."
+                    )
                 )
             ),
             "wrong_actor": (
@@ -10169,15 +10183,15 @@ class LlmRuntime:
             for part in (
                 retry_hint,
                 language_contract,
-                "One sentence. No JSON. No codes.",
+                correction_format,
             )
             if part
         )
         retry_system = f"{retry_system_base}\n{correction}"
         retry_user = _compose_user_content(user_text, prompt_facts, "", include_request=cause != "acting")
-        focus_correction = window_focus_feedback(text, visible_situation, user_text)
-        if focus_correction is not None:
-            retry_user += "\nVerified factual correction: " + json.dumps(focus_correction, ensure_ascii=False)
+        factual_correction = window_fact_feedback(text, visible_situation, user_text)
+        if factual_correction is not None:
+            retry_user += "\nVerified factual correction: " + json.dumps(factual_correction, ensure_ascii=False)
         retry_payload["messages"] = [
             {"role": "system", "content": retry_system},
             {"role": "user", "content": retry_user},
@@ -10217,12 +10231,12 @@ class LlmRuntime:
         sent_instructions.append(third_hint)
         third_system = (
             f"{retry_system_base}\n{third_hint} {language_contract} "
-            "One sentence. First person. No JSON. No codes."
+            + (correction_format if inventory_answer else "One sentence. First person. No JSON. No codes.")
         )
         third_user = _compose_user_content(user_text, prompt_facts, "", include_request=cause != "acting")
-        focus_correction = window_focus_feedback(retry_text, visible_situation, user_text)
-        if focus_correction is not None:
-            third_user += "\nVerified factual correction: " + json.dumps(focus_correction, ensure_ascii=False)
+        factual_correction = window_fact_feedback(retry_text, visible_situation, user_text)
+        if factual_correction is not None:
+            third_user += "\nVerified factual correction: " + json.dumps(factual_correction, ensure_ascii=False)
         third_payload["messages"] = [
             {"role": "system", "content": third_system},
             {"role": "user", "content": third_user},

@@ -111,13 +111,19 @@ def _window_focus_question(user_text: str, window: dict) -> str | None:
     return "state"
 
 
-def window_focus_feedback(text: str, payload: dict, user_text: str = "") -> dict | None:
-    """Bind explicit focus assertions to their window, never to display state.
+def window_fact_feedback(text: str, payload: dict, user_text: str = "") -> dict | None:
+    """Preserve the factual cause when a window answer needs correction.
 
     Single-window focus coverage is checked only when explicitly requested.
     Unknown subjects and untyped fields stay unknown. Ambiguous conjunction
     negation does not establish a Boolean claim to contradict.
     """
+    inventory = _inventory_seen(payload)
+    if inventory is not None and _inventory_chronology_claim(text, inventory):
+        return {
+            "unsupported_claim": {"predicate": "window_opening_chronology", "observed": False},
+            "rejected_draft": text,
+        }
     seen = payload.get("seen")
     if not str(payload.get("operation", "")).startswith("window.") or not isinstance(seen, dict):
         return None
@@ -542,7 +548,7 @@ def window_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     inventory_defect = _inventory_fact_defect(text, payload, user_text)
     if inventory_defect:
         return inventory_defect
-    feedback = window_focus_feedback(text, payload, user_text)
+    feedback = window_fact_feedback(text, payload, user_text)
     if feedback is not None:
         return "reversed_result" if "contradiction" in feedback else "missing_fact"
     seen = _seen(payload)

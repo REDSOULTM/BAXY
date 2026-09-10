@@ -130,12 +130,12 @@ def test_valid_focus_does_not_need_an_extra_inference():
 @pytest.mark.parametrize("focus", [True, False])
 @pytest.mark.parametrize("name", ["Vega", "Órbita 42", "Is Active"])
 def test_correction_is_derived_from_this_subject_and_value(focus, name):
-    from baxy_mind.window_prose_facts import window_focus_feedback
+    from baxy_mind.window_prose_facts import window_fact_feedback
     payload = _compose_situation_payload(situation(focus, name=name), "en")
     wrong = f"{name} is {'not ' if focus else ''}active."
-    feedback = window_focus_feedback(wrong, payload)
+    feedback = window_fact_feedback(wrong, payload)
     assert feedback == {"window_title":name, "contradiction":{"predicate":"is_active_window", "observed_value":focus, "draft_claim":not focus}, "rejected_draft":wrong}
-    assert window_focus_feedback(f"{name} is {'not ' if not focus else ''}active.", payload) is None
+    assert window_fact_feedback(f"{name} is {'not ' if not focus else ''}active.", payload) is None
 
 
 def test_third_attempt_receives_its_own_rejected_claim():

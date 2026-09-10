@@ -1,9 +1,11 @@
 """Inventory page meaning, complete identities and unobserved chronology."""
 import copy
+import json
 
 import pytest
 
 from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect, LlmRuntime
+from baxy_mind.window_prose_facts import window_fact_feedback
 
 
 def observation(count=2, total=7, offset=0, complete=True):
@@ -131,6 +133,10 @@ def test_only_verified_success_gets_semantic_projection(flag, value):
 def test_inventory_cannot_establish_opening_times_or_chronology(claim, count, total):
     payload = _compose_situation_payload(observation(count, total), "en", "List the windows.")
     assert _payload_fact_defect(claim, payload, "List the windows.") == "extra_claim"
+    assert window_fact_feedback(claim, payload) == {
+        "unsupported_claim": {"predicate": "window_opening_chronology", "observed": False},
+        "rejected_draft": claim,
+    }
 
 
 @pytest.mark.parametrize("reply", [
@@ -145,6 +151,7 @@ def test_inventory_cannot_establish_opening_times_or_chronology(claim, count, to
 def test_unknown_chronology_and_page_positions_are_not_recency_claims(reply):
     payload = _compose_situation_payload(observation(), "en", "List the windows.")
     assert not _payload_fact_defect(reply, payload, "List the windows.")
+    assert window_fact_feedback(reply, payload) is None
 
 
 @pytest.mark.parametrize("name", ["Latest", "Newest", "Más recientes", "Chronological", "Últimas abiertas"])
@@ -178,6 +185,42 @@ def test_compositor_applies_the_same_factual_rule_to_both_model_families(model):
     assert reply == "This page lists two of seven windows: Órbita 0 and Órbita 1."
     assert len(client.requests) == 2
     assert '"windowOpeningTimesObserved": false' in client.requests[0]["messages"][1]["content"]
+
+
+@pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+@pytest.mark.parametrize("language", ["es", "en"])
+@pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+@pytest.mark.parametrize("attempts", [2, 3])
+def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+    situation = observation(count, total)
+    original = copy.deepcopy(situation)
+    names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+    request = "Lista las ventanas." if language == "es" else "List the windows."
+    prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+              else f"This page lists {count} of {total} windows")
+    wrong = [prefix + suffix + ":\n" + names for suffix in (
+        [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+    good = prefix + ":\n" + names
+    client = Capture(model)
+    client.replies = iter(wrong[:attempts - 1] + [good])
+    assert client.compose_user_message(request, "status", {"situation": situation}) == good
+    assert len(client.requests) == attempts
+    first_user = client.requests[0]["messages"][1]["content"]
+    assert "Verified factual correction" not in first_user
+    for index, payload in enumerate(client.requests[1:]):
+        system = payload["messages"][0]["content"]
+        user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+        first_request, first_facts = first_user.split("\nsituation: ", 1)
+        retry_request, retry_facts = user.split("\nsituation: ", 1)
+        assert retry_request == first_request
+        assert json.JSONDecoder().raw_decode(retry_facts)[0] == json.JSONDecoder().raw_decode(first_facts)[0]
+        assert json.loads(feedback) == {
+            "unsupported_claim": {"predicate": "window_opening_chronology", "observed": False},
+            "rejected_draft": wrong[index],
+        }
+        assert "One sentence" not in system and "One short sentence" not in system
+        assert payload["max_tokens"] == client.requests[0]["max_tokens"]
+    assert situation == original
 
 
 def test_nested_results_keep_their_own_page_scope_without_mutating_the_snapshot():

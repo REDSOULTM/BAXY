@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-10T17:29:30.490447+00:00",
+  "status": "adopted_after_owners_integrity_fast",
+  "source_pins": "SOURCE_PINS.json",
+  "first_attempt_model_profile_sampler_budget_unchanged": true,
+  "retry_instructions_changed": true,
+  "factual_acceptance_rules_unchanged": true,
+  "coverage_added": 0,
+  "commit": "Containing commit"
+}

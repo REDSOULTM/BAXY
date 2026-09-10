@@ -1,0 +1,962 @@
+........................................................................ [  9%]
+....................................FFFFFFFFFFFFFFFFFFFFFFFF............ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 37%]
+........................................................................ [ 46%]
+........................................................................ [ 55%]
+........................................................................ [ 65%]
+........................................................................ [ 74%]
+........................................................................ [ 83%]
+........................................................................ [ 92%]
+.......................................................                  [100%]
+================================== FAILURES ===================================
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'es', count = 2
+total = 7, attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 585 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-es-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'es', count = 2, total = 7
+attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 585 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'en', count = 2
+total = 7, attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 583 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-en-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'en', count = 2, total = 7
+attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 583 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'es', count = 20
+total = 25, attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 1473 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-es-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'es', count = 20, total = 25
+attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 1473 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'en', count = 20
+total = 25, attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 1471 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-en-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'en', count = 20, total = 25
+attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 1471 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'es', count = 3
+total = 3, attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 637 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-es-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'es', count = 3, total = 3
+attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 637 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'en', count = 3
+total = 3, attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 635 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-en-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'en', count = 3, total = 3
+attempts = 2
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 635 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'es', count = 2
+total = 7, attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 585 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-es-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'es', count = 2, total = 7
+attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 585 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'en', count = 2
+total = 7, attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 583 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-en-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'en', count = 2, total = 7
+attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 583 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'es', count = 20
+total = 25, attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 1473 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-es-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'es', count = 20, total = 25
+attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 1473 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'en', count = 20
+total = 25, attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 1471 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-en-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'en', count = 20, total = 25
+attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 1471 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'es', count = 3
+total = 3, attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 637 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-es-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'es', count = 3, total = 3
+attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'Lista las ve...dow.resolve"}' == 'Lista las ve...ras inglesas.'
+E
+E             Skipping 637 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Idioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf] _
+
+model = 'Qwen3-4B-Instruct-2507-Q4_K_M.gguf', language = 'en', count = 3
+total = 3, attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 635 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+_ test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-en-K2-Horizon-3.7B-Q4_K_M.gguf] _
+
+model = 'K2-Horizon-3.7B-Q4_K_M.gguf', language = 'en', count = 3, total = 3
+attempts = 3
+
+    @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+    @pytest.mark.parametrize("language", ["es", "en"])
+    @pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+    @pytest.mark.parametrize("attempts", [2, 3])
+    def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+        situation = observation(count, total)
+        original = copy.deepcopy(situation)
+        names = "\n".join('- "' + w["title"] + '"' for w in situation["observed"]["windows"])
+        request = "Lista las ventanas." if language == "es" else "List the windows."
+        prefix = (f"Esta página muestra {count} de {total} ventanas" if language == "es"
+                  else f"This page lists {count} of {total} windows")
+        wrong = [prefix + suffix + ":\n" + names for suffix in (
+            [", las más recientes", ", las más antiguas"] if language == "es" else [", the newest", ", the oldest"])]
+        good = prefix + ":\n" + names
+        client = Capture(model)
+        client.replies = iter(wrong[:attempts - 1] + [good])
+        assert client.compose_user_message(request, "status", {"situation": situation}) == good
+        assert len(client.requests) == attempts
+        first_user = client.requests[0]["messages"][1]["content"]
+        assert "Verified factual correction" not in first_user
+        for index, payload in enumerate(client.requests[1:]):
+            system = payload["messages"][0]["content"]
+            user, feedback = payload["messages"][1]["content"].split("\nVerified factual correction: ")
+>           assert user == first_user
+E           assert 'List the win...dow.resolve"}' == 'List the win...English only.'
+E
+E             Skipping 635 identical leading characters in diff, use -v to show
+E             - w.resolve"}
+E             ?            -
+E             + w.resolve"}
+E             - Mandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».
+E             - English only.
+
+tests\test_c03_inventory_semantic_projection.py:213: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-es-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-2-7-en-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-es-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-20-25-en-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-es-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[2-3-3-en-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-es-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-2-7-en-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-es-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-20-25-en-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-es-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-es-K2-Horizon-3.7B-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-en-Qwen3-4B-Instruct-2507-Q4_K_M.gguf]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft[3-3-3-en-K2-Horizon-3.7B-Q4_K_M.gguf]
+24 failed, 751 passed in 5.34s

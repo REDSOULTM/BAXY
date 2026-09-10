@@ -1,0 +1,7 @@
+{
+  "utc": "2026-09-10T17:30:01.635890+00:00",
+  "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-inventory-correction768-private\\owners-initial-original.log",
+  "original_sha256": "46165d70a17b0c31af5c01b806122bb96a5bb2d4d73d88c648ae83c4eea22c04",
+  "public_sha256": "e45e123f7662747d80f03430cf6778bd7dd3a7e09c2f6ee0b6308654557c80b7",
+  "reason": "Initial pytest failure lines contain trailing spaces. Public copy trims only line-end spaces; raw output retained privately. git diff --check initially failed before publication; source and tests unchanged."
+}
