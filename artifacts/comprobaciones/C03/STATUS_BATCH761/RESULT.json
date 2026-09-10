@@ -1,0 +1,641 @@
+{
+  "utc": "2026-09-10T16:20:47.054386+00:00",
+  "status": "diagnostic_adjudicated",
+  "cases": 73,
+  "correct": 51,
+  "not_accredited": 22,
+  "substantive_failures": 22,
+  "interpretation_sensitive": 3,
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "method": "All73 records read against their fresh facts: root reviewedt1-7 and disputed cases; two readonly reviewers inspectedt8-40 andt41-73. Root made final adjudications. Same frozen689/729 panel and criteria. Not native model, UI/voice or causal cross-run scoring.",
+  "interpretation_sensitivity": "H0655 explicitly separates total usable, free, used and installed quantities; accepted from complete meaning, unlike the bare available claim in752B. Demanding the literal field label would remove1. Audio H0383/audio-status-en are byte-identical to their accepted752B replies: current default endpoint was measured and not reassigned. Demanding an unrequested literal endpoint name and explicit percent symbol would remove2. Those stricter readings are recorded without changing the main criterion after the run.",
+  "failure_categories": {
+    "inventory_composition_not_delivered": 2,
+    "global_inventory_interpretation": 3,
+    "faithful_focus_draft_rejected": 1,
+    "no_fresh_read": 2,
+    "memory_total_labelled_available": 2,
+    "supported_read_not_selected": 7,
+    "internet_not_observed": 1,
+    "wifi_scope_expanded": 1,
+    "cpu_process_metric_and_membership": 2,
+    "process_memory_ranking": 1
+  },
+  "latency_seconds": {
+    "scope": "first to last turn trace, including recovery; not UI/voice time",
+    "median": 0.9560270000000018,
+    "maximum": 27.473390999999996
+  },
+  "resources": {
+    "utc": "2026-09-10T16:05:57.121367+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2503.34765625,
+    "seconds": 273.344,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "panel_sha256": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+  "evidence_sha256": {
+    "panel.json": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+    "review.json": "c55511ad19ba7bee48753186126eb65bb22a7e76dea153a47d91cf417cb06236",
+    "capture/events.jsonl": "436887130f43d185479d3b50e5a71d65fd7e61fc0f722c51112e3e839b9b1189",
+    "shell-trace.jsonl": "0d0e9b8b506b3bf0f2e4f0ced69a53714d65b421d6dcccfe3cc9c0a31e4d7b48",
+    "turn-audit.jsonl": "30edb0328cab6e56d35c4c638dfbba7132d188122c958ef98f6fccb6648a4048",
+    "compose-audit.jsonl": "71005337fff71e8becb4d6a53958751e5a50add7325ac1d1e6867bd98c3ee43c",
+    "raw-replies.jsonl": "99f78f7627342b1522667c6f7917f6ad1d5e5242dc1a5c471d4a33e602d501bc",
+    "processes.json": "51378fb261aa95f53356051b432cd250168d809fd07d2a128f67266cd6ab9ffb",
+    "memory-samples.jsonl": "d80c1989fe8f588e4a858938fba50f2af06258554e2bf10451768b2bf61c42cb"
+  },
+  "verdicts": [
+    {
+      "case_id": "H0023",
+      "group": "windows",
+      "turn_id": "t1",
+      "correct": false,
+      "category": "inventory_composition_not_delivered",
+      "reason": "window.resolve reached Core, but no final inventory composition was captured or delivered. The captured status text is not the requested inventory. The internal cause remains unproved."
+    },
+    {
+      "case_id": "H0103",
+      "group": "windows",
+      "turn_id": "t2",
+      "correct": false,
+      "category": "inventory_composition_not_delivered",
+      "reason": "window.resolve reached Core, but no final inventory composition was captured or delivered. The captured status text is not the requested inventory. The internal cause remains unproved."
+    },
+    {
+      "case_id": "H0104",
+      "group": "windows",
+      "turn_id": "t3",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh foreground observation supports the named focused window and any stated display state."
+    },
+    {
+      "case_id": "H0209",
+      "group": "windows",
+      "turn_id": "t4",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory read reached Core. Spanish raw proposals for window.resolve were vetoed by domain_grounding; the English raw proposal selected window.active, then was vetoed. The global parser misses these envelopes; clarification does not fulfill the request, and the English final is also Spanish."
+    },
+    {
+      "case_id": "H0663",
+      "group": "windows",
+      "turn_id": "t5",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory read reached Core. Spanish raw proposals for window.resolve were vetoed by domain_grounding; the English raw proposal selected window.active, then was vetoed. The global parser misses these envelopes; clarification does not fulfill the request, and the English final is also Spanish."
+    },
+    {
+      "case_id": "windows-all-en",
+      "group": "windows",
+      "turn_id": "t6",
+      "correct": false,
+      "category": "global_inventory_interpretation",
+      "reason": "No inventory read reached Core. Spanish raw proposals for window.resolve were vetoed by domain_grounding; the English raw proposal selected window.active, then was vetoed. The global parser misses these envelopes; clarification does not fulfill the request, and the English final is also Spanish."
+    },
+    {
+      "case_id": "windows-focus-mixed",
+      "group": "windows",
+      "turn_id": "t7",
+      "correct": false,
+      "category": "faithful_focus_draft_rejected",
+      "reason": "Fresh foreground data identifies ChatGPT. Eighteen drafts identify that focus correctly using ventanal/focus, but window prose validation rejects them as missing_fact and no final is delivered."
+    },
+    {
+      "case_id": "windows-focus-reference-es",
+      "group": "windows",
+      "turn_id": "t8",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh foreground observation supports the named focused window and any stated display state."
+    },
+    {
+      "case_id": "H0025",
+      "group": "disk",
+      "turn_id": "t9",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "H0207",
+      "group": "disk",
+      "turn_id": "t10",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "H0384",
+      "group": "disk",
+      "turn_id": "t11",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "H0442",
+      "group": "disk",
+      "turn_id": "t12",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "H0644",
+      "group": "disk",
+      "turn_id": "t13",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "disk-free-en",
+      "group": "disk",
+      "turn_id": "t14",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "disk-used-es",
+      "group": "disk",
+      "turn_id": "t15",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh disk observation supports the requested free/used amount with matching decimal units and requested drive."
+    },
+    {
+      "case_id": "H0026",
+      "group": "gpu",
+      "turn_id": "t16",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "H0087",
+      "group": "gpu",
+      "turn_id": "t17",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "H0114",
+      "group": "gpu",
+      "turn_id": "t18",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "H0194",
+      "group": "gpu",
+      "turn_id": "t19",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "H0370",
+      "group": "gpu",
+      "turn_id": "t20",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "H0625",
+      "group": "gpu",
+      "turn_id": "t21",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "gpu-identity-en",
+      "group": "gpu",
+      "turn_id": "t22",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "gpu-usage-es",
+      "group": "gpu",
+      "turn_id": "t23",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh single/plan GPU observations support the reported adapter, capacity or usage without claiming unobserved adapters."
+    },
+    {
+      "case_id": "H0111",
+      "group": "memory",
+      "turn_id": "t24",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "H0156",
+      "group": "memory",
+      "turn_id": "t25",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "H0162",
+      "group": "memory",
+      "turn_id": "t26",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "H0342",
+      "group": "memory",
+      "turn_id": "t27",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "H0532",
+      "group": "memory",
+      "turn_id": "t28",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "Current RAM capacity/process ranking is answered from conversational history without a fresh requested read. The final plausible value does not establish the current machine observation or aggregate app memory."
+    },
+    {
+      "case_id": "H0539",
+      "group": "memory",
+      "turn_id": "t29",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "Fresh total usable RAM is labelled available; actual available RAM is a different, much smaller field. The requested capacity is not distinguished from free memory."
+    },
+    {
+      "case_id": "H0655",
+      "group": "memory",
+      "turn_id": "t30",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "H0508",
+      "group": "memory",
+      "turn_id": "t31",
+      "correct": false,
+      "category": "memory_total_labelled_available",
+      "reason": "Fresh total usable RAM is labelled available; actual available RAM is a different, much smaller field. The requested capacity is not distinguished from free memory."
+    },
+    {
+      "case_id": "memory-total-en",
+      "group": "memory",
+      "turn_id": "t32",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "memory-free-mixed",
+      "group": "memory",
+      "turn_id": "t33",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "memory-used-es",
+      "group": "memory",
+      "turn_id": "t34",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory observation supports the requested installed, free or used amount with matching label and units."
+    },
+    {
+      "case_id": "H0037",
+      "group": "battery",
+      "turn_id": "t35",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh battery observation supports the reported percentage, charging and AC state."
+    },
+    {
+      "case_id": "H0144",
+      "group": "battery",
+      "turn_id": "t36",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh battery observation supports the reported percentage, charging and AC state."
+    },
+    {
+      "case_id": "H0359",
+      "group": "battery",
+      "turn_id": "t37",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The supported battery/time/date/audio read did not reach Core. Interpretation failure, unsupported prose or composition_failed does not fulfill the requested observation."
+    },
+    {
+      "case_id": "H0379",
+      "group": "battery",
+      "turn_id": "t38",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh battery observation supports the reported percentage, charging and AC state."
+    },
+    {
+      "case_id": "H0665",
+      "group": "battery",
+      "turn_id": "t39",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh battery observation supports the reported percentage, charging and AC state."
+    },
+    {
+      "case_id": "battery-charge-en",
+      "group": "battery",
+      "turn_id": "t40",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh battery observation supports the reported percentage, charging and AC state."
+    },
+    {
+      "case_id": "battery-level-es",
+      "group": "battery",
+      "turn_id": "t41",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh battery observation supports the reported percentage, charging and AC state."
+    },
+    {
+      "case_id": "H0065",
+      "group": "cpu",
+      "turn_id": "t42",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The final gives the freshly measured CPU usage percentage; rejected drafts are retained separately."
+    },
+    {
+      "case_id": "H0350",
+      "group": "cpu",
+      "turn_id": "t43",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The final gives the freshly measured CPU usage percentage; rejected drafts are retained separately."
+    },
+    {
+      "case_id": "cpu-usage-en",
+      "group": "cpu",
+      "turn_id": "t44",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The final gives the freshly measured CPU usage percentage; rejected drafts are retained separately."
+    },
+    {
+      "case_id": "cpu-order-es",
+      "group": "cpu",
+      "turn_id": "t45",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "The final gives the freshly measured CPU usage percentage; rejected drafts are retained separately."
+    },
+    {
+      "case_id": "H0126",
+      "group": "clock",
+      "turn_id": "t46",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0180",
+      "group": "clock",
+      "turn_id": "t47",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0223",
+      "group": "clock",
+      "turn_id": "t48",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0449",
+      "group": "clock",
+      "turn_id": "t49",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0450",
+      "group": "clock",
+      "turn_id": "t50",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The supported battery/time/date/audio read did not reach Core. Interpretation failure, unsupported prose or composition_failed does not fulfill the requested observation."
+    },
+    {
+      "case_id": "H0498",
+      "group": "clock",
+      "turn_id": "t51",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0499",
+      "group": "clock",
+      "turn_id": "t52",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The supported battery/time/date/audio read did not reach Core. Interpretation failure, unsupported prose or composition_failed does not fulfill the requested observation."
+    },
+    {
+      "case_id": "H0586",
+      "group": "clock",
+      "turn_id": "t53",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0600",
+      "group": "clock",
+      "turn_id": "t54",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0602",
+      "group": "clock",
+      "turn_id": "t55",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The supported battery/time/date/audio read did not reach Core. Interpretation failure, unsupported prose or composition_failed does not fulfill the requested observation."
+    },
+    {
+      "case_id": "H0700",
+      "group": "clock",
+      "turn_id": "t56",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0727",
+      "group": "clock",
+      "turn_id": "t57",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "clock-date-en",
+      "group": "clock",
+      "turn_id": "t58",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The supported battery/time/date/audio read did not reach Core. Interpretation failure, unsupported prose or composition_failed does not fulfill the requested observation."
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "group": "clock",
+      "turn_id": "t59",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "group": "clock",
+      "turn_id": "t60",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "A fresh system.time read supports the requested local time/date and language."
+    },
+    {
+      "case_id": "H0127",
+      "group": "network",
+      "turn_id": "t61",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh WLAN observation supports the narrowly worded absence of Wi-Fi connection."
+    },
+    {
+      "case_id": "H0433",
+      "group": "network",
+      "turn_id": "t62",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh WLAN observation supports the narrowly worded absence of Wi-Fi connection."
+    },
+    {
+      "case_id": "H0732",
+      "group": "network",
+      "turn_id": "t63",
+      "correct": false,
+      "category": "internet_not_observed",
+      "reason": "network.status online is derived from interfaces with OperationalStatus.Up, not verified Internet reachability. The provider source confirms that limitation; the user asked for Internet."
+    },
+    {
+      "case_id": "network-wifi-en",
+      "group": "network",
+      "turn_id": "t64",
+      "correct": false,
+      "category": "wifi_scope_expanded",
+      "reason": "The WLAN observation supports no Wi-Fi connection, while the final claims no network connection of any kind."
+    },
+    {
+      "case_id": "network-internet-es",
+      "group": "network",
+      "turn_id": "t65",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "No network operation ran; the final denies the requested capability. No connectivity observation was obtained."
+    },
+    {
+      "case_id": "H0364",
+      "group": "processes",
+      "turn_id": "t66",
+      "correct": false,
+      "category": "cpu_process_metric_and_membership",
+      "reason": "The provider sorts lifetime TotalProcessorSeconds, not current CPU consumption. The prose also drops distinct same-name processes and promotes different members as if they were the requested ranking."
+    },
+    {
+      "case_id": "H0650",
+      "group": "processes",
+      "turn_id": "t67",
+      "correct": false,
+      "category": "process_memory_ranking",
+      "reason": "Fresh memory order is python before ChatGPT, but the numbered answer reverses these entries despite displaying their measured values. The requested descending ranking is wrong."
+    },
+    {
+      "case_id": "H0675",
+      "group": "processes",
+      "turn_id": "t68",
+      "correct": false,
+      "category": "no_fresh_read",
+      "reason": "Current RAM capacity/process ranking is answered from conversational history without a fresh requested read. The final plausible value does not establish the current machine observation or aggregate app memory."
+    },
+    {
+      "case_id": "processes-top3-en",
+      "group": "processes",
+      "turn_id": "t69",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh memory-sorted inventory supports the requested three process entries and exact byte values."
+    },
+    {
+      "case_id": "processes-top2-es",
+      "group": "processes",
+      "turn_id": "t70",
+      "correct": false,
+      "category": "cpu_process_metric_and_membership",
+      "reason": "The provider sorts lifetime TotalProcessorSeconds, not current CPU consumption. The prose also drops distinct same-name processes and promotes different members as if they were the requested ranking."
+    },
+    {
+      "case_id": "H0383",
+      "group": "audio",
+      "turn_id": "t71",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh default output endpoint observation supports the reported volume and mute state; no volume effect ran."
+    },
+    {
+      "case_id": "audio-status-en",
+      "group": "audio",
+      "turn_id": "t72",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Fresh default output endpoint observation supports the reported volume and mute state; no volume effect ran."
+    },
+    {
+      "case_id": "audio-order-es",
+      "group": "audio",
+      "turn_id": "t73",
+      "correct": false,
+      "category": "supported_read_not_selected",
+      "reason": "The supported battery/time/date/audio read did not reach Core. Interpretation failure, unsupported prose or composition_failed does not fulfill the requested observation."
+    }
+  ]
+}

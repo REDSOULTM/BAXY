@@ -1,0 +1,39 @@
+{
+  "public_json_line_endings": {
+    "artifacts/comprobaciones/C03/STATUS_BATCH761/RESULT.json": {
+      "original_sha256": "5274b85ebec7e86b2c6c6c2be20bd67afb0b6e3e2ba69fe7aac7c00e8241abb3",
+      "public_lf_sha256": "738845368fdf177912f64e6843957f4f6cf423c4a4f1c0149323627812b4a316",
+      "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-evidence763-originals\\STATUS_BATCH761\\RESULT.json"
+    },
+    "artifacts/comprobaciones/C03/COMPOSE_BOUNDARY762/PREREG.json": {
+      "original_sha256": "2dfb1b1954f784615d26f15a03ee3536eca7da23597d2a708043ec93018fb725",
+      "public_lf_sha256": "bb23d3378d60fbff425c6c4384afde09bb22805063cd2ac6694dc5ea49d532b2",
+      "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-evidence763-originals\\COMPOSE_BOUNDARY762\\PREREG.json"
+    },
+    "artifacts/comprobaciones/C03/COMPOSE_BOUNDARY762/PROCESS.json": {
+      "original_sha256": "047d0ddd466c60be7c2cc1cdd5ba829f43a0fcb5acd01b6ac9b1fd5405d2bece",
+      "public_lf_sha256": "1e8e30b8c759e1df32b4b691e1a62add9edf578fdef11686bd93e2d5bdef93fb",
+      "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-evidence763-originals\\COMPOSE_BOUNDARY762\\PROCESS.json"
+    },
+    "artifacts/comprobaciones/C03/COMPOSE_BOUNDARY762/RESOURCES.json": {
+      "original_sha256": "f1932799af11d4ca1d643d803727c5cadef2012eb040fa1a5e376897b6f88e6f",
+      "public_lf_sha256": "d0e0d39862d6efbea9e57d61855f102487dbaf9a26a2cde0f7285ac6e978b827",
+      "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-evidence763-originals\\COMPOSE_BOUNDARY762\\RESOURCES.json"
+    },
+    "artifacts/comprobaciones/C03/COMPOSE_BOUNDARY762/EXIT.json": {
+      "original_sha256": "cd782822d04f21b803a6effff3b4d58dbc122b0006b8c980ea256e186bd78864",
+      "public_lf_sha256": "6686a28b5918e870e0722406bfad79e1aa0b5a7da48bccb543cf08c3638e8b93",
+      "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-evidence763-originals\\COMPOSE_BOUNDARY762\\EXIT.json"
+    },
+    "artifacts/comprobaciones/C03/COMPOSE_BOUNDARY762/OBSERVER_PREFLIGHT.json": {
+      "original_sha256": "ab34605930707ddeb53c3923f2a96674ca2c34b1b160b659f5d0b74936f06f7a",
+      "public_lf_sha256": "1e08e37f6de451eda89f9064eb03be9c283c7ce334f44a6567246d88c046aafa",
+      "original_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-evidence763-originals\\COMPOSE_BOUNDARY762\\OBSERVER_PREFLIGHT.json"
+    }
+  },
+  "intermediate_failures": [
+    "Checkpoint direct write returned OSError22 before modifying it; resumed with atomic replacement.",
+    "Git LF conversion caused the first pin verification to reject6public JSON files. Original bytes are preserved privately, public JSON canonicalized and pins rechecked."
+  ],
+  "source_changed": false
+}

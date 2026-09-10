@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-10T16:32:02.994322+00:00",
+  "actual_calls_planned": 1,
+  "actual_calls_completed": 1,
+  "erratum": "Original RESULT.calls_planned=2 is a stale driver constant. PREREG.calls, planned payloads and results all contain1; original bytes remain unchanged.",
+  "payload_exactly_matches762_request3": true,
+  "planned_sha256": "166ed77923519d67b4296bbb7fc7fae9bfcc15f498a57847a1e4d59abeaddf4e",
+  "results_sha256": "bf3d65733dd07eee2363712245db47ec12d8cb112a60738ed4c1b2784d43774c",
+  "content_correct": true,
+  "current_window_validator_defect": "",
+  "manual_criterion": "All20 returned identities and repeated entries in observed order, partial20/24 scope, no unobserved chronology. Localized explorer process names retain identity; no title data published.",
+  "seconds": 4.14100000000326,
+  "finish_reason": "stop",
+  "usage": {
+    "completion_tokens": 174,
+    "prompt_tokens": 727,
+    "total_tokens": 901,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 727,
+    "prompt_ms": 407.214,
+    "prompt_per_token_ms": 0.5601292984869326,
+    "prompt_per_second": 1785.3020770405733,
+    "predicted_n": 174,
+    "predicted_ms": 3716.941,
+    "predicted_per_token_ms": 21.36172988505747,
+    "predicted_per_second": 46.81268817557234
+  },
+  "within_original4s": false,
+  "product_pass": false,
+  "coverage_added": 0,
+  "limits": "One frozen local request, not repeated-seed or end-to-end performance.15s observation changes no product deadline; cwd matches the registered interpreter, other inherited environment not certified identical."
+}

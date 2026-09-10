@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-10T16:32:02.994322+00:00",
+  "inventory_http_calls": 6,
+  "errors": "TimeoutError",
+  "http_call_seconds": [
+    4.014999999999418,
+    3.9839999999967404,
+    4.0,
+    4.0,
+    4.014999999999418,
+    4.01600000000326
+  ],
+  "compose_before_post_seconds": [
+    0.0,
+    0.01600000000325963,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "http_posts_sha256": "8f91db8ff43595eb383e1c2e44b385b5459b4ae827915646742868f782c877aa",
+  "compose_boundary_sha256": "db9551fb1700e1afca7bb1e63a5f3b05b7c064a2ad5b3e0e581eb4c9dc7a5bba",
+  "projection_reached_request": true,
+  "windows": 20,
+  "selected_total": 24,
+  "interpretation": "Every inventory call exhausted the4s budget. The final retry stack may mask the first wire timeout; it does not prove slow startup or no HTTP request. Exact output observed separately in763.",
+  "product_or_survey_credit": false
+}

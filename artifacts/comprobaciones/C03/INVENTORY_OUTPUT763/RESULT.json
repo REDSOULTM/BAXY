@@ -1,0 +1,12 @@
+{
+  "calls_completed": 1,
+  "calls_planned": 2,
+  "gpu_peak_mib": 3495.55859375,
+  "ram_peak_mib": 718.11328125,
+  "seconds": 6.9689999999973224,
+  "violations": [],
+  "driver_unchanged": true,
+  "source_unchanged": true,
+  "scope": "One captured760 request, original256output tokens, observed15s with4s outcome retained. Server cwd matches the registered interpreter folder; no change to product deadline and no automatic acceptance. No LoRA argument in captured server command.",
+  "quality_adjudicated": false
+}

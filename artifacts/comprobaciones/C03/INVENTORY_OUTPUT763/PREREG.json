@@ -1,0 +1,68 @@
+{
+  "utc": "2026-09-10T16:14:21.189783+00:00",
+  "calls": 1,
+  "command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "61260",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching"
+  ],
+  "source": "COMPOSE_BOUNDARY762 HTTP request3, same frozen20-window observation",
+  "change": "No payload change: observe the captured760 request beyond the4s product deadline.",
+  "all_other_payload_fields_equal": true,
+  "model": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  },
+  "backend": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "driver_sha256": "e3160c0e016643b3e947958d27b9cc41aac758d4e6fea3fa177a09545e6f082f",
+  "source_llm_sha256": "88a4b82f173ed4ffb08932af059bad7ddfa1e30f8de6d5ae28a153b2d27d1883",
+  "planned_sha256": "166ed77923519d67b4296bbb7fc7fae9bfcc15f498a57847a1e4d59abeaddf4e",
+  "source_requests_sha256": "8f91db8ff43595eb383e1c2e44b385b5459b4ae827915646742868f782c877aa",
+  "limits": {
+    "offline_observation_seconds": 15,
+    "unchanged_product_reference_seconds": 4,
+    "max_tokens": 256,
+    "gpu_stop_mib": 3800,
+    "minimum_free_ram_mib": 768
+  },
+  "criterion": "Success reference remains complete untruncated final within4s. Offline observer waits15s to inspect the previously censored final; a late reply is not a4s success. Preserve all returned identities, count and page scope. No shrinking the list, no factual invention, no changed validator.",
+  "scope": "One captured760 request, original256output tokens, observed15s with4s outcome retained. Server cwd matches the registered interpreter folder; no change to product deadline and no automatic acceptance. No LoRA argument in captured server command.",
+  "runtime_environment_defaults": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "environment_source": "Defaults match src/baxy_mind/__main__.py; other inherited process environment has not been asserted byte-identical."
+}
