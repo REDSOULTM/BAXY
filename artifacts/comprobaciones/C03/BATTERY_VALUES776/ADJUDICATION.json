@@ -1,0 +1,428 @@
+{
+  "utc": "2026-09-10T18:47:41.929614+00:00",
+  "cases": 50,
+  "correct": 46,
+  "not_accredited": 4,
+  "interpretation_sensitive": 4,
+  "all_reported_percentages_and_charge_states_match": true,
+  "method": "Read-only agents reviewed1-25/26-50; root inspected all flagged full replies and facts. Conservative causal-relation failure retained; root rejected an extra second-person actor failure for24.",
+  "causal_limit": "Each disputed fixture explicitly says charging=true and AC=true. This is not evidence that the model derived a wrong charging value from AC. The unverified part is the because relation; no acceptance-threshold relaxation.",
+  "raw_posts": 50,
+  "repairs": 0,
+  "first_raw_equals_final_in_all_cases": true,
+  "actor_repair_quality_demonstrated": false,
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "verdicts": [
+    {
+      "case_id": "battery776-01",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta. No tiene batería es coloquialmente ambiguo, pero la continuación está completamente descargada fija el sentido de0% y no ausencia física.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-02",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-03",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-04",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-05",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-06",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-07",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-08",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-09",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-10",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-11",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-12",
+      "group": "percent",
+      "correct": false,
+      "category": "unsupported_causal_relation",
+      "reason": "Los valores y ambos estados booleanos son correctos, pero porque añade una relación causal no explícita en el fixture. Se conserva sin acreditar bajo el criterio from supplied fixture only; no se clasifica como porcentaje o estado de carga equivocado.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-13",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-14",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-15",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-16",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-17",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-18",
+      "group": "percent",
+      "correct": false,
+      "category": "unsupported_causal_relation",
+      "reason": "Los valores y ambos estados booleanos son correctos, pero porque añade una relación causal no explícita en el fixture. Se conserva sin acreditar bajo el criterio from supplied fixture only; no se clasifica como porcentaje o estado de carga equivocado.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-19",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-20",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-21",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-22",
+      "group": "percent",
+      "correct": false,
+      "category": "unsupported_causal_relation",
+      "reason": "Los valores y ambos estados booleanos son correctos, pero porque añade una relación causal no explícita en el fixture. Se conserva sin acreditar bajo el criterio from supplied fixture only; no se clasifica como porcentaje o estado de carga equivocado.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-23",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-24",
+      "group": "percent",
+      "correct": false,
+      "category": "unsupported_causal_relation",
+      "reason": "Los valores y ambos estados booleanos son correctos, pero porque añade una relación causal no explícita en el fixture. Se conserva sin acreditar bajo el criterio from supplied fixture only; no se clasifica como porcentaje o estado de carga equivocado. Estás cargando no se cuenta como fallo de actor adicional: la elipsis del dispositivo es plausible y el trato en segunda persona ya está aceptado.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-25",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-26",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-27",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-28",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-29",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-30",
+      "group": "percent",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-31",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-32",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-33",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-34",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-35",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-36",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-37",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-38",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-39",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-40",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-41",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-42",
+      "group": "charging",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-43",
+      "group": "absence",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-44",
+      "group": "absence",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-45",
+      "group": "absence",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-46",
+      "group": "absence",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-47",
+      "group": "absence",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-48",
+      "group": "absence",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-49",
+      "group": "unknown",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta.",
+      "first_raw_equals_final": true
+    },
+    {
+      "case_id": "battery776-50",
+      "group": "unknown",
+      "correct": true,
+      "category": "verified_fixture_answer",
+      "reason": "Porcentaje, carga, alimentación, presencia o incertidumbre fieles al fixture y a la pregunta. I do not know expresa desconocimiento del asistente, no posesión de hardware, y es válido.",
+      "first_raw_equals_final": true
+    }
+  ],
+  "private_pins": {
+    "cases.json": "b11bd6fd31f0b4eb7020cb57c9cd89bf7d90f34862ae87037b2a0142c2dfdb7d",
+    "replies.jsonl": "99ed1635ae498bb659495e482e31c46b0be919b6dda6288e987a79953d6afd24",
+    "posts.jsonl": "fb82f567e10b81929dd8398928ab3a5154a8fa2dca82a6edee504d7cd89dab5d",
+    "compose-audit.jsonl": "ab1cccdffc39734cf88f43445f0411ee026317b5afc9b66fd3d2eab9e1b604d2"
+  }
+}

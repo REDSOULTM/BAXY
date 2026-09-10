@@ -1,0 +1,391 @@
+................FFFFFFFFFFFFFFFF........................................ [ 27%]
+........................................................................ [ 55%]
+........................................................................ [ 82%]
+.............................................                            [100%]
+================================== FAILURES ===================================
+_ test_battery_measurement_rejects_first_person_hardware[I have 17% battery.-False] _
+
+reply = 'I have 17% battery.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I have 17% battery.-True] _
+
+reply = 'I have 17% battery.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I have 17 percent of battery.-False] _
+
+reply = 'I have 17 percent of battery.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I have 17 percent of battery.-True] _
+
+reply = 'I have 17 percent of battery.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[My battery is at 17%.-False] _
+
+reply = 'My battery is at 17%.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[My battery is at 17%.-True] _
+
+reply = 'My battery is at 17%.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I'm charging.-False] _
+
+reply = "I'm charging.", mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I'm charging.-True] __
+
+reply = "I'm charging.", mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I am not charging.-False] _
+
+reply = 'I am not charging.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I am not charging.-True] _
+
+reply = 'I am not charging.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I don't have a battery.-False] _
+
+reply = "I don't have a battery.", mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I don't have a battery.-True] _
+
+reply = "I don't have a battery.", mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I have no battery.-False] _
+
+reply = 'I have no battery.', mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I have no battery.-True] _
+
+reply = 'I have no battery.', mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I'm discharging.-False] _
+
+reply = "I'm discharging.", mission = False
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+_ test_battery_measurement_rejects_first_person_hardware[I'm discharging.-True] _
+
+reply = "I'm discharging.", mission = True
+
+    @pytest.mark.parametrize("mission", [False, True])
+    @pytest.mark.parametrize("reply", [
+        "Tengo el 100% de batería.", "Tengo un 17 por ciento de batería.",
+        "Me queda 17% de batería.", "Estoy al 17% de batería.",
+        "Mi batería tiene un 17%.", "Estoy cargando la batería.",
+        "Estoy descargando la batería.", "No tengo batería.",
+        "I have 17% battery.", "I have 17 percent of battery.",
+        "My battery is at 17%.", "I'm charging.", "I am not charging.",
+        "I don't have a battery.", "I have no battery.", "I'm discharging.",
+    ])
+    def test_battery_measurement_rejects_first_person_hardware(reply, mission):
+        text = "Battery status" if reply.startswith(("I ", "I'm", "My ")) else "Estado de la batería"
+>       assert llm.compose_visible_defect(reply, "status", text, facts(mission)) == "wrong_machine_actor"
+E       AssertionError: assert 'wrong_language' == 'wrong_machine_actor'
+E
+E         - wrong_machine_actor
+E         + wrong_language
+
+tests\test_c03_battery_actor.py:35: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I have 17% battery.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I have 17% battery.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I have 17 percent of battery.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I have 17 percent of battery.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[My battery is at 17%.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[My battery is at 17%.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I'm charging.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I'm charging.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I am not charging.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I am not charging.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I don't have a battery.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I don't have a battery.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I have no battery.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I have no battery.-True]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I'm discharging.-False]
+FAILED tests/test_c03_battery_actor.py::test_battery_measurement_rejects_first_person_hardware[I'm discharging.-True]
+16 failed, 245 passed in 2.91s

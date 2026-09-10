@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-10T18:41:27.142337+00:00",
+  "passed": 483,
+  "failed": 0,
+  "environmental_skips": 1,
+  "seconds": 5.63,
+  "skip": "Private blind STT inputs absent",
+  "owners_preseal_passed": 261,
+  "new_cases": 56,
+  "command": "registered Python -X utf8 -m pytest tests/test_c03_battery_actor.py tests/test_c03_cpu_actor.py tests/test_c03_network_actor_recovery.py tests/test_compose_contract.py tests/test_c03_request_preservation.py tests/test_price_v8_veto_damage_by_cause.py tests/test_stt_quality_evaluators.py tests/test_validate_physical_wake_v17_program.py -q",
+  "fast_command": "scripts/test_source_quality.ps1 -Mode Fast",
+  "fast_exit_code": 0,
+  "fast_session": 22518,
+  "fast_terminal_collected": true,
+  "release_seconds": 20.67,
+  "full_new": false,
+  "adoption_pending_real_composer": false,
+  "product": "77717/17, one actual actor repair; all guards intact.",
+  "synthetic": "77646/50; four causal relations unaccredited. No repair executed in776.",
+  "all_source_pins_unchanged_after_validation": true
+}

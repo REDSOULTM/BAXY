@@ -1,0 +1,172 @@
+{
+  "utc": "2026-09-10T18:51:01.163290+00:00",
+  "source_parent_commit": "aa5f7b6a2b83b75e8507b40a7d21eeab993c08f1",
+  "source_pins": "BATTERY_ACTOR775/SOURCE_PINS.json",
+  "source_adoption": "Containing commit",
+  "cases": 17,
+  "correct": 17,
+  "failed": 0,
+  "fresh_reads": 17,
+  "real_actor_repairs": 1,
+  "method": "Root reviewed all17 complete replies against their fresh payloads, including actual first/retry H0665.",
+  "resources": {
+    "utc": "2026-09-10T18:46:36.328668+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2167.31640625,
+    "seconds": 32.437,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "verdicts": [
+    {
+      "case_id": "H0037",
+      "turn_id": "t1",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "H0144",
+      "turn_id": "t2",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "H0359",
+      "turn_id": "t3",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "H0379",
+      "turn_id": "t4",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "H0665",
+      "turn_id": "t5",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_actor_repair",
+      "reason": "Primera persona de BAXY detectada y reparada conservando100%; sujeto de la respuesta ligado al equipo de la consulta."
+    },
+    {
+      "case_id": "battery-charge-en",
+      "turn_id": "t6",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-level-es",
+      "turn_id": "t7",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-01",
+      "turn_id": "t8",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-02",
+      "turn_id": "t9",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-03",
+      "turn_id": "t10",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-04",
+      "turn_id": "t11",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-05",
+      "turn_id": "t12",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-06",
+      "turn_id": "t13",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-07",
+      "turn_id": "t14",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-08",
+      "turn_id": "t15",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-09",
+      "turn_id": "t16",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    },
+    {
+      "case_id": "battery-variant774-10",
+      "turn_id": "t17",
+      "group": "battery",
+      "correct": true,
+      "category": "verified_answer",
+      "reason": "Respuesta fiel a porcentaje/estado de carga/alimentación observados y al idioma solicitado."
+    }
+  ],
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "limits": "Same seven original battery cases plus ten existing development variants as774, all physical observations100%/AC/not charging. No UI/voice/reserve credit; four unsupported causal relations remain in synthetic776.",
+  "private_pins": {
+    "review.json": "980c29bc6030eab634f9d3894e8a84344a917157259702efd69996e05bf78aea",
+    "compose-audit.jsonl": "a20fabee497fe2979b6ad26083192364a5637f4d606478a8aa33dad959d87a02",
+    "turn-audit.jsonl": "63b6e68e3f6d2077cac73b5fc4d8bf40ec34898ef90c5a2c2aeba1cc4869cdcb",
+    "shell-trace.jsonl": "4a1979c64200c09b5dab4c65262b65aefe5cddb0eb4caecdcb04f99433f3d1c5"
+  }
+}

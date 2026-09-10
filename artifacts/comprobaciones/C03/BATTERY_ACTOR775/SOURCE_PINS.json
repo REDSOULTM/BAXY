@@ -1,0 +1,7 @@
+{
+  "src/baxy_mind/llm.py": "88706a515ca716ed01014975002938a3b4c6b881ef9043c1b33961debc7f518b",
+  "tests/test_c03_battery_actor.py": "a46d723691cbef98b2f4524bd9f0d7bcc9c47e5e8a0bcdc7851de44ca3876e76",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "f196cf4eb179e1300aefc5e7329a03d27eb7f22a29351b7e99902da42f577180",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "1a491a2ba8f4eca994e4f999f81ab18cc130124efb06983adc1c2649dfeb12c2",
+  "tests/test_price_v8_veto_damage_by_cause.py": "1015ff8cbbc2f71155bb82dc6d89353bb1bbe5be1e43016fdffe2bfd8bd4168e"
+}

@@ -4654,6 +4654,18 @@ def compose_visible_defect(
         folded,
     ):
         return "wrong_machine_actor"
+    if isinstance(observed_dict.get("battery"), dict) and observed_dict["battery"] and re.search(
+        r"\b(?:(?:tengo|me\s+queda|estoy\s+(?:a|al))\s+"
+        r"(?:(?:un|una|el|la)\s+)?(?:\d+(?:[.,]\d+)?\s*"
+        r"(?:%|por\s*ciento|percent|per\s+cent)\s*(?:de\s+)?)?(?:bater[ií]a|carga)|"
+        r"mi\s+bater[ií]a|estoy\s+(?:cargando|descargando)|"
+        r"i\s+(?:have|(?:do\s+not|don't|don’t)\s+have)\s+"
+        r"(?:(?:a|the|no)\s+)?(?:\d+(?:[.,]\d+)?\s*"
+        r"(?:%|percent|per\s+cent)\s*(?:of\s+)?)?(?:battery|charge)|"
+        r"my\s+battery|i(?:\s+am|'m|’m)\s+(?:not\s+)?(?:charging|discharging))\b",
+        folded,
+    ):
+        return "wrong_machine_actor"
     mentions_mute = re.search(r"silenci|\bmuted\b|\bunmuted\b|\bmute\b", folded)
     if mentions_mute and "muted" not in observed_dict and operation != "audio.mute":
         return "extra_claim"

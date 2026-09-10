@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T18:29:22.413039+00:00",
+  "confirmedAtUtc": "2026-09-10T18:51:01.163290+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "774 terminada0/21331 recogida,17 consultas con lectura fresca:16pass/1wrong_actor H0665(Tengo). H0359 correcto433,305ms; todas guardas intactas.3495,56MiB/2151,49MiB/35,25s. Registro5referencias,SHA=e170fc33bdf15b57961588fd33afe3dbbda7dd82f33b56b0178a1a6d59ecb17f,26/716/0. Siguiente aislar sujeto bateria reutilizando reparación CPU573–582 y medir valores/carga/ausencia en fixtures declarados. No inferencia activa.",
-  "continuation": "Reuse existing CPU wrong-actor detection/correction for battery only after locating cause; prepare declared synthetic percentage/charging/absence generalization. No model promotion or coverage yet.",
+  "checkpoint": "775 adoptado tras483pass/1skipSTT/5,63s,Fast0/20,67s y77717/17 con reparación real H0665(Tengo→Tiene)737,301ms. 77650fixtures=46pass/4causalidad añadida interpretativamente sensible; todosdatoscorrectos,0reintentos. 777todasguardastrue,3497,56MiB/2167,32MiB/32,437s. RegistroSHA=72fae04c61cdf7d8cdf57fddf86220cce46bc9628014fdc9f383eb450fca750a;26/716/0. Sesiones30493/20301 terminal0 recogidas, no procesoactivo. Publicar775/776/777; conservar cuatro hallazgos de causalidad y seguir bloqueos de lectura completos.",
+  "continuation": "Publish775 source plus776/777 evidence. Battery actor defect repaired; preserve4 unsupported causal relations in776. Next bounded blocker is shared current-date/time request gates; entire clock category, no another inventory prompt tweak.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "481c2f411aa7eaaf00cc78665953bfdf7bd01586",
-  "workStatus": "battery774_adjudicated_actor_and_value_generalization_pending",
+  "workStatus": "battery_actor775_adopted_pending_publication",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "481c2f411aa7eaaf00cc78665953bfdf7bd01586",
+  "publishedEvidenceCommit": "aa5f7b6a2b83b75e8507b40a7d21eeab993c08f1",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,14 +48,14 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Adjudicated73 registered turns and isolated4s cutoff from complete4.141s output; next source repair identified.",
+  "previousGoalTurnClassificationReason": "Published773 input-scope repair, adjudicated774 complete battery category and located independent actor defect; no owner blocker.",
   "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
   "ownerMethodology": "Maximum efficient throughput without quality loss; all742 registry and shared causes. Do not repeat completed baseline/publication solely because the same authority was restated.",
   "lastValidation": {
     "name": "Full7/745",
-    "utc": "2026-09-10T13:46:36.567397+00:00",
+    "utc": "2026-09-10T10:46:36.567397-03:00",
     "exit_code": 0,
     "elapsed_seconds": 1543.5469999999987,
     "dotnet_projects": [
@@ -629,7 +629,7 @@
   "currentIntegratedFull": {
     "sessionId": 65777,
     "status": "terminal_failed",
-    "observed_at_utc": "2026-09-10T06:49:24+00:00",
+    "observed_at_utc": "2026-09-10T03:49:24-03:00",
     "progress": "Terminal exit1: .NET4532 passed/0 failed/1 aggregate skip; Python11135 passed/2 failed/3 skips,466 subtests. Original packaging45s and sidecar3s timeouts; no Full6 yet.",
     "candidate": "artifacts/comprobaciones/C03/astra-catalog-source712/CANDIDATE.json",
     "log": "%TEMP%/c03-catalog712-full5.log",
@@ -637,7 +637,7 @@
     "model_inference": false,
     "coverage_added": 0,
     "exit_code": 1,
-    "terminal_at_utc": "2026-09-10T07:00:24.0214040Z",
+    "terminal_at_utc": "2026-09-10T07:00:24.021404Z",
     "result": "artifacts/comprobaciones/C03/astra-catalog-source712/FULL5_RESULT.json"
   },
   "activeOwnerDiagnostics": {
@@ -676,7 +676,7 @@
     "processes_closed": true
   },
   "lastGoalTurn": {
-    "utc": "2026-09-10T09:26:27.940831+00:00",
+    "utc": "2026-09-10T06:26:27.940831-03:00",
     "classification": "progress",
     "goal_status": "active",
     "completed": "Measured and adjudicated all50 isolated K2 thinking-override pairs; deterministic template change and38to19 quality difference established in local profile; original source/runtime preserved.",
@@ -684,7 +684,7 @@
     "next": "Prepare an experimental K2 product adapter preserving native reasoning/profile across roles and inspect exact requests before paired integration. Reuse699/700/731; do not repeat disabled-thinking campaign.730 Python integration remains pending. No live process."
   },
   "activeWindowInventory730": {
-    "utc": "2026-09-10T09:00:04.474774+00:00",
+    "utc": "2026-09-10T06:00:04.474774-03:00",
     "status": "candidate_csharp_owners_passed",
     "provider_first": "compile failed CS8604, no tests run; private normalizer now accepts nullable input and retains its validation",
     "provider_final": {
@@ -735,7 +735,7 @@
     "exit_record": "%TEMP%/c03-k2-adapter731-exit.json",
     "source_frozen": "llm.py and731 script remain unchanged during execution",
     "scope": "50 native699 same tasks, only K2 enable_thinking=False; no product/model adoption or survey credit",
-    "utc": "2026-09-10T09:07:46.157511+00:00",
+    "utc": "2026-09-10T06:07:46.157511-03:00",
     "exit_code": 0,
     "finished_at_utc": "2026-09-10T09:18:33.3484265Z",
     "resources": "K2_HORIZON_ADAPTER731/RESOURCES.json",
@@ -753,7 +753,7 @@
       "origin_Goal_c03_matches": true,
       "sealed_files_verified_in_HEAD": 12,
       "main_unchanged": "5f572ee1b48cb5e2543ee5e06510e51057c9c845",
-      "verified_at_utc": "2026-09-10T09:31:29.227748+00:00"
+      "verified_at_utc": "2026-09-10T06:31:29.227748-03:00"
     },
     "report_open_status": "queued_by_Codex; not claimed visible"
   },

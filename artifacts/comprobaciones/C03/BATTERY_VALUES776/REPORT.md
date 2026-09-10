@@ -1,0 +1,9 @@
+# Generalización de batería: valores fieles, cuatro causas añadidas
+
+Las50situaciones sintéticas se ejecutaron con el compositor real, la configuración local registrada y un presupuesto de4s por consulta. El comando del servidor coincide con774 salvo puerto. Todos los primeros borradores se publicaron sin reintento: no hubo errores, respuestas vacías ni cambios de fuente. Esta corrida no mide el modelo aislado, el provider, la interfaz ni la voz.
+
+46respuestas cumplen íntegramente. Las cuatro restantes12/18/22/24 conservan porcentajes y estados verdaderos de carga y alimentación, pero añaden «porque» para ligarlos causalmente. Se mantienen sin acreditar bajo el criterio fijado de responder desde los datos suministrados. No son valores de carga erróneos ni prueba de que el modelo ignore isCharging: el fixture lo declara true. La relación añadida, que el fixture no observa, es la parte discutida. La segunda persona de24 no constituye por sí sola un fallo de actor adicional.
+
+La matriz incluye0/1/9/17/31/49/67/82/99/100%, carga activa/inactiva, alimentación conectada/desconectada, batería ausente y porcentaje desconocido. Los casos43–48 no convierten ausencia en0%;49–50 preservan el desconocimiento. En01, «no tiene batería» queda desambiguado por «está completamente descargada» como0% de carga. Las respuestas y datos sintéticos completos están en CASOS_SINTETICOS.md.
+
+Duración18,735s incluyendo arranque; llamada más lenta0,609s. Pico3495,56MiB VRAM y758,21MiB RAM residente del árbol directo, sin violaciones. No equivale al consumo del producto con UI y voz. Las50llamadas usaron temperature0/max_tokens256/cache_prompt=false/enable_thinking=false; ningún reintento, por lo que775 aún necesita demostrar corrección real del sujeto en la repetición777 del producto. No se concede cobertura:26cubiertos/716abiertos/0NA; C03 activo.

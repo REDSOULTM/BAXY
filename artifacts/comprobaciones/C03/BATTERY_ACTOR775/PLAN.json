@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-10T18:37:40.011712+00:00",
+  "parent": "aa5f7b6a2b83b75e8507b40a7d21eeab993c08f1",
+  "evidence": [
+    "STATUS_BATCH774/RESULT.json H0665",
+    "astra-cpu-repair-generalization580/RESULT.md",
+    "tests/test_c03_cpu_actor.py",
+    "tests/test_c03_network_actor_recovery.py"
+  ],
+  "diagnosis": "wrong_machine_actor classifier only considered CPU observation, so battery first-person ownership escaped the existing shared repair.",
+  "change": "Classify direct battery possession/percentage/charging in first person only with a nonempty battery observation; reuse the same actor repair without changing its prompt/sampler/budget.",
+  "owners_before_seal": {
+    "passed": 261,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 2.53,
+    "new_cases": 56
+  },
+  "initial_test_error": "16 English actor fixtures used ambiguous Battery status, which the language reader resolved to Spanish. Replaced the fixture question with the unambiguous real774 How much battery is left; no language source change.",
+  "pending": "Current integrity/Fast and real local composer on50 declared synthetic battery scenarios. No adoption or survey coverage yet.",
+  "full_new_required": false,
+  "coverage_added": 0,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}
