@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T03:06:12.709848+00:00",
+  "confirmedAtUtc": "2026-09-10T03:10:00.536411+00:00",
   "branch": "Goal-c03",
   "checkpoint": "702adoptada de forma limitada:79focales/392dueñas/Fast0; WLAN2casos recuperados con entrada inicial idéntica. Producto73:18correctos/55fallos,39capturados por confirmación. Encuesta26/716/0.",
-  "continuation": "Publicar fuente702 y evidencia701/702 tras auditoría de índice. Después reparar continuidad de confirmaciones que absorbe nuevos pedidos. No permitir Sensitive/External en bloque ni aplicar prototype695. Mantener binding exacto y privacidad.",
+  "continuation": "702 publicada7ceeef70 y push confirmado. Siguiente: distinguir respuesta de confirmación de un objetivo nuevo autocontenido reutilizando MindClarificationPolicy, sin doble clasificación, conservando binding/outbox/efecto incierto. No cambiar Sensitive/External en bloque. Fuente703 aún no editada; no inferencia activa.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "10f16319f53356be5c306a6880c01f09675da0f7",
-  "workStatus": "machine_actor702_adopted_awaiting_publication",
+  "publishedSourceCommit": "7ceeef708265a372ac39dcb69880aba1b6e348e3",
+  "workStatus": "machine_actor702_published_continuity_next",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "10f16319f53356be5c306a6880c01f09675da0f7",
+  "publishedEvidenceCommit": "7ceeef708265a372ac39dcb69880aba1b6e348e3",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
