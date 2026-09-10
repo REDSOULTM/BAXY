@@ -1,0 +1,25 @@
+{
+  "native_high": {
+    "completed_requests": 57,
+    "valid_final_transport": 57,
+    "errors_or_incomplete": 0,
+    "completion_median_seconds": 12.984000000004016,
+    "complete_under4s_not_quality_adjudicated": 1,
+    "context_shift_possible": 0,
+    "context_telemetry_missing": 0
+  },
+  "baxy_prompt_high": {
+    "completed_requests": 57,
+    "valid_final_transport": 54,
+    "errors_or_incomplete": 3,
+    "completion_median_seconds": 3.3354999999974098,
+    "complete_under4s_not_quality_adjudicated": 31,
+    "context_shift_possible": 0,
+    "context_telemetry_missing": 2
+  },
+  "calls_completed": 114,
+  "results_sha256": "458f41854f8d976650aa4f3ff67c542c6451f761aaba297f0daad88cd8f2e1ba",
+  "adjudication_pending": false,
+  "adjudication_file": "ADJUDICATION.json",
+  "adjudication_sha256": "21ef9139fe6e1c19fba63e1c6a5a934f0b9dd9d64aed41ce4de0317dc5b204db"
+}

@@ -1,0 +1,15 @@
+{
+  "calls_completed": 114,
+  "calls_planned": 114,
+  "gpu_peak_mib": 3448.23046875,
+  "ram_peak_mib": 801.9921875,
+  "seconds": 1406.6100000000006,
+  "violations": [],
+  "manifest_unchanged": true,
+  "source_unchanged": true,
+  "driver_unchanged": true,
+  "scope": "Server-only native prompt diagnostic; offline streaming. Not product deadline acceptance, UI/voice, model promotion or coverage.",
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0
+}

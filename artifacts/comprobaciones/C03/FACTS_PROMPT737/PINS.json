@@ -1,0 +1,35 @@
+{
+  "public": {
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/PREREG.json": "ee545864b6c12205620cacb369c6195a7bde22841fa9b7b0256e1b2d22225912",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/PREFLIGHT.json": "8b4723e2275435ee51f1228cf4c321de420660cd24707667e0788a4f490699be",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/PROCESS.json": "9a4435ed4ddcc9e58417117c17f049e289542d6921ca0d14b77228df95270a6a",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/RESULT.json": "072d5e42f4bfe7bde92709ed5a4523fa6aa03e43c6c0ff0c2f56a493476f51db",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/TRANSPORT.json": "6f3cf77c186dd4b0bb92a61dc35584cafe8e5756179d9ca36ce53f88c2dcf04a",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/ADJUDICATION.json": "21ef9139fe6e1c19fba63e1c6a5a934f0b9dd9d64aed41ce4de0317dc5b204db",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/METHOD.md": "27d1ab39f1ef6569e05ad29de82bd7788c15557109b6d4af32d8d8b091412984",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/PARSER_ATTRIBUTION.md": "14b5982e541d68c5ec537ecd8f096dc5cb39f8f6d12821fb87556eace50ce421",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/REPORT.md": "0cd3226fe3806de1fb08566ed8a3543d1ef52c4b99255289be8a46600cd79955",
+    "artifacts/comprobaciones/C03/FACTS_PROMPT737/INTEGRITY.json": "33b18cee7cb938711fdf072617f651b50a61df4eaa8902af349ca1f4270ca907"
+  },
+  "private": {
+    "cases.json": "3da69390f6fbc4134360f1d1a31483cd1721cb4194a723e0b6eef75587dbb238",
+    "planned-requests.json": "78770250190741f75f8bdd63ff05ca32a5c94d163f00e3d4db4e157e153e472d",
+    "rendered-prompts.jsonl": "253d69acf59a26436425dd0fdb0859ae2480c0efc64214c13b2c489b2f508825",
+    "props.json": "869f9efc1a0dfdf3614b3f6e86c6fc3ea1f46a21118ad16fed08b8a0df5251b2",
+    "stream.jsonl": "da289c6d107686a820e938b830b63f069dcfd28d8e304264e24e8cad8930617e",
+    "results.jsonl": "458f41854f8d976650aa4f3ff67c542c6451f761aaba297f0daad88cd8f2e1ba",
+    "server.log": "9f847c07be11a6d71b2fed09b7778db180b31d36c0e9c66c6b0186f8c39a949b",
+    "RESPUESTAS.md": "5135143fb11bb363fdd0dc976498a3710ab182e9dfbfb8a9f6fac5fbb358b535",
+    "RESPUESTAS_Y_ADJUDICACION.md": "4e50f3dc1f53f5a3b4fd72f4080d05a755c67f98b4f6214310161cfddabf4f76"
+  },
+  "scripts": {
+    "scratchpad/c03-facts-prompt737.py": "0adaac651f6936fa32521a1cff897f47d3b0b1100b7af810a17373d6d7bc8ff2",
+    "scratchpad/c03-review-facts737.py": "51cc43e60c0b35f7801486ed611372e917ad7bd0127717b9cd7529015cd8d330",
+    "scratchpad/c03-adjudicate-facts737.py": "3c1a1dbdac7162f73f443c08de0bb3d36815fcc928707e9219dfa92f05e636c7",
+    "scratchpad/c03-report-facts737.py": "20db69cbabdb65ba4df8f50cdf9d3254af1742de82ce553641eb4ee80c3d0c2c",
+    "scratchpad/c03-checkpoint737.py": "f109ddeadbf43f58e9cfa3b369116732bab07ac1cb8145ae10979a78f1aa3b8d"
+  },
+  "source_unchanged_sha256": "40e2770bff56e9d6d7e5156caa780ecb0ea192447faa950c6bba67fbe9faead7",
+  "private_root": "%LOCALAPPDATA%/BAXY/C03-facts-prompt737-private",
+  "byte_preservation": "New public737 and script paths use -text; historical evidence unchanged."
+}

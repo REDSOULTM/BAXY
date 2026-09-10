@@ -1,0 +1,570 @@
+{
+  "method": "Root review of whole final content versus frozen question and observations. Length alone is not failure. Hedged possibilities distinguished from assertions. Missing drive/network/process evidence separated as I; delivery error E is not a semantic model failure.",
+  "labels": {
+    "P": "faithful answer",
+    "F": "incorrect or unsupported assertion / unusable language",
+    "I": "insufficient supplied facts for requested scope",
+    "E": "delivery failure"
+  },
+  "cases_sha256": "3da69390f6fbc4134360f1d1a31483cd1721cb4194a723e0b6eef75587dbb238",
+  "results_sha256": "458f41854f8d976650aa4f3ff67c542c6451f761aaba297f0daad88cd8f2e1ba",
+  "summary": {
+    "native_high": {
+      "verdict_counts": {
+        "F": 24,
+        "P": 28,
+        "I": 5
+      },
+      "correct_within4s": 1,
+      "complete_final_median_seconds": 12.984000000004016,
+      "all_requests_median_seconds": 12.984000000004016,
+      "max_seconds": 47.15699999999924,
+      "first_content_median_seconds": 9.843000000000757,
+      "decode_tokens_per_second_median": 53.59005636504147,
+      "completion_tokens_median": 671,
+      "context_shift_possible": 0,
+      "context_telemetry_unknown": 0
+    },
+    "baxy_prompt_high": {
+      "verdict_counts": {
+        "E": 3,
+        "P": 39,
+        "I": 5,
+        "F": 10
+      },
+      "correct_within4s": 25,
+      "complete_final_median_seconds": 3.3354999999974098,
+      "all_requests_median_seconds": 3.327999999994063,
+      "max_seconds": 120.03199999999924,
+      "first_content_median_seconds": 3.132499999996071,
+      "decode_tokens_per_second_median": 53.4084579786551,
+      "completion_tokens_median": 163.5,
+      "context_shift_possible": 0,
+      "context_telemetry_unknown": 2
+    },
+    "paired_quality": {
+      "both_correct": 25,
+      "baxy_only_correct": 14,
+      "native_only_correct": 3,
+      "neither_correct": 15
+    }
+  },
+  "reviews": [
+    {
+      "case_id": "H0104",
+      "native_high": "F",
+      "baxy_prompt_high": "E",
+      "reason": "Native infers off-screen placement from negative border coordinates; BAXY arm PEG500, semantic final not delivered.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "windows-focus-mixed",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native adds centered placement without screen geometry; BAXY final identifies observed focus and maximized state.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "windows-focus-reference-es",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Both identify observed active window.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0025",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native says available disk space includes cache and temporary files; BAXY gives observed free value.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0207",
+      "native_high": "I",
+      "baxy_prompt_high": "I",
+      "reason": "Observation contains disk figures but no drive identity; cannot independently establish requested C: scope.",
+      "input_insufficient": true,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0384",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native turns empty read-failures into a claim of no disk faults; disk health was not measured.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0442",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed free disk value, correct units.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0644",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native guarantees temporary/backups use will not affect long-term storage; no workload/storage evidence supports that assurance.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "disk-free-en",
+      "native_high": "I",
+      "baxy_prompt_high": "I",
+      "reason": "Same missing drive identity as H0207, despite correct disk figures.",
+      "input_insufficient": true,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0026",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native invents primary GPU/use assignment; BAXY reports per-adapter AMD capacity as total across several adapters.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0087",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native asserts primary GPU and actual shared RAM use from capacity limit; BAXY names observed adapters.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0114",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native invents virtual-duplicate explanation and labels engine usage CPU/GPU; BAXY VRAM percentage is observed.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0194",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native invents primary/physical-duplicate explanation and confuses dedicated/shared capacity; BAXY reports observed capacities.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0370",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native assigns primary role without observation; BAXY gives observed adapter and dedicated capacity.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0625",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native invents physical/virtual roles and leaks unrelated-language text; BAXY replaces observed6.2873GB capacity with12GB.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "gpu-identity-en",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native assigns primary role; BAXY labels AMD integrated although supplied observation does not distinguish integrated/discrete.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "gpu-usage-es",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native declares primary/active and other adapters irrelevant; BAXY invents incorrect total4.93GB and treats partial readings as all GPUs.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0111",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Both distinguish installed, used and free RAM correctly.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0156",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed free RAM, correct rounding.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0162",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed installed RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0342",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed used RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0539",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Native distinguishes usable/installed/free; BAXY gives installed RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0655",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native invents hypervisor/server and attributes system used RAM to one application; BAXY gives observed usable total and free RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0508",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native invents cause for installed/usable difference and treats usable as per-program available; BAXY gives observed Windows family and installed RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "memory-total-en",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native invents virtual-memory/disk-cache reason for installed/usable difference; BAXY gives installed physical RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "memory-free-mixed",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed free RAM in natural Spanish.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "memory-used-es",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed used RAM.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0037",
+      "native_high": "P",
+      "baxy_prompt_high": "F",
+      "reason": "Native states not charging/AC online correctly, though awkwardly treats input as a label and speculates conditionally; BAXY contradicts AC online and leaks Hindi.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0144",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native adds global everything-working-correctly claim without health observation; BAXY gives observed battery percentage.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0379",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed charge percentage, native also preserves charging and AC states.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0665",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed battery percentage.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "battery-charge-en",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native suggests full-capacity cause at96% without supporting evidence; BAXY preserves not-charging and AC-online facts.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "battery-level-es",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed battery percentage.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0065",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native contradicts16threads/8cores with one thread per core and adds incorrect advice; BAXY claims stable load and no faults from one sample without health measurement.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0350",
+      "native_high": "F",
+      "baxy_prompt_high": "E",
+      "reason": "Native generalizes read-failures to system faults and emits corrupted Spanish; BAXY exceeds offline120s observation with no final.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "cpu-usage-en",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native infers normal operation and running workload from CPU percentage alone; BAXY reports14.46 although14.4654088 rounds to14.47 at two decimals. Sensitivity: accept truncation adds one BAXY pass.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0126",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": true,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0180",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed date in natural text/ISO representation.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0223",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute, English or language-neutral numeric answer.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0449",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute; native has minor agreement error but unambiguous meaning.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0498",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0586",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0600",
+      "native_high": "P",
+      "baxy_prompt_high": "E",
+      "reason": "Native delivers observed time; BAXY arm sends84SSE events with reasoning only, then stop, no final content.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0700",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute; native minor agreement error does not change meaning.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0727",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed hour and minute.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed time; natural Spanish is valid for mixed input.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed date.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0127",
+      "native_high": "F",
+      "baxy_prompt_high": "P",
+      "reason": "Native invents Windows navigation and emits nonsensical Spanish in explanations; BAXY preserves no Wi-Fi connection.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    },
+    {
+      "case_id": "H0433",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native equates no Wi-Fi with no Internet and invents Ethernet detection steps; BAXY uses an imperative instead of reporting the observed state. Sensitivity: interpreting estes as a typo for estas adds one BAXY pass.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0732",
+      "native_high": "I",
+      "baxy_prompt_high": "I",
+      "reason": "Provider online means an interface is up, not verified Internet; frozen payload omits this distinction, so Internet cannot be established from it.",
+      "input_insufficient": true,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "network-wifi-en",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Both preserve no Wi-Fi connection without asserting absence of all networks.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0364",
+      "native_high": "I",
+      "baxy_prompt_high": "I",
+      "reason": "Cumulative CPU seconds do not establish current usage. Additional errors: native invents Taskmgr supervisory relationship and Microsoft ownership; BAXY changes codex1849.21875 to1848.21875.",
+      "input_insufficient": true,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0650",
+      "native_high": "F",
+      "baxy_prompt_high": "F",
+      "reason": "Native changes observedProcessCount198 to5 while returning top5. BAXY approximates binary GiB quantities with GB labels; e.g.1084989440bytes rounds to1.1GB at one decimal, not1.0GB.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "processes-top3-en",
+      "native_high": "P",
+      "baxy_prompt_high": "F",
+      "reason": "Native preserves top3 and exact byte values. BAXY conversions1.01/0.83/0.73GB match neither decimal GB nor correctly rounded binary GiB.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "processes-top2-es",
+      "native_high": "I",
+      "baxy_prompt_high": "I",
+      "reason": "Cumulative CPU seconds rank historical processor time, not current CPU usage; two samples/rate are absent.",
+      "input_insufficient": true,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "H0383",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed level100 and not-muted state; native lexical calque mutado is awkward but the audio meaning is unambiguous.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": false
+    },
+    {
+      "case_id": "audio-status-en",
+      "native_high": "P",
+      "baxy_prompt_high": "P",
+      "reason": "Observed volume and not-muted state.",
+      "input_insufficient": false,
+      "native_high_correct_within4s": false,
+      "baxy_prompt_high_correct_within4s": true
+    }
+  ],
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0
+}

@@ -411,3 +411,9 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /scratchpad/c03-domain-attribution736.py -text
 /scratchpad/c03-adjudicate-native-product736.py -text
 /scratchpad/c03-report-native-product736.py -text
+/artifacts/comprobaciones/C03/FACTS_PROMPT737/** -text
+/scratchpad/c03-facts-prompt737.py -text
+/scratchpad/c03-review-facts737.py -text
+/scratchpad/c03-adjudicate-facts737.py -text
+/scratchpad/c03-report-facts737.py -text
+/scratchpad/c03-checkpoint737.py -text
