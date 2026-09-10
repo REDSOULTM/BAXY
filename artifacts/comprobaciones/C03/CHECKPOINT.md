@@ -1,3 +1,17 @@
+## Fuente751 adoptada tras validación final
+
+Fast final57628 exit0;Release1,47s,0advertencias/0errores.8fuentes congeladas sin cambios. Dueñas4194pass+121subtests y finales355pass/1skip ambiental,con solapamiento. Validación/hashes/comandos completos en WINDOW_INVENTORY751. Fuente adoptada en el commit de ADOPTION.json; publicar y comprobar remoto. No suites ni inferencias activas;no sondear20929/26323/57628.
+
+Sigue la categoría real73 para750+751 con runtime registrado. No reinterpretar mocks Qwen/K2 como modelos probados ni controles como cobertura. Encuesta26/716/0,C03 activo. Revisión de alcance en prompt final conserva filtros (total seleccionado, no siempre escritorio); no cambios C# ni a modelo.
+
+## Inventario global751 implementado — validación final en curso
+
+Sobre fuente750 publicada07bbdbb0:conecta petición globalwindow.resolve con process=* /byTitle=false y límites1–50; conserva títulos específicos por su selector; prosa distingue página,observado y total conocido, incluidos subconjuntos2de7 y páginas vacías. Contrato C#730 intacto.143tests nuevos. Dueñas4194pass+121subtests en68,31s; finales355pass/1skip ambiental en3,97s tras corregir el texto del contrato de prosa para conservar filtros de proceso/título (total del inventario seleccionado, no siempre del escritorio). Primer Fast26323 exit0/build18,18s; Fast final iniciado, no darlo por terminado.8fuentes congeladas en WINDOW_INVENTORY751/SOURCE_PINS.json;programa407=86dadf1b2b828862303f26908ca4f3d4c56315ab82aefe410dd549d2eab95111.
+
+No inferencia nueva ni crédito de encuesta/UI/voz/recursos;26/716/0. Recoger Fast final y adoptar/publicar751. Después corrida real de categoría73 con modelo/runtime registrado para comprobar750+751, sin reutilizar como aceptación los perfiles de prueba736. El conductor oculto no acredita UI. Dos borradores de foco738 siguen pendientes; no se repararon aquí. C03 íntegro activo.
+
+Publicación750 confirmada: 07bbdbb09666e49010f5ae09492f0e14a6d5056e. HEAD=origin=remoto;4pins fuente/9evidencia coinciden con blobs publicados;main intacto,fuente limpia. PUBLICATION.json conserva comprobación. Sigue inventario global Python;no suites/inferencia activas.
+
 ## Fuente750 validada y adoptada
 
 Fast750 sesión62890 terminó exit0; build Release24,90s,0advertencias/0errores. Dueñas2687pass/0fail/1skip ambiental en61,99s; las4huellas fuente y árbol407e6416b42 coinciden tras validación. Panel747 contra commit65282f2c:dominio23→70/70,resolución20→70/70,50/50argumentos conservados. Evidencia completa en FRONTED_STATUS750/REPORT.md y VALIDATION.json. Fuente se adopta en el commit de ADOPTION.json; publicar y verificar remoto inmediatamente. No inferencia ni suites activas; no sondear50989/45283/62890.

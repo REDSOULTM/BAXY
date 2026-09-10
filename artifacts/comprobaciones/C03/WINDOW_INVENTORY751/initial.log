@@ -1,0 +1,71 @@
+.........................FF............................FF............... [ 51%]
+...................................................................      [100%]
+================================== FAILURES ===================================
+_ test_global_request_selects_inventory_and_preserves_its_selector[{text}-The open windows, list them.] _
+
+text = 'The open windows, list them.', envelope = '{text}'
+
+    @pytest.mark.parametrize("text", REQUESTS)
+    @pytest.mark.parametrize("envelope", ["{text}", "Baxy, por favor: {text}"])
+    def test_global_request_selects_inventory_and_preserves_its_selector(text, envelope):
+        text = envelope.format(text=text)
+        expected = {"process": "*", "byTitle": False}
+        assert window_inventory_arguments(text) == expected
+        assert operation_domain_is_grounded(text, "window.resolve") is True
+        result = resolve_explicit_effects(text, {"window.active", "window.resolve"})
+>       assert result is not None and result.operations == ("window.resolve",)
+E       assert (None is not None)
+
+tests\test_c03_window_inventory.py:48: AssertionError
+_ test_global_request_selects_inventory_and_preserves_its_selector[{text}-Dame el inventario de las ventanas.] _
+
+text = 'Dame el inventario de las ventanas.', envelope = '{text}'
+
+    @pytest.mark.parametrize("text", REQUESTS)
+    @pytest.mark.parametrize("envelope", ["{text}", "Baxy, por favor: {text}"])
+    def test_global_request_selects_inventory_and_preserves_its_selector(text, envelope):
+        text = envelope.format(text=text)
+        expected = {"process": "*", "byTitle": False}
+>       assert window_inventory_arguments(text) == expected
+E       AssertionError: assert None == {'process': '*', 'byTitle': False}
+E        +  where None = window_inventory_arguments('Dame el inventario de las ventanas.')
+
+tests\test_c03_window_inventory.py:45: AssertionError
+_ test_global_request_selects_inventory_and_preserves_its_selector[Baxy, por favor: {text}-The open windows, list them.] _
+
+text = 'Baxy, por favor: The open windows, list them.'
+envelope = 'Baxy, por favor: {text}'
+
+    @pytest.mark.parametrize("text", REQUESTS)
+    @pytest.mark.parametrize("envelope", ["{text}", "Baxy, por favor: {text}"])
+    def test_global_request_selects_inventory_and_preserves_its_selector(text, envelope):
+        text = envelope.format(text=text)
+        expected = {"process": "*", "byTitle": False}
+        assert window_inventory_arguments(text) == expected
+        assert operation_domain_is_grounded(text, "window.resolve") is True
+        result = resolve_explicit_effects(text, {"window.active", "window.resolve"})
+>       assert result is not None and result.operations == ("window.resolve",)
+E       assert (None is not None)
+
+tests\test_c03_window_inventory.py:48: AssertionError
+_ test_global_request_selects_inventory_and_preserves_its_selector[Baxy, por favor: {text}-Dame el inventario de las ventanas.] _
+
+text = 'Baxy, por favor: Dame el inventario de las ventanas.'
+envelope = 'Baxy, por favor: {text}'
+
+    @pytest.mark.parametrize("text", REQUESTS)
+    @pytest.mark.parametrize("envelope", ["{text}", "Baxy, por favor: {text}"])
+    def test_global_request_selects_inventory_and_preserves_its_selector(text, envelope):
+        text = envelope.format(text=text)
+        expected = {"process": "*", "byTitle": False}
+>       assert window_inventory_arguments(text) == expected
+E       AssertionError: assert None == {'process': '*', 'byTitle': False}
+E        +  where None = window_inventory_arguments('Baxy, por favor: Dame el inventario de las ventanas.')
+
+tests\test_c03_window_inventory.py:45: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_window_inventory.py::test_global_request_selects_inventory_and_preserves_its_selector[{text}-The open windows, list them.]
+FAILED tests/test_c03_window_inventory.py::test_global_request_selects_inventory_and_preserves_its_selector[{text}-Dame el inventario de las ventanas.]
+FAILED tests/test_c03_window_inventory.py::test_global_request_selects_inventory_and_preserves_its_selector[Baxy, por favor: {text}-The open windows, list them.]
+FAILED tests/test_c03_window_inventory.py::test_global_request_selects_inventory_and_preserves_its_selector[Baxy, por favor: {text}-Dame el inventario de las ventanas.]
+4 failed, 135 passed in 1.71s

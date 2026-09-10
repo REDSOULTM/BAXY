@@ -9318,6 +9318,24 @@ class LlmRuntime:
             )
             message_prompt += scope
             cpu_prompt += scope
+        if (
+            situation.get("operation") == "window.resolve"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(_merged_observed(situation).get("complete"), bool)
+        ):
+            scope = (
+                " For this window inventory, count is the returned page size;"
+                " observedCount is the number observed, and totalCount is known only"
+                " when complete is true. Distinguish a page from the selected inventory total;"
+                " preserve any process or title filter in the request;"
+                " disclose a partial or paginated list. Name the returned windows"
+                " when a list is requested. Pages are fresh observations, not a stable"
+                " snapshot. Visible window style does not prove an unobscured window"
+                " or background process state."
+            )
+            message_prompt += scope
+            cpu_prompt += scope
         compose_sampling = _public_compose_sampling(gguf)
         adapter = getattr(self, "_cpu_prose_adapter", None)
         if adapter is not None and applies_to_cpu_prose(situation, _merged_observed(situation)):

@@ -1,0 +1,37 @@
+source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=not-required
+source_quality_stage_started: powershell-source
+source_quality_stage_passed: powershell-source
+source_quality_stage_started: python-ruff
+All checks passed!
+source_quality_stage_passed: python-ruff
+source_quality_stage_started: python-compileall
+source_quality_stage_passed: python-compileall
+source_quality_stage_started: field-ui-eslint
+source_quality_stage_passed: field-ui-eslint
+source_quality_stage_started: field-ui-tsc-app
+source_quality_stage_passed: field-ui-tsc-app
+source_quality_stage_started: field-ui-tsc-node
+source_quality_stage_passed: field-ui-tsc-node
+source_quality_stage_started: dotnet-format
+source_quality_stage_passed: dotnet-format
+source_quality_stage_started: dotnet-build-release
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Setup -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Setup\bin\Release\net10.0-windows10.0.19041.0\win-x64\Baxy.Setup.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Contracts.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll
+  Baxy.Setup.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Kernel.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.Providers.Windows.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:01.47
+source_quality_stage_passed: dotnet-build-release
+source_quality_gate_passed: mode=Fast

@@ -327,11 +327,120 @@ def _seen(payload: dict) -> dict | None:
     return seen
 
 
+def _inventory_seen(payload: dict) -> dict | None:
+    seen = payload.get("seen")
+    if (
+        payload.get("operation") != "window.resolve" or not isinstance(seen, dict)
+        or not isinstance(seen.get("windows"), list)
+        or not isinstance(seen.get("complete"), bool)
+        or any(type(seen.get(key)) is not int or seen[key] < 0
+               for key in ("count", "observedCount", "offset"))
+        or seen["count"] != len(seen["windows"])
+        or seen["count"] > seen["observedCount"]
+        or (seen["complete"] and (
+            type(seen.get("totalCount")) is not int
+            or seen["totalCount"] != seen["observedCount"]
+        ))
+        or (not seen["complete"] and seen.get("totalCount") is not None)
+    ):
+        return None
+    return seen
+
+
+_PAGE_CONTEXT = re.compile(r"\b(?:pagina|page|listad[oa]|listed|mostrad[oa]s?|shown|"
+                           r"muestro|muestra|showing|displayed|devuelt[oa]s?|returned)\b")
+_OBSERVATION_CONTEXT = re.compile(r"\b(?:observad[oa]s?|observed|encontrad[oa]s?|found|"
+                                  r"detectad[oa]s?|detected|identificad[oa]s?|identified)\b")
+_TOTAL_CONTEXT = re.compile(r"\b(?:en\s+total|in\s+total|total\s+of|total\s+de)\b")
+_INVENTORY_LIMIT = re.compile(r"\b(?:pagina|page|parcial|partial|limite|limited|"
+                             r"al\s+menos|at\s+least|mas\s+ventanas|more\s+windows)\b")
+_INVENTORY_FRACTION = re.compile(
+    rf"\b(?P<page>{_NUMBER})\s*"
+    r"(?:(?:open\s+|visible\s+)?(?:windows?|ventanas?)\s+)?"
+    r"(?:de|of|out\s+of)\s+(?:(?:las|the|un\s+total\s+de|a\s+total\s+of)\s+)?"
+    rf"(?P<total>{_NUMBER})(?:\s+(?:open\s+|visible\s+)?(?:windows?|ventanas?))?\b"
+)
+
+
+def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
+    seen = _inventory_seen(payload)
+    if seen is None:
+        return ""
+    asserted = fold(window_status_assertions(text, payload))
+    # Quoted observed names are data, including names containing cardinality
+    # or punctuation. Keep the original draft and observation untouched.
+    for window in seen["windows"]:
+        if not isinstance(window, dict):
+            continue
+        for key in ("title", "processName"):
+            name = window.get(key)
+            if isinstance(name, str) and name:
+                asserted = re.sub(r"[\"'«]" + re.escape(fold(name)) + r"[\"'»]", "window_name", asserted)
+    if _PROCESS_STATE.search(asserted):
+        return "extra_claim"
+    total = seen["totalCount"] if seen["complete"] else None
+    partial_page = total is None or seen["count"] < total
+    count_question = re.search(r"\b(?:cuantas|how\s+many|cuenta|count)\b", fold(user_text))
+    stated_subset = False
+    for clause in re.split(r"[,;.!?]|\b(?:pero|but|and|y)\b", asserted):
+        if _UNCERTAINTY.search(clause) or re.search(r"^\s*(?:si|if)\b", clause):
+            continue
+        for fraction in reversed(list(_INVENTORY_FRACTION.finditer(clause))):
+            if not re.search(r"\b(?:windows?|ventanas?)\b", fraction[0]):
+                continue
+            numbers = [re.sub(r"[\s-]+", " ", fraction[key]) for key in ("page", "total")]
+            page_value, total_value = [int(n) if n.isdecimal() else _CARDINALS[n] for n in numbers]
+            if page_value != seen["count"]:
+                return "reversed_result"
+            if total is None:
+                return "extra_claim"
+            if total_value != total:
+                return "reversed_result"
+            stated_subset = True
+            clause = clause[:fraction.start()] + "window_subset" + clause[fraction.end():]
+        value = (total if _TOTAL_CONTEXT.search(clause) else
+                 seen["count"] if _PAGE_CONTEXT.search(clause) else
+                 seen["observedCount"] if _OBSERVATION_CONTEXT.search(clause) else total)
+        for match in _COUNT.finditer(clause):
+            raw = re.sub(r"[\s-]+", " ", match["number"])
+            number = int(raw) if raw.isdecimal() else _CARDINALS[raw]
+            bound = match["bound"]
+            if value is None:
+                valid = (
+                    seen["observedCount"] >= number if bound in {"at least", "al menos"} else
+                    seen["observedCount"] > number if bound in {"more than", "mas de"} else False
+                )
+            else:
+                valid = (
+                    value >= number if bound in {"at least", "al menos"} else
+                    value <= number if bound in {"at most", "como maximo"} else
+                    value > number if bound in {"more than", "mas de"} else
+                    value < number if bound in {"less than", "fewer than", "menos de"} else
+                    value == number
+                )
+            if not valid:
+                return "extra_claim" if value is None else "reversed_result"
+        if _NO_WINDOWS.search(clause) and value != 0:
+            return "extra_claim" if value is None else "reversed_result"
+        if _HAS_WINDOWS.search(_NO_WINDOWS.sub("", clause)) and value == 0:
+            return "reversed_result"
+        if partial_page and not _PAGE_CONTEXT.search(clause) and re.search(
+            r"\b(?:todas\s+las\s+ventanas|all\s+(?:the\s+)?windows|"
+            r"son\s+todas|all\s+of\s+them|no\s+hay\s+mas\s+ventanas|no\s+other\s+windows)\b", clause,
+        ):
+            return "extra_claim"
+    if partial_page and not (count_question and total is not None) and not (
+        stated_subset or _INVENTORY_LIMIT.search(asserted) or _UNCERTAINTY.search(asserted)
+    ):
+        return "missing_fact"
+    return ""
+
+
 def window_status_assertions(
     text: str, payload: dict, *, require_window_answer: bool = False,
 ) -> str:
     """Only for validation: omit process uncertainty, retaining other clauses."""
-    if _seen(payload) is None:
+    if _seen(payload) is None and _inventory_seen(payload) is None:
         return text
     parts = _SEPARATORS.split(fold(text))
     for index in range(0, len(parts), 2):
@@ -353,6 +462,9 @@ def window_status_assertions(
 
 
 def window_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+    inventory_defect = _inventory_fact_defect(text, payload, user_text)
+    if inventory_defect:
+        return inventory_defect
     feedback = window_focus_feedback(text, payload, user_text)
     if feedback is not None:
         return "reversed_result" if "contradiction" in feedback else "missing_fact"

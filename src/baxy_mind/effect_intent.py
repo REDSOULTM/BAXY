@@ -1900,7 +1900,7 @@ def _curated_domain_is_grounded(
     }:
         return _window_domain(folded)
     if operation == "window.resolve":
-        return _window_domain(folded) or _has(
+        return window_inventory_arguments(folded) is not None or _window_domain(folded) or _has(
             folded,
             r"\b(?:aplicacion|application|proceso|process)\b",
         )
@@ -5254,6 +5254,64 @@ def has_named_window_target(text: str) -> bool:
     return explicit_window_title(text) is not None
 
 
+def window_inventory_arguments(text: str) -> dict[str, object] | None:
+    """Project an explicit global window inventory into the existing selector.
+
+    Match the entire request so app/title qualifiers, physical windows, quoted
+    orders and another requested action cannot silently widen into all windows.
+    Filters and follow-up pages stay with their own argument/plan readers.
+    """
+
+    text = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    if not _has(text, r"\b(?:ventanas|windows)\b"):
+        return None
+    number = r"(?:\d+|" + "|".join(
+        re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
+    ) + r")"
+    determiner = r"(?:(?:todas(?:\s+las)?|all(?:\s+the)?|las|mis|the|my)\s+)?"
+    state = r"(?:abiertas|visibles|open|visible)"
+    local = (
+        r"(?:(?:de|del|en)\s+(?:(?:mi|el|este)\s+)?"
+        r"(?:pc|equipo|computador(?:a)?|escritorio)|"
+        r"(?:on|in|of)\s+(?:(?:my|the|this)\s+)?(?:pc|computer|desktop))"
+    )
+    noun = (
+        rf"{determiner}(?:(?:primeras|first|hasta|up\s+to)\s+{number}\s+)?"
+        rf"(?:{state}\s+)?(?:ventanas|windows)"
+        rf"(?:\s+(?:{state}|{local}|(?:que\s+tengo|that\s+(?:i\s+have|are)|"
+        rf"i\s+have|tengo|hay|estan|are)(?:\s+{state})?)){{0,3}}"
+    )
+    object_phrase = (
+        rf"(?:(?:(?:el|la|los|the)\s+)?(?:titulos|titles|nombres|names|"
+        rf"listado|lista|list|inventario|inventory)\s+(?:de|of)\s+)?{noun}"
+    )
+    read_head = (
+        rf"(?:{_LIST}|{_MACHINE_STATUS_OBSERVATION_HEAD}|enumera|enumerate|"
+        r"ensename|cuenta|count|tell\s+me|give\s+me|necesito|"
+        r"quiero\s+ver|i\s+want\s+to\s+see|i\s+need\s+to\s+see)"
+    )
+    question_head = (
+        r"(?:(?:dime|tell\s+me)\s+)?(?:que|cuales|which|what|cuantas|how\s+many)"
+        r"(?:\s+(?:son|are))?"
+    )
+    ending = r"(?:\s+(?:ahora|ahora\s+mismo|now|right\s+now))?(?:\s*[,;]?\s*(?:please|por\s+favor|porfa))?"
+    if not re.fullmatch(
+        rf"(?:(?:{read_head}|{question_head})\s+{object_phrase}|"
+        rf"{object_phrase}\s*[,;]\s*(?:muestramelas|enumeralas|list\s+them|show\s+them))"
+        rf"{ending}", text, re.IGNORECASE,
+    ):
+        return None
+    result: dict[str, object] = {"process": "*", "byTitle": False}
+    limit = _match(text, rf"\b(?:primeras|first|hasta|up\s+to)\s+(?P<number>{number})\b")
+    if limit is not None:
+        raw = limit.group("number")
+        value = int(raw) if raw.isdecimal() else _PERCENTAGE_WORD_VALUES[raw]
+        if not 1 <= value <= 50:
+            return None
+        result["limit"] = value
+    return result
+
+
 def _window_domain(text: str) -> bool:
     if not _has(text, r"\b(?:ventana|window)\b"):
         return False
@@ -7560,6 +7618,11 @@ def _strict_catalog_request(
     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
     # at most one remaining non-semantic layer for surface invariance.
     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
+    if window_inventory_arguments(text) is not None:
+        return (
+            EffectIntent(("window.resolve",), (text,))
+            if "window.resolve" in available_operations else None
+        )
     desired = _explicit_desire_request(text)
     if desired is not None:
         # A need for an explicit action is not a noun-only request to observe
@@ -11431,6 +11494,10 @@ def _resolve_explicit_effects_single(
 
 
 def _request_clauses(text: str) -> tuple[str, ...]:
+    if window_inventory_arguments(text) is not None:
+        # A complete inventory topic plus "list them" is one request. The
+        # closed reader rejects extra actions before preserving this span.
+        return (text.strip(),)
     action_after_clause = _COVERAGE_ACTION_HEAD
     # Ordinal discourse markers describe the order of the first real action;
     # they are not standalone clauses.  Only strip them when a known effect

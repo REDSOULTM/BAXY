@@ -4241,6 +4241,9 @@ def _explicit_arguments_from_evidence(
         return _explicit_system_status_scope(evidence)
 
     if operation == "window.resolve":
+        inventory = effect_intent.window_inventory_arguments(evidence)
+        if inventory is not None:
+            return inventory
         title = effect_intent.explicit_window_title(evidence)
         return {"process": title, "byTitle": True} if title is not None else None
 
@@ -4971,6 +4974,10 @@ def _ground_explicit_arguments(
         # A legacy process-only schema cannot represent title identity. Never
         # discard the selector to make this literal fit a different contract.
         return None
+    if operation == "window.resolve" and explicit.get("process") == "*" and explicit.get("byTitle") is False:
+        # The closed inventory request supplies this catalog selector. The
+        # person need not spell the provider's wildcard in natural language.
+        return explicit
     if operation in {
         "app.installed",
         "app.open",

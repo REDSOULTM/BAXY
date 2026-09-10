@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-10T14:18:18.911951+00:00",
+  "commit": "07bbdbb09666e49010f5ae09492f0e14a6d5056e",
+  "origin": "07bbdbb09666e49010f5ae09492f0e14a6d5056e",
+  "remote": "07bbdbb09666e49010f5ae09492f0e14a6d5056e",
+  "source_pins_verified": 4,
+  "evidence_pins_verified": 9,
+  "main_unchanged": true,
+  "source_worktree_clean": true,
+  "whole_worktree_clean": false,
+  "remaining_wip": "Prior evidence/documentation and this postcommit publication receipt; not source750."
+}
