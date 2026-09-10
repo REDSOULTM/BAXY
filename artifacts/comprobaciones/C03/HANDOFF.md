@@ -16,7 +16,7 @@ Público astra-status-batch704/{MANUAL_REVIEW,RESULT,PINS}; privadoLOCALAPPDATA/
 
 ## Publicación
 
-703adoptada de forma delimitada; consultar gitlog/RELEVO por commit de publicación. Auditoría scratchpad/c03-audit-continuity703-704.py comprueba disco/índice,privados,6fuentes,árbol,plan/observador,encuesta/runtime/main y sellos702. Predecesores:7ceeef70fuente702,4d55b449estado,10f16319fuente693,a8eaf976comparación. Preservar APLAZADOS/prototype695 y ghosts de índiceK2; no restaurarlos ni incluirlos de paso.
+703adoptada de forma delimitada y publicada enc11007b0; push origin/Goal-c03 confirmado. Auditoría scratchpad/c03-audit-continuity703-704.py comprueba disco/índice,privados,6fuentes,árbol,plan/observador,encuesta/runtime/main y sellos702. Predecesores:7ceeef70fuente702,4d55b449estado,10f16319fuente693,a8eaf976comparación. Preservar APLAZADOS/prototype695 y ghosts de índiceK2; no restaurarlos ni incluirlos de paso.
 
 ## Bloqueos siguientes
 
