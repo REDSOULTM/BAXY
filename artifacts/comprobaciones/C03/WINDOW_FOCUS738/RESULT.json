@@ -1,0 +1,50 @@
+{
+  "utc": "2026-09-10T12:30:54.556350+00:00",
+  "status": "validated_worktree_candidate_not_adopted",
+  "source_sha256": "0bd4cc673c3f6d8714854ff76ce34d03a8342f586e3466fcc6ab6bb0e9f3d952",
+  "test_sha256": "72420519d042a9048a119dad2bd72a2ee1221bd979bac162a91560d12b985d34",
+  "baseline_new_tests": {
+    "passed": 40,
+    "failed": 179,
+    "total": 219
+  },
+  "final_window_owner_tests": {
+    "passed": 772,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 2.75,
+    "command": "pytest tests/test_c03_window_facts.py tests/test_c03_window_focus_coverage.py tests/test_c03_window_focus_subject_order.py tests/test_c03_window_identity_answers.py tests/test_c03_window_prose_projection.py tests/test_c03_window_state_facts.py tests/test_c03_window_focus_apposition.py -q"
+  },
+  "program_tests": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 1,
+    "seconds": 1.9,
+    "skip": "environment: blind campaign inputs absent",
+    "audio_acceptance": false
+  },
+  "fast1": {
+    "session": 39645,
+    "exit_code": 0,
+    "revision": "before quoted-title apposition fix",
+    "release_seconds": 21.7
+  },
+  "fast2": {
+    "session": 84139,
+    "exit_code": 0,
+    "release_seconds": 1.74,
+    "warnings": 0,
+    "errors": 0
+  },
+  "validation_context": "Existing unadopted705+712+730 worktree retained. Current STT declarations reflect this worktree, not a standalone clean-head promotion.",
+  "llm_dependency_sha256": "40e2770bff56e9d6d7e5156caa780ecb0ea192447faa950c6bba67fbe9faead7",
+  "snapshots": {
+    "window_prose_facts.py.txt": "src/baxy_mind/window_prose_facts.py",
+    "test_c03_window_focus_apposition.py.txt": "tests/test_c03_window_focus_apposition.py"
+  },
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0,
+  "full": "Full5 remains red at original packaging45s and sidecar3s. No Full6 and no final-goal acceptance.",
+  "next_action": "Repair original Full5 blockers before adopting the pending source set; inherit725/727 without treating phase-prototype passes as original3s proof."
+}

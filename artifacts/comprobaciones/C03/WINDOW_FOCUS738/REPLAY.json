@@ -1,0 +1,79 @@
+{
+  "baseline_commit": "d47a92c532f205a71a39eec83c606b9a8ac939d3",
+  "baseline_source_sha256": "e126d859b850f66d96e03a573ec01d844f51b486c6b6fa8b68f69fda2fb50211",
+  "candidate_source_sha256": "0bd4cc673c3f6d8714854ff76ce34d03a8342f586e3466fcc6ab6bb0e9f3d952",
+  "drafts": 215,
+  "window_drafts": 14,
+  "unique_drafts": 205,
+  "unique_window_drafts": 9,
+  "unique_changed_drafts": 1,
+  "changes": [
+    {
+      "source": "736_k2",
+      "case_id": "H0104",
+      "draft_index": 0,
+      "stage": "first",
+      "all_facts_before": "missing_fact",
+      "all_facts_after": ""
+    },
+    {
+      "source": "736_k2",
+      "case_id": "H0104",
+      "draft_index": 1,
+      "stage": "first",
+      "all_facts_before": "missing_fact",
+      "all_facts_after": ""
+    },
+    {
+      "source": "736_k2",
+      "case_id": "H0104",
+      "draft_index": 2,
+      "stage": "first",
+      "all_facts_before": "missing_fact",
+      "all_facts_after": ""
+    },
+    {
+      "source": "736_k2",
+      "case_id": "H0104",
+      "draft_index": 3,
+      "stage": "first",
+      "all_facts_before": "missing_fact",
+      "all_facts_after": ""
+    },
+    {
+      "source": "736_k2",
+      "case_id": "H0104",
+      "draft_index": 4,
+      "stage": "first",
+      "all_facts_before": "missing_fact",
+      "all_facts_after": ""
+    },
+    {
+      "source": "736_k2",
+      "case_id": "H0104",
+      "draft_index": 5,
+      "stage": "first",
+      "all_facts_before": "missing_fact",
+      "all_facts_after": ""
+    }
+  ],
+  "faithful737_focus_rejections": [
+    {
+      "source": "737_baxy_prompt_high",
+      "case_id": "windows-focus-mixed"
+    },
+    {
+      "source": "737_native_high",
+      "case_id": "windows-focus-reference-es"
+    }
+  ],
+  "source_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-product736-k2-private\\review.json": "5a9672b1f69d843303dfb977251ec342e6e722dffa76a016a19f6457c99fdbf3",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-native-product736-qwen-private\\review.json": "91eed09063b2ba24f45e753311fd5f25e412f580656f6254bbe3db1d53a2b4c4",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-facts-prompt737-private\\results.jsonl": "458f41854f8d976650aa4f3ff67c542c6451f761aaba297f0daad88cd8f2e1ba"
+  },
+  "replay_sha256": "a839581862dedfd9f8c797fa3a4b339e2d68c42efaebe95d3d4a8731febddf16",
+  "scope": "Offline replay of captured facts/drafts, not fresh product/UI/voice or survey acceptance.",
+  "adopted": false,
+  "survey_coverage_added": 0
+}

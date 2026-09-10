@@ -1,0 +1,30 @@
+{
+  "public": {
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/BEFORE.log": "63b53cf3eec22309e67baa173a0feff184b92696777ae5d095e3f159de9e1d8a",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/OWNERS.log": "c830de039eb86002255e76766ea5529d8baf923e8186000116166edde448dd6c",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/PROGRAM_TESTS.log": "a239a8e1dfc71860f4ff82b3f55b414e0538ff21a0f634de3c253b4807ecb132",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/FAST1.log": "5579fa2a6131b7fc7b06cc3378b9ed87b7fc5c0f25aa2bc24417b78ba6ed0010",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/FAST2.log": "e7d438629c41adb543247d2add979ad84b42e8bae97ca9c55907c1e564cc0b8d",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/window_prose_facts.py.txt": "0bd4cc673c3f6d8714854ff76ce34d03a8342f586e3466fcc6ab6bb0e9f3d952",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/test_c03_window_focus_apposition.py.txt": "72420519d042a9048a119dad2bd72a2ee1221bd979bac162a91560d12b985d34",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/RESULT.json": "a2ba631e884e844bd7f46726c5586cf6927fb73b8211d4725345ff151e0ad554",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/REPLAY.json": "670121891c962c79381273b5f28ab32019568873fadd7ceff076dbcc1b13cb2c",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/PROGRAM.json": "a6cbdc64fbf7e645dc93ea2eba37e27957d485fb04f0ac2219b85288e8b11f1f",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/REPORT.md": "101264bf433c00343e4fd1d7c770bdbbdd1f4329ae55cf9e483d1fecf64ff036",
+    "artifacts/comprobaciones/C03/WINDOW_FOCUS738/HANDOFF.md": "d05836e2e8a8ff1dceea0e618dd2edb435eb5dc2c99580ef7eecaa7082dce73a"
+  },
+  "private": {
+    "replay.json": "a839581862dedfd9f8c797fa3a4b339e2d68c42efaebe95d3d4a8731febddf16",
+    "RESPUESTAS.md": "a9cde58efec1c9d8300f0b112266ff4b7f52a00d15d3027cfbc06d172b6324c8"
+  },
+  "scripts": {
+    "scratchpad/c03-replay-window-focus738.py": "4a6cfdd60137dcc1d4e050cbd7a0eaf5e8857d0309e28ebca88f84eb0efc2131",
+    "scratchpad/c03-checkpoint-window738.py": "13b29ddd8a1a30c74fc6ae3ebe20d28f7548e9d99d0bfa62dadf07be274bcbe2",
+    "scratchpad/c03-record-window738.py": "eae5e1e38e843b947fab31cb9e582f9d087bc8d82f7334e838fc6fcc8a69fd24"
+  },
+  "worktree_candidate": {
+    "src/baxy_mind/window_prose_facts.py": "0bd4cc673c3f6d8714854ff76ce34d03a8342f586e3466fcc6ab6bb0e9f3d952",
+    "tests/test_c03_window_focus_apposition.py": "72420519d042a9048a119dad2bd72a2ee1221bd979bac162a91560d12b985d34"
+  },
+  "private_root": "%LOCALAPPDATA%/BAXY/C03-window-focus738-private"
+}

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T11:51:15.375074+00:00",
+  "confirmedAtUtc": "2026-09-10T12:30:54.404120+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "737 terminó114/114, sesión85518 terminal; no volver a sondearla ni reiniciar. Adjudicación57pares: directo28 fieles, prompt BAXY39. Mediana final completa12.984/3.335s. BAXY:1errorPEG,1límiteoffline120s,1stop sin content. Datos insuficientes y sensibilidad separados enREPORT/ADJUDICATION. Seguir reparando primera transformación demostrada, no otro barrido de presets. Compara57 pares con los mismos hechos/pregunta: petición directa frente a los mensajes exactos del writer BAXY capturados en736. Sólo cambia ese componente de prompt; K2 Q4 high/T1/p.95, backend y contexto8192 iguales, salida32768 y streaming. Preflight114/114 con plantilla high nativa, máximo1232 tokens de entrada. Es diagnóstico de prompt completo, no cláusula individual ni aceptación de producto. El límite offline120s es blando por lectura SSE/socket; no se presenta como deadline estricto. Errores sin usage dejan contexto desconocido aunque el campo original diga false. La referencia4s separa latencia de calidad; no cambia plazos de producción.",
-  "continuation": "Follow FACTS_PROMPT737/HANDOFF.md. Keep inference and quality adjudication distinct; no new integrated campaign before first-loss attribution.",
+  "checkpoint": "Se corrige el orden del predicado de foco y el enlace de un nombre observado entre paréntesis, incluido un título opaco entre comillas. El alias descriptivo debe estar en los datos de esa misma ventana. También se impide que un nombre como Is Active borre el predicado de una pregunta. No se cambian respuestas, modelos, plazos ni reglas de autorización.\n\nPruebas: nuevos219 antes=179fallos/40pass; dueñas finales de ventanas772pass/0skip en2,75s. Declaraciones actuales del programa STT:17pass/1skip ambiental en1,90s, no aceptación de voz. Árbol Python407/hash87bf1a3b9602377869fa7d27fdfe3a65a6231f2d2ad5dfc71c450a783af9e47a; sellos históricos intactos. Fast1/39645 verde sobre la revisión anterior; Fast2/84139 terminó verde; no volver a sondear.\n\nReplay de215registros,205textos/factos distintos,14registros de ventanas/9distintos. Cambia una respuesta correcta de K2/H0104 que aparece en6registros duplicados: pasa de missing_fact a aceptada por el validador completo. Los demás resultados del replay se conservan. Dos respuestas737 fieles siguen rechazadas: windows-focus-mixed/BAXY y windows-focus-reference-es/directo; no ampliar aceptación sin revisar las demás afirmaciones del texto. Esta fuente es candidata pendiente de regresión integrada, no cierre de la familia ni promoción de K2.\n\nSiguiente: resolver los dos fallos originales de Full5 antes de acumular más fuentes sin adoptar. Empezar por tests/test_sidecar_lifecycle.py y la evidencia725/727; sus pases del prototipo de fases retirado no acreditan el límite original3s. Conservar packaging45s y ambas pruebas intactas. 736 también prueba3vetos incorrectos de propuestas;737 separa prompt/servidor/modelo. Fuentes705+712+730 sin adoptar; Full5 sigue rojo en packaging45s y sidecar3s originales, noFull6. Encuesta26cubiertos/716abiertos/0NA; ninguna decisión pendiente. BAXY manual cerrado. C03 completo sigue activo, incluidos UI, voz, recursos conjuntos, reserva, matriz y Full final.\n",
+  "continuation": "Follow WINDOW_FOCUS738/HANDOFF.md; preserve full C03 scope and all unadopted sources.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
-  "workStatus": "facts_prompt737_complete_no_adoption",
+  "workStatus": "window_focus738_candidate_validated",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "2bbb41d49ca15850b9a32b7cbfc0cf25b925bff1",
+  "publishedEvidenceCommit": "d47a92c532f205a71a39eec83c606b9a8ac939d3",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Frozen57 paired facts-to-prose controls, verified114 native high templates and observed model/server/prompt separately.",
+  "previousGoalTurnClassificationReason": "737 completed114calls, paired adjudication and publication;738 now fixes an observed false rejection with existing and variant controls.",
   "activeValidation": {
     "utc": "2026-09-10T07:02:22.123806+00:00",
     "sessionId": 65777,
@@ -798,8 +798,8 @@
     "processes_closed": true
   },
   "currentDiagnostic": {
-    "path": "artifacts/comprobaciones/C03/FACTS_PROMPT737",
-    "sessionId": 85518,
+    "path": "artifacts/comprobaciones/C03/WINDOW_FOCUS738",
+    "sessionId": 84139,
     "running": false
   }
 }
