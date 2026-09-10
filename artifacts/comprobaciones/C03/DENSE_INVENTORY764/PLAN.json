@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-10T16:36:39.889380+00:00",
+  "baseline": "e3e968b8fe753abf9d342c479922593a8d24194f",
+  "diagnosis": "INVENTORY_OUTPUT763/ADJUDICATION.json",
+  "change": "Apply existing dense budget thresholds to verified successful window.resolve observation arrays carried in situation. No change to global timeout, model, prompt, sampler or factual contract.",
+  "validation": "PlannerAppBoundaryTests owner suite, source Fast, then registered73-case category regression. C# source only; full final remains required.",
+  "coverage_credit": 0,
+  "counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

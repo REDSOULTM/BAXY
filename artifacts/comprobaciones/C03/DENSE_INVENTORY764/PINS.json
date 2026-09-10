@@ -1,0 +1,13 @@
+{
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/SOURCE_PINS.json": "2214cebf29e0f862b538b59c3097c00b3a1d0d57cea8e559d1f1a4ecaefc2c78",
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/PLAN.json": "26adb067db4bbe98c6b3db4d2d3ef4db21c80037629cd91bf2cc4711e3a1cad2",
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/owners.log": "a683e14fc4cf1d0eecbc86dbb61067e219bfa1759401baa3381db4817755914b",
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/fast.log": "5e4b0272a0075022c0f91ec9ab2459b8d6f564ff92a9e1df67027ca9497070d0",
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/VALIDATION.json": "127b4644666c9f3ac5b5b271ca185902c48ac5c08ad6c07f4890837af814b0ed",
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/ADOPTION.json": "f0fe14f741aa2eececdaf5621c7f8577509fc8a3ae9569c26a7ca8b03ad68a73",
+  "artifacts/comprobaciones/C03/DENSE_INVENTORY764/REPORT.md": "0e2527ab750bb20f9be1a83d093277e374a124d57eddd15ece21e432fa2dbd94",
+  "scratchpad/c03-prepare-status765.py": "dfcebd0b16bddc5911db50e1bfc9bf7a20f924a95630ac3597255cf1ada40017",
+  "scratchpad/c03-status-batch765.py": "20364e3d72ca43292cf811febdaea0ed10f02eac3887bda180ec1074a85400ea",
+  "scratchpad/c03-adopt-dense764.py": "cd3693d8a5a5de32e008d1a05cfa59d0dff9b44a14873eee6ac9ceeacc6a3223",
+  "artifacts/comprobaciones/C03/INVENTORY_OUTPUT763/PUBLICATION.json": "dd96d8bd10b3982e29bbbaedce48af8833c061ceff6851defe1173bc6989f2ab"
+}

@@ -1,0 +1,4 @@
+{
+  "src/Baxy.App/MindSidecarClient.cs": "41e4060a4404823e9c888c7eb744f8b956106aeb1714c1b130096ffdbf59deac",
+  "tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs": "2b80853b78f20cab1e674cf7f7601fb2d2c5e9209136767990d298b5f4a7169f"
+}

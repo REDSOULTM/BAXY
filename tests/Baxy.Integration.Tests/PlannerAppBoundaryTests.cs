@@ -462,6 +462,103 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    [TestCase(0, false)]
+    [TestCase(1, false)]
+    [TestCase(7, false)]
+    [TestCase(8, true)]
+    [TestCase(20, true)]
+    [TestCase(50, true)]
+    public void ObservedInventoryUsesItsCompositionBudgetThroughTheSharedFactsPath(
+        int count, bool dense)
+    {
+        var windows = new JsonArray();
+        foreach (int index in Enumerable.Range(0, count))
+        {
+            windows.Add(new JsonObject
+            {
+                ["title"] = $"File {index}",
+                ["processName"] = "editor",
+            });
+        }
+        var situation = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "window.resolve",
+            ["polarity"] = "success",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["windows"] = windows,
+                ["count"] = count,
+                ["observedCount"] = count + 4,
+                ["totalCount"] = count + 4,
+                ["complete"] = true,
+                ["offset"] = 0,
+            },
+        };
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            situation.ToJsonString(), UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+        string before = facts.ToJsonString();
+
+        Assert.Multiple(() =>
+        {
+            TimeSpan gpu = MindSidecarClient.SelectMessageCompositionTimeout(facts);
+            Assert.That(gpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(gpu),
+                Is.EqualTo(dense ? 9d : 4d));
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)));
+            Assert.That(facts.ToJsonString(), Is.EqualTo(before));
+        });
+    }
+
+    [TestCase("true", "true", true)]
+    [TestCase("false", "true", false)]
+    [TestCase("true", "false", false)]
+    [TestCase("null", "true", false)]
+    [TestCase("true", "null", false)]
+    [TestCase("\"true\"", "true", false)]
+    [TestCase("true", "1", false)]
+    public void LargeInventoryFactsNeedVerifiedSuccessToSelectTheDenseBudget(
+        string verified, string succeeded, bool dense)
+    {
+        var situation = new JsonObject
+        {
+            ["operation"] = "window.resolve",
+            ["verified"] = JsonNode.Parse(verified),
+            ["succeeded"] = JsonNode.Parse(succeeded),
+            ["observed"] = new JsonObject
+            {
+                ["windows"] = new JsonArray(new JsonObject
+                {
+                    ["title"] = new string('a', 512),
+                    ["processName"] = "editor",
+                }),
+            },
+        };
+        var facts = new JsonObject { ["situation"] = situation.ToJsonString() };
+        Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+            Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("Looking at the windows.")]
+    [TestCase("{broken}")]
+    [TestCase("[]")]
+    [TestCase("{\"operation\":\"window.resolve\",\"observed\":{\"windows\":[]}}")]
+    [TestCase("{\"operation\":\"window.resolve\",\"verified\":true,\"succeeded\":true,\"observed\":[]}")]
+    [TestCase("{\"operation\":\"window.resolve\",\"verified\":true,\"succeeded\":true,\"observed\":{\"windows\":8}}")]
+    [TestCase("{\"operation\":\"window.active\",\"verified\":true,\"succeeded\":true,\"observed\":{\"windows\":[1,2,3,4,5,6,7,8]}}")]
+    public void NonInventoryOrMalformedSituationRetainsOrdinaryCompositionBudget(string? situation)
+    {
+        var facts = new JsonObject { ["situation"] = situation };
+        Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+            Is.EqualTo(TimeSpan.FromSeconds(5)));
+    }
+
     [TestCase("Son las 07 horas y 58 minutos.", true)]
     [TestCase("It is 07 hours and 58 minutes.", true)]
     [TestCase("Son las 07 horas y 59 minutos.", false)]

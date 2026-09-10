@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T16:39:40.033299+00:00",
+  "owner_command": "dotnet test tests/Baxy.Integration.Tests -c Release --nologo -v:minimal --filter FullyQualifiedName~PlannerAppBoundaryTests",
+  "owners": {
+    "passed": 136,
+    "failed": 0,
+    "skipped": 0,
+    "duration_display": "6s",
+    "new_cases": 22
+  },
+  "fast_command": "scripts/test_source_quality.ps1 -Mode Fast",
+  "fast_exit_code": 0,
+  "source_pins_unchanged": true,
+  "python760_pins_unchanged": true,
+  "full_new": false,
+  "full_reason": "Only C# source changed; no shared protocol or Python change. Final Full remains required; no C03 closure is claimed.",
+  "real_model_product_regression_pending": "STATUS_BATCH765, same73 cases and frozen criteria"
+}

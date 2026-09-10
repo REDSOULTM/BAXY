@@ -124,6 +124,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal static readonly TimeSpan CpuDenseMessageCompositionRequestTimeout =
         TimeSpan.FromSeconds(130);
     private const double MaximumMessageCompositionProtocolBudgetSeconds = 120d;
+    private const int DenseMessageFactCount = 8;
+    private const int DenseMessageFactCharacters = 512;
     private const int MaximumLineBytes = 1024 * 1024;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> _pending = new();
@@ -180,8 +182,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             : 0;
         bool partialMission = facts["partialMission"]?.GetValue<bool>() is true;
         bool dense = partialMission
-            || requiredFactCount >= 8
-            || requiredFactCharacters >= 512;
+            || requiredFactCount >= DenseMessageFactCount
+            || requiredFactCharacters >= DenseMessageFactCharacters
+            || HasDenseWindowInventory(facts);
         if (cpuFallback)
         {
             return dense
@@ -192,6 +195,39 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         return dense
             ? DenseMessageCompositionRequestTimeout
             : MessageCompositionRequestTimeout;
+    }
+
+    private static bool HasDenseWindowInventory(JsonObject facts)
+    {
+        if (facts["situation"] is not JsonValue value
+            || !value.TryGetValue<string>(out string? source)
+            || string.IsNullOrWhiteSpace(source)
+            || !source.TrimStart().StartsWith('{'))
+        {
+            return false;
+        }
+
+        try
+        {
+            if (JsonNode.Parse(source) is not JsonObject situation
+                || situation["operation"]?.ToString() != "window.resolve"
+                || situation["verified"]?.GetValueKind() != JsonValueKind.True
+                || situation["succeeded"]?.GetValueKind() != JsonValueKind.True
+                || situation["observed"] is not JsonObject observed
+                || observed["windows"] is not JsonArray windows)
+            {
+                return false;
+            }
+
+            // Inventory observations travel in situation, outside requiredFacts.
+            // Apply the same dense budget without changing the factual contract.
+            return windows.Count >= DenseMessageFactCount
+                || windows.ToJsonString().Length >= DenseMessageFactCharacters;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
