@@ -1578,7 +1578,8 @@ def _curated_domain_is_grounded(
             ),
         )
     if operation == "system.status":
-        return _is_direct_request(folded) and _system_status_domain(folded)
+        request = _strip_request_envelope(folded)
+        return _is_direct_request(request) and _system_status_domain(request)
     if operation in {"system.settings.adjust", "system.settings.status"}:
         return _has(
             folded,
@@ -4372,6 +4373,9 @@ def _explicit_desire_request(text: str) -> re.Match[str] | None:
 
 
 def _request_head(text: str) -> str:
+    topic = _machine_status_topic(text)
+    if topic is not None:
+        text = topic.group("body")
     text = _negative_state_question_body(text) or text
     desired = _explicit_desire_request(text)
     if desired is not None:
@@ -4713,6 +4717,11 @@ def _is_machine_knowledge_or_diagnosis(text: str) -> bool:
     model instead of gaining deterministic authority.
     """
 
+    topic = _machine_status_topic(text)
+    if topic is not None:
+        # The Spanish relation in "respecto a CPU" is not the English
+        # indefinite article in "a CPU". Keep its scope and complete request.
+        text = text[topic.start("scope"):]
     return _has(
         text,
         (
@@ -4818,6 +4827,7 @@ def _note_inventory_object(text: str) -> bool:
 
 
 def _system_status_domain(text: str) -> bool:
+    text = _strip_request_envelope(text)
     if _is_machine_knowledge_or_diagnosis(text) or _is_past_or_hypothetical_state(
         text,
     ):
@@ -6368,20 +6378,34 @@ def _is_definition_question(text: str) -> bool:
 def _is_explicit_meta_or_tool_denial(text: str) -> bool:
     """Recognize explicit how-to, quotation and no-tool constraints."""
 
+    topic = _machine_status_topic(text)
+    request = topic.group("body") if topic is not None else text
     supported_live_status_question = (
-        re.match(r"^[¿?¡!\s]*tell\s+me\s+how\b", text, re.IGNORECASE) is not None
-        and _has(
-            text,
-            r"\b(?:doing|running|status|state|condition|configured)\b",
-        )
+        re.match(r"^[¿?¡!\s]*tell\s+me\s+how\b", request, re.IGNORECASE) is not None
         and (
-            _has(text, r"\b(?:audio|sound|volume)\b")
-            or _system_status_domain(text)
-            or _network_status_domain(text)
-            or _has(
-                text,
-                r"\b(?:pc|computer|machine|equipo|computador)\b.{0,64}"
-                r"\b(?:doing|running|whole|overall)\b",
+            (
+                _has(request, r"\b(?:doing|running|status|state|condition|configured)\b")
+                and (
+                    _has(text, r"\b(?:audio|sound|volume)\b")
+                    or _system_status_domain(text)
+                    or _network_status_domain(text)
+                    or _has(
+                        text,
+                        r"\b(?:pc|computer|machine|equipo|computador)\b.{0,64}"
+                        r"\b(?:doing|running|whole|overall)\b",
+                    )
+                )
+            )
+            or (
+                _has(request, r"^[¿?¡!\s]*tell\s+me\s+how\s+(?:much|many)\b")
+                and _has(
+                    request,
+                    r"\b(?:free|available|used|occupied|remaining|remains|left|"
+                    r"installed|have|has|is|are)\b",
+                )
+                and _system_status_domain(text)
+                and _machine_status_scopes_are_one_reading(text)
+                and _machine_status_is_the_whole_clause(text)
             )
         )
     )
@@ -7360,13 +7384,19 @@ _STATE_QUERY_HEAD = (
     r"audio|sonido|sound|volumen|volume)"
 )
 
+# Verbos de observación que, por sí solos, ya piden mirar el equipo.
+_MACHINE_STATUS_OBSERVATION_HEAD = (
+    r"(?:revisa|revisar|review|check|chequea|checar|checa|verifica|"
+    r"verificar|comprueba|comprobar|fijate|mira|mirar|muestra|muestrame|"
+    r"mostrame|show|display|dime|decime|dame|ver)"
+)
+
 # Cabezas que abren una observación del equipo. Se combinan siempre con un
 # alcance medible y con el veto de conocimiento/diagnóstico.
 _MACHINE_STATUS_HEAD = (
-    r"(?:como|how|que|what|which|cual|cuanto|cuanta|cuantos|cuantas|"
-    r"dime|decime|dame|muestra|muestrame|mostrame|show|display|ver|"
-    r"revisa|revisar|review|check|chequea|checar|checa|verifica|verificar|"
-    r"fijate|mira|mirar|queda|quedan|hay|tengo|tiene|tienes|"
+    rf"(?:{_MACHINE_STATUS_OBSERVATION_HEAD}|"
+    r"como|how|que|what|which|cual|cuanto|cuanta|cuantos|cuantas|"
+    r"queda|quedan|hay|tengo|tiene|tienes|"
     r"esta|estan|is|are|am|do|does|"
     r"bateria|battery|gpu|vram|cpu|procesador|processor|ram|memoria|memory|"
     r"disco|disk|storage|almacenamiento|espacio|space|windows|"
@@ -7391,17 +7421,45 @@ _MACHINE_STATUS_OBSERVATION = (
     r"actual|actuales|current|ahora|now|mismo|general|overall)\b"
 )
 
-# Verbos de observación que, por sí solos, ya piden mirar el equipo.
-_MACHINE_STATUS_OBSERVATION_HEAD = (
-    r"(?:revisa|revisar|review|check|chequea|checar|checa|verifica|"
-    r"verificar|fijate|mira|mirar|muestra|muestrame|mostrame|show|"
-    r"display|dime|decime|dame|ver)"
-)
+
+def _machine_status_topic(text: str) -> re.Match[str] | None:
+    """Locate a measured topic governing an observation, without rewriting it.
+
+    This is only syntax. Domain, time, device, quotation, negation and whole
+    request checks still decide authority. Do not call the envelope/head
+    readers here: they consume this view and must not recurse into themselves.
+    """
+
+    if "," not in text and ";" not in text:
+        return None
+    scope = (
+        rf"(?:(?:el|la|mi|este|esta|the|my|this)\s+)?"
+        rf"(?:{_MACHINE_STATUS_EVIDENCE})(?:\s+c:?)?"
+    )
+    found = _match(
+        text,
+        rf"^[¿?¡!\s]*{_REQUEST_PREFIX}"
+        r"(?:(?:de|del|sobre|respecto\s+a|en\s+cuanto\s+a|"
+        r"con\s+respecto\s+a|about|regarding|as\s+for)\s+)?"
+        rf"(?P<scope>{scope}(?:\s+(?:y|and)\s+{scope})?)"
+        r"\s*(?P<separator>[,;])\s*"
+        rf"(?P<body>[¿?¡!\s]*{_REQUEST_PREFIX}"
+        rf"(?:{_MACHINE_STATUS_HEAD}|tell)\b.*)$",
+    )
+    if found is None or (
+        not _has(found.group("body"), _MACHINE_STATUS_OBSERVATION)
+        or _is_negative_effect_clause(found.group("body"))
+    ):
+        return None
+    return found
 
 
 def _is_direct_request(text: str) -> bool:
     """Require a request speech act before granting deterministic authority."""
 
+    topic = _machine_status_topic(text)
+    if topic is not None:
+        text = topic.group("body")
     text = _negative_state_question_body(text) or text
     request_head = (
         rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_MUTE_VERB}|"
@@ -9552,7 +9610,9 @@ def _review_system_and_network_effects(
             matches,
             folded,
             "system.status",
-            _MACHINE_STATUS_EVIDENCE,
+            # Identity/usage can precede the hardware noun. Retain the whole
+            # request for the existing scope extractor, not just its noun.
+            r"^",
         )
 
     if _head_is(head, r"(?:haz|hacer|ejecuta|run|ping)") and _has(
@@ -11439,6 +11499,13 @@ def _request_clauses(text: str) -> tuple[str, ...]:
     parts = []
     start = 0
     for boundary in separator.finditer(boundary_text):
+        topic = _machine_status_topic(boundary_text[start:])
+        if topic is not None and (
+            boundary.start() <= start + topic.start("separator") < boundary.end()
+        ):
+            # The topic belongs to this request; the next actual action still
+            # forms its own clause. Slice original text, including quoted data.
+            continue
         parts.append(text[start:boundary.start()])
         start = boundary.end()
     parts.append(text[start:])

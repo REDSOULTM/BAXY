@@ -1,3 +1,25 @@
+## Fuente750 validada y adoptada
+
+Fast750 sesión62890 terminó exit0; build Release24,90s,0advertencias/0errores. Dueñas2687pass/0fail/1skip ambiental en61,99s; las4huellas fuente y árbol407e6416b42 coinciden tras validación. Panel747 contra commit65282f2c:dominio23→70/70,resolución20→70/70,50/50argumentos conservados. Evidencia completa en FRONTED_STATUS750/REPORT.md y VALIDATION.json. Fuente se adopta en el commit de ADOPTION.json; publicar y verificar remoto inmediatamente. No inferencia ni suites activas; no sondear50989/45283/62890.
+
+No promoción de modelo, ni crédito de producto/encuesta/UI/voz/recursos por controles sintéticos. Encuesta26/716/0; C03 íntegro activo. Sigue inventario global de ventanas707/708/730/743/746:dominio plural,selector tipado process=* y prosa de página vs total. Full final pendiente; no repetir Full por este cambio sólo Python.
+
+## Reparación estructural750 — dueñas verdes, Fast en curso
+
+Fuente Python nueva sobre65282f2c: tópico y petición conservan su relación a través de dominio, cabecera, meta y cláusulas; vocabulario de observación unificado; cantidades actuales tell-me-how se separan de how-to. La evidencia de system.status conserva la petición entera, también cuando identidad/uso anteceden a GPU. No cambia modelo, catálogo ni C#.
+
+Comparación pura con la fuente publicada sobre el mismo panel747: dominio23→70/70; resolución20→70/70;50/50 peticiones positivas conservan argumentos desde original y evidencia. Sin inferencia/proveedor/UI/voz ni crédito de encuesta.86 nuevas pruebas incluidas en2687pass/0fail/1skip ambiental (datos privados de campaña ausentes),61,99s. Primera corrida2669pass/1fail por recorte de identidad GPU queda conservada; reparada sin cambiar su oracle. Fast en sesión62890, aún sin resultado terminal al escribir. No editar fuente durante la validación. Programa407=e6416b4290298d023c4cb600fd3e748393295de8c1cb1588c7f71c859df97f37; declaraciones STT actuales actualizadas, sellos históricos intactos.
+
+Siguiente: recoger Fast, verificar pins y adoptar/publicar fuente750; luego inventario global window.resolve y prosa paginada, causas ya localizadas707/708/730/743. Encuesta26/716/0; C03 íntegro activo. Full final obligatorio; no repetir Full7 ni hacer Full por este cambio sólo Python según objetivo vigente.
+
+## Publicación748 confirmada y atribución749 corregida
+
+Fuente748 publicada65282f2cdd6824bbe9095ab4ed54950a4938013b;HEAD=origin=remoto,main intacto.25pinsfuente/17pinsartefactos verificados contra blobs publicados;diff de fuente vacío. Full7 terminal0;no hay suite ni inferencia activa. No repetir Full7. WIP antiguo de evidencia/documentación preservado.
+
+749 demuestra que la explicación747 de tell-me-how-much era incompleta:quitar tópico mantiene meta=True en3/3. Además de ancla inicial,la excepción exige doing/running/status/state/condition/configured,ausentes en preguntas de cantidad. Leer FRONTED_STATUS749/REPORT.md y el contrafactual exacto.747(noadoptado) sigue23→57/70,34ganancias,13falsos vetos y0regresiones/falsos dominios. No parche productivo nuevo después748.
+
+Siguiente trabajo es implementar interpretación estructural común de tópico/petición y cantidades,en sus guardas existentes,preservando original,citas,negación,pasado,otrodispositivo y negativosV8. Evitar ciclo: _strip_request_envelope llama _request_head;un nuevo lector estructural no puede llamarlos si ellos lo consumen. Usar vocabulario de scopes existente y cabeceras de observación compartidas, no una lista de frases humanas. Pruebas dueñas y Fast tras la edición. Encuesta26/716/0,C03 íntegro activo.
+
 ## Fuente748 adoptada tras Full7
 
 Full7/745 terminó en la sesión41560 con exit0,1543,547s; no hay suite activa. NET4574pass/0fail/1skip agregado (16omisiones opt-in aparte). Python11399pass/0fail/3skips ambientales+466subtests en706,70s.1233fuentes idénticas durante la corrida. No repetir Full por este mismo candidato.

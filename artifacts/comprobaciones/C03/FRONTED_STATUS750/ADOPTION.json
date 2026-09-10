@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-10T14:16:34.043853+00:00",
+  "parent_commit": "65282f2cdd6824bbe9095ab4ed54950a4938013b",
+  "source_files": 4,
+  "source_pins_sha256": "3bd101c1291fb54776e65cc87fa3e6858b34ff361883cf73ff13d81c9b510634",
+  "validation_sha256": "5a65a57e72937f97d1f3390a4312a16c2358a41e8b2db5869b6fe60480aef221",
+  "adoption": "Validated Python source is adopted by the commit containing this receipt.",
+  "model_promoted": false,
+  "goal_complete": false,
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  }
+}

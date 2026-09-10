@@ -1,0 +1,30 @@
+{
+  "source_sha256": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+  "rows": [
+    {
+      "original": "About my RAM, tell me how much memory is free.",
+      "body": "tell me how much memory is free.",
+      "whole_meta": true,
+      "body_meta": true,
+      "body_matches_start": true,
+      "body_has_required_live_state_word": false
+    },
+    {
+      "original": "Sobre mi disco C, tell me how much space is occupied.",
+      "body": "tell me how much space is occupied.",
+      "whole_meta": true,
+      "body_meta": true,
+      "body_matches_start": true,
+      "body_has_required_live_state_word": false
+    },
+    {
+      "original": "About my battery, tell me how much charge remains.",
+      "body": "tell me how much charge remains.",
+      "whole_meta": true,
+      "body_meta": true,
+      "body_matches_start": true,
+      "body_has_required_live_state_word": false
+    }
+  ],
+  "correction": "Removing the topic alone does not clear the meta veto. Its exception also requires a state word absent from quantity questions;747 attribution was incomplete. No source changes."
+}

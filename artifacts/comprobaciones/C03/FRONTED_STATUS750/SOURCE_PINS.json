@@ -1,0 +1,6 @@
+{
+  "src/baxy_mind/effect_intent.py": "862be90bd08bdffc6a81b9919dc279ec7d0a0b424322b17ad3ad27101790b337",
+  "tests/test_c03_fronted_machine_status.py": "df6093742858676cbfebd60ee6d82b5ff2ebdf2f3b0d950e270847e72e50d42d",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "0f3ed9c99d7f7cf2e41e3fa6eaf099de13e6d8626abb6077d78e2004e3eaa994",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "8d1629d7856bef4ce09f1e420c979b56f171249a0ae539f47d144948e6a1264b"
+}

@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # Historical STT/wake campaign pins remain unchanged; this declaration does
 # not claim new audio acceptance.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "edaa6459d951f43de878d41ae67e1bbd7d5fc108b915d6fc65d451ab306f7491"
+    "e6416b4290298d023c4cb600fd3e748393295de8c1cb1588c7f71c859df97f37"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-10T13:51:57.488732+00:00",
+  "source_commit": "65282f2cdd6824bbe9095ab4ed54950a4938013b",
+  "branch": "Goal-c03",
+  "remote_head": "65282f2cdd6824bbe9095ab4ed54950a4938013b",
+  "published_source_pins_verified": 25,
+  "published_public_artifact_pins_verified": 17,
+  "main_unchanged": true,
+  "source_diff_empty": true,
+  "whole_worktree_clean": false,
+  "note": "Old diagnostic/documentation WIP is preserved. Broad git diff --check reported CRLF on sealed Full7 receipts intentionally preserved with -text; the source-scoped check passed. Full7 passed unchanged source.",
+  "goal_complete": false
+}

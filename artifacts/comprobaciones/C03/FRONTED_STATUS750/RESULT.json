@@ -1,0 +1,1332 @@
+{
+  "utc": "2026-09-10T14:12:23.951819+00:00",
+  "baseline_commit": "65282f2cdd6824bbe9095ab4ed54950a4938013b",
+  "baseline_source_sha256": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+  "source_sha256": "862be90bd08bdffc6a81b9919dc279ec7d0a0b424322b17ad3ad27101790b337",
+  "panel": "artifacts\\comprobaciones\\C03\\FRONTED_STATUS747\\PREREG.json",
+  "panel_sha256": "a755d20b02ce5ea224645262343ed68ded719e5fc41eceadf1c66183d587ed91",
+  "counts": {
+    "cases": 70,
+    "before_correct_domain": 23,
+    "before_correct_resolution": 20,
+    "after_correct_domain": 70,
+    "after_correct_resolution": 70,
+    "after_arguments_preserved": 50
+  },
+  "rows": [
+    {
+      "id": "P1-1",
+      "text": "Del disco C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "del disco c, dime cuanto espacio esta ocupado."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-2",
+      "text": "Sobre mi disco C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi disco c, dime cuanto espacio esta ocupado."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-3",
+      "text": "Respecto a disco C, comprueba cuánto espacio está ocupado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "respecto a disco c, comprueba cuanto espacio esta ocupado."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-4",
+      "text": "En cuanto a disco C, muéstrame cuánto espacio está ocupado.",
+      "expected": true,
+      "before_domain": true,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "en cuanto a disco c, muestrame cuanto espacio esta ocupado."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-5",
+      "text": "Baxy, por favor: sobre disco C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre disco c, dime cuanto espacio esta ocupado."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-6",
+      "text": "About my disk C, tell me how much space is occupied.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about my disk c, tell me how much space is occupied."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-7",
+      "text": "Regarding the disk C, show me how much space is occupied.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "regarding the disk c, show me how much space is occupied."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-8",
+      "text": "As for this disk C, check how much space is occupied.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "as for this disk c, check how much space is occupied."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-9",
+      "text": "Sobre mi disco C, tell me how much space is occupied.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi disco c, tell me how much space is occupied."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P1-10",
+      "text": "About the disk C, dime cuánto espacio está ocupado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about the disk c, dime cuanto espacio esta ocupado."
+      ],
+      "after_scope_original": {
+        "scope": "disk"
+      },
+      "after_scope_evidence": {
+        "scope": "disk"
+      }
+    },
+    {
+      "id": "P2-1",
+      "text": "Del RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "del ram, dime cuanta memoria queda libre."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-2",
+      "text": "Sobre mi RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi ram, dime cuanta memoria queda libre."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-3",
+      "text": "Respecto a RAM, comprueba cuánta memoria queda libre.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "respecto a ram, comprueba cuanta memoria queda libre."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-4",
+      "text": "En cuanto a RAM, muéstrame cuánta memoria queda libre.",
+      "expected": true,
+      "before_domain": true,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "en cuanto a ram, muestrame cuanta memoria queda libre."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-5",
+      "text": "Baxy, por favor: sobre RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre ram, dime cuanta memoria queda libre."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-6",
+      "text": "About my RAM, tell me how much memory is free.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about my ram, tell me how much memory is free."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-7",
+      "text": "Regarding the RAM, show me how much memory is free.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "regarding the ram, show me how much memory is free."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-8",
+      "text": "As for this RAM, check how much memory is free.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "as for this ram, check how much memory is free."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-9",
+      "text": "Sobre mi RAM, tell me how much memory is free.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi ram, tell me how much memory is free."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P2-10",
+      "text": "About the RAM, dime cuánta memoria queda libre.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about the ram, dime cuanta memoria queda libre."
+      ],
+      "after_scope_original": {
+        "scope": "memory"
+      },
+      "after_scope_evidence": {
+        "scope": "memory"
+      }
+    },
+    {
+      "id": "P3-1",
+      "text": "Del CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "del cpu, dime que modelo tengo."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-2",
+      "text": "Sobre mi CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi cpu, dime que modelo tengo."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-3",
+      "text": "Respecto a CPU, comprueba qué modelo tengo.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "respecto a cpu, comprueba que modelo tengo."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-4",
+      "text": "En cuanto a CPU, muéstrame qué modelo tengo.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "en cuanto a cpu, muestrame que modelo tengo."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-5",
+      "text": "Baxy, por favor: sobre CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre cpu, dime que modelo tengo."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-6",
+      "text": "About my CPU, tell me which model I have.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about my cpu, tell me which model i have."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-7",
+      "text": "Regarding the CPU, show me which model I have.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "regarding the cpu, show me which model i have."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-8",
+      "text": "As for this CPU, check which model I have.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "as for this cpu, check which model i have."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-9",
+      "text": "Sobre mi CPU, tell me which model I have.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi cpu, tell me which model i have."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P3-10",
+      "text": "About the CPU, dime qué modelo tengo.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about the cpu, dime que modelo tengo."
+      ],
+      "after_scope_original": {
+        "scope": "cpu"
+      },
+      "after_scope_evidence": {
+        "scope": "cpu"
+      }
+    },
+    {
+      "id": "P4-1",
+      "text": "Del GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "del gpu, dime que modelo esta instalado."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-2",
+      "text": "Sobre mi GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi gpu, dime que modelo esta instalado."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-3",
+      "text": "Respecto a GPU, comprueba qué modelo está instalado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "respecto a gpu, comprueba que modelo esta instalado."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-4",
+      "text": "En cuanto a GPU, muéstrame qué modelo está instalado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "en cuanto a gpu, muestrame que modelo esta instalado."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-5",
+      "text": "Baxy, por favor: sobre GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre gpu, dime que modelo esta instalado."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-6",
+      "text": "About my GPU, tell me which model is installed.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about my gpu, tell me which model is installed."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-7",
+      "text": "Regarding the GPU, show me which model is installed.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "regarding the gpu, show me which model is installed."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-8",
+      "text": "As for this GPU, check which model is installed.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "as for this gpu, check which model is installed."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-9",
+      "text": "Sobre mi GPU, tell me which model is installed.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi gpu, tell me which model is installed."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P4-10",
+      "text": "About the GPU, dime qué modelo está instalado.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about the gpu, dime que modelo esta instalado."
+      ],
+      "after_scope_original": {
+        "scope": "gpu_identity"
+      },
+      "after_scope_evidence": {
+        "scope": "gpu_identity"
+      }
+    },
+    {
+      "id": "P5-1",
+      "text": "Del batería, dime cuánta carga queda.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "del bateria, dime cuanta carga queda."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-2",
+      "text": "Sobre mi batería, dime cuánta carga queda.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi bateria, dime cuanta carga queda."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-3",
+      "text": "Respecto a batería, comprueba cuánta carga queda.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "respecto a bateria, comprueba cuanta carga queda."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-4",
+      "text": "En cuanto a batería, muéstrame cuánta carga queda.",
+      "expected": true,
+      "before_domain": true,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "en cuanto a bateria, muestrame cuanta carga queda."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-5",
+      "text": "Baxy, por favor: sobre batería, dime cuánta carga queda.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre bateria, dime cuanta carga queda."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-6",
+      "text": "About my battery, tell me how much charge remains.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about my battery, tell me how much charge remains."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-7",
+      "text": "Regarding the battery, show me how much charge remains.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "regarding the battery, show me how much charge remains."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-8",
+      "text": "As for this battery, check how much charge remains.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "as for this battery, check how much charge remains."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-9",
+      "text": "Sobre mi batería, tell me how much charge remains.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "sobre mi bateria, tell me how much charge remains."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "P5-10",
+      "text": "About the battery, dime cuánta carga queda.",
+      "expected": true,
+      "before_domain": false,
+      "after_domain": true,
+      "before_operations": [],
+      "after_operations": [
+        "system.status"
+      ],
+      "before_evidence": [],
+      "after_evidence": [
+        "about the battery, dime cuanta carga queda."
+      ],
+      "after_scope_original": {
+        "scope": "battery"
+      },
+      "after_scope_evidence": {
+        "scope": "battery"
+      }
+    },
+    {
+      "id": "N1",
+      "text": "Del disco C, borra el archivo carta.txt.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N2",
+      "text": "Sobre mi RAM, ayer había más libre.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N3",
+      "text": "About my CPU, tell me what model I had last year.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N4",
+      "text": "Regarding the battery, show me how much charge it will have tomorrow.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N5",
+      "text": "Sobre la batería de mi auto, dime cuánta carga queda.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N6",
+      "text": "About my phone CPU, tell me which model I have.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N7",
+      "text": "De mi memoria del colegio, dime qué recuerdo queda.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N8",
+      "text": "Sobre el disco de música, dime cuánto dura.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N9",
+      "text": "Sobre mi GPU, dime cuál me recomiendas comprar.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N10",
+      "text": "Del disco C, no me digas cuánto espacio está ocupado.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N11",
+      "text": "Respecto a RAM, no compruebes cuánta queda libre.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N12",
+      "text": "About my CPU, do not check the current load.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N13",
+      "text": "Repite: «Del disco C, dime cuánto espacio está ocupado».",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N14",
+      "text": "Translate 'About my CPU, tell me which model I have'.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N15",
+      "text": "«Del disco C, dime cuánto espacio está ocupado».",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N16",
+      "text": "Del disco C, «dime cuánto espacio está ocupado».",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N17",
+      "text": "Sobre la red neuronal, dime cómo está la conexión.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N18",
+      "text": "About my CPU, explain how processors work.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N19",
+      "text": "Sobre RAM, si fuera otro equipo dime cuánta tendría.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    },
+    {
+      "id": "N20",
+      "text": "Sobre GPU, escribe una nota que diga cuánto se está usando.",
+      "expected": false,
+      "before_domain": false,
+      "after_domain": false,
+      "before_operations": [],
+      "after_operations": [],
+      "before_evidence": [],
+      "after_evidence": [],
+      "after_scope_original": null,
+      "after_scope_evidence": null
+    }
+  ],
+  "scope": "Pure development comparison: no model, provider, UI, voice or survey credit.",
+  "initial_development": "First integrated patch:64/70 domain,70/70 resolution; then fixed stacked envelopes and topic-leading English negation. First owner run:2669pass/1fail on lost GPU identity in evidence; repaired whole status-clause evidence. These are development iterations, not preregistered acceptance campaigns.",
+  "coverage_added": 0,
+  "model_promoted": false
+}

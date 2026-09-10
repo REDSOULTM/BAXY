@@ -1,0 +1,36 @@
+{
+  "utc": "2026-09-10T14:16:34.043853+00:00",
+  "owners": {
+    "command": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -X utf8 -m pytest tests/test_c03_fronted_machine_status.py tests/test_effect_intent.py tests/test_machine_status_scope.py tests/test_system_status_scope_grounding.py tests/test_c03_compound_mute_query.py tests/test_counterfactual_behind_denial_frame.py tests/test_generalization_product_r2_development.py tests/test_price_v8_veto_damage_by_cause.py tests/test_stt_quality_evaluators.py tests/test_validate_physical_wake_v17_program.py -q",
+    "exit_code": 0,
+    "passed": 2687,
+    "failed": 0,
+    "environmental_skipped": 1,
+    "seconds": 61.99,
+    "skip_reason": "tests/test_stt_quality_evaluators.py:122: blind campaign inputs absent"
+  },
+  "fast": {
+    "command": "scripts/test_source_quality.ps1 -Mode Fast",
+    "exit_code": 0,
+    "release_seconds": 24.9,
+    "warnings": 0,
+    "errors": 0
+  },
+  "logs": {
+    "owners-initial.log": {
+      "raw_sha256": "adf6247b7c941c0c99c720260b50120889437cb217df6939c068c8692167ac56",
+      "public_lf_sha256": "afe2456454ce8dcce96882692fff3fa09e9a7c385613c19e49a10c6c5c34eceb"
+    },
+    "owners.log": {
+      "raw_sha256": "3c4c490dbb2e9592aa09af711ca74b975af38c673990768ba2749bacbe80ce44",
+      "public_lf_sha256": "8d3be7a9ced50e6bea3655b6a9aec293855c5e619c54a4471b5908d8aeae8912"
+    },
+    "fast.log": {
+      "raw_sha256": "b3fc946fc2de65d980ce5d53b53b81ae5202e9ec97dd256515820107b71bd459",
+      "public_lf_sha256": "6977a55368908754df4795b74c9f6bcd2c4f79641b438bc5c0727210af8f5c56"
+    }
+  },
+  "source_pins_unchanged_after_validation": true,
+  "new_tests": 86,
+  "source_only_whitespace_check_exit_code": 0
+}
