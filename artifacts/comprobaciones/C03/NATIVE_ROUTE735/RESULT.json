@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-10T10:24:34.225806+00:00",
+  "previous_goal_turn": "progress",
+  "native_tool_checks": {
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 1.32
+  },
+  "native_route_owner_checks": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 1.12
+  },
+  "fast1": {
+    "exit_code": 1,
+    "cause": "3 whitespace diagnostics in newly added730 C# test initializers"
+  },
+  "format_only_file": "tests/Baxy.Integration.Tests/MvpLocalTransientHandlerMatrixTests.cs",
+  "format_only_file_sha256": "71962685e2017cb7b3e97054df12d5785cd1a8018bb770e4082e634bd622f596",
+  "fast2": {
+    "exit_code": 0,
+    "session_id": 64673,
+    "warnings": 0,
+    "errors": 0,
+    "release_build_seconds": 114.47
+  },
+  "adopted": false,
+  "legacy_guard_repair_started": false,
+  "system_free_ram_mib": 3762.77734375,
+  "next": "Actual native product736, same73 per model; K2 first then Qwen."
+}

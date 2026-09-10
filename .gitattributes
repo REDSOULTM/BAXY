@@ -401,3 +401,13 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /scratchpad/c03-k2-grammar733.py -text
 /scratchpad/c03_k2_native_adapter734.py -text
 /scratchpad/c03-k2-schema734.py -text
+/artifacts/comprobaciones/C03/NATIVE_ROUTE735/** -text
+/artifacts/comprobaciones/C03/NATIVE_PRODUCT736/** -text
+/scratchpad/c03-native-product736.py -text
+/scratchpad/c03-native-product736-hook/** -text
+/scratchpad/c03-observe-product-resources736.py -text
+/scratchpad/c03-review-native-product736.py -text
+/scratchpad/c03-focus-attribution736.py -text
+/scratchpad/c03-domain-attribution736.py -text
+/scratchpad/c03-adjudicate-native-product736.py -text
+/scratchpad/c03-report-native-product736.py -text

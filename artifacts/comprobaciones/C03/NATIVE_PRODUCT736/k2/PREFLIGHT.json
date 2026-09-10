@@ -1,0 +1,31 @@
+{
+  "profile": "k2",
+  "wire": {
+    "messages": [
+      {
+        "role": "system",
+        "content": "A"
+      },
+      {
+        "role": "system",
+        "content": "B"
+      },
+      {
+        "role": "user",
+        "content": "C"
+      }
+    ],
+    "seed": 17,
+    "max_tokens": 4096,
+    "chat_template_kwargs": {
+      "reasoning_effort": "high"
+    },
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 0,
+    "min_p": 0.0,
+    "repeat_penalty": 1.0,
+    "presence_penalty": 0.0
+  },
+  "native_policy": true
+}

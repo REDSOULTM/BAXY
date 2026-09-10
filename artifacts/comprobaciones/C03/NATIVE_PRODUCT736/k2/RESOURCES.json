@@ -1,0 +1,10 @@
+{
+  "gpu_peak_mib": 3448.23046875,
+  "ram_peak_mib": 2485.78515625,
+  "gpu_telemetry_available": true,
+  "violations": [
+    "free_ram_bound"
+  ],
+  "seconds": 1653.875,
+  "scope": "Owned driver/server/hidden product tree; no visible UI or physical voice credit"
+}

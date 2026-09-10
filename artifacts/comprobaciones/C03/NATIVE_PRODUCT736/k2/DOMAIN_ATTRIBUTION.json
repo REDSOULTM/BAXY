@@ -1,0 +1,32 @@
+{
+  "method": "Pure shared veto replay; actual decision/text/history and candidate names. No LLM or Core calls.",
+  "scope": "No explicit/compound contract supplied, consistent with these model-path single operations. App/game catalogs omitted; the window.resolve and system.status lexical branches do not depend on their contents. Candidate operations are the captured shortlist, not an assertion of full catalog capture.",
+  "cases": [
+    {
+      "case_id": "H0023",
+      "native_operation": "window.resolve",
+      "after_mode": "conversation",
+      "after_operations": []
+    },
+    {
+      "case_id": "H0103",
+      "native_operation": "window.resolve",
+      "after_mode": "conversation",
+      "after_operations": []
+    },
+    {
+      "case_id": "disk-used-es",
+      "native_operation": "system.status",
+      "after_mode": "conversation",
+      "after_operations": []
+    }
+  ],
+  "sources": {
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/baxy_mind/effect_intent.py": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778"
+  },
+  "script_sha256": "86e54508274da11e68dcbdda4edba79826256027047edf14b2b854ae99af8ed6",
+  "conclusion": "Domain veto can reproduce removal of all three valid native proposals before Core. The recorded conversation timeout is downstream, not the first demonstrated semantic loss. No evidence that the required process argument itself invalidates '*'.",
+  "adopted": false,
+  "survey_coverage_added": 0
+}

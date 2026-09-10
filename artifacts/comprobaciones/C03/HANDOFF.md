@@ -1,3 +1,29 @@
+## Cierre diagnóstico736 — estado vigente
+
+63813/48438(K2) y84322/5502(Qwen) terminales; sin BAXY/llama vivo. K2 cortado por RAM global747,49MiB tras50/73:11 finales correctos/39fallos/23 no evaluados. Qwen73/73:48correctos/25fallos, sensibilidad47–50. Mismos50:11K2/35Qwen,24gananciasQwen/0pérdidas. Fuente/scripts/AppDLL/AppEXE/Core publicados idénticos. VRAM3448,23/3169,55MiB; RSS sólo servidor/producto observado2328,29/2396,01MiB; commitpriv6656,82/6283,55MiB, no confundir con RAM física. Ambos observadores empezaron con App presente. Qwen arrancó con más RAM libre después de cerrar colector AMD PresentMon/solicitar cierreSteam; no comparación causal perfecta de latencia.
+
+REPORT/COMPARISON/ADJUDICATION/PINS en NATIVE_PRODUCT736. Informe enviado al panel con estadoqueued, no afirmar visible. Respuestas/payloads literales privados en C03-native-product736-{k2,qwen}-private/RESPUESTAS.md. Replays puros prueban falso rechazo de foco y veto de dominio de3propuestas correctas; marcador IFM ya en contentHTTP. H0359 nace como conversation nativa sin lectura y guard posterior entra por __main__6322→1309, no llm7750. Guardia real3K2/14Qwen. No repetir diagnósticos aislados ni tomar defaults de input como wire efectiva.
+
+Handoff pequeño vigente: NATIVE_PRODUCT736/HANDOFF.md. Próximo: aislar redacción de hechos/preset por rol con payloads736, medir primera transformación y plazos originales, antes de otra tanda integrada. No se promueve modelo ni adopta fuente. Fast735verde; Full5rojo original, noFull6; encuesta26/716/0 y alcance completoC03 pendientes. Fuentes705+712+730sinadoptar y demás WIP preservados.
+
+## Continuación736 — atribución por etapas, comparación todavía en curso
+
+K2 sigue en sesión63813; observador RAM48438 también vivo. Última lectura39/73 terminales, no adjudicación final. No editar fuente, driver736, hook ni adaptadores732/734; después ejecutar qwen con el mismo driver. Extractor nuevo scratchpad/c03-review-native-product736.py soporta --partial sin mezclar finales pendientes. Manual BAXY cerrado.
+
+Nuevo replay scratchpad/c03-focus-attribution736.py demuestra rechazo incorrecto H0104: invertir sólo cópula no arregla, también falla asociación del sujeto; alternativas con mismo payload pasan. FOCUS_ATTRIBUTION.json conserva resultado/hashes. H0023/H0103/disk-used-es sí recibieron y seleccionaron operación; conversation_reply timeout ocurre después de conversión a conversación, no atribuirle sin más la primera pérdida. Se investiga transformación previa. H0207/H0384 publican marcador IFM ya presente en content HTTP; wire efectiva T1/max4096/high, no T0/thinkingFalse del input anterior al adaptador. Nativo6990/50 marcadores; causa interna aún sin aislar.
+
+Legacy guard ahora tiene1 llamada real H0359/t37 (51931.5); no sostener ausencia total por el retorno nativo. Observador RAM empezó con app_present=true: el flag started_before_app calculado por latencia es defectuoso, usar primera muestra y etiquetar arranque no observado. RSS y commit privados no equivalen. Informe parcial NATIVE_PRODUCT736/METODO_Y_HALLAZGOS.md. Fast735 verde; Full5 rojo original; encuesta26/716/0, ninguna adopción ni promoción.
+
+## Actualización736 — ejecución vigente
+
+Fast735/64673 terminalexit0, todos los stages verdes; Release114,47s/0warnings/0errors. Build servers cerrados. K2 producto736 iniciado en63813, categoría73 intacta y fuente/scripts/DLL fijados; esperar misma sesión, no duplicar ni editar mientras corra. Después Qwen con el mismo driver. Observación nativa por etapas, sin reparar guardia antiguo por pruebas directas. Registro enNATIVE_ROUTE735 yNATIVE_PRODUCT736/k2. Full5/encuesta26/716/0 siguen abiertos.
+
+## Corrección735 — prioridad vigente
+
+La ruta nativa llm7356–7378 retorna antes del guardia antiguo: no reparar su count por los probes733/734 sin demostrar una llamada real. Dos dueñas explícitas2pass y otros4native_tool pass. Se prepara comparación736 de73turnos por modelo con perfiles699, fuente/scripts/DLL iguales, observación de todas las etapas y guardia sólo si se alcanza. Fast2 sesión64673 en curso tras corregir sólo3formatos C# de730; Fast1 y detalle en NATIVE_ROUTE735. No inferencia aún; Full5 y encuesta26/716/0 siguen abiertos.
+
+Diagnósticos732–734 publicados en **58f45e270451dbaf6c285ae56e5207f29a9f70e2**; HEAD=origin/Goal-c03, sellos verificados en commit y main intacto. No fuente productiva adoptada. Sesiones77166/80551/32762 terminales; el primer check de espacios señaló CRLF de evidencia sellada, se conservó y verificó reconociendo CR como fin de línea. No hay proceso de inferencia activo.
+
 ## Actualización734 — estado vigente, precede a los registros inferiores
 
 732/15917,733/41764 y734/22979 terminales exit0; sin procesos BAXY/llama/testhost vivos. Se implementaron sólo adaptadores experimentales en scratchpad; fuente llm40e277…ad7 y manifiesto intactos, sin promoción/adopción. Reporte vigente K2_HORIZON_SCHEMA734/REPORT.md; PINS con hashes de scripts, evidencia pública y trazas privadas exactas.

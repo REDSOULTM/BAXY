@@ -1,0 +1,785 @@
+{
+  "model": "qwen",
+  "registered_cases": 73,
+  "completed_terminals": 73,
+  "correct_finals": 48,
+  "failed_finals": 25,
+  "not_evaluated": 0,
+  "capture_interrupted": false,
+  "terminal_kinds": {
+    "published_final": 72,
+    "composition_failed": 1
+  },
+  "final_latency_seconds": {
+    "median_all_completed_including_failures": 1.1858410000000148,
+    "max": 26.205552999999984
+  },
+  "method": "Root reviewed all completed finals and fresh typed facts; bounded independent review assisted Qwen first23. No final means delivery failure, not native semantic failure. Scores concern requested final-answer quality, including unsupported additions and natural requested language; noted redundant reads prevent interpreting a pass as full product acceptance.",
+  "judgment_notes": {
+    "H0037": "Conservative failure for completed-charge addition. Accepting it as loose wording adds one pass.",
+    "H0194": "Conservative failure for unobserved principal GPU. Scoring only requested core identity adds one pass.",
+    "H0655": "Accepted because same final explicitly distinguishes free, used and installed from total usable; treating disponible en total as independently misleading subtracts one pass."
+  },
+  "review_sha256": "91eed09063b2ba24f45e753311fd5f25e412f580656f6254bbe3db1d53a2b4c4",
+  "script_sha256": "6bd9299a4b6185a81d41da1f7b2ca78756dd27a342bc024fc51af1749b01d004",
+  "verdicts": [
+    {
+      "case_id": "H0023",
+      "turn_id": "t1",
+      "group": "windows",
+      "pass": false,
+      "category": "inventory_not_delivered",
+      "reason": "Explicit request for window inventory ends in a question without enumeration. English variant also changes scope and language.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 5560.559000000001
+    },
+    {
+      "case_id": "H0103",
+      "turn_id": "t2",
+      "group": "windows",
+      "pass": false,
+      "category": "inventory_not_delivered",
+      "reason": "Explicit request for window inventory ends in a question without enumeration. English variant also changes scope and language.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 10914.632999999998
+    },
+    {
+      "case_id": "H0104",
+      "turn_id": "t3",
+      "group": "windows",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1037.2540000000008
+    },
+    {
+      "case_id": "H0209",
+      "turn_id": "t4",
+      "group": "windows",
+      "pass": false,
+      "category": "inventory_not_delivered",
+      "reason": "Explicit request for window inventory ends in a question without enumeration. English variant also changes scope and language.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 7461.037000000004
+    },
+    {
+      "case_id": "H0663",
+      "turn_id": "t5",
+      "group": "windows",
+      "pass": false,
+      "category": "inventory_not_delivered",
+      "reason": "Explicit request for window inventory ends in a question without enumeration. English variant also changes scope and language.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 12178.045000000006
+    },
+    {
+      "case_id": "windows-all-en",
+      "turn_id": "t6",
+      "group": "windows",
+      "pass": false,
+      "category": "inventory_not_delivered",
+      "reason": "Explicit request for window inventory ends in a question without enumeration. English variant also changes scope and language.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 10133.231999999996
+    },
+    {
+      "case_id": "windows-focus-mixed",
+      "turn_id": "t7",
+      "group": "windows",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 881.4159999999974
+    },
+    {
+      "case_id": "windows-focus-reference-es",
+      "turn_id": "t8",
+      "group": "windows",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 795.1940000000031
+    },
+    {
+      "case_id": "H0025",
+      "turn_id": "t9",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 811.8810000000085
+    },
+    {
+      "case_id": "H0207",
+      "turn_id": "t10",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 982.5180000000109
+    },
+    {
+      "case_id": "H0384",
+      "turn_id": "t11",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 907.5109999999986
+    },
+    {
+      "case_id": "H0442",
+      "turn_id": "t12",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 896.3709999999992
+    },
+    {
+      "case_id": "H0644",
+      "turn_id": "t13",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 877.0400000000081
+    },
+    {
+      "case_id": "disk-free-en",
+      "turn_id": "t14",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 947.1840000000084
+    },
+    {
+      "case_id": "disk-used-es",
+      "turn_id": "t15",
+      "group": "disk",
+      "pass": false,
+      "category": "no_fresh_read",
+      "reason": "Current PC quantity/ranking asserted without a fresh Core read; previous conversational values are insufficient.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 6643.076000000001
+    },
+    {
+      "case_id": "H0026",
+      "turn_id": "t16",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3277.0080000000016
+    },
+    {
+      "case_id": "H0087",
+      "turn_id": "t17",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1674.1080000000075
+    },
+    {
+      "case_id": "H0114",
+      "turn_id": "t18",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3723.2690000000002
+    },
+    {
+      "case_id": "H0194",
+      "turn_id": "t19",
+      "group": "gpu",
+      "pass": false,
+      "category": "unverified_gpu_hierarchy",
+      "reason": "Observed adapter identity/capacity is correct, but calling one GPU principal adds an unobserved relationship.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 2649.2839999999997
+    },
+    {
+      "case_id": "H0370",
+      "turn_id": "t20",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1431.6399999999994
+    },
+    {
+      "case_id": "H0625",
+      "turn_id": "t21",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1696.0540000000037
+    },
+    {
+      "case_id": "gpu-identity-en",
+      "turn_id": "t22",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": "Also performed an unnecessary summary read; final-answer pass does not certify minimal operation scope.",
+      "trace_duration_ms": 5790.406999999992
+    },
+    {
+      "case_id": "gpu-usage-es",
+      "turn_id": "t23",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 2937.8849999999948
+    },
+    {
+      "case_id": "H0111",
+      "turn_id": "t24",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 851.1180000000022
+    },
+    {
+      "case_id": "H0156",
+      "turn_id": "t25",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 870.5419999999867
+    },
+    {
+      "case_id": "H0162",
+      "turn_id": "t26",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1005.8470000000088
+    },
+    {
+      "case_id": "H0342",
+      "turn_id": "t27",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 950.1710000000021
+    },
+    {
+      "case_id": "H0532",
+      "turn_id": "t28",
+      "group": "memory",
+      "pass": false,
+      "category": "no_fresh_read",
+      "reason": "Current PC quantity/ranking asserted without a fresh Core read; previous conversational values are insufficient.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 6105.983999999997
+    },
+    {
+      "case_id": "H0539",
+      "turn_id": "t29",
+      "group": "memory",
+      "pass": false,
+      "category": "memory_usable_labelled_available",
+      "reason": "Labels about16.54GB usable total as available although fresh available RAM is about2.85GB.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 858.7869999999966
+    },
+    {
+      "case_id": "H0655",
+      "turn_id": "t30",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1910.4309999999969
+    },
+    {
+      "case_id": "H0508",
+      "turn_id": "t31",
+      "group": "memory",
+      "pass": false,
+      "category": "memory_usable_labelled_available",
+      "reason": "Labels about16.54GB usable total as available although fresh available RAM is about2.85GB.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3392.994000000006
+    },
+    {
+      "case_id": "memory-total-en",
+      "turn_id": "t32",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1024.4980000000069
+    },
+    {
+      "case_id": "memory-free-mixed",
+      "turn_id": "t33",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 898.1379999999917
+    },
+    {
+      "case_id": "memory-used-es",
+      "turn_id": "t34",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1074.673999999999
+    },
+    {
+      "case_id": "H0037",
+      "turn_id": "t35",
+      "group": "battery",
+      "pass": false,
+      "category": "unverified_charging_completion",
+      "reason": "Correctly says not charging, but adds that the battery is already charged; payload96%/not charging/AC does not establish completed charging.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 969.5550000000076
+    },
+    {
+      "case_id": "H0144",
+      "turn_id": "t36",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 842.1579999999958
+    },
+    {
+      "case_id": "H0359",
+      "turn_id": "t37",
+      "group": "battery",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 7478.895999999993
+    },
+    {
+      "case_id": "H0379",
+      "turn_id": "t38",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 873.1089999999967
+    },
+    {
+      "case_id": "H0665",
+      "turn_id": "t39",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 757.7039999999979
+    },
+    {
+      "case_id": "battery-charge-en",
+      "turn_id": "t40",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1185.841000000015
+    },
+    {
+      "case_id": "battery-level-es",
+      "turn_id": "t41",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1001.4610000000102
+    },
+    {
+      "case_id": "H0065",
+      "turn_id": "t42",
+      "group": "cpu",
+      "pass": false,
+      "category": "defective_spanish_after_repair",
+      "reason": "CPU number is correct, but published repair says Esto computer; not natural Spanish for this Spanish request.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 2052.5130000000063
+    },
+    {
+      "case_id": "H0350",
+      "turn_id": "t43",
+      "group": "cpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1697.0109999999986
+    },
+    {
+      "case_id": "cpu-usage-en",
+      "turn_id": "t44",
+      "group": "cpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1099.5570000000007
+    },
+    {
+      "case_id": "cpu-order-es",
+      "turn_id": "t45",
+      "group": "cpu",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 14695.342000000004
+    },
+    {
+      "case_id": "H0126",
+      "turn_id": "t46",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 685.6739999999991
+    },
+    {
+      "case_id": "H0180",
+      "turn_id": "t47",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 894.9530000000086
+    },
+    {
+      "case_id": "H0223",
+      "turn_id": "t48",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 713.8249999999825
+    },
+    {
+      "case_id": "H0449",
+      "turn_id": "t49",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 706.9990000000107
+    },
+    {
+      "case_id": "H0450",
+      "turn_id": "t50",
+      "group": "clock",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 11958.706999999995
+    },
+    {
+      "case_id": "H0498",
+      "turn_id": "t51",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1149.9189999999944
+    },
+    {
+      "case_id": "H0499",
+      "turn_id": "t52",
+      "group": "clock",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 5740.177999999985
+    },
+    {
+      "case_id": "H0586",
+      "turn_id": "t53",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 669.7449999999953
+    },
+    {
+      "case_id": "H0600",
+      "turn_id": "t54",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 680.1419999999925
+    },
+    {
+      "case_id": "H0602",
+      "turn_id": "t55",
+      "group": "clock",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 13258.423999999999
+    },
+    {
+      "case_id": "H0700",
+      "turn_id": "t56",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 653.8789999999863
+    },
+    {
+      "case_id": "H0727",
+      "turn_id": "t57",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 671.9899999999907
+    },
+    {
+      "case_id": "clock-date-en",
+      "turn_id": "t58",
+      "group": "clock",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 6009.841000000015
+    },
+    {
+      "case_id": "clock-time-mixed",
+      "turn_id": "t59",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 913.5089999999909
+    },
+    {
+      "case_id": "clock-date-reference-es",
+      "turn_id": "t60",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1079.6689999999944
+    },
+    {
+      "case_id": "H0127",
+      "turn_id": "t61",
+      "group": "network",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 4258.110000000015
+    },
+    {
+      "case_id": "H0433",
+      "turn_id": "t62",
+      "group": "network",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3863.7399999999907
+    },
+    {
+      "case_id": "H0732",
+      "turn_id": "t63",
+      "group": "network",
+      "pass": false,
+      "category": "interface_not_internet_verification",
+      "reason": "network.status derives online only from interfaces that are up; no Internet reachability was verified.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 558.9900000000198
+    },
+    {
+      "case_id": "network-wifi-en",
+      "turn_id": "t64",
+      "group": "network",
+      "pass": false,
+      "category": "wifi_absence_extended_to_all_networks",
+      "reason": "WLAN observation supports no Wi-Fi connection, not the published absence of every network connection.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3600.1140000000014
+    },
+    {
+      "case_id": "network-internet-es",
+      "turn_id": "t65",
+      "group": "network",
+      "pass": false,
+      "category": "supported_connectivity_read_not_delivered",
+      "reason": "Refuses to verify Internet without performing a read.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3213.0500000000175
+    },
+    {
+      "case_id": "H0364",
+      "turn_id": "t66",
+      "group": "processes",
+      "pass": false,
+      "category": "cpu_ranking_metric_and_membership",
+      "reason": "Provider ranks cumulative CPU seconds, not current consumption; final also changes members/order of the observed list.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 7323.312999999995
+    },
+    {
+      "case_id": "H0650",
+      "turn_id": "t67",
+      "group": "processes",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 8332.159999999974
+    },
+    {
+      "case_id": "H0675",
+      "turn_id": "t68",
+      "group": "processes",
+      "pass": false,
+      "category": "no_fresh_read",
+      "reason": "Current PC quantity/ranking asserted without a fresh Core read; previous conversational values are insufficient.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 7042.057000000001
+    },
+    {
+      "case_id": "processes-top3-en",
+      "turn_id": "t69",
+      "group": "processes",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 7458.149000000005
+    },
+    {
+      "case_id": "processes-top2-es",
+      "turn_id": "t70",
+      "group": "processes",
+      "pass": false,
+      "category": "cpu_ranking_metric_and_membership",
+      "reason": "Provider ranks cumulative CPU seconds, not current consumption; final also changes members/order of the observed list.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 5631.052999999985
+    },
+    {
+      "case_id": "H0383",
+      "turn_id": "t71",
+      "group": "audio",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1307.6549999999988
+    },
+    {
+      "case_id": "audio-status-en",
+      "turn_id": "t72",
+      "group": "audio",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed observation, scope and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 1043.8679999999877
+    },
+    {
+      "case_id": "audio-order-es",
+      "turn_id": "t73",
+      "group": "audio",
+      "pass": false,
+      "category": "supported_read_not_delivered",
+      "reason": "Requested existing read did not reach Core; refusal, interpretation failure or no final does not fulfill it.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 26205.552999999985
+    }
+  ],
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0
+}

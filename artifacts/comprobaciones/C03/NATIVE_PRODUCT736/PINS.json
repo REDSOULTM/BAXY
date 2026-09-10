@@ -1,0 +1,71 @@
+{
+  "public": {
+    "COMPARISON.json": "577865f09bbb0182efae29b6f6d77571eab61d99278c69c693ef6404a2b61cb0",
+    "REPORT.md": "400e5dc8e982808b14cef54479bafb3dd128d402713f5f64765626dd8f57ae8f",
+    "METODO_Y_HALLAZGOS.md": "b267ff0176fd7874574c70c4d9a6eb10c9ee6cc9fac8f5b4fd1265492ec89ddc",
+    "k2/PREREG.json": "0154df4aac82b8b767de3be435d98ad3162315d4ba0f47004f2f27b2c90bcf8e",
+    "k2/PREFLIGHT.json": "67b3376d5c64ccb469309702b96084de572a50b07aefba4e018544f1b9183781",
+    "k2/PROCESS.json": "27c3a9d34de8edcb6401bad8953d051f4d3dbf1d912af809192c602a3aa9cb90",
+    "k2/EXIT.json": "0391baf65a150f92e65d2d0145658cbedcb4a82f758163757ac947e9cd436085",
+    "k2/RESOURCES.json": "3d46d2ad975c54c5f2741b311d54e1aeecd6aaaab69e2e65993095478b288757",
+    "k2/PRODUCT_RESOURCES.json": "1a6026c48014c8d27822400f0911153e6f4cfecaee45fe1d67e496cb711d766d",
+    "k2/REVIEW_CAPTURE.json": "2966bbffd5bffe6a7d7986bd3e2cd9ecda9311d2cd0c46cef7820afa33f56bca",
+    "k2/ADJUDICATION.json": "72a82a92665d067789ead31b602113a70bda8d08c515d07cf32e3286e9466a1a",
+    "qwen/PREREG.json": "1813f123a115fd2f0cc869ed3823f9c36bd5163f545b92b82f6724f07d83c72d",
+    "qwen/PREFLIGHT.json": "562693dbd71ad16984f9b3ae8b9c6bc4297958936acc7346003fbb24642561b9",
+    "qwen/PROCESS.json": "c644383193ba5204c311c678f217def584e70010bcbb38849d7a2115e74a2a4f",
+    "qwen/EXIT.json": "4d0b15afb66f3464da287f48057a12e1ecd47632c2f5465640704f37048bd2aa",
+    "qwen/RESOURCES.json": "40acd9eee04418f430f7da872bc6bdf3ffe8b1ab231fa2c0e92afd24bd204b13",
+    "qwen/PRODUCT_RESOURCES.json": "9a5c72413df8f27d4f8727770f9459f0ca1aa4870c27ab2004c2ae3146138afa",
+    "qwen/REVIEW_CAPTURE.json": "56a85f6de72601522b51911d19f9945d75a718f3d3e0137badee0958e04fe34b",
+    "qwen/ADJUDICATION.json": "afc4779b3767ce0cb20290420547009632c4cf5c829d3abc8cc7212afdfcf990",
+    "k2/FOCUS_ATTRIBUTION.json": "100e2c3b536d7307da93b40415191c26e007cc5e90ee52e3117c66a762d70566",
+    "k2/DOMAIN_ATTRIBUTION.json": "02963529ced2eb4b927e98d818fc8259908f4936945898aeb68acc8348943471"
+  },
+  "private": {
+    "k2": {
+      "panel.json": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+      "review.json": "5a9672b1f69d843303dfb977251ec342e6e722dffa76a016a19f6457c99fdbf3",
+      "capture/events.jsonl": "b5a0665f4e7e49375865a59dad2bc47c822fe43509079016d4056c6e766923ba",
+      "shell-trace.jsonl": "b515bc8431d76d59e786c956a2f2cda22c6b9c438dc55fe4ae697ed83858abc2",
+      "turn-audit.jsonl": "1532920083da4cf55d108fdc5ca6a19305d0da1c1171334274e882117dddb579",
+      "compose-audit.jsonl": "57573376d984404bb55dcd40810ce0fc6b28f7242c795e6d80805e26523f670d",
+      "adapter-http.jsonl": "cc6278924ad5a6b82881bc31b3be51f9cd38a03d829579bf5506fceae20e1a9b",
+      "http-posts.jsonl": "2a7e46a20aee04a728246c1431d337e8e7c27991e3256d82404c3607ae828ad5",
+      "decision-boundary.jsonl": "bff867b7809d49fe92b901bd40255c8ae8b1a6a0126939174bbcc39ba2280e8f",
+      "legacy-guard.jsonl": "511fc2c9b746acef922ed854dfcaf30ed1a42cd3fdd10c6947817fbd4da8ad65",
+      "runtime-init.jsonl": "185d9b0b13bd3f7b734ca15bb0c733122cf6e2710a6d1ab8db83a8266682f597",
+      "memory-samples.json": "ffa518a9f0a8be271313d0c53f87d551a74d48b230569f446d820f4e31e8be24",
+      "product-resource-samples.jsonl": "d9728825c796b0c65d1b625ba78d1199c2e4da982fc6683dd4404fb4a7783ed4",
+      "props.json": "4352db6e76b59f9fb118b4e4e9226b6a5d25230c44cb2d258775c75fcfc0c859",
+      "RESPUESTAS.md": "dfa1d33491507bcad867994a106d5dae1a57f105a5525e6d5abc94658db1914c"
+    },
+    "qwen": {
+      "panel.json": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+      "review.json": "91eed09063b2ba24f45e753311fd5f25e412f580656f6254bbe3db1d53a2b4c4",
+      "capture/events.jsonl": "871dbfa7c0976d86a6579b4c96395e5dd5b6bdead37f115f1f2f3609863dd985",
+      "shell-trace.jsonl": "bf1f163b1895765a9a23ec7c1f4ed79c135d68e1d03dd984da1ac454c2f8adb7",
+      "turn-audit.jsonl": "9cc40f667c9896957061983510b00fd3268c95dfab013ab63d748b2adfb0d083",
+      "compose-audit.jsonl": "955816c96936b38784fd46fadddbdf50b593683ab792300ff2b566f0215a392e",
+      "adapter-http.jsonl": "6377a6b9895d4919d82928db333ce3841af433988994328bd4ae5d73fcc21533",
+      "http-posts.jsonl": "52cd224f91247722ff228e5aa3ac9f915fd05d89319b67d5ae1e6d5c1a9c0ba2",
+      "decision-boundary.jsonl": "779098acf14b6ab976186a58c96873e36b674e159fafe35235dc09dd7eb67b0c",
+      "legacy-guard.jsonl": "038986df528d987574ebae116e9f69560493d85ad0b5ce22a1dc6c814be1c72f",
+      "runtime-init.jsonl": "6bf076b57559151bb48cc6766db52f440ee794616ba830c62339996d62702a34",
+      "memory-samples.json": "f5e63a8c36a848c03343f2e1562de5a43995880cb338884eb5217d50a6d8bc0b",
+      "product-resource-samples.jsonl": "bdb44e32dc1b1372fd7ae32e7a47153f04157bf0a2b3278d0310793aa90edb31",
+      "props.json": "b404e24106c19f4746839e834f9e3f30237ff89bd87a0f8cc41229ea2dc150c2",
+      "RESPUESTAS.md": "73336daeefe36f18e5e25f0b8b81aceeae15071e9f4fed8e4207bfd96c892879"
+    }
+  },
+  "scripts": {
+    "scratchpad/c03-native-product736.py": "bf5f00e84420a4f5e3adf97d01d01f628754ab48f4399e66a8d3e3b8c658810b",
+    "scratchpad/c03-observe-product-resources736.py": "9a9771020b355b3261c6965964d6ebb8ca8f0bee79d48c8b1b4f55fd12bbfc36",
+    "scratchpad/c03-review-native-product736.py": "4108bc856156e9dd1c076465d97f9c811107c648f509291270406edf5d6c5bef",
+    "scratchpad/c03-focus-attribution736.py": "e6b8db5d930f7036b036ffcbdbf39a7e4271709d7e78919d77790a199cc4a776",
+    "scratchpad/c03-domain-attribution736.py": "86e54508274da11e68dcbdda4edba79826256027047edf14b2b854ae99af8ed6",
+    "scratchpad/c03-adjudicate-native-product736.py": "6bd9299a4b6185a81d41da1f7b2ca78756dd27a342bc024fc51af1749b01d004",
+    "scratchpad/c03-report-native-product736.py": "46322ce4af1f49c6ef2a4cc2f68758f658f0732fc7c3c3f62003bcccc42a440c"
+  },
+  "note": "Private literal content remains local. Original model-input scripts/backend/source hashes are also pinned by each PREREG; no source adoption."
+}

@@ -1,0 +1,119 @@
+{
+  "utc": "2026-09-10T11:07:37.288407+00:00",
+  "models": {
+    "k2": {
+      "completed": 50,
+      "correct": 11,
+      "failed": 39,
+      "not_evaluated": 23,
+      "matched50_correct": 11,
+      "matched50_final_latency_p50_seconds": 30.390189499999977,
+      "resources": {
+        "gpu_peak_mib": 3448.23046875,
+        "ram_peak_mib": 2485.78515625,
+        "gpu_telemetry_available": true,
+        "violations": [
+          "free_ram_bound"
+        ],
+        "seconds": 1653.875,
+        "scope": "Owned driver/server/hidden product tree; no visible UI or physical voice credit"
+      },
+      "observed_product_memory": {
+        "model": "k2",
+        "samples": 4447,
+        "product_samples": 4439,
+        "server_and_product_peak_rss_mib": 2328.29296875,
+        "server_and_product_peak_private_mib": 6656.81640625,
+        "seconds": 1424.4839999999967,
+        "observed_executables": {
+          "Baxy.exe": {
+            "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
+            "sha256": "8015cb0180366eb98f15113fff0b068ff2dd293631f5c737577fc77cd1ad5b8c"
+          },
+          "baxy-core.exe": {
+            "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+            "sha256": "1f297ddfb67303e22891c6dc0a763bbe61403f0c74c77b7b59485f6abda029eb"
+          }
+        },
+        "observer_sha256": "9a9771020b355b3261c6965964d6ebb8ca8f0bee79d48c8b1b4f55fd12bbfc36",
+        "scope": "Server plus actual Baxy.exe and its descendants while the app is present. Excludes launcher/build compilers. Sampled250ms; may miss briefer peaks. No visible UI/physical voice acceptance.",
+        "started_before_app": false
+      },
+      "http": {
+        "calls": 333,
+        "end_stages": {
+          "failure": 292,
+          "response": 40
+        },
+        "incomplete_at_guard_stop": [
+          346
+        ]
+      },
+      "legacy_guard_calls": 3
+    },
+    "qwen": {
+      "completed": 73,
+      "correct": 48,
+      "failed": 25,
+      "not_evaluated": 0,
+      "matched50_correct": 35,
+      "matched50_final_latency_p50_seconds": 1.055964,
+      "resources": {
+        "gpu_peak_mib": 3169.5546875,
+        "ram_peak_mib": 2552.16796875,
+        "gpu_telemetry_available": true,
+        "violations": [],
+        "seconds": 293.03199999999924,
+        "scope": "Owned driver/server/hidden product tree; no visible UI or physical voice credit"
+      },
+      "observed_product_memory": {
+        "model": "qwen",
+        "samples": 982,
+        "product_samples": 980,
+        "server_and_product_peak_rss_mib": 2396.01171875,
+        "server_and_product_peak_private_mib": 6283.55078125,
+        "seconds": 280.82800000000134,
+        "observed_executables": {
+          "Baxy.exe": {
+            "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
+            "sha256": "8015cb0180366eb98f15113fff0b068ff2dd293631f5c737577fc77cd1ad5b8c"
+          },
+          "baxy-core.exe": {
+            "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+            "sha256": "1f297ddfb67303e22891c6dc0a763bbe61403f0c74c77b7b59485f6abda029eb"
+          }
+        },
+        "observer_sha256": "9a9771020b355b3261c6965964d6ebb8ca8f0bee79d48c8b1b4f55fd12bbfc36",
+        "scope": "Server plus actual Baxy.exe and its descendants while the app is present. Excludes launcher/build compilers. Sampled250ms; may miss briefer peaks. No visible UI/physical voice acceptance.",
+        "started_before_app": false
+      },
+      "http": {
+        "calls": 194,
+        "end_stages": {
+          "response": 193,
+          "failure": 1
+        },
+        "incomplete_at_guard_stop": []
+      },
+      "legacy_guard_calls": 14
+    }
+  },
+  "matched50": {
+    "both_correct": 11,
+    "k2_only": 0,
+    "qwen_only": 24,
+    "both_failed": 15
+  },
+  "parity": {
+    "source": true,
+    "adapter_driver": true,
+    "app_dll": true,
+    "app_exe": true,
+    "published_core": true
+  },
+  "environment_change": "K2 stopped below768MiB globally free RAM. After stop, AMD PresentMon collector was stopped and Steam shutdown requested. Qwen started with4940.35MiB free versus K2 reported3762.8MiB. Do not interpret this as an isolated causal latency comparison.",
+  "limits": "K2 completed50/73 and must retain23 unmeasured. Qwen completed73. Matched50 are a post-stop common subset, not a newly claimed preregistered50 campaign. Native699 and product736 use different panels. Memory observers began with App present and exclude startup. No UI/voice/reserve acceptance, native-model ranking, adoption or survey coverage.",
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0
+}

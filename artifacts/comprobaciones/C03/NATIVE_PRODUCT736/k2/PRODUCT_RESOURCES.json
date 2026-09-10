@@ -1,0 +1,21 @@
+{
+  "model": "k2",
+  "samples": 4447,
+  "product_samples": 4439,
+  "server_and_product_peak_rss_mib": 2328.29296875,
+  "server_and_product_peak_private_mib": 6656.81640625,
+  "seconds": 1424.4839999999967,
+  "observed_executables": {
+    "Baxy.exe": {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
+      "sha256": "8015cb0180366eb98f15113fff0b068ff2dd293631f5c737577fc77cd1ad5b8c"
+    },
+    "baxy-core.exe": {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+      "sha256": "1f297ddfb67303e22891c6dc0a763bbe61403f0c74c77b7b59485f6abda029eb"
+    }
+  },
+  "observer_sha256": "9a9771020b355b3261c6965964d6ebb8ca8f0bee79d48c8b1b4f55fd12bbfc36",
+  "scope": "Server plus actual Baxy.exe and its descendants while the app is present. Excludes launcher/build compilers. Sampled250ms; may miss briefer peaks. No visible UI/physical voice acceptance.",
+  "started_before_app": false
+}

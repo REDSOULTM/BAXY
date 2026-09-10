@@ -1,0 +1,526 @@
+{
+  "model": "k2",
+  "registered_cases": 73,
+  "completed_terminals": 50,
+  "correct_finals": 11,
+  "failed_finals": 39,
+  "not_evaluated": 23,
+  "capture_interrupted": true,
+  "terminal_kinds": {
+    "composition_failed": 37,
+    "published_final": 13
+  },
+  "final_latency_seconds": {
+    "median_all_completed_including_failures": 30.390189499999977,
+    "max": 67.750388
+  },
+  "method": "Root reviewed all completed finals and fresh typed facts; bounded independent review assisted Qwen first23. No final means delivery failure, not native semantic failure. Scores concern requested final-answer quality, including unsupported additions and natural requested language; noted redundant reads prevent interpreting a pass as full product acceptance.",
+  "judgment_notes": {},
+  "review_sha256": "5a9672b1f69d843303dfb977251ec342e6e722dffa76a016a19f6457c99fdbf3",
+  "script_sha256": "6bd9299a4b6185a81d41da1f7b2ca78756dd27a342bc024fc51af1749b01d004",
+  "verdicts": [
+    {
+      "case_id": "H0023",
+      "turn_id": "t1",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": "shared_domain_veto",
+      "route_note": null,
+      "trace_duration_ms": 67750.388
+    },
+    {
+      "case_id": "H0103",
+      "turn_id": "t2",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": "shared_domain_veto",
+      "route_note": null,
+      "trace_duration_ms": 49565.04099999998
+    },
+    {
+      "case_id": "H0104",
+      "turn_id": "t3",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": "prose_validator_false_rejection",
+      "route_note": null,
+      "trace_duration_ms": 30516.595
+    },
+    {
+      "case_id": "H0209",
+      "turn_id": "t4",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 49575.25199999998
+    },
+    {
+      "case_id": "H0663",
+      "turn_id": "t5",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 49581.68400000001
+    },
+    {
+      "case_id": "windows-all-en",
+      "turn_id": "t6",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 48614.929000000004
+    },
+    {
+      "case_id": "windows-focus-mixed",
+      "turn_id": "t7",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30374.64499999996
+    },
+    {
+      "case_id": "windows-focus-reference-es",
+      "turn_id": "t8",
+      "group": "windows",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30249.119000000006
+    },
+    {
+      "case_id": "H0025",
+      "turn_id": "t9",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3172.7000000000116
+    },
+    {
+      "case_id": "H0207",
+      "turn_id": "t10",
+      "group": "disk",
+      "pass": false,
+      "reason": "Internal reasoning delimiter leaked into published final; already present in HTTP content.",
+      "first_loss_attribution": "server_content_delimiter_origin_unresolved",
+      "route_note": null,
+      "trace_duration_ms": 3561.652000000002
+    },
+    {
+      "case_id": "H0384",
+      "turn_id": "t11",
+      "group": "disk",
+      "pass": false,
+      "reason": "Internal reasoning delimiter leaked into published final; already present in HTTP content.",
+      "first_loss_attribution": "server_content_delimiter_origin_unresolved",
+      "route_note": null,
+      "trace_duration_ms": 3546.0989999999874
+    },
+    {
+      "case_id": "H0442",
+      "turn_id": "t12",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3335.92300000001
+    },
+    {
+      "case_id": "H0644",
+      "turn_id": "t13",
+      "group": "disk",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3234.5109999999986
+    },
+    {
+      "case_id": "disk-free-en",
+      "turn_id": "t14",
+      "group": "disk",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 29357.869999999995
+    },
+    {
+      "case_id": "disk-used-es",
+      "turn_id": "t15",
+      "group": "disk",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": "shared_domain_veto",
+      "route_note": null,
+      "trace_duration_ms": 49635.465000000026
+    },
+    {
+      "case_id": "H0026",
+      "turn_id": "t16",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 33352.75
+    },
+    {
+      "case_id": "H0087",
+      "turn_id": "t17",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30449.03700000001
+    },
+    {
+      "case_id": "H0114",
+      "turn_id": "t18",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 32628.611000000034
+    },
+    {
+      "case_id": "H0194",
+      "turn_id": "t19",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30592.775999999954
+    },
+    {
+      "case_id": "H0370",
+      "turn_id": "t20",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30406.194000000018
+    },
+    {
+      "case_id": "H0625",
+      "turn_id": "t21",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30486.680999999982
+    },
+    {
+      "case_id": "gpu-identity-en",
+      "turn_id": "t22",
+      "group": "gpu",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": "Also performed an unnecessary summary read; final-answer pass does not certify minimal operation scope.",
+      "trace_duration_ms": 41766.41300000006
+    },
+    {
+      "case_id": "gpu-usage-es",
+      "turn_id": "t23",
+      "group": "gpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 31361.08400000003
+    },
+    {
+      "case_id": "H0111",
+      "turn_id": "t24",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30245.701999999932
+    },
+    {
+      "case_id": "H0156",
+      "turn_id": "t25",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30246.07700000005
+    },
+    {
+      "case_id": "H0162",
+      "turn_id": "t26",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30394.574999999953
+    },
+    {
+      "case_id": "H0342",
+      "turn_id": "t27",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30385.804000000004
+    },
+    {
+      "case_id": "H0532",
+      "turn_id": "t28",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 49594.033000000054
+    },
+    {
+      "case_id": "H0539",
+      "turn_id": "t29",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30264.52999999991
+    },
+    {
+      "case_id": "H0655",
+      "turn_id": "t30",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30251.564999999944
+    },
+    {
+      "case_id": "H0508",
+      "turn_id": "t31",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 32912.265000000014
+    },
+    {
+      "case_id": "memory-total-en",
+      "turn_id": "t32",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 29422.753999999957
+    },
+    {
+      "case_id": "memory-free-mixed",
+      "turn_id": "t33",
+      "group": "memory",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30461.33899999992
+    },
+    {
+      "case_id": "memory-used-es",
+      "turn_id": "t34",
+      "group": "memory",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3509.8209999999963
+    },
+    {
+      "case_id": "H0037",
+      "turn_id": "t35",
+      "group": "battery",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30489.919999999925
+    },
+    {
+      "case_id": "H0144",
+      "turn_id": "t36",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 2986.336999999825
+    },
+    {
+      "case_id": "H0359",
+      "turn_id": "t37",
+      "group": "battery",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": "native_selector_no_fresh_read_then_guard_timeout",
+      "route_note": null,
+      "trace_duration_ms": 49568.742000000086
+    },
+    {
+      "case_id": "H0379",
+      "turn_id": "t38",
+      "group": "battery",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30333.72399999993
+    },
+    {
+      "case_id": "H0665",
+      "turn_id": "t39",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3121.528999999864
+    },
+    {
+      "case_id": "battery-charge-en",
+      "turn_id": "t40",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3383.625
+    },
+    {
+      "case_id": "battery-level-es",
+      "turn_id": "t41",
+      "group": "battery",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 2484.310999999987
+    },
+    {
+      "case_id": "H0065",
+      "turn_id": "t42",
+      "group": "cpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30564.52000000002
+    },
+    {
+      "case_id": "H0350",
+      "turn_id": "t43",
+      "group": "cpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30415.001999999862
+    },
+    {
+      "case_id": "cpu-usage-en",
+      "turn_id": "t44",
+      "group": "cpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 29581.050999999978
+    },
+    {
+      "case_id": "cpu-order-es",
+      "turn_id": "t45",
+      "group": "cpu",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 49553.1939999999
+    },
+    {
+      "case_id": "H0126",
+      "turn_id": "t46",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3142.0359999998473
+    },
+    {
+      "case_id": "H0180",
+      "turn_id": "t47",
+      "group": "clock",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 30244.70900000003
+    },
+    {
+      "case_id": "H0223",
+      "turn_id": "t48",
+      "group": "clock",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 29823.601000000024
+    },
+    {
+      "case_id": "H0449",
+      "turn_id": "t49",
+      "group": "clock",
+      "pass": true,
+      "reason": "Requested final fact matches this turn's fresh typed payload and units.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 3205.1410000000615
+    },
+    {
+      "case_id": "H0450",
+      "turn_id": "t50",
+      "group": "clock",
+      "pass": false,
+      "reason": "No final response was published; not a claim that the native model chose incorrectly.",
+      "first_loss_attribution": null,
+      "route_note": null,
+      "trace_duration_ms": 49541.92100000009
+    }
+  ],
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0
+}

@@ -1,0 +1,10 @@
+{
+  "exit_code": 1,
+  "manifest_unchanged": true,
+  "sources_unchanged": true,
+  "scripts_unchanged": true,
+  "app_dll_unchanged": true,
+  "adopted": false,
+  "model_promoted": false,
+  "survey_coverage_added": 0
+}

@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T10:03:46.052409+00:00",
+  "confirmedAtUtc": "2026-09-10T11:09:30.682470+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "732/733/734 terminal. Native profile tools/prose works in technical controls; compact GBNF forces JSON into reasoning. Original schema plus explicit serialization restores final JSON but guard counts external reads as zero (ES/EN), mix19s timeout. No production source changed or promoted.",
-  "continuation": "Change strategy from sampler/format probes to the shared semantic count contract: selector counts each external read, guard permits external_read+zero and cannot recover a conversation. Verify llm.py568/1307/7763/8021 and owner tests, then repair general contract and evaluate an entire category. No repeat of completed native699/731 or three-case schema probes.",
+  "checkpoint": "Diagnostic736 complete with K2 RAM interruption50/73 and Qwen73/73; matched50 K211/Qwen35. Same source/adapters/App/Core. REPORT and PINS preserved. No adoption/promotion/coverage.",
+  "continuation": "All sessions63813/48438/84322/5502 terminal; never poll or rerun. Follow NATIVE_PRODUCT736/HANDOFF.md. Isolate facts-to-prose native role settings against captured payloads and identify BAXY transformations before another integrated campaign. Preserve23 unmeasured K2 cases, Full5 red, survey26/716/0.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
-  "workStatus": "native_k2_adapter_diagnosed_semantic_contract_blocker",
+  "workStatus": "native_product736_k2_running",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "626082b07056edd3f63077aef05b6e2c2d7707bd",
+  "publishedEvidenceCommit": "58f45e270451dbaf6c285ae56e5207f29a9f70e2",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Built and checked experimental native adapters, isolated the GBNF/reasoning conflict, and identified an inconsistent shared external-read effect-count contract from actual responses.",
+  "previousGoalTurnClassificationReason": "Published experimental adapters and direct-role diagnostics; current trace corrects their reachability before any retired-path repair.",
   "activeValidation": {
     "utc": "2026-09-10T07:02:22.123806+00:00",
     "sessionId": 65777,
@@ -570,15 +570,10 @@
     "next": "Implement bounded typed global window inventory708, preserving exact selectors, identity, cancellation and honest pagination/errors. Then measure native proposal and first wrong transformation; do not simply remove the domain guard."
   },
   "activeDiagnostic": {
-    "name": "K2 schema734",
-    "sessionId": 22979,
-    "status": "terminal",
-    "exitCode": 0,
-    "contract_passed": 0,
-    "contract_failed": 3,
-    "source_unchanged": true,
-    "manifest_unchanged": true,
-    "owned_processes_remaining": 0
+    "name": "Native product736 K2",
+    "sessionId": 63813,
+    "status": "running",
+    "output": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/k2"
   },
   "activeCatalogProbe": {
     "sessionId": 73101,
@@ -736,5 +731,27 @@
       "verified_at_utc": "2026-09-10T09:31:29.227748+00:00"
     },
     "report_open_status": "queued_by_Codex; not claimed visible"
+  },
+  "publicationReceipt": {
+    "commit": "58f45e270451dbaf6c285ae56e5207f29a9f70e2",
+    "remote_branch": "origin/Goal-c03",
+    "head_matches_origin": true,
+    "sealed_files_verified_in_head": 25,
+    "main_unchanged": true,
+    "source_adopted": false
+  },
+  "comparison736": {
+    "status": "diagnostic_adjudicated_incomplete_k2_campaign",
+    "live_sessions": [],
+    "k2_completed": 50,
+    "k2_not_evaluated": 23,
+    "qwen_completed": 73,
+    "matched50": {
+      "k2_correct": 11,
+      "qwen_correct": 35
+    },
+    "report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
+    "handoff": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/HANDOFF.md",
+    "memory_startup_observed": false
   }
 }

@@ -1,0 +1,28 @@
+{
+  "case_id": "H0104",
+  "turn_id": "t3",
+  "method": "Exact observed payload and validator; no LLM or product mutation",
+  "validator_sha256": "e126d859b850f66d96e03a573ec01d844f51b486c6b6fa8b68f69fda2fb50211",
+  "script_sha256": "e6b8db5d930f7036b036ffcbdbf39a7e4271709d7e78919d77790a199cc4a776",
+  "variants": [
+    {
+      "name": "observed_original",
+      "accepted": false
+    },
+    {
+      "name": "copula_order_only",
+      "accepted": false
+    },
+    {
+      "name": "observed_process_immediately_after_predicate",
+      "accepted": true
+    },
+    {
+      "name": "observed_title_in_nominal_identity",
+      "accepted": true
+    }
+  ],
+  "conclusion": "Correct observed draft rejected. Copula reordering alone still rejected: subject binding also restricts accepted phrasing. This replay does not adopt a repair or add survey coverage.",
+  "adopted": false,
+  "survey_coverage_added": 0
+}
