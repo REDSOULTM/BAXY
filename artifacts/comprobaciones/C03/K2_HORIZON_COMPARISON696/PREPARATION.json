@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-09T21:55:34.407966+00:00",
+  "status": "downloads_verified_build_running_no_K2_inference_yet",
+  "tools_sha256": {
+    "scratchpad/c03-build-k2-backend696.ps1": "d2eb3fc2321565f20ebff98f0569104d5cb22a8bf598844cf563c7338e6f9462",
+    "scratchpad/c03-k2-download696.py": "d317531a7314119486c00c386ae457c025525195fee8c9292ef31aa72163a344",
+    "scratchpad/c03-prepare-k2-panel696.py": "3e7dd6855503ba90a8d4c1aa0429b4438e6e641aa98da5125e649ae5105d0264",
+    "scratchpad/c03-k2-smoke696.py": "0228c9ced879b33f191d97a04aede673456d674bedd473fb5ceef9861d710e41"
+  },
+  "cuda": "13.0.88",
+  "architecture": "sm86",
+  "host_gpu": "RTX3060Laptop",
+  "driver": "581.57",
+  "source_commit": "35999d101cf2233fc54f09c3c8d599da7303ce02",
+  "build_session": 85416,
+  "build_log": "TEMP/c03-build-k2-backend696.log",
+  "download_session": 93590,
+  "download_exit": 0,
+  "weights_verified": 4,
+  "owner_instruction": "Pause Qwen repair batches and run real K2 comparison before selecting the model. Preserve full C03 goal.",
+  "prelaunch_preparation_issue": "Initial panel assertion found network.status absent from the actual filtered tool packet. No inference occurred. Preserve this as supplied-catalog gap with abstention criterion; never score fabricated network reading as model improvement.",
+  "dynamic_parser": "common/chat-auto-parser-generator.cpp100-152 infers reasoning delimiters and composes schema after reasoning; inspect runtime instead of inferring incompatibility from absent model-specific parser string.",
+  "qwen_same_backend_control": "Optional same-configuration Qwen on IFM build to separate backend from model differences; no repair source changes."
+}

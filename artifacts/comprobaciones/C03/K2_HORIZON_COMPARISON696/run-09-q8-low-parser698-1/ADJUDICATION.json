@@ -1,0 +1,365 @@
+{
+  "utc": "2026-09-10T00:22:15.667727+00:00",
+  "tag": "09-q8-low-parser698-1",
+  "reviewer": "root",
+  "method": "Revisión manual de las50 entradas/resultados. Misma base congelada y criterios; separación entre error de protocolo y error semántico. Ninguna cobertura C03 ni promoción. No evaluación ciega.",
+  "pass": 20,
+  "fail": 30,
+  "selector_pass": 3,
+  "prose_and_conversation_pass": 17,
+  "rows": [
+    {
+      "id": "select-disk-used-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0532",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0359",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-cpu-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0450",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0499",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0602",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-clock-date-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-network-internet-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "network_fact",
+      "reason": "Afirma conectividad actual sin una observación correspondiente."
+    },
+    {
+      "id": "select-H0675",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-audio-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-control-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-battery-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-control-cpu-then-date-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "order",
+      "reason": "Omite una de las operaciones solicitadas en secuencia."
+    },
+    {
+      "id": "select-control-negated-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "negated",
+      "reason": "Propone una lectura que la persona pidió no realizar."
+    },
+    {
+      "id": "select-control-past-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados.",
+      "note": "La selección efectiva vacía respeta no actuar ante la referencia al pasado. La promesa interna de una lectura futura es incongruente, pero no es la prosa visible ni una ejecución; no se concede cobertura de producto."
+    },
+    {
+      "id": "select-control-knowledge-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "address",
+      "reason": "Afirma que RAM no requiere espacio de direcciones físicas; explicación factual incorrecta."
+    },
+    {
+      "id": "select-control-other-machine-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "other",
+      "reason": "Propone una lectura de este PC para una consulta sobre otro ordenador."
+    },
+    {
+      "id": "select-control-process-memory-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-disk-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "wrong_disk",
+      "reason": "Selecciona lista de procesos para una petición de lectura de disco."
+    },
+    {
+      "id": "writer521-0",
+      "kind": "welcome",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-1",
+      "kind": "error",
+      "pass": false,
+      "defect": "missing_cause",
+      "reason": "No conserva la causa observada del fallo: memoria desactivada."
+    },
+    {
+      "id": "writer521-2",
+      "kind": "confirmation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-3",
+      "kind": "completed",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-4",
+      "kind": "completed",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-6",
+      "kind": "clarification",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-7",
+      "kind": "read",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-8",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-10",
+      "kind": "clarification",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-11",
+      "kind": "read",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-12",
+      "kind": "progress",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-16",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-17",
+      "kind": "completed",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-18",
+      "kind": "read",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-19",
+      "kind": "capability",
+      "pass": false,
+      "defect": "disabled",
+      "reason": "Contradice la memoria desactivada o confunde ese estado con ausencia de la capacidad."
+    },
+    {
+      "id": "writer694-H0111",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "ram_scope",
+      "reason": "No distingue correctamente capacidad instalada, total utilizable y memoria disponible solicitada."
+    },
+    {
+      "id": "writer694-H0342",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "ram_scope",
+      "reason": "No distingue correctamente capacidad instalada, total utilizable y memoria disponible solicitada."
+    },
+    {
+      "id": "writer694-H0539",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "ram_scope",
+      "reason": "No distingue correctamente capacidad instalada, total utilizable y memoria disponible solicitada."
+    },
+    {
+      "id": "writer694-H0508",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "ram_scope",
+      "reason": "No distingue correctamente capacidad instalada, total utilizable y memoria disponible solicitada."
+    },
+    {
+      "id": "writer694-H0114",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "gpu_scope",
+      "reason": "Añade límites, roles o interpretaciones de capacidad GPU no sustentadas por las observaciones."
+    },
+    {
+      "id": "writer694-gpu-usage-es",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "gpu_number",
+      "reason": "La cifra de memoria/uso GPU no corresponde a los hechos proporcionados."
+    },
+    {
+      "id": "writer694-H0650",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "ranking",
+      "reason": "Inventa valores o no conserva el orden de procesos y el top solicitado."
+    },
+    {
+      "id": "writer694-processes-top3-en",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "ranking",
+      "reason": "Inventa valores o no conserva el orden de procesos y el top solicitado."
+    },
+    {
+      "id": "writer694-H0104",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "missing_window",
+      "reason": "Describe geometría/estado de la ventana pero omite su identidad solicitada."
+    },
+    {
+      "id": "writer694-H0127",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "chat-identity-es",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "identity",
+      "reason": "No identifica a la persona según la fuente solicitada o atribuye su nombre al asistente."
+    },
+    {
+      "id": "chat-name-es",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "chat-vocative-mixed",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "chat-knowledge-en",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "physics",
+      "reason": "Añade una explicación física incorrecta sobre por qué flota el hielo."
+    },
+    {
+      "id": "chat-difference-es",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    }
+  ],
+  "private_review_sha256": "cccea713f9046aa3b795044124853a73c254f6c773bc35c855188c639438257e",
+  "repeated_fixture": "writer521-6 and writer521-10 are identical, not independent evidence"
+}

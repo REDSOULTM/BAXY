@@ -1,0 +1,155 @@
+{
+  "utc": "2026-09-09T23:10:13.823701+00:00",
+  "tag": "37-q4-high-native-selectors1",
+  "reviewer": "root",
+  "method": "Revisión manual de las20entradas/resultados ejecutados contra criterios fijados antes de inferencia. No evaluación ciega. Fallos de calidad/prosa separados por causa de fallos fácticos. Texto interno del selector no se equipara a prosa visible. No cobertura C03 ni promoción.",
+  "pass": 10,
+  "fail": 10,
+  "selector_pass": 10,
+  "prose_and_conversation_pass": 0,
+  "rows": [
+    {
+      "id": "select-disk-used-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-H0532",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-H0359",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-cpu-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "empty_final",
+      "reason": "Final stop vacío sin la lectura CPU solicitada; tampoco hay llamada de herramienta."
+    },
+    {
+      "id": "select-H0450",
+      "kind": "selector",
+      "pass": false,
+      "defect": "invented_failure",
+      "reason": "Afirma una avería de lectura del sistema no observada y no propone la hora."
+    },
+    {
+      "id": "select-H0499",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0602",
+      "kind": "selector",
+      "pass": false,
+      "defect": "wrong_interpretation",
+      "reason": "Interpreta pasar la hora como algo pasado/intransferible y no selecciona system.time."
+    },
+    {
+      "id": "select-clock-date-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missed_available_operation",
+      "reason": "Niega una herramienta de fecha aunque system.time está en el catálogo."
+    },
+    {
+      "id": "select-network-internet-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "unsupported_followup",
+      "reason": "Promete verificar Internet sin emitir una lectura y sin la operación correspondiente en el catálogo suministrado."
+    },
+    {
+      "id": "select-H0675",
+      "kind": "selector",
+      "pass": false,
+      "defect": "unverified_wrong_ranking",
+      "reason": "Da como mayor consumo un proceso del historial que ni siquiera es el mayor de esa observación; no propone lectura actual."
+    },
+    {
+      "id": "select-audio-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-control-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-battery-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-cpu-then-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-negated-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-past-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-knowledge-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-other-machine-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "wrong_device",
+      "reason": "Propone una lectura local para una consulta sobre el ordenador de otra persona."
+    },
+    {
+      "id": "select-control-process-memory-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-disk-order-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    }
+  ],
+  "private_review_sha256": "7fc88e440629d7f5f0df674eea22e055910adedfc3cf9f5188b5dc34a078e9c1",
+  "repeated_fixture": "writer521-6 and writer521-10 are identical source repetition, not independent evidence",
+  "remaining": "Reference precision, model-specific profiles and integrated BAXY validation before any promotion."
+}

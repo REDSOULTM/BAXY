@@ -1,0 +1,156 @@
+{
+  "utc": "2026-09-09T23:33:48.765629+00:00",
+  "tag": "09-bf16-high-native-selectors1",
+  "reviewer": "root",
+  "method": "Revisión manual de las20entradas/resultados ejecutados contra criterios fijados antes de inferencia. No evaluación ciega. Fallos de calidad/prosa separados por causa de fallos fácticos. Texto interno del selector no se equipara a prosa visible. No cobertura C03 ni promoción.",
+  "pass": 7,
+  "fail": 13,
+  "selector_pass": 7,
+  "prose_and_conversation_pass": 0,
+  "rows": [
+    {
+      "id": "select-disk-used-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "empty_final",
+      "reason": "Final stop vacío sin lectura de disco solicitada."
+    },
+    {
+      "id": "select-H0532",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0359",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-cpu-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0450",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missed_available_operation",
+      "reason": "Niega poder mostrar la hora sin proponer system.time."
+    },
+    {
+      "id": "select-H0499",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0602",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-clock-date-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "empty_final",
+      "reason": "Final stop vacío sin la lectura disponible de fecha."
+    },
+    {
+      "id": "select-network-internet-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "unverified_network",
+      "reason": "Niega poder comprobar la conexión pero afirma que el PC está online sin observación."
+    },
+    {
+      "id": "select-H0675",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-audio-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-control-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-battery-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-cpu-then-date-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_second_operation",
+      "reason": "Propone estado CPU pero omite la lectura de fecha solicitada después."
+    },
+    {
+      "id": "select-control-negated-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-past-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "unrequested_read",
+      "reason": "Propone estado actual ante una afirmación sobre una lectura de ayer."
+    },
+    {
+      "id": "select-control-knowledge-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-other-machine-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados.",
+      "note": "Abstiene correctamente la lectura de otro ordenador. La justificación interna es extensa e imprecisa sobre la capacidad local; este texto del selector no es la prosa visible de BAXY."
+    },
+    {
+      "id": "select-control-process-memory-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-disk-order-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    }
+  ],
+  "private_review_sha256": "d0ac6ce576984383c62684a7f034ac199e8480b0246e9014890054ba4706bdd0",
+  "repeated_fixture": "writer521-6 and writer521-10 are identical source repetition, not independent evidence",
+  "remaining": "Reference precision, model-specific profiles and integrated BAXY validation before any promotion."
+}

@@ -1,0 +1,40 @@
+{
+  "tag": "37-q4-high-gpu8k1",
+  "responses": 50,
+  "adjudication": "pending",
+  "results_sha256": "e42f9e4e45e2dcf33420a8de5788cf03e10ab76141ccee558e62b11755b25806",
+  "resources": {
+    "gpu_peak_mib": 3448.23046875,
+    "ram_peak_mib": 842.08203125,
+    "seconds": 359.03100000000086,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "stop": 41,
+    "tool_calls": 9
+  },
+  "errors": [],
+  "seconds": {
+    "count": 50,
+    "median": 3.9140000000006694,
+    "max": 49.35999999999876,
+    "sum": 349.5630000000001
+  },
+  "first_token_seconds": {
+    "count": 50,
+    "median": 0.3985000000002401,
+    "max": 1.5779999999995198,
+    "sum": 35.67000000000189
+  },
+  "first_content_seconds": {
+    "count": 42,
+    "median": 3.2890000000006694,
+    "max": 48.73499999999876,
+    "sum": 297.2159999999967
+  },
+  "completion_tokens": 16841,
+  "selector_function_name_matches_only": 10,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

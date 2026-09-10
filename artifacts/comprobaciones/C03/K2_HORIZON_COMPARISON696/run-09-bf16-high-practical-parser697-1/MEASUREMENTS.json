@@ -1,0 +1,42 @@
+{
+  "tag": "09-bf16-high-practical-parser697-1",
+  "responses": 50,
+  "adjudication": "pending",
+  "operator_stop": null,
+  "excluded_after_operator_stop": [],
+  "results_sha256": "537952b31f35dec6d7acb0b260431cc8be8b4f30f994a71a2a671f7aaded628e",
+  "resources": {
+    "gpu_peak_mib": 2279.9140625,
+    "ram_peak_mib": 709.20703125,
+    "seconds": 153.34399999999914,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "stop": 41,
+    "tool_calls": 9
+  },
+  "errors": [],
+  "seconds": {
+    "count": 50,
+    "median": 1.3284999999996217,
+    "max": 37.79699999999866,
+    "sum": 149.45399999999972
+  },
+  "first_token_seconds": {
+    "count": 50,
+    "median": 0.13249999999970896,
+    "max": 0.7810000000008586,
+    "sum": 14.56499999999869
+  },
+  "first_content_seconds": {
+    "count": 41,
+    "median": 1.0159999999996217,
+    "max": 37.63999999999942,
+    "sum": 109.19299999999748
+  },
+  "completion_tokens": 12934,
+  "selector_function_name_matches_only": 9,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

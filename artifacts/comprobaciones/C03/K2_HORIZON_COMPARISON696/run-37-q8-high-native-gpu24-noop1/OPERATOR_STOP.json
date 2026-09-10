@@ -1,0 +1,32 @@
+{
+  "utc": "2026-09-09T23:30:59.732276+00:00",
+  "operator": "root",
+  "planned_cases": 50,
+  "completed_before_stop": [
+    "select-disk-used-es",
+    "select-H0532",
+    "select-H0359",
+    "select-cpu-order-es",
+    "select-H0450",
+    "select-H0499",
+    "select-H0602",
+    "select-clock-date-en",
+    "select-network-internet-es",
+    "select-H0675",
+    "select-audio-order-es",
+    "select-control-date-en",
+    "select-control-battery-es",
+    "select-control-cpu-then-date-en",
+    "select-control-negated-en",
+    "select-control-past-en",
+    "select-control-knowledge-en",
+    "select-control-other-machine-es",
+    "select-control-process-memory-es",
+    "select-control-disk-order-es"
+  ],
+  "completed_selector_category": true,
+  "reason": "Adaptive stop after the complete selector category: this CPU/GPU profile is impractical for interactive BAXY (~20s prefill, ~5 tokens/s). Preserve completed outputs; quality of all50 is unknown. Subsequent connection errors caused by this stop are not model failures.",
+  "preregistered_stop_rule": false,
+  "partial_run_not_a_complete_50_case_panel": true,
+  "pid": 19088
+}

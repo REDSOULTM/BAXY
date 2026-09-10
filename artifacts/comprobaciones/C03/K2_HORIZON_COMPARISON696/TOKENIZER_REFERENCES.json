@@ -1,0 +1,56 @@
+[
+  {
+    "model": "0.9B",
+    "revision": "02d0da0fefe5a2f8dc3db091cad29b15c9d8e4fa",
+    "url": "https://huggingface.co/IFM/K2-Horizon-0.9B/resolve/02d0da0fefe5a2f8dc3db091cad29b15c9d8e4fa/tokenizer.json",
+    "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-0.9B-tokenizer.json",
+    "sha256": "7a42bd219df0b747f000ca3e39f8eca9b93e965707e8be0b6603cac56aaad738",
+    "bytes": 4948077,
+    "pre_tokenizer": {
+      "type": "Sequence",
+      "pretokenizers": [
+        {
+          "type": "Split",
+          "pattern": {
+            "Regex": "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\\r\\n\\p{L}\\p{N}]?(?:\\p{L}|\\p{M}|\\u200C|\\u200D)+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+"
+          },
+          "behavior": "Isolated",
+          "invert": false
+        },
+        {
+          "type": "ByteLevel",
+          "add_prefix_space": false,
+          "trim_offsets": true,
+          "use_regex": false
+        }
+      ]
+    }
+  },
+  {
+    "model": "3.7B",
+    "revision": "633f52ad28b17edeabd82afc61d2d13b4c59a561",
+    "url": "https://huggingface.co/IFM/K2-Horizon-3.7B/resolve/633f52ad28b17edeabd82afc61d2d13b4c59a561/tokenizer.json",
+    "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-3.7B-tokenizer.json",
+    "sha256": "838d767b7c9925ff257feb20eaa4299a8e3cc35bb3d805589c373f51d2cc3cb6",
+    "bytes": 20637260,
+    "pre_tokenizer": {
+      "type": "Sequence",
+      "pretokenizers": [
+        {
+          "type": "Split",
+          "pattern": {
+            "Regex": "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\\r\\n\\p{L}\\p{N}]?(?:\\p{L}|\\p{M}|\\u200C|\\u200D)+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+"
+          },
+          "behavior": "Isolated",
+          "invert": false
+        },
+        {
+          "type": "ByteLevel",
+          "add_prefix_space": false,
+          "trim_offsets": true,
+          "use_regex": false
+        }
+      ]
+    }
+  }
+]

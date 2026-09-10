@@ -1,0 +1,46 @@
+{
+  "tag": "09-q8-medium-parser698-1",
+  "responses": 50,
+  "adjudication": "pending",
+  "operator_stop": null,
+  "excluded_after_operator_stop": [],
+  "results_sha256": "8eb37598e9603008d563f2e7e0008870c077892b332626111cc975689c2312da",
+  "resources": {
+    "gpu_peak_mib": 1389.734375,
+    "ram_peak_mib": 481.80859375,
+    "seconds": 81.48400000000038,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "None": 2,
+    "stop": 36,
+    "tool_calls": 12
+  },
+  "errors": [
+    "select-H0359",
+    "select-cpu-order-es"
+  ],
+  "seconds": {
+    "count": 50,
+    "median": 1.0474999999996726,
+    "max": 9.031999999999243,
+    "sum": 73.08299999998962
+  },
+  "first_token_seconds": {
+    "count": 50,
+    "median": 0.13299999999981083,
+    "max": 0.6560000000008586,
+    "sum": 14.283999999996013
+  },
+  "first_content_seconds": {
+    "count": 33,
+    "median": 0.7029999999995198,
+    "max": 8.875,
+    "sum": 40.828999999996086
+  },
+  "completion_tokens": 7227,
+  "selector_function_name_matches_only": 13,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

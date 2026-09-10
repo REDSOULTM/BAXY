@@ -1,0 +1,102 @@
+"""Summarize sealed independent controls; never award product coverage."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+
+root = Path(__file__).resolve().parents[1]
+base = root / 'artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699'
+profiles = [
+    ('09-bf16-high-reference699', 'K2 0.9 BF16 high · referencia'),
+    ('qwen-q4-reference699', 'Qwen Q4 · referencia'),
+    ('37-q4-high-reference699', 'K2 3.7 Q4 high · referencia'),
+    ('qwen-q4-practical699', 'Qwen Q4 · GPU 8k'),
+    ('37-q4-low-practical699', 'K2 3.7 Q4 low · GPU 8k'),
+    ('37-q4-high-practical699', 'K2 3.7 Q4 high · GPU 8k'),
+]
+def read(path):
+    return json.loads(path.read_text(encoding='utf-8-sig'))
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+panel_sha = sha(base / 'PANEL.json')
+rows = []
+for tag, label in profiles:
+    folder = base / ('run-' + tag)
+    grade, metrics, timing = [read(folder / n) for n in ['ADJUDICATION.json', 'MEASUREMENTS.json', 'RESPONSE_TIMING.json']]
+    assert grade['cases'] == metrics['responses'] == 50
+    assert grade['panel_sha256'] == panel_sha
+    assert grade['measurements_sha256'] == sha(folder / 'MEASUREMENTS.json')
+    assert grade['raw_results_sha256'] == metrics['results_sha256'] == timing['results_sha256']
+    assert not metrics['resources']['violations'] and metrics['resources']['manifest_unchanged']
+    rows.append(dict(tag=tag, label=label, adjudication=grade, measurements=metrics, timing=timing))
+
+# Actual sent bodies for the effort-only comparison, not claimed CLI defaults.
+request_sets = []
+for tag in ['37-q4-low-practical699', '37-q4-high-practical699']:
+    path = Path(os.environ['LOCALAPPDATA']) / f'BAXY/C03-k2-native699-{tag}-private/requests.jsonl'
+    request_sets.append([json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()])
+assert len(request_sets[0]) == len(request_sets[1]) == 50
+effort_parity = []
+for left, right in zip(*request_sets, strict=True):
+    # Request-record structure is verified against the producer below on execution.
+    assert left['case'] == right['case']
+    low, high = left['payload'], right['payload']
+    assert low['chat_template_kwargs']['reasoning_effort'] == 'low'
+    assert high['chat_template_kwargs']['reasoning_effort'] == 'high'
+    low = json.loads(json.dumps(low))
+    low['chat_template_kwargs']['reasoning_effort'] = 'high'
+    assert low == high, left['case']
+    effort_parity.append(left['case'])
+
+by_tag = {r['tag']: r for r in rows}
+def paired(left_tag, right_tag):
+    left = {r['id']: r['passed'] for r in by_tag[left_tag]['adjudication']['rows']}
+    right = {r['id']: r['passed'] for r in by_tag[right_tag]['adjudication']['rows']}
+    assert left.keys() == right.keys()
+    return dict(left=left_tag, right=right_tag,
+        gains=[k for k in left if not left[k] and right[k]],
+        regressions=[k for k in left if left[k] and not right[k]],
+        both_pass=[k for k in left if left[k] and right[k]],
+        both_fail=[k for k in left if not left[k] and not right[k]])
+comparisons = [paired('qwen-q4-practical699', '37-q4-high-practical699'),
+               paired('37-q4-low-practical699', '37-q4-high-practical699')]
+data = dict(utc=datetime.now(timezone.utc).isoformat(), cases=50, outputs=300,
+    panel_sha256=panel_sha, profiles=rows, paired=comparisons,
+    effort_only_payload_parity=effort_parity,
+    decision='Independent diagnostic only; combined decision is in selector700. No product acceptance.')
+(base / 'SUMMARY699.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+text = [
+    '# Modelos antes de BAXY: referencia independiente', '',
+    'La objeción del dueño era válida: llamar a la API nativa no elimina las instrucciones de BAXY. Las 860 respuestas previas las conservaban. Esta fase añade 300 respuestas sin system de BAXY, herramientas ni schema, con plantilla nativa y muestreo específico por modelo. La conclusión conjunta está en la comparación emparejada de instrucciones700; ningún modelo queda promovido por esta tabla.', '',
+    'Son las mismas50 tareas nuevas en cada perfil:20 de hechos suministrados,10 de conocimiento sencillo,10 de instrucciones y10 de contexto;30 español,15 inglés y5 mezcla. Rúbricas congeladas antes de inferencia y respuestas completas leídas manualmente. Es diagnóstico de desarrollo dirigido a veracidad, no un benchmark general, prueba ciega ni cobertura de los742 requisitos humanos.', '',
+    '| Perfil | Cumple | Primer texto p50 | Final p50 / máximo | VRAM pico | RAM pico |',
+    '|---|---:|---:|---:|---:|---:|',
+]
+for r in rows:
+    m, t, g = r['measurements'], r['timing'], r['adjudication']
+    text.append(f"| {r['label']} | {g['passed']}/50 | {t['first_visible_text_seconds']['median']:.3f}s | {m['seconds']['median']:.3f}s / {m['seconds']['max']:.3f}s | {m['resources']['gpu_peak_mib']/1024:.2f}GiB | {m['resources']['ram_peak_mib']/1024:.2f}GiB |")
+text += ['',
+    'Picos medidos sólo en el árbol del servidor, con muestras cada250ms; no son el consumo conjunto de BAXY ni garantizan capturar picos más breves. El tiempo de primer texto corresponde al stream HTTP, no a pantalla/voz. La mediana del primer texto excluye finales ausentes, que se declaran abajo. No se interpreta el primer token de razonamiento oculto como una respuesta visible.', '',
+    'Las referencias usan el margen de salida recomendado: Qwen16384, K2 high32768. Qwen y K2 grande desplazan KV a RAM para reservar ese margen bajo el techo local; K2 pequeño BF16 mantiene KV en GPU. Los perfiles prácticos usan contexto8192/salida4096 y KV q8 en GPU. Por eso comparar referencia y práctico cambia varias condiciones; no identifica por sí solo cuál ajuste causa la diferencia.', '',
+    'K2 grande high y low prácticos sí mantienen idénticos los50 cuerpos enviados salvo reasoning_effort, verificado en SUMMARY699.json. El high práctico se añadió al observar degradación en low: escogerlo únicamente por las pruebas anteriores con BAXY habría repetido el sesgo señalado.', '',
+    'IFM recomienda high, T0.6/p0.95 para0.9 y T1/p0.95 para3.7, con32768tokens de margen; low/medium sacrifican precisión y no son su receta de evaluación. Aquí se rotulan como perfiles prácticos. [K2 pequeño](https://huggingface.co/IFM/K2-Horizon-0.9B), [K2 grande](https://huggingface.co/IFM/K2-Horizon-3.7B).', '',
+    'Qwen2507 es no-thinking; su tarjeta no requiere enable_thinking=false y recomienda su propio muestreo. La referencia usaT0.7/p0.8/k20/minp0 y el práctico conserva ese muestreo. [Ficha Qwen](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507).', '',
+    'Los resultados pertenecen a los perfiles locales medidos: K2 pequeño BF16, grandes Q4_K_M y sus backends fijados por hash. El fork llama.cpp de K2 tiene correcciones Windows/tokenizador/parser probadas; no es la ejecución BF16/SGLang/H200 validada por IFM. La paridad del tokenizador285/285 y las plantillas no acreditan paridad completa de logits o calidad con Transformers. No se atribuye automáticamente al modelo original todo defecto del perfil local.', '',
+    'Las fichas identifican inglés para K2 grande e inglés/chino para el pequeño. Eso no prueba que no puedan responder español; sí obliga a medirlo directamente antes de elegirlos para un producto que prioriza español. [K2 grande](https://huggingface.co/IFM/K2-Horizon-3.7B), [K2 pequeño](https://huggingface.co/IFM/K2-Horizon-0.9B).', '',
+    '**Finales ausentes y cortes:**', '',
+]
+for r in rows:
+    absent = r['timing']['no_visible_text']
+    text.append(f"- {r['label']}: " + (', '.join(f"{a['case']} ({a['finish_reason']}, {a['seconds']:.3f}s)" for a in absent) if absent else 'ninguno.'))
+text += ['', '**Comparaciones por la misma pregunta:**', '']
+for p in comparisons:
+    text.append(f"- {p['right']} frente a {p['left']}: {len(p['gains'])} mejoras, {len(p['regressions'])} regresiones, {len(p['both_fail'])} fallos compartidos. IDs en SUMMARY699.json.")
+text += ['',
+    'No hay ganador universal por una diferencia de uno o dos casos. Las discrepancias interpretativas con el segundo lector están escritas: Qwen referencia/práctico39–40, K2 low27–28 según los fronterizos; la tabla usa el criterio final documentado del revisor principal. Una apertura correcta seguida de hechos materialmente falsos falla. Se toleran redacción torpe y alternativas que no cambian el significado; no se exigen frases literales.', '',
+    '**Entradas, respuestas y decisiones completas:**', '',
+]
+text += [f"- [{r['label']}](run-{r['tag']}/RESPUESTAS.md)" for r in rows]
+text += ['', 'El contraste700 conserva las herramientas e historias y quita exactamente un mensaje system sobre los mismos 20 selectores previos. Mide ese mensaje, no todas las capas del producto. Consulta su informe para la conclusión conjunta. C03 y la encuesta continúan en 26 cubiertos / 716 abiertos / 0 no aplicables; estos controles no conceden cobertura.']
+(base / 'REPORTE699.md').write_text('\n'.join(text) + '\n', encoding='utf-8')
+print(json.dumps(dict(profiles=len(rows), outputs=300, effort_parity=len(effort_parity), paired=comparisons)))

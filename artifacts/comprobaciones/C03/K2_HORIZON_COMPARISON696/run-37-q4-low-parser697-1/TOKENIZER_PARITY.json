@@ -1,0 +1,9 @@
+{
+  "model_size": "3.7B",
+  "tokenizers_version": "0.22.2",
+  "reference_sha256": "838d767b7c9925ff257feb20eaa4299a8e3cc35bb3d805589c373f51d2cc3cb6",
+  "cases": 285,
+  "equal": 285,
+  "mismatches": 0,
+  "method": "Exact token IDs without automatic BOS/EOS; special-token recognition enabled on both. Unicode adversarial fixtures and fixed-seed mixed strings. No generation."
+}

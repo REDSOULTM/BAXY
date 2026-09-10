@@ -1,0 +1,27 @@
+{
+  "tag": "37-q4-high-reference699",
+  "responses": 50,
+  "expected": 50,
+  "seconds": {
+    "median": 21.91400000000067,
+    "max": 233.2970000000023
+  },
+  "errors": [],
+  "empty_finals": [],
+  "finish_reasons": {
+    "stop": 50
+  },
+  "prompt_tokens_max": 65,
+  "completion_tokens_max": 3078,
+  "results_sha256": "3b75b0789318a06e36d4a0b820e61260537e25d0dc93e89df87eea1491b52267",
+  "resources": {
+    "gpu_peak_mib": 3064.24609375,
+    "ram_peak_mib": 3544.57421875,
+    "seconds": 2034.969000000001,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "requests_sha256": "16a1cd89c069e72d9334fcf38167f84269c3808d35e62831cf304fa5bb29b730",
+  "template_parity_sha256": "b712be013f722435d0109dc0caeb43c4da432d3a9ce473e04ced8206d26a86cc"
+}

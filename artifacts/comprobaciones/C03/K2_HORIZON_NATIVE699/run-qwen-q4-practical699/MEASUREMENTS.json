@@ -1,0 +1,27 @@
+{
+  "tag": "qwen-q4-practical699",
+  "responses": 50,
+  "expected": 50,
+  "seconds": {
+    "median": 1.3520000000007713,
+    "max": 9.71900000000096
+  },
+  "errors": [],
+  "empty_finals": [],
+  "finish_reasons": {
+    "stop": 50
+  },
+  "prompt_tokens_max": 68,
+  "completion_tokens_max": 702,
+  "results_sha256": "5c49de78acaff63857fb956fc254fadbaa7a2500a54b219d5b86011e7d586056",
+  "resources": {
+    "gpu_peak_mib": 3165.5546875,
+    "ram_peak_mib": 715.3828125,
+    "seconds": 111.35899999999674,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "requests_sha256": "f30e4b6f87dda4b402d1c15156ada379295585d23b8d4ecb06fe0e220005f9eb",
+  "template_parity_sha256": "5c61454f2b07a535edecfce2ce77467e14102cda0122d5a7e4e1f093beaf77e6"
+}

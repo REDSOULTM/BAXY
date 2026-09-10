@@ -1,0 +1,366 @@
+{
+  "utc": "2026-09-09T22:59:12.497732+00:00",
+  "tag": "09-bf16-high-reference1",
+  "reviewer": "root",
+  "method": "Revisión manual de las50entradas/resultados contra criterios fijados antes de inferencia. No evaluación ciega. Fallos de calidad/prosa separados por causa de fallos fácticos. Texto interno del selector no se equipara a prosa visible. No cobertura C03 ni promoción.",
+  "pass": 32,
+  "fail": 18,
+  "selector_pass": 9,
+  "prose_and_conversation_pass": 23,
+  "rows": [
+    {
+      "id": "select-disk-used-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0532",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0359",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-cpu-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0450",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-H0499",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missed_available_operation",
+      "reason": "Nombra la herramienta necesaria para la fecha pero no la propone y promete intentarla."
+    },
+    {
+      "id": "select-H0602",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-clock-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-network-internet-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-H0675",
+      "kind": "selector",
+      "pass": false,
+      "defect": "missing_fresh_read",
+      "reason": "Reutiliza una respuesta del historial; no propone la lectura actual solicitada."
+    },
+    {
+      "id": "select-audio-order-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-battery-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-cpu-then-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-negated-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-past-en",
+      "kind": "selector",
+      "pass": false,
+      "defect": "unrequested_read",
+      "reason": "Propone una lectura actual ante una afirmación sobre ayer."
+    },
+    {
+      "id": "select-control-knowledge-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-other-machine-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "wrong_device",
+      "reason": "Propone una lectura local para una consulta sobre el ordenador de otra persona."
+    },
+    {
+      "id": "select-control-process-memory-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "backend_parse_error",
+      "reason": "Emite nombre/argumentos correctos pero el backend termina con HTTP500 peg-native y sin finish_reason. El intento no es válido; no se atribuye automáticamente a incapacidad semántica del modelo."
+    },
+    {
+      "id": "select-control-disk-order-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-0",
+      "kind": "welcome",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-1",
+      "kind": "error",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-2",
+      "kind": "confirmation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-3",
+      "kind": "completed",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-4",
+      "kind": "completed",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-6",
+      "kind": "clarification",
+      "pass": false,
+      "defect": "wrong_clarification",
+      "reason": "Pregunta sobre funcionalidad de una aplicación en vez de preguntar qué aplicación abrir."
+    },
+    {
+      "id": "writer521-7",
+      "kind": "read",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-8",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-10",
+      "kind": "clarification",
+      "pass": false,
+      "defect": "wrong_clarification",
+      "reason": "Repite el error de aclaración writer521-6; fixture idéntico, no independiente."
+    },
+    {
+      "id": "writer521-11",
+      "kind": "read",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-12",
+      "kind": "progress",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-16",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-17",
+      "kind": "completed",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-18",
+      "kind": "read",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-19",
+      "kind": "capability",
+      "pass": false,
+      "defect": "capability_state_conflation",
+      "reason": "Responde que no tiene memoria local; los hechos indican capacidad existente desactivada."
+    },
+    {
+      "id": "writer694-H0111",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-H0342",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-H0539",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "memory_quantity_scope",
+      "reason": "La consulta pide cuánta RAM tiene el PC; no identifica correctamente la capacidad instalada y su relación con la memoria libre."
+    },
+    {
+      "id": "writer694-H0508",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-H0114",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-gpu-usage-es",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "wrong_measurement",
+      "reason": "La cantidad5.3146GB no corresponde al uso dedicado4.1013GB suministrado ni a una suma justificada."
+    },
+    {
+      "id": "writer694-H0650",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-processes-top3-en",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-H0104",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer694-H0127",
+      "kind": "measured-facts",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados.",
+      "note": "La primera persona es una debilidad de estilo; conserva ausencia de Wi-Fi y no niega Internet. Mismo criterio para ambos modelos."
+    },
+    {
+      "id": "chat-identity-es",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "chat-name-es",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "chat-vocative-mixed",
+      "kind": "conversation",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para esta entrada y los hechos suministrados."
+    },
+    {
+      "id": "chat-knowledge-en",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "false_knowledge",
+      "reason": "Afirma que el hielo empaqueta moléculas más juntas y por eso tiene menor densidad: explicación contradictoria."
+    },
+    {
+      "id": "chat-difference-es",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "false_memory_definition",
+      "reason": "Define RAM como memoria interna del procesador y expande VRAM como visión; no distingue correctamente memoria del sistema y de la GPU."
+    }
+  ],
+  "private_review_sha256": "03026e140a796d04bb26ef834a83627e7602b61dee8babdcc34c81851d002ddf",
+  "repeated_fixture": "writer521-6 and writer521-10 are identical source repetition, not independent evidence",
+  "remaining": "Reference precision, model-specific profiles and integrated BAXY validation before any promotion."
+}

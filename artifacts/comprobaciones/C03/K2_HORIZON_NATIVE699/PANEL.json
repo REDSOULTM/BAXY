@@ -1,0 +1,882 @@
+[
+  {
+    "id": "facts-01",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "En este ejemplo hay 24 GiB de RAM utilizables y 9 GiB libres. ¿Cuánta está usada?"
+        }
+      ]
+    },
+    "rubric": "15 GiB usados; no confundir con instalada ni estado real del equipo.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-02",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Un informe dice: RAM instalada 16 GiB, utilizable 15,4 GiB, libre 5,1 GiB. Dime la instalada y la libre."
+        }
+      ]
+    },
+    "rubric": "16 GiB instalada y 5,1 GiB libre, correctamente asociadas.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-03",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Estas mediciones son ficticias: disco R: 200 GB totales, 50 GB libres. ¿Qué porcentaje está ocupado?"
+        }
+      ]
+    },
+    "rubric": "75% ocupado; no confundir libre con usado.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-04",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Una captura de ejemplo registra volumen 42% y silenciado sí. ¿Se puede concluir que está sonando?"
+        }
+      ]
+    },
+    "rubric": "No; está silenciado y no hay prueba de reproducción audible.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-05",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "En un registro, el intento de abrir una aplicación devolvió error de acceso. Luego no se comprobó ninguna ventana. ¿Se logró abrir?"
+        }
+      ]
+    },
+    "rubric": "No consta éxito; error de acceso y ausencia de verificación; no afirmar cerrada como hecho observado.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-06",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "A las 10:00 un sensor marcó 18 °C. No hay lecturas posteriores. ¿Qué temperatura tiene ahora?"
+        }
+      ]
+    },
+    "rubric": "Valor actual desconocido; sólo se conoce 18 °C a las 10:00.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-07",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Datos de ejemplo: CPU 7%, memoria usada 61% y batería 82%. Resume sólo la CPU y la batería."
+        }
+      ]
+    },
+    "rubric": "CPU7% y batería82%; omitir memoria, no inventar efectos.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-08",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Tras solicitar silenciar, una lectura de ejemplo devuelve silenciado false y volumen 35%. ¿Qué resultado comunica ese registro?"
+        }
+      ]
+    },
+    "rubric": "No quedó silenciado; volumen35% si lo menciona. No éxito.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-09",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Un registro de red indica Wi-Fi conectado al router, pero la prueba de Internet agotó su tiempo. ¿Tengo Internet confirmado?"
+        }
+      ]
+    },
+    "rubric": "No confirmado; conexión al router no demuestra acceso a Internet; timeout no demuestra caída universal.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-10",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hay tres archivos de ejemplo: norte.txt 8 KB, sur.txt 21 KB y oeste.txt 13 KB. ¿Cuál es el mayor?"
+        }
+      ]
+    },
+    "rubric": "sur.txt de21KB.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-11",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Una lista de ejemplo muestra Editor 310 MB, Juego 980 MB y Música 220 MB de memoria. Ordénalos de mayor a menor."
+        }
+      ]
+    },
+    "rubric": "Juego980,Editor310,Música220 en ese orden.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-12",
+    "group": "facts",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "En una medición ficticia la GPU usa 1,5 GiB de un total de 4 GiB. ¿Cuánto queda y qué porcentaje está usado?"
+        }
+      ]
+    },
+    "rubric": "2,5GiB libres y37,5%usado.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "facts-13",
+    "group": "facts",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "An example report says 12 GiB usable memory and 4.5 GiB free. How much is used?"
+        }
+      ]
+    },
+    "rubric": "7.5GiB used, in English.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "facts-14",
+    "group": "facts",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "A sample log says the save request timed out. There is no follow-up file check. Was the document saved?"
+        }
+      ]
+    },
+    "rubric": "Unknown/unverified; timeout does not establish success or definite non-save.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "facts-15",
+    "group": "facts",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "A fictional device is connected to power, but its battery report says not charging. Is it charging?"
+        }
+      ]
+    },
+    "rubric": "No, per the report; distinguish plugged in from charging.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "facts-16",
+    "group": "facts",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample values: downloaded 30 MB out of 120 MB. What percentage is complete?"
+        }
+      ]
+    },
+    "rubric": "25% complete.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "facts-17",
+    "group": "facts",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "The list contains 3 blue folders and 5 red folders. How many folders are listed in total?"
+        }
+      ]
+    },
+    "rubric": "8 folders.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "facts-18",
+    "group": "facts",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "At noon a sample showed 40% CPU usage. No newer sample exists. Tell me the current CPU usage."
+        }
+      ]
+    },
+    "rubric": "Cannot establish current usage;40%was at noon.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "facts-19",
+    "group": "facts",
+    "language": "mix",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "En este ejemplo, storage total 500 GB y free space 125 GB. ¿Cuánto queda libre?"
+        }
+      ]
+    },
+    "rubric": "125GB libres; Spanish natural allowed.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es_or_en"
+  },
+  {
+    "id": "facts-20",
+    "group": "facts",
+    "language": "mix",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sample: volume 70% y muted true. Dime si está silenciado, please."
+        }
+      ]
+    },
+    "rubric": "Sí silenciado; do not claim audible sound.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es_or_en"
+  },
+  {
+    "id": "knowledge-01",
+    "group": "knowledge",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Explícame brevemente la diferencia entre RAM y almacenamiento."
+        }
+      ]
+    },
+    "rubric": "RAM trabajo temporal/volátil frente almacenamiento persistente; no confundir tamaño con velocidad.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "knowledge-02",
+    "group": "knowledge",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Qué diferencia hay entre estar conectado al Wi-Fi y tener acceso a Internet?"
+        }
+      ]
+    },
+    "rubric": "Red local/router versus conectividad exterior; uno no garantiza otro.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "knowledge-03",
+    "group": "knowledge",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Por qué el hielo flota en agua líquida?"
+        }
+      ]
+    },
+    "rubric": "Menor densidad del hielo; no afirmar que hielo es más denso.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "knowledge-04",
+    "group": "knowledge",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Si todos los zorpos son verdes y Luma es un zorpo, ¿de qué color es Luma?"
+        }
+      ]
+    },
+    "rubric": "Verde. Terms invented, no external facts needed.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "knowledge-05",
+    "group": "knowledge",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Una tarea empieza a las 14:35 y dura 50 minutos. ¿A qué hora termina?"
+        }
+      ]
+    },
+    "rubric": "15:25.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "knowledge-06",
+    "group": "knowledge",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Es lo mismo que un programa no responda a que esté cerrado?"
+        }
+      ]
+    },
+    "rubric": "No; puede seguir ejecutándose pero bloqueado/no atender; no inferir cierre.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "knowledge-07",
+    "group": "knowledge",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "In one or two sentences, explain the difference between system RAM and dedicated GPU memory."
+        }
+      ]
+    },
+    "rubric": "RAM used byCPU/system;VRAM used byGPU; memory distinction understandable, no false exclusivity required.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "knowledge-08",
+    "group": "knowledge",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "If every narp is round and this object is a narp, what shape must it have?"
+        }
+      ]
+    },
+    "rubric": "Round.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "knowledge-09",
+    "group": "knowledge",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "A timer starts at 09:48 and runs for 27 minutes. At what time does it finish?"
+        }
+      ]
+    },
+    "rubric": "10:15.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "knowledge-10",
+    "group": "knowledge",
+    "language": "mix",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Qué significa read-only? Explícalo con un ejemplo corto."
+        }
+      ]
+    },
+    "rubric": "Sólo lectura:consultar sin modificar; correctexample.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es_or_en"
+  },
+  {
+    "id": "instruction-01",
+    "group": "instruction",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reescribe de forma amable y breve: «El archivo no se pudo abrir porque falta permiso»."
+        }
+      ]
+    },
+    "rubric": "Preserve openingfailure+missingpermission, friendly/brief; do not claim success.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "instruction-02",
+    "group": "instruction",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Resume en una frase: el equipo tiene 8 GB de RAM; quedan 2 GB libres; no se ha cambiado ninguna configuración."
+        }
+      ]
+    },
+    "rubric": "8total/2free correct; no inventedchanges;one sentence.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "instruction-03",
+    "group": "instruction",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Devuélveme únicamente los nombres, separados por comas: Nube (rojo), Río (verde), Sol (azul)."
+        }
+      ]
+    },
+    "rubric": "Nube, Río, Sol; onlynamescomma-separated.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "instruction-04",
+    "group": "instruction",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Traduce al inglés: «No he borrado ningún archivo»."
+        }
+      ]
+    },
+    "rubric": "English preserves firstpersonnegative/no deletion.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "instruction-05",
+    "group": "instruction",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "¿Cuál de estos nombres aparece dos veces: Lila, Cobre, Nieve, Cobre? Responde sólo con el nombre."
+        }
+      ]
+    },
+    "rubric": "Cobre only.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "instruction-06",
+    "group": "instruction",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Pon estas cantidades de menor a mayor: 2,5 GB; 800 MB; 1,2 GB. Usa 1 GB = 1000 MB."
+        }
+      ]
+    },
+    "rubric": "800MB,1.2GB,2.5GB order, use provideddecimalunits.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "instruction-07",
+    "group": "instruction",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Rewrite this briefly without changing the facts: The window is open, but audio playback has not been checked."
+        }
+      ]
+    },
+    "rubric": "Openwindow and playbackunverified; no audiblesuccess.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "instruction-08",
+    "group": "instruction",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply in Spanish: What does \"file not found\" mean?"
+        }
+      ]
+    },
+    "rubric": "Spanish explanation that filecouldnotbelocated; no unrelatedcauseinvented.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "instruction-09",
+    "group": "instruction",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Return only the largest number from this list: 9, 27, 14, 6."
+        }
+      ]
+    },
+    "rubric": "27only.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "instruction-10",
+    "group": "instruction",
+    "language": "mix",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Pasa a español natural «The download failed», sin añadir una causa que no conocemos."
+        }
+      ]
+    },
+    "rubric": "Descarga falló/no se completó; noinventedcause.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es_or_en"
+  },
+  {
+    "id": "context-01",
+    "group": "context",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "En un ejemplo hay 10 GiB utilizables y 8 GiB usados."
+        },
+        {
+          "role": "assistant",
+          "content": "Entendido: 10 GiB utilizables y 8 GiB usados."
+        },
+        {
+          "role": "user",
+          "content": "¿Y cuánto hay libre?"
+        }
+      ]
+    },
+    "rubric": "2GiBfree from established sameexample.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "context-02",
+    "group": "context",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Mis carpetas de ejemplo son, en este orden, Mar, Luna y Bosque."
+        },
+        {
+          "role": "assistant",
+          "content": "El orden es Mar, Luna y Bosque."
+        },
+        {
+          "role": "user",
+          "content": "Me refería a la segunda, ¿cómo se llama?"
+        }
+      ]
+    },
+    "rubric": "Carpeta Luna; resolvesseconditem.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "context-03",
+    "group": "context",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "El ejemplo tiene 20 GiB utilizables y 6 GiB libres."
+        },
+        {
+          "role": "assistant",
+          "content": "En ese ejemplo hay 14 GiB usados."
+        },
+        {
+          "role": "user",
+          "content": "Perdón, eran 7 libres. ¿Cuánta queda usada entonces?"
+        }
+      ]
+    },
+    "rubric": "13GiB used, usescorrection.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "context-04",
+    "group": "context",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Sólo hay una lectura antigua de CPU del 42%."
+        },
+        {
+          "role": "assistant",
+          "content": "La última lectura conocida es 42%; falta una nueva para saber el uso actual."
+        },
+        {
+          "role": "user",
+          "content": "Ahora dime lo mismo en inglés."
+        }
+      ]
+    },
+    "rubric": "English states no newer reading and oldvalue42%, not currentinvented.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "context-05",
+    "group": "context",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Estoy pensando en cerrar el editor, pero todavía no lo cierres."
+        },
+        {
+          "role": "assistant",
+          "content": "De acuerdo, no lo cierro."
+        },
+        {
+          "role": "user",
+          "content": "¿Ya lo hiciste?"
+        }
+      ]
+    },
+    "rubric": "No real action/noneconfirmed; do not claim opened/closed.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "context-06",
+    "group": "context",
+    "language": "es",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Estoy comparando tres programas: Brisa, Faro y Delta."
+        },
+        {
+          "role": "assistant",
+          "content": "Podemos comparar Brisa, Faro y Delta."
+        },
+        {
+          "role": "user",
+          "content": "Abre el otro."
+        }
+      ]
+    },
+    "rubric": "Ask which app; previouscontextdoesnotidentifyoneother. No fakeexecution.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "es"
+  },
+  {
+    "id": "context-07",
+    "group": "context",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Example memory usage: Alpha uses 300 MB and Beta uses 120 MB."
+        },
+        {
+          "role": "assistant",
+          "content": "Alpha uses 300 MB; Beta uses 120 MB."
+        },
+        {
+          "role": "user",
+          "content": "Which one uses less?"
+        }
+      ]
+    },
+    "rubric": "Beta120MB versusAlpha300MB; answerEnglish.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "context-08",
+    "group": "context",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "The example starts at 17:10 and lasts 20 minutes."
+        },
+        {
+          "role": "assistant",
+          "content": "It finishes at 17:30."
+        },
+        {
+          "role": "user",
+          "content": "Actually, use 45 minutes instead. What is the new finish time?"
+        }
+      ]
+    },
+    "rubric": "17:55 followingupdatedduration.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "context-09",
+    "group": "context",
+    "language": "en",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Explain deletion, but do not delete anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Deletion removes an item; I have not performed an action."
+        },
+        {
+          "role": "user",
+          "content": "Has the deletion happened?"
+        }
+      ]
+    },
+    "rubric": "No actionperformed/verified. Do not infer deletion fromdiscussion.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  },
+  {
+    "id": "context-10",
+    "group": "context",
+    "language": "mix",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Explícame RAM frente a disco."
+        },
+        {
+          "role": "assistant",
+          "content": "La RAM guarda datos temporales de trabajo; el disco conserva archivos."
+        },
+        {
+          "role": "user",
+          "content": "Ahora explain it in English, por favor."
+        }
+      ]
+    },
+    "rubric": "English explanationRAMtemporaryandstoragepersistent, followlanguagechange.",
+    "origin": "New synthetic diagnostic; not human history or C03 acceptance.",
+    "expected_response_language": "en"
+  }
+]

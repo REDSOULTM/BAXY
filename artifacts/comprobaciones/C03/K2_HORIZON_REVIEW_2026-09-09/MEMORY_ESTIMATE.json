@@ -1,0 +1,55 @@
+{
+  "status": "calculated_not_measured",
+  "date": "2026-09-09",
+  "assumptions": {
+    "total_context_tokens": 12288,
+    "slots": 3,
+    "tokens_per_slot": 4096,
+    "cache_k": "q8_0",
+    "cache_v": "q8_0",
+    "bytes_per_cache_element": 1.0625,
+    "excluded": "CUDA, compute buffers, backend allocations, CPU RAM and rest of BAXY; file size is only a weight residency proxy"
+  },
+  "variants": [
+    {
+      "name": "0.9B Q4_K_M",
+      "bytes": 666184352,
+      "fileGiB": 0.6204325258731842,
+      "kvMiB": 357,
+      "weightPlusKvGiB": 0.9690653383731842,
+      "single4096GiB": 0.7366434633731842
+    },
+    {
+      "name": "0.9B Q8_0",
+      "bytes": 1148614016,
+      "fileGiB": 1.0697301626205444,
+      "kvMiB": 357,
+      "weightPlusKvGiB": 1.4183629751205444,
+      "single4096GiB": 1.1859411001205444
+    },
+    {
+      "name": "0.9B BF16",
+      "bytes": 2159424896,
+      "fileGiB": 2.011121153831482,
+      "kvMiB": 357,
+      "weightPlusKvGiB": 2.359753966331482,
+      "single4096GiB": 2.127332091331482
+    },
+    {
+      "name": "3.7B Q4_K_M",
+      "bytes": 3156598144,
+      "fileGiB": 2.939811110496521,
+      "kvMiB": 918,
+      "weightPlusKvGiB": 3.836295485496521,
+      "single4096GiB": 3.238639235496521
+    },
+    {
+      "name": "3.7B Q8_0",
+      "bytes": 5386404224,
+      "fileGiB": 5.016479849815369,
+      "kvMiB": 918,
+      "weightPlusKvGiB": 5.912964224815369,
+      "single4096GiB": 5.315307974815369
+    }
+  ]
+}

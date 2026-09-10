@@ -1,0 +1,10 @@
+{
+  "repository": "IFM/K2-Horizon-0.9B-GGUF",
+  "revision": "8496259ac62d33192d0fffe708303ed2ca29a384",
+  "filename": "K2-Horizon-1B-BF16.gguf",
+  "bytes": 2159424896,
+  "sha256": "371010db1807bb07b62e738422ee0de26c1e15a347f31108ed2c6e219095a8b8",
+  "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-1B-BF16.gguf",
+  "url": "https://huggingface.co/IFM/K2-Horizon-0.9B-GGUF/resolve/8496259ac62d33192d0fffe708303ed2ca29a384/K2-Horizon-1B-BF16.gguf?download=true",
+  "hash_verified": true
+}

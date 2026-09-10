@@ -1,0 +1,14 @@
+{
+  "phase": "Adaptive bounded follow-up before any high-GPU inference",
+  "tag": "37-q4-high-practical699",
+  "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
+  "cases": 50,
+  "variant": "3.7B-Q4_K_M",
+  "effort": "high",
+  "context": 8192,
+  "max_tokens": 4096,
+  "kv": "GPU q8_0",
+  "sampling": "K2 large documented, same as low practical",
+  "rationale": "The first20 complete low-practical answers include semantic degeneration and one absent final. The independent high reference scored39/50 but used CPU KV for its full32768-output margin. Selecting a practical profile only from the old BAXY-conditioned low/high results would inherit the selection bias the owner identified. Measure high with GPU KV on all50 before comparing achievable quality/latency. Only reasoning_effort changes relative to low practical; same weights, backend, sampling, context, output cap and panel. No new model or quantization sweep.",
+  "limits": "Development follow-up, not blind validation. This is not the full-output manufacturer reference. Retain every cutoff/error. Does not promote a product model or grant C03/survey coverage. Timing/resources are model-server measurements, not the whole BAXY product."
+}

@@ -1,0 +1,162 @@
+{
+  "utc": "2026-09-10T02:08:08.079809+00:00",
+  "tag": "qwen-without-policy700",
+  "cases": 20,
+  "passed": 5,
+  "failed": 15,
+  "before_passed": 7,
+  "rows": [
+    {
+      "id": "select-disk-used-es",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-H0532",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-H0359",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-cpu-order-es",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-H0450",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-H0499",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-H0602",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-clock-date-en",
+      "passed": false,
+      "before_passed": false,
+      "reason": "Niega una operación de fecha que sí está disponible.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-network-internet-es",
+      "passed": false,
+      "before_passed": false,
+      "reason": "Afirma conexión a Internet sin observación ni herramienta disponible.",
+      "capability_unavailable": true
+    },
+    {
+      "id": "select-H0675",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-audio-order-es",
+      "passed": false,
+      "before_passed": false,
+      "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-date-en",
+      "passed": true,
+      "before_passed": true,
+      "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-battery-es",
+      "passed": true,
+      "before_passed": true,
+      "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-cpu-then-date-en",
+      "passed": true,
+      "before_passed": true,
+      "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-negated-en",
+      "passed": true,
+      "before_passed": true,
+      "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-past-en",
+      "passed": false,
+      "before_passed": true,
+      "reason": "Propone leer este PC ante una afirmación sobre ayer, sin petición actual.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-knowledge-en",
+      "passed": true,
+      "before_passed": true,
+      "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-other-machine-es",
+      "passed": false,
+      "before_passed": false,
+      "reason": "Propone leer este PC para una pregunta sobre otro equipo.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-process-memory-es",
+      "passed": false,
+      "before_passed": true,
+      "reason": "Elige estado general en vez de la lista de procesos solicitada.",
+      "capability_unavailable": false
+    },
+    {
+      "id": "select-control-disk-order-es",
+      "passed": false,
+      "before_passed": false,
+      "reason": "Niega poder leer disco pese a disponer de system.status.",
+      "capability_unavailable": false
+    }
+  ],
+  "gains": [],
+  "regressions": [
+    "select-control-past-en",
+    "select-control-process-memory-es"
+  ],
+  "raw_results_sha256": "c45dd7597e0cf8a923e8adc4d3bac71f41d8aa9972f2855eb243a26d7d6dfc13",
+  "measurements_sha256": "754cf15420bbc4f727eada13fae7ffc10c1bfe4dc8c1957b3fa9e1f8f16dcc73",
+  "baseline_adjudication_sha256": "03c817cd6e50dddcf4781b71b59255bb03ee939b195d5202e1c67caf687ac5e9",
+  "payload_parity_sha256": "de3458dc4eb64756a5cc07174c4a1204df9441eefe6122417e413a76c044257d",
+  "private_review_sha256": "bbc91033bc0e013745718454c90a0e2b98d1da57be025608bb3c01cdba319567",
+  "private_report_sha256": "6f97c6bc6a0c1799feea018790eba2ac47755284db80b48bc582f6d480574dd8",
+  "scope": "Manual review of all20 complete inputs and outputs; same frozen criteria and histories. Internal selector prose is not user-visible product prose. Only the first system message was removed. Historical single-seed control, not randomized replication; no C03 coverage or model promotion."
+}

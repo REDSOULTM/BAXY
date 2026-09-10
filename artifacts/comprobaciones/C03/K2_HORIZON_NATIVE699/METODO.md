@@ -1,0 +1,11 @@
+# Rectificación de método: comparación de modelos antes de BAXY
+
+La elección anterior queda **provisional**. El dueño señaló que las instrucciones de BAXY pueden favorecer a Qwen. Las pruebas 696–698 llamaron directamente a los servidores, pero transportaron políticas, historias y datos preparados para BAXY. No acreditan todavía una comparación de calidad independiente del producto.
+
+Se conservan los 860 resultados: sirven para diagnosticar esa combinación concreta de modelo, backend e instrucciones. El muestreo sí se ajustó por familia: Qwen documentado T0.7/p0.8/k20; K2 pequeño T0.6 y grande T1/p0.95, con esfuerzo high/medium/low explícito. No todos recibieron los defaults Qwen. La API recibió streaming; no ejecutó kernel, providers ni efectos.
+
+La continuación es: 50 tareas nuevas y completas por modelo, sólo mensajes user/assistant y plantilla oficial, con criterios fijados antes de inferencia. Se mide también el mejor perfil práctico conocido de Qwen y K2 grande sobre esas mismas 50 tareas (PRACTICAL_PLAN.json). Después, la ablación SELECTOR700 compara la categoría completa de 20 selectores con y sin una instrucción de BAXY: reutiliza los controles previos y exige que cada petición efectiva sea idéntica salvo ese mensaje system. El catálogo y la historia permanecen en ambas mitades de esa ablación. Finalmente corresponde verificar la integración real. Las tareas nuevas son controles sintéticos, no turnos humanos ni cobertura de la encuesta. Comparar porcentajes de baterías diferentes no demuestra una regresión causada por BAXY.
+
+«Original» se interpreta conforme a la aclaración del dueño: sin ecosistema BAXY ni ajuste de pesos. Se declara por separado cada cuantización y backend. K2 pequeño dispone de BF16; los modelos grandes usan cuantización para el techo local de memoria. El perfil de referencia de calidad conserva el esfuerzo y margen de salida oficiales; los perfiles prácticos reducidos se rotulan aparte.
+
+Los ficheros anteriores a esta aclaración y sus hashes se preservan aquí. Los sellos nuevos registran explícitamente la modificación de estado/conclusión; no cambian las respuestas ni sus adjudicaciones. No se ha promovido K2, aceptado Qwen ni cerrado C03.

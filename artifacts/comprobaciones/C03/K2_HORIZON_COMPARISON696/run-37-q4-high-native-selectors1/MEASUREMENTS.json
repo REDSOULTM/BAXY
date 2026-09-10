@@ -1,0 +1,40 @@
+{
+  "tag": "37-q4-high-native-selectors1",
+  "responses": 20,
+  "adjudication": "pending",
+  "results_sha256": "45a135fbcfa0b70584aa29c521eaf48f5c6a17d46144ad922c54a8c8be154b68",
+  "resources": {
+    "gpu_peak_mib": 3448.23046875,
+    "ram_peak_mib": 809.59375,
+    "seconds": 51.64099999999962,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "stop": 12,
+    "tool_calls": 8
+  },
+  "errors": [],
+  "seconds": {
+    "count": 20,
+    "median": 1.71100000000024,
+    "max": 6.906999999999243,
+    "sum": 43.67200000000048
+  },
+  "first_token_seconds": {
+    "count": 19,
+    "median": 0.8910000000014406,
+    "max": 1.2819999999992433,
+    "sum": 17.71900000000096
+  },
+  "first_content_seconds": {
+    "count": 11,
+    "median": 1.0,
+    "max": 6.735000000000582,
+    "sum": 20.70300000000134
+  },
+  "completion_tokens": 1202,
+  "selector_function_name_matches_only": 11,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

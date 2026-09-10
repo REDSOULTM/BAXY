@@ -1,0 +1,546 @@
+{
+  "utc": "2026-09-10T01:49:15.961098+00:00",
+  "tag": "qwen-q4-practical699",
+  "passed": 40,
+  "failed": 10,
+  "cases": 50,
+  "rows": [
+    {
+      "id": "facts-01",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "3d224616ed8b436bbee97fdadae7a0e53dafba136278665a0ad71a3a90e45aa7",
+      "seconds": 1.735000000000582,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-02",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "dd6352d7891f28581386598065cb9cb4b80c2bcd230122feb11a5a0bee026a34",
+      "seconds": 1.3909999999996217,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-03",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "623f61e85aae815decfcfaa79a1d338f73b3983b6bcd6e689bbb570d61402dfa",
+      "seconds": 2.062999999998283,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-04",
+      "group": "facts",
+      "language": "es",
+      "passed": false,
+      "reason": "Confunde volumen configurado con señal sonora medida y presenta el mute como contradicción/error de captura.",
+      "answer_sha256": "9b37985a9fc0aea834c0a85b9ffd7f61b58edbbeffe55a5085c01c17d187262e",
+      "seconds": 5.735000000000582,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-05",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "bff756f49def0f6c663c2d55a0916c3616891dac4ab54b1142ba5084299b208c",
+      "seconds": 2.312000000001717,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-06",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "c7618aafc1df00485bfe95b33fa75a2784ca992f482641dbcff7bbfc4eec32da",
+      "seconds": 3.6409999999996217,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-07",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "57d6dbe6bdd9e28bd41e0be0f342162dfbff6628eda95bd017cbd7a979f1752e",
+      "seconds": 0.23500000000058208,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-08",
+      "group": "facts",
+      "language": "es",
+      "passed": false,
+      "reason": "Afirma reproducción activa a partir de no silenciado y volumen35%, sin observación de reproducción.",
+      "answer_sha256": "e8c5bb168f16b9121f3437dd18b089fab965b337b0f40106c247a32276b7c11b",
+      "seconds": 2.8440000000009604,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-09",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "ba54f1b2e512b6d8b49edc570fd94ed810d0aef678849a2e6c603777af1d87bf",
+      "seconds": 8.15599999999904,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-10",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "0d1078203d40689290be2670f2d59f298739d8533a307a2dbe3909bcdb885213",
+      "seconds": 1.2189999999973224,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-11",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "db81810c48910fea3cde0a7ec0a35bdc91e2004d06e46e457d9b2b7d4c29f768",
+      "seconds": 2.438000000001921,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-12",
+      "group": "facts",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "8d5c630e08d4dbce12dc8162f04ec939eae4766971a180c585cd6207466d6a2a",
+      "seconds": 2.7809999999990396,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-13",
+      "group": "facts",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "500743627c874819605a0297b28f54e87442b34e59c96435f23c6c770764465d",
+      "seconds": 1.8290000000015425,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-14",
+      "group": "facts",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "6bcaea374233e7f5e0474dff367f1e1f7e5fd7cce0a7247172252141d9bbb53b",
+      "seconds": 6.59400000000096,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-15",
+      "group": "facts",
+      "language": "en",
+      "passed": false,
+      "reason": "Contradice not charging y termina afirmando que probablemente sí carga.",
+      "answer_sha256": "ee9d72eb95fb5b785ddc7b8fe1aeef4a867d441240eef70aa760a006e0391c94",
+      "seconds": 5.1560000000026776,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-16",
+      "group": "facts",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "df513720ed22dffdf86eeb93626da3d5fdd7d822d38659df216339932240f172",
+      "seconds": 1.5319999999992433,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-17",
+      "group": "facts",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "c63bcf1f286cf8e487d03f5690bb80f36d0aa201f552dba5354ed1d040c3ad0d",
+      "seconds": 0.8280000000013388,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-18",
+      "group": "facts",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "088f0637a3947cb5d8e2612d89e9af9ce8508bd37594b5e723ebdee9bb8652d8",
+      "seconds": 1.6569999999992433,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-19",
+      "group": "facts",
+      "language": "mix",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "5fb4066d2ddd36f8405e1b4f619025bd9618f8850483c27de378d0d9bfee5acc",
+      "seconds": 0.9690000000009604,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "facts-20",
+      "group": "facts",
+      "language": "mix",
+      "passed": false,
+      "reason": "Interpreta muted=true como no silenciado y afirma que está sonando.",
+      "answer_sha256": "c4c3c8a9f3d70b6a7517481e0503e28c271fa702eb7cc43416d8ad7fc9aa4f67",
+      "seconds": 1.2180000000007567,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-01",
+      "group": "knowledge",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "e0f4b0e4f0eb433fe8621dc9814387dc5146893525c0e6117165d2ee11f63741",
+      "seconds": 3.7809999999990396,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-02",
+      "group": "knowledge",
+      "language": "es",
+      "passed": false,
+      "reason": "Afirma que ver una red en el menú significa estar conectado; también infiere acceso a redes sociales de conexión Wi-Fi.",
+      "answer_sha256": "a89f4e87c3fdaac7d0633f4b3f674a0474b96ffcc8ea098de1af76556ad2835a",
+      "seconds": 9.71900000000096,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-03",
+      "group": "knowledge",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "18aecdfcbdf8170761f6fa0d0b54f67c0af9ce9500a38a1861f9ac8919a301bb",
+      "seconds": 6.797000000002299,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-04",
+      "group": "knowledge",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "117d3a5e18b10dd6f2512a764428289ef6317e60fb6ceeb2c9607e9d794b73d0",
+      "seconds": 0.5159999999996217,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-05",
+      "group": "knowledge",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "233a7cedd0a540ee459205053fdfb132f8752061d2373149856aa0b0d0f6f881",
+      "seconds": 1.9680000000007567,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-06",
+      "group": "knowledge",
+      "language": "es",
+      "passed": false,
+      "reason": "La tabla afirma que un programa cerrado no puede abrirse de nuevo porque está cerrado.",
+      "answer_sha256": "e3000eb47f4b22f911207cdeb620ef681a07795f653ff46f44ffb37deeb2aeb7",
+      "seconds": 8.28099999999904,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-07",
+      "group": "knowledge",
+      "language": "en",
+      "passed": false,
+      "reason": "Afirma que VRAM es exclusiva de renderizado, vídeo y efectos3D, excluyendo otros cómputos GPU.",
+      "answer_sha256": "e9213c7ec31c56321581ad95d83a4cab6d2ae1f66b58466f292f94d67c22bd7e",
+      "seconds": 0.7350000000005821,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-08",
+      "group": "knowledge",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "248d547eef695c39c1cdd308b8f35df9ca5078b113ed27a79492b5b89351d4c4",
+      "seconds": 1.3130000000019209,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-09",
+      "group": "knowledge",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "c00cc6f9806b83ed5ba370a799638aedeaa72e1b316857050547dc2214da0949",
+      "seconds": 1.4209999999984575,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "knowledge-10",
+      "group": "knowledge",
+      "language": "mix",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "9fa941ea07b3f77d7bade2ec9223a97b199a782cc6723e284e96770672651e85",
+      "seconds": 2.0939999999973224,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-01",
+      "group": "instruction",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "3689d9aa7a54016fef6fd4aab26743d4a16861109f50d33ed4cb910071b1a445",
+      "seconds": 0.23500000000058208,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-02",
+      "group": "instruction",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "6a4977fdfd512b086ecac5a443818906032722b3d829de633ccc5ffd03357ba0",
+      "seconds": 0.4059999999990396,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-03",
+      "group": "instruction",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "f1c754a30de0e61305ff724168d316032d24acfe0e2f442cd5cda18305195010",
+      "seconds": 0.15599999999903957,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-04",
+      "group": "instruction",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "a355ed28b03e4445260733063d37133df5cf90c25da4f86698370fadfc2a5d80",
+      "seconds": 0.15599999999903957,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-05",
+      "group": "instruction",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "037fe5fbe2d41815946835dfad051923e7b3a7a819862088ca7ce52b6c3cfee6",
+      "seconds": 0.06299999999828287,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-06",
+      "group": "instruction",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "64d6de4d1f314838edc07d29b7cf8ee5bae5bd3aa2bc936d09d7636170597aad",
+      "seconds": 4.812000000001717,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-07",
+      "group": "instruction",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "5e01f0c2eae8ed39fe1fcfbd29af4866edc492021bab70998b0ef23035af82a5",
+      "seconds": 0.2180000000007567,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-08",
+      "group": "instruction",
+      "language": "en",
+      "passed": false,
+      "reason": "Traduce la pregunta en vez de explicar file not found.",
+      "answer_sha256": "985e9fc4964b99ebb402b79d5f335b3c0586b3bdbd049bf78142defcc76447c6",
+      "seconds": 0.14099999999962165,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-09",
+      "group": "instruction",
+      "language": "en",
+      "passed": false,
+      "reason": "Añade una oración cuando sólo se pidió el número.",
+      "answer_sha256": "cd1a2167ce25dfb18fe8106e47dc4d0fef8622d97b4959b5e1550db340c4147b",
+      "seconds": 0.375,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "instruction-10",
+      "group": "instruction",
+      "language": "mix",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "ff352adc5484b05e8a72d9ac86e0c6c8fdfb0ebb9cbc52eed187e7ef60ec9e17",
+      "seconds": 0.11000000000058208,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-01",
+      "group": "context",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "99be0ab7a2a3e3ce0bc5f4f2341b0be6f387579c767e171eb7d27fea1724c366",
+      "seconds": 0.9689999999973224,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-02",
+      "group": "context",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "4a985f9aafccc6aaa9fadc60f5b6842791b72fb6334e2239788ec8fb56aeb7de",
+      "seconds": 0.9379999999982829,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-03",
+      "group": "context",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "cb81fa59ddb31fe7de136f8d8fc0f3b879fc4916cb179ee900b4ec82f2acf197",
+      "seconds": 1.8280000000013388,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-04",
+      "group": "context",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "bf208ef4a904e42222b7057047c95dae4b618c96af724698093f04ca4906c8f8",
+      "seconds": 0.3280000000013388,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-05",
+      "group": "context",
+      "language": "es",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "2a1a903d7b714b434c512544c5162748b06caaab6704a59141ce69808f91b6a0",
+      "seconds": 0.4219999999986612,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-06",
+      "group": "context",
+      "language": "es",
+      "passed": false,
+      "reason": "Sustituye aclarar cuál aplicación por preguntar sobre una comparación y su dominio.",
+      "answer_sha256": "4d0066bb2649f3185407ce85d51abb2654047654ef5e3104b96a14edb375f26a",
+      "seconds": 2.688000000001921,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-07",
+      "group": "context",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "f4a075cc2b68fb955294753cd220f0afcc606fd12120dd9e7b95745eb971c434",
+      "seconds": 0.3600000000005821,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-08",
+      "group": "context",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "c57cef522a8246693d9fffd122e2949920db2e389155938ee3a4e564a4174286",
+      "seconds": 0.9530000000013388,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-09",
+      "group": "context",
+      "language": "en",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "0ad2adb3a3e67652835ed22d80ff34f4e62b3579a655840558fac7e99f361020",
+      "seconds": 0.3280000000013388,
+      "finish_reason": "stop"
+    },
+    {
+      "id": "context-10",
+      "group": "context",
+      "language": "mix",
+      "passed": true,
+      "reason": "Cumple la rúbrica fijada.",
+      "answer_sha256": "a5023f0c69850f809049b48698d33b3d6c90f486fbeeca85af0880594e2020b7",
+      "seconds": 0.21799999999711872,
+      "finish_reason": "stop"
+    }
+  ],
+  "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
+  "raw_results_sha256": "5c49de78acaff63857fb956fc254fadbaa7a2500a54b219d5b86011e7d586056",
+  "measurements_sha256": "a106948b9aac7879767bdbb10133dc58f805a2ad83b7e563c2873e561e43a02d",
+  "scope": "Complete manual development review of visible finals, not blind or a general-model benchmark. Does not grant survey/C03 coverage.",
+  "review_notes": "All50 visible finals read. facts05 accepted as an unsuccessful opening attempt with access error; no explicit observed-closed state. facts14 retains likely-not uncertainty and demands verification, accepted consistently with K2 reference. instruction01 keeps lack of permission and inability to access, despite changing person and omitting a literal I-could-not-open phrase; not graded by exact wording. context09 same interpretation as Qwen reference. facts08 differs materially from the ambiguous reference answer: this profile explicitly asserts active playback and therefore fails. Peer preferred failing context09 as an unsupported verification; root retains the same no-action interpretation used for the reference. Disclosed judgment difference39 versus40.",
+  "by_group": {
+    "facts": {
+      "passed": 16,
+      "cases": 20
+    },
+    "knowledge": {
+      "passed": 7,
+      "cases": 10
+    },
+    "instruction": {
+      "passed": 8,
+      "cases": 10
+    },
+    "context": {
+      "passed": 9,
+      "cases": 10
+    }
+  },
+  "by_input_language": {
+    "es": {
+      "passed": 25,
+      "cases": 30
+    },
+    "en": {
+      "passed": 11,
+      "cases": 15
+    },
+    "mix": {
+      "passed": 4,
+      "cases": 5
+    }
+  }
+}

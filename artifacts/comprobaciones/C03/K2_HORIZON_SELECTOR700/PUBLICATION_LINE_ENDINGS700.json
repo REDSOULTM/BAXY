@@ -1,0 +1,29 @@
+{
+  "changes": [
+    {
+      "path": "scratchpad/c03-report-k2-698.py",
+      "before_sha256": "37b2121740874788ff5aa4feb32ea1b8d7e8fc06a38dd7d227722384690947e2",
+      "after_sha256": "d2cd3e0cfb3e5820c7bca85cd23614c4aa821b15234b35aaacf71eada9b04b3a",
+      "before_bytes": 23143,
+      "after_bytes": 22929,
+      "only_change": "CRLF to LF in diagnostic source; generated evidence untouched"
+    },
+    {
+      "path": "scratchpad/c03-seal-k2-backend697.py",
+      "before_sha256": "729d26dbc71ce16e3eea946b232737b205cfd9ef4f955f94e7012be728493d19",
+      "after_sha256": "ccaec10305ee51d49b18ecf244ae8dfa1cb0fd5fb839420a51c225c6c6ff2d49",
+      "before_bytes": 3343,
+      "after_bytes": 3296,
+      "only_change": "CRLF to LF in diagnostic source; generated evidence untouched"
+    },
+    {
+      "path": "scratchpad/c03-seal-k2-backend698.py",
+      "before_sha256": "4049ab3264ea919faa6e48a7be1e252078758a920dae2b6247b183bf8ec7daa4",
+      "after_sha256": "f959cac005ad283c4fec2e52af3318cc1a56c94d2fd512c8d92ba9e74eccee44",
+      "before_bytes": 3289,
+      "after_bytes": 3241,
+      "only_change": "CRLF to LF in diagnostic source; generated evidence untouched"
+    }
+  ],
+  "scope": "Canonical diagnostic source line endings for Git; no model output, measurement or historical pin changed."
+}

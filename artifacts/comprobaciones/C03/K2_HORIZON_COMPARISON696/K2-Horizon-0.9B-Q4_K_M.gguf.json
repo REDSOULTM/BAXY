@@ -1,0 +1,10 @@
+{
+  "repository": "NANI-Nithin/K2-Horizon-0.9B-GGUF",
+  "revision": "d0655fdf8065e5f5d80e1d9e30189dee5efef771",
+  "filename": "K2-Horizon-0.9B-Q4_K_M.gguf",
+  "bytes": 666184352,
+  "sha256": "08c4baf06554edee1846d0490ace73d73e70f6cb02c02143c8283a98a1ea43ea",
+  "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-0.9B-Q4_K_M.gguf",
+  "url": "https://huggingface.co/NANI-Nithin/K2-Horizon-0.9B-GGUF/resolve/d0655fdf8065e5f5d80e1d9e30189dee5efef771/K2-Horizon-0.9B-Q4_K_M.gguf?download=true",
+  "hash_verified": true
+}

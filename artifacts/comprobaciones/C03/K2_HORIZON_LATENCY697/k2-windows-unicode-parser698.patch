@@ -1,0 +1,571 @@
+diff --git a/common/chat-auto-parser-generator.cpp b/common/chat-auto-parser-generator.cpp
+index d7e117e..c8af1b6 100644
+--- a/common/chat-auto-parser-generator.cpp
++++ b/common/chat-auto-parser-generator.cpp
+@@ -33,7 +33,8 @@ common_chat_params peg_generator::generate_parser(const common_chat_template &
+                                                   const struct generation_params & inputs) {
+     // Run differential analysis to extract template structure
+     struct autoparser autoparser;
+-    autoparser.analyze_template(tmpl);
++    autoparser.analyze_template(tmpl, inputs.extra_context,
++                               common_chat_template_generation_prompt(tmpl, inputs));
+     return generate_parser(tmpl, inputs, autoparser);
+ }
+ 
+@@ -162,6 +163,19 @@ common_peg_parser analyze_reasoning::build_parser(parser_build_context & ctx) co
+ 
+     if (mode == reasoning_mode::TAG_BASED || mode == reasoning_mode::TOOLS_ONLY) {
+         if (!end.empty()) {
++            const auto opening = trim_whitespace(start);
++            const bool k2 = opening == "<ifm|think>" || opening == "<ifm|think_fast>" ||
++                            opening == "<ifm|think_faster>";
++            if (k2 && ctx.inputs.tools.is_array() && !ctx.inputs.tools.empty() &&
++                ctx.inputs.tool_choice != COMMON_CHAT_TOOL_CHOICE_NONE) {
++                // Match the official K2 reasoning parser: a tool opening is an
++                // implicit boundary. Keep mismatched effort closes internal;
++                // never turn unclosed reasoning into visible prose.
++                const std::string tool_start = "<ifm|tool_call";
++                return p.optional(p.optspace(start) +
++                    p.reasoning(p.until_one_of({trim_whitespace(end), tool_start})) +
++                    p.choice({p.optspace(end), p.peek(p.literal(tool_start))}));
++            }
+             if (!start.empty()) {
+                 // Standard tag-based: optional(<think>reasoning</think>)
+                 return p.optional(p.optspace(start) + p.reasoning(p.until(trim_whitespace(end))) + p.optspace(end));
+diff --git a/common/chat-auto-parser.h b/common/chat-auto-parser.h
+index 8ae15c9..81669d6 100644
+--- a/common/chat-auto-parser.h
++++ b/common/chat-auto-parser.h
+@@ -244,9 +244,11 @@ struct analyze_base {
+ 
+   protected:
+     const common_chat_template * tmpl = nullptr;
++    json extra_context;
+ 
+     analyze_base() = default;
+-    explicit analyze_base(const common_chat_template & tmpl) : tmpl(&tmpl) {}
++    explicit analyze_base(const common_chat_template & tmpl, const json & context = json::object())
++        : tmpl(&tmpl), extra_context(context) {}
+ };
+ 
+ // ============================================================================
+@@ -260,7 +262,7 @@ struct analyze_reasoning : analyze_base {
+     std::string end;    // e.g., "</think>", "[BEGIN FINAL RESPONSE]", "<|END_THINKING|>"
+ 
+     analyze_reasoning() = default;
+-    analyze_reasoning(const common_chat_template & tmpl, bool supports_tools);
++    analyze_reasoning(const common_chat_template & tmpl, bool supports_tools, const json & context = json::object());
+     analyze_reasoning(std::string start_, std::string end_) : start(std::move(start_)), end(std::move(end_)) {}
+ 
+     common_peg_parser build_parser(parser_build_context & ctx) const override;
+@@ -289,7 +291,7 @@ struct analyze_content : analyze_base {
+     bool requires_nonnull_content = false;
+ 
+     analyze_content() = default;
+-    analyze_content(const common_chat_template & tmpl, const analyze_reasoning & reasoning);
++    analyze_content(const common_chat_template & tmpl, const analyze_reasoning & reasoning, const json & context = json::object());
+ 
+     common_peg_parser build_parser(parser_build_context & ctx) const override;
+ 
+@@ -310,7 +312,8 @@ struct analyze_tools : analyze_base {
+     analyze_tools() = default;
+     analyze_tools(const common_chat_template & tmpl,
+                   const jinja::caps &          caps,
+-                  const analyze_reasoning &    reasoning);
++                  const analyze_reasoning &    reasoning,
++                  const json & context = json::object());
+ 
+     common_peg_parser build_parser(parser_build_context & ctx) const override;
+ 
+@@ -394,11 +397,12 @@ struct autoparser {
+     autoparser() = default;
+ 
+     // Find the starting marker for the user message and assistant message
+-    std::string detect_user_start_marker(const common_chat_template & tmpl);
+-    std::string detect_assistant_start_marker(const common_chat_template & tmpl);
++    std::string detect_user_start_marker(const common_chat_template & tmpl, const json & extra_context = json::object());
++    std::string detect_assistant_start_marker(const common_chat_template & tmpl, const json & extra_context = json::object());
+ 
+     // Run full differential analysis on a template
+-    void analyze_template(const common_chat_template & tmpl);
++    void analyze_template(const common_chat_template & tmpl, const json & extra_context = json::object(),
++                          const std::string & generation_prompt = "");
+ 
+     // Build the PEG parser for this template
+     common_peg_arena build_parser(const generation_params & inputs, const std::string & generation_prompt) const;
+diff --git a/common/chat-diff-analyzer.cpp b/common/chat-diff-analyzer.cpp
+index a7e3705..849ad08 100644
+--- a/common/chat-diff-analyzer.cpp
++++ b/common/chat-diff-analyzer.cpp
+@@ -254,13 +254,27 @@ static std::string mode_to_str(T mode) {
+     return os.str();
+ }
+ 
+-void autoparser::analyze_template(const common_chat_template & tmpl) {
++void autoparser::analyze_template(const common_chat_template & tmpl, const json & extra_context,
++                                  const std::string & generation_prompt) {
+     jinja_caps = tmpl.original_caps();
+-    reasoning = analyze_reasoning(tmpl, jinja_caps.supports_tool_calls);
+-    content = analyze_content(tmpl, reasoning);
+-    tools = analyze_tools(jinja_caps.supports_tool_calls ? analyze_tools(tmpl, jinja_caps, reasoning) : analyze_tools());
+-    assistant_start = detect_assistant_start_marker(tmpl);
+-    user_start = detect_user_start_marker(tmpl);
++    reasoning = analyze_reasoning(tmpl, jinja_caps.supports_tool_calls, extra_context);
++    content = analyze_content(tmpl, reasoning, extra_context);
++    tools = analyze_tools(jinja_caps.supports_tool_calls ? analyze_tools(tmpl, jinja_caps, reasoning, extra_context) : analyze_tools());
++    assistant_start = detect_assistant_start_marker(tmpl, extra_context);
++    user_start = detect_user_start_marker(tmpl, extra_context);
++
++    // K2 renders historical reasoning_content with high tags even when the new
++    // generation uses medium/low. Its effective prefill selects the current pair.
++    if (trim_whitespace(reasoning.start) == "<ifm|think>") {
++        const auto tail = trim_whitespace(generation_prompt);
++        for (const std::string tag : {"ifm|think", "ifm|think_fast", "ifm|think_faster"}) {
++            if (string_ends_with(tail, "<" + tag + ">")) {
++                reasoning.start = "<" + tag + ">\n";
++                reasoning.end = "\n</" + tag + ">\n";
++                break;
++            }
++        }
++    }
+     collect_preserved_tokens();
+ 
+     for (auto & workaround : workarounds) {
+@@ -344,7 +358,7 @@ void autoparser::collect_preserved_tokens() {
+     add_token(tools.call_id.suffix);
+ }
+ 
+-std::string autoparser::detect_assistant_start_marker(const common_chat_template & tmpl) {
++std::string autoparser::detect_assistant_start_marker(const common_chat_template & tmpl, const json & extra_context) {
+     json user_msg = json{
+         { "role",    "user"   },
+         { "content", USER_MSG }
+@@ -356,6 +370,7 @@ std::string autoparser::detect_assistant_start_marker(const common_chat_template
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg });
+     params.add_generation_prompt = false;
+     params.enable_thinking       = true;
+@@ -386,7 +401,7 @@ std::string autoparser::detect_assistant_start_marker(const common_chat_template
+     return trim_whitespace(ast_prefix);
+ }
+ 
+-std::string autoparser::detect_user_start_marker(const common_chat_template & tmpl) {
++std::string autoparser::detect_user_start_marker(const common_chat_template & tmpl, const json & extra_context) {
+     json user_msg = json{
+         { "role",    "user"   },
+         { "content", USER_MSG }
+@@ -403,6 +418,7 @@ std::string autoparser::detect_user_start_marker(const common_chat_template & tm
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({});
+     params.add_generation_prompt = false;
+     params.enable_thinking       = true;
+@@ -458,8 +474,8 @@ std::string autoparser::detect_user_start_marker(const common_chat_template & tm
+     return trim_whitespace(result.str());
+ }
+ 
+-analyze_reasoning::analyze_reasoning(const common_chat_template & tmpl, bool supports_tools)
+-    : analyze_base(tmpl) {
++analyze_reasoning::analyze_reasoning(const common_chat_template & tmpl, bool supports_tools, const json & context)
++    : analyze_base(tmpl, context) {
+     LOG_DBG(ANSI_PURPLE "=== Starting differential analysis ===\n" ANSI_RESET);
+     LOG_DBG(ANSI_ORANGE "Phase 1: Reasoning analysis\n" ANSI_RESET);
+ 
+@@ -488,6 +504,7 @@ void analyze_reasoning::compare_reasoning_presence() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_no_reasoning });
+     params.add_generation_prompt = false;
+     params.enable_thinking       = true;
+@@ -536,6 +553,7 @@ void analyze_reasoning::compare_thinking_enabled() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg });
+     params.add_generation_prompt = true;
+     params.enable_thinking       = false;
+@@ -629,6 +647,7 @@ void analyze_reasoning::compare_reasoning_scope() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_reasoning_content });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -674,8 +693,8 @@ void analyze_reasoning::compare_reasoning_scope() {
+     }
+ }
+ 
+-analyze_content::analyze_content(const common_chat_template & tmpl, const analyze_reasoning & reasoning)
+-    : analyze_base(tmpl) {
++analyze_content::analyze_content(const common_chat_template & tmpl, const analyze_reasoning & reasoning, const json & context)
++    : analyze_base(tmpl, context) {
+     LOG_DBG(ANSI_ORANGE "Phase 2: Content analysis\n" ANSI_RESET);
+ 
+     json assistant_content_only = json{
+@@ -696,6 +715,7 @@ analyze_content::analyze_content(const common_chat_template & tmpl, const analyz
+     };
+ 
+     template_params params_content_only;
++    params_content_only.extra_context = extra_context;
+     params_content_only.messages              = json::array({ user_msg, assistant_content_only });
+     params_content_only.add_generation_prompt = false;
+     params_content_only.enable_thinking       = true;
+@@ -767,8 +787,9 @@ bool analyze_content::is_always_wrapped() const {
+ 
+ analyze_tools::analyze_tools(const common_chat_template & tmpl,
+                              const jinja::caps &          caps,
+-                             const analyze_reasoning &    reasoning)
+-    : analyze_base(tmpl) {
++                             const analyze_reasoning &    reasoning,
++                             const json & context)
++    : analyze_base(tmpl, context) {
+     LOG_DBG(ANSI_ORANGE "Phase 3: Tool call analysis\n" ANSI_RESET);
+ 
+     analyze_tool_calls(reasoning, caps.supports_parallel_tool_calls);
+@@ -803,6 +824,7 @@ void analyze_tools::analyze_tool_calls(const analyze_reasoning & reasoning, bool
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_no_tools });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -899,6 +921,7 @@ void analyze_tools::analyze_json_native_parallel_calls() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_one_tool });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1058,6 +1081,7 @@ void analyze_tools::check_per_call_markers() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_one_tool });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1119,6 +1143,7 @@ void analyze_tools::extract_function_markers() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_foofoo });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1262,6 +1287,7 @@ void analyze_tools::extract_argument_name_markers() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_first_arg });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1336,6 +1362,7 @@ void analyze_tools::extract_argument_value_markers() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_val_X });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1401,6 +1428,7 @@ void analyze_tools::extract_argument_separator() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_one_arg });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1436,6 +1464,7 @@ void analyze_tools::extract_args_markers() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_no_args });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+@@ -1497,6 +1526,7 @@ void analyze_tools::extract_call_id_markers() {
+     };
+ 
+     template_params params;
++    params.extra_context = extra_context;
+     params.messages              = json::array({ user_msg, assistant_id1 });
+     params.tools                 = tools;
+     params.add_generation_prompt = false;
+diff --git a/common/chat.cpp b/common/chat.cpp
+index 743ecde..8b809a0 100644
+--- a/common/chat.cpp
++++ b/common/chat.cpp
+@@ -3717,7 +3717,8 @@ static common_chat_params common_chat_templates_apply_jinja(const struct common_
+     try {
+         LOG_DBG("%s: using differential autoparser\n", __func__);
+         struct autoparser::autoparser autoparser;
+-        autoparser.analyze_template(tmpl);
++        autoparser.analyze_template(tmpl, params.extra_context,
++                                   common_chat_template_generation_prompt_impl(tmpl, params));
+         auto auto_params = autoparser::peg_generator::generate_parser(tmpl, params, autoparser);
+ 
+         common_chat_msg_delimiters delimiters;
+diff --git a/src/llama-vocab.cpp b/src/llama-vocab.cpp
+index 4d054db..ed67097 100644
+--- a/src/llama-vocab.cpp
++++ b/src/llama-vocab.cpp
+@@ -607,7 +607,13 @@ struct llm_tokenizer_bpe_session {
+ 
+     virtual void tokenize(const std::string & text, std::vector<llama_token> & output) {
+         int final_prev_index = -1;
+-        const auto word_collection = unicode_regex_split(text, tokenizer.regex_exprs, tokenizer.byte_encode);
++        std::string normalized = text;
++#ifdef _WIN32
++        if (vocab.get_pre_type() == LLAMA_VOCAB_PRE_TYPE_K2_HORIZON) {
++            normalized = unicode_utf8_normalize_nfc_windows(text);
++        }
++#endif
++        const auto word_collection = unicode_regex_split(normalized, tokenizer.regex_exprs, tokenizer.byte_encode);
+ 
+         symbols_final.clear();
+         auto tok_pre = vocab.get_pre_type();
+diff --git a/src/unicode.cpp b/src/unicode.cpp
+index 93996f9..321532f 100644
+--- a/src/unicode.cpp
++++ b/src/unicode.cpp
+@@ -13,6 +13,47 @@
+ #include <utility>
+ #include <vector>
+ 
++#ifdef _WIN32
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include <windows.h>
++#pragma comment(lib, "Normaliz.lib")
++
++// K2's official tokenizer applies NFC before its byte-level pre-tokenizer.
++std::string unicode_utf8_normalize_nfc_windows(const std::string & text) {
++    if (text.empty()) {
++        return text;
++    }
++    const int wide_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), (int) text.size(), nullptr, 0);
++    if (wide_size <= 0) {
++        throw std::runtime_error("K2 NFC: invalid UTF-8");
++    }
++    std::wstring wide(wide_size, L'\0');
++    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), (int) text.size(), wide.data(), wide_size)) {
++        throw std::runtime_error("K2 NFC: UTF-16 conversion failed");
++    }
++    int normalized_size = NormalizeString(NormalizationC, wide.data(), wide_size, nullptr, 0);
++    if (normalized_size <= 0) {
++        throw std::runtime_error("K2 NFC: normalization sizing failed");
++    }
++    std::wstring normalized(normalized_size, L'\0');
++    normalized_size = NormalizeString(NormalizationC, wide.data(), wide_size, normalized.data(), normalized_size);
++    if (normalized_size <= 0) {
++        throw std::runtime_error("K2 NFC: normalization failed");
++    }
++    const int utf8_size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, normalized.data(), normalized_size, nullptr, 0, nullptr, nullptr);
++    if (utf8_size <= 0) {
++        throw std::runtime_error("K2 NFC: UTF-8 sizing failed");
++    }
++    std::string result(utf8_size, '\0');
++    if (!WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, normalized.data(), normalized_size, result.data(), utf8_size, nullptr, nullptr)) {
++        throw std::runtime_error("K2 NFC: UTF-8 conversion failed");
++    }
++    return result;
++}
++#endif
++
+ size_t unicode_len_utf8(char src) {
+     const size_t lookup[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4 };
+     uint8_t highbits = static_cast<uint8_t>(src) >> 4;
+@@ -330,7 +371,7 @@ static std::vector<size_t> unicode_regex_split_custom_gpt2(const std::string & t
+ }
+ 
+ // LLAMA3 system regex: "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+"
+-static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string & text, const std::vector<size_t> & offsets) {
++static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string & text, const std::vector<size_t> & offsets, bool k2_horizon = false) {
+     std::vector<size_t> bpe_offsets; // store the offset of each word
+     bpe_offsets.reserve(offsets.size()); // Reserve memory for the approximate size
+ 
+@@ -352,6 +393,12 @@ static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string &
+             return (offset_ini <= pos && pos < offset_end) ? unicode_cpt_flags_from_cpt(cpts[pos]) : unicode_cpt_flags{};
+         };
+ 
++        auto _is_word_cpt = [&] (const size_t pos) -> bool {
++            const auto flags = _get_flags(pos);
++            const auto cpt = _get_cpt(pos);
++            return flags.is_letter || (k2_horizon && (flags.is_accent_mark || cpt == 0x200C || cpt == 0x200D));
++        };
++
+         size_t _prev_end = offset_ini;
+         auto _add_token = [&] (const size_t end) -> size_t {
+             assert(_prev_end <= end && end <= offset_end);
+@@ -391,11 +438,11 @@ static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string &
+                 }
+             }
+ 
+-            // regex: [^\r\n\p{L}\p{N}]?\p{L}+
++            // K2 Horizon also admits marks and join controls in the letter run.
+             if (!(cpt == '\r' || cpt == '\n' || flags.is_number)) {
+-                if (flags.is_letter || _get_flags(pos+1).is_letter) {  // one or more letters
++                if (_is_word_cpt(pos) || _is_word_cpt(pos + 1)) {
+                     pos++;
+-                    while (_get_flags(pos).is_letter) {
++                    while (_is_word_cpt(pos)) {
+                         pos++;
+                     }
+                     _add_token(pos);
+@@ -1056,6 +1103,9 @@ static std::vector<size_t> unicode_regex_split_custom(const std::string & text,
+             regex_expr == "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+" ||
+             regex_expr == "(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+") {
+         bpe_offsets = unicode_regex_split_custom_llama3(text, offsets);
++    } else if (
++           regex_expr == "(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])|[^\\r\\n\\p{L}\\p{N}]?(?:\\p{L}|\\p{M}|\\u200C|\\u200D)+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+") {
++        bpe_offsets = unicode_regex_split_custom_llama3(text, offsets, true);
+     } else if (
+            regex_expr == "(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+") {
+         bpe_offsets = unicode_regex_split_custom_qwen2(text, offsets);
+diff --git a/src/unicode.h b/src/unicode.h
+index 600ab92..2b9512e 100644
+--- a/src/unicode.h
++++ b/src/unicode.h
+@@ -98,6 +98,10 @@ std::vector<uint32_t> unicode_cpts_from_utf8(const std::string & utf8);
+ 
+ std::vector<uint32_t> unicode_cpts_normalize_nfd(const std::vector<uint32_t> & cpts);
+ 
++#ifdef _WIN32
++std::string unicode_utf8_normalize_nfc_windows(const std::string & text);
++#endif
++
+ unicode_cpt_flags unicode_cpt_flags_from_cpt (uint32_t cpt);
+ unicode_cpt_flags unicode_cpt_flags_from_utf8(const std::string & utf8);
+ 
+diff --git a/tests/test-chat-auto-parser.cpp b/tests/test-chat-auto-parser.cpp
+index 5aa9482..c2d0e2d 100644
+--- a/tests/test-chat-auto-parser.cpp
++++ b/tests/test-chat-auto-parser.cpp
+@@ -81,6 +81,7 @@ static void test_cohere_analysis(testing & t);
+ 
+ // SmolLM3 template analysis tests
+ static void test_smollm3_analysis(testing & t);
++static void test_k2_effective_reasoning(testing & t);
+ 
+ // Marker separation
+ static void test_marker_separation(testing & t);
+@@ -559,6 +560,7 @@ int main(int argc, char * argv[]) {
+     t.test("laguna-s", test_laguna_s_analysis);
+     t.test("laguna-xs2", test_laguna_xs2_analysis);
+     t.test("smollm3", test_smollm3_analysis);
++    t.test("k2_effective_reasoning", test_k2_effective_reasoning);
+     t.test("standard_json_tools", test_standard_json_tools_formats);
+     t.test("normalize_quotes_to_json", test_normalize_quotes_to_json);
+     t.test("tagged_args_embedded_quotes", test_tagged_args_with_embedded_quotes);
+@@ -2705,3 +2707,98 @@ static void test_tagged_args_with_embedded_quotes(testing & t) {
+         }
+     }
+ }
++
++
++static void test_k2_effective_reasoning(testing & t) {
++    std::ifstream stream("models/templates/k2-horizon.jinja", std::ios::binary);
++    std::string source((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
++    if (!t.assert_true("K2 template loaded", !source.empty())) {
++        return;
++    }
++    const std::vector<std::pair<std::string, std::string>> efforts = {
++        {"high", "ifm|think"}, {"medium", "ifm|think_fast"}, {"low", "ifm|think_faster"}
++    };
++    for (const auto & effort : efforts) {
++        for (const std::string format : {"plain", "xml", "json"}) {
++            t.test(effort.first + "/" + format, [&](testing & t) {
++                auto templates = common_chat_templates_init(nullptr, source);
++                common_chat_templates_inputs inputs;
++                inputs.messages = common_chat_msgs_parse_oaicompat(json::array({
++                    {{"role", "user"}, {"content", "Read the current audio volume."}}
++                }));
++                inputs.reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
++                inputs.enable_thinking = true;
++                inputs.chat_template_kwargs["reasoning_effort"] = json(effort.first).dump();
++                const std::string end = "</" + effort.second + ">";
++                std::string final = "4 GiB.";
++                if (format != "plain") {
++                    inputs.tools = {{"audio_status", "Read current audio volume.",
++                        R"({"type":"object","properties":{},"additionalProperties":false})"}};
++                    inputs.chat_template_kwargs["tool_call_format"] = json(format).dump();
++                    if (format == "json") {
++                        final = "<ifm|tool_calls>\n<ifm|tool_call>{\"name\":\"audio_status\",\"arguments\":{}}</ifm|tool_call>\n</ifm|tool_calls>";
++                    } else {
++                        final = "<ifm|tool_calls>\n<ifm|tool_call>audio_status\n</ifm|tool_call>\n</ifm|tool_calls>";
++                    }
++                }
++                auto generated = common_chat_templates_apply(templates.get(), inputs);
++                t.assert_equal("effective start", "<" + effort.second + ">", generated.thinking_start_tag);
++                t.assert_true("effective end", generated.thinking_end_tags == std::vector<std::string>{end});
++                common_chat_parser_params parser(generated);
++                parser.reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
++                parser.parser.load(generated.parser);
++                const std::string output = "check facts\n" + end + "\n" + final;
++                auto message = common_chat_parse(output, false, parser);
++                t.assert_equal("separated reasoning", "check facts", trim_whitespace(message.reasoning_content));
++                if (format == "plain") {
++                    t.assert_equal("clean final", "4 GiB.", trim_whitespace(message.content));
++                } else {
++                    t.assert_true("tool content empty", trim_whitespace(message.content).empty());
++                    if (t.assert_equal("one tool", size_t(1), message.tool_calls.size())) {
++                        t.assert_equal("tool name", "audio_status", message.tool_calls.front().name);
++                        t.assert_equal("tool arguments", "{}", json::parse(message.tool_calls.front().arguments).dump());
++                    }
++                }
++                for (size_t position : {size_t(5), size_t(12), output.find(end) + end.size() - 2,
++                                        output.find(end) + end.size()}) {
++                    auto partial = common_chat_parse(output.substr(0, position), true, parser);
++                    t.assert_true("reasoning prefix never visible", partial.content.empty());
++                }
++                // The official K2 parser keeps the selected effort delimiter.
++                // A tool opening can end reasoning implicitly, but a mismatched
++                // close must not expose arbitrary reasoning as visible prose.
++                for (const auto & emitted : efforts) {
++                    const std::string closing = "</" + emitted.second + ">";
++                    for (const std::string opening : {"", "<ifm|think>\n"}) {
++                        const std::string trace = opening + "check facts\n" + closing + "\n" + final;
++                        auto actual = common_chat_parse(trace, false, parser);
++                        t.assert_true("real trace reasoning retained",
++                                      actual.reasoning_content.find("check facts") != std::string::npos);
++                        if (format == "plain") {
++                            const bool matching = emitted.second == effort.second;
++                            t.assert_equal("selected effort controls prose", matching ? "4 GiB." : "",
++                                           trim_whitespace(actual.content));
++                            t.assert_true("mismatched close remains internal",
++                                          matching || actual.reasoning_content.find(final) != std::string::npos);
++                        } else if (t.assert_equal("mixed effort one tool", size_t(1), actual.tool_calls.size())) {
++                            t.assert_equal("mixed effort tool name", "audio_status", actual.tool_calls.front().name);
++                            t.assert_equal("mixed effort tool arguments", "{}", json::parse(actual.tool_calls.front().arguments).dump());
++                            t.assert_true("mixed effort tool content empty", trim_whitespace(actual.content).empty());
++                        }
++                        for (size_t position = 1; position <= trace.find(closing) + closing.size(); ++position) {
++                            auto partial = common_chat_parse(trace.substr(0, position), true, parser);
++                            t.assert_true("mixed effort stream does not leak", partial.content.empty());
++                            t.assert_true("mixed effort stream no premature tool", partial.tool_calls.empty());
++                        }
++                    }
++                }
++                if (format != "plain") {
++                    auto implicit = common_chat_parse("check facts\n" + final, false, parser);
++                    t.assert_equal("tool opens after unclosed reasoning", size_t(1), implicit.tool_calls.size());
++                    t.assert_equal("implicit close reasoning", "check facts", trim_whitespace(implicit.reasoning_content));
++                    t.assert_true("implicit close no visible reasoning", trim_whitespace(implicit.content).empty());
++                }
++            });
++        }
++    }
++}

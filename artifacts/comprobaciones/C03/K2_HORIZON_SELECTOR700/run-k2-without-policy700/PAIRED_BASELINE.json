@@ -1,0 +1,8 @@
+{
+  "baseline": "37-q4-high-parser698-1",
+  "preregistration_sha256": "be4f51839f34343025919d97756e92d7bdc4f9ffd2eba574206d8133ab62dae1",
+  "command_equal_except_port_and_log": true,
+  "backend_and_model_equal": true,
+  "cases": 20,
+  "removed_system_sha256": "eafffdf64b46195d9e92899b12e0347a7e0f0cda0618d0a2b70a843efad12596"
+}

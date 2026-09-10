@@ -1,0 +1,15 @@
+{
+  "scope": "Public metadata path reduced to local log bundle identifier; measured values, source/package hashes and private logs unchanged. Original receipt hashes retained here.",
+  "files": [
+    {
+      "file": "BACKEND_BUILD.json",
+      "before_sha256": "f1bd410429a5129a0ff078f26dfcf45f2585276527ac856018048a5a59656a17",
+      "after_sha256": "a667292e3171e37a8f6d29bde7fd46000cafe400049a8075db3d6ddd247d595b"
+    },
+    {
+      "file": "BACKEND_BUILD698.json",
+      "before_sha256": "dc171e98154ae5138eeca2c3acb85546b52c4c290fd81175cb4ec703cf8acbeb",
+      "after_sha256": "a4b2a129a42ddbb55946b45e999a7261abe10f3a15a03dc4f68733cf7d898a36"
+    }
+  ]
+}

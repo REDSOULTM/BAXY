@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-10T02:10:30.587301+00:00",
+  "investigation_status": "completed",
+  "goal_status": "EN_CURSO",
+  "goal_completed": false,
+  "decision": "retain_registered_qwen_as_working_candidate",
+  "model_promoted": false,
+  "original_outputs": 300,
+  "paired_new_outputs": 40,
+  "previous_conditioned_outputs": 860,
+  "rationale": "K2 has gains and regressions, but no joint advantage in Spanish quality, latency and memory. Removing the selected BAXY policy has mixed effects and reduces both totals. Native/local profile results are not universal original-weight judgments.",
+  "report": "artifacts/comprobaciones/C03/K2_HORIZON_SELECTOR700/INFORME_PARA_DUENO.md",
+  "next_action": "Resume full payload adjudication of product694, then adopt or repair source693 only if evidence supports it; continue C03 blockers.",
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "runtime_manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed"
+}

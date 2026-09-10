@@ -1,0 +1,133 @@
+diff --git a/src/llama-vocab.cpp b/src/llama-vocab.cpp
+index 4d054db..ed67097 100644
+--- a/src/llama-vocab.cpp
++++ b/src/llama-vocab.cpp
+@@ -607,7 +607,13 @@ struct llm_tokenizer_bpe_session {
+ 
+     virtual void tokenize(const std::string & text, std::vector<llama_token> & output) {
+         int final_prev_index = -1;
+-        const auto word_collection = unicode_regex_split(text, tokenizer.regex_exprs, tokenizer.byte_encode);
++        std::string normalized = text;
++#ifdef _WIN32
++        if (vocab.get_pre_type() == LLAMA_VOCAB_PRE_TYPE_K2_HORIZON) {
++            normalized = unicode_utf8_normalize_nfc_windows(text);
++        }
++#endif
++        const auto word_collection = unicode_regex_split(normalized, tokenizer.regex_exprs, tokenizer.byte_encode);
+ 
+         symbols_final.clear();
+         auto tok_pre = vocab.get_pre_type();
+diff --git a/src/unicode.cpp b/src/unicode.cpp
+index 93996f9..321532f 100644
+--- a/src/unicode.cpp
++++ b/src/unicode.cpp
+@@ -13,6 +13,47 @@
+ #include <utility>
+ #include <vector>
+ 
++#ifdef _WIN32
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include <windows.h>
++#pragma comment(lib, "Normaliz.lib")
++
++// K2's official tokenizer applies NFC before its byte-level pre-tokenizer.
++std::string unicode_utf8_normalize_nfc_windows(const std::string & text) {
++    if (text.empty()) {
++        return text;
++    }
++    const int wide_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), (int) text.size(), nullptr, 0);
++    if (wide_size <= 0) {
++        throw std::runtime_error("K2 NFC: invalid UTF-8");
++    }
++    std::wstring wide(wide_size, L'\0');
++    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), (int) text.size(), wide.data(), wide_size)) {
++        throw std::runtime_error("K2 NFC: UTF-16 conversion failed");
++    }
++    int normalized_size = NormalizeString(NormalizationC, wide.data(), wide_size, nullptr, 0);
++    if (normalized_size <= 0) {
++        throw std::runtime_error("K2 NFC: normalization sizing failed");
++    }
++    std::wstring normalized(normalized_size, L'\0');
++    normalized_size = NormalizeString(NormalizationC, wide.data(), wide_size, normalized.data(), normalized_size);
++    if (normalized_size <= 0) {
++        throw std::runtime_error("K2 NFC: normalization failed");
++    }
++    const int utf8_size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, normalized.data(), normalized_size, nullptr, 0, nullptr, nullptr);
++    if (utf8_size <= 0) {
++        throw std::runtime_error("K2 NFC: UTF-8 sizing failed");
++    }
++    std::string result(utf8_size, '\0');
++    if (!WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, normalized.data(), normalized_size, result.data(), utf8_size, nullptr, nullptr)) {
++        throw std::runtime_error("K2 NFC: UTF-8 conversion failed");
++    }
++    return result;
++}
++#endif
++
+ size_t unicode_len_utf8(char src) {
+     const size_t lookup[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4 };
+     uint8_t highbits = static_cast<uint8_t>(src) >> 4;
+@@ -330,7 +371,7 @@ static std::vector<size_t> unicode_regex_split_custom_gpt2(const std::string & t
+ }
+ 
+ // LLAMA3 system regex: "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+"
+-static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string & text, const std::vector<size_t> & offsets) {
++static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string & text, const std::vector<size_t> & offsets, bool k2_horizon = false) {
+     std::vector<size_t> bpe_offsets; // store the offset of each word
+     bpe_offsets.reserve(offsets.size()); // Reserve memory for the approximate size
+ 
+@@ -352,6 +393,12 @@ static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string &
+             return (offset_ini <= pos && pos < offset_end) ? unicode_cpt_flags_from_cpt(cpts[pos]) : unicode_cpt_flags{};
+         };
+ 
++        auto _is_word_cpt = [&] (const size_t pos) -> bool {
++            const auto flags = _get_flags(pos);
++            const auto cpt = _get_cpt(pos);
++            return flags.is_letter || (k2_horizon && (flags.is_accent_mark || cpt == 0x200C || cpt == 0x200D));
++        };
++
+         size_t _prev_end = offset_ini;
+         auto _add_token = [&] (const size_t end) -> size_t {
+             assert(_prev_end <= end && end <= offset_end);
+@@ -391,11 +438,11 @@ static std::vector<size_t> unicode_regex_split_custom_llama3(const std::string &
+                 }
+             }
+ 
+-            // regex: [^\r\n\p{L}\p{N}]?\p{L}+
++            // K2 Horizon also admits marks and join controls in the letter run.
+             if (!(cpt == '\r' || cpt == '\n' || flags.is_number)) {
+-                if (flags.is_letter || _get_flags(pos+1).is_letter) {  // one or more letters
++                if (_is_word_cpt(pos) || _is_word_cpt(pos + 1)) {
+                     pos++;
+-                    while (_get_flags(pos).is_letter) {
++                    while (_is_word_cpt(pos)) {
+                         pos++;
+                     }
+                     _add_token(pos);
+@@ -1056,6 +1103,9 @@ static std::vector<size_t> unicode_regex_split_custom(const std::string & text,
+             regex_expr == "(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+" ||
+             regex_expr == "(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+") {
+         bpe_offsets = unicode_regex_split_custom_llama3(text, offsets);
++    } else if (
++           regex_expr == "(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])|[^\\r\\n\\p{L}\\p{N}]?(?:\\p{L}|\\p{M}|\\u200C|\\u200D)+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+") {
++        bpe_offsets = unicode_regex_split_custom_llama3(text, offsets, true);
+     } else if (
+            regex_expr == "(?:'[sS]|'[tT]|'[rR][eE]|'[vV][eE]|'[mM]|'[lL][lL]|'[dD])|[^\\r\\n\\p{L}\\p{N}]?\\p{L}+|\\p{N}| ?[^\\s\\p{L}\\p{N}]+[\\r\\n]*|\\s*[\\r\\n]+|\\s+(?!\\S)|\\s+") {
+         bpe_offsets = unicode_regex_split_custom_qwen2(text, offsets);
+diff --git a/src/unicode.h b/src/unicode.h
+index 600ab92..2b9512e 100644
+--- a/src/unicode.h
++++ b/src/unicode.h
+@@ -98,6 +98,10 @@ std::vector<uint32_t> unicode_cpts_from_utf8(const std::string & utf8);
+ 
+ std::vector<uint32_t> unicode_cpts_normalize_nfd(const std::vector<uint32_t> & cpts);
+ 
++#ifdef _WIN32
++std::string unicode_utf8_normalize_nfc_windows(const std::string & text);
++#endif
++
+ unicode_cpt_flags unicode_cpt_flags_from_cpt (uint32_t cpt);
+ unicode_cpt_flags unicode_cpt_flags_from_utf8(const std::string & utf8);
+ 

@@ -1,0 +1,53 @@
+{
+  "utc": "2026-09-10T00:45:34.600944+00:00",
+  "panel_sha256": "6b1f06a72b856b792fec34784267c192280bdaff280fb0bafe1421e563207b88",
+  "cases": 50,
+  "groups": {
+    "facts": 20,
+    "knowledge": 10,
+    "instruction": 10,
+    "context": 10
+  },
+  "languages": {
+    "es": 30,
+    "en": 15,
+    "mix": 5
+  },
+  "method": "Same complete50 synthetic tasks for each candidate; no system, tools, schema, BAXY policy or runtime. Official embedded chat template. Per-model documented sampling. Seed0 development diagnostic, not broad ability proof.",
+  "rubric": "Judge visible final content against each frozen rubric. Understandable minor typos are allowed; wrong facts/negation/language, invented execution, refusals of answerable questions, empty finals, leaked internal markers and truncated/unparseable finals fail. Preserve final and raw reasoning separately. Do not use reasoning as a substitute for visible answer.",
+  "layers": "Native baseline first. Later same exact messages plus declared instructions, same model/backend/profile; do not compare old696 scores to699 as causal regressions. Tools and real product execution remain separate untested domains.",
+  "profiles": [
+    {
+      "tag": "09-bf16-high-reference699",
+      "family": "k2",
+      "variant": "1B-BF16",
+      "effort": "high",
+      "context": 36864,
+      "max_tokens": 32768,
+      "kv": "GPU q8_0"
+    },
+    {
+      "tag": "qwen-q4-reference699",
+      "family": "qwen",
+      "context": 20480,
+      "max_tokens": 16384,
+      "kv": "CPU q8_0"
+    },
+    {
+      "tag": "37-q4-high-reference699",
+      "family": "k2",
+      "variant": "3.7B-Q4_K_M",
+      "effort": "high",
+      "context": 36864,
+      "max_tokens": 32768,
+      "kv": "CPU q8_0"
+    }
+  ],
+  "limits": "One process at a time. Per-process GPU guard3800MiB and minimum free RAM768MiB; sampled250ms, hard product ceiling4096MiB. Measurements exclude UI/TTS and do not certify whole-product budget. CPU KV enables official output headroom under GPU cap; those latencies are not practical8k latency estimates.",
+  "quantization": "No weight finetuning. K2 small original BF16 GGUF; Qwen and K2 large Q4_K_M as separately disclosed compression, not unquantized originals.",
+  "sources": [
+    "https://huggingface.co/IFM/K2-Horizon-0.9B",
+    "https://huggingface.co/IFM/K2-Horizon-3.7B",
+    "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507"
+  ]
+}

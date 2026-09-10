@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-10T00:58:41.395891+00:00",
+  "source": "src/baxy_mind/llm.py",
+  "source_sha256": "47373573c0d50327f026fb9a76345a26a5e5805baf326a2c9c8041dcc770c154",
+  "source_lines": [
+    99,
+    111
+  ],
+  "layers": {
+    "baxy-system": {
+      "system_prompt": "Eres BAXY, un compañero que vive en el PC. Eres un él. Tuteas. Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque el historial o estas instrucciones estén en español. Solo existen las herramientas del catálogo activo. Las acciones se deciden en otra etapa: en este turno conversacional no llames herramientas ni simules haberlas ejecutado. Responde de forma útil y directa a conversación, conocimiento, explicaciones y charla. Una explicación sencilla no necesita ser exhaustiva: adapta el detalle a lo que se pide. Si realmente falta un dato esencial, formula una sola pregunta breve. Nunca muestres JSON, sintaxis de tools, razonamiento interno ni mensajes del planner. Nunca afirmes haber hecho algo que no ejecutaste.",
+      "sha256": "f076815d565fcc285fba1797224e6defbf9fbfd6b25ec8b4386624e385313cd8"
+    }
+  },
+  "plan": "After native699 baseline, compare complete50 paired tasks for Qwen and strongest feasible K2 profile. Keep weights/backend/sampling/context/KV/output/headroom unchanged within each pair. Prepend only the existing SYSTEM_PROMPT; no other pipeline code, language classifier, guards, tools, kernel or provider. This identifies the effect of that instruction layer only, not all BAXY. A later minimal replacement is warranted only by a measured problem.",
+  "scoring": "Same frozen PANEL.json rubrics and final-answer verification, no relaxed criteria. Record case-level gains/regressions. Identity/style alone is not given a bonus: compare correctness first. Model choice remains provisional until relevant integration is checked."
+}

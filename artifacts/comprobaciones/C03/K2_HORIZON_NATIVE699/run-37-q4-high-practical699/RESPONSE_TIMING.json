@@ -1,0 +1,21 @@
+{
+  "tag": "37-q4-high-practical699",
+  "results_sha256": "dc966c7753e1a39e26c27dddd71895a68638e09c7cb790f31e663c0bdae81d2b",
+  "first_any_token_seconds": {
+    "count": 50,
+    "median": 0.21900000000096043,
+    "max": 0.2649999999994179
+  },
+  "first_visible_text_seconds": {
+    "count": 50,
+    "median": 6.07799999999952,
+    "max": 62.78200000000288
+  },
+  "complete_response_seconds": {
+    "count": 50,
+    "median": 8.828499999999622,
+    "max": 74.78200000000288
+  },
+  "no_visible_text": [],
+  "scope": "Native HTTP stream only, not BAXY display/audio latency. First-any-token can be hidden reasoning. First-visible statistics only include rows with text; absent text is explicitly listed and never treated as a fast success."
+}

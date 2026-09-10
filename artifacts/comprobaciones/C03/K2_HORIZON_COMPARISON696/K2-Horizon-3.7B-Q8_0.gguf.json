@@ -1,0 +1,11 @@
+{
+  "repository": "abenzerps/K2-Horizon-3.7B-GGUF",
+  "revision": "63286c989835381729533e8a16a118a231b0a956",
+  "filename": "K2-Horizon-3.7B-Q8_0.gguf",
+  "bytes": 5386404224,
+  "sha256": "8203991019c36dd618145aa76246097252e45283a4f75c0991a0ce902a0ad7d3",
+  "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-3.7B-Q8_0.gguf",
+  "url": "https://huggingface.co/abenzerps/K2-Horizon-3.7B-GGUF/resolve/63286c989835381729533e8a16a118a231b0a956/K2-Horizon-3.7B-Q8_0.gguf?download=true",
+  "hash_verified": true,
+  "purpose": "Higher-precision 3.7B control. Q4 alone does not adjudicate full model quality. No promotion."
+}

@@ -1,0 +1,425 @@
+{
+  "records": [
+    {
+      "family": "qwen",
+      "grade": {
+        "utc": "2026-09-10T02:08:08.079809+00:00",
+        "tag": "qwen-without-policy700",
+        "cases": 20,
+        "passed": 5,
+        "failed": 15,
+        "before_passed": 7,
+        "rows": [
+          {
+            "id": "select-disk-used-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0532",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0359",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-cpu-order-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0450",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0499",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0602",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-clock-date-en",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Niega una operación de fecha que sí está disponible.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-network-internet-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Afirma conexión a Internet sin observación ni herramienta disponible.",
+            "capability_unavailable": true
+          },
+          {
+            "id": "select-H0675",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-audio-order-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-date-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-battery-es",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-cpu-then-date-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-negated-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-past-en",
+            "passed": false,
+            "before_passed": true,
+            "reason": "Propone leer este PC ante una afirmación sobre ayer, sin petición actual.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-knowledge-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-other-machine-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Propone leer este PC para una pregunta sobre otro equipo.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-process-memory-es",
+            "passed": false,
+            "before_passed": true,
+            "reason": "Elige estado general en vez de la lista de procesos solicitada.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-disk-order-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Niega poder leer disco pese a disponer de system.status.",
+            "capability_unavailable": false
+          }
+        ],
+        "gains": [],
+        "regressions": [
+          "select-control-past-en",
+          "select-control-process-memory-es"
+        ],
+        "raw_results_sha256": "c45dd7597e0cf8a923e8adc4d3bac71f41d8aa9972f2855eb243a26d7d6dfc13",
+        "measurements_sha256": "754cf15420bbc4f727eada13fae7ffc10c1bfe4dc8c1957b3fa9e1f8f16dcc73",
+        "baseline_adjudication_sha256": "03c817cd6e50dddcf4781b71b59255bb03ee939b195d5202e1c67caf687ac5e9",
+        "payload_parity_sha256": "de3458dc4eb64756a5cc07174c4a1204df9441eefe6122417e413a76c044257d",
+        "private_review_sha256": "bbc91033bc0e013745718454c90a0e2b98d1da57be025608bb3c01cdba319567",
+        "private_report_sha256": "6f97c6bc6a0c1799feea018790eba2ac47755284db80b48bc582f6d480574dd8",
+        "scope": "Manual review of all20 complete inputs and outputs; same frozen criteria and histories. Internal selector prose is not user-visible product prose. Only the first system message was removed. Historical single-seed control, not randomized replication; no C03 coverage or model promotion."
+      },
+      "measurements": {
+        "tag": "qwen-without-policy700",
+        "responses": 20,
+        "adjudication": "pending",
+        "operator_stop": null,
+        "excluded_after_operator_stop": [],
+        "results_sha256": "c45dd7597e0cf8a923e8adc4d3bac71f41d8aa9972f2855eb243a26d7d6dfc13",
+        "resources": {
+          "gpu_peak_mib": 3167.5546875,
+          "ram_peak_mib": 724.0078125,
+          "seconds": 31.71900000000096,
+          "violations": [],
+          "manifest_unchanged": true,
+          "backend_exit": 1
+        },
+        "finish_reasons": {
+          "stop": 14,
+          "tool_calls": 6
+        },
+        "errors": [],
+        "seconds": {
+          "count": 20,
+          "median": 1.382500000001528,
+          "max": 2.437999999998283,
+          "sum": 27.718000000000757
+        },
+        "first_token_seconds": {
+          "count": 20,
+          "median": 1.069999999999709,
+          "max": 1.1559999999990396,
+          "sum": 20.573999999993248
+        },
+        "first_content_seconds": {
+          "count": 15,
+          "median": 1.0469999999986612,
+          "max": 1.1559999999990396,
+          "sum": 14.918999999994412
+        },
+        "completion_tokens": 522,
+        "selector_function_name_matches_only": 6,
+        "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+      }
+    },
+    {
+      "family": "k2",
+      "grade": {
+        "utc": "2026-09-10T02:08:08.093608+00:00",
+        "tag": "k2-without-policy700",
+        "cases": 20,
+        "passed": 8,
+        "failed": 12,
+        "before_passed": 10,
+        "rows": [
+          {
+            "id": "select-disk-used-es",
+            "passed": false,
+            "before_passed": true,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0532",
+            "passed": false,
+            "before_passed": true,
+            "reason": "Final vacío sin propuesta de lectura disponible; posible fallo de protocolo, no conocimiento probado.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0359",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Reutiliza batería del historial sin lectura y filtra un marcador de razonamiento.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-cpu-order-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0450",
+            "passed": true,
+            "before_passed": false,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0499",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Final vacío sin propuesta de fecha disponible; posible fallo de protocolo.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-H0602",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-clock-date-en",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Inventa una fecha desde la hora y no propone la lectura disponible.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-network-internet-es",
+            "passed": true,
+            "before_passed": false,
+            "reason": "Abstiene sin inventar herramienta ni observación. No satisface la capacidad de Internet ausente del catálogo.",
+            "capability_unavailable": true
+          },
+          {
+            "id": "select-H0675",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-audio-order-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "No propone la lectura actual disponible; responde desde historia o datos no observados.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-date-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-battery-es",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-cpu-then-date-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-negated-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-past-en",
+            "passed": false,
+            "before_passed": true,
+            "reason": "Propone una lectura actual sin petición, ante una afirmación sobre ayer.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-knowledge-en",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-other-machine-es",
+            "passed": false,
+            "before_passed": false,
+            "reason": "Propone leer este PC para una pregunta sobre otro equipo.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-process-memory-es",
+            "passed": false,
+            "before_passed": true,
+            "reason": "Añade system.status a process.list aunque sólo se pidió la lista de procesos.",
+            "capability_unavailable": false
+          },
+          {
+            "id": "select-control-disk-order-es",
+            "passed": true,
+            "before_passed": true,
+            "reason": "Cumple selección y límites declarados; no acredita ejecución.",
+            "capability_unavailable": false
+          }
+        ],
+        "gains": [
+          "select-H0450",
+          "select-network-internet-es"
+        ],
+        "regressions": [
+          "select-disk-used-es",
+          "select-H0532",
+          "select-control-past-en",
+          "select-control-process-memory-es"
+        ],
+        "raw_results_sha256": "0d669a532759242fe77d1ebd174a14873acfde376fb959456b5cecf47815f5dd",
+        "measurements_sha256": "121248b3f0398a593fcdabbba132721d996b8612b30c549bb0f472d1274573bd",
+        "baseline_adjudication_sha256": "30f558df8e0c2ad5bedaa78fce742a39a4c057372bd9855b6a443dc1a2de4626",
+        "payload_parity_sha256": "de3458dc4eb64756a5cc07174c4a1204df9441eefe6122417e413a76c044257d",
+        "private_review_sha256": "dda046e8fa289777e10510d3a6bba0a786f2c1703fd5899af182da2e43e96070",
+        "private_report_sha256": "d2c77965d7dcf3aec4913ba0b20ee6be2b16065e8cce6bb8bb24ac3def93d5e9",
+        "scope": "Manual review of all20 complete inputs and outputs; same frozen criteria and histories. Internal selector prose is not user-visible product prose. Only the first system message was removed. Historical single-seed control, not randomized replication; no C03 coverage or model promotion."
+      },
+      "measurements": {
+        "tag": "k2-without-policy700",
+        "responses": 20,
+        "adjudication": "pending",
+        "operator_stop": null,
+        "excluded_after_operator_stop": [],
+        "results_sha256": "0d669a532759242fe77d1ebd174a14873acfde376fb959456b5cecf47815f5dd",
+        "resources": {
+          "gpu_peak_mib": 3448.23046875,
+          "ram_peak_mib": 830.42578125,
+          "seconds": 61.61000000000058,
+          "violations": [],
+          "manifest_unchanged": true,
+          "backend_exit": 1
+        },
+        "finish_reasons": {
+          "stop": 12,
+          "tool_calls": 8
+        },
+        "errors": [],
+        "seconds": {
+          "count": 20,
+          "median": 1.867500000000291,
+          "max": 6.875,
+          "sum": 46.01699999999255
+        },
+        "first_token_seconds": {
+          "count": 18,
+          "median": 0.8909999999996217,
+          "max": 1.0780000000013388,
+          "sum": 16.31399999999121
+        },
+        "first_content_seconds": {
+          "count": 10,
+          "median": 1.0315000000009604,
+          "max": 6.438000000001921,
+          "sum": 15.532999999999447
+        },
+        "completion_tokens": 1445,
+        "selector_function_name_matches_only": 8,
+        "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+      }
+    }
+  ],
+  "cases_per_model": 20,
+  "new_outputs": 40
+}

@@ -1,0 +1,119 @@
+{
+  "utc": "2026-09-09T23:52:43.307051+00:00",
+  "source_commit": "35999d101cf2233fc54f09c3c8d599da7303ce02",
+  "build_exit": 0,
+  "build_session": 54702,
+  "source_modified": true,
+  "scope": "Isolated experimental backend. Existing Windows K2 Unicode/NFC plus effective template kwargs and reasoning-prefix parser correction. BAXY runtime unchanged.",
+  "patch": "k2-windows-unicode-parser.patch",
+  "patch_sha256": "5bd8e086fc6fa40ca529cd23bbcee0c3c4deac3caa3beb95b5549372ab256b76",
+  "source_files": {
+    "src/unicode.cpp": "992669679230d4a415448257d53295e7567b90d54351c56ff5212b298e4f9f80",
+    "src/unicode.h": "6254dd254abb9d6af9c644d3f03a39cd60767fc0ed05dca2a7136eef83d1ff44",
+    "src/llama-vocab.cpp": "f62efc9e1cfb7ad333640f32e199d74fd5e33c7f83b845a6388c919bbe14536e",
+    "common/chat.cpp": "b517b80853fa7c885a069ea284b40f7ad67ea2e5db4ba9a4e2169ebaa6628aec",
+    "common/chat-auto-parser.h": "803d3b97eb204a5beadf45bde71287f30765e4545d0f182fcb1b42d64d6fd59b",
+    "common/chat-auto-parser-generator.cpp": "6ffd8a4b91b837b2c0f510449b7df52e8962f6d222fb676c6db010dee0f0b0db",
+    "common/chat-diff-analyzer.cpp": "9765a50fa1649b3cee047f58cab2eba2264982fd19abcf4f54cd61676d63a8e9",
+    "tests/test-chat-auto-parser.cpp": "0007854dcc7ff6273dcb39d57f184114b3b047af4d021fa2564d14085a7e20b0"
+  },
+  "backend_files": {
+    "ggml-base.dll": {
+      "bytes": 658432,
+      "sha256": "0fa873a4cb7ab6c392721daf501f95cd0b65cd20ab3a6f221d68f2499c2c9d45"
+    },
+    "ggml-cpu.dll": {
+      "bytes": 904704,
+      "sha256": "b3c79f4d5c4ff0e8818d4bd750c969fe178d2ab86c46aab4d4edc07205a5486a"
+    },
+    "ggml-cuda.dll": {
+      "bytes": 50826752,
+      "sha256": "7708c27820fdfe18982857a211e97022125e969ec34d388c9e68442e2c4bc1c7"
+    },
+    "ggml.dll": {
+      "bytes": 67072,
+      "sha256": "fe2171d3b7c5ba622028af088d1b8595417dfbb677813f6cfd06a0725524c0c0"
+    },
+    "llama-bench-impl.dll": {
+      "bytes": 886272,
+      "sha256": "775ce081d7637ae95188c8bd9cb1c29ddc3d9641d2c929cd4098b22dfcb94c7a"
+    },
+    "llama-bench.exe": {
+      "bytes": 10752,
+      "sha256": "17bb0f3f084c240b4728881feca1d15d00ff43996c8fc073b1abc152431fd7cc"
+    },
+    "llama-cli-impl.dll": {
+      "bytes": 868352,
+      "sha256": "da8fc1214d9752ec3357df37af1fbca85df2f124440bdf61d5735bb98ea92689"
+    },
+    "llama-cli.exe": {
+      "bytes": 10752,
+      "sha256": "d34afbe195688a28caac550bd51b970d07df4615fcc456bbeab39460c6fa049e"
+    },
+    "llama-common.dll": {
+      "bytes": 8201216,
+      "sha256": "bc9c1c1765830550c86a3ef221e19304c22f47e04c5f64dd439c1c6d9c1d68a0"
+    },
+    "llama-server-impl.dll": {
+      "bytes": 13087232,
+      "sha256": "031e68c180480be268d23302fe2097996d2e5b7b8e3fd852126f16ca2ddd14e3"
+    },
+    "llama-server.exe": {
+      "bytes": 10752,
+      "sha256": "24f1a6ae4e68ebe2b245d4bb216344cb633e034941d41f215304e9e5574d9e06"
+    },
+    "llama.dll": {
+      "bytes": 2580992,
+      "sha256": "68637742a6f08716fd7fab0717f9470e1b59f69f27bf749cd1241240a60ccc26"
+    },
+    "mtmd.dll": {
+      "bytes": 2379264,
+      "sha256": "f8e6d5f0bcd071af0eaa28b530320b2850d0e6e96d3f0d03bbb822dead25f773"
+    },
+    "test-chat-auto-parser.exe": {
+      "bytes": 467968,
+      "sha256": "bbcc85e7e550c92a56a7a18f6bf9c99a3ce14c979523998db5e406391497730e"
+    },
+    "test-chat-peg-parser.exe": {
+      "bytes": 301056,
+      "sha256": "35d2c9c8ff6802719399f7d7f324ce9462481b38ddf3c8345ace43973953bbaa"
+    }
+  },
+  "log_sha256": {
+    "c03-build-k2-tests697.log": "57b5adc904fb6f175349608c897043bf453960436bf8b731078feda60e6bd44d",
+    "c03-build-k2-tests697-2.log": "68c02f0193c8b85239912a4b59cb06a6fae7aa0cc0cd20b3f540bc24413902ad",
+    "c03-build-k2-parser697.log": "b90fcb829ff9e0537790cbc7354882bb9cee0b270a002b21383c88436856d0aa",
+    "c03-k2-parser697-before.log": "4c98f405af79f17ab2739f4dbc0dc066064902e72a30ad6ac337096c2cf88f40",
+    "c03-k2-parser697-before-2.log": "37ee5a4454ce6f5c1808e7da1cfd29bfffeb4246b92fa5484a86b07e680be6d4",
+    "c03-k2-parser697-after.log": "01f181b33b21b8605f014d620e09f74a844c2f6824a55f45253dae8f7c0644d1",
+    "c03-k2-autoparser697-full.log": "2f10235550136a0da2df67f70390f8a0ce68af5d4010d6be23c50560f40a532a",
+    "c03-k2-peg697-full.log": "bb7b52ac0bbcaecd87564d4c0d7dfd0726c0861c7e937986058a4c436cb4ebd4",
+    "c03-k2-parser697-full-exits.json": "584985005c167cf3b8794fbf9d93ba22bd7501656a983285d51322e4d576e93b"
+  },
+  "targeted_before": {
+    "exit": 1,
+    "tests": 10,
+    "assertions": 64,
+    "failures": 39,
+    "exceptions": 3,
+    "skips": 0
+  },
+  "targeted_after": {
+    "exit": 0,
+    "tests": 10,
+    "assertions": 91,
+    "failures": 0,
+    "exceptions": 0,
+    "skips": 0
+  },
+  "full_exits": {
+    "peg": 0,
+    "auto": 0
+  },
+  "non_acceptance_attempts": [
+    "Initial test compile failed because common_json has no ostream formatter in assert_equal; changed assertion to serialized JSON.",
+    "Initial test filter matched only the parent (one assertion); corrected regex .* exercised all three efforts and formats."
+  ],
+  "note": "Build adds llama-bench and owner test executables; package hashes, not thin llama-server.exe alone, identify implementation.",
+  "private_log_id": "C03-k2-parser697-private"
+}

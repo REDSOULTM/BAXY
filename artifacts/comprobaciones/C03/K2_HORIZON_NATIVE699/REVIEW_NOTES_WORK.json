@@ -1,0 +1,26 @@
+{
+  "status": "partial_manual_notes_not_an_adjudication",
+  "tag": "09-bf16-high-reference699",
+  "read_through": "knowledge-07",
+  "failures_observed": {
+    "facts-01": "Confunde utilizable con usada y responde24GiB en lugar de15.",
+    "facts-04": "Inventa un archivo de grabación y afirma que silencio equivale a0dBFS; el dato era volumen42% y silenciado.",
+    "facts-05": "La respuesta inicial reconoce el fallo, pero añade instrucciones y hechos de registro inventados; afirma que reiniciar resetea permisos y presenta RUNDATA/SAM como regiones que reparar.",
+    "facts-09": "Empieza distinguiendo Wi-Fi de Internet y termina asegurando que un ping al router confirma Internet; contradicción material.",
+    "facts-14": "Con un timeout sin verificación, acaba asegurando que el documento está incompleto; no se conoce ese resultado.",
+    "facts-18": "Afirma que la lectura antigua de40% representa el uso actual por no haber otra.",
+    "facts-19": "Responde375GB libres cuando el dato explícito es125GB.",
+    "knowledge-01": "Distinción principal correcta, pero añade tiempos falsos generales: RAM en milisegundos y almacenamiento en segundos a minutos.",
+    "knowledge-02": "Distinción principal correcta, pero invierte causalmente la latencia local/Internet: dice que mayor distancia da menor latencia.",
+    "knowledge-03": "Conclusión inicial correcta, pero después afirma que hielo es más compacto, cambia agua por miel y niega flotación al añadir sal.",
+    "knowledge-06": "No distingue programa bloqueado aún activo de programa cerrado; cambia la pregunta por gestión de señales de cierre."
+  },
+  "notes": {
+    "facts-06": "No se penaliza una hipótesis claramente condicional: reconoce que la temperatura actual es desconocida. Su extensión por sí sola no falla.",
+    "facts-02": "La informe es un error gramatical menor; datos correctos, no falla por eso.",
+    "facts-13": "7.5GiB y aproximación8.05GB son correctos.",
+    "knowledge-07": "Imprecisión in the CPU no cambia la distinción central RAM general frente a VRAM. No falla.",
+    "peer_review": "Agente de sólo lectura revisó exclusivamente las primeras27 respuestas visibles: coincide en los11 fallos y en aceptar facts-06/knowledge-07. No leyó posteriores."
+  },
+  "preflight": "Antes de la primera inferencia se precisó system RAM en knowledge-07 y se fijó expected_response_language por ID. Las versiones anteriores se conservan en PRE_PREFLIGHT_PANEL/PLAN; nuevo SHA en PREREG."
+}

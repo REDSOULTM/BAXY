@@ -1,0 +1,42 @@
+[
+  {
+    "repository": "NANI-Nithin/K2-Horizon-0.9B-GGUF",
+    "revision": "d0655fdf8065e5f5d80e1d9e30189dee5efef771",
+    "filename": "K2-Horizon-0.9B-Q8_0.gguf",
+    "bytes": 1148614016,
+    "sha256": "741fb9ad263956c003883cb7caddeb14b4dfb9b4b67b5414ad12967e965dd547",
+    "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-0.9B-Q8_0.gguf",
+    "url": "https://huggingface.co/NANI-Nithin/K2-Horizon-0.9B-GGUF/resolve/d0655fdf8065e5f5d80e1d9e30189dee5efef771/K2-Horizon-0.9B-Q8_0.gguf?download=true",
+    "hash_verified": true
+  },
+  {
+    "repository": "NANI-Nithin/K2-Horizon-0.9B-GGUF",
+    "revision": "d0655fdf8065e5f5d80e1d9e30189dee5efef771",
+    "filename": "K2-Horizon-0.9B-Q4_K_M.gguf",
+    "bytes": 666184352,
+    "sha256": "08c4baf06554edee1846d0490ace73d73e70f6cb02c02143c8283a98a1ea43ea",
+    "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-0.9B-Q4_K_M.gguf",
+    "url": "https://huggingface.co/NANI-Nithin/K2-Horizon-0.9B-GGUF/resolve/d0655fdf8065e5f5d80e1d9e30189dee5efef771/K2-Horizon-0.9B-Q4_K_M.gguf?download=true",
+    "hash_verified": true
+  },
+  {
+    "repository": "IFM/K2-Horizon-0.9B-GGUF",
+    "revision": "8496259ac62d33192d0fffe708303ed2ca29a384",
+    "filename": "K2-Horizon-1B-BF16.gguf",
+    "bytes": 2159424896,
+    "sha256": "371010db1807bb07b62e738422ee0de26c1e15a347f31108ed2c6e219095a8b8",
+    "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-1B-BF16.gguf",
+    "url": "https://huggingface.co/IFM/K2-Horizon-0.9B-GGUF/resolve/8496259ac62d33192d0fffe708303ed2ca29a384/K2-Horizon-1B-BF16.gguf?download=true",
+    "hash_verified": true
+  },
+  {
+    "repository": "abenzerps/K2-Horizon-3.7B-GGUF",
+    "revision": "63286c989835381729533e8a16a118a231b0a956",
+    "filename": "K2-Horizon-3.7B-Q4_K_M.gguf",
+    "bytes": 3156598144,
+    "sha256": "07773aed93890d4f5d08b421430000d5c8d73cefc74fbdc32e67d820f23207b2",
+    "path": "D:\\BAXYRuntime\\experiments\\models\\k2-horizon-20260909\\K2-Horizon-3.7B-Q4_K_M.gguf",
+    "url": "https://huggingface.co/abenzerps/K2-Horizon-3.7B-GGUF/resolve/63286c989835381729533e8a16a118a231b0a956/K2-Horizon-3.7B-Q4_K_M.gguf?download=true",
+    "hash_verified": true
+  }
+]

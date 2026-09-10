@@ -1,0 +1,46 @@
+{
+  "date": "2026-09-09",
+  "status": "documentation_review_no_model_execution",
+  "files": {
+    "abenzerps--K2-Horizon-3.7B-GGUF-files.json": {
+      "sha256": "d827ef7507b6a92c68af4c0ee2c5449b635bac2c429639193e6babd361efe07c",
+      "bytes": 2180
+    },
+    "IFM--K2-Horizon-0.9B-GGUF-files.json": {
+      "sha256": "747d2369273d9017e86a5938d585e2d3c96461aedf1e8bdf91b4f6c7ef3212cd",
+      "bytes": 604
+    },
+    "IFM--K2-Horizon-3.7B-GGUF-files.json": {
+      "sha256": "5d6d61a559d93e043ddc27f194cbcfed59b9405777f5b5c42bb7c1b2c2511c15",
+      "bytes": 606
+    },
+    "K2-Horizon-0.9B-config.json": {
+      "sha256": "0ba8f6a0fe8daa5003f88c335735cabc7dba20600ace939efab949ae5e59b936",
+      "bytes": 1816
+    },
+    "K2-Horizon-0.9B-metadata.json": {
+      "sha256": "6604574ef6ecfec786c34eb68a82847c20b6a249c5cf554a5c6fb54300b9b622",
+      "bytes": 55608
+    },
+    "K2-Horizon-3.7B-config.json": {
+      "sha256": "d998363c5bb7478e4b85f4354a6667b4e13326f6464afa79c0a6f10a7eea549a",
+      "bytes": 1756
+    },
+    "K2-Horizon-3.7B-metadata.json": {
+      "sha256": "fb014b596706c16f0af3ebd3772b98d23e51fb6e63ae6da23515e458408e682c",
+      "bytes": 57340
+    },
+    "MEMORY_ESTIMATE.json": {
+      "sha256": "8884180c82385389a070baa091ba116879cb82a8a9444540d19bdf31b5f02fa8",
+      "bytes": 1455
+    },
+    "NANI-Nithin--K2-Horizon-0.9B-GGUF-files.json": {
+      "sha256": "9e990551db096a4206535fd18aba92673ff4861827670ad706955491a331d3f2",
+      "bytes": 9538
+    },
+    "REPORTE.md": {
+      "sha256": "64e3953f7c194da2ecb969d1f144eb86259ae39dd6b25537e526b64266ff5b18",
+      "bytes": 10936
+    }
+  }
+}

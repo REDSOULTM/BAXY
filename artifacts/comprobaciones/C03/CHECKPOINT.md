@@ -1236,3 +1236,190 @@ Fuente686 y evidencias687–688 publicadas en d7ddd926a2b382acade4f9c9b69818490b
 Causas compartidas: enumeración de ventanas no ejecutada; lecturas claras que se rechazan o responden desde historial; valores de memoria/GPU confundidos y cantidades derivables omitidas; falso rechazo descriptivo de foco687; confirmación de wifi.status que arrastra consultas posteriores independientes. No atribuir los fallos de procesos/audio a sus proveedores: no llegaron a ejecutarse. La correlación de decisiones usa request_id de shell-trace, no posición (56decisiones para73turnos). Una sonda inicial por posición produjo IndexError y se descartó antes de adjudicar.
 
 GPU3499,559MiB/RAM2519,566MiB/140,484s, sin infracciones ni timeout; registro y fuente686publicada intactos. No UI/voz conjunta ni mínimo global. Siguiente reparación por causas compartidas de esta misma tanda, conservando sus50requisitos y23variantes: primero recuperar el contrato de lectura y las cantidades observadas, y separar la política/confirmación pendiente de la capacidad del proveedor. Herencia542 ya documentó confusión de8GBGPU: arregló alcance, no presentación; no repetir su investigación. No fuente nueva adoptada por esta evaluación.
+
+
+# 693 — reparación compartida candidata
+
+Cantidades RAM/disco/GPU con unidades y aritmética explícitas, capacidad RAM instalada independiente y wifi.status de lectura.29pruebas focales Python verdes; Full C#+Python requerido y pendiente antes de adoptar. Sin cambios de modelo ni cobertura:26cubiertos/716abiertos/0NA. Tablero692 planifica los742, no adjudica automáticamente.690/691 completados; sus comparaciones y el error de preparación690 se conservarán sin afirmar que el modelo recibió JSON truncado.
+
+
+# 690 — cantidades explícitas; conversión binaria insuficiente
+
+30casos por dos representaciones,60EOS; los24controles históricos reproducen exactamente los primeros borradores689. RAM usada, disco ocupado y ocupación de VRAM mejoran al derivar cantidades, pero varias salidas etiquetan GiB como GB y una GPU no medida sigue descrita como inactiva. Se conserva cada fallo; no se adopta el brazo binario ni se acredita encuesta.
+
+La preparación inicial falló antes de lanzar el modelo al intentar decodificar la copia de auditoría de situation limitada a2048caracteres. PREPARATION_ERROR.log se conserva. Eso no demuestra que la petición real estuviera truncada: se usó el payload completo registrado y se comprobó su reconstrucción por los24borradores idénticos. Se corrigió explícitamente la afirmación inicial al dueño. GPU3499,559MiB/RAM728,270MiB/28,422s; sin infracciones. Sin UI/voz ni cambio de registro.
+
+
+# 691 — unidades decimales conservan el significado numérico
+
+Mismos30casos, dos brazos,60EOS. Los30controles binarios reproducen690 exactamente; cambiar sólo divisor y etiqueta aGB elimina las etiquetas binarias erróneas y conserva el12,5%VRAM frente al92%de uso del motor.24casos cumplen el fixture y seis consultas de capacidad RAM siguen pendientes de distinguir instalada de utilizable. No se infiere RAM instalada del total del sistema operativo.
+
+GPU3497,559MiB/RAM720,449MiB/40,141s, sin infracciones ni cambio de registro. Evidencia para el candidato compartido693, todavía sin adopción ni cobertura nueva. Los742requisitos se planifican juntos en COVERAGE_WORKBOARD692.json:26cubiertos/716abiertos. Las515filas sin resolución estática autónoma requieren contexto o modelo; no son515fallos demostrados. Ninguna fila se marca cubierta por pertenecer a una categoría.
+
+
+# 695 — siguiente causa compartida explorada durante Full693
+
+Prototipo sólo en memoria, sin modificar la fuente validada: sobre742mensajes cambia6propuestas de operación y10dentro del panel73.18controles negativos no cambian. La preposición española «a la notebook» se confundía con el artículo indefinido inglés «a»; las consultas directas de fecha/hora y los tópicos físicos adelantados perdían la lectura. No es ejecución ni cobertura. Patch y entradas en %LOCALAPPDATA%/BAXY/C03-read-scope-prototype695-private. El primer montaje de la sonda falló por una aserción demasiado amplia del reemplazo; se acotó al resolver antes de ejecutar. Fuente693 intacta, Full24618 activo.
+
+
+Actualización de objetivo leída: C:\Users\usuario\.codex\attachments\5f9b2c11-56d6-4dba-88ce-309f6a18f035\goal-objective.md, SHA0482a248c39658e7dcda83d0d0bf5d40251c0f9874ad189cf81fc1cc1ef8e974. Conserva C03 y añade maximizar rapidez/eficiencia sin perder calidad. Full693 ya activo y pertinente; no se reinicia ni se repite baseline651 por la reiteración.
+
+695ampliado a50variantes:26/28positivos resueltos, pero3activaciones erróneas nuevas (definición «What is time?», GPU de otra persona, discoD). No se adopta el prototipo; los18controles iniciales no cubrían estos límites. Dos lecturas tópicas siguen sin resolver. Fuente693 y su Full permanecen intactos.
+
+
+# Pausa del dueño — demostración al profesor
+
+El dueño pidió parar y lanzar BAXY. Se detuvo exclusivamente el árbol identificado de Full693 (PowerShell31604 y Python39644/65020). Sesión24618 terminó-1 por interrupción solicitada, no se marca Full verde. Compilación Release sin errores/advertencias y4480pruebas.NET aprobadas;1skip agregado y pruebas opt-in omitidas aparte. Python iba por73%sin resultado final. Log crudo preservado en astra-shared-status-source693/FULL_INTERRUPTED_FOR_DEMO.log. Arranque normal py main.py PID31232 con consola oculta y GUI normal. No cerrar la instancia del dueño ni reanudar campañas hasta que acabe su demostración.693sigue candidato sin adopción/publicación;694preparado pero no ejecutado.
+
+
+# Reanudación tras la clase
+
+El dueño terminó la demostración y pidió completar C03 con máxima rapidez, sólo bloqueantes. BAXY13792 cerró mediante su mensaje normal de salida; kernel20416/modelo4496 ya no aparecen.16hashes del candidato693 coinciden con su preregistro; Full anterior sigue documentado como interrumpido. Nuevo Full sobre el mismo candidato para completar validación C#+Python; sin repetir campañas nativas690/691. Encuesta26/716/0; no se aplica695con falsos positivos.
+
+
+Objetivo actualizado leído: C:\Users\usuario\.codex\attachments\6ae23b71-129f-4953-948e-314f746f0d72\goal-objective.md, SHA6226cdc82d14fabe07540da3c975d6b82d580b8556b7809e40a741f7ed99518b. Conserva alcance C03 y máxima eficiencia; elimina la frase explícita de prohibición de escritores paralelos/subagentes, sin solicitar delegación. Se continúa sin agentes. Full693 sesión82319: NET4480pases/1skip agregado, opt-ins aparte; Python en curso. Instrumentación694 añadida antes de ejecutar: observador local de HTTP y frontera decide_turn, hereda521 sin cambiar flags/argumentos/retornos. Sonda de identidad de argumentos, resultados y excepciones verde; el montaje inicial detectó un reemplazo de metadatos en orden incorrecto antes de cualquier lanzamiento y se corrigió. Encuesta26/716/0.
+
+
+Nueva autoridad C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md, SHA621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86: añade explícitamente «Puedes usar subagentes». Se delega sólo lectura del alcance de consultas de estado en742 a survey_status_scope; sin editores/modelos/tests paralelos. El principal mantiene diseño, implementación y validación. Full693 sigue la misma ejecución82319, NET4480pases/1skip agregado y Python en curso. Encuesta26/716/0.
+
+
+Revisión de sólo lectura survey_status_scope concluida:29IDs abiertos adicionales de estado local fuera de los50históricos689, comprobados contra registro. Familias y referencias que requieren contexto en STATUS_FAMILY_SCOPE_NEXT.json. Privacidad de lecturas de página/pestañas/portapapeles/IP es una etiqueta vigente que causa confirmación, no una decisión nueva del dueño. No se ejecutan históricos ni se cambia694: conserva73entradas exactas. Encuesta26/716/0.
+
+
+Contexto mínimo histórico recuperado por agente de sólo lectura, fuente traces.jsonl SHA7071bce3…6865b verificada: H0607sigue consultaRAM (12243→12279), H0301siguehora (12310→12346). H0527no define «la mejor» en seis ocurrencias; H0631es afirmación aislada en diez. Respuestas antiguas no se usan como hechos comprobados ni autorización de acción. Contexto privado en C03-next-status-scope-private/HISTORICAL_CONTEXT.json; no cambia encuesta26/716/0.
+
+
+## 2026-09-09 — Full693 completo, producto694 ejecutado y reporte K2
+
+Full693 sesión82319 exit0, fuente16hashes congelada:11051 Python pass/3 skips/466 subtests,4480 NET pass/1 skip agregado;opt-ins separados en FULL.log. No equivale a cierre C03. Producto694 sesión43437 exit0,73terminales/manifest intacto. Leídos todos73 finales; adjudicación contra hechos completos pendiente, sin adopción693 ni cobertura automática. La observación nativa permite atribuir el primer cambio por request_id, no por raw_attempt.
+
+K2_HORIZON_REVIEW_2026-09-09/REPORTE.md entregable listo; apertura solicitada en Codex (queued). Fuentes oficiales/comunitarias y cálculos fijados, metadatos de parámetros verificados. No ejecución K2. Recomendación:0.9B primero,3.7B condicionado a perfil y backend verificados. Encuesta permanece26cubiertos/716abiertos/0NA. Goal activo; main intacto.
+
+
+## Prioridad explícita del dueño — comparar K2 antes de seguir Qwen
+
+Detener todas las tandas/reparaciones Qwen; comparar realmente K2 Horizon con configuraciones recomendadas y mejores prácticas antes de elegirmodelo.694 ya terminal exit0, no modelo corriendo; revisión parcial preservada sin sellado/adopción693. Descarga696 de0.9BF16/Q8/Q4 y3.7Q4 con hashes LFS, forkIFM35999d1 aislado y buildWindowsCUDA13sm86. Los agentes de lectura anteriores interrumpidos; survey_status_scope sólo revisa plantilla/APIK2. GoalC03 siguecompleto/activo; cambia el orden de trabajo, no criterios.
+
+
+## Tramo696 — compatibilidad K2 en Windows antes de comparar
+
+Comparación K2 prioritaria. 4 GGUF verificados; build IFM CUDA13 exit0. Dos problemas de tokenización identificados y corregidos localmente: regex Unicode Windows y NFC oficial. Smoke q8-nfc1 en curso, aún sin adjudicación de calidad. Se preservan fallos anteriores y hashes en BACKEND_BUILD_NFC.json; el error de backend no se adjudica como calidad del modelo. No promoción. Perfil recomendado high y panel50 pendientes. Encuesta26/716/0; goal activo.
+
+
+## Tramo696 — primera inferencia K2 comprobada
+
+K2 0.9B Q8 smoke q8-nfc1 exit0:285/285 tokenizer IDs oficiales; respuestaES,JSON Schema y tool call correctos. Panel50 high de Q8 en marcha; primeras consultas reutilizan historial y negación tiene razonamiento repetitivo. No adjudicación final ni promoción. Smoke medido:2285.56MiB GPU/1370.47MiB RAM del servidor; no UI/voz. Perfilhigh/Q8/36864ctx/1slot/KVq8. Manifest intacto. Tres smokes no acreditan mejor modelo.
+
+
+## Tramo696 — dos paneles completos y3.7en curso
+
+K2 Q8 panel50 terminado y adjudicado21/50 (selector4/20,prosa17/30); Qwen registrado30/50 (7/20,23/30). No promoción ni cobertura automática. K2 3.7B Q4 smoke pasó285/285paridad y3casos; panel50 high CPU-KV en curso. Recuentos y límites en ADJUDICATION.json/MEASUREMENTS.json por run. Encuesta26/716/0; goal activo.
+
+
+## Tramo696 — cuatro paneles cerrados, referenciaBF16activa
+
+Cuatro paneles50 terminados: K2 0.9Q8=21, K2 3.7Q4 highCPU-KV=31, Qwen registrado=30, Qwen documentado=29. Sin promoción.0.9BF16 high panel50 en curso; evita repetición de la negación en Q8.3.7Q8 adicional descargado y verificado. Ver ADJUDICATION.json y MEASUREMENTS.json por perfil. Sólo servidor; encuesta26/716/0; objetivo activo.
+
+
+## Comparación K2 696 — 2026-09-09T23:19:11.046201+00:00
+
+Seis paneles de 50 completos y control nativo de 20 selectores: Qwen registrado 30, documentado 29; K2 0.9 Q8 21, BF16 32; K2 3.7 Q4 CPU-KV 31 y GPU8k 31. Formato nativo Q4 obtiene 10/20, igual recuento que JSON. Q8 3.7 con 28 capas superó 4096 MiB durante carga: pico 4154.707 MiB, intento rechazado sin generaciones. Ahora Q8 con 24 capas y no-op-offload ejecuta panel50; estos dos cambios no permiten atribución aislada. Restan control nativo BF1620, low3.7Q4 experimental50, adjudicar y abrir reporte.
+
+
+## Comparación K2 696 — 2026-09-09T23:35:55.776963+00:00
+
+Prioridad nueva del dueño: investigación avanzada y corrección de lentitud K2 antes de cerrar elección. Q8 3.7 ngl24/no-op detenido adaptativamente tras20 selectores:10/20, VRAM3665.578MiB/RAM2739.09MiB; OPERATOR_STOP conserva20completos y excluye30cancelados del puntaje. Sesión54356 exit0 no significa panel50completo. BF16nativo20 terminado7/20; parser500 anterior no reproducido. LowQ4full50 terminado sesión80162 exit0:mediana1.0545s/máx2.766s,GPU3448.23MiB/RAM814.76MiB,pendiente adjudicar; filtra think_faster en todas las respuestas. Dos agentes sólo lectura: parserlocal y usuarios/versiones. No campañas de inferencia activas; no promoción ni decisión final. Borrador generador de reporte creado pero aún no ejecutar/publicar su conclusión; revisar tras corregir latencia/parser.
+
+
+## Comparación K2 696 — 2026-09-10T00:02:33.723586+00:00
+
+Investigación697: parser K2 corregido en fork aislado para kwargs efectivos JSON/XML y delimitadores high/medium/low. Validación: 121tests/615assertions autoparser y39tests/210assertions PEG, cero fallos/skips. Seis benchmarks GPU completos:0.9Q8~171–173tokens/s,0.9BF16~112,3.7Q4~72. GRAPH_OPT no aporta mejora material. Cola96015 terminó exit0 con cuatro paneles50 nuevos; revisión manual pendiente. Qwen693/694 pausado, runtime productivo intacto, sin elección final ni cobertura nueva.
+
+
+## Cierre investigación K2 698 — 2026-09-10T00:28:09.378394+00:00
+
+Investigación K2 finalizada:19 corridas/860 resultados evaluables sobre50 entradas(49 fixtures), seis benchmarks fijos y backend Windows Unicode/NFC+parser697/698 corregido. Decisión autónoma: conservar Qwen; mejor K2 BF16 high33/50 vsQwen30/50,10ganancias/7regresiones, mediana1.3285s vs.649s y máximo37.797s vs2.235s. Q4low32/50;Q8low20/50;Q8medium32/50 con2errores parser. Autoparser121tests4539assertions yPEG39tests210assertions verdes,cero skips. Cola63450 final exit0; no inferencia activa. Informe REPORTE_FINAL.md generado. Runtime productivo intacto. Reanudar sólo bloqueantes compartidos693/694; C03 activo26/716/0, ninguna decisión pendiente del dueño.
+
+
+## Aclaración del dueño: referencia independiente 699 — 2026-09-10T00:43:01.922217+00:00
+
+Decisión K2/Qwen provisional por aclaración metodológica del dueño. Las 860 respuestas previas usaron instrucciones de BAXY mediante API nativa, con muestreo y esfuerzo específicos del modelo; no son una referencia independiente. Primero comparar modelos con plantilla oficial sin instrucciones de BAXY; después añadir capas con tareas emparejadas para localizar regresiones. 693/694 siguen pausados. Runtime intacto; encuesta 26 cubiertos/716 abiertos/0 NA; C03 activo.
+
+
+## Referencia independiente699 — 2026-09-10T00:52:54.667148+00:00
+
+Referencia independiente699 09-bf16-high-reference699: running. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:03:37.670870+00:00
+
+Referencia independiente699 09-bf16-high-reference699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:03:37.907330+00:00
+
+Referencia independiente699 qwen-q4-reference699: running. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:09:10.265929+00:00
+
+Referencia independiente699 qwen-q4-reference699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:09:10.549849+00:00
+
+Referencia independiente699 37-q4-high-reference699: running. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:18:22.978146+00:00
+
+Referencia independiente699 09-bf16-high-reference699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:18:23.189374+00:00
+
+Referencia independiente699 qwen-q4-reference699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:42:44.719083+00:00
+
+Referencia independiente699 37-q4-high-reference699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:42:46.054180+00:00
+
+Referencia independiente699 qwen-q4-practical699: running. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:44:58.497860+00:00
+
+Referencia independiente699 37-q4-low-practical699: running. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:45:02.328193+00:00
+
+Referencia independiente699 qwen-q4-practical699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:48:37.347466+00:00
+
+Referencia independiente699 37-q4-low-practical699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T01:48:38.739958+00:00
+
+Referencia independiente699 37-q4-high-practical699: running. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Referencia independiente699 — 2026-09-10T02:02:31.124804+00:00
+
+Referencia independiente699 37-q4-high-practical699: completed. Decisión provisional;693/694 pausados;C03 activo;encuesta26/716/0.
+
+
+## Comparación independiente y política cerradas — 2026-09-10T02:10:30.587301+00:00
+
+Comparison699/700 complete:300 original outputs+40 paired; retain Qwen working candidate, no model promotion or C03 acceptance. Resume694/693. Survey26/716/0.
+
+Referencias: BF16 pequeño33/50, Qwen40/50, K2grande39/50. Prácticos: Qwen40/50 (1.352s,3165.55MiB GPU/715.38MiB RAM); K2low28/50; K2high38/50 (8.8285s,3444.23MiB GPU/787.56MiB RAM). Son picos del servidor, no del producto.
+
+Quitar sólo el system: Qwen7→5/20, K2high10→8/20; K2recupera hora y abstención pero pierde4casos. Un caso sin herramienta deInternet no concede capacidad. Todas340salidas nuevas revisadas; paridad50effort+40system. EVIDENCE_VALIDATION700 verifica coherencia/hashes/compilación; no nuevo Full deproducto ni cobertura. Informes viejos698 son históricos rectificados; CLOSURE700 es la decisión más reciente.

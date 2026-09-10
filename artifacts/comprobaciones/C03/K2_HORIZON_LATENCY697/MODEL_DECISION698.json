@@ -1,0 +1,22 @@
+{
+  "decision": "provisional_pending_independent_and_paired_comparison",
+  "owner_decision_pending": false,
+  "reviewed_tags": [
+    "qwen-registered1",
+    "qwen-documented1",
+    "09-bf16-high-practical-parser697-1",
+    "37-q4-high-parser698-1",
+    "37-q4-low-parser698-1",
+    "37-q4-medium-parser698-1",
+    "09-q8-low-parser698-1",
+    "09-q8-medium-parser698-1"
+  ],
+  "report_lead": "Decisión K2/Qwen provisional por aclaración metodológica del dueño. Las 860 respuestas previas usaron instrucciones de BAXY mediante API nativa, con muestreo y esfuerzo específicos del modelo; no son una referencia independiente. Primero comparar modelos con plantilla oficial sin instrucciones de BAXY; después añadir capas con tareas emparejadas para localizar regresiones. 693/694 siguen pausados. Runtime intacto; encuesta 26 cubiertos/716 abiertos/0 NA; C03 activo.",
+  "report_rationale": "El mejor recuento K2 fue el pequeño BF16 high: **33/50**, frente a **30/50** del Qwen registrado. Acertó 10 entradas que Qwen falló y falló 7 que Qwen acertó; dos de esas siete son el mismo fixture repetido. Sus pérdidas incluyen una secuencia de operaciones, aclaración de aplicación, cantidades GPU y conocimiento sencillo. Su mediana fue 1,33 s frente a 0,65 s, y su máximo 37,80 s frente a 2,24 s. El menor uso de memoria es atractivo, pero no compensa todavía esas regresiones para un compañero general. El 3.7B Q4 low alcanzó 32/50 en 1,11 s de mediana, con errores de identidad, estado de memoria, cifras y prosa. El 0.9B Q8 low llegó a 0,33 s y unos 1,36 GiB de VRAM, pero sólo cumplió 20/50. Medium 0.9B mejoró a 32/50, aunque tuvo dos errores de parsing y propuso cambiar una conexión cuando sólo se pedía observarla. Son conclusiones de este panel de desarrollo y backend experimental; no un descarte universal de K2 ni una aceptación de Qwen, que también necesita correcciones.",
+  "production_manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+  "integration_promoted": false,
+  "c03_coverage_added": 0,
+  "next": "Independent official-template baseline, then paired prompt layers before resuming Qwen repairs.",
+  "supersedes_previous_verdict_at": "2026-09-10T00:43:01.922217+00:00",
+  "interpretation": "Prior results are BAXY-prompt-conditioned diagnostics, not intrinsic model ranking."
+}

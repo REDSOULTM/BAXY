@@ -1,0 +1,364 @@
+{
+  "utc": "2026-09-10T00:11:59.587844+00:00",
+  "tag": "37-q4-low-native-gpu8k1",
+  "reviewer": "root",
+  "method": "Revisión manual de las50 entradas/resultados. Misma base congelada y criterios; separación entre error de protocolo y error semántico. Ninguna cobertura C03 ni promoción. No evaluación ciega.",
+  "pass": 11,
+  "fail": 39,
+  "selector_pass": 11,
+  "prose_and_conversation_pass": 0,
+  "rows": [
+    {
+      "id": "select-disk-used-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0532",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0359",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-cpu-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0450",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-H0499",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-H0602",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-clock-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-network-internet-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "internet",
+      "reason": "Confunde una observación Wi-Fi con conectividad a Internet."
+    },
+    {
+      "id": "select-H0675",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-audio-order-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "fresh",
+      "reason": "Responde desde el historial u omite la lectura actual disponible solicitada."
+    },
+    {
+      "id": "select-control-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-battery-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-cpu-then-date-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-negated-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-past-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-knowledge-en",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-other-machine-es",
+      "kind": "selector",
+      "pass": false,
+      "defect": "other",
+      "reason": "Propone una lectura de este PC para una consulta sobre otro ordenador."
+    },
+    {
+      "id": "select-control-process-memory-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "select-control-disk-order-es",
+      "kind": "selector",
+      "pass": true,
+      "defect": "none",
+      "reason": "Cumple el criterio declarado para la entrada y los hechos suministrados."
+    },
+    {
+      "id": "writer521-0",
+      "kind": "welcome",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-1",
+      "kind": "error",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-2",
+      "kind": "confirmation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-3",
+      "kind": "completed",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-4",
+      "kind": "completed",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-6",
+      "kind": "clarification",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-7",
+      "kind": "read",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-8",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-10",
+      "kind": "clarification",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-11",
+      "kind": "read",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-12",
+      "kind": "progress",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-16",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-17",
+      "kind": "completed",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-18",
+      "kind": "read",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer521-19",
+      "kind": "capability",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0111",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0342",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0539",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0508",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0114",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-gpu-usage-es",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0650",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-processes-top3-en",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0104",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "writer694-H0127",
+      "kind": "measured-facts",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "chat-identity-es",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "chat-name-es",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "chat-vocative-mixed",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "chat-knowledge-en",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    },
+    {
+      "id": "chat-difference-es",
+      "kind": "conversation",
+      "pass": false,
+      "defect": "leaked_marker",
+      "reason": "El cierre de razonamiento se filtra en la respuesta visible con el backend anterior."
+    }
+  ],
+  "private_review_sha256": "89f54331b4ead7409bf5b1d98d48907ea6d8e7a6471d96a6beb312d1e977e499",
+  "repeated_fixture": "writer521-6 and writer521-10 are identical, not independent evidence"
+}

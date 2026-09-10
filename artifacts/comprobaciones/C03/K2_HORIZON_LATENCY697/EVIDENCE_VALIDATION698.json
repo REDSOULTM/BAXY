@@ -1,0 +1,108 @@
+{
+  "utc": "2026-09-10T00:30:06.913865+00:00",
+  "panels": [
+    {
+      "tag": "qwen-registered1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "qwen-documented1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "09-bf16-high-practical-parser697-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-high-parser698-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-low-parser698-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-medium-parser698-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "09-q8-low-parser698-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "09-q8-medium-parser698-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "q8-high-reference1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "09-bf16-high-reference1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-high-cpu-kv1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-high-gpu8k1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-high-native-selectors1",
+      "responses": 20,
+      "verified": true
+    },
+    {
+      "tag": "37-q8-high-native-gpu24-noop1",
+      "responses": 20,
+      "verified": true
+    },
+    {
+      "tag": "09-bf16-high-native-selectors1",
+      "responses": 20,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-low-native-gpu8k1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-low-parser697-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "37-q4-medium-parser697-1",
+      "responses": 50,
+      "verified": true
+    },
+    {
+      "tag": "09-q8-medium-parser697-1",
+      "responses": 50,
+      "verified": true
+    }
+  ],
+  "results_verified": 860,
+  "backend_files_verified": 15,
+  "source_files_verified": 8,
+  "local_report_links_verified": 29,
+  "diagnostic_python_files_compiled": 16,
+  "manifest_unchanged": true,
+  "report_sha256": "85e61aedf7a1c42698b133e6c9e5fbdeb48f1189ae77231076d136296939c5e0",
+  "scope": "Evidence/provenance validation, not BAXY Full or C03 acceptance."
+}

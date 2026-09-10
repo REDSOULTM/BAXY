@@ -1,0 +1,43 @@
+{
+  "tag": "09-bf16-high-reference1",
+  "responses": 50,
+  "adjudication": "pending",
+  "results_sha256": "761a76f2abba9b28b3d179c65f1dd26534e044298104b0f2cc090b5bd9d5bbe3",
+  "resources": {
+    "gpu_peak_mib": 3175.56640625,
+    "ram_peak_mib": 2410.73046875,
+    "seconds": 168.17200000000048,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "None": 1,
+    "stop": 41,
+    "tool_calls": 8
+  },
+  "errors": [
+    "select-control-process-memory-es"
+  ],
+  "seconds": {
+    "count": 50,
+    "median": 1.5785000000005311,
+    "max": 37.70299999999952,
+    "sum": 162.46900000000278
+  },
+  "first_token_seconds": {
+    "count": 50,
+    "median": 0.29650000000037835,
+    "max": 0.9840000000003783,
+    "sum": 22.935000000008586
+  },
+  "first_content_seconds": {
+    "count": 41,
+    "median": 1.2970000000004802,
+    "max": 37.54700000000048,
+    "sum": 119.56100000001061
+  },
+  "completion_tokens": 12642,
+  "selector_function_name_matches_only": 10,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-10T02:10:30.587301+00:00",
+  "independent_outputs": 300,
+  "paired_new_outputs": 40,
+  "manually_reviewed_new_outputs": 340,
+  "effort_only_payload_pairs": 50,
+  "removed_system_payload_pairs": 40,
+  "diagnostic_python_scripts_compiled": 28,
+  "powershell_syntax_errors": 0,
+  "historical_public_pins_verified": 211,
+  "manifest_unchanged": true,
+  "source_full": "No new product source adopted. Prior source693 Full is separate:11051 Python pass/3 environmental skips/466 subtests;4480.NET pass/1 aggregate skip. Not a C03 closing Full.",
+  "backend_tests": "Previously sealed698:121 auto-parser tests/4539 assertions,39 PEG tests/210 assertions;0 failures/exceptions/skips.",
+  "scope": "Evidence validation; not all model answers pass, no survey credit, no product acceptance."
+}

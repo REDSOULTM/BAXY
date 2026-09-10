@@ -1,0 +1,855 @@
+{
+  "scope": "Public K2 research evidence; private contexts excluded. Metadata path redactions explicitly recorded. Backend and runtime files remain external.",
+  "files": {
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/BACKEND_BUILD.json": {
+      "bytes": 2232,
+      "sha256": "3b9d46b7f43e4c642d4a726a5f4eb6a63049922578c9f716cd7837ebf238cef7"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/BACKEND_BUILD_NFC.json": {
+      "bytes": 3146,
+      "sha256": "eb4ad8637408a11307c51b52b1a83c1609a531706f0587b9ad469a279080568b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/COMPATIBILIDAD.md": {
+      "bytes": 3260,
+      "sha256": "1b85176f1aea53e3647e7505159bb802adcdbd7c20c65c4f88aea395bdaa26cb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/CONTROLES_SIGUIENTES.md": {
+      "bytes": 2727,
+      "sha256": "1c8000d7f343609e9d25c50499cad7e5745fadcd1008af55a1135758e94af970"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/K2-Horizon-0.9B-Q4_K_M.gguf.json": {
+      "bytes": 554,
+      "sha256": "bc7b27b21398c06119b89495be725585786bbd44cc8f4e9900f2a82de51c677d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/K2-Horizon-0.9B-Q8_0.gguf.json": {
+      "bytes": 549,
+      "sha256": "8d4e394c203900103780c0f0dcbce7b6c4a5224c74f9b6e16e08ac88e9d82116"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/K2-Horizon-1B-BF16.gguf.json": {
+      "bytes": 527,
+      "sha256": "25d6a7e38ea5a4cbc543e599f8ca2105f0ceda31d74f7f02af2e40d05c9b7d35"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/K2-Horizon-3.7B-Q4_K_M.gguf.json": {
+      "bytes": 551,
+      "sha256": "b431b9e2adcb571370f9b3b9be5f55f242a5c496be0b6132f7941708b78ae5b0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/K2-Horizon-3.7B-Q8_0.gguf.json": {
+      "bytes": 656,
+      "sha256": "e6788d210544b33ce5af07e20397e367426561918644273c9a59c57d3190507c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/METODO_Y_LIMITES.md": {
+      "bytes": 6229,
+      "sha256": "ee6c36f2bb55c54d580586b958359c6734b2cc9cda942448d5759cbe3e0c1ab2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/PANEL_PLAN.json": {
+      "bytes": 21668,
+      "sha256": "c245f14a5140dc5254f009d8e31c7ad4a98aa35023fba1c8fa1fd8bbd93daac1"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/PREPARATION.json": {
+      "bytes": 1704,
+      "sha256": "c992899986eac4630174a2854f8e4843058a20816c50b9f03518f1205701bb3e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/PROFILE_PLAN.md": {
+      "bytes": 4416,
+      "sha256": "4b5b60e6713c95da4d911510ae694f626fd979c89c82378c9c26cd00f9381046"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/TOKENIZER_REFERENCES.json": {
+      "bytes": 2028,
+      "sha256": "add7d2f281d3a3e0d4a4d140a8928e1c5181e0736ec22e58a567e015c23128c0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/WEIGHTS.json": {
+      "bytes": 2270,
+      "sha256": "9f5351ae56e96dbfd0bb57d5a9dfc00cde53c3fb7e90daa98c45e5232d0e3126"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/k2-unicode-nfc-windows.patch": {
+      "bytes": 6768,
+      "sha256": "87e037587e5e3365d8cefbaffec06a5775951a975113c511f0750e09a88d791c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/k2-unicode-windows.patch": {
+      "bytes": 3345,
+      "sha256": "0d01e92e66b7279846423f918f71f184e061fd4776f32a29b3a3d6b86df4c637"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/ADJUDICATION.json": {
+      "bytes": 5615,
+      "sha256": "0f872e6ba0bc69a5b6a77c5a31e0f6fc7f0d6472bb6a31495f31352467e944bb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/MEASUREMENTS.json": {
+      "bytes": 1234,
+      "sha256": "b12b83c9526e6abd24c72e8a99571ee01fcbe8710db3114034b79fd48cbf9e4e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/PREREG.json": {
+      "bytes": 3920,
+      "sha256": "6684c6f4106561598935f15a1b9d75ac2121a2f3cf827dc57f56afe24dc543a0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/PROCESS.json": {
+      "bytes": 768,
+      "sha256": "c33d7cefb7832dfb20616b5f43501d9976e3e69a7a517e28271bbad9f97872f4"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/READY.json": {
+      "bytes": 39,
+      "sha256": "5ee895b027672edc4934448a96d0f8652646b0cde4498dfd651960efde7eb868"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/RESOURCES.json": {
+      "bytes": 180,
+      "sha256": "153e252530710339743f2406f008389dac44dcccf1f964fa347f888fe09e2bec"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-native-selectors1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/ADJUDICATION.json": {
+      "bytes": 11543,
+      "sha256": "cdb446d373223be65ffa58111d5fa51cdd3531cf7baae05d9e4086e54870034b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/MEASUREMENTS.json": {
+      "bytes": 1252,
+      "sha256": "2790c0ff661a8bfacb7afeb90863d1d6cc8a6b9b6db76ed8004b9573219b08fc"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/PREREG.json": {
+      "bytes": 4992,
+      "sha256": "d1df1809e9d38ea9b6202b2b6de4bdd5a842afcbe437f91cc4860e8ff3e31d2b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/PROCESS.json": {
+      "bytes": 785,
+      "sha256": "5358d3105d6202178ac7f965202c929b8b2381657e53fc86a85070d37ad823dd"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/READY.json": {
+      "bytes": 39,
+      "sha256": "ab41b25a9e25dd4f27919dd17dda11c33fb5a7d569180797948d4b0742e8e18c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/RESOURCES.json": {
+      "bytes": 179,
+      "sha256": "90be5feea83db7b0e453a25b59e707ae9bf79580b20ff385ebc39f1075e846f9"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-practical-parser697-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/ADJUDICATION.json": {
+      "bytes": 12524,
+      "sha256": "0e03bb87851c4f8ee1a202a8891169047d520c2a4601f06ae8ee17449df49f17"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/MEASUREMENTS.json": {
+      "bytes": 1240,
+      "sha256": "4f6fed0f9080ef2cf74216b50ea99c515c95dc828721e52cdc6aa6116715782e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/PREREG.json": {
+      "bytes": 4413,
+      "sha256": "6554efddef254cbaa580ce1ea0b7e91926cec7836f7c30afd9bf5df83b2d95dd"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/PROCESS.json": {
+      "bytes": 767,
+      "sha256": "a3fdbd49ca9a9803e6b4ced4a1b7041db7952097941d3ab5aabeeaf68e1dd5c6"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/READY.json": {
+      "bytes": 38,
+      "sha256": "2c4cd3fd1f16d3df0b25b513273c57275c95b355a6a3a603086330cb785f6edb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/RESOURCES.json": {
+      "bytes": 181,
+      "sha256": "e4b7a62b81b4de7023dcf2c622aef7fa98f5eda254ec6f6c6bb47389f8df5837"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-bf16-high-reference1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/ADJUDICATION.json": {
+      "bytes": 11934,
+      "sha256": "f2f41dfb5c4bce0b586ed773e03bdea6d175edc50be3ec1ebaddb1aa39a1f23d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/MEASUREMENTS.json": {
+      "bytes": 1237,
+      "sha256": "05457020105115bcc2ecf14a8ab5f76634fe881805219cf70d2af867e5918b61"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/PREREG.json": {
+      "bytes": 5042,
+      "sha256": "a7a32ee46d26fa7112379cb47219a7741b108a8657dc7fcf4dbe2478c45d523e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/PROCESS.json": {
+      "bytes": 816,
+      "sha256": "3c7111f61361ff91893774edebd022c531b261699982e26b892356e73d0321df"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/READY.json": {
+      "bytes": 39,
+      "sha256": "da36f10834e4b710269e03c02d2649f6309ded17d78b6506ab8c6dbfbdde4316"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/RESOURCES.json": {
+      "bytes": 175,
+      "sha256": "2a01ab768e04a6059b88af1ac848451111af9f2166adcaa643880a53263de5c2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/TEMPLATE_PARITY.jsonl": {
+      "bytes": 7843,
+      "sha256": "4f2b16d883d684acf5ab3ba7a51ce927a4abebe7570f9d9b22f5a04a8a59537b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-low-parser698-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/ADJUDICATION.json": {
+      "bytes": 12412,
+      "sha256": "3844cdda92b2ab121c4fe87bf321b9ccf927710e4d47c365c317f1d595e8fefe"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/MEASUREMENTS.json": {
+      "bytes": 1212,
+      "sha256": "383b54c3666edeb7784569f38ab938c8590e7e1577eb88a1ba0d8907bcc41748"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/PREREG.json": {
+      "bytes": 4990,
+      "sha256": "ddab1e8c7005b81c1cf856beee56fa7dabfe7b76d86d422d6c7ba0d92a975e82"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/PROCESS.json": {
+      "bytes": 789,
+      "sha256": "df43497ad0ae1e031d7de0ed9c7498861d3a3b503417cf8e42b0fc9a0cc84dab"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/READY.json": {
+      "bytes": 39,
+      "sha256": "dd55fcadf12b39f3e74e4ffc8b16344804c8c3b0d5d0e9ed88d4793bcdf99ba5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/RESOURCES.json": {
+      "bytes": 176,
+      "sha256": "afaddc31b01fd15999697488d91f5ad042a3cb84a63a831b3e051b2167ab7b53"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser697-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/ADJUDICATION.json": {
+      "bytes": 11995,
+      "sha256": "2715be0bfb808373f9220b315b7c30a944b54972d2cfcd0525467e0ff5d17eb9"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/MEASUREMENTS.json": {
+      "bytes": 1297,
+      "sha256": "fb995c1349c5c83c0ba92e1025daa7a251ba609ffb259738903d729ea8842f59"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/PREREG.json": {
+      "bytes": 5051,
+      "sha256": "1c39e1232779617f06b34bff8e2744bcb132c726a443bbd0ffa5efefea358882"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/PROCESS.json": {
+      "bytes": 819,
+      "sha256": "e04150d451950df88a3e32dd96addf370b6ec36605acdce4c313b4f99b79af14"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/READY.json": {
+      "bytes": 39,
+      "sha256": "4afd43af950246ec3b65d2324199fd170a702fa9b8807b606cbda2c204fbf410"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/RESOURCES.json": {
+      "bytes": 177,
+      "sha256": "222a8c2bb146d9a490bdee0fb2daeb21090b7b16a33d610ddf0b8be9281ce744"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/TEMPLATE_PARITY.jsonl": {
+      "bytes": 7993,
+      "sha256": "b28fbf80a2b5501fd41afe796368dcafce0ed400e930d8dbc3e5181426243e6b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-09-q8-medium-parser698-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/ADJUDICATION.json": {
+      "bytes": 12509,
+      "sha256": "e34d33cf920f1bff3755225a4d543ee60c9f3c48fe92b6ba60061a516198e3b2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/MEASUREMENTS.json": {
+      "bytes": 1136,
+      "sha256": "1e692121e26966b58f482a01dda71da086613510aea61cf64ad61bf168e98cd9"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/PREREG.json": {
+      "bytes": 4456,
+      "sha256": "390c6391a6f77330faa8a221e5d124343b97d78e0098983b17150167c8a7290a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/PROCESS.json": {
+      "bytes": 814,
+      "sha256": "7f720e859c5bb53711b434c97f12db06c7295d374e36718af6e25ee362c180d3"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/READY.json": {
+      "bytes": 38,
+      "sha256": "a04d9b91f121959489944626859ff066fab14c313171ebf14bbe31931d9b3569"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/RESOURCES.json": {
+      "bytes": 180,
+      "sha256": "440358175d17468160e057542acbab85b49687539155dcd75ff8643f1a909ffb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-cpu-kv1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/ADJUDICATION.json": {
+      "bytes": 12579,
+      "sha256": "36f0d758bc8d7eb858f4693e39caf6ff08e2b774ec651e6ddd8e38123db6cdc9"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/MEASUREMENTS.json": {
+      "bytes": 1169,
+      "sha256": "ab47d531089e531336a4da13214feb86efafda3676df61b4866f6254651adb27"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/PREREG.json": {
+      "bytes": 4429,
+      "sha256": "3d7ee18b49055a68d69c78a1ec823837d9b4e91d46412126bff60aa844551170"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/PROCESS.json": {
+      "bytes": 789,
+      "sha256": "3de19128d928b6c7b1152cb39e30efe598feb93acca8517c385d2b79dbf5f262"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/READY.json": {
+      "bytes": 37,
+      "sha256": "0082cda97b41d640d751ec7ea57dff6bf68260ac354aa157cdbe4f8db3314260"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/RESOURCES.json": {
+      "bytes": 180,
+      "sha256": "db4e6937da62353728d4710f8c68486276575de0638043316d83635933bc0494"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-gpu8k1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/ADJUDICATION.json": {
+      "bytes": 5530,
+      "sha256": "5b3dd766a0138e81b9aebd885f236a7b298ac2e5020da94790f464cbac2aeca4"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/MEASUREMENTS.json": {
+      "bytes": 1158,
+      "sha256": "7b13e596446e3c6375967d1d340d3fb02b27d9f3246983b08dd48763dfb51e16"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/PREREG.json": {
+      "bytes": 3911,
+      "sha256": "9106f4c607191ca813ca67ca5da2bd7d9818f1a85658e5b1437d644fd9721759"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/PROCESS.json": {
+      "bytes": 789,
+      "sha256": "3383b32d83b4b83756d71ebdc06a0a78210772eba08c1f12ebb061909a30ec7e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/READY.json": {
+      "bytes": 39,
+      "sha256": "31a5e977a31433450091d588c9786116c9ceb5249128eb4ca96208223e9e2005"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/RESOURCES.json": {
+      "bytes": 176,
+      "sha256": "548f8971b774f5e29493d1eeb573090502585d2a9095c44f3a99e6c3fd1f1885"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-native-selectors1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/ADJUDICATION.json": {
+      "bytes": 11703,
+      "sha256": "30f558df8e0c2ad5bedaa78fce742a39a4c057372bd9855b6a443dc1a2de4626"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/MEASUREMENTS.json": {
+      "bytes": 1237,
+      "sha256": "3eaffe2671a7c2fada37c58528d441ca7f7b15bb3245d26081ef08e9450bd2f6"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/PREREG.json": {
+      "bytes": 5051,
+      "sha256": "be4f51839f34343025919d97756e92d7bdc4f9ffd2eba574206d8133ab62dae1"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/PROCESS.json": {
+      "bytes": 819,
+      "sha256": "d90e55d25c99ddc514ecb71ae6b0487b4514c6cc88179e259e5c8344a97760f1"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/READY.json": {
+      "bytes": 38,
+      "sha256": "139ffdab81b5655acb73705581bb5369f4cd8fd7629cecb847771b0ac8331d1a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/RESOURCES.json": {
+      "bytes": 178,
+      "sha256": "8825b1646863d18234fb9c4c33b6c100f93f0d26577586f97b3f1d02f3cd49b1"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/TEMPLATE_PARITY.jsonl": {
+      "bytes": 7893,
+      "sha256": "4ebf77748e20ad321c53dd9ec3b9ca3920f6f2645360e51a3233eabd169436ee"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-high-parser698-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/ADJUDICATION.json": {
+      "bytes": 12103,
+      "sha256": "a1b777dc5e7d7149c07231d4792248f2754cadeabbaadc114b9253b32ff2a03b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/MEASUREMENTS.json": {
+      "bytes": 1240,
+      "sha256": "58a8e661735c63895abb5670ea586ac9ede46d832f4294bce2b50208accdf540"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/PREREG.json": {
+      "bytes": 4597,
+      "sha256": "05e4657d68e25a450655f6b1662c445cc6958c57d6227c58a9f2564f69d8c207"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/PROCESS.json": {
+      "bytes": 788,
+      "sha256": "7ae5e02c761b5e7cd8e52842fb8b68e84dbcb2e614eeb12261dd77a5838edeca"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/READY.json": {
+      "bytes": 38,
+      "sha256": "25314d48ae652d126d50b26b9ab39d7cc465c26e28b7d88d948013b40bd345b5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/RESOURCES.json": {
+      "bytes": 178,
+      "sha256": "656168dfa5022c55016e07102b1b79c85e661682d60621dd84a38d228b97a2a2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-native-gpu8k1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/ADJUDICATION.json": {
+      "bytes": 11609,
+      "sha256": "b8bde2f0e50888fd7e58731013014a9d95c64e78617530242b5109c405d93dbb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/MEASUREMENTS.json": {
+      "bytes": 1220,
+      "sha256": "9a8ff68cd6650528027f927b4239f9d7ed0c341bc0bfde9fc8b837f113c8aa66"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/PREREG.json": {
+      "bytes": 4987,
+      "sha256": "03490f600b4a7d4c2d4c752268384a87aa65bf2fe67e952d5521196b8de2646d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/PROCESS.json": {
+      "bytes": 788,
+      "sha256": "ff9616a0acb3c04e81398156d93f4802f9ba6efb4c63c903562ca13c89534392"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/READY.json": {
+      "bytes": 39,
+      "sha256": "07e8d6b303b1ab397b7ce9e43d9840ff2f229fe2c87f4008ff66ad2881c01175"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/RESOURCES.json": {
+      "bytes": 173,
+      "sha256": "3c7af2b85d1021807bcd774e03f827355c9c41a7df58446547a388d5576e21f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser697-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/ADJUDICATION.json": {
+      "bytes": 11609,
+      "sha256": "c0b33b22bc3d9756c3333da2ca94aa70aba5dfcee650447861459bc79b52cd77"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/MEASUREMENTS.json": {
+      "bytes": 1227,
+      "sha256": "81ab2bda95331bee2096ea23e1cac98eb4ac01e2d6535848ab59c5d35f4b5c8a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/PREREG.json": {
+      "bytes": 5048,
+      "sha256": "0a0cc7c850c7c7bde61669dbad9109b27d07415bbaf965e0c943e470bbf30bd5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/PROCESS.json": {
+      "bytes": 817,
+      "sha256": "f80b0e2ccd470097894c2fd19f40b27628c006f3a8f17f93197e7cec8cd817f2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/READY.json": {
+      "bytes": 39,
+      "sha256": "31a5e977a31433450091d588c9786116c9ceb5249128eb4ca96208223e9e2005"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/RESOURCES.json": {
+      "bytes": 177,
+      "sha256": "b6f52cbc83af4ee2a6b30d99233c823d617800d1faf66a7ba33b656af8df612a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/TEMPLATE_PARITY.jsonl": {
+      "bytes": 7843,
+      "sha256": "3dffd8f4963eadd7f0a3c2b3777dffe9d2c435c1d6cb66ec858c1c73642789ec"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-low-parser698-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/ADJUDICATION.json": {
+      "bytes": 14701,
+      "sha256": "bdd447444e5e100b52d4cce6dec97628df0056132e839b3321d5154b2c6cbb3b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/MEASUREMENTS.json": {
+      "bytes": 1219,
+      "sha256": "f46c9fd130e90e93bc040bfe77e57f4bab38c8c89f1328fdd8bf7d3c892a0200"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/PREREG.json": {
+      "bytes": 4996,
+      "sha256": "d7a8ac4f6b37447f07a58e10fb9c7d64e85f92fe29ed51bc74cbda881e1ac97d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/PROCESS.json": {
+      "bytes": 791,
+      "sha256": "cd4d16373d5e5475f379fd295f18ab2609d03b20b6626cab7d39f71896d1a9c3"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/READY.json": {
+      "bytes": 38,
+      "sha256": "57ee7497b0ab49486175b83ca47979701bf06dba5ba35088b0775b49f24928ee"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/RESOURCES.json": {
+      "bytes": 179,
+      "sha256": "cf17dd3218d1f35b0c80874170ff90c442278a8ae91f26dc27b16e7397bfb979"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser697-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/ADJUDICATION.json": {
+      "bytes": 13734,
+      "sha256": "83c52d2d0599ff1e6e55c8c9ec72d49debb35c813ac8bbc9073e41f4171be985"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/MEASUREMENTS.json": {
+      "bytes": 1225,
+      "sha256": "e451fdb8382ca78c5281ff1c38a3526158259b04be236133a51d5a46bfc76ff7"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/PREREG.json": {
+      "bytes": 5057,
+      "sha256": "270456fe500fc6efc21b9bdc4358fc201c2b7875832061af31e6594e2192463c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/PROCESS.json": {
+      "bytes": 821,
+      "sha256": "8b8a0c1548df9c1643f550b262b4502f1ad108d723177d962080d9ea8c8008cb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/READY.json": {
+      "bytes": 38,
+      "sha256": "8a9335c227a7f1aafada276602ebef8cffd4152a3883685a853b15ee73f3f32c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/RESOURCES.json": {
+      "bytes": 177,
+      "sha256": "639e89ac0cc9f2693bb9e12e1fd1af09f1f189e9d72cdde0d2539048c50d8c02"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/TEMPLATE_PARITY.jsonl": {
+      "bytes": 7993,
+      "sha256": "58d85b5499f8ceca5ab4926e8c5ccc1e1fdede50943dad4143130560c87f6e45"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q4-medium-parser698-1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/ADJUDICATION.json": {
+      "bytes": 5438,
+      "sha256": "12cc061439314e4132b6c564895100bfe2f80dfb5f16b4f014d7fe6fee2ea25b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/MEASUREMENTS.json": {
+      "bytes": 3149,
+      "sha256": "e8aadf2dbfcb783dbd8bff14e6a09381f519ea7e34c86973115d655d0f519ad4"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/OPERATOR_STOP.json": {
+      "bytes": 1164,
+      "sha256": "53ccb53e86c74b14c95dc59ea6316878133fb8c7ea5d48f95a96041e8e83c23d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/PREREG.json": {
+      "bytes": 4624,
+      "sha256": "a85aefe0d811c75458808abb7c9151342f138cceb76becf6531e33a6a6392e0d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/PROCESS.json": {
+      "bytes": 811,
+      "sha256": "808a371aa6b1155120a908845d3c0c0847f5cf3a8a4037eeb645260a624df830"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/READY.json": {
+      "bytes": 39,
+      "sha256": "5cbe5b0e495351f0b981da0d1befb61699058c0472d5c77512f5ae6f1f30040e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/RESOURCES.json": {
+      "bytes": 179,
+      "sha256": "dc54e4a9137c28edfb6d934138943d3a38e4e34b57ef171483c8e118dcb2c13c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu24-noop1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu28-1/PREREG.json": {
+      "bytes": 4568,
+      "sha256": "73713cbe851201b9b1d6978008f096a4ffa586d205041d0897854346d9d2e15a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu28-1/PROCESS.json": {
+      "bytes": 787,
+      "sha256": "50826cda18eb5b0017130a038b8d767eba79bcb4e1888599d418e2c448a9de1b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-37-q8-high-native-gpu28-1/RESOURCES.json": {
+      "bytes": 202,
+      "sha256": "e37511f43b04f339288d869560ba4464afbec73756fa2672619b7d018500a4c4"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/ADJUDICATION.json": {
+      "bytes": 12779,
+      "sha256": "d865f945cb55d1042af38c449dedbe357c24a03b303a663be89e94128e5e8f51"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/MEASUREMENTS.json": {
+      "bytes": 1189,
+      "sha256": "6d6f25c152541f9d85db14b63bcfaf53d6049f525237fe0411af680e5ac7d8bd"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/PREREG.json": {
+      "bytes": 4362,
+      "sha256": "6aa71d06592c6609b6fc6b95f5444d1e550fb80ed57c111de2b5231d5e3e5dc6"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/PROCESS.json": {
+      "bytes": 770,
+      "sha256": "7849661a416bdd30af2689dfb6d8f4960b38df60faa1bb45ac2d4d3a418fc7f0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/READY.json": {
+      "bytes": 39,
+      "sha256": "90086fd324743c2c0d90ef52c4348572b9e8c0ee5ff24902286c3a48244214cc"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/RESOURCES.json": {
+      "bytes": 180,
+      "sha256": "095869219d9414ed00ad6b262dace6f28c7deb2c713f0920bda6766ccf9dbd73"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-q8-high-reference1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-documented1/ADJUDICATION.json": {
+      "bytes": 12992,
+      "sha256": "03c817cd6e50dddcf4781b71b59255bb03ee939b195d5202e1c67caf687ac5e9"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-documented1/MEASUREMENTS.json": {
+      "bytes": 1155,
+      "sha256": "6dccac8cfe174ad6a7644aadeddbf081c4c94908cc379863daf672d47074b000"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-documented1/PREREG.json": {
+      "bytes": 8716,
+      "sha256": "6ee259bc3a2487497f0e20d12c7836edaac954d62b758694d3a57a982e6c4a2d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-documented1/PROCESS.json": {
+      "bytes": 799,
+      "sha256": "693d4bb3490040c9ac6f8b0a415e0e298a035a0aa5fe8c6181ee9064c7fcfb9a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-documented1/READY.json": {
+      "bytes": 38,
+      "sha256": "3428a78b85af6077d6c62b02a041e1e6a0845b440bd087f4ff2e925914e63d60"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-documented1/RESOURCES.json": {
+      "bytes": 178,
+      "sha256": "6b1e9aaba790e5014d17dd62248db6cdceeaf1547b398ba7ac21e1b626866cfe"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-registered1/ADJUDICATION.json": {
+      "bytes": 12874,
+      "sha256": "29e01045a844401200f6b83cf1ff945a644b216ba31f6c8d923c370532f9ec4e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-registered1/MEASUREMENTS.json": {
+      "bytes": 1153,
+      "sha256": "445f7bfa1ce48732d8073c7bd84a73278de6091dff40c93840cd0fcfd064a8ab"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-registered1/PREREG.json": {
+      "bytes": 8719,
+      "sha256": "99bb6118559dedd960572b2ac2cd8d1296642791535ad1f2461e2112fc1dd139"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-registered1/PROCESS.json": {
+      "bytes": 801,
+      "sha256": "6cbf3230facc86d6910e87a51a13e0f9eb7f88ab0dae0bdcbc6c937fb0c80c0f"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-registered1/READY.json": {
+      "bytes": 38,
+      "sha256": "77b6bb9d96a7dbe3ab7a65d04d9d594b3385c34a7475f53b4d10cd03c7708de1"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/run-qwen-registered1/RESOURCES.json": {
+      "bytes": 175,
+      "sha256": "d3debb7c4b1816fea56f165650bca22c0add5dbe243b079d448ef4c87fedad21"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-37-q4-high-cpu-kv1/PREREG.json": {
+      "bytes": 3092,
+      "sha256": "d461b36fc9b61fa0c5cdb195590ab4d733dc6bce84f22fbb4f635037e61d80e0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-37-q4-high-cpu-kv1/PROCESS.json": {
+      "bytes": 814,
+      "sha256": "8f2c1490c1089f85cb4c7992f320d652c17f454a10eedbb78f6489f6de960f21"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-37-q4-high-cpu-kv1/READY.json": {
+      "bytes": 38,
+      "sha256": "1c1f3b940d268b1ef1692372dba8a622c1823bd751751fd03a6af4a4b7fa0724"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-37-q4-high-cpu-kv1/RESOURCES.json": {
+      "bytes": 169,
+      "sha256": "658d6f92df6eaac5561aa46d8dad5c99fa61097b8c37a914cb9a0a7f5a2bcf8c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-37-q4-high-cpu-kv1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "41002b521804e66770edce66805956c2e60802bef277ce690c6748b88b95b486"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-auto/PREREG.json": {
+      "bytes": 1861,
+      "sha256": "a5f0721b0420193ed4bb2554319c4e647c5d672bcdd3337ce418be54c0088a4e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-auto/PROCESS.json": {
+      "bytes": 770,
+      "sha256": "44c660f07ddb60852a7e9b9a3f56cf19cabfdf02f101671d7d7ed71ea31b12d6"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-auto/RESOURCES.json": {
+      "bytes": 177,
+      "sha256": "8845f8f60c4cc023f1fa2930b47f6531e8ada3bcc696a0f60ce96d1de23f2bfe"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-nfc1/PREREG.json": {
+      "bytes": 1861,
+      "sha256": "6c2e77ebbb6cc75b0922c748adeaca0ee897c46d388b052bb99eebda92d3702a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-nfc1/PROCESS.json": {
+      "bytes": 770,
+      "sha256": "1ff2a0df8a39241b0a91a147535da2b891f0bb22aa484ab452872a6eeb0d6abe"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-nfc1/READY.json": {
+      "bytes": 26,
+      "sha256": "bfca555005ca5290d0f6cac6e033add6ee89ab32a4a7c01f6da0efc57b449a8d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-nfc1/RESOURCES.json": {
+      "bytes": 180,
+      "sha256": "f68c568975358b64f944564febcef62864c3671a8a400ae13858b9a847ca2955"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-nfc1/TOKENIZER_PARITY.json": {
+      "bytes": 386,
+      "sha256": "972e0a958196680181ff82126ebdb77ca8770eefae76ac07df21d74f095372f5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-unicode1/PREREG.json": {
+      "bytes": 1865,
+      "sha256": "8c19bdd778f8526445fe99f8aa975c414a3b3575ddaea94c1d4745f5595c6cde"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-unicode1/PROCESS.json": {
+      "bytes": 770,
+      "sha256": "749beec302c1d0f40a538871e4a4c3a69de479ddb07783fe49a1bb7d3e806741"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-unicode1/READY.json": {
+      "bytes": 38,
+      "sha256": "2ca8b0a27d7150d46060d3cde69569de3994e9d46fbdf37ab9a28e88eba178e0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/smoke-q8-unicode1/RESOURCES.json": {
+      "bytes": 179,
+      "sha256": "105d69276e9d41f9dfff871b7b4c301e4708ca6430042d4dd88e2201a0cff4e0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/BACKEND_BUILD.json": {
+      "bytes": 5284,
+      "sha256": "a667292e3171e37a8f6d29bde7fd46000cafe400049a8075db3d6ddd247d595b"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/BACKEND_BUILD698.json": {
+      "bytes": 5386,
+      "sha256": "a4b2a129a42ddbb55946b45e999a7261abe10f3a15a03dc4f68733cf7d898a36"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/CONTROLS698_PLAN.json": {
+      "bytes": 1095,
+      "sha256": "a5ae6d62123497ac7a18c4fac71de58de022574aa75a58c98018b67c1fc19eb8"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/EVIDENCE_VALIDATION698.json": {
+      "bytes": 2415,
+      "sha256": "b16bf988198120481c79bd03f959c5a7a34a94749c4fdb804b4d40f6c93b5ba0"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/GGUF_METADATA_09.json": {
+      "bytes": 2550,
+      "sha256": "6de503d0dc10940f6931ea5e18ee3f0879eb165e091a03cfe890a6147bb9475e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/METADATA_REDACTION698.json": {
+      "bytes": 677,
+      "sha256": "e84559690d74ad60c842581cef09df2528636baad70f6f02ba9593660eb010ca"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/MODEL_DECISION698.json": {
+      "bytes": 2380,
+      "sha256": "595684fb5905b3b75b3b5ddbe1f3a4cdd0cb6ac396df336d7c8659ceaa20bcae"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/PLAN.md": {
+      "bytes": 4687,
+      "sha256": "d8bbd3abc5ba230245c97a42c265ded0885bf55411c7fbf4b4f4983dcf4bd5dc"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/REPORTE_FINAL.md": {
+      "bytes": 24682,
+      "sha256": "a5dea3a3a845cfa7771b6dcd0935fe433f4d928fe28306669ef5d48f9ba4d888"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/SUMMARY698.json": {
+      "bytes": 316746,
+      "sha256": "b7bdca8a354371c74afdacb40aca39552875002c71e2d00b7f6766a5cfd906d8"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-bf16-graph0-PLAN.json": {
+      "bytes": 585,
+      "sha256": "6e2a0aa1e84dfc056c4c39aa976312dc9e2bf70bd547cccd481d7cf6dcac47c5"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-bf16-graph0-RESULT.json": {
+      "bytes": 3360,
+      "sha256": "23e166ecd7928f430eda146e9c26e5ad35acdcd9a1fe52dd5006b273004a336e"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-bf16-graph1-PLAN.json": {
+      "bytes": 585,
+      "sha256": "490f8d9355e8876e9e75b68e2d78b84ce713275178ae2d764aa64c42bd4f63f3"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-bf16-graph1-RESULT.json": {
+      "bytes": 3361,
+      "sha256": "93298ad56ca2b15c69293ed37a0853cececa75a797ecbafe8d35d765ad93a894"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-q8-graph0-PLAN.json": {
+      "bytes": 587,
+      "sha256": "74a9ad6247a226c6a36bd4c6375eb7a6b0a40d3a03fb2f5f214c7aed8e30c4ac"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-q8-graph0-RESULT.json": {
+      "bytes": 3365,
+      "sha256": "005d25a2dceeea3afe9b57e1b31b01e413cce488ca9de0b2975e36a3d3b638c2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-q8-graph1-PLAN.json": {
+      "bytes": 587,
+      "sha256": "8c3ff18bb4228ab726d5a40001540c3f2c95c97ccd52cbbd3df41f451cc7f713"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/09-q8-graph1-RESULT.json": {
+      "bytes": 3364,
+      "sha256": "d350c754e201c93d86cc2f53c8fe52d4c430562bbc5569b7c566a2989ae7d094"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/37-q4-graph0-PLAN.json": {
+      "bytes": 589,
+      "sha256": "7639f12ad8e469cf87d83a5e15f8b09923618080eddf71fe1ca0edb1c6664abb"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/37-q4-graph0-RESULT.json": {
+      "bytes": 3392,
+      "sha256": "e3b54380fcc9cee6cca8540c9c299dcf5db1b35e4ba54573c513d5bdd8e04557"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/37-q4-graph1-PLAN.json": {
+      "bytes": 589,
+      "sha256": "95a7714f89ceba6e1115991f578a2f9a062414ae6f445d604bce00016120504a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/37-q4-graph1-RESULT.json": {
+      "bytes": 3393,
+      "sha256": "79472d30795a86c155d78fc46ab2ac8f39506cc3f5b10e387ebfc086aa699113"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/PREREG.json": {
+      "bytes": 2690,
+      "sha256": "ae6b0f50d1dac56c29d10e112cd9048e4eaa71c56ef6e7abd995e5234d0ecf8d"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/bench-fixed/RESULTS.json": {
+      "bytes": 21650,
+      "sha256": "f7ed3083ea138c9f94f58fad7b6eb432d851cab841f3ae7404349c7abc15f8f8"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/k2-windows-unicode-parser.patch": {
+      "bytes": 25848,
+      "sha256": "5bd8e086fc6fa40ca529cd23bbcee0c3c4deac3caa3beb95b5549372ab256b76"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/k2-windows-unicode-parser698.patch": {
+      "bytes": 30067,
+      "sha256": "1d4940830d896fd71292b4de7a23d22b22399db6d8e1432acbcce6e2ec8f4811"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/IFM--K2-Horizon-0.9B-GGUF-files.json": {
+      "bytes": 604,
+      "sha256": "747d2369273d9017e86a5938d585e2d3c96461aedf1e8bdf91b4f6c7ef3212cd"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/IFM--K2-Horizon-3.7B-GGUF-files.json": {
+      "bytes": 606,
+      "sha256": "5d6d61a559d93e043ddc27f194cbcfed59b9405777f5b5c42bb7c1b2c2511c15"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/K2-Horizon-0.9B-config.json": {
+      "bytes": 1816,
+      "sha256": "0ba8f6a0fe8daa5003f88c335735cabc7dba20600ace939efab949ae5e59b936"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/K2-Horizon-0.9B-metadata.json": {
+      "bytes": 55608,
+      "sha256": "6604574ef6ecfec786c34eb68a82847c20b6a249c5cf554a5c6fb54300b9b622"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/K2-Horizon-3.7B-config.json": {
+      "bytes": 1756,
+      "sha256": "d998363c5bb7478e4b85f4354a6667b4e13326f6464afa79c0a6f10a7eea549a"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/K2-Horizon-3.7B-metadata.json": {
+      "bytes": 57340,
+      "sha256": "fb014b596706c16f0af3ebd3772b98d23e51fb6e63ae6da23515e458408e682c"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/MEMORY_ESTIMATE.json": {
+      "bytes": 1455,
+      "sha256": "8884180c82385389a070baa091ba116879cb82a8a9444540d19bdf31b5f02fa8"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/NANI-Nithin--K2-Horizon-0.9B-GGUF-files.json": {
+      "bytes": 9538,
+      "sha256": "9e990551db096a4206535fd18aba92673ff4861827670ad706955491a331d3f2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/PINS.json": {
+      "bytes": 1656,
+      "sha256": "ddd3f58a7bc2217a9efa5a1fa961e364df08e71ceb818ea00fd66f8b0c5e7df2"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/REPORTE.md": {
+      "bytes": 10936,
+      "sha256": "64e3953f7c194da2ecb969d1f144eb86259ae39dd6b25537e526b64266ff5b18"
+    },
+    "artifacts/comprobaciones/C03/K2_HORIZON_REVIEW_2026-09-09/abenzerps--K2-Horizon-3.7B-GGUF-files.json": {
+      "bytes": 2180,
+      "sha256": "d827ef7507b6a92c68af4c0ee2c5449b635bac2c429639193e6babd361efe07c"
+    }
+  },
+  "methodology_amendment": {
+    "utc": "2026-09-10T00:43:01.922217+00:00",
+    "previous_pins_sha256": "734e800794e35e0d0363c34954492627edfc12ae6896eeb845e3fe1de4d871e0",
+    "previous_pins_preserved": "../K2_HORIZON_NATIVE699/PRE_ACLARACION_PINS698.json",
+    "reason": "Owner requires original-model baseline before model choice; measurements unchanged."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "tag": "09-bf16-high-reference699",
+  "responses": 50,
+  "expected": 50,
+  "seconds": {
+    "median": 4.585999999999331,
+    "max": 511.1090000000022
+  },
+  "errors": [],
+  "empty_finals": [
+    "knowledge-08",
+    "context-06"
+  ],
+  "finish_reasons": {
+    "stop": 49,
+    "length": 1
+  },
+  "prompt_tokens_max": 74,
+  "completion_tokens_max": 32768,
+  "results_sha256": "2229a587a5e81ea313d88cc37791352afea6ad9c001dcd4cd34dc63341cf74de",
+  "resources": {
+    "gpu_peak_mib": 3173.9375,
+    "ram_peak_mib": 689.19140625,
+    "seconds": 891.5310000000009,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "requests_sha256": "c5d65b267e9586f2a27ddc64883e6d7d9010cdd5853706d5fe8e218be86594fc",
+  "template_parity_sha256": "7084344ccd194bcf81e4b90f0d089cea35112142eb02ca00749259bd4bded901"
+}

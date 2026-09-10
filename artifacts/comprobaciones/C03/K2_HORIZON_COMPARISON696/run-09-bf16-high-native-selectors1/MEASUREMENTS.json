@@ -1,0 +1,42 @@
+{
+  "tag": "09-bf16-high-native-selectors1",
+  "responses": 20,
+  "adjudication": "pending",
+  "operator_stop": null,
+  "excluded_after_operator_stop": [],
+  "results_sha256": "b2c52fbd95e41276873b54c888c2f2ca744db6c6fd7e8508fe7e8139294a1567",
+  "resources": {
+    "gpu_peak_mib": 3173.56640625,
+    "ram_peak_mib": 2374.2421875,
+    "seconds": 103.17200000000048,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "stop": 14,
+    "tool_calls": 6
+  },
+  "errors": [],
+  "seconds": {
+    "count": 20,
+    "median": 1.4455000000007203,
+    "max": 25.203999999999724,
+    "sum": 97.73500000000058
+  },
+  "first_token_seconds": {
+    "count": 20,
+    "median": 0.625,
+    "max": 0.9220000000004802,
+    "sum": 13.254000000004453
+  },
+  "first_content_seconds": {
+    "count": 12,
+    "median": 0.7735000000002401,
+    "max": 24.39099999999962,
+    "sum": 45.44000000000051
+  },
+  "completion_tokens": 7762,
+  "selector_function_name_matches_only": 8,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

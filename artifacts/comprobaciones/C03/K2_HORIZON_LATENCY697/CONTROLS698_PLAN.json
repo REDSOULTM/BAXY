@@ -1,0 +1,41 @@
+{
+  "purpose": "Final corrected controls: high reference, practical low, and medium diagnostic after official implicit-tool-boundary fix. Preserve all errors and malformed effort outputs; no automatic C03 credit.",
+  "profiles": [
+    {
+      "tag": "37-q4-high-parser698-1",
+      "effort": "high",
+      "format": "native",
+      "variant": "3.7B-Q4_K_M"
+    },
+    {
+      "tag": "37-q4-low-parser698-1",
+      "effort": "low",
+      "format": "native",
+      "variant": "3.7B-Q4_K_M"
+    },
+    {
+      "tag": "37-q4-medium-parser698-1",
+      "effort": "medium",
+      "format": "native",
+      "variant": "3.7B-Q4_K_M"
+    },
+    {
+      "tag": "09-q8-low-parser698-1",
+      "effort": "low",
+      "format": "json",
+      "variant": "0.9B-Q8_0"
+    },
+    {
+      "tag": "09-q8-medium-parser698-1",
+      "effort": "medium",
+      "format": "json",
+      "variant": "0.9B-Q8_0"
+    }
+  ],
+  "backend": "BACKEND_BUILD698.json",
+  "sequential": true,
+  "context": 8192,
+  "max_tokens": 4096,
+  "utc": "2026-09-10T00:09:32.7230693Z",
+  "panel": 50
+}

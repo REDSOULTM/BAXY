@@ -1,0 +1,11 @@
+{
+  "phase": "Practical original-model profiles after the full-output reference",
+  "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
+  "cases_per_profile": 50,
+  "profiles": [
+    {"tag": "qwen-q4-practical699", "family": "qwen", "context": 8192, "max_tokens": 4096, "kv": "GPU q8_0", "sampling": "Qwen documented"},
+    {"tag": "37-q4-low-practical699", "family": "k2", "variant": "3.7B-Q4_K_M", "effort": "low", "context": 8192, "max_tokens": 4096, "kv": "GPU q8_0", "sampling": "K2 large documented"}
+  ],
+  "rationale": "The previous BAXY-conditioned paired high/low3.7 controls had31/50 versus32/50 with much lower latency for low. Verify that practical candidate independently on all50 new original-model tasks. Qwen gets its GPU8k practical profile on the same50. SmallBF16 already has a full independent reference; no unbounded sweep of every quantization/effort.",
+  "limits": "These are practical profiles, not the full16384/32768-output manufacturer references. Preserve every cut/error. CPU-KV/high reference versus GPU-KV/low changes several settings: compare overall profiles, never attribute the difference to a single setting. Selector700 separately isolates one prompt message with every effective parameter held fixed. No BAXY instructions/tools/schema in this phase; no product promotion or survey acceptance."
+}

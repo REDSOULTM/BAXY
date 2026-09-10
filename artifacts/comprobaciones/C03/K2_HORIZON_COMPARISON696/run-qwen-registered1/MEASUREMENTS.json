@@ -1,0 +1,40 @@
+{
+  "tag": "qwen-registered1",
+  "responses": 50,
+  "adjudication": "pending",
+  "results_sha256": "546f7e98c3ad215c76f72fff540b516f6a092f4b96e514c33aa70f983471eabc",
+  "resources": {
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 728.8125,
+    "seconds": 43.67200000000048,
+    "violations": [],
+    "manifest_unchanged": true,
+    "backend_exit": 1
+  },
+  "finish_reasons": {
+    "stop": 45,
+    "tool_calls": 5
+  },
+  "errors": [],
+  "seconds": {
+    "count": 50,
+    "median": 0.6489999999998872,
+    "max": 2.235000000000582,
+    "sum": 39.655000000000655
+  },
+  "first_token_seconds": {
+    "count": 50,
+    "median": 0.22650000000021464,
+    "max": 1.125,
+    "sum": 24.234000000001288
+  },
+  "first_content_seconds": {
+    "count": 45,
+    "median": 0.1570000000001528,
+    "max": 1.0619999999998981,
+    "sum": 18.814000000002125
+  },
+  "completion_tokens": 1129,
+  "selector_function_name_matches_only": 8,
+  "note": "Name matching is a diagnostic, not quality credit. Root must judge all full inputs/facts/output, errors, language and authority. Repeated writer521-6/10 are not independent."
+}

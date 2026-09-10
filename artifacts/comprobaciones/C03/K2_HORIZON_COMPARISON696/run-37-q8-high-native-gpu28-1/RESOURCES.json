@@ -1,0 +1,10 @@
+{
+  "gpu_peak_mib": 4154.70703125,
+  "ram_peak_mib": 2111.89453125,
+  "seconds": 11.843999999999141,
+  "violations": [
+    "gpu_limit"
+  ],
+  "manifest_unchanged": true,
+  "backend_exit": 1
+}
