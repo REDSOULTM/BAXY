@@ -1,0 +1,23 @@
+{
+  "cases": [
+    {
+      "case": "native_tool_selector",
+      "seconds": 2.0309999999954016
+    },
+    {
+      "case": "structured_turn_policy",
+      "seconds": 22.859000000004016
+    },
+    {
+      "case": "multiple_system_writer",
+      "seconds": 2.75
+    }
+  ],
+  "gpu_peak_mib": 3446.23046875,
+  "ram_peak_mib": 822.18359375,
+  "seconds": 32.84300000000076,
+  "violations": [],
+  "manifest_unchanged": true,
+  "source_unchanged": true,
+  "scope": "Server resource peak only; three technical formats, no product acceptance"
+}

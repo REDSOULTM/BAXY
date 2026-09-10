@@ -1,0 +1,8 @@
+{
+  "original_schema_restored": true,
+  "schema_message_is_exact_contract": true,
+  "existing_messages_unchanged": true,
+  "retry_seed_preserved": true,
+  "caller_payload_unchanged": true,
+  "scope": "Transport sentinel, no model output"
+}

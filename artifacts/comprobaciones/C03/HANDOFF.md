@@ -1,4 +1,16 @@
+## Actualización734 — estado vigente, precede a los registros inferiores
+
+732/15917,733/41764 y734/22979 terminales exit0; sin procesos BAXY/llama/testhost vivos. Se implementaron sólo adaptadores experimentales en scratchpad; fuente llm40e277…ad7 y manifiesto intactos, sin promoción/adopción. Reporte vigente K2_HORIZON_SCHEMA734/REPORT.md; PINS con hashes de scripts, evidencia pública y trazas privadas exactas.
+
+732:50 comprobaciones de transporte; selector nativo y prosa con tres systems correctos en controles. Policy usó response_format (no GBNF anunciado), y sus22,859s tras retry no acreditan presupuesto total19s.733: GBNF del guardia real fuerza JSON incorrecto dentro de reasoning_content, content vacío enES/EN/mix. Sentinel GBNF_ACTIVE confirma restricción aplicada al pensamiento, no ignorada. Schema original:2timeouts19s y1cuenta cero.734: se restaura schema exacto y se añade sólo instrucción de serialización; ES/EN clasifican external_read pero cuentan zero, mix timeout19s.0/3 cumplen. No repetir estos pequeños barridos de formato.
+
+Siguiente estrategia: corregir contrato compartido de conteo, no más presets. Selector llm493–508 cuenta acción o lectura; guard568–582 no dice que leer cuenta como efecto; derive1307 acepta external_read+zero como complete; rama7763–7820 no recupera conversación salvo countone/multiple. Verificar y reparar esa contradicción general, conservar catálogo/validación/plazos y medir categoría completa con variantes. No recuperar reasoning como respuesta ni añadir excepciones por frase. Detalle del resultado y límites en REPORT734.
+
+Full5 sigue rojo en packaging45s y sidecar3s originales. Fuentes705+712+730 sin adoptar;730Python/prosa pendientes. Encuesta742/rev1248 hash237c149…b7,26cubiertos/716abiertos/0NA. C03 activo; ninguna decisión pendiente; BAXY manual cerrado. Publicar esta evidencia separada de las fuentes noadoptadas.
+
 # Handoff — C03 — 2026-09-10 — tramo731
+
+Diagnóstico731 publicado en **626082b07056edd3f63077aef05b6e2c2d7707bd**, HEAD=origin/Goal-c03 verificados;12 sellos coinciden en commit, main intacto. Informe enviado al panel con estadoqueued, no afirmar que esté visible. Encuesta recontada26/716/0 y hash237c149…b7 preservado. No procesos ni sesiones de prueba vivos;36038/97735/14177 también terminales.
 
 ## Siguiente acción y estado actual
 

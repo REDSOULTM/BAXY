@@ -1,0 +1,21 @@
+{
+  "files": {
+    "artifacts/comprobaciones/C03/K2_HORIZON_GRAMMAR733/EXIT.json": "845d1dff99fe04b1e4da792158920530461e05c128c7b576f88d0e7001405733",
+    "artifacts/comprobaciones/C03/K2_HORIZON_GRAMMAR733/PREREG.json": "a55f3f8e1ce17184c0126f7582906d6f2b854716458a34ec7be279296898b160",
+    "artifacts/comprobaciones/C03/K2_HORIZON_GRAMMAR733/PROCESS.json": "0ac37c61ab4f94afae723dd5ecaec4e64fb7e2601ac31818d307a5f8dfe6e832",
+    "artifacts/comprobaciones/C03/K2_HORIZON_GRAMMAR733/REPORT.md": "1c5ac21be48832edb8f9a146140844d137a0acdbbdf1b99f138c52e4a2382524",
+    "artifacts/comprobaciones/C03/K2_HORIZON_GRAMMAR733/RESULT.json": "e77d55d0d92df6043e32a15e0b260c400a7bad39362145885534fa13c1830385",
+    "scratchpad/c03_k2_native_adapter732.py": "8907feebc30ddb14b8e3d031879fa153a331980affaafe03cfb91fbf3ab15d0b",
+    "scratchpad/c03-k2-contract-probe732.py": "eb12f0e448309f885f6172908b25ed76099f48b6f7556c8af2d8188b6542fc0b",
+    "scratchpad/c03-k2-grammar733.py": "afd0d92998b6a9b7c32c354d6000136a6ae4e2c55ca91b51f6b0cd017201fd8c",
+    "scratchpad/c03_k2_native_adapter734.py": "407c4f0a98c5a60b6d699d7b2d97b613d4a52f18f178c5d1b5af7f12ae8396b6",
+    "scratchpad/c03-k2-schema734.py": "8d7e7c46e761f53b68a2cebfa59626bd2e89564df972ab6c414bdbcfab59f32f"
+  },
+  "private_directory": "C03-k2-grammar733-private",
+  "private_files": {
+    "adapter-http.jsonl": "8ca7daec927f21df42be009566d7d289cb6985a5270522f045debfad364a0a41",
+    "results.json": "db0be7da3b45760aa4df75c617b61a8ba6e734e0aa523f4f651fb22776134a96",
+    "launch.log": "b18facbfb9a5583baff3ff795b07e9cd8527b9213f3d068a6e61968b0ddcb551",
+    "planned.json": "32aa2c8cbb5560409a199134e53e0d680f37a9448e73ccfaa320d0807b1ec4e5"
+  }
+}

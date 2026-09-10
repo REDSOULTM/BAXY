@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T09:26:27.940831+00:00",
+  "confirmedAtUtc": "2026-09-10T10:03:46.052409+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "731 completed50 pairs: K2 native high38/50 versus enable_thinkingFalse19/50 (sensitivity20).3gains/22losses; actual template change verified. No model/source adoption.730 C#83owners passed; Python pending. Full5 original2timeouts and survey26/716/0 remain.",
-  "continuation": "Prepare an experimental K2 product adapter preserving native reasoning/profile across roles and inspect exact requests before paired integration. Reuse699/700/731; do not repeat disabled-thinking campaign.730 Python integration remains pending. No live process.",
+  "checkpoint": "732/733/734 terminal. Native profile tools/prose works in technical controls; compact GBNF forces JSON into reasoning. Original schema plus explicit serialization restores final JSON but guard counts external reads as zero (ES/EN), mix19s timeout. No production source changed or promoted.",
+  "continuation": "Change strategy from sampler/format probes to the shared semantic count contract: selector counts each external read, guard permits external_read+zero and cannot recover a conversation. Verify llm.py568/1307/7763/8021 and owner tests, then repair general contract and evaluate an entire category. No repeat of completed native699/731 or three-case schema probes.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
-  "workStatus": "unadopted_product_diagnostic728_running_original_tests_restored",
+  "workStatus": "native_k2_adapter_diagnosed_semantic_contract_blocker",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
+  "publishedEvidenceCommit": "626082b07056edd3f63077aef05b6e2c2d7707bd",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,34 +48,47 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Withdrew narrowed acceptance prototypes, restored both original tests, measured native process exit identities, and moved full73-turn product diagnosis ahead of the still-required adoption gate.",
+  "previousGoalTurnClassificationReason": "Built and checked experimental native adapters, isolated the GBNF/reasoning conflict, and identified an inconsistent shared external-read effect-count contract from actual responses.",
   "activeValidation": {
-    "utc": "2026-09-10T05:21:34.442267+00:00",
-    "sessionId": 88138,
+    "utc": "2026-09-10T07:02:22.123806+00:00",
+    "sessionId": 65777,
     "status": "terminal_failed",
     "exit_code": 1,
     "candidate_sources_unchanged": true,
+    "candidate_sha256": "ce2d929ce161a1bfd9416f0b866a618b1b5bf652413bad0cb42862571e1e9cfe",
     "dotnet": {
-      "passed": 4531,
-      "failed": 1,
+      "passed": 4532,
+      "failed": 0,
       "aggregate_skipped": 1,
-      "integration": {
-        "passed": 3335,
-        "failed": 1,
-        "aggregate_skipped": 1,
-        "duration": "23m26s"
+      "projects": {
+        "Contracts": 60,
+        "Integration": 3336,
+        "Kernel": 140,
+        "Providers": 519,
+        "Setup": 477
       },
-      "other_projects": {
-        "contracts": 60,
-        "kernel": 140,
-        "providers": 519,
-        "setup": 477
-      }
+      "note": "Explicit opt-in omissions also remain in log and are not counted as passes."
     },
-    "python_full": "not run: gate stops after dotnet-tests failure",
-    "failure": "MindShellEndToEndTests.SlotOrUncertainReplyRetainsTheExactPendingConfirmation(\"la segunda\"): IsReady=false/HasStartupError=true after11s, before test body. Cause not yet captured.",
+    "python": {
+      "passed": 11135,
+      "failed": 2,
+      "skipped": 3,
+      "subtests_passed": 466,
+      "seconds": 1823.03,
+      "failures": [
+        "tests/test_product_packaging.py::ProductPackagingTests::test_detached_head_snapshot_is_exact_and_cleanup_removes_it",
+        "tests/test_sidecar_lifecycle.py::test_dispatch_crash_exits_while_redirected_stdin_remains_open"
+      ]
+    },
+    "diagnostic_observation": {
+      "tool": "py-spy0.4.2 installed only in TEMP/c03-pyspy712",
+      "command": "dump --pid14344, without locals",
+      "raw_stack": "TEMP/c03-catalog712-python-stack1.txt",
+      "observation": "One stack in test_source_quality_mode_is_canonicalized waiting for a PowerShell subprocess. That test is not in the final failure list; the observation does not explain the two failures."
+    },
     "adopted": false,
-    "new_coverage": 0
+    "new_coverage": 0,
+    "goal_complete": false
   },
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
@@ -94,16 +107,16 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "product704",
-    "sessionId": 76313,
+    "name": "product729",
+    "sessionId": 94146,
     "exitCode": 0,
     "turns": 73,
     "manifestUnchanged": true,
-    "adjudication": "completed:50correct,23failed; sealed",
-    "result": "artifacts/comprobaciones/C03/astra-status-batch704/RESULT.json"
+    "adjudication": "49correct,24failed",
+    "result": "artifacts/comprobaciones/C03/astra-status-batch729/RESULT.json"
   },
-  "k2Report": "artifacts/comprobaciones/C03/K2_HORIZON_SELECTOR700/INFORME_PARA_DUENO.md",
-  "ownerPriority": "Comparison complete; resume C03 product blockers with registered Qwen candidate, preserving independent model versus BAXY-layer methodology.",
+  "k2Report": "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/REPORT.md",
+  "ownerPriority": "Complete fair native K2 adaptation before integrated comparison; do not blame model for BAXY transforms.",
   "k2Comparison": {
     "weightsVerified": 5,
     "weights": "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/WEIGHTS.json",
@@ -557,20 +570,15 @@
     "next": "Implement bounded typed global window inventory708, preserving exact selectors, identity, cancellation and honest pagination/errors. Then measure native proposal and first wrong transformation; do not simply remove the domain guard."
   },
   "activeDiagnostic": {
-    "sessionId": 46516,
-    "status": "terminal_failed_as_expected_diagnostic",
-    "script": "scratchpad/c03-fixture-startup-probe709.py",
-    "public": "artifacts/comprobaciones/C03/astra-fixture-startup-probe709",
-    "private": "%LOCALAPPDATA%/BAXY/C03-fixture-startup709-private",
-    "temporary_sources": [
-      "tests/Baxy.Integration.Tests/MindShellEndToEndTests.cs",
-      "tests/Baxy.Integration.Tests/TemporaryStartupProbe709.cs"
-    ],
-    "model_inference": false,
-    "coverage_added": 0,
-    "exit_code": 1,
-    "fixture_restored": true,
-    "temporary_helper_removed": true
+    "name": "K2 schema734",
+    "sessionId": 22979,
+    "status": "terminal",
+    "exitCode": 0,
+    "contract_passed": 0,
+    "contract_failed": 3,
+    "source_unchanged": true,
+    "manifest_unchanged": true,
+    "owned_processes_remaining": 0
   },
   "activeCatalogProbe": {
     "sessionId": 73101,
@@ -719,6 +727,14 @@
     "gains": 3,
     "losses": 22,
     "processes_closed": true,
-    "adopted": false
+    "adopted": false,
+    "publication": {
+      "commit": "626082b07056edd3f63077aef05b6e2c2d7707bd",
+      "origin_Goal_c03_matches": true,
+      "sealed_files_verified_in_HEAD": 12,
+      "main_unchanged": "5f572ee1b48cb5e2543ee5e06510e51057c9c845",
+      "verified_at_utc": "2026-09-10T09:31:29.227748+00:00"
+    },
+    "report_open_status": "queued_by_Codex; not claimed visible"
   }
 }

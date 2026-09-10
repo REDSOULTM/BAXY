@@ -1,0 +1,22 @@
+{
+  "files": {
+    "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/EXIT.json": "3f21eff03ccd7493b456403eade889ed77a3d70a899c2249515744119dc9114a",
+    "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/PREFLIGHT.json": "ff96d429e5d8afec0bfea57b3a5ee18fd4b79cc39d2ad68ef645fa3903ff245b",
+    "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/PREREG.json": "d01b51d23b249f7df5a2679b20b41d94f87ea380e666dc5fb7d857e090c515c1",
+    "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/PROCESS.json": "03c4ae938b763acdbfa0b72abe74c219ad36fae752a659468ea70710f6d21b1c",
+    "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/REPORT.md": "4bfe37ee99b5fceed2924af295a07870be29fd79d813f2f2dfdc20c3b09c9889",
+    "artifacts/comprobaciones/C03/K2_HORIZON_SCHEMA734/RESULT.json": "cb4acec10f8759b88a32668c186d852d88cf1b918666f03e970c196f6956b3b1",
+    "scratchpad/c03_k2_native_adapter732.py": "8907feebc30ddb14b8e3d031879fa153a331980affaafe03cfb91fbf3ab15d0b",
+    "scratchpad/c03-k2-contract-probe732.py": "eb12f0e448309f885f6172908b25ed76099f48b6f7556c8af2d8188b6542fc0b",
+    "scratchpad/c03-k2-grammar733.py": "afd0d92998b6a9b7c32c354d6000136a6ae4e2c55ca91b51f6b0cd017201fd8c",
+    "scratchpad/c03_k2_native_adapter734.py": "407c4f0a98c5a60b6d699d7b2d97b613d4a52f18f178c5d1b5af7f12ae8396b6",
+    "scratchpad/c03-k2-schema734.py": "8d7e7c46e761f53b68a2cebfa59626bd2e89564df972ab6c414bdbcfab59f32f"
+  },
+  "private_directory": "C03-k2-schema734-private",
+  "private_files": {
+    "adapter-http.jsonl": "23e5b0e6f265fbe74f321afaf0f71f0d858cefe2fbb1bc9cb8a41d7e283b33a7",
+    "results.json": "48303044014b9ff732a2d1d62b54b430a3e26cb81049ad9b4e868599ffb6171b",
+    "launch.log": "fcaee7d428fd807d14ed2f0ef7cd2423a5705d062c1e511ac83d35b61e9bf327",
+    "planned.json": "731093799992324203b24c1f7a03603ae8bb035db940c78ff5a3360022476c88"
+  }
+}

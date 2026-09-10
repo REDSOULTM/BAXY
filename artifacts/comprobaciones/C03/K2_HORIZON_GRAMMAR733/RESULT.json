@@ -1,0 +1,49 @@
+{
+  "cases": [
+    {
+      "case": "es-compact_gbnf",
+      "contract_met": false,
+      "seconds": 1.514999999999418
+    },
+    {
+      "case": "es-original_schema",
+      "error_type": "TimeoutError",
+      "error": "se agotó el presupuesto local del LLM",
+      "contract_met": false,
+      "seconds": 19.0
+    },
+    {
+      "case": "en-compact_gbnf",
+      "contract_met": false,
+      "seconds": 1.5630000000019209
+    },
+    {
+      "case": "en-original_schema",
+      "error_type": "TimeoutError",
+      "error": "se agotó el presupuesto local del LLM",
+      "contract_met": false,
+      "seconds": 19.0
+    },
+    {
+      "case": "mixed-compact_gbnf",
+      "contract_met": false,
+      "seconds": 1.5619999999980791
+    },
+    {
+      "case": "mixed-original_schema",
+      "contract_met": false,
+      "seconds": 11.453000000001339
+    },
+    {
+      "case": "custom_grammar_constraint_probe",
+      "contract_met": false,
+      "seconds": 1.7030000000013388
+    }
+  ],
+  "gpu_peak_mib": 3446.23046875,
+  "ram_peak_mib": 824.72265625,
+  "seconds": 60.937999999994645,
+  "violations": [],
+  "manifest_unchanged": true,
+  "source_unchanged": true
+}
