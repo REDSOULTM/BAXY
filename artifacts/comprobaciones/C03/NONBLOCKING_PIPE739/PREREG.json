@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-10T12:36:12.131960+00:00",
+  "source_pins": {
+    "tests/test_sidecar_lifecycle.py": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/baxy_mind/protocol.py": "81c71530f17ce009e457a8bda0742197ac23e6762c4f0f060c34f5064c58d235",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a"
+  },
+  "profiles": [
+    "deferred_only",
+    "deferred_nonblocking"
+  ],
+  "cases": [
+    [
+      "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      3.0,
+      1
+    ],
+    [
+      "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      10.0,
+      0
+    ]
+  ],
+  "difference": "Both defer prepare_resampler privately; second sets stdin pipe nonblocking and retries only BlockingIOError every 5ms.",
+  "preserved": "Original child scripts, deadlines, expected errors and open stdin; no production or test file edited.",
+  "scope": "Mechanism diagnostic; not original-owner acceptance until a source candidate passes the unmodified tests.",
+  "sources": [
+    "https://docs.python.org/3.12/library/os.html#os.set_blocking",
+    "https://learn.microsoft.com/en-us/windows/win32/ipc/anonymous-pipe-operations"
+  ],
+  "previous_turn": "progress: published and verified candidate738 evidence as a296db0b060dd1857d9339638df89d39b15e3635"
+}

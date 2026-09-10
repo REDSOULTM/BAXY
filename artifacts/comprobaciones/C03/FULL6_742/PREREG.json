@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-10T12:46:36.091781+00:00",
+  "parent_commit": "a296db0b060dd1857d9339638df89d39b15e3635",
+  "command": "powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/test_source_quality.ps1 -Mode Full",
+  "source_count": 1233,
+  "source_manifest_sha256": "c197760389190df242528938f9369766593aab95123aa5daea380b71264fc2f6",
+  "reason": "740 repairs original sidecar3s;741 original packaging45s passed without source change. Shared candidate705+712+730+738+740 requires Full before adoption.",
+  "unchanged_acceptance": "No deadline, test, gate threshold, skip or environment opt-in changed for this run.",
+  "survey": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "log": "%LOCALAPPDATA%/BAXY/C03-full6-742-private/full.log",
+  "goal_complete": false
+}

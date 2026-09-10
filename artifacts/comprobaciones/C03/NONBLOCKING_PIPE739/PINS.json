@@ -1,0 +1,30 @@
+{
+  "source": {
+    "tests/test_sidecar_lifecycle.py": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/baxy_mind/protocol.py": "81c71530f17ce009e457a8bda0742197ac23e6762c4f0f060c34f5064c58d235",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a"
+  },
+  "script": "c61b36362ef089536a9748d67c9eb28a066a8fa2155f1c1645e4a6ce84d0343a",
+  "private": {
+    "deferred_nonblocking-crash-pipe.json": "b8118f5f5b93030c7396e37837bf802b4abdf0a562c87b5956ef0f0f4d053833",
+    "deferred_nonblocking-crash-stderr.txt": "71d03a6e0b415468d8eebd83125b957f6500696580ce8d5b147de70d0d58bb50",
+    "deferred_nonblocking-crash-stdout.txt": "f7d8c2483bd6ae2ad0e359d4ddb075f5abbc09419115d979d80fa824abd8c664",
+    "deferred_nonblocking-crash.py": "07cfc68af920ec42c6f5c44c597654162d53d4795aff4120938c6f09b2f04596",
+    "deferred_nonblocking-dsp-pipe.json": "393b6a4271aaa0fce655a0bda2959592e136cdfca588fa04cacfbfb6e990de9a",
+    "deferred_nonblocking-dsp-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "deferred_nonblocking-dsp-stdout.txt": "81cdd15c9719ac0fdfc461978981e71cc4338386820819c639f6500664a9c07a",
+    "deferred_nonblocking-dsp.py": "b50d99b36e4ad9ac44eb3ba7f19bb4b2ab2df6e319c67ed2ed1fbe32d3c8cab2",
+    "deferred_only-crash-stderr.txt": "5dcc077a19defb89192149ed2431774e76d9fe20ce58a4920135afee1f6f75f4",
+    "deferred_only-crash-stdout.txt": "f7d8c2483bd6ae2ad0e359d4ddb075f5abbc09419115d979d80fa824abd8c664",
+    "deferred_only-crash.py": "0f65cddbf4089ada875ed07c0d36c312bc7dc82a4de8a600881903780f85b244",
+    "deferred_only-dsp-stack.txt": "833f45f698f3f916aa6062f3a9179a199e89b82a5fc307014be73f72802059cb",
+    "deferred_only-dsp-stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "deferred_only-dsp-stdout.txt": "f7d8c2483bd6ae2ad0e359d4ddb075f5abbc09419115d979d80fa824abd8c664",
+    "deferred_only-dsp.py": "4749b5e0a2c2b0a82ea6f72dd622ce64b8470f17395d6808b593067fa1fea3d4"
+  },
+  "public": {
+    "PREREG.json": "a50204fdb7960af75628eb2ce232ecebfa03193c43c38384e3c9fc3b00a38b58",
+    "RESULT.json": "9ad85a36c52f157db6295a384105e96811d6c49de2701f3d4b1daad7fc749d16"
+  }
+}

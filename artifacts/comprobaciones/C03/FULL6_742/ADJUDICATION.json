@@ -1,0 +1,29 @@
+{
+  "status": "failed",
+  "session": 3835,
+  "exit_code": 1,
+  "elapsed_seconds": 1519.4680000000008,
+  "dotnet": {
+    "passed": 4574,
+    "failed": 0,
+    "aggregate_skipped": 1,
+    "explicit_opt_in_omission_log_lines": 16
+  },
+  "python": {
+    "passed": 11398,
+    "failed": 1,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 736.77
+  },
+  "failure": "tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported",
+  "cause": "Current __main__.py allowlist pin still precedes source740. Historical V8 evidence hashes and reported numbers are unchanged.",
+  "original_sidecar_and_packaging_tests": "passed in this Full; original test bytes and 3s/45s deadlines unchanged",
+  "sources_unchanged": true,
+  "source_count": 1233,
+  "private_raw_log_sha256": "312c988e201331706123a46de12088be6cb2d60d85244d93a263f69bf7e2e177",
+  "public_lf_log_sha256": "f30dd06eb35eb5e65123899ca00870f89890f60a16406b145cda763a518d3754",
+  "adopted": false,
+  "coverage_added": 0,
+  "goal_complete": false
+}

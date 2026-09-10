@@ -421,3 +421,15 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /scratchpad/c03-replay-window-focus738.py -text
 /scratchpad/c03-checkpoint-window738.py -text
 /scratchpad/c03-record-window738.py -text
+/artifacts/comprobaciones/C03/NONBLOCKING_PIPE739/** -text
+/artifacts/comprobaciones/C03/PIPE_SOURCE740/** -text
+/artifacts/comprobaciones/C03/PACKAGING741/** -text
+/artifacts/comprobaciones/C03/FULL6_742/** -text
+/artifacts/comprobaciones/C03/DOMAIN_TRACE743/** -text
+/artifacts/comprobaciones/C03/PUBLICATION744/** -text
+/scratchpad/c03-nonblocking-pipe739.py -text
+/scratchpad/c03-full6-742.py -text
+/scratchpad/c03-domain-trace743.py -text
+/scratchpad/c03-publication744.py -text
+/artifacts/comprobaciones/C03/FULL7_745/** -text
+/scratchpad/c03-full7-745.py -text

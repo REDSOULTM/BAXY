@@ -1,0 +1,42 @@
+{
+  "utc": "2026-09-10T12:42:27.760571+00:00",
+  "status": "owners_fast_passed_full6_failed_current_pin",
+  "source": {
+    "src/baxy_mind/__main__.py": "908c4276977761e1c64f20b005dfd8dde0a0180869fc11d8c26e02577e5f5f99",
+    "src/baxy_mind/protocol.py": "854067c97af6be29b2e65c17dad402f5a29b1b9409bb52cecb1932506b5c537b",
+    "src/baxy_mind/voice_aec.py": "0e1355ad548c10b23aec1046bcb977c252fe221687422dad8d647ce32e3241de",
+    "tests/test_protocol_nonblocking.py": "16ef6ee9174df18693119a7b70349d99c83ca49361de7a001c5fa00912ae7c36"
+  },
+  "owners": {
+    "initial": {
+      "passed": 52,
+      "seconds": 5.47
+    },
+    "expanded": {
+      "passed": 89,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 4.71
+    }
+  },
+  "original_tests": {
+    "tests/test_sidecar_lifecycle.py": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+    "tests/test_product_packaging.py": "5ba170a05a877e31a9d023468856b3403fdda066ebd75b432a7cf7166730501f"
+  },
+  "adopted": false,
+  "survey_coverage_added": 0,
+  "dependencies": "Existing705+712+730+738 WIP; original packaging and sidecar passed Full6. Only stale current-main pin failed; repaired in744. Raw source snapshots in740 remain the pre-normalization tested bytes.",
+  "fast": {
+    "exit_code": 0,
+    "session": 34592,
+    "release_seconds": 20.76,
+    "warnings": 0,
+    "errors": 0
+  },
+  "program_tests": {
+    "passed": 17,
+    "skipped": 1,
+    "seconds": 1.46,
+    "reason": "blind campaign inputs absent; not voice acceptance"
+  }
+}

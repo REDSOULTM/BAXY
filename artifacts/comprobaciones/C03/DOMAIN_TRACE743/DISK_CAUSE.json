@@ -1,0 +1,6 @@
+{
+  "case_id": "disk-used-es",
+  "direct_request": false,
+  "status_domain": true,
+  "machine_scope": "disk"
+}

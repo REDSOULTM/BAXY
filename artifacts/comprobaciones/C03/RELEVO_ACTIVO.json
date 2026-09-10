@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T12:30:54.404120+00:00",
+  "confirmedAtUtc": "2026-09-10T13:17:19.752647+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "Se corrige el orden del predicado de foco y el enlace de un nombre observado entre paréntesis, incluido un título opaco entre comillas. El alias descriptivo debe estar en los datos de esa misma ventana. También se impide que un nombre como Is Active borre el predicado de una pregunta. No se cambian respuestas, modelos, plazos ni reglas de autorización.\n\nPruebas: nuevos219 antes=179fallos/40pass; dueñas finales de ventanas772pass/0skip en2,75s. Declaraciones actuales del programa STT:17pass/1skip ambiental en1,90s, no aceptación de voz. Árbol Python407/hash87bf1a3b9602377869fa7d27fdfe3a65a6231f2d2ad5dfc71c450a783af9e47a; sellos históricos intactos. Fast1/39645 verde sobre la revisión anterior; Fast2/84139 terminó verde; no volver a sondear.\n\nReplay de215registros,205textos/factos distintos,14registros de ventanas/9distintos. Cambia una respuesta correcta de K2/H0104 que aparece en6registros duplicados: pasa de missing_fact a aceptada por el validador completo. Los demás resultados del replay se conservan. Dos respuestas737 fieles siguen rechazadas: windows-focus-mixed/BAXY y windows-focus-reference-es/directo; no ampliar aceptación sin revisar las demás afirmaciones del texto. Esta fuente es candidata pendiente de regresión integrada, no cierre de la familia ni promoción de K2.\n\nSiguiente: resolver los dos fallos originales de Full5 antes de acumular más fuentes sin adoptar. Empezar por tests/test_sidecar_lifecycle.py y la evidencia725/727; sus pases del prototipo de fases retirado no acreditan el límite original3s. Conservar packaging45s y ambas pruebas intactas. 736 también prueba3vetos incorrectos de propuestas;737 separa prompt/servidor/modelo. Fuentes705+712+730 sin adoptar; Full5 sigue rojo en packaging45s y sidecar3s originales, noFull6. Encuesta26cubiertos/716abiertos/0NA; ninguna decisión pendiente. BAXY manual cerrado. C03 completo sigue activo, incluidos UI, voz, recursos conjuntos, reserva, matriz y Full final.\n",
-  "continuation": "Follow WINDOW_FOCUS738/HANDOFF.md; preserve full C03 scope and all unadopted sources.",
+  "checkpoint": "Full6 terminal exit1: .NET4574pass/0fail/1skip agregado; Python11398pass/1fail/3skip+466subtests. Único fallo es pin actual de __main__ anterior a740. Originales sidecar3s y packaging45s pasaron.744 normalizó LF de voice_aec y declaraciones STT, recalculó programa407 y actualizó sólo el pin actual V8. Evidencia histórica intacta; validación nueva pendiente. Encuesta26/716/0.",
+  "continuation": "Run 744 owner checks, preserve publication bytes, then next integrated Full before adopting the combined WIP.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "c11007b02649d16ea2a58e1130aeca2909172872",
-  "workStatus": "window_focus738_candidate_validated",
+  "workStatus": "full6_failed_current_pin_repaired_744",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "d47a92c532f205a71a39eec83c606b9a8ac939d3",
+  "publishedEvidenceCommit": "a296db0b060dd1857d9339638df89d39b15e3635",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,61 +48,40 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "737 completed114calls, paired adjudication and publication;738 now fixes an observed false rejection with existing and variant controls.",
-  "activeValidation": {
-    "utc": "2026-09-10T07:02:22.123806+00:00",
-    "sessionId": 65777,
-    "status": "terminal_failed",
-    "exit_code": 1,
-    "candidate_sources_unchanged": true,
-    "candidate_sha256": "ce2d929ce161a1bfd9416f0b866a618b1b5bf652413bad0cb42862571e1e9cfe",
-    "dotnet": {
-      "passed": 4532,
-      "failed": 0,
-      "aggregate_skipped": 1,
-      "projects": {
-        "Contracts": 60,
-        "Integration": 3336,
-        "Kernel": 140,
-        "Providers": 519,
-        "Setup": 477
-      },
-      "note": "Explicit opt-in omissions also remain in log and are not counted as passes."
-    },
-    "python": {
-      "passed": 11135,
-      "failed": 2,
-      "skipped": 3,
-      "subtests_passed": 466,
-      "seconds": 1823.03,
-      "failures": [
-        "tests/test_product_packaging.py::ProductPackagingTests::test_detached_head_snapshot_is_exact_and_cleanup_removes_it",
-        "tests/test_sidecar_lifecycle.py::test_dispatch_crash_exits_while_redirected_stdin_remains_open"
-      ]
-    },
-    "diagnostic_observation": {
-      "tool": "py-spy0.4.2 installed only in TEMP/c03-pyspy712",
-      "command": "dump --pid14344, without locals",
-      "raw_stack": "TEMP/c03-catalog712-python-stack1.txt",
-      "observation": "One stack in test_source_quality_mode_is_canonicalized waiting for a PowerShell subprocess. That test is not in the final failure list; the observation does not explain the two failures."
-    },
-    "adopted": false,
-    "new_coverage": 0,
-    "goal_complete": false
-  },
+  "previousGoalTurnClassificationReason": "739 demonstrated nonblocking improvement;740 source passed89owners andFast;741 original packaging passed;742 Full6 launched on1233 frozen files.",
+  "activeValidation": null,
   "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
   "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
   "ownerMethodology": "Maximum efficient throughput without quality loss; all742 registry and shared causes. Do not repeat completed baseline/publication solely because the same authority was restated.",
   "lastValidation": {
-    "name": "Full693",
-    "sessionId": 82319,
-    "exitCode": 0,
-    "pythonPassed": 11051,
-    "pythonSkipped": 3,
-    "pythonSubtestsPassed": 466,
-    "dotnetPassed": 4480,
-    "dotnetAggregateSkips": 1,
-    "log": "artifacts/comprobaciones/C03/astra-shared-status-source693/FULL.log"
+    "name": "Full6/742",
+    "status": "failed",
+    "session": 3835,
+    "exit_code": 1,
+    "elapsed_seconds": 1519.4680000000008,
+    "dotnet": {
+      "passed": 4574,
+      "failed": 0,
+      "aggregate_skipped": 1,
+      "explicit_opt_in_omission_log_lines": 16
+    },
+    "python": {
+      "passed": 11398,
+      "failed": 1,
+      "skipped": 3,
+      "subtests_passed": 466,
+      "seconds": 736.77
+    },
+    "failure": "tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported",
+    "cause": "Current __main__.py allowlist pin still precedes source740. Historical V8 evidence hashes and reported numbers are unchanged.",
+    "original_sidecar_and_packaging_tests": "passed in this Full; original test bytes and 3s/45s deadlines unchanged",
+    "sources_unchanged": true,
+    "source_count": 1233,
+    "private_raw_log_sha256": "312c988e201331706123a46de12088be6cb2d60d85244d93a263f69bf7e2e177",
+    "public_lf_log_sha256": "f30dd06eb35eb5e65123899ca00870f89890f60a16406b145cda763a518d3754",
+    "adopted": false,
+    "coverage_added": 0,
+    "goal_complete": false
   },
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
@@ -798,8 +777,16 @@
     "processes_closed": true
   },
   "currentDiagnostic": {
-    "path": "artifacts/comprobaciones/C03/WINDOW_FOCUS738",
-    "sessionId": 84139,
-    "running": false
-  }
+    "sessionId": 3835,
+    "running": true,
+    "pid": 35232,
+    "path": "artifacts/comprobaciones/C03/FULL6_742"
+  },
+  "independentDiagnostic": {
+    "path": "artifacts/comprobaciones/C03/DOMAIN_TRACE743",
+    "cases": 63,
+    "source_changed": false,
+    "first_disk_loss": "direct_request false while disk domain true"
+  },
+  "publicationCheck": "PIPE_SOURCE740/PUBLICATION_BYTES.json; normalize live source only after Full terminal; preserve frozen snapshot"
 }

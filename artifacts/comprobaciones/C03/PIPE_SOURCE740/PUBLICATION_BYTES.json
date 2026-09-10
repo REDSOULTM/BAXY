@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-10T12:59:54.556273+00:00",
+  "files": [
+    {
+      "path": "src/baxy_mind/voice_aec.py",
+      "working_sha256": "0e1355ad548c10b23aec1046bcb977c252fe221687422dad8d647ce32e3241de",
+      "lf_sha256": "ee1251a6b3e90862c6faf735406ec1dea981b215ff62ff50a64fc3ce44f38442",
+      "crlf_lines": 283,
+      "lf_lines": 288
+    },
+    {
+      "path": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+      "working_sha256": "5df93d399e5b1590e714c6b43dd0903bae560f696f3cedc10d6e8dcc051f2ecf",
+      "lf_sha256": "298946534ddd077d61f6384ae35528a6fce15ee7c6d7e4cfe70bdf0ab5e10c79",
+      "crlf_lines": 561,
+      "lf_lines": 561
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "working_sha256": "573b82feafba6b29024e47e5892f656d6b676cbd3b2114b2daed25c8ac406148",
+      "lf_sha256": "302df091bc1b1219a2c02b2e2d025071b9f263d0ad3b3d2563bd9045347d07fe",
+      "crlf_lines": 1801,
+      "lf_lines": 1801
+    }
+  ],
+  "attribute": "text=auto eol=lf",
+  "source_changed": false,
+  "risk": "Current raw-byte program fingerprint includes mixed CRLF in voice_aec.py; Git will normalize to LF on clean checkout. Preserve Full6 snapshot and original evidence; after terminal result canonicalize changed source according to existing attributes, recompute current program declaration and validate it. Do not introduce -text exceptions for live source merely to preserve accidental line endings.",
+  "not_a_new_semantic_model_failure": true
+}

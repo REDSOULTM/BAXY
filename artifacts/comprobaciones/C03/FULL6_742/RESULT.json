@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-10T13:11:55.617018+00:00",
+  "exit_code": 1,
+  "elapsed_seconds": 1519.4680000000008,
+  "sources_unchanged": true,
+  "changed_sources": [],
+  "log_sha256": "312c988e201331706123a46de12088be6cb2d60d85244d93a263f69bf7e2e177",
+  "adopted": false,
+  "goal_complete": false,
+  "coverage_added": 0
+}

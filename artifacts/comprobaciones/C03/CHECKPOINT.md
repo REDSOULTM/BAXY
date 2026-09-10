@@ -1,3 +1,39 @@
+## Continuación 744 — Full6 terminal y bytes de publicación
+
+Full6/742 terminó exit1, 1519,468 s: .NET4574pass/0fail/1skip agregado (16 líneas de omisiones opt-in); Python11398pass/1fail/3skip+466subtests. Fuente1233sin cambios durante Full. No sigue activa la sesión3835. Único fallo: pin actual de __main__ en auditoría V8, anterior a740; los originales sidecar3s y packaging45s pasaron. Resultado íntegro en FULL6_742/REPORT.md.
+
+744 actualiza únicamente ese pin actual, normaliza fuente viva a LF (voice_aec, voice y declaraciones STT) y verifica bytes frente al filtro Git. Programa407:edaa6459d951f43de878d41ae67e1bbd7d5fc108b915d6fc65d451ab306f7491. Dueñas111pass/0fail/1skip ambiental en6,58s. Full7/745 es la siguiente validación antes de adoptar el candidato integrado. No modificar los snapshots históricos740 ni los sellos consumidos.
+
+Siguiente causa de producto demostrada743: window.resolve rechazado por _window_domain en pedidos plurales; disk-used-es por _is_direct_request aunque el dominio/scope son correctos. No repetir el plural aislado707 (rechazado) ni eximir todas las lecturas. Modelo registrado intacto. Encuesta26cubiertos/716abiertos/0NA. UI, voz, reserva, recursos conjuntos, matriz y continuidad siguen pendientes; C03 EN_CURSO. BAXY manual cerrado.
+
+## Continuación743 — Full6 y publicación
+
+Full6/742 sigue vivo en sesión3835/PID35232 (comprobado por wait y proceso), fase Python: .NET terminó4574pass/0fail/1skip agregado, con16omisiones opt-in explícitas en log; no reiniciar ni editar los1233archivos congelados. Revalidación de huellas:1233sin cambios. Turno anterior=progress:739/740 repararon bloqueo y89dueñas+Fast;741 packaging original1pass;742 inicióFull.
+
+743 produjo63trazas puras de dominio: las2propuestas window.resolve fallan en_window_domain; disk-used-es falla en_is_direct_request aunque_system_status_domain=True y scope=disk. DOMAIN_TRACE743/REPORT.md conserva causa y rechazos707; no aplicar otra vez el plural aislado ni eximir todas las lecturas. Sin inferencia ni cobertura.
+
+Publicación: se detectó EOL accidental CRLF/mixto en voice_aec.py y declaracionesSTT frente al eol=lf vigente. PIPE_SOURCE740/PUBLICATION_BYTES.json conserva hashes actuales/LF. NO normalizar mientras Full corre. Al terminar, mantener su snapshot honesto; normalizar la fuente modificada a la política existente, recalcular árbol/declaraciones actuales y validar antes de publicar un checkout reproducible. No añadir -text a fuente viva para conservar EOL accidentales.
+
+El resto de C03 no se reduce. Fuentes705+712+730+738+740 candidatas, encuesta26/716/0; UI/voz/reserva/recursos conjuntos/matriz/continuidad pendientes. Estado fuente adoptada sigue703 y evidencia publicada a296db0b.
+
+## Candidato compartido — Full6 en curso742
+
+740 pasó89dueñas/0skip y Fast completo (Release20,76s);17pass/1skip ambiental STT. Retira prewarm porque el pipe no bloqueante elimina el atasco reproducido en739. Packaging741 original pasó1/1 en21,72s, timeout45s intacto; no causa aislada demostrada para los timeouts previos.
+
+Full6/742 arrancó en sesión3835, PowerShellPID35232; esperar la misma sesión. Congelados1233archivos en FULL6_742/SOURCES.json y árbolPython407 d9d3c7f150d954e84507171561a23d5d574486624e4993fe18dcce7c2a1e2dd1. NO editar src/tests/scripts/.gitattributes/declaracionesSTT mientras corre. Log privado C03-full6-742-private/full.log. No inferencia simultánea ni repetir por timeout de observación.
+
+Validación sobre WIP705+712+730+738+740, aún sin adoptar. Al terminar: comprobar log, hash de fuente, causa de cualquier rojo y luego adoptar/publicar sólo si corresponde. Full5 sigue como fallo histórico; no anunciar Full6 verde antes de recogerlo. Encuesta26cubiertos/716abiertos/0NA, ninguna decisión pendiente; BAXY manual cerrado. Mantener todo C03: ocho rutas, generalización742, reserva, UI/voz, recursos conjuntos, matriz y continuidadC04–C09.
+
+## Reparación del arranque740 — estado vigente
+
+La sonda privada739 comparó prewarm diferido con entrada síncrona y con pipe no bloqueante. La primera vuelve a atascar DSP (>10s); la segunda pasa caída en0,781s y DSP en2,500s. Registros en NONBLOCKING_PIPE739; no es por sí sola aceptación de fuente.
+
+Fuente740: stdin pipe Windows no bloqueante, espera de10ms sólo ante BlockingIOError, conserva EOF y errores. Retira prepare_resampler, sin cambiar resample_poly ni audio. Dueñas originales y variantes:89pass/0fail/0skip en4,71s. Los hashes originales de sidecar3s y packaging45s permanecen intactos. Fast pendiente; candidato sin adoptar. Árbol Python407/hashd9d3c7f150d954e84507171561a23d5d574486624e4993fe18dcce7c2a1e2dd1 y declaraciones actuales STT actualizadas, históricos intactos.
+
+Packaging741: prueba original en sesión4750 con GIT_TRACE2_EVENT local temporal, en curso; esperar esa sesión, no repetir. El checkout incluye un LFS de304,7MB; su coste causal aún no está probado y no se omite su hidratación. Memoria antes:6,018GiB disponibles/15,404GiB totales.
+
+Fuente738/evidencia publicada y verificada en a296db0b060dd1857d9339638df89d39b15e3635. Turno anterior=progress por esa publicación. Fuentes705+712+730+738 preservadas; encuesta26cubiertos/716abiertos/0NA. C03 completo activo, ninguna decisión pendiente, BAXY manual cerrado. Tras resolver packaging: Fast y Full del candidato compartido antes de adopción; mantener UI/voz, reserva, recursos conjuntos, matriz y resto del objetivo.
+
 ## Fuente candidata738 — estado vigente
 
 Se corrige el orden del predicado de foco y el enlace de un nombre observado entre paréntesis, incluido un título opaco entre comillas. El alias descriptivo debe estar en los datos de esa misma ventana. También se impide que un nombre como Is Active borre el predicado de una pregunta. No se cambian respuestas, modelos, plazos ni reglas de autorización.

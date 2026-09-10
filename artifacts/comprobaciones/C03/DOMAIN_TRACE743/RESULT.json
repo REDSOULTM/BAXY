@@ -1,0 +1,70 @@
+{
+  "utc": "2026-09-10T12:53:20.911910+00:00",
+  "source_sha256": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+  "inputs": {
+    "captured736": "e2dcd91426116539112033af15e60cc836247c585e3163715579fdd96d001f7d",
+    "controls707": "71378bbe97bf31a4f58b9b87bcceab961df820b55bd73075661eada74639c75b"
+  },
+  "cases": 63,
+  "correct": 28,
+  "captured": [
+    {
+      "id": "H0023",
+      "operation": "window.resolve",
+      "actual": false,
+      "predicates": [
+        {
+          "function": "operation_identity_is_a_near_miss",
+          "result": false
+        },
+        {
+          "function": "_window_domain",
+          "result": false
+        },
+        {
+          "function": "_curated_domain_is_grounded",
+          "result": false
+        }
+      ]
+    },
+    {
+      "id": "H0103",
+      "operation": "window.resolve",
+      "actual": false,
+      "predicates": [
+        {
+          "function": "operation_identity_is_a_near_miss",
+          "result": false
+        },
+        {
+          "function": "_window_domain",
+          "result": false
+        },
+        {
+          "function": "_curated_domain_is_grounded",
+          "result": false
+        }
+      ]
+    },
+    {
+      "id": "disk-used-es",
+      "operation": "system.status",
+      "actual": false,
+      "predicates": [
+        {
+          "function": "operation_identity_is_a_near_miss",
+          "result": false
+        },
+        {
+          "function": "_curated_domain_is_grounded",
+          "result": false
+        }
+      ]
+    }
+  ],
+  "private_sha256": "8a58246b90d7ebd123d09599929960ebc986378d803aa47ae4faf83d93b7392e",
+  "source_changed": false,
+  "model_calls": 0,
+  "adopted": false,
+  "survey_coverage_added": 0
+}

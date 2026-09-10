@@ -1,0 +1,43 @@
+{
+  "utc": "2026-09-10T12:45:09.056846+00:00",
+  "command": "pytest tests/test_product_packaging.py::ProductPackagingTests::test_detached_head_snapshot_is_exact_and_cleanup_removes_it -q --tb=short",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "seconds": 21.72,
+  "original_timeout_seconds": 45,
+  "source_test_sha256": "5ba170a05a877e31a9d023468856b3403fdda066ebd75b432a7cf7166730501f",
+  "helper_sha256": "b7c7ed4d74158ac07605c2af8628e68babcc6afa2843c0e366a4d3b854ef422f",
+  "trace_sha256": "8f92f1f8a1b2f24bf2b69a88eb2ef33deb91e50bbea19081c0400994529e1acb",
+  "trace_events": 420,
+  "git_worktree": [
+    {
+      "operation": "add",
+      "seconds": 14.158774,
+      "exit_code": 0
+    },
+    {
+      "operation": "remove",
+      "seconds": 2.83294,
+      "exit_code": 0
+    }
+  ],
+  "ram_before": {
+    "available_GiB": 6.018341064453125,
+    "total_GiB": 15.403617858886719
+  },
+  "tracked_git_blobs": {
+    "artifacts_files": 14002,
+    "artifacts_bytes": 646900028
+  },
+  "lfs_filter_process_lifetime_seconds": 3.579727,
+  "lfs_limit": "Process lifetime includes waits; does not isolate the hydration/copy cost of the304667648byte LFS object. No filter bypass or checkout exclusion applied.",
+  "interpretation": "Original failure not reproduced with current environment. This pass does not prove cause of earlier timeouts or replace the shared Full gate.",
+  "snapshot_removed": true,
+  "remaining_worktrees": [
+    "Goal-c03",
+    "existing recovery goal03-corpus-2bbb202"
+  ],
+  "source_edits": false,
+  "goal_complete": false
+}

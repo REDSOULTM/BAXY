@@ -1,0 +1,87 @@
+{
+  "utc": "2026-09-10T13:17:19.751598+00:00",
+  "normalization": [
+    {
+      "file": "src/baxy_mind/voice_aec.py",
+      "full6_sha256": "0e1355ad548c10b23aec1046bcb977c252fe221687422dad8d647ce32e3241de",
+      "before_this_invocation_sha256": "ee1251a6b3e90862c6faf735406ec1dea981b215ff62ff50a64fc3ce44f38442",
+      "lf_only_sha256": "ee1251a6b3e90862c6faf735406ec1dea981b215ff62ff50a64fc3ce44f38442",
+      "crlf_removed_this_invocation": 0
+    },
+    {
+      "file": "src/baxy_mind/voice.py",
+      "full6_sha256": "b17d1d71c4d0931ce6a63fda4e85311825514aeacf8e64885f7e0a97dab2fda6",
+      "before_this_invocation_sha256": "b17d1d71c4d0931ce6a63fda4e85311825514aeacf8e64885f7e0a97dab2fda6",
+      "lf_only_sha256": "3cdc672c0290102735fe0aee85dfdafd007dfea7b78263f1ba3985b4f75dc623",
+      "crlf_removed_this_invocation": 2957
+    },
+    {
+      "file": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "full6_sha256": "573b82feafba6b29024e47e5892f656d6b676cbd3b2114b2daed25c8ac406148",
+      "before_this_invocation_sha256": "302df091bc1b1219a2c02b2e2d025071b9f263d0ad3b3d2563bd9045347d07fe",
+      "lf_only_sha256": "302df091bc1b1219a2c02b2e2d025071b9f263d0ad3b3d2563bd9045347d07fe",
+      "crlf_removed_this_invocation": 0
+    },
+    {
+      "file": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+      "full6_sha256": "5df93d399e5b1590e714c6b43dd0903bae560f696f3cedc10d6e8dcc051f2ecf",
+      "before_this_invocation_sha256": "298946534ddd077d61f6384ae35528a6fce15ee7c6d7e4cfe70bdf0ab5e10c79",
+      "lf_only_sha256": "298946534ddd077d61f6384ae35528a6fce15ee7c6d7e4cfe70bdf0ab5e10c79",
+      "crlf_removed_this_invocation": 0
+    }
+  ],
+  "current_sources": [
+    {
+      "file": "src/baxy_mind/voice_aec.py",
+      "sha256": "ee1251a6b3e90862c6faf735406ec1dea981b215ff62ff50a64fc3ce44f38442",
+      "git_blob": "2c39295c44c2ddd7906e7a6d0165c083fc461773",
+      "clean_checkout_bytes_identical": true
+    },
+    {
+      "file": "src/baxy_mind/voice.py",
+      "sha256": "3cdc672c0290102735fe0aee85dfdafd007dfea7b78263f1ba3985b4f75dc623",
+      "git_blob": "2e0e08782aec91e7dbfdbf5ad66490c0cf4b6a42",
+      "clean_checkout_bytes_identical": true
+    },
+    {
+      "file": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "sha256": "44b4185aadba0f8e51060d2516bc44a8afa5762a3029655e9553e65f50ad9bc4",
+      "git_blob": "47d7447f7a7baaf5cf6f82564978188f190b4702",
+      "clean_checkout_bytes_identical": true
+    },
+    {
+      "file": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+      "sha256": "02fb3d6ed55873bc2b9127f3b1d2439e83b97fb228685f9f6fa654e8c8cc5318",
+      "git_blob": "4901091e1f5b9ff0f1dcb08a761ea10ed20deef9",
+      "clean_checkout_bytes_identical": true
+    },
+    {
+      "file": "tests/test_price_v8_veto_damage_by_cause.py",
+      "sha256": "4b008e985de1434ecfbc64b06499cfa670a0064adcc34200258c234fcc4aeea8",
+      "git_blob": "64f4685253a41f0b194eeb5b85f46a920bc854a2",
+      "clean_checkout_bytes_identical": true
+    }
+  ],
+  "program": {
+    "schema": "baxy.wake-validation-program-tree.v1",
+    "roots": [
+      "experiments/voice_latency",
+      "scripts",
+      "src/baxy_mind"
+    ],
+    "pythonFiles": 407,
+    "sha256": "edaa6459d951f43de878d41ae67e1bbd7d5fc108b915d6fc65d451ab306f7491"
+  },
+  "full6_snapshot_preserved": true,
+  "original_deadlines_unchanged": true,
+  "historical_v8_evidence_and_verdict_unchanged": true,
+  "validation": {
+    "owner_passed": 111,
+    "failed": 0,
+    "environmental_skipped": 1,
+    "seconds": 6.58,
+    "log_sha256": "9195b8e939df3dc789a4b8f5fa5f46d80f113e4dba72d82bb5a0a4eb9df8660c",
+    "next": "Full7/745"
+  },
+  "adopted": false
+}

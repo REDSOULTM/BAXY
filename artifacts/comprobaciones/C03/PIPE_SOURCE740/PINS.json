@@ -1,0 +1,17 @@
+{
+  "public": {
+    "PROGRAM.json": "6657cd05a9f59d9042ec5ce4256a8b2e4a4e229cfdc3151262e501ae4afcbfe1",
+    "CANDIDATE.json": "caa7d17867e274a55357a4b219dee894dfce68804f59a88155b1da7b19311813",
+    "OWNERS_INITIAL.log": "51c64daee0984de4ec5ae17939dc1b5ea527f62dd55e413be64ddecea4349499",
+    "OWNERS.log": "0fd3655953822e8a5c9deda728bd0b07a9d1aa81e3fcedb0bd38139e91b00e77",
+    "PROGRAM_TESTS.log": "54bfd86da8271b211a437a4d4eb07a59ccc2461d079674a3a51d32719b1c66c2",
+    "FAST.log": "befc49dd60848b41055f866459a0570b1eaed20b09ba32301c5f22aae89f94db",
+    "REPORT.md": "3b5eb80dfa49d9e9b57f29725a6252d7d4fb4a8cc140aa63628cd3c1da9cd758",
+    "HANDOFF.md": "3acfea0af4d2452cd70ce39ac922e369ca32f67ec795040193bd084f6fac8ffb",
+    "PUBLICATION_BYTES.json": "eaa4fb06ac089d6d7d6be4378da7d05d5d1418f047f8bb43c82c06d7b34a0529",
+    "src__baxy_mind____main__.py.txt": "908c4276977761e1c64f20b005dfd8dde0a0180869fc11d8c26e02577e5f5f99",
+    "src__baxy_mind__protocol.py.txt": "854067c97af6be29b2e65c17dad402f5a29b1b9409bb52cecb1932506b5c537b",
+    "src__baxy_mind__voice_aec.py.txt": "0e1355ad548c10b23aec1046bcb977c252fe221687422dad8d647ce32e3241de",
+    "tests__test_protocol_nonblocking.py.txt": "16ef6ee9174df18693119a7b70349d99c83ca49361de7a001c5fa00912ae7c36"
+  }
+}

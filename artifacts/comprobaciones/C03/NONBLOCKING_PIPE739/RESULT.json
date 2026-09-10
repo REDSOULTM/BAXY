@@ -1,0 +1,65 @@
+{
+  "rows": [
+    {
+      "profile": "deferred_only",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline": 3.0,
+      "elapsed": 1.110000000000582,
+      "timed_out": false,
+      "exit_code": 1,
+      "passed": true,
+      "hello_seen": true,
+      "stack_exit": null,
+      "pipe": null
+    },
+    {
+      "profile": "deferred_only",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline": 10.0,
+      "elapsed": 10.015999999995984,
+      "timed_out": true,
+      "exit_code": 15,
+      "passed": false,
+      "hello_seen": true,
+      "stack_exit": 0,
+      "pipe": null
+    },
+    {
+      "profile": "deferred_nonblocking",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline": 3.0,
+      "elapsed": 0.7810000000026776,
+      "timed_out": false,
+      "exit_code": 1,
+      "passed": true,
+      "hello_seen": true,
+      "stack_exit": null,
+      "pipe": {
+        "nonblocking": true,
+        "empty_retries": 20,
+        "eof": 0,
+        "reads": 0
+      }
+    },
+    {
+      "profile": "deferred_nonblocking",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline": 10.0,
+      "elapsed": 2.5,
+      "timed_out": false,
+      "exit_code": 0,
+      "passed": true,
+      "hello_seen": true,
+      "stack_exit": null,
+      "pipe": {
+        "nonblocking": true,
+        "empty_retries": 273,
+        "eof": 0,
+        "reads": 1
+      }
+    }
+  ],
+  "adopted": false,
+  "coverage_added": 0,
+  "goal_complete": false
+}
