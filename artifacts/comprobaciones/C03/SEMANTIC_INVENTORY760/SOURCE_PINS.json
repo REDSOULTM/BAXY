@@ -1,0 +1,8 @@
+{
+  "src/baxy_mind/llm.py": "88a4b82f173ed4ffb08932af059bad7ddfa1e30f8de6d5ae28a153b2d27d1883",
+  "src/baxy_mind/window_prose_facts.py": "60d3a99ebab19466b91e6e5dad8650352e3916b0e46996997ff8059ad831ab8a",
+  "tests/test_c03_inventory_semantic_projection.py": "bee6780b025f9774ce65817a74422ac23a4a7b2f0f6ff02af1914ace4ec2da7b",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "71f974e0b95a3ae098bd83d50fb6477c108b3417367656b04c4bfd31fdf4c9e5",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "4d93aef151285b88957e8d085c294ee9402ac533638348023d9a869afc7e166f",
+  "tests/test_price_v8_veto_damage_by_cause.py": "53ae233588fcb962ca9ca49311df6bf7b66662dd2e1dfdf52e318169aae6b4e2"
+}

@@ -1,0 +1,21 @@
+{
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/SOURCE_PINS.json": "67c5e55ad64ac8b87ef0de0fc8365ef93daf430c45c16c57fef84c3abc369a67",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/PROGRAM.json": "0e9b7593e1adbdc95067dc4a04c33dedb06bdb2e78b487dff2070786f03656c3",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/PLAN.json": "2762d08dee0f9a4a5f8d5cae82eec494ce938d76edc7dc8ce9bd37aeade256f9",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/VALIDATION.json": "b9b2eee2b3b0dc8a04befbb9bd85973d346c4f5640468cdb1fcf1ae0f6abf418",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/ADOPTION.json": "ed85d8186fc05b4beb390d6ab377aa5748467890ed2dfd1e45fa1aed7a492627",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/REPORT.md": "d2840996fb847080473d40e4490dac90e87bdf0bdf6630eccb418f9e77c78d2c",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/initial.log": "b2bffaf96b71f88a3e6021ea7eaedb2f9741f4f9448e078ebcef1167531c1f86",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/initial2.log": "62fbeb0f1f9ff8bc65fbe5b82b7f5ffe49723deb4062f3a8901bd1d907f1da55",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/focused.log": "818d62faae35b60c1150bfab802f81f081a4d46b0b557d9a07e22b55155008fa",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/owners.log": "9991758fe35e24009b3b09428cdd084c20a5b9d42ba3e5181cf71827fe4d123f",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/final-owners.log": "560e68510bfcdb93905da36c4d872b6de5ffb505ae93c4a5ffcc0421fe072c5b",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/integrity-before-pins.log": "f94d6278826c11a0841997f95bcb15e61d2e43ed466e78081bb8528716532f9c",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/integrity-final.log": "b848a2f44236627f3ee2ae4a7e9f4b6d893cdba8d3d94b9781e1a437e69f4701",
+  "artifacts/comprobaciones/C03/SEMANTIC_INVENTORY760/fast.log": "aa5675084eb4d9d02decda09d0e9f9923056de0af8623f46663aa74e0a0324bd",
+  "artifacts/comprobaciones/C03/INVENTORY_PROJECTION759/PUBLICATION.json": "96940cc3558a39f37a913c394983bc5a2f7e280713cb7635854f47d54e4fc238",
+  "scratchpad/c03-prepare-inventory760.py": "70e87f9a27d5dca34758555c97ef2885f2f5869d347cd6d42edd547bf4a81318",
+  "scratchpad/c03-adopt-inventory760.py": "c8499fcc586c01914c7ba8219b8fc6930e4c149c02bea8646395bda7d2e33516",
+  "scratchpad/c03-prepare-status761.py": "6841e7b07cab7b7243b31c287d37ccc62fd47e37fc49fa7cb1e8b7de62bd5122",
+  "scratchpad/c03-status-batch761.py": "f1a871c38166c1ceb203dd2c3016f7b0bcd46c9d44dd62c73db05bbbccc7e01c"
+}

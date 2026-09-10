@@ -1,0 +1,87 @@
+........................................................................ [ 25%]
+.............................FFFFF...................................... [ 51%]
+........................................................................ [ 77%]
+...............................................................          [100%]
+================================== FAILURES ===================================
+_____ test_chronology_words_in_observed_identities_remain_opaque[Latest] ______
+
+name = 'Latest'
+
+    @pytest.mark.parametrize("name", ["Latest", "Newest", "Más recientes", "Chronological", "Últimas abiertas"])
+    def test_chronology_words_in_observed_identities_remain_opaque(name):
+        situation = observation(1, 1)
+        situation["observed"]["windows"][0]["title"] = name
+        payload = _compose_situation_payload(situation, "en", "List the windows.")
+        assert not _payload_fact_defect(f'This page contains "{name}".', payload)
+>       assert not _payload_fact_defect(f"This page contains one window:\n- {name}", payload)
+E       AssertionError: assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('This page contains one window:\n- Latest', {'seen': {'windows': [{'title': 'Latest', 'processName': 'Viewer0'}], 'count': 1, 'observedCount': 1, 'offset': 0, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_semantic_projection.py:156: AssertionError
+_____ test_chronology_words_in_observed_identities_remain_opaque[Newest] ______
+
+name = 'Newest'
+
+    @pytest.mark.parametrize("name", ["Latest", "Newest", "Más recientes", "Chronological", "Últimas abiertas"])
+    def test_chronology_words_in_observed_identities_remain_opaque(name):
+        situation = observation(1, 1)
+        situation["observed"]["windows"][0]["title"] = name
+        payload = _compose_situation_payload(situation, "en", "List the windows.")
+        assert not _payload_fact_defect(f'This page contains "{name}".', payload)
+>       assert not _payload_fact_defect(f"This page contains one window:\n- {name}", payload)
+E       AssertionError: assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('This page contains one window:\n- Newest', {'seen': {'windows': [{'title': 'Newest', 'processName': 'Viewer0'}], 'count': 1, 'observedCount': 1, 'offset': 0, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_semantic_projection.py:156: AssertionError
+_ test_chronology_words_in_observed_identities_remain_opaque[M\xe1s recientes] _
+
+name = 'Más recientes'
+
+    @pytest.mark.parametrize("name", ["Latest", "Newest", "Más recientes", "Chronological", "Últimas abiertas"])
+    def test_chronology_words_in_observed_identities_remain_opaque(name):
+        situation = observation(1, 1)
+        situation["observed"]["windows"][0]["title"] = name
+        payload = _compose_situation_payload(situation, "en", "List the windows.")
+        assert not _payload_fact_defect(f'This page contains "{name}".', payload)
+>       assert not _payload_fact_defect(f"This page contains one window:\n- {name}", payload)
+E       AssertionError: assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('This page contains one window:\n- Más recientes', {'seen': {'windows': [{'title': 'Más recientes', 'processName': 'Viewer0'}], 'count': 1, 'observedCount': 1, 'offset': 0, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_semantic_projection.py:156: AssertionError
+__ test_chronology_words_in_observed_identities_remain_opaque[Chronological] __
+
+name = 'Chronological'
+
+    @pytest.mark.parametrize("name", ["Latest", "Newest", "Más recientes", "Chronological", "Últimas abiertas"])
+    def test_chronology_words_in_observed_identities_remain_opaque(name):
+        situation = observation(1, 1)
+        situation["observed"]["windows"][0]["title"] = name
+        payload = _compose_situation_payload(situation, "en", "List the windows.")
+        assert not _payload_fact_defect(f'This page contains "{name}".', payload)
+>       assert not _payload_fact_defect(f"This page contains one window:\n- {name}", payload)
+E       AssertionError: assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('This page contains one window:\n- Chronological', {'seen': {'windows': [{'title': 'Chronological', 'processName': 'Viewer0'}], 'count': 1, 'observedCount': 1, 'offset': 0, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_semantic_projection.py:156: AssertionError
+_ test_chronology_words_in_observed_identities_remain_opaque[\xdaltimas abiertas] _
+
+name = 'Últimas abiertas'
+
+    @pytest.mark.parametrize("name", ["Latest", "Newest", "Más recientes", "Chronological", "Últimas abiertas"])
+    def test_chronology_words_in_observed_identities_remain_opaque(name):
+        situation = observation(1, 1)
+        situation["observed"]["windows"][0]["title"] = name
+        payload = _compose_situation_payload(situation, "en", "List the windows.")
+        assert not _payload_fact_defect(f'This page contains "{name}".', payload)
+>       assert not _payload_fact_defect(f"This page contains one window:\n- {name}", payload)
+E       AssertionError: assert not 'extra_claim'
+E        +  where 'extra_claim' = _payload_fact_defect('This page contains one window:\n- Últimas abiertas', {'seen': {'windows': [{'title': 'Últimas abiertas', 'processName': 'Viewer0'}], 'count': 1, 'observedCount': 1, 'offset': 0, ...}, 'operation': 'window.resolve'})
+
+tests\test_c03_inventory_semantic_projection.py:156: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_inventory_semantic_projection.py::test_chronology_words_in_observed_identities_remain_opaque[Latest]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_chronology_words_in_observed_identities_remain_opaque[Newest]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_chronology_words_in_observed_identities_remain_opaque[M\xe1s recientes]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_chronology_words_in_observed_identities_remain_opaque[Chronological]
+FAILED tests/test_c03_inventory_semantic_projection.py::test_chronology_words_in_observed_identities_remain_opaque[\xdaltimas abiertas]
+5 failed, 274 passed in 2.23s

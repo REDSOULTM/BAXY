@@ -77,7 +77,12 @@ from .request_reading import (
     starts_new_definition_topic,
 )
 from .time_budget import remaining_seconds
-from .window_prose_facts import window_fact_defect, window_focus_feedback, window_status_assertions
+from .window_prose_facts import (
+    project_window_inventory,
+    window_fact_defect,
+    window_focus_feedback,
+    window_status_assertions,
+)
 from .observed_response_literals import without_observed_window_names
 
 
@@ -3519,6 +3524,8 @@ def _compose_situation_payload(
     # Preserve supplied identity; never infer an operation from the request.
     if operation and isinstance(situation.get("operation"), str):
         payload["operation"] = operation
+    if situation.get("verified") is True and situation.get("succeeded") is True:
+        payload = project_window_inventory(payload, user_text)
     return payload
 
 

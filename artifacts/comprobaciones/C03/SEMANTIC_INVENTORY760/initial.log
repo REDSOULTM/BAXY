@@ -1,0 +1,8 @@
+
+=================================== ERRORS ====================================
+______ ERROR collecting tests/test_c03_inventory_semantic_projection.py _______
+tests/test_c03_inventory_semantic_projection.py::test_identity_requests_keep_every_entry_and_its_multiplicity: 'request' is a reserved name and cannot be used in @pytest.mark.parametrize
+=========================== short test summary info ===========================
+ERROR tests/test_c03_inventory_semantic_projection.py - Failed: tests/test_c0...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.72s

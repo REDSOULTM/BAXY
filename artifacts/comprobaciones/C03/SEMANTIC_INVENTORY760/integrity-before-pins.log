@@ -1,0 +1,169 @@
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+........................................................................ [ 45%]
+........................................................................ [ 60%]
+........................................................................ [ 75%]
+........................................................................ [ 90%]
+.......................F.F..sF.............                              [100%]
+================================== FAILURES ===================================
+_______ test_published_split_and_ceiling_are_the_numbers_r144_reported ________
+
+    def test_published_split_and_ceiling_are_the_numbers_r144_reported() -> None:
+        candidate = _module()
+        report = candidate.build()
+    
+        integrity = report["integrity"]
+        assert integrity["v8_artifacts"]["observed"] == V8_EVIDENCE_SHA256
+        # What moved since the campaign, named file by file and split by kind: the
+        # catalogue aliases moved with the catalogue (157 -> 158 operations), and
+        # goal 03 replaced the two decision-path programs.
+        identity = integrity["program_identity"]
+>       assert {
+            row["file"]: row["observed_sha256"]
+            for row in identity["files"]
+            if not row["identical"] and not row["file"].startswith("tests/")
+        } == {
+            **V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN,
+            **V8_PROGRAMS_REPLACED_BY_GOAL_03,
+        }
+E       AssertionError: assert {'src/baxy_mi...53b2d27d1883'} == {'src/baxy_mi...5a7b91d234a8'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'src/baxy_mind/llm.py': '88a4b82f173ed4ffb08932af059bad7ddfa1e30f8de6d5ae28a153b2d27d1883'} != {'src/baxy_mind/llm.py': '1ab5900c774df5fade2cb0724d27e7c4581f2c9686faf16ac7e05a7b91d234a8'}
+E         Use -v to get more diff
+
+tests\test_price_v8_veto_damage_by_cause.py:173: AssertionError
+_________ test_stt_evaluator_freezes_final_contract_and_blind_engines _________
+
+    def test_stt_evaluator_freezes_final_contract_and_blind_engines() -> None:
+        evaluator = load_module(
+            "baxy_stt_reserved_evaluator",
+            "experiments/stt_quality/evaluate_reserved_stt.py",
+        )
+    
+        assert evaluator.CONTRACT_SCHEMA == "baxy.stt-evaluator-preopen-contract.v3"
+        assert evaluator.REPORT_SCHEMA == "baxy.stt-real-audio-evaluation.v3"
+        assert evaluator.THRESHOLDS["minds14"]["blind"]["expectedCases"] == 196
+        assert evaluator.THRESHOLDS["audio_arena"]["blind"]["expectedCases"] == 50
+        assert (
+>           evaluator._program_tree(ROOT)["sha256"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            == evaluator.EXPECTED_PROGRAM_TREE_SHA256
+        )
+
+tests\test_stt_quality_evaluators.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\evaluate_reserved_stt.py:356: RuntimeError
+_____ test_fresh_postweight_source_audit_is_preacquisition_and_text_blind _____
+
+    def test_fresh_postweight_source_audit_is_preacquisition_and_text_blind() -> None:
+        audit_module = load_module(
+            "baxy_fresh_postweight_stt_source_audit",
+            "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+        )
+        pages: dict[str, str] = {}
+        private_samples: list[str] = []
+        for language in ("es", "en"):
+            page, samples = _fake_mdc_page(audit_module, language)
+            pages[audit_module.MDC_EXPECTED[language]["url"]] = page
+            private_samples.extend(samples)
+        pages[audit_module.GIGASPEECHBENCH_API] = json.dumps(
+            {
+                "sha": audit_module.GIGASPEECHBENCH_COMMIT,
+                "lastModified": audit_module.GIGASPEECHBENCH_LAST_MODIFIED,
+                "gated": False,
+                "private": False,
+                "tags": [],
+                "siblings": [
+                    {"rfilename": f"data/file-{index:03d}.parquet"} for index in range(155)
+                ],
+            }
+        )
+    
+>       audit = audit_module.build_audit(
+            repository_root=ROOT,
+            audited_at_utc="2026-08-11T00:00:00Z",
+            fetch_text=pages.__getitem__,
+        )
+
+tests\test_stt_quality_evaluators.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:526: in build_audit
+    "wakeProgramTree": _program_tree(repository_root),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:383: RuntimeError
+=========================== short test summary info ===========================
+FAILED tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported
+FAILED tests/test_stt_quality_evaluators.py::test_stt_evaluator_freezes_final_contract_and_blind_engines
+FAILED tests/test_stt_quality_evaluators.py::test_fresh_postweight_source_audit_is_preacquisition_and_text_blind
+3 failed, 471 passed, 1 skipped in 5.59s

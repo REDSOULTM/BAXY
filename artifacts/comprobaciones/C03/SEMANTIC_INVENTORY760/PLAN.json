@@ -1,0 +1,47 @@
+{
+  "utc": "2026-09-10T15:55:12.706397+00:00",
+  "source_before": "a4c95c61e507d9211d738ee1f5daf05cdb187230",
+  "source_after_status": "candidate_not_adopted",
+  "source_files": [
+    "src/baxy_mind/llm.py",
+    "src/baxy_mind/window_prose_facts.py",
+    "tests/test_c03_inventory_semantic_projection.py",
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+    "tests/test_price_v8_veto_damage_by_cause.py"
+  ],
+  "inherited_evidence": [
+    "COMPOSE_BOUNDARY753",
+    "INVENTORY_PROJECTION757",
+    "INVENTORY_PROJECTION758",
+    "INVENTORY_PROJECTION759"
+  ],
+  "changes": [
+    "Preserve canonical inventory metadata; derive explicit page scope and unknown opening times from the typed verified result.",
+    "Project only title/process identities for recognized identity/count requests; preserve all entries, duplicates and detailed observations for other requests.",
+    "Reject unsupported chronological claims independently of model, preserving observed titles, page position and fresh-reading statements."
+  ],
+  "historical_seals_unchanged": true,
+  "current_declarations_updated": [
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+    "tests/test_price_v8_veto_damage_by_cause.py"
+  ],
+  "initial_checks": {
+    "collection_error": "pytest reserved parameter name request, corrected to user_text",
+    "preparation_error": "Initially fingerprinted only src; assertion stopped before current declarations were written. Corrected to the same three roots as751 and both STT evaluators.",
+    "integrity_before_pins": "471passed/3failed/1environmental skip; expected current pins had not yet been updated after preparation failure",
+    "first_run": "274passed/5failed: folding discarded line breaks before identity masking",
+    "focused": "279passed",
+    "broad_owners": "4303passed/121subtests",
+    "final_window_owners": "950passed; added scope contrasts for fresh readings and unrelated uncertainty"
+  },
+  "next_validation": "Current pin integrity + Fast; then source adoption/publication and registered73 category.",
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "model_or_budget_changed": false,
+  "goal_complete": false
+}

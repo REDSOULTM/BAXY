@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-10T15:59:23.101019+00:00",
+  "status": "source_adopted_after_owner_tests_and_fast",
+  "commit": "The commit containing this receipt",
+  "source_pins_file": "SOURCE_PINS.json",
+  "model_or_budget_promotion": false,
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "product_acceptance_pending": "Registered73 product regression, generalized coverage and all remaining C03 closure requirements."
+}

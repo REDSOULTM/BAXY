@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 
-from .effect_intent import _PERCENTAGE_WORD_VALUES, _strip_request_envelope
+from .effect_intent import _PERCENTAGE_WORD_VALUES, _strip_request_envelope, window_inventory_arguments
 from .request_reading import fold
 
 
@@ -347,6 +347,37 @@ def _inventory_seen(payload: dict) -> dict | None:
     return seen
 
 
+def project_window_inventory(payload: dict, user_text: str) -> dict:
+    """Describe page scope without confusing enumeration completion with a full list.
+
+    Keep the typed fields for factual checks. Only an identity/count request
+    permits omitting unrequested per-window details from the narrator's copy.
+    The provider records no opening time, so enumeration order is not recency.
+    """
+    seen = _inventory_seen(payload)
+    if seen is None:
+        return payload
+    total = seen["totalCount"] if seen["complete"] else None
+    entire_inventory = (
+        seen["offset"] == 0 and seen["count"] == total if total is not None else
+        False if seen["offset"] > 0 or seen["count"] < seen["observedCount"] else None
+    )
+    projected = dict(seen)
+    projected["returnedPageScope"] = {
+        "windowsListedOnThisPage": seen["count"],
+        "totalWindowsInSelectedInventory": total,
+        "thisListIncludesEveryWindowInSelectedInventory": entire_inventory,
+        "windowOpeningTimesObserved": False,
+    }
+    if window_inventory_arguments(user_text) is not None:
+        projected["windows"] = [
+            {key: value for key, value in window.items() if key in {"title", "processName"}}
+            if isinstance(window, dict) else window
+            for window in seen["windows"]
+        ]
+    return {**payload, "seen": projected}
+
+
 _PAGE_CONTEXT = re.compile(r"\b(?:pagina|page|listad[oa]|listed|mostrad[oa]s?|shown|"
                            r"muestro|muestra|showing|displayed|devuelt[oa]s?|returned)\b")
 _OBSERVATION_CONTEXT = re.compile(r"\b(?:observad[oa]s?|observed|encontrad[oa]s?|found|"
@@ -360,12 +391,58 @@ _INVENTORY_FRACTION = re.compile(
     r"(?:de|of|out\s+of)\s+(?:(?:las|the|un\s+total\s+de|a\s+total\s+of)\s+)?"
     rf"(?P<total>{_NUMBER})(?:\s+(?:open\s+|visible\s+)?(?:windows?|ventanas?))?\b"
 )
+_WINDOW_CHRONOLOGY = re.compile(
+    r"\b(?:(?:mas|menos)\s+(?:recientes?|nuev[oa]s?|antigu[oa]s?)|"
+    r"(?:most|least|more|less)\s+recent|newest|oldest|latest|newer|older|"
+    r"(?:recien|recently|last|first)\s+(?:abiert[oa]s?|opened)|"
+    r"(?:primeras|ultimas)\s+(?:en\s+)?(?:abrirse|abiertas)|"
+    r"(?:orden(?:adas?|ados)?|order(?:ed)?|sort(?:ed)?)\s+(?:por|by|of)\s+"
+    r"(?:fecha|antiguedad|recencia|apertura|age|recency|opening|creation)|"
+    r"cronologic[oa]s?|chronological(?:ly)?)\b"
+)
+
+
+def _inventory_chronology_claim(text: str, seen: dict) -> bool:
+    # Quoted names and standalone list entries are identities, even if their
+    # titles contain words such as "Latest". Never change the actual reply.
+    text = "\n".join(fold(line) for line in text.splitlines())
+    for window in seen["windows"]:
+        if not isinstance(window, dict):
+            continue
+        for key in ("title", "processName"):
+            name = window.get(key)
+            if not isinstance(name, str) or not name:
+                continue
+            literal = re.escape(fold(name))
+            text = re.sub(r"[\"'«]" + literal + r"[\"'»]", "window_name", text)
+            text = re.sub(r"(?m)^\s*(?:[-*]|\d+[.)])?\s*" + literal + r"\s*$", "window_name", text)
+    if seen.get("pageConsistency") == "fresh_enumeration_per_request":
+        # Freshness of the reading is known; it says nothing about the age of
+        # the windows. Bind those modifiers to their observation noun.
+        text = re.sub(
+            r"\b(?:latest|most recent|newest)\s+(?:observation|reading|snapshot|enumeration)\b|"
+            r"\b(?:observacion|lectura|enumeracion)\s+mas\s+reciente\b", "fresh_reading", text,
+        )
+    for clause in re.split(r"[,;.!?]|\b(?:but|pero|and|y)\b", text):
+        if _UNCERTAINTY.search(clause):
+            continue
+        for claim in _WINDOW_CHRONOLOGY.finditer(clause):
+            if re.match(
+                r"\s+(?:(?:is|are|esta|estan)\s+)?(?:unknown|unverified|not\s+(?:known|observed|checked))\b|"
+                r"\s+no\s+(?:esta|estan|se\s+ha|se\s+han)\s+(?:observad[oa]s?|comprobad[oa]s?|verificad[oa]s?)\b",
+                clause[claim.end():],
+            ):
+                continue
+            return True
+    return False
 
 
 def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
     seen = _inventory_seen(payload)
     if seen is None:
         return ""
+    if _inventory_chronology_claim(text, seen):
+        return "extra_claim"
     asserted = fold(window_status_assertions(text, payload))
     # Quoted observed names are data, including names containing cardinality
     # or punctuation. Keep the original draft and observation untouched.
