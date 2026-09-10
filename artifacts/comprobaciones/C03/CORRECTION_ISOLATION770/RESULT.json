@@ -1,0 +1,12 @@
+{
+  "calls_completed": 4,
+  "calls_planned": 4,
+  "seconds": 20.468999999997322,
+  "gpu_peak_mib": 3497.55859375,
+  "ram_peak_mib": 718.578125,
+  "violations": [],
+  "driver_unchanged": true,
+  "sources_unchanged": true,
+  "quality_adjudicated": false,
+  "scope": "Four development calls on one frozen observation, causal diagnostic of two retry factors. Single pass/fixed order/cache may affect latency; no model ranking, survey, fresh reserve, UI, voice or product acceptance."
+}

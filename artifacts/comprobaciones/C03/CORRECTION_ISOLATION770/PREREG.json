@@ -1,0 +1,88 @@
+{
+  "utc": "2026-09-10T17:38:50.008563+00:00",
+  "calls": 4,
+  "command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "61349",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching"
+  ],
+  "factors": [
+    "Retain or remove rejected_draft only in existing feedback object",
+    "Add or omit one explicit statement of the same unsupported chronology cause in system"
+  ],
+  "order": [
+    "A_current",
+    "B_no_rejected_draft",
+    "D_no_draft_explicit_cause",
+    "C_explicit_cause"
+  ],
+  "model": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  },
+  "backend": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "driver_sha256": "806535bf3229a35372243ad0a0f1304ed36ce34480435867f32d54f243b3325c",
+  "source_pins": {
+    "src/baxy_mind/llm.py": "0ee327caa9cdb920365728d8afc038ff4615f9a1b7cd9c9d3a840c47cc68604f",
+    "src/baxy_mind/window_prose_facts.py": "719d7dfd42ef9067949d1a0507adb5489646a38f335316046ea800610ff484ed",
+    "tests/test_c03_inventory_semantic_projection.py": "544f3917c39a97cd87965ca08c600e123491e5d06e07498604d59fa1f2e2f983",
+    "tests/test_c03_window_state_facts.py": "f8a0c4653e6220848f7838ebac05a78554a2a7ba2f7153b3810a42d1a710896f",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "218e85543d2af3b2a5569972e968d7ff0fd3be4cd96eb0d415388467e91b5bd3",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "7a8c88034a0877f6b32d4ddc9a007e5fa912b01d94459c7992ef7f026405b155",
+    "tests/test_price_v8_veto_damage_by_cause.py": "8bf19c827399741b5c597d4c43097629f06e1e9b35cc179cbd6d77113ce2e79a",
+    "src/Baxy.App/MindSidecarClient.cs": "41e4060a4404823e9c888c7eb744f8b956106aeb1714c1b130096ffdbf59deac",
+    "tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs": "2b80853b78f20cab1e674cf7f7601fb2d2c5e9209136767990d298b5f4a7169f"
+  },
+  "planned_sha256": "5725fce8a9e9e08cb118d97aee9bbcc1ff690ac28c3ece3efb062356d3b77bcb",
+  "source_review_sha256": "1f3dd6e02e01cacd6acdbf6e4af7bc4d7aaa312689bc87f8eab85b9105bac5de",
+  "reconstructed_sha256": "1ddaea25adf6a25269f323cad8e692d0464e00cad21b4de2c890ab9a17567027",
+  "raw_input_exact_replay": false,
+  "projected_payload_exactly_equal": true,
+  "input_limit": "audit.situation is truncated at2048characters; reconstruct verified envelope with equal projected facts. Current composer builds both requests with one captured draft stub. No assertion of raw product request byte identity.",
+  "limits": {
+    "observe_seconds_per_call": 15,
+    "max_tokens_unchanged": 256,
+    "gpu_stop_mib": 3800,
+    "free_ram_min_mib": 768,
+    "wall_seconds": 150
+  },
+  "criterion": "All20 returned identities including multiplicity, partial20/25 scope, no unsupported opening chronology or other invented facts; score separately from elapsed time. A single isolated reply does not establish retry fits total product budget.",
+  "scope": "Four development calls on one frozen observation, causal diagnostic of two retry factors. Single pass/fixed order/cache may affect latency; no model ranking, survey, fresh reserve, UI, voice or product acceptance.",
+  "environment_defaults": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false"
+  }
+}

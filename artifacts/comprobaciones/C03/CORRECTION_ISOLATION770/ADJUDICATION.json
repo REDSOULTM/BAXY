@@ -1,0 +1,140 @@
+{
+  "utc": "2026-09-10T17:45:33.176006+00:00",
+  "semantically_correct": 2,
+  "semantically_failed": 2,
+  "verdicts": [
+    {
+      "arm": "A_current",
+      "semantic_correct": false,
+      "entries": 20,
+      "missing": {},
+      "extra": {},
+      "validator_defect": "extra_claim",
+      "reason": "All20 identities but unobserved recency repeated; legitimate extra_claim rejection.",
+      "seconds": 4.2189999999973224,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 164,
+        "prompt_tokens": 974,
+        "total_tokens": 1138,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 974,
+        "prompt_ms": 611.437,
+        "prompt_per_token_ms": 0.627758726899384,
+        "prompt_per_second": 1592.9686950577081,
+        "predicted_n": 164,
+        "predicted_ms": 3580.425,
+        "predicted_per_token_ms": 21.83185975609756,
+        "predicted_per_second": 45.80461816683773
+      }
+    },
+    {
+      "arm": "B_no_rejected_draft",
+      "semantic_correct": false,
+      "entries": 19,
+      "missing": {
+        "explorer": 1
+      },
+      "extra": {},
+      "validator_defect": "",
+      "reason": "19entries: one explorer instance omitted despite claiming20. Window validator accepts; manual completeness fails.",
+      "seconds": 3.8589999999967404,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 162,
+        "prompt_tokens": 761,
+        "total_tokens": 923,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 761,
+        "prompt_ms": 411.773,
+        "prompt_per_token_ms": 0.5410946123521683,
+        "prompt_per_second": 1848.1056310151469,
+        "predicted_n": 162,
+        "predicted_ms": 3431.879,
+        "predicted_per_token_ms": 21.184438271604936,
+        "predicted_per_second": 47.20446146265646
+      }
+    },
+    {
+      "arm": "D_no_draft_explicit_cause",
+      "semantic_correct": true,
+      "entries": 20,
+      "missing": {},
+      "extra": {},
+      "validator_defect": "extra_claim",
+      "reason": "All20 identities, correct20/25 page, denies list completeness and unknown opening order. False extra_claim: negated includes-all statement treated as affirmative.",
+      "seconds": 4.39100000000326,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 186,
+        "prompt_tokens": 790,
+        "total_tokens": 976,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 790,
+        "prompt_ms": 459.822,
+        "prompt_per_token_ms": 0.582053164556962,
+        "prompt_per_second": 1718.0561173671551,
+        "predicted_n": 186,
+        "predicted_ms": 3920.565,
+        "predicted_per_token_ms": 21.078306451612903,
+        "predicted_per_second": 47.44214163009668
+      }
+    },
+    {
+      "arm": "C_explicit_cause",
+      "semantic_correct": true,
+      "entries": 20,
+      "missing": {},
+      "extra": {},
+      "validator_defect": "reversed_result",
+      "reason": "All20 identities, correct20/25 partial scope, opening order explicitly unknown. False reversed_result: lista is absent from page-context vocabulary,20 treated as total25.",
+      "seconds": 4.375,
+      "finish_reason": "stop",
+      "usage": {
+        "completion_tokens": 179,
+        "prompt_tokens": 1003,
+        "total_tokens": 1182,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 1003,
+        "prompt_ms": 555.933,
+        "prompt_per_token_ms": 0.5542701894317049,
+        "prompt_per_second": 1804.1742440186138,
+        "predicted_n": 179,
+        "predicted_ms": 3811.204,
+        "predicted_per_token_ms": 21.291642458100558,
+        "predicted_per_second": 46.96678529934372
+      }
+    }
+  ],
+  "inference_calls": 4,
+  "source_unchanged": true,
+  "input_scope": "Reconstructed verified envelope with identical projected payload, not raw full input replay; audit is truncated.",
+  "limits": "Single frozen observation/fixed order, no model ranking or total product retry-budget acceptance; source unchanged.",
+  "next": "Repair page-subject and quantified-statement polarity in existing window fact checker; preserve rejection of actual global completeness/recency. Explicit-cause factor has two faithful outputs; do not adopt solely on synthetic tests.",
+  "evidence_sha256": {
+    "results.json": "641092b3fffa008e94a3504eaa35bca0294c0c4fe83e3bf80e934017633bf036",
+    "planned.json": "5725fce8a9e9e08cb118d97aee9bbcc1ff690ac28c3ece3efb062356d3b77bcb",
+    "reconstructed.json": "1ddaea25adf6a25269f323cad8e692d0464e00cad21b4de2c890ab9a17567027",
+    "server.log": "5dcf598502b0d58ebca9e87decbc8650603b9ecd9691d45fb060a2454572374a"
+  }
+}
