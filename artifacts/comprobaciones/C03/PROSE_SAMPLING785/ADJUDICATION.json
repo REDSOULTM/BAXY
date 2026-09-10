@@ -1,0 +1,1813 @@
+{
+  "utc": "2026-09-10T20:25:36.540686+00:00",
+  "method": "Root full-answer manual adjudication; explicit frozen decision matrix. No product validator, LLM judge or opening-sentence shortcut.",
+  "review": "Root read all150 responses, grouping only byte-identical whole strings within a case. RO inventory review confirmed24 inventory-content failures; root added5 independent subject failures, recorded separately.",
+  "interpretations": [
+    "Window identity may be given by title, or process when title is absent; unrequested process metadata is not mandatory. Multiplicity must remain explicit.",
+    "Fresh observation wording is supported; most-recent windows is unsupported without opening times.",
+    "First-person ownership of the user PC is a separate subject failure, not a quantity failure. This preserves the existing CPU/battery criterion.",
+    "H0655 B/C and memory785-5-1 A have ambiguous available-total wording. Their correct component values are preserved and not re-labelled false; subject failure alone prevents whole-answer credit.",
+    "Minor understandable agreement errors are not new failure categories. Repeated Marka remains the pre-existing clock blocker."
+  ],
+  "quality_adjudicated": true,
+  "metrics": {
+    "A_registered_greedy": {
+      "pass": 30,
+      "fail": 20,
+      "finish_reason": {
+        "stop": 44,
+        "length": 6
+      },
+      "final_seconds_p50": 0.4764999999970314,
+      "final_seconds_p95_nearest_rank": 3.5,
+      "final_seconds_max": 3.514999999999418,
+      "generation_tokens_per_second_p50": 86.2463283566891
+    },
+    "B_qwen_recommended_seed0": {
+      "pass": 32,
+      "fail": 18,
+      "finish_reason": {
+        "stop": 45,
+        "length": 5
+      },
+      "final_seconds_p50": 0.47650000000430737,
+      "final_seconds_p95_nearest_rank": 3.5,
+      "final_seconds_max": 3.514999999999418,
+      "generation_tokens_per_second_p50": 86.38761715755572
+    },
+    "C_qwen_recommended_seed17": {
+      "pass": 33,
+      "fail": 17,
+      "finish_reason": {
+        "stop": 44,
+        "length": 6
+      },
+      "final_seconds_p50": 0.46850000000267755,
+      "final_seconds_p95_nearest_rank": 3.5,
+      "final_seconds_max": 3.5160000000032596,
+      "generation_tokens_per_second_p50": 86.48097498216201
+    }
+  },
+  "paired_against_A": {
+    "B_qwen_recommended_seed0": {
+      "both_pass": [
+        "inventory785-1-1",
+        "inventory785-1-3",
+        "inventory785-2-1",
+        "inventory785-2-3",
+        "inventory785-2-4",
+        "inventory785-3-1",
+        "inventory785-3-2",
+        "inventory785-3-3",
+        "inventory785-3-4",
+        "inventory785-4-1",
+        "inventory785-4-3",
+        "inventory785-4-4",
+        "memory785-1-1",
+        "memory785-1-2",
+        "memory785-1-3",
+        "memory785-1-4",
+        "memory785-2-1",
+        "memory785-2-2",
+        "memory785-2-3",
+        "memory785-2-4",
+        "memory785-3-3",
+        "memory785-3-4",
+        "memory785-4-2",
+        "memory785-4-3",
+        "memory785-4-4",
+        "memory785-5-2",
+        "memory785-5-3",
+        "memory785-5-4"
+      ],
+      "gain": [
+        "H0023",
+        "inventory785-4-2",
+        "inventory785-6-1",
+        "memory785-3-2"
+      ],
+      "regression": [
+        "inventory785-1-4",
+        "inventory785-2-2"
+      ],
+      "both_fail": [
+        "H0103",
+        "H0539",
+        "H0655",
+        "H0508",
+        "clock-variant779-31",
+        "inventory785-1-2",
+        "inventory785-5-1",
+        "inventory785-5-2",
+        "inventory785-5-3",
+        "inventory785-5-4",
+        "inventory785-6-2",
+        "inventory785-6-3",
+        "inventory785-6-4",
+        "memory785-3-1",
+        "memory785-4-1",
+        "memory785-5-1"
+      ]
+    },
+    "C_qwen_recommended_seed17": {
+      "both_pass": [
+        "inventory785-1-1",
+        "inventory785-1-3",
+        "inventory785-1-4",
+        "inventory785-2-1",
+        "inventory785-2-2",
+        "inventory785-2-3",
+        "inventory785-2-4",
+        "inventory785-3-1",
+        "inventory785-3-2",
+        "inventory785-3-3",
+        "inventory785-3-4",
+        "inventory785-4-1",
+        "inventory785-4-3",
+        "inventory785-4-4",
+        "memory785-1-1",
+        "memory785-1-2",
+        "memory785-1-3",
+        "memory785-1-4",
+        "memory785-2-1",
+        "memory785-2-2",
+        "memory785-2-3",
+        "memory785-2-4",
+        "memory785-3-3",
+        "memory785-3-4",
+        "memory785-4-2",
+        "memory785-4-3",
+        "memory785-4-4",
+        "memory785-5-2",
+        "memory785-5-3",
+        "memory785-5-4"
+      ],
+      "gain": [
+        "H0023",
+        "inventory785-4-2",
+        "memory785-3-2"
+      ],
+      "regression": [],
+      "both_fail": [
+        "H0103",
+        "H0539",
+        "H0655",
+        "H0508",
+        "clock-variant779-31",
+        "inventory785-1-2",
+        "inventory785-5-1",
+        "inventory785-5-2",
+        "inventory785-5-3",
+        "inventory785-5-4",
+        "inventory785-6-1",
+        "inventory785-6-2",
+        "inventory785-6-3",
+        "inventory785-6-4",
+        "memory785-3-1",
+        "memory785-4-1",
+        "memory785-5-1"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "case_id": "H0023",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "unsupported_chronology"
+      ],
+      "reason": "Conserva las 20 entradas y el total 25, pero inventa que las 20 son las más recientes; no hay tiempos de apertura.",
+      "finish_reason": "stop",
+      "seconds": 2.625,
+      "answer_sha256": "715ac098d59147bc4760b6820476638678669f0a7247ad48bba252e701ac3e99"
+    },
+    {
+      "case_id": "H0023",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.437000000005355,
+      "answer_sha256": "4e2a7aa72dddc4e9b317dafb6e4c1dbcad266386375d8b742ae7ad1de4e9f990"
+    },
+    {
+      "case_id": "H0023",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.4060000000026776,
+      "answer_sha256": "2f4e3314e948103effd50f4d973e056a44591460a47fa1be170505ab6afa2763"
+    },
+    {
+      "case_id": "H0103",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Resume categorías con varias instancias sin sus cantidades; omite identidades observadas. El alcance 20/25 no sustituye una lista completa de la página.",
+      "finish_reason": "stop",
+      "seconds": 2.125,
+      "answer_sha256": "499cef6c50d1e7d41d109635f3a4d84488eea2a99eb2213ca06eb2d5e4a8f8e6"
+    },
+    {
+      "case_id": "H0103",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Resume categorías con varias instancias sin sus cantidades; omite identidades observadas. El alcance 20/25 no sustituye una lista completa de la página.",
+      "finish_reason": "stop",
+      "seconds": 1.6719999999913853,
+      "answer_sha256": "0ab0fe5820e7c39e4f3cd74cb4c62f86e4f4ac8e57b9b4abbd311d9971bb4440"
+    },
+    {
+      "case_id": "H0103",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Resume categorías con varias instancias sin sus cantidades; omite identidades observadas. El alcance 20/25 no sustituye una lista completa de la página.",
+      "finish_reason": "stop",
+      "seconds": 1.6720000000059372,
+      "answer_sha256": "61d12c84a6b4b6abca01e14a29a1e3af88807e5c483e931ec4dfd5038a179c06"
+    },
+    {
+      "case_id": "H0539",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "Llama disponible a 16,54 GB utilizables; los disponibles son aproximadamente 1,98 GB. Tengo también atribuye al narrador la RAM del PC.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "cc7d672f82faca2ff6dac97ee1f0ed049097932d2aa78d2f18b4918f49e7c6c4"
+    },
+    {
+      "case_id": "H0539",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "Llama instalada a 16,54 GB utilizables; la instalada observada es 17,18 GB. Tengo cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "347bde158328673285e38c2780194426ca9fbe2196aca3cc2a18413eb344650e"
+    },
+    {
+      "case_id": "H0539",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "Llama instalada a 16,54 GB utilizables; la instalada observada es 17,18 GB. Tengo cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "answer_sha256": "347bde158328673285e38c2780194426ca9fbe2196aca3cc2a18413eb344650e"
+    },
+    {
+      "case_id": "H0655",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "Disponible en total no distingue la capacidad utilizable de la memoria libre, que es aproximadamente 1,97 GB; además dice Tengo.",
+      "finish_reason": "stop",
+      "seconds": 0.3129999999946449,
+      "answer_sha256": "0c6caed393a462c5809473cb3ae33975a3ef59d57324373cfa47f727b43d8e80"
+    },
+    {
+      "case_id": "H0655",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cifras posteriores distinguen libre, usada e instalada correctamente. Disponible en total es una etiqueta ambigua, no se declara que todas las cifras sean falsas. El sujeto Tengo sigue siendo incorrecto para el PC del usuario.",
+      "finish_reason": "stop",
+      "seconds": 0.7810000000026776,
+      "answer_sha256": "80766a608825a11532da4f48558a2e08d5ddf1324810c3876aae9806a1f11b95"
+    },
+    {
+      "case_id": "H0655",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cifras posteriores distinguen libre, usada e instalada correctamente. Disponible en total es una etiqueta ambigua, no se declara que todas las cifras sean falsas. El sujeto Tengo sigue siendo incorrecto para el PC del usuario.",
+      "finish_reason": "stop",
+      "seconds": 0.7810000000026776,
+      "answer_sha256": "80766a608825a11532da4f48558a2e08d5ddf1324810c3876aae9806a1f11b95"
+    },
+    {
+      "case_id": "H0508",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "La versión observada de Windows se conserva; llama disponible a 16,54 GB utilizables, frente a aproximadamente 1,97 GB disponibles. Tengo cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.6560000000026776,
+      "answer_sha256": "61e0d02ba2bf50bbca20e63e0368df34247e7880b2ebd7818f609e441cfcb01b"
+    },
+    {
+      "case_id": "H0508",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "La versión observada de Windows se conserva; llama disponible a 16,54 GB utilizables, frente a aproximadamente 1,97 GB disponibles. Tengo cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.6719999999913853,
+      "answer_sha256": "f945e73afc103249f742f86b531b1828087c29e3085cf72a17f4035392632d3e"
+    },
+    {
+      "case_id": "H0508",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "La versión observada de Windows se conserva; llama disponible a 16,54 GB utilizables, frente a aproximadamente 1,97 GB disponibles. Tengo cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.6560000000026776,
+      "answer_sha256": "f945e73afc103249f742f86b531b1828087c29e3085cf72a17f4035392632d3e"
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "spelling"
+      ],
+      "reason": "La hora 16:34 es correcta, pero los tres brazos conservan Marka. No cumple el criterio de prosa de C03.",
+      "finish_reason": "stop",
+      "seconds": 0.23500000000058208,
+      "answer_sha256": "28620807278237b6c8c10f1e835dacfc81308ef9219fc7a96dac0427f3e21458"
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "spelling"
+      ],
+      "reason": "La hora 16:34 es correcta, pero los tres brazos conservan Marka. No cumple el criterio de prosa de C03.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "f86b35aa2a0fd4537c810188656cb8f280e320cf60eba8de9f6bce65334fa0a6"
+    },
+    {
+      "case_id": "clock-variant779-31",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "spelling"
+      ],
+      "reason": "La hora 16:34 es correcta, pero los tres brazos conservan Marka. No cumple el criterio de prosa de C03.",
+      "finish_reason": "stop",
+      "seconds": 0.28099999998812564,
+      "answer_sha256": "f86b35aa2a0fd4537c810188656cb8f280e320cf60eba8de9f6bce65334fa0a6"
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2970000000059372,
+      "answer_sha256": "0dd71898380f2e4f861adbcd97a1a0d0247723df3880b21d4ba8a6a95df8551f"
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2960000000020955,
+      "answer_sha256": "6e63ba58332dd8605d25ecfb38b52a5f7f711a204b41ba2ce0a5af3301583d69"
+    },
+    {
+      "case_id": "inventory785-1-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.3129999999946449,
+      "answer_sha256": "6e63ba58332dd8605d25ecfb38b52a5f7f711a204b41ba2ce0a5af3301583d69"
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "El inventario vacío es correcto, pero No tengo atribuye al narrador las ventanas por las que preguntó el usuario.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "d8465d90771a5d0fe7009e4e3dd60c15ab31624d5e349427e6d58f9346d071d7"
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "El inventario vacío es correcto, pero No tengo atribuye al narrador las ventanas por las que preguntó el usuario.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "d8465d90771a5d0fe7009e4e3dd60c15ab31624d5e349427e6d58f9346d071d7"
+    },
+    {
+      "case_id": "inventory785-1-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "El inventario vacío es correcto, pero No tengo atribuye al narrador las ventanas por las que preguntó el usuario.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "d8465d90771a5d0fe7009e4e3dd60c15ab31624d5e349427e6d58f9346d071d7"
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2960000000020955,
+      "answer_sha256": "2a621744f0551e05c914d32fa13a77a672d489aeaeef69a5ad656aad1a66baf9"
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.3129999999946449,
+      "answer_sha256": "2a621744f0551e05c914d32fa13a77a672d489aeaeef69a5ad656aad1a66baf9"
+    },
+    {
+      "case_id": "inventory785-1-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.3129999999946449,
+      "answer_sha256": "2a621744f0551e05c914d32fa13a77a672d489aeaeef69a5ad656aad1a66baf9"
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "2f046bfb43b475d37b584aa713f827da85b595e5318f92ff8764eb9cafd2c29c"
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "El inventario vacío es correcto, pero I do not have atribuye las ventanas al narrador.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "13e8093f51345392ec9386a987a8e813fb23ef8493bea7b0d74a24e8fb791a92"
+    },
+    {
+      "case_id": "inventory785-1-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "2f046bfb43b475d37b584aa713f827da85b595e5318f92ff8764eb9cafd2c29c"
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.8600000000005821,
+      "answer_sha256": "7939ada1f22572131e7fe4b2dc929d1ef4eda9ca740d9be9155718893c7c9008"
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.1089999999967404,
+      "answer_sha256": "52c8aa02507261d03f3ad8bfc2d5754301589d99f12e8b363e281f2cee6d01eb"
+    },
+    {
+      "case_id": "inventory785-2-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.8439999999973224,
+      "answer_sha256": "26b85d9a1eb5d45608dc2de9831e6676b307622d85aca5b709aa6a7054d6dad1"
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.7820000000065193,
+      "answer_sha256": "1fa9d2ba6032a9f32980de86060fa4ad126ad771b0520a5f24ed0b295529fa48"
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Conserva títulos y página 2/7; Tengo atribuye las ventanas al narrador. Solo he podido ver dos es además una formulación ambigua de la página, no se cuenta como otra falsedad demostrada.",
+      "finish_reason": "stop",
+      "seconds": 0.8899999999994179,
+      "answer_sha256": "bf2eafd886223ed35127fe110f3860437f97392bb69070801b0ce6083266b790"
+    },
+    {
+      "case_id": "inventory785-2-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.7969999999913853,
+      "answer_sha256": "1a7dc70cc916490dc01f05156449819b69997c9792fc68c426a6c623ee7d8120"
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.9219999999913853,
+      "answer_sha256": "24c1b5c49407e140e060d8c1a2f4c5610e321ab16076a93035a5e204d6a1e493"
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.8590000000112923,
+      "answer_sha256": "a9d3a5a45a6df46c5d385426c3531f8ed4f30f9cd4bafa2c5fc10716cedf1254"
+    },
+    {
+      "case_id": "inventory785-2-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.8589999999967404,
+      "answer_sha256": "a9d3a5a45a6df46c5d385426c3531f8ed4f30f9cd4bafa2c5fc10716cedf1254"
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.9370000000053551,
+      "answer_sha256": "7e4b2ab46f115c73989f996635b15e54418b315523bb005b098b5d20f7dffcd8"
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.9539999999979045,
+      "answer_sha256": "7b831e230adbc50a898fb08211fdd0a81c81098d1df7f136d626246cfc2ab763"
+    },
+    {
+      "case_id": "inventory785-2-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.8589999999967404,
+      "answer_sha256": "c06aa3aee50a3d8ca369880d4f3fd948bc0a92d523d629e2bd5c327132dcb9c0"
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.3119999999908032,
+      "answer_sha256": "fda645ee7cb0391e2873967313c3fa90f1a6db59745299af77c973ec89996948"
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.2970000000059372,
+      "answer_sha256": "fda645ee7cb0391e2873967313c3fa90f1a6db59745299af77c973ec89996948"
+    },
+    {
+      "case_id": "inventory785-3-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.2970000000059372,
+      "answer_sha256": "fda645ee7cb0391e2873967313c3fa90f1a6db59745299af77c973ec89996948"
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.639999999999418,
+      "answer_sha256": "682c6fc1f917f57ebd3690bb5fae3a4d7f91ff5a8ac45e56e61637e2870e3370"
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.625,
+      "answer_sha256": "682c6fc1f917f57ebd3690bb5fae3a4d7f91ff5a8ac45e56e61637e2870e3370"
+    },
+    {
+      "case_id": "inventory785-3-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.625,
+      "answer_sha256": "682c6fc1f917f57ebd3690bb5fae3a4d7f91ff5a8ac45e56e61637e2870e3370"
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.639999999999418,
+      "answer_sha256": "eb5e6c4dfd22ddf79dfbbbd7c2839a99973da9282cf600f3d23f6b71dd8e8823"
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.6560000000026776,
+      "answer_sha256": "eb5e6c4dfd22ddf79dfbbbd7c2839a99973da9282cf600f3d23f6b71dd8e8823"
+    },
+    {
+      "case_id": "inventory785-3-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.6560000000026776,
+      "answer_sha256": "eb5e6c4dfd22ddf79dfbbbd7c2839a99973da9282cf600f3d23f6b71dd8e8823"
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.735000000000582,
+      "answer_sha256": "964ec3638d916073e1852b4c1583a174efd5d42ef63f7bcf472ac2f3954ff762"
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.7660000000032596,
+      "answer_sha256": "1fa69fb6c15f79257599e400b830bfe7102dfc52fcde659cf96de396fa869e4d"
+    },
+    {
+      "case_id": "inventory785-3-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 1.7809999999881256,
+      "answer_sha256": "1fa69fb6c15f79257599e400b830bfe7102dfc52fcde659cf96de396fa869e4d"
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 3.1560000000026776,
+      "answer_sha256": "2f8ab415fe4a4bc9a52b4f2f2aec260e5f82d107b99dfab74cbf447d8b253cb8"
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.937999999994645,
+      "answer_sha256": "f47a9b413941dac6c7c8ed1ec1c9e6b955ff1801cc98dca34f8dd31dd88e2e75"
+    },
+    {
+      "case_id": "inventory785-4-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.922000000005937,
+      "answer_sha256": "5e06458c5c4c59f721b6f258250148fce3f0a5f282760eb970ab80e9bf80a86d"
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos y algunas se repiten, sin multiplicidades 3,3,2,2,2 de las doce entradas.",
+      "finish_reason": "stop",
+      "seconds": 1.4529999999940628,
+      "answer_sha256": "c82de9334de3a79e828fbe99c6d6c4b9b30c83a3b526e17e42c27dec4c9b78bb"
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.125,
+      "answer_sha256": "a6126be4ad7e513d119a34bf7a73123eb99fbeae5fecd5d0ff28f7d7a7f00847"
+    },
+    {
+      "case_id": "inventory785-4-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.1560000000026776,
+      "answer_sha256": "2588ddd1dc1375d4f315273fc7ca7867603862d8a4504bad9fcdae78831716c0"
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.9689999999973224,
+      "answer_sha256": "f1a7abe7b13f3d89fd79684b75e157a0e88d273ab763c0fedcd05a1dfc8707e8"
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.9060000000026776,
+      "answer_sha256": "b7f70492c2cfa181af235f9067bf83b86142e49d94a10ca566d1f0936c515361"
+    },
+    {
+      "case_id": "inventory785-4-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.922000000005937,
+      "answer_sha256": "21375267620465687cb30efe30e18738cb01a79edb625e3b4743ceceed52d218"
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.8590000000112923,
+      "answer_sha256": "d75e653305ccebbd79b643bb641feeb0ad8248e72e4df051893ed5555ce5d64c"
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.9060000000026776,
+      "answer_sha256": "02e4f880ad6074426f5312ddfa348b6dee8f8cfe8febbdb88cc51208331f9668"
+    },
+    {
+      "case_id": "inventory785-4-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 2.952999999994063,
+      "answer_sha256": "f086a6341cc1c8aea72a209d377ac637e3bb9fe0fecdabe6ce1940ab4ec85dfe"
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "69b04dd1593e1f3b12ca3fc1dd2cc5c9a3425b5032d8cc111b056d890bd09304"
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.4840000000112923,
+      "answer_sha256": "69b04dd1593e1f3b12ca3fc1dd2cc5c9a3425b5032d8cc111b056d890bd09304"
+    },
+    {
+      "case_id": "inventory785-5-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.485000000000582,
+      "answer_sha256": "69b04dd1593e1f3b12ca3fc1dd2cc5c9a3425b5032d8cc111b056d890bd09304"
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "finish_reason": "stop",
+      "seconds": 1.625,
+      "answer_sha256": "e3f5d7bfbbf32a71f5d11dceeb84d88fad5851e4f6f51e75f64ccc4990187dee"
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "finish_reason": "stop",
+      "seconds": 1.5,
+      "answer_sha256": "ab3cf34b517baddb4ffeed219baf0a09766b3d5420deff3289fb17d841f0cd0a"
+    },
+    {
+      "case_id": "inventory785-5-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "finish_reason": "stop",
+      "seconds": 1.4839999999967404,
+      "answer_sha256": "4f8e35e27e5b095da5bff08fb6724ee24aad05df8ae8301f6f02d912a0b9aa08"
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "8b5f053b2da65ad22021f9b2d837dbc6f38cd1d871a5278368ff4e93ab02b852"
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "8b5f053b2da65ad22021f9b2d837dbc6f38cd1d871a5278368ff4e93ab02b852"
+    },
+    {
+      "case_id": "inventory785-5-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "8b5f053b2da65ad22021f9b2d837dbc6f38cd1d871a5278368ff4e93ab02b852"
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "66b012100484b08105cbcb2bde2688885c6b202bce9ecab4ff62dc60cd73bc60"
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "66b012100484b08105cbcb2bde2688885c6b202bce9ecab4ff62dc60cd73bc60"
+    },
+    {
+      "case_id": "inventory785-5-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "66b012100484b08105cbcb2bde2688885c6b202bce9ecab4ff62dc60cd73bc60"
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "2a7cd5dc5ffe146ed1d51f977f1aa1fd14661f46f475153c02eddfd5e396c0bc"
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 3.2189999999973224,
+      "answer_sha256": "87d0bd9dae0c8069ebebd6ca819913528da7760983cd14682f494534f8cd123c"
+    },
+    {
+      "case_id": "inventory785-6-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.4839999999967404,
+      "answer_sha256": "7d3f2ae662a5468214ab4b0a46c70fa27ea84115b37077c6d33e0d140a8df2a8"
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "finish_reason": "stop",
+      "seconds": 1.6089999999967404,
+      "answer_sha256": "251e3170d2dd11b1ad78e4dba44945013f26ca8d0f67d62b975cb39359606586"
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "finish_reason": "stop",
+      "seconds": 1.5319999999919673,
+      "answer_sha256": "f9c349216769a71f9c4dd88c14a8773ee1c78a70c4651c2982ffc04834b353ef"
+    },
+    {
+      "case_id": "inventory785-6-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "inventory_multiplicity"
+      ],
+      "reason": "Da cinco títulos sin las cuatro instancias de cada título. Varias/algunas no preserva las veinte entradas. No se interpreta observado como total conocido cuando complete es false.",
+      "finish_reason": "stop",
+      "seconds": 1.4220000000059372,
+      "answer_sha256": "0d505fcb38c015d0a2a86734dde93496b67a25f5a2eefa510d3169670a312d6d"
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.514999999999418,
+      "answer_sha256": "77a08b947f354aeb9526545c9ebb7e944416916c58a0e65eaea62593bbfff42d"
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.514999999999418,
+      "answer_sha256": "77a08b947f354aeb9526545c9ebb7e944416916c58a0e65eaea62593bbfff42d"
+    },
+    {
+      "case_id": "inventory785-6-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "77a08b947f354aeb9526545c9ebb7e944416916c58a0e65eaea62593bbfff42d"
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5,
+      "answer_sha256": "14e288d156d061f926e0d0b4ed3a1dbc37001f98e68530b228556cfc034d9786"
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.514999999999418,
+      "answer_sha256": "14e288d156d061f926e0d0b4ed3a1dbc37001f98e68530b228556cfc034d9786"
+    },
+    {
+      "case_id": "inventory785-6-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "output_limit",
+        "inventory_multiplicity"
+      ],
+      "reason": "Termina por length a 256 tokens en medio de una identidad, sin completar las veinte entradas ni la declaración de alcance. Es un corte del presupuesto de la integración, no prueba de incapacidad nativa.",
+      "finish_reason": "length",
+      "seconds": 3.5160000000032596,
+      "answer_sha256": "14e288d156d061f926e0d0b4ed3a1dbc37001f98e68530b228556cfc034d9786"
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "e1fac45a55ce278ba26ec513dc4494b177b3d75a15786438d8e59a97cf9513da"
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "e1fac45a55ce278ba26ec513dc4494b177b3d75a15786438d8e59a97cf9513da"
+    },
+    {
+      "case_id": "memory785-1-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "e1fac45a55ce278ba26ec513dc4494b177b3d75a15786438d8e59a97cf9513da"
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2659999999887077,
+      "answer_sha256": "3d62929c5c5369e2c328c49aef370fcca28948ad33db002874433ddc09e199a8"
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28200000000651926,
+      "answer_sha256": "3d62929c5c5369e2c328c49aef370fcca28948ad33db002874433ddc09e199a8"
+    },
+    {
+      "case_id": "memory785-1-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "3d62929c5c5369e2c328c49aef370fcca28948ad33db002874433ddc09e199a8"
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "5447558f599a1aaed029825e6cc41fc24ab787b29bc4917871ffbe1f5fb5750a"
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28199999999196734,
+      "answer_sha256": "5447558f599a1aaed029825e6cc41fc24ab787b29bc4917871ffbe1f5fb5750a"
+    },
+    {
+      "case_id": "memory785-1-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "5447558f599a1aaed029825e6cc41fc24ab787b29bc4917871ffbe1f5fb5750a"
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2970000000059372,
+      "answer_sha256": "fb925ec8318030b592384f8121d6d487a4a17589c85ac6c11bb7759170172323"
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "fb925ec8318030b592384f8121d6d487a4a17589c85ac6c11bb7759170172323"
+    },
+    {
+      "case_id": "memory785-1-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28099999998812564,
+      "answer_sha256": "fb925ec8318030b592384f8121d6d487a4a17589c85ac6c11bb7759170172323"
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "1002bc97f884b42627d2f11916aba824f5e26c9ab1b0ca7ca9d7a97c11787d2d"
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "1002bc97f884b42627d2f11916aba824f5e26c9ab1b0ca7ca9d7a97c11787d2d"
+    },
+    {
+      "case_id": "memory785-2-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "1002bc97f884b42627d2f11916aba824f5e26c9ab1b0ca7ca9d7a97c11787d2d"
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "a00c8c5025872798584cab686680012a17a3b5d23fefc48595c508146196f52b"
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "09862844beba17046d1f8ccca1950cda5c8b42c32eac22b6c60659208ef6bad1"
+    },
+    {
+      "case_id": "memory785-2-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2659999999887077,
+      "answer_sha256": "09862844beba17046d1f8ccca1950cda5c8b42c32eac22b6c60659208ef6bad1"
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "7a051c6225809cc1d463aeb6403b18eb0fb8390403f1085e9a8be3fa2aa493c3"
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.29699999999138527,
+      "answer_sha256": "7a051c6225809cc1d463aeb6403b18eb0fb8390403f1085e9a8be3fa2aa493c3"
+    },
+    {
+      "case_id": "memory785-2-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "7a051c6225809cc1d463aeb6403b18eb0fb8390403f1085e9a8be3fa2aa493c3"
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "dc2279235128a5412d154db186c525dcbaa9da18e0fd3a1739b3835f71a0407e"
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "dc2279235128a5412d154db186c525dcbaa9da18e0fd3a1739b3835f71a0407e"
+    },
+    {
+      "case_id": "memory785-2-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "dc2279235128a5412d154db186c525dcbaa9da18e0fd3a1739b3835f71a0407e"
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "finish_reason": "stop",
+      "seconds": 0.5469999999913853,
+      "answer_sha256": "308213c204c54605bc4dcc8bdcc58dcb7b3c5100eb83a630179198a3cd61b8d7"
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "finish_reason": "stop",
+      "seconds": 0.35899999999674037,
+      "answer_sha256": "248c9d7067fb42e0de7483259f911385caa191a5c55864d0c23ffedfafc13dae"
+    },
+    {
+      "case_id": "memory785-3-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "finish_reason": "stop",
+      "seconds": 0.35899999999674037,
+      "answer_sha256": "248c9d7067fb42e0de7483259f911385caa191a5c55864d0c23ffedfafc13dae"
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "measurement_label"
+      ],
+      "reason": "Disponible cero es correcto, pero toda la memoria instalada confunde 32 GB instalados con 31,6 GB utilizables y usados.",
+      "finish_reason": "stop",
+      "seconds": 0.34399999999732245,
+      "answer_sha256": "4bbc708c75867f20da9fa3a9fa62f4c7dadbef19d6b1288dad7661251bb9944d"
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.45300000000861473,
+      "answer_sha256": "7a4ab64f3d5b77677821d2d04d1ea7cc04af1dc5ba2cf782affb7852a7d62594"
+    },
+    {
+      "case_id": "memory785-3-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.4370000000053551,
+      "answer_sha256": "7a4ab64f3d5b77677821d2d04d1ea7cc04af1dc5ba2cf782affb7852a7d62594"
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.4369999999908032,
+      "answer_sha256": "40142053985b25e989428d3b7c95d5c9a86653ba85e9be646e6aafc10227b644"
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.40699999999196734,
+      "answer_sha256": "b21c0d12c17461970ba46c06b808c10f7bbb14c93b0b004310ea251fd91b785f"
+    },
+    {
+      "case_id": "memory785-3-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.40700000000651926,
+      "answer_sha256": "b21c0d12c17461970ba46c06b808c10f7bbb14c93b0b004310ea251fd91b785f"
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "7dcb0c09a62969ccbcdba1660eed1f65bbfa29f8e344018b15151e50c9178e3e"
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28099999998812564,
+      "answer_sha256": "7dcb0c09a62969ccbcdba1660eed1f65bbfa29f8e344018b15151e50c9178e3e"
+    },
+    {
+      "case_id": "memory785-3-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "7dcb0c09a62969ccbcdba1660eed1f65bbfa29f8e344018b15151e50c9178e3e"
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "finish_reason": "stop",
+      "seconds": 0.23399999999674037,
+      "answer_sha256": "67954185e216b71ef7a1133c7a0e197c80ed1ed66199a68b4f1d38361cf470b4"
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "finish_reason": "stop",
+      "seconds": 0.21799999999348074,
+      "answer_sha256": "67954185e216b71ef7a1133c7a0e197c80ed1ed66199a68b4f1d38361cf470b4"
+    },
+    {
+      "case_id": "memory785-4-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "Las cantidades son correctas. Tengo atribuye la capacidad del PC del usuario al narrador; se separa del eje numérico y se aplica el mismo criterio de sujeto que en CPU/batería.",
+      "finish_reason": "stop",
+      "seconds": 0.21899999999732245,
+      "answer_sha256": "67954185e216b71ef7a1133c7a0e197c80ed1ed66199a68b4f1d38361cf470b4"
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "187636c066cabe06d631cb9394c1d6c5626969b7d37c7f5e3c274f90e400ab32"
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "361525d40bf78dde75a63157d7682bec567a134b0e0b4575762f8f3cca364960"
+    },
+    {
+      "case_id": "memory785-4-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28199999999196734,
+      "answer_sha256": "361525d40bf78dde75a63157d7682bec567a134b0e0b4575762f8f3cca364960"
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "8789a008d4b47a478579277ffa5d8261c0acddd0db965aa507813aa7a00aeb66"
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "8789a008d4b47a478579277ffa5d8261c0acddd0db965aa507813aa7a00aeb66"
+    },
+    {
+      "case_id": "memory785-4-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28100000000267755,
+      "answer_sha256": "8789a008d4b47a478579277ffa5d8261c0acddd0db965aa507813aa7a00aeb66"
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "4ea7577b6c98d79a776ddd359f08e8face48cb14066f3cc9d2ed56d2422c2bf1"
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "4ea7577b6c98d79a776ddd359f08e8face48cb14066f3cc9d2ed56d2422c2bf1"
+    },
+    {
+      "case_id": "memory785-4-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "4ea7577b6c98d79a776ddd359f08e8face48cb14066f3cc9d2ed56d2422c2bf1"
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "A_registered_greedy",
+      "passed": false,
+      "defects": [
+        "wrong_subject"
+      ],
+      "reason": "No afirma instalada: 12 GB es capacidad utilizable, con 3,5 libres y 8,5 usados. Disponible en total queda ambiguo; se rechaza por Tengo, sin inventar una afirmación de capacidad instalada.",
+      "finish_reason": "stop",
+      "seconds": 0.5160000000032596,
+      "answer_sha256": "3aace587e2797933c8b49c2f921ba2ee40dd26b01d880bfa6e76ca795d230b66"
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "Afirma 12 GB instalados aunque installedBytes es desconocido; 12 GB es la capacidad utilizable. Tengo también cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.5,
+      "answer_sha256": "11c1d5a9b6695323b6c143ba2d2ec648d7e32a4f4c715821c0fe6084bb4ccd9e"
+    },
+    {
+      "case_id": "memory785-5-1",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": false,
+      "defects": [
+        "measurement_label",
+        "wrong_subject"
+      ],
+      "reason": "Afirma 12 GB instalados aunque installedBytes es desconocido; 12 GB es la capacidad utilizable. Tengo también cambia el sujeto.",
+      "finish_reason": "stop",
+      "seconds": 0.5,
+      "answer_sha256": "11c1d5a9b6695323b6c143ba2d2ec648d7e32a4f4c715821c0fe6084bb4ccd9e"
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2649999999994179,
+      "answer_sha256": "40034d665349cd18ea96c97f8ca5bcf46e0ae790518c6587ed38a8a6ca9ffeee"
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.25,
+      "answer_sha256": "2328fd0ae7dee393bad99d62dca59acc7af59ce3273d056c42377c3852c274bc"
+    },
+    {
+      "case_id": "memory785-5-2",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "2328fd0ae7dee393bad99d62dca59acc7af59ce3273d056c42377c3852c274bc"
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28099999998812564,
+      "answer_sha256": "50e975200633a133adcaa04c3989126401ce5e7d4d9225e9f0460d204cf66ee1"
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.2970000000059372,
+      "answer_sha256": "50e975200633a133adcaa04c3989126401ce5e7d4d9225e9f0460d204cf66ee1"
+    },
+    {
+      "case_id": "memory785-5-3",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "50e975200633a133adcaa04c3989126401ce5e7d4d9225e9f0460d204cf66ee1"
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "A_registered_greedy",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28199999999196734,
+      "answer_sha256": "1ef34846dc2ef2f4f9c79712d8434882a98670284fef3e8eff0a7366412b1433"
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "B_qwen_recommended_seed0",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.28200000000651926,
+      "answer_sha256": "1ef34846dc2ef2f4f9c79712d8434882a98670284fef3e8eff0a7366412b1433"
+    },
+    {
+      "case_id": "memory785-5-4",
+      "arm": "C_qwen_recommended_seed17",
+      "passed": true,
+      "defects": [],
+      "reason": "Respuesta completa contrastada: petición, hechos, alcance, cantidades y sujeto conservados.",
+      "finish_reason": "stop",
+      "seconds": 0.26600000000325963,
+      "answer_sha256": "1ef34846dc2ef2f4f9c79712d8434882a98670284fef3e8eff0a7366412b1433"
+    }
+  ],
+  "adoption": false,
+  "survey_coverage_added": 0,
+  "scope": "First-draft sampler diagnostic, not model ranking, native baseline, full retry/product/UI/voice/reserve acceptance or automatic survey credit. All user data stays local."
+}

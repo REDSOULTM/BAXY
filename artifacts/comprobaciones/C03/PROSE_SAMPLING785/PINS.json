@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-10T20:29:47.846863+00:00",
+  "files": {
+    "PREREG.json": "72f9a8f2c5f246a7f06d9a92b9a797fa983ed57ebf1f3c7898eeb6ccb6425918",
+    "PROCESS.json": "d4a343fecfe7b500e4116cfd885839461145ed3a7553fc219870583d8ade8c45",
+    "RESULT.json": "3e6a1b7dad14a1f3f94c526e9702527e553beb39fd77f49e729586d48b7d64e8",
+    "ADJUDICATION.json": "786168549c448f8823254a32df246dd769ee41ae50e74e156d0c57910b13feb8",
+    "EFFECTIVE_PARAMS.json": "cc59203248f6b7f4c1b6ce552e9caad65694e5ab4d0a66b274e20a0ffb7ff01f",
+    "PRIVATE_PINS.json": "117751e1668c2ade1b48967339e66859e889a4721d1a14c184b594313869157b",
+    "RESPUESTAS_SINTETICAS.md": "4aacda1b947bcb0b8fe1761b1ab6694ad183bb6999cf57cfec3436b1cdd10375",
+    "REPORT.md": "aced0b9289bcf66abb25025f72641e57778b8ec2def5bfc3a6e7f87aa828ded9"
+  },
+  "drivers": {
+    "scratchpad/c03-prepare-prose-sampling785.py": "e6f9cd1e01be5ce8ceecc34004ef0466f9984fe8568fdb7adb8018f8416641c4",
+    "scratchpad/c03-prose-sampling785.py": "b4e904e5735b4a3741bea145b781760f7f081e4cb430dd7005fc88bc21d69883",
+    "scratchpad/c03-record-prose-sampling785.py": "4d0e773a0190620c670a8af66d645cadc2592d4c685fb12c48583228f515b98b"
+  },
+  "registry_sha256_unchanged": "3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b",
+  "no_product_source_edits": true,
+  "owned_processes_after": []
+}

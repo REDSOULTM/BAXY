@@ -1,0 +1,9 @@
+{
+  "staged_hashes_verified": 11,
+  "synthetic_literal_blocks_match_raw": 132,
+  "git_diff_check_exit": 2,
+  "git_diff_check_findings": 497,
+  "findings": "Only trailing spaces inside exact raw-model text fences; all132 blocks byte-for-byte match raw responses. Preserved intentionally as evidence, no product-source whitespace changes.",
+  "no_test_or_gate_relaxed": true,
+  "product_source_changes": []
+}

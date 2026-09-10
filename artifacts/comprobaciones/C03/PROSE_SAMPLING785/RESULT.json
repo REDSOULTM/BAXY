@@ -1,0 +1,12 @@
+{
+  "calls_completed": 150,
+  "calls_planned": 150,
+  "seconds": 178.54700000000594,
+  "gpu_peak_mib": 3499.55859375,
+  "ram_peak_mib": 723.36328125,
+  "violations": [],
+  "driver_unchanged": true,
+  "sources_unchanged": true,
+  "quality_adjudicated": false,
+  "scope": "First-draft sampler diagnostic, not model ranking, native baseline, full retry/product/UI/voice/reserve acceptance or automatic survey credit. All user data stays local."
+}

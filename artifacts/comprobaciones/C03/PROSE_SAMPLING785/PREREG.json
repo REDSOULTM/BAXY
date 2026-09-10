@@ -1,0 +1,80 @@
+{
+  "utc": "2026-09-10T20:10:48.446090+00:00",
+  "calls": 150,
+  "cases": 50,
+  "command": [
+    "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "-m",
+    "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "61381",
+    "-ngl",
+    "99",
+    "-c",
+    "12288",
+    "-b",
+    "2048",
+    "-ub",
+    "256",
+    "-fa",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-np",
+    "3",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--reasoning-budget",
+    "0",
+    "--cache-ram",
+    "0",
+    "--no-mmap",
+    "--cont-batching"
+  ],
+  "model": {
+    "path": "D:\\BAXYRuntime\\experiments\\models\\qwen3-4b-instruct-2507-a06e946b\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597"
+  },
+  "backend": {
+    "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+    "sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e"
+  },
+  "source_pins": {
+    "src/baxy_mind/llm.py": "bbf7f502408463b516de5cc95fb3ad2fc20cf50f8ea6b059b24048715c123253",
+    "tests/test_c03_named_clock.py": "8fdeeb1089f00a1dc164edad5e6b6b677b41c11d402cb697271dba28559ef270",
+    "tests/test_c03_request_preservation.py": "bfbd4ebb73562c576dc1ad87bb25ab62955c013e0f581b8731da1ba655dfb89f",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "2d1a5447e9070dd643e2e6f3bb8ba11c32899e48918d3b9d2b3113be1edeaaf3",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "193db66a1d7450cb28bb11eb983351d6ec08eab76309fc45167ecd134cab2002",
+    "tests/test_price_v8_veto_damage_by_cause.py": "c092e58d6795a216933867b2d974c6af163f06a68a27a782deb9d8d185474a3d",
+    "src/baxy_mind/__main__.py": "1f651f36f7c755c47c78bfb8b2b7f3b859d886c72aaf8bfdf53907e315871211",
+    "src/baxy_mind/effect_intent.py": "6eb1c5322607aa915d143af811e954b106d164f36091c967fadfcf788a1b1af5",
+    "src/Baxy.App/MindSidecarClient.cs": "41e4060a4404823e9c888c7eb744f8b956106aeb1714c1b130096ffdbf59deac",
+    "tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs": "2b80853b78f20cab1e674cf7f7601fb2d2c5e9209136767990d298b5f4a7169f"
+  },
+  "driver_sha256": "b4e904e5735b4a3741bea145b781760f7f081e4cb430dd7005fc88bc21d69883",
+  "planned_sha256": "55fca05bed70adbc3ba624db3fce7d7fe8c2affb0b5ed4604f18056893e3b1f8",
+  "cases_sha256": "b10194b60ec34632bc4c14501bbd505301b4de85cd0c574fa32abee8d485c334",
+  "intervention": "Same first-draft BAXY messages and256-token cap; sampler profile only. A currentT0 versus officialQwen0.7/p0.8/k20/minp0 at seeds0 and17. Greedy keeps original omitted sampler fields; recommended profile explicitly sets neutral penalties.",
+  "reference": "https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507#best-practices",
+  "reference_checked": "2026-09-10; official card suggestsT0.7,p0.8,k20,minp0. Its16384-output reference is not this controlled256-token task-budget probe; native699 remains separate.",
+  "inheritance": "579 tested only CPU actor repair;759/770/772 show inventory regressions. No measured first-draft inventory/RAM recipe comparison found in those exact sources.",
+  "limits": {
+    "observe_seconds_per_call": 15,
+    "max_tokens_unchanged": 256,
+    "gpu_stop_mib": 3800,
+    "free_ram_min_mib": 768,
+    "wall_seconds": 900
+  },
+  "criterion": "Adjudicate full raw answer against each frozen request/observation, including multiplicity and measurement semantics. Keep cuts/errors and faithful answers rejected by BAXY separate. No best-seed cherry-picking; two sampled passes cannot establish general stability.",
+  "scope": "First-draft sampler diagnostic, not model ranking, native baseline, full retry/product/UI/voice/reserve acceptance or automatic survey credit. All user data stays local.",
+  "environment_defaults": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false"
+  }
+}
