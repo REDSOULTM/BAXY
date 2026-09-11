@@ -118,13 +118,15 @@ internal static class ProductConductorHost
             foreach (JsonObject command in commands)
             {
                 lifetime.Token.ThrowIfCancellationRequested();
-                await ExecuteCommandAsync(
+                if (!await ExecuteCommandAsync(
                         conductor,
                         command,
                         parsed.Timeout,
                         capture,
-                        lifetime.Token)
-                    .ConfigureAwait(true);
+                        lifetime.Token).ConfigureAwait(true))
+                {
+                    return 3;
+                }
             }
 
             await EmitAsync(
@@ -156,7 +158,7 @@ internal static class ProductConductorHost
         }
     }
 
-    private static async Task ExecuteCommandAsync(
+    private static async Task<bool> ExecuteCommandAsync(
         ProductConductor conductor,
         JsonObject command,
         TimeSpan timeout,
@@ -164,6 +166,42 @@ internal static class ProductConductorHost
         CancellationToken cancellationToken)
     {
         string cmd = ((string?)command["cmd"] ?? "turn").Trim().ToLowerInvariant();
+        if (cmd == "turn.confirm-if-matches")
+        {
+            string? caseId = command["caseId"] is JsonValue caseValue
+                && caseValue.TryGetValue(out string? parsedCase) ? parsedCase : null;
+            if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
+                || command["text"] is not JsonValue textValue
+                || !textValue.TryGetValue(out string? requestText)
+                || string.IsNullOrWhiteSpace(requestText)
+                || command["expectedOperation"] is not JsonValue operationValue
+                || !operationValue.TryGetValue(out string? expectedOperation)
+                || string.IsNullOrWhiteSpace(expectedOperation)
+                || command["expectedArguments"] is not JsonObject expectedArguments
+                || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+            {
+                await EmitTurnAsync(
+                    conductor.RejectConfirmation("confirmation_command_not_admitted"),
+                    capture, cancellationToken, caseId, "final").ConfigureAwait(true);
+                return false;
+            }
+
+            ProductTurnResult initial = await conductor
+                .TurnAsync(requestText, timeout, cancellationToken).ConfigureAwait(true);
+            PendingOperationConfirmation? observed =
+                conductor.ViewModel.CaptureConductorConfirmation();
+            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
+                .ConfigureAwait(true);
+            ProductTurnResult final = await conductor.ConfirmPendingAsync(
+                initial, observed, expectedOperation, expectedArguments,
+                timeout, cancellationToken).ConfigureAwait(true);
+            await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
+                .ConfigureAwait(true);
+            return !final.TimedOut
+                && final.Terminal == ProductTurnTerminal.PublishedFinal
+                && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
+        }
+
         if (cmd is "session.new" or "new-session" or "sessions/new")
         {
             FieldHttpResponse response = await conductor.NewSessionAsync()
@@ -173,7 +211,7 @@ internal static class ProductConductorHost
                     capture,
                     cancellationToken)
                 .ConfigureAwait(true);
-            return;
+            return true;
         }
 
         if (cmd == "upload")
@@ -182,7 +220,7 @@ internal static class ProductConductorHost
                 .ConfigureAwait(true);
             await EmitAsync(HttpJson("upload", response), capture, cancellationToken)
                 .ConfigureAwait(true);
-            return;
+            return true;
         }
 
         // R07 pide inyectar el fallo, restaurar el recurso y volver a pedir en
@@ -212,7 +250,7 @@ internal static class ProductConductorHost
                     capture,
                     cancellationToken)
                 .ConfigureAwait(true);
-            return;
+            return true;
         }
 
         if (cmd is "cancel" or "cancelar")
@@ -221,7 +259,7 @@ internal static class ProductConductorHost
                 .CancelAsync(timeout, cancellationToken)
                 .ConfigureAwait(true);
             await EmitTurnAsync(result, capture, cancellationToken).ConfigureAwait(true);
-            return;
+            return true;
         }
 
         string text = ((string?)command["text"] ?? string.Empty).Trim();
@@ -232,19 +270,22 @@ internal static class ProductConductorHost
                 .ConfigureAwait(true);
             await EmitAsync(HttpJson("turn", response), capture, cancellationToken)
                 .ConfigureAwait(true);
-            return;
+            return true;
         }
 
         ProductTurnResult turn = await conductor
             .TurnAsync(text, timeout, cancellationToken)
             .ConfigureAwait(true);
         await EmitTurnAsync(turn, capture, cancellationToken).ConfigureAwait(true);
+        return true;
     }
 
     private static async Task EmitTurnAsync(
         ProductTurnResult result,
         StreamWriter? capture,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? caseId = null,
+        string? phase = null)
     {
         await EmitAsync(HttpJson("turn", result.Admission), capture, cancellationToken)
             .ConfigureAwait(true);
@@ -261,19 +302,22 @@ internal static class ProductConductorHost
                 .ConfigureAwait(true);
         }
 
-        await EmitAsync(
-                new JsonObject
-                {
-                    ["type"] = "terminal",
-                    ["kind"] = TerminalName(result.Terminal),
-                    ["final"] = result.FinalText,
-                    ["diagnostic"] = result.Diagnostic,
-                    ["timedOut"] = result.TimedOut,
-                    ["admissionStatus"] = result.Admission.Status,
-                },
-                capture,
-                cancellationToken)
-            .ConfigureAwait(true);
+        var terminal = new JsonObject
+        {
+            ["type"] = "terminal",
+            ["kind"] = TerminalName(result.Terminal),
+            ["final"] = result.FinalText,
+            ["diagnostic"] = result.Diagnostic,
+            ["timedOut"] = result.TimedOut,
+            ["admissionStatus"] = result.Admission.Status,
+        };
+        if (caseId is not null)
+        {
+            terminal["caseId"] = caseId;
+            terminal["phase"] = phase;
+        }
+
+        await EmitAsync(terminal, capture, cancellationToken).ConfigureAwait(true);
         await EmitAsync(PosteriorJson(result.Posterior), capture, cancellationToken)
             .ConfigureAwait(true);
     }

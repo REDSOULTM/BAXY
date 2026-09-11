@@ -15,6 +15,7 @@ namespace Baxy.App;
 internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDisposable
 {
     private readonly SynchronizationContext _uiContext;
+    private readonly int _uiThreadId = Environment.CurrentManagedThreadId;
     private readonly string _memorySessionId;
     private readonly Func<MissionInputRoute, RoutedOperation?>? _testTurnResolver;
     private readonly Func<MindSidecarClient> _mindClientFactory;
@@ -572,6 +573,30 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     internal bool HasPendingPlan => _mindPlans.HasPending;
+
+    internal PendingOperationConfirmation? CaptureConductorConfirmation()
+    {
+        if (Environment.CurrentManagedThreadId != _uiThreadId
+            || _isDisposed || !IsInputEnabled || _coreClient?.IsReady != true
+            || PendingModelMessageCount != 0 || HasCompositionError
+            || !string.IsNullOrEmpty(LastMessageCompositionFailure)
+            || _memoryTurns.HasConfirmation || _memoryTurns.HasPendingOperation
+            || _pendingAudioOperation is not null || _pendingNoteInteraction.Current is not null
+            || _mindPlans.Current is not { } execution
+            || execution.Steps.Count != 1 || execution.NextIndex != 0
+            || execution.ReplanCount != 0 || execution.Observations.Count != 0
+            || execution.CompletedMessages.Count != 0 || execution.PendingEffectMayHaveOccurred
+            || execution.Confirmation is not { ReconciliationRequired: false } confirmation
+            || !ReferenceEquals(execution.PendingOperation, confirmation.Prepared)
+            || _retryableOperations?.SnapshotPendingOperations() is not { Count: 1 } pending
+            || !ReferenceEquals(pending[0], confirmation.Prepared)
+            || confirmation.ExpiresAtUtc <= DateTimeOffset.UtcNow)
+        {
+            return null;
+        }
+
+        return confirmation;
+    }
 
     internal async Task SubmitAsync(
         MissionInput input,
