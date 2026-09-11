@@ -4267,6 +4267,7 @@ def compose_visible_defect(
         return "extra_claim"
     if "seen you" in stripped.casefold() or "he visto" in stripped.casefold():
         return "extra_claim"
+    situation = _situation_from_facts(facts)
     asked = re.sub(r"[¿?¡!.]", "", (user_text or "").casefold()).strip()
     answered = re.sub(r"[¿?¡!.]", "", stripped.casefold()).strip()
     asked_lead = re.sub(
@@ -4290,7 +4291,35 @@ def compose_visible_defect(
         and intent != "welcome"
         and not _looks_like_greeting_ask(user_text)
     ):
-        return "extra_claim"
+        observed_open = situation.get("observed")
+        opened_name = (
+            observed_open.get("displayName") if isinstance(observed_open, dict) else None
+        )
+        # An imperative and its completed first-person report can have the same
+        # spelling. Exempt only this echo, bound to the verified complete name;
+        # any nominal qualifier is already present in the identical request.
+        completed_open_echo = (
+            answered == asked
+            and situation.get("kind") == "operation"
+            and situation.get("operation") == "app.open"
+            and situation.get("polarity") == "success"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(opened_name, str)
+            and bool(opened_name.strip())
+            and "?" not in stripped
+            and "¿" not in stripped
+            and re.fullmatch(
+                r"(?:(?:yo\s+)?abrí|i\s+(?:have\s+)?opened)\s+"
+                r"(?:(?:el|la|the)\s+)?"
+                + re.escape(opened_name.strip())
+                + r"(?:\s+(?:de|of)\s+\w+)?\.?",
+                stripped,
+                re.IGNORECASE,
+            ) is not None
+        )
+        if not completed_open_echo:
+            return "extra_claim"
     if re.search(
         r"i'm baxy|im baxy|i am baxy|soy baxy|living on the pc|vive en el pc",
         stripped.casefold(),
@@ -4406,7 +4435,6 @@ def compose_visible_defect(
         stripped.casefold(),
     ):
         return "invented"
-    situation = _situation_from_facts(facts)
     polarity = str(situation.get("polarity") or "").strip().lower()
     kind = str(situation.get("kind") or intent).strip().lower()
     cause = str(situation.get("cause") or "").strip().lower()

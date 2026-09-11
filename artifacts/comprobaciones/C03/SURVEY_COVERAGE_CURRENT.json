@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T18:15:05.2549596Z",
+  "utc": "2026-09-11T18:40:54.0158542Z",
   "covered": 69,
   "open": 673,
   "not_applicable": 0,
@@ -349,16 +349,18 @@
     "APP_OPEN853_TAIL/ROOT_ADJUDICATION.json",
     "WEB_SEARCH895/ROOT_ADJUDICATION.json",
     "WEB_SEARCH900/ROOT_ADJUDICATION.json",
-    "APP_CORRECTION902/ROOT_ADJUDICATION.json"
+    "APP_CORRECTION902/ROOT_ADJUDICATION.json",
+    "WEB_CONFIRMATION916/ROOT_ADJUDICATION.json",
+    "APP_PRIORITY922/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Web and apps both46open; next sealed web864 selected. No category with more open requirements is bypassed.",
+  "equal_maximum_open_next_selection": "Apps44open precedes web43 after916;922 adds no credit. Repair verified Settings response before directed retry; web918/919 remain reserved.",
   "latest_product_run": {
-    "passed": 4,
-    "executed": 5,
-    "batch": 916,
-    "not_executed": 5,
-    "failed": 1,
-    "coverage_added": 3
+    "passed": 1,
+    "executed": 6,
+    "batch": 922,
+    "not_executed": 0,
+    "failed": 5,
+    "coverage_added": 0
   },
-  "registry_sha256": "1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c"
+  "registry_sha256": "cba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693"
 }

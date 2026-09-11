@@ -192,3 +192,11 @@ H0706 sí ejecutó app.open completed/verified inv5d64886a-6e0d-4bff-9644-224981
 La prohibición de Paint pasó. Retirada, cita, relato y destino ausente no produjeron apertura, pero respondieron respectivamente incapacidad infundada, significado invertido, contradicción del relato y limitación sin identificar app. No se acreditan por mera ausencia de efecto. Adjudicación APP_PRIORITY922/ROOT_ADJUDICATION.json SHA78e0ddf3087249e9e6654c9d4b6793796c4f36e43b14fd534d09ebc5728a51ce.
 
 44,5s; VRAM3497,56MiB y RAM2415,14MiB, por separado frente4096. Encuesta69/742,673abiertos,0NA;41altas confirmadas24h,0/35categorías cerradas. Apps44 sigue antes de web43. No suites/Fast/Full por orden vigente. Próximo: diagnóstico924 del rechazo de respuesta H0706 y reparación mínima; no repetir panel entero.923 conserva plan privado de observabilidad de identidad para5IDs, sin código.918/919 web reservados. Goal activo; ninguna consulta pendiente ni bloqueo de RAM.
+
+## Tramo926 — corregir eco de apertura comprobada
+
+924 demuestra en compose-audit922 que el borrador «Abrí la configuración de Windows.» se rechazó18veces como extra_claim por coincidir con el pedido normalizado. No fue silencio del modelo ni el fallo C#891. Informe externo924 SHAe62d640305611ef76cb140f8941e23d5cc3f005a4bcd25dcc1539db40febfc56.
+
+Raíz revisó parche926 íntegro1d0fe1 y lo aplica sólo a llm.py: excepción local al veto de eco para afirmación pasada completa, mismo destino observado y app.open success/verified/succeeded estrictos. Nombre escapado, calificador nominal del mismo pedido, sin pregunta, promesa ni negación; no aceptación anticipada y validadores posteriores intactos. Reubica única lectura situation sin añadir resolver/catálogo/provider/prompt. +30/-2, patch455df8face7ebd96355abbc68c23eadf21641fd0557acd7665d472f0164e325e, fuente96245f75eac6aba2dd54dcc2271082f0993b98f569c233c226ede7f7a58166c8.
+
+No suites/Fast/Full ni compilación, por instrucción vigente y cambio sólo Python. Corrección revisada pendiente de ejecución real925, no se afirma validación verde ni crédito. Panel925: H0706 intacto y5límites nuevos; referencias854 sólo, sin repetir variantes o panel922. Sello3af4c4dc7823776d0329d53dfbbcd68f4da8e0df3972b07649045cc3fadfdb94 revisado antes de ejecución. Encuesta69/742,673abiertos,0NA;41altas24h,0/35categorías; apps44 primero.
