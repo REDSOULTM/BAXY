@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T13:44:27.830697+00:00",
+  "root_reviewed": true,
+  "script_sha256": "918ffb6b97bea89118cb723ce096179a9aac017086e4d634d21f8ae8868f6cf0",
+  "root_input_sha256": "895e1dec44d5a41cd41ccd9c84d7cc0c50183ba2a5d5a5c925c54abe22cf9180",
+  "source_final_journal_sha256": "fd64320a6698202e30a2d43291c217e7da07dc14a3fdff7a39ed121049503803",
+  "expected_final": {
+    "volumePercent": 100,
+    "muted": false
+  },
+  "baseline": {
+    "volumePercent": 31,
+    "muted": false
+  },
+  "maximum_calls": 4,
+  "retry": false,
+  "diff_review_chunk": "cc99b4"
+}

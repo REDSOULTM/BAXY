@@ -1,35 +1,31 @@
 # Estado para el dueño — 11 de septiembre
 
-La encuesta llegó a **45/742 cubiertos**. Se acreditaron dos lecturas de audio y siete solicitudes de apertura en estas tandas. Las dos correcciones de apps están publicadas y comprobadas: recuperan peticiones con cortesía y describen correctamente aperturas ya verificadas.
+La encuesta llegó a **63/742 cubiertos**. La última tanda acreditó18 solicitudes de volumen: los valores escritos con palabras ya llegan a la operación y las respuestas se contrastaron con los cambios reales. Tres variantes, incluida una inglesa, pasaron con 27%,11% ymitad de escala.
 
 | Qué se midió | Resultado | Qué falta |
 |---|---|---|
-| Primera tanda de apps | 1/52 respuestas válidas; ninguna alta. Una apertura incierta de Calculadora arrastró las peticiones siguientes. | Conservar ese diagnóstico sin repetir el panel completo. |
-| Audio848 | 26/52 válidas; 21 literales correctos. Dos lecturas recibieron crédito con variantes pertinentes. | Generalizar ajustes y silencio. |
-| Audio858, candidato actual | 52/52 ejecutados:31 respuestas válidas y21 fallidas;26 literales correctos. Ninguna alta nueva porque sólo una variante pasó. | Corregir el paso que pierde las cantidades escritas después de haberlas reconocido. |
-| Apps tras las correcciones | 15 de 25 casos ejecutados: 10 válidos, 5 fallidos. Siete variantes válidas y tres créditos: Notepad, WhatsApp y Opera. | La continuación acreditó otras cuatro solicitudes; quedan tres límites sin ejecutar. Audio pasa primero por número de pendientes. |
-
-Las dos tandas de apps se detuvieron al caer la RAM libre bajo768MiB. La última tanda de audio terminó completa y sin violaciones de recursos. Se conservaron los resultados y las aperturas inciertas de Steam y Discord. Tras terminar la prueba, se cerró normalmente la nueva ventana de Opera y salió la instancia de Steam abierta por el diagnóstico; se recuperaron 5106,73 MiB de RAM libre. Discord quedó en segundo plano. El Administrador de tareas se conserva como lo dejaste.
-
-| Recursos, medidos por separado | VRAM pico | RAM residente pico |
-|---|---:|---:|
-| Apps847 | 3497,56 MiB | 2392,03 MiB |
-| Audio848 | 3499,56 MiB | 2437,42 MiB |
-| Apps853, parcial | 3497,56 MiB | 2449,31 MiB |
-| Continuación853, parcial | 3497,56 MiB | 1886,62 MiB |
-| Audio858, completa | 3499,56 MiB | 2413,79 MiB |
-
-Las cinco ejecuciones quedaron bajo el techo de 4 GB de VRAM. El muestreo de RAM del árbol puede incluir aplicaciones descendientes; no representa sólo el modelo. Audio quedó restaurado y verificado en **31 %, sin silencio**.
+| Audio861, candidato actual | 47/47 ejecutados;27 válidos y 20 fallidos.18 créditos nuevos. | Tres respuestas de ajustes siguen fallando; nueve peticiones sin cantidad terminan en aclaración. |
+| Generalización del volumen absoluto | Tres variantes correctas, con cambios reales; antes fallaban las tres. | No equivale a cerrar todo audio: siguen abiertos30 requisitos de la categoría. |
+| Apps853 y continuación | Siete solicitudes acreditadas; dos paradas por RAM conservaron lo ya ejecutado. | Sigue la tanda grande de apps854, preparada con 30 literales,12 variantes y 5 límites. |
 
 | Avance formal | Estado |
 |---|---|
-| Encuesta | 45/742 cubiertos; 697 abiertos; 0 no aplican. |
-| Últimas 24 horas | 17 altas confirmadas, más 2 actualizaciones de casos cubiertos cuya primera fecha no se distingue. |
-| Categorías | 0/35 cerradas. Audio: 48 abiertos; apps: 47; web: 46. |
-| Matriz C03 | 3/11 cumplidas, 5 contradichas y 3 pendientes. |
+| Encuesta | 63/742 cubiertos;679 abiertos;0 no aplican. |
+| Últimas24 horas | 35 altas confirmadas;otras2 actualizaciones de casos cubiertos no permiten distinguir su primera fecha. |
+| Categorías | 0/35 cerradas. Apps47 abiertos;web46;audio30. |
+| Matriz C03 | 3/11 cumplidas,5 contradichas y 3 pendientes. |
 
-El ritmo sigue bajo 20 altas: hubo un Full en la ventana, fallos de generalización y una parada por RAM. El ajuste aplicado es reducir a dos subagentes como máximo y ejecutar sólo casos pendientes. Audio sigue primero por cantidad de abiertos. Después de dos tandas sin generalizar los ajustes, el arreglo pasa a la frontera pública que las pruebas anteriores no ejercitaban. El siguiente panel ya tiene30 literales de ajustes,12 variantes y5 límites; los casos con otras causas esperan su propio tramo. La tanda grande de apps queda sellada para su turno. H0675, OCR y los nuevos providers permanecen aparcados.
+| Recursos, medidos por separado | VRAM pico | RAM residente pico |
+|---|---:|---:|
+| Audio861 | 3499,56 MiB | 2402,05 MiB |
+| Audio858 | 3499,56 MiB | 2413,79 MiB |
+| Apps853 | 3497,56 MiB | 2449,31 MiB |
+| Continuación853 | 3497,56 MiB | 1886,62 MiB |
 
-El nuevo candidato de audio pasó **3545 pruebas conjuntas, cero fallos y cero omisiones**, además de estática y compilación Release. La medición del producto mostró que reconocer la cantidad no bastaba: se perdía en el paso siguiente. Esa frontera está localizada y su reparación se prepara con pruebas de la ruta pública completa. El Full del candidato anterior tuvo 4754 pruebas .NET y 12907 Python aprobadas, cero fallos; una omisión agregada .NET y tres Python, además de 466 subpruebas aprobadas. Las omisiones no cuentan como aprobaciones y ese Full no se atribuye al nuevo Python.
+La última ejecución duró137,656 segundos y terminó sin cortes de recursos. La VRAM permaneció bajo 4 GB. La RAM del árbol puede incluir aplicaciones descendientes; no representa sólo el modelo. El volumen volvió a31%, sin silencio, verificado mediante tres llamadas separadas de la prueba.
 
-C03 sigue en curso, sin fecha de cierre fiable. La tabla de las 35 categorías está en [el checkpoint](CHECKPOINT.md). El avance se cuenta por requisitos verificados; main y los cambios del dueño se conservan.
+El candidato pasó3583 pruebas, sin fallos ni omisiones, además de estática y compilación Release. El Full anterior tuvo4754 pruebas.NET y 12907 Python aprobadas, cero fallos;una omisión agregada.NET y tresPython, además de 466 subpruebas aprobadas. Esas omisiones no cuentan como aprobaciones y ese Full no se atribuye al Python nuevo. Falta el Full final.
+
+Apps pasa primero por número de abiertos; web se prepara en paralelo. Los fallos de respuesta de audio tienen propuesta externa y no retrasan esa prioridad. H0675,OCR y nuevos providers siguen aparcados. El Administrador de tareas se conserva como lo dejaste.
+
+C03 sigue en curso, sin fecha de cierre fiable. El avance se cuenta por requisitos verificados; main y tus cambios se conservan. La tabla completa de categorías está en [el checkpoint](CHECKPOINT.md).

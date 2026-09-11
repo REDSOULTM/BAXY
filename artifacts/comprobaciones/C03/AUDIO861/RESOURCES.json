@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-11T13:42:21.409973+00:00",
+  "violations": [],
+  "gpu_peak_mib": 3499.55859375,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 2402.046875,
+  "seconds": 137.6559999999954,
+  "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+}

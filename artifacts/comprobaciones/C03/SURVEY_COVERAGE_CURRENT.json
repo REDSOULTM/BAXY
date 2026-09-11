@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T13:27:42.273809+00:00",
-  "covered": 45,
-  "open": 697,
+  "utc": "2026-09-11T13:47:23.707261+00:00",
+  "covered": 63,
+  "open": 679,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 19,
+  "covered_updated_last_24h": 37,
   "updated_recent_ids": [
     "H0133",
     "H0158",
@@ -26,22 +26,32 @@
     "H0557",
     "H0633",
     "H0649",
-    "H0729"
+    "H0729",
+    "H0577",
+    "H0690",
+    "H0310",
+    "H0402",
+    "H0035",
+    "H0086",
+    "H0132",
+    "H0233",
+    "H0258",
+    "H0338",
+    "H0409",
+    "H0471",
+    "H0477",
+    "H0501",
+    "H0524",
+    "H0538",
+    "H0684",
+    "H0725"
   ],
-  "confirmed_new_grants_last_24h": 17,
+  "confirmed_new_grants_last_24h": 35,
   "first_grant_date_not_distinguished_for_recent_ids": [
     "H0180",
     "H0499"
   ],
   "categories": [
-    {
-      "category": "audio_volume",
-      "label": "Audio y volumen",
-      "total": 51,
-      "covered": 3,
-      "open": 48,
-      "not_applicable": 0
-    },
     {
       "category": "apps_open",
       "label": "Abrir aplicaciones",
@@ -120,6 +130,14 @@
       "total": 31,
       "covered": 0,
       "open": 31,
+      "not_applicable": 0
+    },
+    {
+      "category": "audio_volume",
+      "label": "Audio y volumen",
+      "total": 51,
+      "covered": 21,
+      "open": 30,
       "not_applicable": 0
     },
     {
@@ -315,7 +333,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "7ad672ca8e643468e33d4dc42f1249febf155e218c5c80b0c523a3bbb66c84af",
+  "requirements_sha256": "8e338064f6ed0a575f60c8a6c06a8c4768a1740bcfd4b572436c0cad4d2dcef3",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",

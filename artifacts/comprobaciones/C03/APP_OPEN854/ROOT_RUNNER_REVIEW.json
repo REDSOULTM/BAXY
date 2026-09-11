@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-11T13:51:39.531726+00:00",
+  "root_reviewed": true,
+  "runner_sha256": "02b72b81d4630d8168000629b42453a7053cf737ef5f89340898eccda8e25605",
+  "plan_sha256": "070e24985b016f461442c4482d159cfaba8e3c733bdcf402c4e61edcf66c7d24",
+  "panel_seal_sha256": "777d2c096c170f6b2542216c193b9dc25de1b41d5428f21b8b5ed756bbc66a3e",
+  "diff_review_chunk": "71da9b",
+  "literal_exact_current_open_positive": 30,
+  "variants": 12,
+  "boundaries": 5,
+  "source_pins": 64,
+  "guards_unchanged": true,
+  "requires_prepare_review_before_gpu": true
+}

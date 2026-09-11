@@ -1,0 +1,58 @@
+{
+  "utc": "2026-09-11T13:41:46.885210+00:00",
+  "root_adjudicated": true,
+  "candidate": "0634a8d5474e099a9fabb990e205224a78638a62",
+  "variants": [
+    {
+      "case_id": "audio848-dev-absolute-01",
+      "turn_id": "t5",
+      "verdict": "pass",
+      "invocation_id": "5260f47e-da07-45d5-8a04-3c096ecdf53d",
+      "baseline": {
+        "volumePercent": 22,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 27,
+        "muted": false
+      },
+      "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+      "reason": "Root saw useful faithful completion, exact level and preserved mute against verified receipt;22→27,27→11,11→50. Includes English; no phrase matching."
+    },
+    {
+      "case_id": "audio848-dev-absolute-02",
+      "turn_id": "t6",
+      "verdict": "pass",
+      "invocation_id": "63d29654-f473-45c0-b4b7-57bc1ff3a054",
+      "baseline": {
+        "volumePercent": 27,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 11,
+        "muted": false
+      },
+      "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+      "reason": "Root saw useful faithful completion, exact level and preserved mute against verified receipt;22→27,27→11,11→50. Includes English; no phrase matching."
+    },
+    {
+      "case_id": "audio848-dev-absolute-03",
+      "turn_id": "t7",
+      "verdict": "pass",
+      "invocation_id": "28e85e6b-dcfc-41e3-8d0b-6aa320c0dd96",
+      "baseline": {
+        "volumePercent": 11,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 50,
+        "muted": false
+      },
+      "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+      "reason": "Root saw useful faithful completion, exact level and preserved mute against verified receipt;22→27,27→11,11→50. Includes English; no phrase matching."
+    }
+  ],
+  "source_review_sha256": "d3896d7aff7008eccdef77fd5c5451fbe4af816e33653c075eb0f0591abbb69a",
+  "root_review_chunk": "c44c11",
+  "coverage_credit": 0
+}

@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T13:44:30.528311+00:00",
+  "restored_verified": true,
+  "baseline": {
+    "volumePercent": 31,
+    "muted": false
+  },
+  "final_panel": {
+    "volumePercent": 100,
+    "muted": false
+  },
+  "core_calls": 3,
+  "retries": 0,
+  "credit": 0,
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio861-cleanup-run\\REPORT.json",
+  "private_report_sha256": "f9af57e5c022319b172f7370956da7fbf3a13936129456b0adde089c01e3cab5",
+  "journal_before_sha256": "fd64320a6698202e30a2d43291c217e7da07dc14a3fdff7a39ed121049503803",
+  "root_review": "ROOT_CLEANUP_REVIEW.json"
+}

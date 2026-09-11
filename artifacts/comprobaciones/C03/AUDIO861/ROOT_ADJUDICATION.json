@@ -1,0 +1,595 @@
+{
+  "utc": "2026-09-11T13:47:23.707261+00:00",
+  "root_adjudicated": true,
+  "candidate_commit": "0634a8d5474e099a9fabb990e205224a78638a62",
+  "panel_sha256": "464a4839403c212dd8df759b63ad7c2cbccf675e6d066f808bae9a62480ba2d0",
+  "private_review_sha256": "0bc053b9a35f570dab403bfb8cccb5e4a3c356e6e350371e9c14af72ebf875f8",
+  "journal_before_cleanup_sha256": "fd64320a6698202e30a2d43291c217e7da07dc14a3fdff7a39ed121049503803",
+  "counts": {
+    "total": 47,
+    "passed": 27,
+    "failed": 20,
+    "historical_literals_passed": 18,
+    "historical_literals_failed": 12,
+    "development_variants_passed": 5,
+    "development_variants_failed": 7,
+    "boundaries_passed": 4,
+    "boundaries_failed": 1,
+    "coverage_added": 18
+  },
+  "cases": [
+    {
+      "case_id": "audio848-dev-up-01",
+      "turn_id": "t1",
+      "group": "relative_up",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Interpretación inválida pese a subida explícita de siete puntos; no ejecuta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-dev-up-02",
+      "turn_id": "t2",
+      "group": "relative_up",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Sólo lee estado para una subida de doce puntos; agota composición sin respuesta. Borradores43% contradicen31% observado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "a4f59f07-7942-4b91-8935-35bc375d3f1a"
+      ]
+    },
+    {
+      "case_id": "audio848-dev-down-01",
+      "turn_id": "t3",
+      "group": "relative_down",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Variante útil y fiel al recibo: cantidad/dirección/dispositivo/nivel/silencio conservados.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "2cd74737-6d44-4876-b408-9127ac2727b4"
+      ]
+    },
+    {
+      "case_id": "audio848-dev-down-02",
+      "turn_id": "t4",
+      "group": "relative_down",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Interpretación inválida pese a reducción explícita de cuatro puntos.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-dev-absolute-01",
+      "turn_id": "t5",
+      "group": "absolute",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Variante útil y fiel al recibo: cantidad/dirección/dispositivo/nivel/silencio conservados.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "5260f47e-da07-45d5-8a04-3c096ecdf53d"
+      ]
+    },
+    {
+      "case_id": "audio848-dev-absolute-02",
+      "turn_id": "t6",
+      "group": "absolute",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Variante útil y fiel al recibo: cantidad/dirección/dispositivo/nivel/silencio conservados.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "63d29654-f473-45c0-b4b7-57bc1ff3a054"
+      ]
+    },
+    {
+      "case_id": "audio848-dev-absolute-03",
+      "turn_id": "t7",
+      "group": "absolute",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Variante útil y fiel al recibo: cantidad/dirección/dispositivo/nivel/silencio conservados.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "28e85e6b-dcfc-41e3-8d0b-6aa320c0dd96"
+      ]
+    },
+    {
+      "case_id": "audio848-dev-mute-01",
+      "turn_id": "t8",
+      "group": "mute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad el silencio de salida presente en catálogo.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-dev-mute-02",
+      "turn_id": "t9",
+      "group": "mute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Interpretación inválida para silenciar altavoces preservando micrófono.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-dev-status-01",
+      "turn_id": "t10",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Interpretación inválida para consultar salida/nivel.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-dev-status-02",
+      "turn_id": "t11",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Interpretación inválida para consultar salida/silencio.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-dev-status-03",
+      "turn_id": "t12",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Variante útil y fiel al recibo: cantidad/dirección/dispositivo/nivel/silencio conservados.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "1b2dac09-f243-4635-bda5-108faa8e89d6"
+      ]
+    },
+    {
+      "case_id": "H0577",
+      "turn_id": "t13",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "61bb1f48-0d5f-4c5d-a704-b308ef752dac"
+      ]
+    },
+    {
+      "case_id": "H0690",
+      "turn_id": "t14",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "5979c189-6e89-476e-b7a3-b4165dec9725"
+      ]
+    },
+    {
+      "case_id": "H0310",
+      "turn_id": "t15",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "201612d5-dbc1-4aef-954a-8db2c5085b23"
+      ]
+    },
+    {
+      "case_id": "H0402",
+      "turn_id": "t16",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "db26c45d-8a96-47c9-a0b5-538461686a7c"
+      ]
+    },
+    {
+      "case_id": "H0465",
+      "turn_id": "t17",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Ejecuta10→30, pero publica otra orden «Poné» en vez de resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": [
+        "3807ab22-0380-47dd-b471-a84bccacdb1b"
+      ]
+    },
+    {
+      "case_id": "H0035",
+      "turn_id": "t18",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "ebbd8d44-0a5d-47ec-833e-0fef001a7a31"
+      ]
+    },
+    {
+      "case_id": "H0086",
+      "turn_id": "t19",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "9c42a796-249f-4103-93f1-0b94846df114"
+      ]
+    },
+    {
+      "case_id": "H0132",
+      "turn_id": "t20",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "571ac217-8d44-46dd-9fd5-65e44082120c"
+      ]
+    },
+    {
+      "case_id": "H0233",
+      "turn_id": "t21",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "9ca66a3f-2f7e-4bce-9982-8dcbc5dabcfc"
+      ]
+    },
+    {
+      "case_id": "H0254",
+      "turn_id": "t22",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Ejecuta20→30, pero afirma que bajó el volumen.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": [
+        "8772fa76-af1c-4382-ace7-7f368f681631"
+      ]
+    },
+    {
+      "case_id": "H0258",
+      "turn_id": "t23",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "86313b47-34b8-4e15-8e4b-e5812441e1ce"
+      ]
+    },
+    {
+      "case_id": "H0338",
+      "turn_id": "t24",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "5f58f378-9577-46bb-acc9-a50f9d9c4f60"
+      ]
+    },
+    {
+      "case_id": "H0409",
+      "turn_id": "t25",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "5357912f-42db-4a3d-9ac2-11860ed9893b"
+      ]
+    },
+    {
+      "case_id": "H0471",
+      "turn_id": "t26",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "1d8424e0-73ff-4fef-bb68-1a4ff8ad657d"
+      ]
+    },
+    {
+      "case_id": "H0477",
+      "turn_id": "t27",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "a50b43e3-3b2a-4b71-8e59-0fe69e1aa779"
+      ]
+    },
+    {
+      "case_id": "H0501",
+      "turn_id": "t28",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "96b38d06-9d92-4071-a646-15308589e48d"
+      ]
+    },
+    {
+      "case_id": "H0524",
+      "turn_id": "t29",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "34d4e559-a11a-439b-b43e-22b0a28a4d86"
+      ]
+    },
+    {
+      "case_id": "H0538",
+      "turn_id": "t30",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "abcf306b-82b4-45f0-b13c-bcf20f6c267f"
+      ]
+    },
+    {
+      "case_id": "H0640",
+      "turn_id": "t31",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Ejecuta100→50 y agota composición; borradores dicen subida y reciben missing_name. No respuesta útil tras efecto.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": [
+        "f2a722c1-cc59-4c7b-b63f-62871dbcda09"
+      ]
+    },
+    {
+      "case_id": "H0684",
+      "turn_id": "t32",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "d02d58f5-198a-4863-804b-1c9600589474"
+      ]
+    },
+    {
+      "case_id": "H0725",
+      "turn_id": "t33",
+      "group": "absolute",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel, con recibo verificado y tres variantes absolutas861 válidas; crédito ya escrito al observarlo.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "5dfee6bb-600e-4057-bcaf-a6529f981c77"
+      ]
+    },
+    {
+      "case_id": "H0027",
+      "turn_id": "t34",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0028",
+      "turn_id": "t35",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0436",
+      "turn_id": "t36",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0308",
+      "turn_id": "t37",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0357",
+      "turn_id": "t38",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0488",
+      "turn_id": "t39",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0695",
+      "turn_id": "t40",
+      "group": "relative_up",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente. Pregunta también dirección pese a la petición reconocible de subida.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0058",
+      "turn_id": "t41",
+      "group": "relative_down",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente. Pregunta dirección pese a que bajar está explícito.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0294",
+      "turn_id": "t42",
+      "group": "relative_down",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Aclara cantidad ausente sin ejecutar el ajuste relativo exigido por el criterio sellado; respuesta honesta sin crédito de consumación. Además faltan dos variantes de esa conducta completa con cantidad ausente.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-boundary-negation",
+      "turn_id": "t43",
+      "group": "negative",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta el límite sin efectos ni referencias inventadas.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-boundary-range",
+      "turn_id": "t44",
+      "group": "out_of_range",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "137% no se ejecuta, pero no explica el rango0–100 que exige el límite sellado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-boundary-reference",
+      "turn_id": "t45",
+      "group": "missing_reference",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta el límite sin efectos ni referencias inventadas.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-boundary-scope",
+      "turn_id": "t46",
+      "group": "wrong_scope",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta el límite sin efectos ni referencias inventadas.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "audio848-boundary-confirmation",
+      "turn_id": "t47",
+      "group": "orphan_confirmation",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta el límite sin efectos ni referencias inventadas.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    }
+  ],
+  "credit_already_written": "ROOT_PARTIAL_CREDIT.json",
+  "relative_note": "Nine honest clarifications did not satisfy the sealed effect criterion and lack two complete-behavior variants; no assumed increment or fabricated dialogue added."
+}

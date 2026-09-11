@@ -1,3 +1,57 @@
+# Audio861:18 créditos; apps854 siguiente por masa — 2026-09-11T13:51:39.531726+00:00
+
+**63/742 cubiertos,679 abiertos,0no aplican;0/35categorías. Últimas24h:35 altas confirmadas+2actualizaciones covered de primera fecha indistinguible. HuboFull843.**
+
+861 ejecutó47/47,exit0,pins intactos;27válidos/20fallidos. Tres variantes absolutas y una bajada relativa ahora funcionan.18literales absolutos recibieron crédito en dos tramos al observarlos;12literales siguen abiertos con causa individual (tres defectos de respuesta,nueve aclaraciones sin ajuste y sin pares pertinentes). No repetir panel entero por ellos. [Adjudicación](AUDIO861/ROOT_ADJUDICATION.json). RegistroSHA8e338064f6ed0a575f60c8a6c06a8c4768a1740bcfd4b572436c0cad4d2dcef3.
+
+860 publicado0634a8d5474e099a9fabb990e205224a78638a62 y adoptado en el alcance medido:3583pass0fail0skip74,57s,Fast0Release23,19s;64pins82653e62...;worktree retirado. Fuente congelada para apps854. Full843 es baseline histórico separado; Full final pendiente.
+
+Apps47abiertos va primero;web46después,audio30. Apps854sellado30literales+12variantes+5límites/94wire,seal777d2c09...;runnerrevision860SHA02b72b81d4630d8168000629b42453a7053cf737ef5f89340898eccda8e25605 revisado71da9b contra861,guardas intactas;30literales positivosabiertos exactos contra registroactual. Prepare conHEADreal,revisar654pins/584sources/18bins yrun. Web864 se prepara en un subagente con evidencia acotada.
+
+863 es propuesta externa de dirección narrada,179pass0skip2,41s,patchccbabb9a...;no se integra antes de apps. WorktreeC03-audio-prose862-worktree conserva llm.py y test_audio_direction863.py;mandato queda en expediente externo,no skips/xfail introducidos.
+
+861 recursos:VRAM3499,56MiB;RAM delárbol2402,05MiB;137,656s,sin violaciones. Sesión98811recogida75e595. Audio restaurado100/false→31/false con tres llamadas verificadas,cleanup0efe32,diario previo preservado. No repetir ejecución ni limpieza. H0675/OCR/nuevos providers aparcados;3negativos18sinmarca intactos. C03 EN_CURSO,matriz3/11.
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Abrir aplicaciones | 54 | 7 | 47 | 0 |
+| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Audio y volumen | 51 | 21 | 30 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+
+---
+
 # Audio860 validado; preparado para producto861 — 2026-09-11T13:36:51.811552+00:00
 
 **45/742 cubiertos,697 abiertos,0no aplican;0/35categorías. Últimas24h:17altas confirmadas+2actualizaciones covered de primera fecha indistinguible;huboFull843.** Audio48>apps47>web46; tabla íntegra vigente en el siguiente apartado.

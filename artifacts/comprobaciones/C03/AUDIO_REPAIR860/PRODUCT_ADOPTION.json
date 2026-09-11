@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-11T13:47:23.707261+00:00",
+  "source_adopted": true,
+  "scope": "Existing explicit audio argument boundary, measured861:three absolute variants and one nine-point downward variant now perform verified effects.18historical credits. Relative interpretation/mute/status/prose failures remain open.",
+  "candidate": "0634a8d5474e099a9fabb990e205224a78638a62",
+  "owners_passed": 3583,
+  "owners_failed": 0,
+  "owners_skipped": 0,
+  "fast_exit_code": 0,
+  "source_pins_sha256": "82653e62a0b2a4eaa6e5e5d174da93c0c3790af8ba59e6e413c795834a1dc7c9",
+  "product_adjudication": "AUDIO861/ROOT_ADJUDICATION.json",
+  "full843_is_historical_baseline": true,
+  "category_closed": false
+}

@@ -1,0 +1,440 @@
+{
+  "root_adjudicated": true,
+  "candidate": "0634a8d5474e099a9fabb990e205224a78638a62",
+  "updates": [
+    {
+      "utc": "2026-09-11T13:42:54.577689+00:00",
+      "ids": [
+        "H0577",
+        "H0690",
+        "H0310",
+        "H0402",
+        "H0035",
+        "H0086",
+        "H0132",
+        "H0233",
+        "H0258",
+        "H0338",
+        "H0409",
+        "H0471",
+        "H0477"
+      ],
+      "before": {
+        "open": 697,
+        "covered": 45,
+        "not_applicable": 0
+      },
+      "after": {
+        "open": 684,
+        "covered": 58,
+        "not_applicable": 0
+      },
+      "requirements_before_sha256": "7ad672ca8e643468e33d4dc42f1249febf155e218c5c80b0c523a3bbb66c84af",
+      "requirements_sha256": "7b5f930c2689073b3a9daddead6f6e27bbbdc6a923f0d542fcac923940f656bb",
+      "source_review_sha256": "90901ba93aa5b2b76b5715e67846cc6de2421baf7eacfa30df83b4be551ba580"
+    },
+    {
+      "utc": "2026-09-11T13:43:32.796896+00:00",
+      "ids": [
+        "H0501",
+        "H0524",
+        "H0538",
+        "H0684",
+        "H0725"
+      ],
+      "before": {
+        "open": 684,
+        "covered": 58,
+        "not_applicable": 0
+      },
+      "after": {
+        "open": 679,
+        "covered": 63,
+        "not_applicable": 0
+      },
+      "requirements_before_sha256": "7b5f930c2689073b3a9daddead6f6e27bbbdc6a923f0d542fcac923940f656bb",
+      "requirements_sha256": "b6ac59fdc8e37123e985397d6484f1870d8f0c256ab793767309a007cc39d7a9",
+      "source_review_sha256": "0bc053b9a35f570dab403bfb8cccb5e4a3c356e6e350371e9c14af72ebf875f8"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "H0577",
+      "turn_id": "t13",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "61bb1f48-0d5f-4c5d-a704-b308ef752dac",
+      "baseline": {
+        "volumePercent": 50,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0690",
+      "turn_id": "t14",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "5979c189-6e89-476e-b7a3-b4165dec9725",
+      "baseline": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0310",
+      "turn_id": "t15",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "201612d5-dbc1-4aef-954a-8db2c5085b23",
+      "baseline": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0402",
+      "turn_id": "t16",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "db26c45d-8a96-47c9-a0b5-538461686a7c",
+      "baseline": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0035",
+      "turn_id": "t18",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "ebbd8d44-0a5d-47ec-833e-0fef001a7a31",
+      "baseline": {
+        "volumePercent": 30,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 50,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0086",
+      "turn_id": "t19",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "9c42a796-249f-4103-93f1-0b94846df114",
+      "baseline": {
+        "volumePercent": 50,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0132",
+      "turn_id": "t20",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "571ac217-8d44-46dd-9fd5-65e44082120c",
+      "baseline": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0233",
+      "turn_id": "t21",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "9ca66a3f-2f7e-4bce-9982-8dcbc5dabcfc",
+      "baseline": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 20,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0258",
+      "turn_id": "t23",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "86313b47-34b8-4e15-8e4b-e5812441e1ce",
+      "baseline": {
+        "volumePercent": 30,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 30,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0338",
+      "turn_id": "t24",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "5f58f378-9577-46bb-acc9-a50f9d9c4f60",
+      "baseline": {
+        "volumePercent": 30,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 60,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0409",
+      "turn_id": "t25",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "5357912f-42db-4a3d-9ac2-11860ed9893b",
+      "baseline": {
+        "volumePercent": 60,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 60,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0471",
+      "turn_id": "t26",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "1d8424e0-73ff-4fef-bb68-1a4ff8ad657d",
+      "baseline": {
+        "volumePercent": 60,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 100,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0477",
+      "turn_id": "t27",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "a50b43e3-3b2a-4b71-8e59-0fe69e1aa779",
+      "baseline": {
+        "volumePercent": 100,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 35,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0501",
+      "turn_id": "t28",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "96b38d06-9d92-4071-a646-15308589e48d",
+      "baseline": {
+        "volumePercent": 35,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 100,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0524",
+      "turn_id": "t29",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "34d4e559-a11a-439b-b43e-22b0a28a4d86",
+      "baseline": {
+        "volumePercent": 100,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0538",
+      "turn_id": "t30",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "abcf306b-82b4-45f0-b13c-bcf20f6c267f",
+      "baseline": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 100,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0684",
+      "turn_id": "t32",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "d02d58f5-198a-4863-804b-1c9600589474",
+      "baseline": {
+        "volumePercent": 50,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    },
+    {
+      "case_id": "H0725",
+      "turn_id": "t33",
+      "verdict": "pass",
+      "verification_status": "covered",
+      "invocation_id": "5dfee6bb-600e-4057-bcaf-a6529f981c77",
+      "baseline": {
+        "volumePercent": 10,
+        "muted": false
+      },
+      "final": {
+        "volumePercent": 100,
+        "muted": false
+      },
+      "variant_ids": [
+        "audio848-dev-absolute-01",
+        "audio848-dev-absolute-02",
+        "audio848-dev-absolute-03"
+      ],
+      "reason": "Root explicitly adjudicated the published literal useful and faithful to the receipt; three same-batch absolute variants also passed. No automatic response grading."
+    }
+  ]
+}
