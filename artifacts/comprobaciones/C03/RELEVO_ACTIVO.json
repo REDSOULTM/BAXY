@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "823 validado:696Pythonpass/0skip/6,15s;17referenciaspass/1skipambiental/1,81s;Fast0/Release21,62s/0advertencias/errores,33pins5b738e727c7a32bd8bb4f38da99d63a02a7a5ad08db2748e8ac438ff639065f2intactos. Frase natural sin identificador, una diferencia.82243/50 íntegro;824 listo tras publicación. Sesión75105 recogida0. Full818retry1baseline,encuesta28/714/0,matriz3/11,C03EN_CURSO.",
-  "continuation": "Publish source823 and evidence822; run824same50, root live/complete adjudication. Do not rerun822 finalizer. No source/Full duringGPU.",
+  "checkpoint": "824 completo:49/50, seis ganancias y cero pérdidas frente82243. Cinco familias genéricas49/49 verificadas; fuente823 adoptada para ellas y ocho requisitos acreditados: encuesta36/706/0. H0675 app-memory y categoría siguen abiertos.50publicados/0agotados/0vetos;246,829s,mediana4,229s,p956,672s,máximo7,352s;VRAM3497,56MiB/RAM2454,28MiB,0infracciones. Sesión55778 recogida0(e718b7),finalizador ejecutado una vez(5428ce),33pins exactos. Full818base separado; final pendiente. Preparación826captura/827OCR aislada, sin fuente canónica nueva. C03EN_CURSO, matriz3/11.",
+  "continuation": "Do not rerun824 finalizer/reviewer.826capture and827OCR agents own separate worktrees; root reviews/integrates prerequisite patches, then implements complete observed table semantics through existing catalog. No H0675 credit from geometry alone.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -28,16 +28,16 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 28,
-    "open": 714,
+    "covered": 36,
+    "open": 706,
     "not_applicable": 0
   },
-  "pendingOwnerClarification": "Owner closure confirmation received; Windows still registers Taskmgr8204. No repeated request and no block for independent C03 work.",
+  "pendingOwnerClarification": null,
   "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-  "workStatus": "process823_validated_824_ready",
-  "goalStatusNote": "Active;82243/50 with7 failures, no new coverage/category adoption.",
+  "workStatus": "process824_closed_app_observation_in_progress",
+  "goalStatusNote": "Active;36covered/706open.49/50 process category, app-memory remains open.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "df941680407e3087871da7efaa5b3078278111c0",
+  "publishedEvidenceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Collected green cumulative Full818retry1, published repairs1b395b18, completed819 and saved all50 root judgments; source821 minimal next proposal preparing.",
+  "previousGoalTurnClassificationReason": "Root completed82449/50 with six gains/no losses, adopted five generic process families and eight individually verified requirements, started isolated capture/OCR prerequisite implementations.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -79,36 +79,34 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "process822",
-    "sessionId": 98543,
-    "launcherPid": 31648,
-    "runnerPid": 20496,
+    "name": "process824",
+    "sessionId": 55778,
+    "launcherPid": 33712,
+    "runnerPid": 7440,
     "processReceipt": {
-      "utc": "2026-09-11T07:15:36.181465+00:00",
-      "launcher": 31648,
-      "runner": 20496,
+      "utc": "2026-09-11T07:29:32.171877+00:00",
+      "launcher": 33712,
+      "runner": 7440,
       "command": [
         "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
         "main.py",
         "--conductor",
         "--profile",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile822",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile824",
         "--capture",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch822-private\\capture",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\capture",
         "--turns-file",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch822-private\\turns.jsonl",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\turns.jsonl",
         "--timeout-ms",
         "120000"
       ]
     },
     "registeredCases": 50,
     "state": "complete",
-    "adjudication": "root_complete",
-    "sourceCandidate": 821,
-    "valid": 43,
-    "failed": 7,
+    "adjudication": "49valid/1failed; five generic families adopted, H0675 open",
+    "sourceCandidate": 823,
     "collectedExitCode": 0,
-    "rootClosure": "PROCESS_BATCH822/ROOT_CLOSURE.json"
+    "collectionChunk": "e718b7"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -813,7 +811,7 @@
     "fast_exit_code": 0,
     "program_tree_sha256": "e6416b4290298d023c4cb600fd3e748393295de8c1cb1588c7f71c859df97f37"
   },
-  "surveyRegistrySha256": "3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b",
+  "surveyRegistrySha256": "4f8e8afb8acd409bc03ab2427223e1810c3b7396f2459e8112ddfcb445c7e76d",
   "latestDiagnostic": {
     "name": "PROSE_SAMPLING785",
     "calls": 150,

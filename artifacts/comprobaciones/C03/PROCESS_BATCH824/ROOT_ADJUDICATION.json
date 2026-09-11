@@ -1,0 +1,594 @@
+{
+  "method": "Root read every terminal, including composition_failed, against its newly observed facts and the sealed criterion; this script assembles only those saved judgments.",
+  "candidate": 823,
+  "adopted": false,
+  "continuous_50": true,
+  "valid": 49,
+  "failed": 1,
+  "by_group": {
+    "list": {
+      "valid": 11
+    },
+    "unspecified_rank": {
+      "valid": 4
+    },
+    "cpu_rank": {
+      "valid": 11
+    },
+    "count": {
+      "valid": 12
+    },
+    "memory_rank": {
+      "valid": 11
+    },
+    "app_memory": {
+      "failed": 1
+    }
+  },
+  "comparison": {
+    "801": {
+      "previous_valid": 35,
+      "gains": [
+        "H0158",
+        "H0169",
+        "H0364",
+        "H0650",
+        "H0669",
+        "process795-list-01",
+        "process795-list-04",
+        "process795-list-05",
+        "process795-list-06",
+        "process795-list-09",
+        "process795-memory_rank-04",
+        "process795-cpu_rank-05",
+        "process795-cpu_rank-06",
+        "process795-unspecified_rank-01"
+      ],
+      "losses": []
+    },
+    "822": {
+      "previous_valid": 43,
+      "gains": [
+        "process795-list-08",
+        "process795-count-02",
+        "process795-count-05",
+        "process795-memory_rank-06",
+        "process795-memory_rank-08",
+        "process795-cpu_rank-07"
+      ],
+      "losses": []
+    }
+  },
+  "latency": {
+    "metric": "Difference between first and last recorded turn-scoped shell event; all 50 completed terminals regardless of terminal kind, explicitly including composition_failed. Not acoustic latency.824 and822 each use their complete continuous50 review.json directly; no interrupted or resumed profiles are combined.",
+    "824": {
+      "all": {
+        "count": 50,
+        "median_seconds": 4.229,
+        "p95_nearest_rank_seconds": 6.672,
+        "max_seconds": 7.352
+      },
+      "by_group": {
+        "list": {
+          "count": 11,
+          "median_seconds": 6.226,
+          "p95_nearest_rank_seconds": 7.352,
+          "max_seconds": 7.352
+        },
+        "unspecified_rank": {
+          "count": 4,
+          "median_seconds": 6.376,
+          "p95_nearest_rank_seconds": 6.565,
+          "max_seconds": 6.565
+        },
+        "cpu_rank": {
+          "count": 11,
+          "median_seconds": 4.188,
+          "p95_nearest_rank_seconds": 6.672,
+          "max_seconds": 6.672
+        },
+        "count": {
+          "count": 12,
+          "median_seconds": 2.775,
+          "p95_nearest_rank_seconds": 3.303,
+          "max_seconds": 3.303
+        },
+        "memory_rank": {
+          "count": 11,
+          "median_seconds": 4.021,
+          "p95_nearest_rank_seconds": 6.447,
+          "max_seconds": 6.447
+        },
+        "app_memory": {
+          "count": 1,
+          "median_seconds": 3.729,
+          "p95_nearest_rank_seconds": 3.729,
+          "max_seconds": 3.729
+        }
+      }
+    },
+    "822": {
+      "all": {
+        "count": 50,
+        "median_seconds": 4.753,
+        "p95_nearest_rank_seconds": 7.474,
+        "max_seconds": 8.78
+      },
+      "by_group": {
+        "list": {
+          "count": 11,
+          "median_seconds": 6.63,
+          "p95_nearest_rank_seconds": 7.636,
+          "max_seconds": 7.636
+        },
+        "unspecified_rank": {
+          "count": 4,
+          "median_seconds": 6.785,
+          "p95_nearest_rank_seconds": 8.78,
+          "max_seconds": 8.78
+        },
+        "cpu_rank": {
+          "count": 11,
+          "median_seconds": 4.383,
+          "p95_nearest_rank_seconds": 7.137,
+          "max_seconds": 7.137
+        },
+        "count": {
+          "count": 12,
+          "median_seconds": 3.099,
+          "p95_nearest_rank_seconds": 4.327,
+          "max_seconds": 4.327
+        },
+        "memory_rank": {
+          "count": 11,
+          "median_seconds": 4.889,
+          "p95_nearest_rank_seconds": 7.438,
+          "max_seconds": 7.438
+        },
+        "app_memory": {
+          "count": 1,
+          "median_seconds": 3.39,
+          "p95_nearest_rank_seconds": 3.39,
+          "max_seconds": 3.39
+        }
+      }
+    }
+  },
+  "resources": {
+    "utc": "2026-09-11T07:33:38.997205+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2454.27734375,
+    "seconds": 246.829,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "group": "list",
+      "turn_id": "t1",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB fieles;141 accesibles observados distingue población mayor de la lista breve de los siguientes procesos. No afirma exhaustividad ni se exige frase literal de subconjunto."
+    },
+    {
+      "case_id": "H0158",
+      "group": "list",
+      "turn_id": "t2",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB correctos;141 accesibles antes de seleccionar éstos expresa claramente población y recorte."
+    },
+    {
+      "case_id": "H0169",
+      "group": "unspecified_rank",
+      "turn_id": "t3",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Declara memoria, cuatro máximos/PID/MB fieles y141 accesibles observados; no cuota pedida y subconjunto explícito."
+    },
+    {
+      "case_id": "H0364",
+      "group": "cpu_rank",
+      "turn_id": "t4",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y porcentajes coinciden con la lectura CPU actual por intervalo,141 accesibles correcto."
+    },
+    {
+      "case_id": "H0470",
+      "group": "count",
+      "turn_id": "t5",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 procesos accesibles coincide con la lectura fresca, limita alcance y no garantiza total completo del sistema."
+    },
+    {
+      "case_id": "H0650",
+      "group": "memory_rank",
+      "turn_id": "t6",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cinco máximos solicitados con identidad/PID y MB correctos;141 accesibles antes de seleccionar cinco, sin agregar instancias."
+    },
+    {
+      "case_id": "H0669",
+      "group": "unspecified_rank",
+      "turn_id": "t7",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Declara memoria descendente, diez identidades/PID y MB correctos,141 accesibles observado correcto."
+    },
+    {
+      "case_id": "H0675",
+      "group": "app_memory",
+      "turn_id": "t8",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Presenta codex PID9312 y1063,01MB de un proceso como app de mayor memoria.141 observados no aporta membresía ni agregación de aplicaciones."
+    },
+    {
+      "case_id": "H0678",
+      "group": "count",
+      "turn_id": "t9",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observado coincide con la lectura y se distingue de selección de filas."
+    },
+    {
+      "case_id": "process795-list-01",
+      "group": "list",
+      "turn_id": "t10",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB fieles, orden por memoria y141 accesibles antes de selección explícitos."
+    },
+    {
+      "case_id": "process795-list-02",
+      "group": "list",
+      "turn_id": "t11",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y magnitudes fieles a precisión mostrada;141 accesibles antes de seleccionar resultados distingue población y recorte."
+    },
+    {
+      "case_id": "process795-list-03",
+      "group": "list",
+      "turn_id": "t12",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez nombres/PID fieles;141 accesibles antes de seleccionar éstos. No se exigían valores de memoria en esta lista."
+    },
+    {
+      "case_id": "process795-list-04",
+      "group": "list",
+      "turn_id": "t13",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles correctos y diez identidades/PID/MB fieles de la lista por memoria, población separada de los enumerados; no afirma exhaustividad."
+    },
+    {
+      "case_id": "process795-list-05",
+      "group": "list",
+      "turn_id": "t14",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cinco procesos solicitados con identidades/PID y MB fieles;141 accesibles antes de seleccionar cinco explícitos."
+    },
+    {
+      "case_id": "process795-list-06",
+      "group": "list",
+      "turn_id": "t15",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB fieles en inglés;141 accesibles antes de selección y subconjunto de observados explícitos."
+    },
+    {
+      "case_id": "process795-list-07",
+      "group": "list",
+      "turn_id": "t16",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB fieles;141 accesibles observados antes de seleccionar filas distingue población y recorte, sin etiqueta interna."
+    },
+    {
+      "case_id": "process795-list-08",
+      "group": "list",
+      "turn_id": "t17",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y orden alfabético fieles;141 accesibles antes de selección, expresado en prosa sin campo interno."
+    },
+    {
+      "case_id": "process795-list-09",
+      "group": "list",
+      "turn_id": "t18",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB exactos;141 accesibles y subconjunto explícitos, español apropiado para petición mixta."
+    },
+    {
+      "case_id": "process795-count-01",
+      "group": "count",
+      "turn_id": "t19",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 coincide con la lectura fresca y acota explícitamente a procesos accesibles."
+    },
+    {
+      "case_id": "process795-count-02",
+      "group": "count",
+      "turn_id": "t20",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observados antes de selección coincide con la lectura; conserva el alcance que faltó en822."
+    },
+    {
+      "case_id": "process795-count-03",
+      "group": "count",
+      "turn_id": "t21",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles correcto, alcance limitado y completitud del sistema no establecida explícitos."
+    },
+    {
+      "case_id": "process795-count-04",
+      "group": "count",
+      "turn_id": "t22",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles de la lectura actual, con límite de completitud expresado."
+    },
+    {
+      "case_id": "process795-count-05",
+      "group": "count",
+      "turn_id": "t23",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observados antes de seleccionar filas, fiel y acotado; conserva el alcance que faltó en822."
+    },
+    {
+      "case_id": "process795-count-06",
+      "group": "count",
+      "turn_id": "t24",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observados correcto en inglés, completitud del sistema no garantizada."
+    },
+    {
+      "case_id": "process795-count-07",
+      "group": "count",
+      "turn_id": "t25",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observado correcto, anterior a selección de filas y alcance explícito, sin campo interno."
+    },
+    {
+      "case_id": "process795-count-08",
+      "group": "count",
+      "turn_id": "t26",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observado correcto en inglés y separado de selección de filas."
+    },
+    {
+      "case_id": "process795-count-09",
+      "group": "count",
+      "turn_id": "t27",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observado correcto y anterior a selección; español apropiado para petición mixta."
+    },
+    {
+      "case_id": "process795-count-10",
+      "group": "count",
+      "turn_id": "t28",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "141 accesibles observado correcto sin enumerar procesos, como se solicitó."
+    },
+    {
+      "case_id": "process795-memory_rank-01",
+      "group": "memory_rank",
+      "turn_id": "t29",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Tres máximos solicitados con PID y MB correctos;141 accesibles antes de seleccionar tres, sin cambiar el tipo de memoria."
+    },
+    {
+      "case_id": "process795-memory_rank-02",
+      "group": "memory_rank",
+      "turn_id": "t30",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Máximo solicitado codex PID9312 con1067,83MB fiel, observado entre141 accesibles."
+    },
+    {
+      "case_id": "process795-memory_rank-03",
+      "group": "memory_rank",
+      "turn_id": "t31",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cinco máximos solicitados con PID y MB fieles,141 accesibles y subconjunto claramente declarados."
+    },
+    {
+      "case_id": "process795-memory_rank-04",
+      "group": "memory_rank",
+      "turn_id": "t32",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y MB correctos en orden descendente;141 accesibles antes de selección correcto."
+    },
+    {
+      "case_id": "process795-memory_rank-05",
+      "group": "memory_rank",
+      "turn_id": "t33",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Dos máximos solicitados con PID y MB correctos;141 accesibles antes de selección."
+    },
+    {
+      "case_id": "process795-memory_rank-06",
+      "group": "memory_rank",
+      "turn_id": "t34",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Tres máximos/PID/MB correctos en inglés;141 accesibles en frase natural, sin etiqueta interna."
+    },
+    {
+      "case_id": "process795-memory_rank-07",
+      "group": "memory_rank",
+      "turn_id": "t35",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Máximo solicitado codex PID9312 con1076,71MB fiel,141 accesibles en prosa natural."
+    },
+    {
+      "case_id": "process795-memory_rank-08",
+      "group": "memory_rank",
+      "turn_id": "t36",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cinco máximos/PID/working set MB fieles,141 accesibles y subconjunto; desaparece la etiqueta interna."
+    },
+    {
+      "case_id": "process795-memory_rank-09",
+      "group": "memory_rank",
+      "turn_id": "t37",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Dos máximos/PID/MB fieles,141 accesibles antes de seleccionar dos; español válido para petición mixta."
+    },
+    {
+      "case_id": "process795-memory_rank-10",
+      "group": "memory_rank",
+      "turn_id": "t38",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y magnitudes exactas, orden por memoria y141 accesibles correctos."
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "group": "cpu_rank",
+      "turn_id": "t39",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Dos máximos/PID/porcentajes fieles a muestra actual por intervalo;141 accesibles correcto."
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "group": "cpu_rank",
+      "turn_id": "t40",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Tres máximos/PID/porcentajes fieles a muestra actual por intervalo;141 accesibles correcto."
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "group": "cpu_rank",
+      "turn_id": "t41",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Máximo actual baxy-core PID7028 con5,37% fiel a muestra por intervalo;141 accesibles antes de selección."
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "group": "cpu_rank",
+      "turn_id": "t42",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cinco máximos solicitados con PID y porcentajes correctos,141 accesibles y límite de observación explícitos."
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "group": "cpu_rank",
+      "turn_id": "t43",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Dos máximos/PID/porcentajes fieles a muestra actual y141 accesibles correcto. No cuota pedida ni afirmación falsa de diez mostrados."
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "group": "cpu_rank",
+      "turn_id": "t44",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez identidades/PID y porcentajes actuales correctos; distingue141 accesibles de diez realmente listados."
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "group": "cpu_rank",
+      "turn_id": "t45",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Tres máximos/PID/porcentajes correctos en inglés;141 accesibles en frase natural sin etiqueta interna."
+    },
+    {
+      "case_id": "process795-cpu_rank-08",
+      "group": "cpu_rank",
+      "turn_id": "t46",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Máximo solicitado con PID y5,46% fieles a muestra actual;141 accesibles correcto."
+    },
+    {
+      "case_id": "process795-cpu_rank-09",
+      "group": "cpu_rank",
+      "turn_id": "t47",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Dos máximos/PID/porcentajes fieles a muestra actual,141 accesibles antes de seleccionar filas, en inglés."
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "group": "cpu_rank",
+      "turn_id": "t48",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Tres máximos/PID/porcentajes fieles a muestra actual;141 accesibles antes de selección, español válido para petición mixta."
+    },
+    {
+      "case_id": "process795-unspecified_rank-01",
+      "group": "unspecified_rank",
+      "turn_id": "t49",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Declara memoria, cuatro máximos/PID/MB fieles,141 accesibles y subconjunto; no cuota solicitada ni confusión conCPU."
+    },
+    {
+      "case_id": "process795-unspecified_rank-02",
+      "group": "unspecified_rank",
+      "turn_id": "t50",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Declara memoria en inglés, diez identidades/PID/MB correctos; usa147 accesibles de este turno, sin reutilizar141 de los anteriores."
+    }
+  ],
+  "evidence_sha256": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-process-batch824.py": "cc533681602b779cd458beea55929f7c480858b14e3fce09e4d98f3a42e42d53",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-review-process824.py": "93f2e9281399ddbefcf505e6ba43b5e2e82fdfcbd22334f143b798a77c58ae17",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_NARRATOR823\\SOURCE_PINS.json": "5b738e727c7a32bd8bb4f38da99d63a02a7a5ad08db2748e8ac438ff639065f2",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.dll": "affe91916835801f48c67c9a2167ba15d1cd84fb8285b8fc8c8d6e6c7590068d",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_NARRATOR823\\OWNERS_PYTHON_EXIT.json": "8186eddb9817577094aaacda3b6f702f7b19d3db5f1f2e35f0ee1a1e1e52bf82",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_REPAIRS818\\FULL_RETRY1\\OWNERS_DOTNET_EXIT.json": "acf5322befab79a320756d9056bbdfbd5cd03d0466f3d5265d88d0db2e78f330",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_NARRATOR823\\VALIDATION_EXIT.json": "07d2343bb81ccab7cb52fdafbb15d57d2c9717d2c64116e948a6f6f614baf019",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_REPAIRS818\\FULL_RETRY1\\FULL_EXIT.json": "08e681a72a850c70e14ddac27f1a89bb4521279aa76aa16ec548727d43030b9f",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_REPAIRS818\\FULL_RETRY1\\SOURCE_PINS.json": "952a061bf291456f415ec67a810f5b8fd5054602c01a761d76f7bb5576beaa45",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_NARRATOR823\\OWNERS_REFERENCE_EXIT.json": "6abaecd0762cf3b7a0838f043195b6438ae0e5e0fcd7c61841be3bb27ebe789e",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\root-adjudication.json": "f21a6bfdd098cae9b801ee2d903d11feefd3a2a52d5376b0a6b3196f18b275c0",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\review.json": "dc74105aa64f2a55fedf21fd598889404416063c081196d345de18c83369eef0",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH824\\PREREG.json": "0c24481f6049945b4cdce97c9498df1e89c2dc3b8ca4cf9b2e37bbf65dbce2ac",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH824\\EXIT.json": "976bd7dc09333eb2b1b237c09bd5c72f80445679556e67964b570f08220fe015",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH824\\REVIEW_CAPTURE.json": "5af0712d0db009eadd063e486a567b634780303204492e28ed912374689fa39c",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH824\\RESOURCES.json": "e2c17a9065f82f93c1c4ab52964c61c8394146bc5850bb1191f5aa2fcbbef365",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch801-private\\RESPUESTAS.md": "f2f65517f328d8b42cf2df19c6903ee6c9aea78a6d9aeace12f779dcb2c98c2f",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH822\\ROOT_ADJUDICATION.json": "9fb60620289ff46f9933410fd5b5ea9764cce2b32de6c34b3c3ea5d233b3c79c",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch822-private\\review.json": "507f745a09c9c8a375e0cfa0a1eace4c4a203091c1a9dc2240c51b41f15b622e"
+  },
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

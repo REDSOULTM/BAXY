@@ -1,0 +1,67 @@
+{
+  "utc": "2026-09-11T07:47:21.510440+00:00",
+  "session": 55778,
+  "collected_exit_code": 0,
+  "collection_chunk": "e718b7",
+  "finalizer_chunk": "5428ce",
+  "finalizer_executed_once": true,
+  "product_runtime_absent_at_collection": true,
+  "terminals": {
+    "published_final": 50,
+    "composition_failed": 0,
+    "rejected_compose_drafts": 0
+  },
+  "source_pins_verified": 33,
+  "adoption": "ADOPTION.json",
+  "category_closed": false,
+  "comparison": {
+    "801": {
+      "previous_valid": 35,
+      "gains": [
+        "H0158",
+        "H0169",
+        "H0364",
+        "H0650",
+        "H0669",
+        "process795-list-01",
+        "process795-list-04",
+        "process795-list-05",
+        "process795-list-06",
+        "process795-list-09",
+        "process795-memory_rank-04",
+        "process795-cpu_rank-05",
+        "process795-cpu_rank-06",
+        "process795-unspecified_rank-01"
+      ],
+      "losses": []
+    },
+    "822": {
+      "previous_valid": 43,
+      "gains": [
+        "process795-list-08",
+        "process795-count-02",
+        "process795-count-05",
+        "process795-memory_rank-06",
+        "process795-memory_rank-08",
+        "process795-cpu_rank-07"
+      ],
+      "losses": []
+    }
+  },
+  "resources": {
+    "utc": "2026-09-11T07:33:38.997205+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2454.27734375,
+    "seconds": 246.829,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "rubric_notes": [
+    "All50 root judgments compare the complete answer with fresh typed facts and sealed criteria.",
+    "A short enumeration and separately stated larger accessible observed population distinguish a subset without a required literal phrase.",
+    "Rankings do not inherit an unrequested quota or list-specific count wording.",
+    "Natural separated words are prose; the former camelCase field label was internal leakage.",
+    "H0675 remains failed: individual process working set is not an application aggregate."
+  ]
+}

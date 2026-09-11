@@ -1,0 +1,67 @@
+{
+  "source_candidate": 823,
+  "source_adopted": true,
+  "new_coverage": 8,
+  "survey_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "Diez identidades/PID y MB fieles;141 accesibles observados distingue población mayor de la lista breve de los siguientes procesos. No afirma exhaustividad ni se exige frase literal de subconjunto."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "Diez identidades/PID y MB correctos;141 accesibles antes de seleccionar éstos expresa claramente población y recorte."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "Declara memoria, cuatro máximos/PID/MB fieles y141 accesibles observados; no cuota pedida y subconjunto explícito."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "Diez identidades/PID y porcentajes coinciden con la lectura CPU actual por intervalo,141 accesibles correcto."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "141 procesos accesibles coincide con la lectura fresca, limita alcance y no garantiza total completo del sistema."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "Cinco máximos solicitados con identidad/PID y MB correctos;141 accesibles antes de seleccionar cinco, sin agregar instancias."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "Declara memoria descendente, diez identidades/PID y MB correctos,141 accesibles observado correcto."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Presenta codex PID9312 y1063,01MB de un proceso como app de mayor memoria.141 observados no aporta membresía ni agregación de aplicaciones."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "covered",
+      "candidate_pass": true,
+      "reason": "141 accesibles observado coincide con la lectura y se distingue de selección de filas."
+    }
+  ],
+  "adoption": "ADOPTION.json"
+}

@@ -1,0 +1,303 @@
+{
+  "utc": "2026-09-11T07:47:21.510440+00:00",
+  "root_thread": "01a08e22-0ac1-7f93-9c99-5d2d0730d6c6",
+  "source_candidate": 823,
+  "source_commit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
+  "source_adopted": true,
+  "scope": "Five generic process families, all49 relevant variants verified. App-memory family H0675 remains open; entire category and C03 remain open.",
+  "authority": "Goal ENCUESTA requires incremental verification_status per behavior; PROCESS_CATEGORY795_PLAN coverage_rule requires all relevant variants, not all distinct families before any credit.",
+  "adjudication_sha256": "8bb68338b08e7d603635092be69554d1278770651716848f82512fefcfa8a1c2",
+  "source_pins_sha256": "5b738e727c7a32bd8bb4f38da99d63a02a7a5ad08db2748e8ac438ff639065f2",
+  "source_pins_verified": 33,
+  "validation": {
+    "python_owner_pass": 696,
+    "python_owner_skip": 0,
+    "reference_pass": 17,
+    "reference_environmental_skip": 1,
+    "fast_exit": 0,
+    "full_baseline": "PROCESS_REPAIRS818/FULL_RETRY1; separate earlier source, final Full pending"
+  },
+  "new_coverage": 8,
+  "survey_counts_before": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "survey_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  },
+  "registry_sha256_before": "3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b",
+  "registry_sha256_after": "4f8e8afb8acd409bc03ab2427223e1810c3b7396f2459e8112ddfcb445c7e76d",
+  "source_survey_sha256_unchanged": "3a8a51a58a00fbf106fc76d6972304721df67c0c1cbb8a4c89f272ef6605405e",
+  "covered_cases": [
+    {
+      "case_id": "H0133",
+      "family": "list",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0133]",
+        "group_pointer": "/by_group/list",
+        "family_pass_count": 11,
+        "family_total": 11,
+        "relevant_case_ids": [
+          "H0133",
+          "H0158",
+          "process795-list-01",
+          "process795-list-02",
+          "process795-list-03",
+          "process795-list-04",
+          "process795-list-05",
+          "process795-list-06",
+          "process795-list-07",
+          "process795-list-08",
+          "process795-list-09"
+        ],
+        "root_reason_unchanged": "Diez identidades/PID y MB fieles;141 accesibles observados distingue población mayor de la lista breve de los siguientes procesos. No afirma exhaustividad ni se exige frase literal de subconjunto.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0158",
+      "family": "list",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0158]",
+        "group_pointer": "/by_group/list",
+        "family_pass_count": 11,
+        "family_total": 11,
+        "relevant_case_ids": [
+          "H0133",
+          "H0158",
+          "process795-list-01",
+          "process795-list-02",
+          "process795-list-03",
+          "process795-list-04",
+          "process795-list-05",
+          "process795-list-06",
+          "process795-list-07",
+          "process795-list-08",
+          "process795-list-09"
+        ],
+        "root_reason_unchanged": "Diez identidades/PID y MB correctos;141 accesibles antes de seleccionar éstos expresa claramente población y recorte.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0169",
+      "family": "unspecified_rank",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0169]",
+        "group_pointer": "/by_group/unspecified_rank",
+        "family_pass_count": 4,
+        "family_total": 4,
+        "relevant_case_ids": [
+          "H0169",
+          "H0669",
+          "process795-unspecified_rank-01",
+          "process795-unspecified_rank-02"
+        ],
+        "root_reason_unchanged": "Declara memoria, cuatro máximos/PID/MB fieles y141 accesibles observados; no cuota pedida y subconjunto explícito.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0364",
+      "family": "cpu_rank",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0364]",
+        "group_pointer": "/by_group/cpu_rank",
+        "family_pass_count": 11,
+        "family_total": 11,
+        "relevant_case_ids": [
+          "H0364",
+          "process795-cpu_rank-01",
+          "process795-cpu_rank-02",
+          "process795-cpu_rank-03",
+          "process795-cpu_rank-04",
+          "process795-cpu_rank-05",
+          "process795-cpu_rank-06",
+          "process795-cpu_rank-07",
+          "process795-cpu_rank-08",
+          "process795-cpu_rank-09",
+          "process795-cpu_rank-10"
+        ],
+        "root_reason_unchanged": "Diez identidades/PID y porcentajes coinciden con la lectura CPU actual por intervalo,141 accesibles correcto.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0470",
+      "family": "count",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0470]",
+        "group_pointer": "/by_group/count",
+        "family_pass_count": 12,
+        "family_total": 12,
+        "relevant_case_ids": [
+          "H0470",
+          "H0678",
+          "process795-count-01",
+          "process795-count-02",
+          "process795-count-03",
+          "process795-count-04",
+          "process795-count-05",
+          "process795-count-06",
+          "process795-count-07",
+          "process795-count-08",
+          "process795-count-09",
+          "process795-count-10"
+        ],
+        "root_reason_unchanged": "141 procesos accesibles coincide con la lectura fresca, limita alcance y no garantiza total completo del sistema.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0650",
+      "family": "memory_rank",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0650]",
+        "group_pointer": "/by_group/memory_rank",
+        "family_pass_count": 11,
+        "family_total": 11,
+        "relevant_case_ids": [
+          "H0650",
+          "process795-memory_rank-01",
+          "process795-memory_rank-02",
+          "process795-memory_rank-03",
+          "process795-memory_rank-04",
+          "process795-memory_rank-05",
+          "process795-memory_rank-06",
+          "process795-memory_rank-07",
+          "process795-memory_rank-08",
+          "process795-memory_rank-09",
+          "process795-memory_rank-10"
+        ],
+        "root_reason_unchanged": "Cinco máximos solicitados con identidad/PID y MB correctos;141 accesibles antes de seleccionar cinco, sin agregar instancias.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0669",
+      "family": "unspecified_rank",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0669]",
+        "group_pointer": "/by_group/unspecified_rank",
+        "family_pass_count": 4,
+        "family_total": 4,
+        "relevant_case_ids": [
+          "H0169",
+          "H0669",
+          "process795-unspecified_rank-01",
+          "process795-unspecified_rank-02"
+        ],
+        "root_reason_unchanged": "Declara memoria descendente, diez identidades/PID y MB correctos,141 accesibles observado correcto.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    },
+    {
+      "case_id": "H0678",
+      "family": "count",
+      "previous_verification_status": "open",
+      "proposed_verification_status": "covered",
+      "previous_generalization_status": "required_before_closure",
+      "proposed_generalization_status": "verified_product_variants",
+      "evidence": {
+        "campaign": "PROCESS_BATCH824",
+        "source_candidate": 823,
+        "root_adjudication": "artifacts/comprobaciones/C03/PROCESS_BATCH824/ROOT_ADJUDICATION.json",
+        "root_case_pointer": "/cases/[case_id=H0678]",
+        "group_pointer": "/by_group/count",
+        "family_pass_count": 12,
+        "family_total": 12,
+        "relevant_case_ids": [
+          "H0470",
+          "H0678",
+          "process795-count-01",
+          "process795-count-02",
+          "process795-count-03",
+          "process795-count-04",
+          "process795-count-05",
+          "process795-count-06",
+          "process795-count-07",
+          "process795-count-08",
+          "process795-count-09",
+          "process795-count-10"
+        ],
+        "root_reason_unchanged": "141 accesibles observado coincide con la lectura y se distingue de selección de filas.",
+        "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+        "partial_campaign": true,
+        "ui_or_voice_credit": false
+      }
+    }
+  ],
+  "open_cases": [
+    "H0675"
+  ],
+  "category_closed": false,
+  "acceptance_credit": false,
+  "ui_or_voice_credit": false,
+  "preservation": "ROOT_ADJUDICATION and initial VERIFICATION_STATUS remain byte-for-byte pre-adoption snapshots. This later root decision supplies current adoption and coverage; no old verdict regraded."
+}
