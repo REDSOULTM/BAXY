@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "71/742covered,671open,0NA;43grants24h,0/35categories,C03 3/11.9478executed4pass4fail0credit;ENnegativevariantpassed.",
-  "continuation": "Collect build951 session95800, sync effective/published Core, adopt current2file observed vocabulary repair and commit/push; prepare934 seals952 H0503+ESfailed originals+5newboundaries, EN947passed as prior pertinent pair. Root9479dec8781a0bf74f7f8ac235bd9a6c81ed336524ec795c7f402bc8b7337b2b474. Apps43>web42; apps_intent852949patch external in progress;950sealed. No tests/Full.",
+  "checkpoint": "72/742covered,670open,0NA;44grants24h,0/35categories,C03 3/11.9527executed5pass2fail,+H0503.",
+  "continuation": "Collect build949 session55757, sync effective/published Core, commit/push5sourcefiles; seal950 manifest584/18/5 andprepare/run.950rootreview57589c/00932f complete; seal9a3f68aa runner22f69bdb.952completeb21de8 ROOT63908a05,+H0503alreadyregistered; no fullreplay.953agentprepare934 plansnexteligibleapps bymass. No tests/Fast/Full.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -29,12 +29,12 @@
   },
   "surveyVerificationCounts": {
     "not_applicable": 0,
-    "open": 671,
-    "covered": 71
+    "open": 670,
+    "covered": 72
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "8c383af1ef1ffde022be16c0635ab4e94c96a8a9",
-  "workStatus": "building951_preparing952",
+  "publishedSourceCommit": "91dc9d46c1a14ca4dcd5f28fdd5cdf2bdfbf799e",
+  "workStatus": "building949_before950",
   "goalStatusNote": "Owner approved the proposed methodology: omit automated suites, Fast and Full; retain sealed product executions and evidence-based survey credit. Previous scope blocker resolved.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "0a945cb407d3f3aaede2796c8924a6630bfd392b",
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "940 verified two real negative lookups but finals failed; root updated open cause immediately, adjudicated8 cases, repaired courtesy945, adopted946 WIP and proved second C# gate948. Progress, no blocker.",
+  "previousGoalTurnClassificationReason": "Adopted945/946/948 and951; actual947Englishpass and952literal/ESpass yield+H0503 immediately. Integrated949mechanism existing namedbrowser fornext5literals; progress no blocker.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",

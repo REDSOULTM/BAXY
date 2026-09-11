@@ -6,7 +6,7 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
 {
     private readonly string _dataRoot;
     private readonly CdpBrowserSessionContext? _sessionContext;
-    private CdpBrowserSession? _opera;
+    private readonly Dictionary<string, CdpBrowserSession> _browsers = new(StringComparer.Ordinal);
 
     internal NamedBrowserAdapter(string dataRoot)
         : this(dataRoot, sessionContext: null)
@@ -20,7 +20,8 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
     {
         _dataRoot = Path.GetFullPath(dataRoot);
         _sessionContext = sessionContext;
-        _opera = opera;
+        if (opera is not null)
+            _browsers.Add("opera", opera);
     }
 
     public bool CanHandle(string operation) => operation == "browser.navigate.named";
@@ -40,15 +41,16 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             return ExternalJson.FailureBeforeEffect(operation, "named_browser_invalid");
         }
-        if (browser != "opera")
+        if (browser is not ("opera" or "opera_gx"))
             return ExternalJson.Failure(operation, "named_browser_invalid");
-        if (_opera is null)
+        if (!_browsers.TryGetValue(browser, out CdpBrowserSession? session))
         {
-            string? executable = ResolveOpera();
+            string? executable = ResolveOpera(browser);
             if (executable is null)
                 return ExternalJson.Failure(operation, "opera_not_installed");
-            _opera = new CdpBrowserSession(
-                Path.Combine(_dataRoot, "opera-browser-profile"), executable);
+            session = new CdpBrowserSession(
+                Path.Combine(_dataRoot, browser + "-browser-profile"), executable);
+            _browsers.Add(browser, session);
         }
         Uri target;
         try
@@ -61,12 +63,12 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             return ExternalJson.FailureBeforeEffect(operation, "named_browser_url_invalid");
         }
-        _sessionContext?.Activate(_opera);
+        _sessionContext?.Activate(session);
         CdpNavigationResult navigation;
         try
         {
             effectBoundary.Cross(cancellationToken);
-            navigation = await _opera.NavigateAsync(target, cancellationToken)
+            navigation = await session.NavigateAsync(target, cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (
@@ -86,10 +88,17 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         if (!navigation.Verified)
             return effectBoundary.Failure(
                 operation, navigation.ErrorCode, navigation.EffectObserved);
+        string? executablePath = session.ObservedExecutablePath;
+        if (executablePath is null)
+            return effectBoundary.Failure(operation, "named_browser_identity_not_verified", navigation.EffectObserved);
+        if (!Uri.TryCreate(navigation.FinalUrl, UriKind.Absolute, out Uri? final)
+            || !DestinationMatches(target, final))
+            return effectBoundary.Failure(operation, "named_browser_destination_not_verified", navigation.EffectObserved);
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("browser", "opera");
+            writer.WriteString("browser", browser);
+            writer.WriteString("executablePath", executablePath);
             writer.WriteString("finalUrl", navigation.FinalUrl);
             writer.WriteString("targetId", navigation.TargetId);
             writer.WriteString("authority", "opera_cdp_url_postread");
@@ -99,24 +108,64 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
 
     public void Dispose()
     {
-        if (_opera is not null)
+        foreach (CdpBrowserSession session in _browsers.Values)
         {
-            _sessionContext?.Deactivate(_opera);
-            _opera.Dispose();
+            _sessionContext?.Deactivate(session);
+            session.Dispose();
         }
+        _browsers.Clear();
     }
 
-    private static string? ResolveOpera()
+    private static bool DestinationMatches(Uri requested, Uri observed)
+    {
+        if (string.Equals(requested.AbsoluteUri, observed.AbsoluteUri, StringComparison.Ordinal))
+            return true;
+        // Search may add presentation parameters, but must retain the exact
+        // public query on the same results page, never its first result.
+        if (requested.Scheme != "https" || requested.Host != "www.bing.com"
+            || requested.AbsolutePath != "/search"
+            || requested.Scheme != observed.Scheme || requested.Host != observed.Host
+            || requested.Port != observed.Port || requested.AbsolutePath != observed.AbsolutePath
+            || observed.UserInfo.Length != 0)
+            return false;
+        var expected = System.Web.HttpUtility.ParseQueryString(requested.Query);
+        var actual = System.Web.HttpUtility.ParseQueryString(observed.Query);
+        string[]? expectedQuery = expected.GetValues("q");
+        string[]? actualQuery = actual.GetValues("q");
+        return expected.Count == 1 && expectedQuery is { Length: 1 }
+            && actualQuery is { Length: 1 }
+            && string.Equals(expectedQuery[0], actualQuery[0], StringComparison.Ordinal);
+    }
+
+    private static string? ResolveOpera(string browser)
     {
         string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        return new[]
+        string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+        string edition = browser == "opera_gx" ? "Opera GX" : "Opera";
+        foreach (string directory in new[]
         {
-            Path.Combine(local, "Programs", "Opera", "opera.exe"),
-            Path.Combine(local, "Programs", "Opera", "launcher.exe"),
-            Path.Combine(local, "Programs", "Opera GX", "opera.exe"),
-            Path.Combine(local, "Programs", "Opera GX", "launcher.exe"),
-            Path.Combine(programFiles, "Opera", "opera.exe"),
-        }.FirstOrDefault(File.Exists);
+            Path.Combine(local, "Programs", edition),
+            Path.Combine(programFiles, edition),
+            Path.Combine(programFilesX86, edition),
+        }.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (!Directory.Exists(directory) || new DirectoryInfo(directory).LinkTarget is not null)
+                continue;
+            string direct = Path.Combine(directory, "opera.exe");
+            if (File.Exists(direct) && new FileInfo(direct).LinkTarget is null)
+                return direct;
+            // Launch the real browser binary, not launcher.exe whose process
+            // identity can disappear before its child owns the CDP session.
+            string? versioned = Directory.EnumerateDirectories(directory)
+                .Where(path => Version.TryParse(Path.GetFileName(path), out _)
+                    && new DirectoryInfo(path).LinkTarget is null)
+                .OrderByDescending(path => Version.Parse(Path.GetFileName(path)))
+                .Select(path => Path.Combine(path, "opera.exe"))
+                .FirstOrDefault(path => File.Exists(path) && new FileInfo(path).LinkTarget is null);
+            if (versioned is not null)
+                return versioned;
+        }
+        return null;
     }
 }

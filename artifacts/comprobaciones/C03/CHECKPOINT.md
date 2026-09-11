@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**71/742 cubiertos, 671 abiertos, 0 no aplican; 43 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**72/742 cubiertos,670abiertos,0noaplican;44acreditaciones confirmadas en las últimas24h;0/35categorías cerradas.** Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente publicada948:8c383af1ef1ffde022be16c0635ab4e94c96a8a9. Última ejecución947:8ejecutados,4pass/4fail,0créditos; EN variante negativa aprobada.951 corrección léxica mínima en compilación,952 siguiente dirigido. Historia debajo, novedades al final.
+Fuente publicada951:91dc9d46c1a14ca4dcd5f28fdd5cdf2bdfbf799e. Última ejecución952:7casos5pass/2fail,+H0503.949 fuenteweb integrada en build,950 panelrevisado siguiente. Historia debajo.
 
 Últimos tres tramos:
 
@@ -304,3 +304,15 @@ Sesión7712 recogida7b7700exit0;80,297s,VRAM3497,56MiB/RAM2423,75MiB,0violacione
 71/742cubiertos,671abiertos,0NA;43altas24h,0/35categorías,C03 3/11. Goalactivo/progreso, no pruebasautomáticas/Full por instrucción del dueño.
 
 951 adoptado: revisión raíz0993b7, build951 exit0/shutdown0 sesión95800 recogida9bf851, Core publicado sincronizado.952 revisado completo61af77: 7casos14wire, H0503+ESfallidos intactos y5límitesnuevos; EN947aprobado sin repetir. SEAL7cfcb8259cdfeea00610f129c0699da28ce51d0e79fbc443d386d9814e680922 runner45798d8d31b98c81d078081a17ebb4d753fc27ea0580e1ff4748f6ca45768d48. Fuente2archivos14insertions3deletions, aún cero crédito por reparación.
+
+## 952 +H0503;949/950 siguiente web
+
+72/742 cubiertos,670abiertos,0NA;44altas24h,0/35categorías,C03 3/11. H0503 cubierto al revisar literal y dos variantes, antes del bookkeeping completo:20:20:23.8980425UTC. Literal952inv4da5ce5e-0614-493f-bbd2-91344f387949 yES952inv57216407-a684-4286-94e8-ccdaf9bfe1ca, ambosnegativeapp.installedverified/completed y finalfiel; EN947inv576a8d29-24f3-457b-ad3d-b7af3fd6c6fe sirve de par anterior sin repetir. Nota original del dueño habilita negativa de catálogo; no se afirma ausencia global ni apertura. Registro56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433. Generalization_status usa verified_with_variants.
+
+9527ejecutados5pass2fail;+1. ROOT63908a050a452282b1cadd654ac9d0ecfdcc2b03235b53fc5421dc87e6d719af. Prohibición/aclaración/alcanceconceptual pasan; cita sinfinal ycondición futura malrespondida fallan. Sesión8688 recogidab21de8exit0,pinsíntegros;62,109s,VRAM3497,56MiB/RAM2495,12MiB,0violaciones. No UI/voz ni suites/Full.
+
+Empateapps42/web42: saleweb949/950ya preparado.949parche621ab1f0a8a3bd2a61a7754cb295094ea1276f40e1d2496d701917562e844f43 revisado íntegro e861de/f6ee79 e integrado4deb6c,5archivos226+/56-; buildreal sesión55757en marcha. Bindingpreservaquery original+Opera/GX, catálogo enumopera/opera_gx, provider exigeejecutableobservado yresultsURLqueryexacta. PolíticaBingHTMLexistente elegida porraíz, no preferenciadelusuario. No nuevoprovider. Pares compuestosES/antecedenteENconsumen sóloelementos explícitosdelmismopedido.
+
+950panel12casos/24wire,5literales+2variantesoriginalesfallidas+5límites; máximo19admisiones/7confirmaciones. Rootreview57589c/00932f completo: sólofasefinaladjudicable, exactconfirmation904 compara args reales, no losrellena. SEAL9a3f68aaeec249e32a3d9e747fb0fbb5ad7aa6a9718d98590014c851eeb19040 runner22f69bdb9901e2692dbf2e2196c59b46e250079ddc6eb057f0d96d3ee9283db9. H0094Opera sinparpertinente aún, no atribuirvariantesGX. Resolverrutasactuales tieneGX; noOpera enlasrutashabituales, no sustituirnavegador. Falta build/sync/commit/manifest950 yprepare/run.953prepara siguienteapps42 conmaterialelegible, sin repetirefectosinciertos. Goalactivo/progreso.
+
+949 adoptado tras revisión raíz e861de/f6ee79: build real exit0 y cierre de servidores exit0, sesión55757 recogida e16e89. Core efectivo sincronizado. Panel950 completo y6pins históricos verificados79ed9a. Sin suites ni Full, sin créditos anticipados. Siguiente inmediato: manifest950 y ejecución sellada.

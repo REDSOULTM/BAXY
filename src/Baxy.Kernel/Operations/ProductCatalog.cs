@@ -198,14 +198,14 @@ public static class ProductCatalog
             "browser.navigate.named",
             Schema(
                 [
-                    String("browser", values: ["opera"]),
+                    String("browser", values: ["opera", "opera_gx"]),
                     String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
                 ["browser", "url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.named.cdp.url.postread.v1",
             ToolExposure.Public,
-            "Navega Opera mediante un perfil CDP privado y verifica la URL final observada."),
+            "Navega la edición indicada de Opera u Opera GX mediante un perfil CDP privado y verifica ejecutable y URL final."),
         Descriptor(
             "browser.page.read",
             Schema([Integer("maximumCharacters", 256, 32_768)], []),

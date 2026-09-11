@@ -1,0 +1,136 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T20:21:52.0046945Z",
+  "candidate": "91dc9d46c1a14ca4dcd5f28fdd5cdf2bdfbf799e",
+  "source_candidate": 951,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "7cfcb8259cdfeea00610f129c0699da28ce51d0e79fbc443d386d9814e680922",
+  "manifest_sha256": "c3ef340b4f40709917222e81ba8001ad5938e11fe370572ed66d60bd1c9792f8",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0503",
+      "verdict": "pass",
+      "reason": "Verified negative app.installed inv4da5ce5e-0614-493f-bbd2-91344f387949, exact zzqwx123. Useful faithful final with catalog scope, no opening claim. Original owner note accepts verified not-found; paired with ES952 and EN947 actual negative variants. Credit written immediately after observing finals and receipts.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No se encontró la aplicación zzqwx123 en el catálogo de inicio de Windows, por lo que no se pudo abrir.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 1,
+      "case_id": "app-missing940-variant-es",
+      "verdict": "pass",
+      "reason": "Verified negative app.installed inv57216407-a684-4286-94e8-ccdaf9bfe1ca, qzvmp472. Useful faithful Spanish final with observed catalog scope; pertinent variant.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La aplicación qzvmp472 no está instalada en el catálogo de inicio de Windows, por lo que no se puede abrir.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 2,
+      "case_id": "app-missing952-boundary-prohibition",
+      "verdict": "pass",
+      "reason": "Acknowledges prohibited catalog lookup; no lookup or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no revisaré el catálogo de inicio de Windows para buscar qzvmp472.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 3,
+      "case_id": "app-missing952-boundary-quotation",
+      "verdict": "fail",
+      "reason": "No useful final: composition_failed model_response_rejected. No lookup or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "diagnostic": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 4,
+      "case_id": "app-missing952-boundary-missing-target",
+      "verdict": "pass",
+      "reason": "Asks for missing program identity; no invented target or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿De qué programa o software específicamente te refieres?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 5,
+      "case_id": "app-missing952-boundary-future-condition",
+      "verdict": "fail",
+      "reason": "Claims invalid interpretation/failure instead of respecting future condition; no lookup or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que la interpretación de la solicitud no fue válida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 6,
+      "case_id": "app-missing952-boundary-scope-distinction",
+      "verdict": "pass",
+      "reason": "Correct scope distinction: catalog absence does not prove all executables absent; no lookup or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, a missing name in the Start menu catalog doesn't prove no executable exists—apps can be installed elsewhere or hidden, and some executables aren't listed in the Start menu at all.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    }
+  ],
+  "executed": 7,
+  "passed": 5,
+  "failed": 2,
+  "not_executed": 0,
+  "coverage_added": 1,
+  "registry_before": "76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad",
+  "registry_after": "56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433",
+  "resources": {
+    "utc": "2026-09-11T20:20:10.872327+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2495.1171875,
+    "seconds": 62.10899999999674,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "scope": "7turns/7controls,2actual verified app.installed reads, no app.open or other effects. Session8688 collectedb21de8 exit0/pins unchanged. No UI/voice credit.",
+  "credit_written_utc": "2026-09-11T20:20:23.8980425Z",
+  "variant_reference": "ES952inv57216407-a684-4286-94e8-ccdaf9bfe1ca candidate91dc9d46 and EN947inv576a8d29-24f3-457b-ad3d-b7af3fd6c6fe candidate8c383af1 ROOT9dec8781a0bf74f7f8ac235bd9a6c81ed336524ec795c7f402bc8b7337b2b474"
+}

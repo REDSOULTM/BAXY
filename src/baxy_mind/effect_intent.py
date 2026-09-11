@@ -1243,6 +1243,8 @@ def _curated_domain_is_grounded(
             return creation
         return reading and not creation
     if operation in {"browser.navigate", "browser.navigate.named"}:
+        if operation == "browser.navigate.named" and _named_browser_search(text) is not None:
+            return True
         return _has(
             folded,
             r"\b(?:navegador|browser|web|website|sitio|site|pagina|page|"
@@ -1254,26 +1256,7 @@ def _curated_domain_is_grounded(
         # lookup (for example, "look through Downloads"). A direct search with
         # its own query need not repeat "internet", but cannot borrow a private
         # or local operand. This gate only retains a proposal, never selects it.
-        direct_search = re.fullmatch(
-            rf"[¿?¡!\s]*{_REQUEST_PREFIX}{_SEARCH}(?:\s+for)?\s+"
-            r"(?P<query>\S.*)",
-            _strip_request_envelope(folded),
-            re.IGNORECASE,
-        )
-        direct_public_search = (
-            direct_search is not None
-            and bool(direct_search.group("query").strip(" \t.,;:!?\"'“”«»"))
-            and not _has(direct_search.group("query"), r"^(?:for|en|on)[.!?]*$")
-            and effect_request_is_authoritative(text)
-            and len(_request_clauses(folded)) == 1
-            and not _has(
-                folded,
-                r"\b(?:mi|mis|my|our|nuestros?|nuestras?|tus?|your|"
-                r"privad[oa]s?|private|local(?:es|ly)?|portapapeles|clipboard|"
-                r"contrasenas?|passwords?|correos?|emails?|mensajes?|messages?)\b|"
-                r"\b[a-z]:[\\/]|\\\\",
-            )
-        )
+        direct_public_search = _direct_public_search_query(text) is not None
         return (
             _location_recommendation_request(folded)
             or _public_route_lookup_request(folded)
@@ -6869,7 +6852,7 @@ _SCHEDULING_BY_ITSELF = (
     r"recordatorio|recordatorios|reminder|reminders|"
     r"alarma|alarmas|alarm|alarms|temporizador|temporizadores|timer|timers)"
 )
-_SEARCH = r"(?:busca|buscar|encuentra|search|find|look\s+up)"
+_SEARCH = r"(?:busc[aá]|buscar|encuentra|search|find|look\s+up)"
 # Verbs for catalog effects that this conservative recognizer does not
 # necessarily classify itself.  They are used only as clause boundaries: if a
 # compound request contains one of them and the following clause cannot be
@@ -11118,6 +11101,106 @@ def _location_recommendation_request(text: str) -> bool:
     )
 
 
+def _direct_public_search_query(text: str) -> str | None:
+    """Read one authoritative public query, preserving its original spelling."""
+
+    match = re.fullmatch(
+        rf"[¿?¡!\s]*{_REQUEST_PREFIX}{_SEARCH}(?:\s+for)?\s+"
+        r"(?P<query>\S.*)",
+        _strip_request_envelope(text),
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    query = match.group("query").strip(" \t.,;:!?\"'“”«»")
+    folded = _fold(text)
+    if (
+        not query
+        or _has(_fold(query), r"^(?:for|en|on)[.!?]*$")
+        or not effect_request_is_authoritative(text)
+        or len(_request_clauses(folded)) != 1
+        or _has(
+            folded,
+            r"\b(?:mi|mis|my|our|nuestros?|nuestras?|tus?|your|"
+            r"privad[oa]s?|private|local(?:es|ly)?|portapapeles|clipboard|"
+            r"contrasenas?|passwords?|correos?|emails?|mensajes?|messages?)\b|"
+            r"\b[a-z]:[\\/]|\\\\",
+        )
+    ):
+        return None
+    return query
+
+
+def _named_browser_search(text: str) -> tuple[str, str] | None:
+    """Bind a public query and browser within one complete current request."""
+
+    folded = _fold(text)
+    if (
+        len(text) > 16_384
+        or explicit_non_action_frame(text)
+        or _is_past_or_hypothetical_state(folded)
+        or _has_unsupported_deferred_effect(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _has_contradictory_correction(folded)
+        or _has(folded, r"\b(?:archivo|file|carpeta|folder|documentos?|documents?|"
+                r"descargas|downloads?|escritorio|desktop|notas?|notes?|"
+                r"tareas?|tasks?|recordatorios?|reminders?|aplicaciones?\s+"
+                r"instaladas?|installed\s+applications?|installed\s+apps?)\b")
+    ):
+        return None
+    clauses = _request_clauses(_strip_request_envelope(text))
+    if not 1 <= len(clauses) <= 2:
+        return None
+    query = _direct_public_search_query(clauses[-1])
+    if query is None:
+        return None
+    scope = _named_browser_match(query)
+    browser = _named_browser(query)
+    if scope is not None:
+        if scope.end() != len(query):
+            return None
+        query = query[:scope.start()].strip()
+    if len(clauses) == 2:
+        opening = _application_open_request(_fold(clauses[0]))
+        if opening is not None and effect_request_is_authoritative(clauses[0]):
+            opening_target = "in " + opening.group("target").rstrip(".!?")
+            opened_scope = _named_browser_match(opening_target)
+            opened = _named_browser(opening_target)
+            if (
+                opened_scope is None
+                or opened_scope.start() != 0
+                or opened_scope.end() != len(opening_target)
+                or (browser is not None and browser != opened)
+            ):
+                return None
+            browser = opened
+        else:
+            # Only a literal nominal desire immediately before this search
+            # supplies its pronoun's antecedent; no history or model guess.
+            antecedent = re.fullmatch(
+                r"(?:i\s+(?:need|want)|necesito|quiero)\s+(?P<query>.+)",
+                clauses[0].strip(), re.IGNORECASE,
+            )
+            if antecedent is None or _fold(query) not in {"it", "them", "that", "eso", "esto"}:
+                return None
+            query = antecedent.group("query").strip()
+            if (
+                _has(_fold(query), rf"^(?:to\s+)?(?:{_COVERAGE_ACTION_HEAD})\b")
+                or _direct_public_search_query("search for " + query) is None
+            ):
+                return None
+    if (
+        browser not in {"opera", "opera_gx"}
+        or not query
+        or _fold(query) in {"it", "them", "that", "eso", "esto"}
+        or len(query.encode("utf-8")) > 512
+        or any(ord(character) < 32 for character in query)
+        or _explicit_google_search_query("search " + query) is not None
+    ):
+        return None
+    return browser, query
+
+
 def _explicit_google_search_query(text: str) -> str | None:
     """Read an explicit Google search without folding its literal query."""
 
@@ -11154,7 +11237,7 @@ def _review_web_and_browser_effects(
 
     if _explicit_google_search_query(folded) is not None:
         browser = _named_browser(folded) or context_browser
-        if browser is None or browser == "opera":
+        if browser is None or browser in {"opera", "opera_gx"}:
             if _append(
                 matches,
                 folded,
@@ -11233,7 +11316,7 @@ def _review_web_and_browser_effects(
                 folded,
                 (
                     "browser.navigate.named"
-                    if context_browser == "opera"
+                    if context_browser in {"opera", "opera_gx"}
                     else "browser.navigate"
                 ),
                 rf"\b{_SEARCH}\b",
@@ -12217,7 +12300,7 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
     for found in re.finditer(_KNOWN_APPLICATION, body, re.IGNORECASE):
         app = found.group(0).casefold()
         app = {
-            "opera gx": "opera",
+            "opera gx": "opera_gx",
             "google chrome": "chrome",
             "microsoft edge": "edge",
         }.get(app, app)
@@ -12230,9 +12313,9 @@ def _opened_applications(text: str) -> tuple[str, ...]:
     return tuple(applications)
 
 
-def _named_browser(text: str) -> str | None:
+def _named_browser_match(text: str) -> re.Match[str] | None:
     browser = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|firefox)"
-    found = _match(
+    return _match(
         text,
         (
             rf"^[¿?¡!\s]*(?:navega|navegar|navigate|ve|go)\s+"
@@ -12243,6 +12326,10 @@ def _named_browser(text: str) -> str | None:
             rf"(?P<located>{browser})\b[\s?!.]*$"
         ),
     )
+
+
+def _named_browser(text: str) -> str | None:
+    found = _named_browser_match(text)
     if found is None:
         return None
     name = next(
@@ -12255,7 +12342,7 @@ def _named_browser(text: str) -> str | None:
         if group is not None
     )
     return {
-        "opera gx": "opera",
+        "opera gx": "opera_gx",
         "google chrome": "chrome",
         "microsoft edge": "edge",
     }.get(name.casefold(), name.casefold())
@@ -13068,6 +13155,8 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if "browser.navigate.named" in available and _named_browser_search(text) is not None:
+        return EffectIntent(("browser.navigate.named",), (text,))
     if (
         "app.installed" in available
         and unresolved_application_open_name(text, authenticated_applications) is not None
@@ -13955,7 +14044,7 @@ def resolve_explicit_effects(
         if opened_in_clause:
             latest = opened_in_clause[-1]
             context_browser = (
-                latest if latest in {"opera", "chrome", "edge", "firefox"} else None
+                latest if latest in {"opera", "opera_gx", "chrome", "edge", "firefox"} else None
             )
             context_spotify = latest == "spotify"
         elif "browser.navigate.named" in result.operations:

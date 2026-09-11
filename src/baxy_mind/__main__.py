@@ -3858,7 +3858,16 @@ def _explicit_browser_navigation_arguments(
     operation: str,
     evidence: str,
 ) -> dict[str, object] | None:
-    """Canonicalize explicit destinations and a literal Google search query."""
+    """Canonicalize literal destinations and searches under public policy."""
+
+    named_search = effect_intent._named_browser_search(evidence)
+    if named_search is not None:
+        if operation != "browser.navigate.named":
+            return None
+        browser, query = named_search
+        # Bing is the product's public-search policy, not a claim about the
+        # person's browser preferences. Confirm this complete URL and browser.
+        return {"browser": browser, "url": "https://www.bing.com/search?" + urlencode({"q": query})}
 
     google_query = effect_intent._explicit_google_search_query(evidence)
     if google_query is not None:
@@ -3908,9 +3917,10 @@ def _explicit_browser_navigation_arguments(
         return None
     arguments: dict[str, object] = {"url": destinations[0]}
     if operation == "browser.navigate.named":
-        if not re.search(r"\b(?:opera|opera gx)\b", folded):
+        browser = effect_intent._named_browser(folded)
+        if browser not in {"opera", "opera_gx"}:
             return None
-        arguments["browser"] = "opera"
+        arguments["browser"] = browser
     return arguments
 
 

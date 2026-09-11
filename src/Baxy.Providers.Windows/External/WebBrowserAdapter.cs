@@ -617,6 +617,27 @@ internal class CdpBrowserSession : IDisposable
             : Path.GetFullPath(browserExecutable);
     }
 
+    internal virtual string? ObservedExecutablePath
+    {
+        get
+        {
+            try
+            {
+                if (_browserExecutable is null || _ownedProcess is null || _ownedProcess.HasExited)
+                    return null;
+                string? observed = _ownedProcess.MainModule?.FileName;
+                return observed is not null && string.Equals(
+                    Path.GetFullPath(observed), _browserExecutable, StringComparison.OrdinalIgnoreCase)
+                    ? observed : null;
+            }
+            catch (Exception exception) when (exception is InvalidOperationException
+                or System.ComponentModel.Win32Exception or NotSupportedException)
+            {
+                return null;
+            }
+        }
+    }
+
     internal virtual async ValueTask<CdpNavigationResult> NavigateAsync(
         Uri target,
         CancellationToken cancellationToken)
@@ -1147,7 +1168,8 @@ internal class CdpBrowserSession : IDisposable
             return _endpoint;
         }
         string? configured = Environment.GetEnvironmentVariable("BAXY_CDP_ENDPOINT");
-        if (Uri.TryCreate(configured, UriKind.Absolute, out Uri? explicitEndpoint)
+        if (_browserExecutable is null
+            && Uri.TryCreate(configured, UriKind.Absolute, out Uri? explicitEndpoint)
             && explicitEndpoint.Scheme == Uri.UriSchemeHttp
             && explicitEndpoint.IsLoopback)
         {
@@ -1168,7 +1190,7 @@ internal class CdpBrowserSession : IDisposable
         string browser = _browserExecutable ?? ResolveEdge();
         var start = new ProcessStartInfo(browser)
         {
-            UseShellExecute = true,
+            UseShellExecute = _browserExecutable is null,
         };
         start.ArgumentList.Add("--remote-debugging-port=0");
         start.ArgumentList.Add("--remote-allow-origins=*");

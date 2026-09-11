@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T20:16:56.1707812Z",
-  "covered": 71,
-  "open": 671,
+  "utc": "2026-09-11T20:21:52.0592902Z",
+  "covered": 72,
+  "open": 670,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 43,
+  "covered_updated_last_24h": 44,
   "updated_recent_ids": [
     "H0017",
     "H0035",
@@ -50,17 +50,18 @@
     "H0622",
     "H0267",
     "H0688",
-    "H0397"
+    "H0397",
+    "H0503"
   ],
-  "confirmed_new_grants_last_24h": 43,
+  "confirmed_new_grants_last_24h": 44,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
       "category": "apps_open",
       "label": "Abrir aplicaciones",
       "total": 54,
-      "covered": 11,
-      "open": 43,
+      "covered": 12,
+      "open": 42,
       "not_applicable": 0
     },
     {
@@ -363,5 +364,5 @@
     "not_executed": 0,
     "coverage_added": 1
   },
-  "registry_sha256": "76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad"
+  "registry_sha256": "56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433"
 }
