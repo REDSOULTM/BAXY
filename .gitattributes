@@ -465,3 +465,6 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-python.log -text
 /scratchpad/c03-process-batch797.py -text
 /scratchpad/c03-review-process797.py -text
+
+# C03 relay validation logs are hashed as captured, including CRLF.
+/artifacts/comprobaciones/C03/PROCESS_BUDGET802/*.log -text

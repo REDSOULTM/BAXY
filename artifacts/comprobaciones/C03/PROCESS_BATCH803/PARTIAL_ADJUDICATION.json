@@ -1,0 +1,62 @@
+{
+  "source_candidate": 802,
+  "registered_cases": 50,
+  "completed_cases": 9,
+  "passed": 3,
+  "failed": 6,
+  "interrupted_case_ordinal": 10,
+  "root_adjudicated": true,
+  "source_adopted": false,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "passed": false,
+      "reason": "Names collapse ten returned instances; repeated processes have no identifying PIDs."
+    },
+    {
+      "case_id": "H0158",
+      "passed": false,
+      "reason": "Returned repeated instances are collapsed; saying processId distinguishes them does not supply those identities."
+    },
+    {
+      "case_id": "H0169",
+      "passed": false,
+      "reason": "The named opera instance is ambiguous among five observed instances; no PID distinguishes the quoted measurement."
+    },
+    {
+      "case_id": "H0364",
+      "passed": false,
+      "reason": "Requested list contains only four of ten returned CPU rows; repeated process names are not identified."
+    },
+    {
+      "case_id": "H0470",
+      "passed": true,
+      "reason": "Fresh observed count206 and accessible scope are preserved."
+    },
+    {
+      "case_id": "H0650",
+      "passed": true,
+      "reason": "Requested top5 contains all five distinct returned names, correct memory rounding and observed subset."
+    },
+    {
+      "case_id": "H0669",
+      "passed": false,
+      "reason": "Only four of ten requested list instances are given despite claiming the list identifies repeated names."
+    },
+    {
+      "case_id": "H0675",
+      "passed": false,
+      "reason": "Single-process working set is asserted as largest application total without app membership or aggregation."
+    },
+    {
+      "case_id": "H0678",
+      "passed": true,
+      "reason": "Fresh observed count212 and accessible scope are preserved."
+    }
+  ]
+}
