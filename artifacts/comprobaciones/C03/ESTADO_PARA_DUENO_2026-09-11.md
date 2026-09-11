@@ -1,16 +1,18 @@
 # Estado para el dueño — 11 de septiembre
 
-La encuesta avanzó a **71/742 cubiertos, 671 abiertos y 0 no aplican**. Las dos últimas tandas acreditaron Terminal y la búsqueda de «toreo» en Google. También pasó la corrección en inglés para abrir Notepad.
+**71/742 cubiertos,671 abiertos,0 no aplican.** Se mantienen las acreditaciones de Terminal y la búsqueda de «toreo» en Google. La última tanda no añadió créditos: comprobó la ausencia de dos aplicaciones, pero BAXY rechazó la respuesta que debía explicarlo.
 
-Se corrigió el rechazo de una respuesta fiel que contenía el signo de consulta de la URL. La última tanda ejecutó6casos:4válidos y2fallidos. Todavía algunas prohibiciones y condiciones futuras reciben mensajes de fallo inadecuados; no ejecutaron la acción.
+Se corrigió una coma que impedía entender una petición de apertura. La siguiente corrección distingue una consulta correcta que no encuentra una aplicación de una consulta fallida y evita mostrar identificadores internos. Se revisa el segundo filtro antes de ejecutar los tres casos afectados y cinco límites nuevos.
 
-| Medición919 | Resultado |
+| Última medición940 | Resultado |
 |---|---:|
-| Pico VRAM |3549,50MiB |
-| Pico RAM |2957,55MiB |
-| Duración |48,937s |
+| Casos válidos/fallidos |2/6 |
+| Créditos añadidos |0 |
+| Pico VRAM |3497,56MiB |
+| Pico RAM |2414,47MiB |
+| Duración |61,453s |
 | Violaciones de recursos |0 |
 
-RAM y VRAM se comparan por separado con4096MiB. Apertura de apps vuelve primera con43abiertos frente a42web. Continúa el diagnóstico de causas comunes para acreditar varios literales; los efectos inciertos anteriores siguen sin reintentos.
+RAM y VRAM por separado frente a4096MiB. Apertura de apps tiene43abiertos; web42. Los efectos inciertos anteriores siguen aparcados. Quedan respuestas inadecuadas a citas, destino ausente y condiciones futuras.
 
-Ritmo:43 acreditaciones confirmadas en24h; dos actualizaciones adicionales no permiten fechar la primera acreditación.0/35categorías cerradas y3/11filasC03cumplidas. No hay fecha de cierre fiable. Suites/Fast/Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.
+Ritmo:43 acreditaciones confirmadas en24h;0/35categorías cerradas y3/11filas C03 cumplidas. No hay fecha de cierre fiable. Suites/Fast/Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.

@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T19:28:35.5116471Z",
+  "utc": "2026-09-11T20:05:19.4577921Z",
   "covered": 71,
   "open": 671,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 45,
+  "covered_updated_last_24h": 43,
   "updated_recent_ids": [
     "H0017",
     "H0035",
@@ -15,7 +15,6 @@
     "H0133",
     "H0158",
     "H0169",
-    "H0180",
     "H0233",
     "H0258",
     "H0310",
@@ -31,7 +30,6 @@
     "H0470",
     "H0471",
     "H0477",
-    "H0499",
     "H0501",
     "H0505",
     "H0524",
@@ -55,10 +53,7 @@
     "H0397"
   ],
   "confirmed_new_grants_last_24h": 43,
-  "first_grant_date_not_distinguished_for_recent_ids": [
-    "H0180",
-    "H0499"
-  ],
+  "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
       "category": "apps_open",
@@ -368,5 +363,5 @@
     "not_executed": 0,
     "coverage_added": 1
   },
-  "registry_sha256": "e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492"
+  "registry_sha256": "e9b3459c0beaf27be052b7dfc6549ae9654941a186afc62c1d9f0d1426624e6d"
 }

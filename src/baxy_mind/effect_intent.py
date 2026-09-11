@@ -3810,7 +3810,8 @@ def unresolved_application_open_name(
     # request suffix, never another article or program word inside the name.
     raw_name = _APPLICATION_TRAILING_REQUEST.sub("", raw_name.rstrip(" ?!.")).rstrip()
     name = _bounded_application_literal(raw_name)
-    if name is None or len(_request_clauses(folded)) != 1:
+    # Courtesy is a request envelope, not a separate effect clause.
+    if name is None or len(_request_clauses(_strip_request_envelope(folded))) != 1:
         return None
     return name
 

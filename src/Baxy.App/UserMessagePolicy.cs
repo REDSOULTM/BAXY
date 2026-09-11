@@ -2506,6 +2506,48 @@ internal static class UserMessagePolicy
             return false;
         }
 
+        if (TryReadJson(source, out JsonElement root)
+            && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
+            && root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String && operation.GetString() == "app.installed"
+            && root.TryGetProperty("polarity", out JsonElement polarity) && polarity.ValueKind == JsonValueKind.String && polarity.GetString() == "success"
+            && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object
+            && observed.TryGetProperty("installed", out JsonElement installed) && installed.ValueKind == JsonValueKind.False
+            && observed.TryGetProperty("authority", out JsonElement authority) && authority.ValueKind == JsonValueKind.String && authority.GetString() == "windows_start_catalog_snapshot"
+            && observed.TryGetProperty("requestedName", out JsonElement requestedName) && requestedName.ValueKind == JsonValueKind.String
+            && requestedName.GetString() is { Length: > 0 } name && !string.IsNullOrWhiteSpace(name))
+        {
+            // Reading absence is successful; a separate failure or invented opening is not.
+            string assertions = FoldForPolicy(result);
+            if (Regex.IsMatch(assertions,
+                @"(?:^|[.;]|\b(?:pero|but|y|and)\b)\s*(?:(?:ya|yo|i|you|we|la|lo)\s+)*"
+                + @"(?:abri|abriste|abrio|abrieron|opened|launched|intente|intentamos|tried|attempted)\b"
+                + @"|\b(?:is|was|has\s+been)\s+(?:opened|launched)\b",
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
+            {
+                return true;
+            }
+
+            string target = @"(?:(?:la|the)\s+)?(?:(?:aplicacion|application|app)\s+)?"
+                + Regex.Escape(FoldForPolicy(name));
+            string scope = @"(?:en|in)\s+(?:el\s+catalogo(?:\s+de\s+(?:la\s+autoridad\s+observada|inicio\s+de\s+windows))?"
+                + @"|the\s+(?:(?:observed|windows\s+start(?:\s+application)?)\s+)?catalog(?:ue)?"
+                + @"(?:\s+of\s+the\s+observed\s+authority)?)";
+            string absent = $@"(?:no\s+se\s+encontro\s+{target}|{target}\s+(?:was\s+)?not\s+found)\s+{scope}";
+            string cannotOpen = @"(?:no\s+(?:se\s+)?(?:pude|pudo|puedo|puede)\s+abrir"
+                + @"|(?:i\s+)?(?:couldn't|could\s+not|cannot|can't)\s+open)";
+            string supported = $@"(?:{absent})(?:,\s*(?:por\s+lo\s+que|asi\s+que|so)\s+"
+                + $@"(?:{cannotOpen}|it\s+(?:cannot|can't|could\s+not)\s+be\s+opened))?"
+                + $@"|{cannotOpen}\s+{target}\s+(?:porque|because)\s+"
+                + $@"(?:no\s+esta(?:\s+presente)?|(?:it\s+is|it's)\s+not\s+found)\s+{scope}";
+            result = Regex.Replace(assertions, @"[^.;\n]+[.;]?", clause =>
+                Regex.IsMatch(clause.Value.Trim().TrimEnd('.', ';'), $@"\A(?:{supported})\z",
+                    RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+                    ? " " : clause.Value,
+                RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+        }
+
         return LooksLikeFailure(result);
     }
 

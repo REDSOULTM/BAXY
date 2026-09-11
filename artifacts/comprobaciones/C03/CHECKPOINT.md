@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**71/742 cubiertos, 671 abiertos, 0 no aplican; 43 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**71/742 cubiertos, 671 abiertos, 0 no aplican; 43 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: e9b3459c0beaf27be052b7dfc6549ae9654941a186afc62c1d9f0d1426624e6d. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente927:76a6c0948908b1ee90ff98a9165defac141b4e4b. Última ejecución919:6 ejecutados,4 válidos,2 fallidos,+H0397. Apps43 precede web42; informes937/938 preparan siguiente avance. Los apartados de tandas anteriores son historia; novedades al final.
+Fuente publicada941:3eca55d86b459b8ab2e0d9811a44ff8e2e4e827c. Última ejecución940:8 ejecutados,2 válidos,6 fallidos,0 créditos. Apps43 precede web42. Reparaciones945/946 integradas WIP;948 corrige segundo veto C# demostrado por flujo, antes de947 ya sellado. Los apartados de tandas anteriores son historia; novedades al final.
 
 Últimos tres tramos:
 
@@ -282,3 +282,15 @@ Raíz revisó diff completo1a0706, main/llm fa88bc y contratos94ded6/b88a0d. Cor
 Apertura positiva con sustantivo explícito de aplicación y nombre aún no resuelto pasa a lectura existente app.installed. Conserva nombre y propósito, no infiere apertura posterior. Resultado negativo informa alcance del catálogo; candidato distinto formula aclaración validada. Identidad ya conocida conserva app.open. Reutiliza guardas de negación, cita, futuro, compuestos y límite literal; extrae cortesía compartida retirando copia anterior. Sin nombres del panel ni respuesta visible fija; no provider/planificador nuevo.
 
 Pendiente ejecución940; no éxito funcional anticipado, suites/Fast/Full omitidos por orden. Python sólo: binarios904 se reutilizan con pins completos.71/742,671open,0NA,43altas24h,0/35categorías. Al corte19:48:53UTC las2actualizaciones antiguas no fechables salieron de la ventana; quedan43actualizaciones recientes, todas del conjunto de43altas confirmadas.942PLAN fd4d63982e97fd005c0fd30dbf24705df4f99ebb56df28b7f2782d3eada0fb86 conserva material5web+2variantes fallidas para próxima prioridad; no ejecutar sin reparación pertinente.
+
+## Tramos940/945–948 — ausencia observada, composición todavía fallida
+
+940 ejecutado con941:8 casos,2 pass/6 fail,0 créditos. H0503 y EN consultaron app.installed y verificaron installed=false en catálogo Windows; respuesta final composition_failed. H0503 primer veto asserted_failure; EN primer veto internal_code al exponer windows_start_catalog_snapshot. ES no consultó: coma de cortesía contada como otra cláusula. Sólo prohibición y narración válidas; cita repetida, target ausente y condición futura con respuesta inútil. ROOT_ADJUDICATION.json SHA0a68463804cabd8ce26c15db42a5074efd9e51a854ee7fe0c1680e5bf0273868. Causa H0503 escrita inmediatamente en registro, conserva open/positive; ninguna ausencia se infiere de nombre extraño.
+
+Exit0/sesión88207 recogidafa8921;61,453s, VRAM3497,56MiB/RAM2414,47MiB,0violaciones, pins íntegros. Dos lecturas app.installed, ninguna apertura. Sin crédito de UI/voz. Fuente941 queda como evidencia de enrutamiento parcial, no éxito de categoría.
+
+945 retira la cortesía antes de contar cláusulas, manteniendo las guardas originales.946 presenta la autoridad en lenguaje legible y distingue proposiciones negativas respaldadas de un fallo de consulta; conserva borrador original y demás validadores. Parches WIP raíz; todavía sin ejecución.948 atiende el segundo veto demostrado en UserMessagePolicy, sin duplicar un waiver global.947 sellado: tres positivos940 intactos y cinco límites nuevos,8casos/16líneas; SEAL59ce95b4e3cae56ec9d8713614f489931592b1a22f7583a54087a9b83e29a1a2 runner7be3fe27cea338cea217203b750c5136aa740085c98ad3af140556aa0723b29d. Root review0fa45f confirma panel/criterios/diff de runner. Falta948, compilación necesaria si C# cambia, candidato/manifest y ejecución. No repetir940 entero.
+
+71/742 cubiertos,671 abiertos,0 no aplican;43 nuevas acreditaciones24h,43 actualizaciones recientes ahora,0 sin fecha inicial distinguible dentro de ventana.0/35 categorías,C03 3/11. No Full ni suites por orden posterior del dueño. Goal activo/progreso; sin permiso pendiente. Reserva siguiente942/943: búsquedas en Opera/GX, cinco literales y dos variantes previas fallidas; diagnóstico cerrado, todavía sin parche ni crédito.
+
+948 integrado tras revisión raízbe91a9/cfd8b6. Build real de producto y cierre de servidores completados exit0/0, sesión56621 recogida0af760; recibo C:/Users/usuario/AppData/Local/BAXY/C03-app-policy948-private/BUILD_EXIT.json. Core publicado sincronizado con ejecutable efectivo del shell (SHA2445a212a28ef7d8b0a61d6c5b71d0392fe84be00dde668e11883671ab45ebe3). Fuente945/946/948 adoptada para medir947; ninguna suite ejecutada ni éxito de encuesta atribuido aún.

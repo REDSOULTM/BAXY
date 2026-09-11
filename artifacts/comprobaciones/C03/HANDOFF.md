@@ -1,3 +1,15 @@
+948 ya integrado/compilado exit0/0; siguiente inmediato: commit fuentes y manifest947/prepare/run. 948 integrado tras revisión raízbe91a9/cfd8b6. Build real de producto y cierre de servidores completados exit0/0, sesión56621 recogida0af760; recibo C:/Users/usuario/AppData/Local/BAXY/C03-app-policy948-private/BUILD_EXIT.json. Core publicado sincronizado con ejecutable efectivo del shell (SHA2445a212a28ef7d8b0a61d6c5b71d0392fe84be00dde668e11883671ab45ebe3). Fuente945/946/948 adoptada para medir947; ninguna suite ejecutada ni éxito de encuesta atribuido aún.
+
+## Reanudación948 →947
+
+940 terminó y está adjudicado:2pass/6fail/0credit,8casos,exit0/pins íntegros; ROOT0a68463804cabd8ce26c15db42a5074efd9e51a854ee7fe0c1680e5bf0273868.71/742,671open,0NA,43altas24h,0/35categorías,C03 3/11. Fuente publicada9413eca55d8. Registro actuale9b3459c0beaf27be052b7dfc6549ae9654941a186afc62c1d9f0d1426624e6d.
+
+WIP canónico raíz: effect_intent.py9450ccbc9995eb1550be2de1a729edd10cf43a2cc27ab3433dd36400e82b4979608 y llm.py946ac4663ffe5fce313cffb1ec7f394039aa06091f911ba1822dfecc9c52918e781. Sólo cortesía/cláusula y composición negativa verificada/presentación de autoridad. process_counts812 implementa948 en UserMessagePolicy.cs externo: segundo veto C# confirmado, mantener rechazo de fallo independiente. Revisar/integrar, build real si cambiaC#, commit/push fuentes, manifest947584/18/5 y stagesprepare/run. Sin tests/Fast/Full por orden del dueño.
+
+947 C:/Users/usuario/AppData/Local/BAXY/C03-app-missing947-proposal: root review0fa45f completo; tres positivos fallidos940 intactos+5límites nuevos. SEAL59ce95b4e3cae56ec9d8713614f489931592b1a22f7583a54087a9b83e29a1a2 runner7be3fe27cea338cea217203b750c5136aa740085c98ad3af140556aa0723b29d. Perfil/privado947 aún no ejecutados. App.installed940 ausencias reales sóloH0503/EN; ES no consulta. No contar como crédito hasta final fiel+2variantes.947 debe leer de nuevo, no inyectar snapshot previo. Ningún bloqueo ni permiso pendiente; autorización para cerrar apps si RAM lo exige.
+
+Historia debajo; esta cabecera sustituye pendientes941/940 antiguos.
+
 ## Reanudación concreta941/940 — sin otra auditoría
 
 939 concluyó sin parche, REPORT SHA dd41a67deca5db50e3625a387966692a6c82386cac1119ae5463280ab8624b47: no hace falta nuevo planificador/kernel; faltan dos conexiones de enrutamiento y resultado. Raíz encarga IMPLEMENTAR esas conexiones en941, worktree codex/c03-app-missing941, entregable C:/Users/usuario/AppData/Local/BAXY/C03-app-missing941-proposal/{repair.patch,REPORT.md}. Archivos permitidos effect_intent.py/__main__.py/llm.py; sin canónico/tests/build/GPU. Lectura previa app.installed con nombre literal, después negativa verificada o aclaración si identidad aproximada, sin apertura automática, scores ni nombres específicos. Identidades exactas conocidas conservan app.open. No confundir una conexión entre piezas existentes con nuevo proveedor/infraestructura.

@@ -3452,6 +3452,15 @@ def _compose_situation_payload(
             visible_seen = project_system_measurements(visible_seen)
         elif operation == "system.process.list":
             visible_seen = project_process_measurements(visible_seen, user_text)
+        elif (
+            operation == "app.installed"
+            and visible_seen.get("authority") == "windows_start_catalog_snapshot"
+        ):
+            # Presentation only: keep the authenticated snapshot and checks intact.
+            visible_seen["authority"] = (
+                "Windows Start application catalog" if language == "en"
+                else "catálogo de inicio de Windows"
+            )
         elif operation == "app.open" and isinstance(visible_seen.get("alreadyRunning"), bool):
             # The receipt records whether it was running BEFORE this invocation.
             # False must not tell the narrator that the app is still closed.
@@ -4551,6 +4560,64 @@ def compose_visible_defect(
         r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", folded
     ):
         return "wrong_language"
+    failure_assertions = stripped
+    presence = _merged_observed(situation)
+    if (
+        kind == "operation"
+        and situation.get("operation") == "app.installed"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and presence.get("installed") is False
+        and isinstance(presence.get("requestedName"), str)
+        and presence["requestedName"].strip()
+        and presence.get("authority") == "windows_start_catalog_snapshot"
+    ):
+        # A successful catalog read can prove absence, not a launch or failure
+        # of the read. Remove only complete, name-bound factual propositions.
+        name = re.escape(_accent_folded_with_punctuation(presence["requestedName"].strip()))
+        target = rf"(?:(?:la|the)\s+)?(?:(?:aplicacion|application|app)\s+)?{name}"
+        catalog = (
+            r"(?:el\s+catalogo(?:\s+de\s+(?:la\s+autoridad\s+observada|inicio\s+de\s+windows))?"
+            r"|the\s+(?:(?:observed|windows\s+start(?:\s+application)?)\s+)?catalog(?:ue)?"
+            r"(?:\s+of\s+the\s+observed\s+authority)?)"
+        )
+        absent = (
+            rf"(?:no\s+se\s+encontro\s+{target}|(?:{target}\s+)?no\s+"
+            rf"(?:esta(?:\s+presente)?|figura|aparece))\s+en\s+{catalog}"
+            rf"|(?:{target}\s+)?(?:was\s+not\s+found|(?:it\s+is|it's|is)\s+not\s+(?:found|present|listed))"
+            rf"\s+in\s+{catalog}"
+        )
+        unavailable = (
+            rf"(?:no\s+(?:se\s+)?(?:pudo|puede|pude|puedo)\s+abrir(?:\s+{target})?"
+            rf"|(?:i\s+)?(?:could\s+not|couldn't|cannot|can't)\s+(?:open|launch)"
+            rf"(?:\s+{target})?|it\s+(?:cannot|can't|could\s+not)\s+be\s+opened|"
+            r"(?:its\s+)?opening\s+could\s+not\s+proceed)"
+        )
+        supported = (
+            rf"(?:{absent})(?:,\s*(?:por\s+lo\s+que|asi\s+que|so)\s+{unavailable})?"
+            rf"|{unavailable}\s+(?:porque|because)\s+(?:{absent})"
+        )
+        failure_assertions = _accent_folded_with_punctuation(stripped)
+        for clause in reversed(tuple(re.finditer(r"[^.;\n]+[.;]?", failure_assertions))):
+            statement = clause[0].strip().rstrip(".;")
+            if (
+                re.search(rf"(?<!\w){name}(?!\w)", statement)
+                and re.fullmatch(supported, statement, re.IGNORECASE)
+            ):
+                failure_assertions = (
+                    failure_assertions[:clause.start()] + " " + failure_assertions[clause.end():]
+                )
+        # A separate completed opening or explicit attempt is not catalog evidence.
+        if re.search(
+            r"(?:^|[.;]|\b(?:pero|but|y|and)\b)\s*"
+            r"(?:(?:ya|yo|i|you|we|la|lo)\s+)*"
+            r"(?:abri|abriste|abrio|abrieron|opened|launched|"
+            r"intente|intentamos|tried|attempted)\b|"
+            r"\b(?:is|was|has\s+been)\s+(?:opened|launched)\b",
+            failure_assertions,
+        ):
+            return "extra_claim"
     is_failure = intent == "error" or polarity == "failure"
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
@@ -4592,7 +4659,7 @@ def compose_visible_defect(
     elif (
         cause != "acting"
         and kind not in {"welcome", "confirmation", "clarification"}
-        and _asserts_failure(window_status_assertions(stripped, {
+        and _asserts_failure(window_status_assertions(failure_assertions, {
             "operation": situation.get("operation"), "seen": _merged_observed(situation),
         }, require_window_answer=True))
         and not (

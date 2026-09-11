@@ -1,0 +1,149 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T20:05:19.4227392Z",
+  "candidate": "3eca55d86b459b8ab2e0d9811a44ff8e2e4e827c",
+  "source_candidate": 941,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "fec750af6d546effc40b80e040b1f698cdb7e68019c25c9d3879dd72fe5b2842",
+  "manifest_sha256": "0c5fff6739581f3bda88337160c017a0bc304496edc3a884b10e19213e3edb06",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0503",
+      "verdict": "fail",
+      "reason": "Verified negative app.installed inv610c81cd-5854-4b30-896e-08d8349b93ea, requested zzqwx123, installed=false, windows_start_catalog_snapshot. No useful final: composition_failed. First Python veto asserted_failure rejects faithful negative as read failure; false opened claim also observed and must remain rejected. H0503 stays open, cause written immediately.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 1,
+      "case_id": "app-missing940-variant-es",
+      "verdict": "fail",
+      "reason": "No catalog lookup. Courtesy comma split the positive request into two clauses, blocking existing unresolved-name recovery. Final claims unsupported capability instead of verified identity evidence.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo abrir esa aplicación, no la manejo en este equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 2,
+      "case_id": "app-missing940-variant-en",
+      "verdict": "fail",
+      "reason": "Verified negative app.installed invb203d2d8-f558-4a69-b6bc-c6f8446493a7, requested xkdrn681, installed=false, windows_start_catalog_snapshot. No useful final. First Python veto internal_code: draft exposes raw authority identifier.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 3,
+      "case_id": "app-missing940-boundary-prohibition",
+      "verdict": "pass",
+      "reason": "Faithful acknowledgement of prohibition; no effects or lookup.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no abriré la aplicación rjvqx294.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 4,
+      "case_id": "app-missing940-boundary-quotation",
+      "verdict": "fail",
+      "reason": "Repeats quoted command rather than explaining its meaning; no effects or lookup.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "open the application tvqzn583",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 5,
+      "case_id": "app-missing940-boundary-narrative",
+      "verdict": "pass",
+      "reason": "Acknowledges past conversation and requests context; no effects or lookup.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! ¿Podrías decirme qué pasó en esa conversación o qué necesitas ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 6,
+      "case_id": "app-missing940-boundary-missing-target",
+      "verdict": "fail",
+      "reason": "Claims inability due to interpretation rather than asking for missing target; no effects or lookup.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude abrir la aplicación porque el sistema no entendió la solicitud. Vamos a intentarlo de nuevo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 7,
+      "case_id": "app-missing940-boundary-future-condition",
+      "verdict": "fail",
+      "reason": "Unsupported capability limitation instead of respecting future condition; no effects or lookup.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I can't open applications that aren't part of my capabilities.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    }
+  ],
+  "executed": 8,
+  "passed": 2,
+  "failed": 6,
+  "not_executed": 0,
+  "coverage_added": 0,
+  "registry_before": "e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492",
+  "registry_after": "e9b3459c0beaf27be052b7dfc6549ae9654941a186afc62c1d9f0d1426624e6d",
+  "resources": {
+    "utc": "2026-09-11T19:52:03.409685+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2414.46875,
+    "seconds": 61.45299999999406,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "scope": "8 real turns/8 controls, 2 verified app.installed reads, no app.open or other effects; session88207 collectedfa8921 exit0 pins unchanged. No UI/voice credit."
+}
