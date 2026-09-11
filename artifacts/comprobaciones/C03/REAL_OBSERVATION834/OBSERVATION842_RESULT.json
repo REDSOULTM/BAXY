@@ -1,0 +1,93 @@
+{
+  "utc": "2026-09-11T10:46:57.285003+00:00",
+  "initial_capture": {
+    "report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\resolve-db9c3c2812f341febc7935795bafd043\\REPORT.json",
+    "report_sha256": "dffcc98b834d1c6454a2cb019b12e86286923cec9c9f5f420d81c9332e3642df",
+    "runner_exit": 1,
+    "chunk": "a0b1df",
+    "core_exit": 0,
+    "capture_verified_by_core": true,
+    "width": 1530,
+    "height": 948,
+    "image_sha256": "06416bbaaee27af9d934d1f7388d122c6f40fc6ea48a1d4f1d5a71c2b0efe022",
+    "is_clipped": false,
+    "root_metadata_read_chunk": "3aca3d",
+    "root_viewed_image": true,
+    "visible_scope": "Processes view and Memory column visible; horizontal viewport clips left names and right units. No complete application section or PC-wide aggregate proved."
+  },
+  "runner_bug": {
+    "cause": "Capture code indexed previous.capture even when previous was a resolution-only report.",
+    "product_capture_failed": false,
+    "original_runner_failure_preserved": true,
+    "fix": "Compare prior capture identity only when the previous report actually contains a capture.",
+    "old_driver_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-runner-proposal\\driver-before842.py",
+    "old_driver_sha256": "3d90f065147dda4eb3cf7a3ca1fb190457812f338000a65242b83bf0fe4e8370",
+    "new_driver_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-runner-proposal\\driver.py",
+    "new_driver_sha256": "41a83b6500f9728e7b6e05a729d08d4560c5d4210b5520266e494201f7a1a8eb",
+    "AST_passed": true,
+    "new_stage_executed": false
+  },
+  "maximize": {
+    "report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\maximize-da9dc7df99da464e96a543e590c67ed5\\REPORT.json",
+    "report_sha256": "899308a9bd024096c340401413debbbb1b328adadb305837efb88adbeb2e17ee",
+    "runner_exit": 1,
+    "chunk": "17b138",
+    "root_read_chunk": "fea2ff",
+    "core_exit": 0,
+    "failure": {
+      "type": "RuntimeError",
+      "message": "operation_stopped:window.maximize:action_failed"
+    },
+    "operation": "window.maximize",
+    "native_boolean": "ShowWindowAsync(SW_SHOWMAXIMIZED) false; no policy success inferred.",
+    "repeat_allowed": false
+  },
+  "ocr": {
+    "report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\observe-15c8100dd12b4b21a2f983d1d33031ad\\REPORT.json",
+    "report_sha256": "19de47fb1a37af20b65f35477f3ccb72009a7e77d7ec827cf9da2a2ef89a1084",
+    "runner_exit": 1,
+    "chunk": "545556",
+    "core_exit": 70,
+    "root_read_chunks": [
+      "10a5d0",
+      "12e0d9"
+    ],
+    "transport_failure": "JsonException: message must be non-empty and at most4096characters.",
+    "completed_journal_extraction": {
+      "journal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\journal\\missions.jsonl",
+      "journal_sha256": "fee940a1c3fd2b8e04ae67b7dbb5ce49e163888c61064f0eea3fea485d3af80d",
+      "journal_bytes": 63375,
+      "sequence": 36,
+      "phase": "completed",
+      "operation": "ocr.read",
+      "response_status": "completed",
+      "verified": true,
+      "replayed": false,
+      "message_utf16_chars": 6532,
+      "message_utf8_bytes": 6535,
+      "ocr_layout_available": true,
+      "ocr_text_chars": 416,
+      "result_image_hash_matches_capture": true,
+      "root_scope": "Recovered persisted completion. The Core did not deliver this response over stdout: serialization crashed at 4096-character validator. Not an end-to-end success. JSON extraction itself does not re-verify HMAC; authenticated journal open remains product ownership.",
+      "files": {
+        "completed-record.json": "83e78cd4c1eded372c081629dc948be8523dba8c0df892d4f60cf9de5e043aef",
+        "journal.snapshot.jsonl": "fee940a1c3fd2b8e04ae67b7dbb5ce49e163888c61064f0eea3fea485d3af80d",
+        "ocr.result.json": "6d235c0cca8ae3960a0d8a8a764c728e60342209f6351132976000b13d758c2b",
+        "response.json": "7928116bd0f60d3a46b573d88ab4593f1f48e9fa4cb6774e757ef4eca0a91ae1"
+      }
+    },
+    "first_lost_boundary": "Persisted verified OCR completion -> ProtocolJson OperationResponse serialization. Message6532 UTF16 units exceeds4096; no terminal response reached stdout or the model."
+  },
+  "pending_user_input": "Root asked once to maximize Task Manager and leave Processes view because product maximize failed and view is clipped. No response yet; do not ask again. Continue protocol repair independently.",
+  "next_repair843": {
+    "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ocr843-protocol-proposal.md",
+    "proposal_sha256": "29f163fa0b1b3506a62772d188e19dcb3678ad315fd92e1df7346ad35f5f8447",
+    "scope": "Reuse adopted48000 message budget as one Contracts constant; align only OperationResponse.Message, retain4096 other fields/1MiB frames/unchanged Python. Add contract, projection, framing and journal reopen regressions.",
+    "agent": "process_counts812",
+    "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-protocol843-worktree"
+  },
+  "model_invoked": false,
+  "original_H0675_request_executed": false,
+  "survey_credit_added": 0,
+  "C03_closed": false
+}

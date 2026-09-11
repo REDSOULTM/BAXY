@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-11T10:31:02.970010+00:00",
+  "base_commit": "e7fbae65f3beb8d9d7a4986cf217564a5c3c93cf",
+  "changed_files": [
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs",
+    "tests/Baxy.Providers.Windows.Tests/NativeWindowFocusTests.cs"
+  ],
+  "source_pins": 55,
+  "source_pins_sha256": "26d686c7e638ed4d390434c8627ca16e953353960617e41b202dadc176b205c5",
+  "root_review_chunk": "309520",
+  "patch_sha256": "4e1ff77f89484e30b6911be61b7f42cb9c4e673a4811ab67002b04177971ea49",
+  "agent_red": {
+    "failed": 7,
+    "passed": 0,
+    "skipped": 0
+  },
+  "agent_green": {
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0
+  },
+  "initial_test_import_error_preserved": true,
+  "scope": "Focus preserves normal/maximized show state; only minimized restores before requesting foreground. Existing identity and state verification remain.",
+  "full839_inheritance": "All50 Full839 pins unchanged; three additional Core source pins unchanged. Full839 is baseline, not a Full on new focus source.",
+  "validation_policy": "C#-only owner repair: root owners and Fast before native probe; no new Full per effect. Goal requires Full on mixed-source adoption and final candidate. Accumulated Full839 already collected, final C03 Full remains required.",
+  "native_cause_of_834": "not_yet_discriminated",
+  "adopted": false,
+  "H0675_closed": false,
+  "credit_added": 0
+}

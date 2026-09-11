@@ -600,7 +600,6 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     private const uint CloseMessage = 0x0010;
     private const uint SystemCommandMessage = 0x0112;
     private const int SystemCloseCommand = 0xF060;
-    private const int ShowNormal = 1;
     private const int ShowMinimized = 6;
     private const int ShowMaximized = 3;
     private const int Restore = 9;
@@ -729,17 +728,23 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
 
     public bool Execute(WindowIdentity identity, WindowControlAction action)
     {
-        _ = Observe(identity);
+        WindowSnapshot snapshot = Observe(identity);
         return action switch
         {
-            WindowControlAction.Focus => ShowWindowAsync(identity.Handle, ShowNormal)
-                && SetForegroundWindow(identity.Handle),
+            WindowControlAction.Focus => ExecuteFocus(snapshot, ShowWindowAsync, SetForegroundWindow),
             WindowControlAction.Minimize => ShowWindowAsync(identity.Handle, ShowMinimized),
             WindowControlAction.Maximize => ShowWindowAsync(identity.Handle, ShowMaximized),
             WindowControlAction.Restore => ShowWindowAsync(identity.Handle, Restore),
             _ => false,
         };
     }
+
+    internal static bool ExecuteFocus(
+        WindowSnapshot snapshot,
+        Func<nint, int, bool> showWindowAsync,
+        Func<nint, bool> setForegroundWindow) =>
+        (snapshot.State != "minimized" || showWindowAsync(snapshot.Identity.Handle, Restore))
+        && setForegroundWindow(snapshot.Identity.Handle);
 
     public bool RequestClose(WindowIdentity identity)
     {

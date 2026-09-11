@@ -1,0 +1,40 @@
+{
+  "utc": "2026-09-11T10:46:57.269682+00:00",
+  "source_pins": 55,
+  "source_pins_sha256": "26d686c7e638ed4d390434c8627ca16e953353960617e41b202dadc176b205c5",
+  "source_pins_unchanged": true,
+  "root_owners": {
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0,
+    "milliseconds": 48
+  },
+  "root_fast": {
+    "exit_code": 0,
+    "release_seconds": 13.06
+  },
+  "collection": {
+    "session": 38876,
+    "exit_code": 0,
+    "chunk": "a0a409"
+  },
+  "native_attempt": {
+    "report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\focus-afeb380829a942899596be992fe3df35\\REPORT.json",
+    "report_sha256": "b761c5335c2f0409ac9120dec7e3ce4b36cef039cc22a2757152a73011470a74",
+    "runner_exit": 1,
+    "chunk": "a65ab3",
+    "reason": "focus_unnecessary",
+    "operations": [
+      "window.resolve"
+    ],
+    "focus_effect_executed": false,
+    "root_read_chunk": "2d33fb"
+  },
+  "adopted_scope": "Focus dispatch preserves already normal/maximized show state and restores only minimized windows. Twenty current owner tests and Fast validate this source repair.",
+  "native_limit": "Fresh resolve found Taskmgr already foreground; driver stopped before requesting focus. Do not credit the source for foreground acquisition or infer cause of earlier focus failure.",
+  "full841_executed": false,
+  "full839_is_baseline_only": true,
+  "C03_closed": false,
+  "H0675_closed": false,
+  "survey_credit_added": 0
+}

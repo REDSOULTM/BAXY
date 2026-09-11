@@ -1,0 +1,84 @@
+{
+  "utc": "2026-09-11T10:28:18.749294+00:00",
+  "runner_exit": 1,
+  "collection_chunk": "5c4860",
+  "private_report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\activate-aeedbbc2ccd34719bc8dab36c87d6106\\REPORT.json",
+  "private_report_sha256": "49c5a22a9eb0aab784aa60b2b008a217e1a95b9930b7993a2ef558d013bef52c",
+  "status": "shortcut_accepted_target_not_foreground",
+  "core_exit": 0,
+  "pins_unchanged": true,
+  "accepted_events": 6,
+  "expected_events": 6,
+  "root_adjudication": "Input operation proves acceptance of six events; postread remained NotepadPID29224, not TaskmgrPID8204. Surface preparation failed. No capture, OCR or model executed.",
+  "root_read_chunk": "aa2ef9",
+  "operations": [
+    {
+      "operation": "window.resolve",
+      "response_sha256": "1a9d5160e0a141f08d67b63d0803098cfdb947534c9a51d20ecc12c2b73206ce"
+    },
+    {
+      "operation": "input.key.press",
+      "response_sha256": "fdcc88b5fa42b4a2b01f6f97562b623f906cf7532affe6b5bfbc12b3878bc871"
+    },
+    {
+      "operation": "window.active",
+      "response_sha256": "44109359098108a35d60b1f53747703178c88174aa7754c7bcee6a4bebebc57b"
+    }
+  ],
+  "one_shot_marker": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\open.attempted.json",
+  "repeat_shortcut_allowed": false,
+  "repeat_focus_without_source_or_condition_change_allowed": false,
+  "desktop_diagnostic": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-runner-proposal\\DESKTOP_STATE840.json",
+    "sha256": "a01bffda5cbcabb5a1de50b467a9d7498243c4b5049a22a9eaf2d9deadfbd7e6",
+    "collection_chunk": "54cf15",
+    "record": {
+      "utc": "2026-09-11T10:24:55.400944+00:00",
+      "pid": 7368,
+      "sessionId": 1,
+      "readOnly": true,
+      "threadDesktop": {
+        "name": "Default",
+        "receivingInput": true
+      },
+      "inputDesktop": {
+        "name": "Default",
+        "receivingInput": true
+      },
+      "wtsBytes": 232,
+      "wtsExpectedBytes": 232,
+      "wts": {
+        "level": 1,
+        "sessionId": 1,
+        "connectionState": 0,
+        "sessionFlags": 1,
+        "locked": false,
+        "unlocked": true
+      },
+      "scriptSha256": "2470d183915f67712fbeca55ed37bae9fedcce4bf376960f4c777b5b0d8ec647"
+    }
+  },
+  "desktop_limit": "Contemporary read: session1 active/unlocked, input and thread desktopDefault receivingInput true. Does not reconstruct native return values of earlier effect.",
+  "token_diagnostic": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-runner-proposal\\PROCESS_TOKENS840.json",
+    "sha256": "1efb3e82051b2804457cebb3d014ac2208012d71455b925310d3337fbd64ee20",
+    "collection_chunk": "d8a988"
+  },
+  "source_change": false,
+  "survey_credit_added": 0,
+  "H0675_closed": false,
+  "next_source_hypothesis841": "Native focus always asks SW_SHOWNORMAL even for normal/maximized windows. Preserve normal/maximized state and restore only minimized before SetForegroundWindow. This removes an unnecessary state change; it is not yet proof of why834 failed.",
+  "next_scope": "Two-file external repair and owner tests, no native effects by agent. Root reviews before integrating and probing the changed path once.",
+  "composition_preparation": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-composition-proposal.md",
+    "sha256": "96fe439c7b676080550fcb18f5b2bec63b4035eaa696652e29d621ad6e097dcc",
+    "executed": false,
+    "requires": "Two real capture/OCR observations and private root oracle; no invented data or injected winner."
+  },
+  "official_sources_2026_09_11": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-openinputdesktop",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getuserobjectinformationw",
+    "https://learn.microsoft.com/en-us/windows/win32/api/wtsapi32/ns-wtsapi32-wtsinfoex_level1_w",
+    "https://learn.microsoft.com/en-us/windows/win32/api/wtsapi32/ne-wtsapi32-wts_info_class"
+  ]
+}

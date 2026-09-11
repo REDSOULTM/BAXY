@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "Full839 collected0:4735.NET pass/1 aggregate omission +16 non-disjoint opt-ins;12907Python pass/3skips/466subtests. Supporting source829/837/839 adopted,50 pins unchanged. Real834 resolve succeeds; focus action_failed before capture/OCR. H0675 open; survey36/706/0; C03 active.",
-  "continuation": "Continue read-only diagnosis of real834 focus failure; no blind retry. Real binaries/source62 sealed in REAL_OBSERVATION834/PREREG839.json. No model or Full running. Publish839 supporting source with dueñas/Full receipts; preserve main/user files.",
+  "checkpoint": "841 root20pass0skip/Fast0/Release13.06s;55pins unchanged. Real focus skipped because Taskmgr already foreground. Capture1530x948 verified, viewport clips labels/units; maximize failed. OCR completed in journal6532UTF16chars but Core exit70 at protocol4096 limit.843 eight-file protocol repair underway. Survey36/706/0,C03active.",
+  "continuation": "Collect protocol843 patch/red-green, review and integrate, owner/Fast then accumulated Full for shared contract. No more UI effects or repeated maximize/shortcut. Driver capture-previous guard fixed privately. User maximize response pending; two future fresh observations after transport repair before real composition.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -32,9 +32,9 @@
     "open": 706,
     "not_applicable": 0
   },
-  "pendingOwnerClarification": null,
+  "pendingOwnerClarification": "Maximize Task Manager and leave Processes view; asked once after product window.maximize failed. Await reply; continue protocol843 independently.",
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "full839_passed_real834_focus_diagnosis",
+  "workStatus": "protocol843_external_repair",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Completed and collected accumulated Full839, adopted supporting repairs within their tested scope, and executed first real Core stages with honest focus failure before capture.",
+  "previousGoalTurnClassificationReason": "Validated focus state repair, preserved guard stop without false effect credit, captured real Taskmgr and recovered verified OCR completion from journal; isolated exact4096 protocol mismatch and delegated bounded repair.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -81,7 +81,7 @@
     },
     "source_pins_unchanged": true
   },
-  "activeReadOnlyAgent": "capture826_provenance: external bounded window.focus failure diagnosis",
+  "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "name": "process824",
@@ -917,7 +917,7 @@
     "owners_reference_skip": 1,
     "receipt": "PROCESS_NARRATOR823/ROOT_VALIDATION.json"
   },
-  "publishedCandidateCommit": "80f57efe33700c987a6774ab9d52f6bab7bda821",
+  "publishedCandidateCommit": "e7fbae65f3beb8d9d7a4986cf217564a5c3c93cf",
   "publishedRunnerCommit": "ef88d4c9b891889e127e25c95a1df1086ff50775",
   "latestOcrRun": {
     "name": "OCR832",
@@ -938,5 +938,6 @@
     "contentFailures": 3,
     "timeouts": 1,
     "coverageAdded": 0
-  }
+  },
+  "activeRepairAgent": "process_counts812: eight-file protocol843 repair in external worktree; no Core/effects/Full/model."
 }

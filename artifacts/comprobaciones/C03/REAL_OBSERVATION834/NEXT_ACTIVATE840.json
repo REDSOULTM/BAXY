@@ -1,0 +1,35 @@
+{
+  "utc": "2026-09-11T10:22:41.006732+00:00",
+  "status": "prepared_not_executed",
+  "decision": "One alternative preparation step through existing input.key.press ctrl_shift_escape, with fresh resolution and postread of the same existing Taskmgr PID. Not a retry of failed native window.focus. No elevation or RunAsInvoker.",
+  "previous_failure_preserved": "INITIAL_RESULT.json",
+  "postfailure_resolve": "C:/Users/usuario/AppData/Local/BAXY/C03-real834-private/runner834/resolve-becc925766c143d2b5eaad12752d4503/REPORT.json",
+  "postfailure_resolve_sha256": "3af7759f9c66853fc068e2bd0bc3f4183c31f4647763effaea76f6161d4745b0",
+  "postfailure_resolve_collection": {
+    "exit_code": 0,
+    "chunk": "1d081e"
+  },
+  "root_review": "Postread still has Notepad foreground; Taskmgr not foreground. Native Execute boolean conflates ShowWindowAsync and SetForegroundWindow; cause not retrospectively recoverable.",
+  "read_only_token_metadata_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-runner-proposal\\PROCESS_TOKENS840.json",
+  "read_only_token_metadata_sha256": "1efb3e82051b2804457cebb3d014ac2208012d71455b925310d3337fbd64ee20",
+  "token_finding": "Current Taskmgr PID8204 elevated/high RID12288; diagnostic Python unelevated/medium RID8192. Current tokens do not identify which historical native call failed; no causal claim.",
+  "agent_diagnosis_path": "C:/Users/usuario/AppData/Local/BAXY/C03-real834-focus-diagnosis.md",
+  "agent_diagnosis_sha256": "692a345913af5f36ec9f220550050dfb1376d74712d98272417f3f9a05311b6c",
+  "source_driver_sha256": "3d90f065147dda4eb3cf7a3ca1fb190457812f338000a65242b83bf0fe4e8370",
+  "driver_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-runner-proposal\\driver-activate840.py",
+  "driver_sha256": "57bdb123727684eee90117217ab5ecb4c9e62628b1fa5edb35a8792f804bce60",
+  "product_source_changed": false,
+  "source_and_binary_pins": "PREREG839.json",
+  "authorization": "Root C03 preparation decision under owner authorization; this preregistered alternative amends only the existing-window preparation branch, preserving the earlier failed stage.",
+  "stop_rule": "One durable marker BEFORE the shortcut, no re-send. Stop on failed/pending receipt or unexpected/missing foreground; if successful, preserve first verified capture and root-review before further effects. SendInput count alone does not prove activation.",
+  "limits": [
+    "No original H0675 turn, model, winner, survey or UI/voice credit.",
+    "No direct ad hoc UI effects: only production Core catalog/kernel/provider.",
+    "No automatic maximize, click, ordering, filters, scrolling or closing."
+  ],
+  "microsoft_sources_read_2026_09_11": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-showwindowasync",
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-gettokeninformation"
+  ]
+}

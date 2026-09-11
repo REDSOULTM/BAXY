@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T10:31:38.208112+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "26d686c7e638ed4d390434c8627ca16e953353960617e41b202dadc176b205c5",
+  "log_sha256": "b54ce5691ac8ec8b42efd8e829ac0c5d40effa62784391a53f15f532d629cff4",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-focus841-private\\owners.log",
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:minimal",
+    "--filter",
+    "FullyQualifiedName~NativeWindowFocusTests|FullyQualifiedName~WindowControl",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "adopted": false
+}
