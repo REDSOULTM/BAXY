@@ -1,0 +1,118 @@
+{
+  "utc": "2026-09-11T17:03:49.6537702Z",
+  "root_adjudicated": true,
+  "candidate_commit": "fb04a7014a368dc37afb05a904a671ba7e0e7499",
+  "tests_run": false,
+  "counts": {
+    "coverage_added": 0,
+    "passed": 3,
+    "total": 11,
+    "historical_literals_passed": 1,
+    "failed": 8
+  },
+  "private_review_sha256": "b52f7bb85bf1b15a33cc4cacbdfb14d69d0921d614738f47620c0e727fcee56f",
+  "journal_sha256": "9e207e3adcd204c14a8a67310e9ff9b1fdc453510cd3e9f272fe0710de9f56ba",
+  "panel_seal_sha256": "0af2e16c9384fcf07001f2d155c312a552cbb132fc9b5b5d666163b4de8152d9",
+  "registry_before_sha256": "124e5f482ff26dbbfb640a718869aa01afb5bde51b29ac6b9f4457bf95812c88",
+  "registry_after_sha256": "45c523628df911994fbe8be17e367c429ce1f544ddb2341db8965ab57e3d7c4e",
+  "cases": [
+    {
+      "case_id": "web-search895-variant-direct-es",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Ejecuta búsqueda; proveedor rechaza resultados irrelevantes. Respuesta honesta, pero no resuelve la consulta.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "6fca54ca-e796-4c43-8a38-a6420f64549b"
+      ]
+    },
+    {
+      "case_id": "web-search895-variant-courtesy-es",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Pide preferencia no necesaria sobre el edificio; ninguna búsqueda ejecutada.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search895-variant-direct-en",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Búsqueda rechazada por resultados irrelevantes y composición agota recuperación sin respuesta.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "b6f0e1e8-8d65-48fd-a542-1dbbff963078"
+      ]
+    },
+    {
+      "case_id": "web-search895-variant-courtesy-en",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Consulta completa Dune novels enviada, pero resultados de películas no resuelven novelas; respuesta reconoce ausencia. Falla relevancia aunque Core marca verified.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "3eb293ed-f22c-411f-844a-1593a11bb5b0"
+      ]
+    },
+    {
+      "case_id": "H0098",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Consulta recetas de pizza preservada y ejecutada; resultados genéricos de recetas no contienen pizza. No cumple relevancia del literal aunque Core marca verified.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "3ff41ac9-9826-4e96-8616-f6c965829669"
+      ]
+    },
+    {
+      "case_id": "H0380",
+      "group": "generic_search",
+      "verdict": "pass",
+      "reason": "Consulta Transformers ejecutada con resultados relevantes y respuesta útil fiel a los fragmentos observados. Literal pasa; continúa open por falta de dos variantes de búsqueda válidas.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "b3d7d9fd-10e9-437d-87be-fc1b657f7f25"
+      ]
+    },
+    {
+      "case_id": "web-search895-boundary-negation",
+      "group": "negation_boundary",
+      "verdict": "fail",
+      "reason": "No ejecuta la prohibición, pero atribuye un fallo de interpretación; respuesta no útil.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search895-boundary-quotation",
+      "group": "quotation_boundary",
+      "verdict": "pass",
+      "reason": "Identifica search como verbo, sin ejecutar la cita.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search895-boundary-missing-query",
+      "group": "missing_query_boundary",
+      "verdict": "fail",
+      "reason": "No solicita el tema faltante; devuelve error de interpretación sin utilidad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search895-boundary-local-scope",
+      "group": "local_private_scope_boundary",
+      "verdict": "fail",
+      "reason": "Sin búsqueda pública ni lectura de contenido, pero composición falla internal_code y no ofrece respuesta útil.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search895-boundary-conditional",
+      "group": "conditional_compound_boundary",
+      "verdict": "pass",
+      "reason": "Declina ejecutar ahora la acción condicionada; no búsqueda, navegación ni agenda. Respuesta breve contextual válida sin frase prescrita.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ]
+}

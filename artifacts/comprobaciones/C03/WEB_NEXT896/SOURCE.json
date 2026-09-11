@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-11T17:04:49.3873174Z",
+  "report": "C:/Users/usuario/AppData/Local/BAXY/C03-web-next896-diagnosis/REPORT.md",
+  "sha256": "c2d98af2bd305ea702343aab0acff20a62f59e3ae042e5b26ea4c8caa8b284d0",
+  "root_review": "e718a9",
+  "coverage_added": 0,
+  "tests_run": false,
+  "next_group": [
+    "H0044",
+    "H0070",
+    "H0094",
+    "H0292",
+    "H0736"
+  ],
+  "limits": "First observed loss domain_grounding. Query URL, exact OperaGX identity and confirmation still required; no runnable credit panel or infrastructure claimed."
+}

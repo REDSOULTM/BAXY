@@ -4,12 +4,12 @@ El dueño aclaró y reactivó el goal: **omitir suites automáticas, Fast y Full
 
 ## Estado autoritativo
 
-- Rama Goal-c03. Fuente publicada d6cf9d2a52f4f1e49836365d6ced125e68f662fe. Los commits documentales posteriores no cambian esa fuente.
+- Rama Goal-c03. Fuente publicada fb04a7014a368dc37afb05a904a671ba7e0e7499 (894). Los commits documentales posteriores no cambian esa fuente.
 - **66/742 cubiertos,676 abiertos,0 no aplican;38 acreditaciones confirmadas24h y2 fechas iniciales indistinguibles;0/35 categorías;matriz C03 3/11.** Cómputo actualizado2026-09-11 alrededor16:40UTC. Ventana móvil: no repetir38 tras vencer esas fechas sin recalcular.
-- Registro: C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl SHA124e5f482ff26dbbfb640a718869aa01afb5bde51b29ac6b9f4457bf95812c88.
-- Fuente: effect_intent.py SHA80d283d7a629e3f113bd9d276755d83bb214f1d5c504c1664b6f06a42e917405;llm.py SHA487d79f477d41d40bf3d9bcc5652b4697a1df8c27af4a2502379e168c1554c6b;__main__.py SHA875911e24697a08417389d18b761568ae89680d60fa5dc1f3cfc5defd5e365fa.
+- Registro: C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl SHA45c523628df911994fbe8be17e367c429ce1f544ddb2341db8965ab57e3d7c4e.
+- Fuente: effect_intent.py sha4625052505bd1d5963dbbec30d55184d21d451654bf81506ccf960d0a5fed10a;llm.py SHA487d79f477d41d40bf3d9bcc5652b4697a1df8c27af4a2502379e168c1554c6b;__main__.py SHA88276c0394352cb40dc529062b565ff4812d286a720dc9e23a9fdfad3160b1c3.
 - 888 reutiliza lector/selector de consulta de apps;889 añade4líneas al prompt existente de identidad para preservar ficción explícita del mismo objeto, sin inferir ausencia por nombre raro ni rechazar creación. Revisiónmanual y producto892; sin suites.
-- No hay corrida GPU viva. Sesiones85222/50599/29968/44837 recogidas y terminales. Agente apps_intent852 prepara diagnóstico893 de web; verificar su estado antes de esperar. process_counts812 terminó891;ocr832_runner terminado histórico.
+- No hay corrida GPU viva. Sesiones85222/50599/29968/44837 recogidas y terminales. Agente apps_intent852 prepara diagnóstico896 de siguiente masa web; process_counts812 adapta runner895. 893/894 y panel895 terminados. ocr832_runner terminado histórico.
 
 ## Siguiente acción por masa
 
@@ -47,3 +47,11 @@ Preservar .codex/config.toml,AGENTS.md,C03_ASTRA_AUTORIDAD.md,C03_RESPUESTA_VERA
 893 terminado y leído37d8c6: raw web.search correcto en H0098/H0380 se retira por domain_grounding; exige una mención pública adicional aunque la orden ya es una búsqueda directa. Son lecturas existentes, sin confirmación de navegador. InformeSHA898422b45b39c1ecf9389c344dd27bb5570d271d0e098d1d3ea38c832d181746. Agente apps_intent852 prepara894 fuera de canónico, en worktree codex/c03-web-search894, sólo effect_intent.py y __main__.py si imprescindible. No pruebas/build/GPU/HTTP; raíz revisaráparche y sellarácontinuación de2literales convariantes, sin repetir864. Fuente canónica todavía d6cf9d2a.66/742,676open,0NA;38altas24h,0/35categorías.
 
 894 integrado tras revisión manual: la búsqueda pública directa conserva web.search sin exigir la palabra internet; extracción reutiliza verbos existentes y conserva buscá. Fuente pendiente de ejecución895, sin suites, sin verdes atribuidos. Panel895 sellado antes de ejecutar:4 variantes originales, H0098/H0380 intactos y5 límites;11casos/22wire, SHA0af2e16c9384fcf07001f2d155c312a552cbb132fc9b5b5d666163b4de8152d9. 66/742 cubiertos,676 abiertos,0NA;38altas confirmadas24h,0/35categorías. Siguiente inmediato: runner895, manifiesto nuevo del HEAD real y producto; no repetir864. Agente896 clasifica siguiente grupo web por fallos ya observados.
+
+## 895 — búsqueda ejecutada; relevancia todavía abierta
+
+Fuente894 publicada fb04a7014a368dc37afb05a904a671ba7e0e7499. Panel895 sellado11casos/22wire antes de ejecutar; revisión raíz751456, manifiesto6e4fb0a75e7c45ff2e23b6c5dbf4a15541fce66b73e20cc246211f9df449a492 y preparacióna1812b1e557a81cad609b759d63cfd9fa05a65e5ce3fb4f7ae4cebd9fe21c3ee. RunnerSHAfbdaf29bb227c144f3dc6530704814a43f6c411b8ea1d9fa643f3905d84e3d63, perfil hijodirecto. Session60692 terminal9a09fa exit0:11/11,3pass8fail,0créditos;94,422s,VRAM3497,56MiB/RAM2454,39MiB, sinviolaciones y pinsintactos. No suites/Fast/Full.
+
+H0380 ahora busca Transformers y da respuesta útil fiel al resultado; sigueopen porque0/4variantes pasaron. H0098 conserva recetas de pizza pero los resultados sólo hablan de recetas generales; falla relevancia aunque Core marcóverified. Dune novels devuelvepelículas; tampoco cuenta. Una variante pide aclaración innecesaria y otra acaba sinrespuesta tras fallo de búsqueda. Límites: cita y condiciónsinseñalválidas; negación, falta deconsulta yscopeprivado sinrespuestaútil. Causas individuales y registro escritas748cc5; [adjudicación](WEB_SEARCH895/ROOT_ADJUDICATION.json). No repetirpanelentero.66/742cubiertos,676abiertos,0NA;38altasconfirmadas24h y2fechasindistinguibles,0/35categorías;matriz3/11.
+
+Siguiente inmediato: recoger898 del proveedor existente sobre consulta/relevancia (sinHTTPnuevo, sinrelajarcriterio) y PLAN897 de11web aúnnoejecutados864.896 ya terminó:5búsquedasOpera/GX retiradasendominio; conservarconsulta, identidadexacta yconfirmación antesdetanda, no prometercrédito porañadirunapalabra. Evidencia896SHA c2d98af2bd305ea702343aab0acff20a62f59e3ae042e5b26ea4c8caa8b284d0. H0675/OCR/proveedoresnuevos permanecenaparcados. No corridasGPU vivas ni permisos pendientes.
