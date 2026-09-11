@@ -1,0 +1,127 @@
+{
+  "utc": "2026-09-11T18:15:05.1912399Z",
+  "root_adjudicated": true,
+  "candidate_commit": "b0621ae5537912420c3d71b88a8f0ec34da37524",
+  "source_commit": "81774290615815caea6e0585156e3b5b24e61fd2",
+  "tests_run": false,
+  "counts": {
+    "reportable_terminals": 10,
+    "failed": 1,
+    "real_admissions": 9,
+    "confirmation_admissions": 4,
+    "passed": 4,
+    "coverage_added": 3,
+    "not_executed": 5,
+    "executed": 5,
+    "sealed": 10
+  },
+  "panel_seal_sha256": "ab8020006294cbdb075176dde11230cf0f8a429bbf1b0a19c67e5b3813bf5f99",
+  "candidate_manifest_sha256": "fde2268db7c8951a0996c4273167952044efe83474e6ee1df9aa6002e31e906b",
+  "preparation_sha256": "0cf30cfe285dd94530eaa98d291dd31cc5836d9267487484126ac7b1bac8ea9b",
+  "registry_before_sha256": "ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1",
+  "registry_after_sha256": "1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c",
+  "journal_sha256": "dc307e1170eb917abe93c0a60b2532e1a4ab0a435f0e3c2a1ba78bd5c42daf67",
+  "capture_sha256": "7fb665c45b02e6ba30cffcaafdb6ef91339f86f85cca518b2532a59a76c4575b",
+  "live_credit_google_sha256": "e516614ce407cb83a4574956c8d90fd9c1761045366d1efba4d4b8db4664aae0",
+  "live_credit_url_sha256": "eb0eeccda63928723bd6ca3c83c33d1d9601822d5c1f2c8a19bb6042161bdbcc",
+  "cases": [
+    {
+      "case_id": "H0490",
+      "group": "engine_search",
+      "verdict": "pass",
+      "reason": "Google y consulta recetas de pasta exactos, navegación verified y respuesta fiel; crédito con par912.",
+      "survey_credit": true,
+      "invocation_ids": "08b951aa-bf42-4ee6-b315-2ca947b33e74"
+    },
+    {
+      "case_id": "H0622",
+      "group": "engine_search",
+      "verdict": "pass",
+      "reason": "Google y consulta teclados mecánicos exactos, navegación verified y respuesta fiel; crédito con par912.",
+      "survey_credit": true,
+      "invocation_ids": "ebacdfd2-b230-4f68-90a1-8cf739ec146a"
+    },
+    {
+      "case_id": "web-confirmation905-url-en",
+      "group": "exact_url_navigation",
+      "verdict": "pass",
+      "reason": "La URL W3C conserva host/ruta standards y se navega mediante pendiente exacto. Final añade parámetro de desafío; se acredita navegación, no lectura/carga de contenido ni superación del desafío. Respuesta identifica el destino sin describir contenido. Variante inglesa reparada914 válida.",
+      "survey_credit": false,
+      "invocation_ids": "bc93adcf-f18d-48cd-b3db-acabf893a617"
+    },
+    {
+      "case_id": "H0267",
+      "group": "exact_url_navigation",
+      "verdict": "pass",
+      "reason": "Gmail.com navegado verified; redirect público final workspace.google.com/intl/es-419/gmail/ informado fielmente. Par URL: ES909 y EN916; crédito de navegación pública, no cuenta/correo.",
+      "survey_credit": true,
+      "invocation_ids": "9b07ab63-f106-46e5-9dda-a3d438aea274"
+    },
+    {
+      "case_id": "H0389",
+      "group": "exact_url_navigation",
+      "verdict": "fail",
+      "reason": "Error de interpretación sin navegación preparada ni ejecutada; confirmación sintética rechazada. Literal sigue open.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-negation",
+      "group": "negation",
+      "verdict": "not_executed",
+      "reason": "No ejecutado: guarda de H0389 detuvo Host con exit3 antes del siguiente comando; cola probada por mapper y captura.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-quotation",
+      "group": "quotation",
+      "verdict": "not_executed",
+      "reason": "No ejecutado: guarda de H0389 detuvo Host con exit3 antes del siguiente comando; cola probada por mapper y captura.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-missingtarget",
+      "group": "missingtarget",
+      "verdict": "not_executed",
+      "reason": "No ejecutado: guarda de H0389 detuvo Host con exit3 antes del siguiente comando; cola probada por mapper y captura.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-local",
+      "group": "local",
+      "verdict": "not_executed",
+      "reason": "No ejecutado: guarda de H0389 detuvo Host con exit3 antes del siguiente comando; cola probada por mapper y captura.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-condition",
+      "group": "condition",
+      "verdict": "not_executed",
+      "reason": "No ejecutado: guarda de H0389 detuvo Host con exit3 antes del siguiente comando; cola probada por mapper y captura.",
+      "survey_credit": false,
+      "invocation_ids": null
+    }
+  ],
+  "prior_variants": {
+    "exact_url_navigation": {
+      "current_case": "web-confirmation905-url-en",
+      "prior_receipt": "WEB_CONFIRMATION909/ROOT_ADJUDICATION.json",
+      "prior_candidate": "71e79fe3db2157302b481de7a8461eca33dd3f18",
+      "prior_case": "web-confirmation905-url-es"
+    },
+    "engine_search": {
+      "cases": [
+        "web-confirmation905-google-es",
+        "web-confirmation905-google-en"
+      ],
+      "receipt": "WEB_CONFIRMATION912/ROOT_ADJUDICATION.json",
+      "candidate": "81774290615815caea6e0585156e3b5b24e61fd2"
+    }
+  },
+  "continuation": "Apps now44open before web43. Preserve five unexecuted boundaries. H0389 needs interpretation repair before repeat; H0397 response issue917 diagnosis with proposed918 and panel919 preparation only.",
+  "private_review_sha256": "f816ad62f95f106256e7d6d1cf5d18d91e63d81d55bcf53047a884d2f6bcda9c"
+}

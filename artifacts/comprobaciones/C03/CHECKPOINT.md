@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**66/742 cubiertos, 676 abiertos, 0 no aplican; 38 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**69/742 cubiertos, 673 abiertos, 0 no aplican; 41 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente: 81774290615815caea6e0585156e3b5b24e61fd2 (914), publicada. Última ejecución912: dos variantes Google válidas, H0397 sin respuesta final, nueve casos no ejecutados, cero créditos. Continuación916 en preparación. Los tramos siguientes conservan historia; novedades más recientes al final.
+Fuente vigente: 81774290615815caea6e0585156e3b5b24e61fd2 (914), publicada. Última ejecución916:4válidas/1fallida,+3créditos,5límites noejecutados. Apps44 abiertos precede ahora web43. Los tramos siguientes conservan historia; novedades al final.
 
 Últimos tres tramos:
 
@@ -27,8 +27,8 @@ No repetir: paneles completos854/TAIL,861,864,881,885,892; campañas de modelo/b
 Tabla de la taxonomía846, ordenada por requisitos abiertos:
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
-| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
 | Abrir aplicaciones | 54 | 10 | 44 | 0 |
+| Navegación y búsqueda web | 46 | 3 | 43 | 0 |
 | Música | 39 | 0 | 39 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
@@ -155,3 +155,17 @@ El mapper automático sólo prueba cola no ejecutada para rechazo sintético409;
 Siguiente916: H0490/H0622 primero, variante EN URL reparada914, H0267/H0389 y5límites;10objetos intactos,20wire,15fases. Reutiliza dos variantesGoogle912 y ESURL909, sin repetirlas. No repite H0397 sin reparar composición. Process_counts812 prepara archivos externos y runner; raíz revisa/sella candidato actual y ejecuta. Fuente914 estable; no GPU viva, sin permiso pendiente.
 
 Estado formal66/742 cubiertos,676 abiertos,0NA;38altas confirmadas24h y2 primeras fechas adicionales indistinguibles;0/35categorías,C03 3/11. Este turno906+909+912:6ejecuciones,3válidas3fallidas,0altas; navegación ES reparada y verificada, dos variantes Google válidas y causa literal escrita. Sin suites/Fast/Full. Ningún plazo de cierre demostrado.
+
+## 916 — tres requisitos acreditados; cambia el orden por masa
+
+Candidato b0621ae5537912420c3d71b88a8f0ec34da37524, fuente914 sin cambios. Revisión821f37/e28395; manifiestofde2268db7c8951a0996c4273167952044efe83474e6ee1df9aa6002e31e906b, preparación0cf30cfe285dd94530eaa98d291dd31cc5836d9267487484126ac7b1bac8ea9b. Run2a1836/session75959 recogida8d7883, Hostexit3.5ejecutados:4pass1fail,5límites noejecutados;9admisiones reales,4confirmaciones,10fases.36,859s,VRAM3563,54MiB/RAM2978,20MiB,sinviolaciones,pinsintactos.
+
++H0490 yH0622 escritos covered en70be8f: Google y consultas completas exactas, efectos verificados y respuestas útiles, con dos variantes pertinentes912. +H0267 en c91e5c: gmail.com navega y comunica fielmente redirección pública a workspace.google.com/intl/es-419/gmail/. Par URL: ES909 y EN916, reparada914 y ahora verificada. W3C conserva host/ruta standards y añade parámetro de desafío; acredita navegación al destino, no lectura/carga de contenido ni superación de ese desafío. Se preserva ese límite en adjudicación y registro.
+
+H0389 «andá a github.com» falla interpretación sin operación; causaopen actualizada, no se reintenta. La guarda rechaza sin confirmar y prueba5límites noejecutados. ROOT_ADJUDICATION SHA30f365ecb740d72b64a56b2ade8be73dcf08f00ec3fab41ff0bcf6164db95d84; registro1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c.
+
+Estado:69/742cubiertos,673abiertos,0NA;41altasconfirmadas24h y2 primerasfechas adicionales indistinguibles;0/35categorías,C03 3/11. Ventana recalcular después19:45UTC. Este turno:11ejecuciones en906/909/912/916,7válidas4fallidas,+3créditos y2causas literales abiertas actualizadas. Se publicaron dos correcciones Python y ambas recuperaron su variante; sin suites/Fast/Full.
+
+Orden nuevo por masa: apps44 precede web43. La siguiente ejecución debe preparar/acreditar apps; no seguir automáticamente web por haber quedado a medias.907 conserva inventario de44 y911 el vacío de evidenciaCalculator. Próximo diagnóstico de apps: H0706 Configuración y H0691 corrección positiva, comparando sus fallos previos con fuente actual para elegir reparación mínima y panel dirigido; no repetirlos sin causa nueva ni saltar incertidumbres. No se requiere permiso externo nuevo.
+
+917 encontró causa del silencioH0397: drafts no vacíos y fieles con URL fueron rechazados porque llm.py toma '?' de la consulta por pregunta (extra_claim), luego empty→no_response→retry_exhausted. Reporte8af622afc74b91e666cf0feee6da147019aeb8bb196eb919950d1f72ba9c963b. apps_intent852 propone918 en worktree, sólo llm.py; process_counts812 prepara919 con H0397+5límites intactos. Ambos quedan preparación/reparación propuesta, sin ejecutar ni alterar orden de masa; raíz debe revisar antes de adoptar. Fuente actual914 estable. Goal activo, sin GPU viva ni permiso pendiente.

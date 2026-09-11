@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "66/742 cubiertos,676abiertos,0NA;38altas24h,0/35categorías,C03 3/11.906+909+912:6ejecuciones3pass3fail0créditos. Navegación ES reparada, par Google válido, H0397 causa open actualizada.",
-  "continuation": "Collect/review916 from process_counts812, bind current source914/current final HEAD584/18/5 and run.10unchangedobjects:H0490,H0622,URL-EN repaired914,H0267,H0389,5boundaries. Reuse Google pair912 and URL-ES909; no repeat H0397 without composition repair. Registry ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1. No GPU live, no permission pending.",
+  "checkpoint": "69/742 cubiertos,673abiertos,0NA;41altas24h,0/35categorías,C03 3/11.916+3:H0490/H0622/H0267. En este turno11ejecuciones7pass4fail,+3 créditos; H0397/H0389 causasopen actualizadas.",
+  "continuation": "Apps44open now precedes web43. Next bounded diagnosis H0706/H0691 from907/current source to select minimal repair and directed app panel; no automatic uncertain retries. Collect proposals918 llm URL-question veto and919 H0397+5boundaries; not adopted or executed, do not let unfinished web override mass order. Source914 current, registry1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c. No GPU or pending permission.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -28,9 +28,9 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "open": 676,
-    "covered": 66,
-    "not_applicable": 0
+    "not_applicable": 0,
+    "open": 673,
+    "covered": 69
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "81774290615815caea6e0585156e3b5b24e61fd2",
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Published source910/914; executed six real cases906/909/912, verified fixed ES navigation and both Google variants, updated one literal open reason immediately, prepared next four-literal continuation. No automated suites.",
+  "previousGoalTurnClassificationReason": "Published two minimal Python corrections, both repaired variants in real product; executed11cases906/909/912/916,7pass4fail; granted3survey cases and wrote2open causes; preserved next repair917 and reordered priority by remaining mass.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -86,16 +86,16 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "failed": 1,
-    "state": "stopped_after_final_composition_failure",
-    "sessionId": 67978,
-    "coverageAdded": 0,
-    "sourceCandidate": "81774290615815caea6e0585156e3b5b24e61fd2",
-    "receipt": "WEB_CONFIRMATION912/ROOT_ADJUDICATION.json",
-    "collectionChunk": "c08280",
-    "notExecuted": 9,
     "exitCode": 3,
-    "passed": 2
+    "sourceCandidate": "b0621ae5537912420c3d71b88a8f0ec34da37524",
+    "state": "guard_stopped",
+    "sessionId": 75959,
+    "coverageAdded": 3,
+    "failed": 1,
+    "receipt": "WEB_CONFIRMATION916/ROOT_ADJUDICATION.json",
+    "notExecuted": 5,
+    "passed": 4,
+    "collectionChunk": "8d7883"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
