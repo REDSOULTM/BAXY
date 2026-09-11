@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**66/742 cubiertos, 676 abiertos, 0 no aplican; 38 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**66/742 cubiertos, 676 abiertos, 0 no aplican; 38 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente: c99a60f58281e74fe22792740b54ca9506e792e4 (904), publicada. Última ejecución906: una variante fallida, trece casos no ejecutados, cero confirmaciones y cero créditos. Reparación local910 y continuación909 en preparación. Los tramos siguientes son históricos y sus novedades más recientes están al final.
+Fuente vigente: 81774290615815caea6e0585156e3b5b24e61fd2 (914), publicada. Última ejecución912: dos variantes Google válidas, H0397 sin respuesta final, nueve casos no ejecutados, cero créditos. Continuación916 en preparación. Los tramos siguientes conservan historia; novedades más recientes al final.
 
 Últimos tres tramos:
 
@@ -141,3 +141,17 @@ Próximo912: objetos restantes intactos, primero dos variantes Google y sus tres
 Raíz localizó el fallo inglés909 en la rama de navegador genérico: «in the browser» añadía app.open aunque el objeto de Open era una URL. Diagnóstico913 SHA46bd024a2e8d7cdac5996731eaf5fb02e7800ad4a55105246a2dcf5078e2a0d6. Parche914 revisado0d9d4d/7fb2fa,1 inserción/2 eliminaciones: _append exige verbo+artículo opcional+navegador/browser y conserva negación sobre el verbo real. SHA59224d0b9bda271aeae8bfa33676c831e2eeb0feb4c8c41d50073175061cbd0f; fuente7f3b86c30bf527af5f46520d356a63fd81993fba6950a8a17792a0567c3524a9.
 
 912 todavía no se había arrancado ni ligado a candidato; se adopta914 ahora para que sus literales usen la fuente nueva y no repetirlos sólo por cambiarla después. Sin suites, Fast o Full, sólo revisión manual; comportamiento inglés aún pendiente915. 912 está sellado:12 objetos restantes intactos,2variantesGoogle+3literalesGoogle+2URL+5límites,24wire/19fases. Sello807881064c5706d6b345de28bcb71af427ce43910db0f6e3c77b20150fef709a; runner2a6c37616f3f339f054804d9a9cf7de12f56a6293de3193f01fc2194e2ae8c50. Root debe revisar diff y ligar584/18/5 del candidato final.66/742,676abiertos,0NA;38altas24h,0/35categorías,C03 3/11.
+
+## 912 — dos variantes de Google aprobadas; el literal queda sin respuesta
+
+Candidato914 HEAD81774290615815caea6e0585156e3b5b24e61fd2. Revisión8f72a6/4e882a, manifiesto16ef36f7fc91c5b3899e7a3699a76719119578bfd1b4d6aa6b67acafc58f9aee, preparación93d7de838658f0329361c5d1b64817d1f3b30169cd04195486912fabae4d7b0d. Run c7fb41/session67978 recogida c08280, Hostexit3. Tres casos ejecutados:2pass1fail,9no ejecutados y0créditos.34,219s;VRAM3546,68MiB/RAM2936,30MiB;sinviolaciones,pinsintactos.
+
+Las dos variantes Google conservaron exactamente motor y consulta, con navegación completed/verified y respuesta final útil fiel. Invocaciones06a734e5-fee6-4e37-b8b5-a5260a2d5ae7 y07aa9032-418b-48d2-84f4-c03c91c0abe7. La inglesa se entendió/confirmó en inglés; el control posterior «confirmar» fue español y recibió resultado español, sin idioma expresamente impuesto. Son pares pertinentes disponibles, no lectura del contenido web.
+
+H0397 navegó a https://www.google.com/search?q=toreo (ec0adbeb-9d50-407c-b81e-ba70a897ced7) pero agotó composición sin respuesta útil. Raíz1d734c escribió causa open al adjudicar; registro actualizado ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1. No atribuir crédito sólo por efecto exitoso.
+
+El mapper automático sólo prueba cola no ejecutada para rechazo sintético409; esta vez informó unresolved. Raíz54bd0b resolvió la cola mediante código+captura: final composition_failed y posterior completos, ExecuteCommandAsync=false y foreach retorna3 inmediatamente;6admisiones6terminales3controles, sin siguiente comando y sin violaciones. Nueve casos no ejecutados, no nueve fallos. ROOT_ADJUDICATION912 preserva esa distinción sin reescribir EXIT.
+
+Siguiente916: H0490/H0622 primero, variante EN URL reparada914, H0267/H0389 y5límites;10objetos intactos,20wire,15fases. Reutiliza dos variantesGoogle912 y ESURL909, sin repetirlas. No repite H0397 sin reparar composición. Process_counts812 prepara archivos externos y runner; raíz revisa/sella candidato actual y ejecuta. Fuente914 estable; no GPU viva, sin permiso pendiente.
+
+Estado formal66/742 cubiertos,676 abiertos,0NA;38altas confirmadas24h y2 primeras fechas adicionales indistinguibles;0/35categorías,C03 3/11. Este turno906+909+912:6ejecuciones,3válidas3fallidas,0altas; navegación ES reparada y verificada, dos variantes Google válidas y causa literal escrita. Sin suites/Fast/Full. Ningún plazo de cierre demostrado.

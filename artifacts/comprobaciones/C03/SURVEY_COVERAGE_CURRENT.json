@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T17:51:31.2426978Z",
+  "utc": "2026-09-11T18:09:33.7001087Z",
   "covered": 66,
   "open": 676,
   "not_applicable": 0,
@@ -350,10 +350,12 @@
   ],
   "equal_maximum_open_next_selection": "Web and apps both46open; next sealed web864 selected. No category with more open requirements is bypassed.",
   "latest_product_run": {
-    "batch": 906,
-    "not_executed": 13,
-    "failed": 1,
     "coverage_added": 0,
-    "executed": 1
-  }
+    "failed": 1,
+    "executed": 3,
+    "batch": 912,
+    "passed": 2,
+    "not_executed": 9
+  },
+  "registry_sha256": "ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1"
 }

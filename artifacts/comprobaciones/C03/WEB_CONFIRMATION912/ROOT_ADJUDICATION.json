@@ -1,0 +1,133 @@
+{
+  "utc": "2026-09-11T18:07:02.7758143Z",
+  "root_adjudicated": true,
+  "candidate_commit": "81774290615815caea6e0585156e3b5b24e61fd2",
+  "tests_run": false,
+  "counts": {
+    "passed": 2,
+    "executed": 3,
+    "reportable_terminals": 6,
+    "not_executed": 9,
+    "coverage_added": 0,
+    "real_admissions": 6,
+    "confirmation_admissions": 3,
+    "failed": 1,
+    "sealed": 12
+  },
+  "panel_seal_sha256": "807881064c5706d6b345de28bcb71af427ce43910db0f6e3c77b20150fef709a",
+  "candidate_manifest_sha256": "16ef36f7fc91c5b3899e7a3699a76719119578bfd1b4d6aa6b67acafc58f9aee",
+  "preparation_sha256": "93d7de838658f0329361c5d1b64817d1f3b30169cd04195486912fabae4d7b0d",
+  "registry_before_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "registry_after_sha256": "ebf22c632e59b77f06c83e58dd80422f52efb4d8d2437ce67a17b4b146ec7bc1",
+  "journal_sha256": "84af05af25d9e5ef71cbc908142ed9457a49fe207e5feebd6284f0452bcd9736",
+  "capture_sha256": "e84dd9151ee82e09f101828a061bf2993453d9518c843421bfea3fcd6389492a",
+  "cases": [
+    {
+      "case_id": "web-confirmation905-google-es",
+      "group": "engine_search",
+      "verdict": "pass",
+      "reason": "Google conservado, consulta completa en requestedUrl y finalUrl, completed/verified CDP y respuesta final útil fiel sin afirmar lectura del contenido. La solicitud inglesa se entendió y confirmó en inglés; el control ordinario posterior confirmar está en español y su resultado responde en español, sin idioma expresamente exigido.",
+      "survey_credit": false,
+      "invocation_ids": "06a734e5-fee6-4e37-b8b5-a5260a2d5ae7"
+    },
+    {
+      "case_id": "web-confirmation905-google-en",
+      "group": "engine_search",
+      "verdict": "pass",
+      "reason": "Google conservado, consulta completa en requestedUrl y finalUrl, completed/verified CDP y respuesta final útil fiel sin afirmar lectura del contenido. La solicitud inglesa se entendió y confirmó en inglés; el control ordinario posterior confirmar está en español y su resultado responde en español, sin idioma expresamente exigido.",
+      "survey_credit": false,
+      "invocation_ids": "07aa9032-418b-48d2-84f4-c03c91c0abe7"
+    },
+    {
+      "case_id": "H0397",
+      "group": "engine_search",
+      "verdict": "fail",
+      "reason": "Navegación Google/toreo verificada en destino exacto, pero ninguna respuesta final útil: composición no_response/recovery/retry_exhausted. No crédito.",
+      "survey_credit": false,
+      "invocation_ids": "ec0adbeb-9d50-407c-b81e-ba70a897ced7"
+    },
+    {
+      "case_id": "H0490",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0622",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0267",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0389",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-negation",
+      "group": "negation",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-quotation",
+      "group": "quotation",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-missingtarget",
+      "group": "missingtarget",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-local",
+      "group": "local",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-condition",
+      "group": "condition",
+      "verdict": "not_executed",
+      "reason": "Raíz resolvió la cola como no ejecutada: final composition_failed del caso previo, posterior completo, Host retorna3 inmediatamente antes de siguiente comando; captura íntegra y sin violaciones.",
+      "survey_credit": false,
+      "invocation_ids": null
+    }
+  ],
+  "root_queue_resolution": {
+    "evidence": "Host source54bd0b: ExecuteCommandAsync returns false for final composition_failed, foreach returns3 immediately. Actual final/complete posterior for H0397, exit3,6real admissions6terminals3controls,no violations,pins unchanged. No next admission/control or journal operation. This is source-and-capture proof, not absence alone.",
+    "root_result": "nine commands not executed",
+    "runner_report": "host_stop_proves_unexecuted_queue:false; conservative automatic mapper only recognizes synthetic409"
+  },
+  "variants_available": [
+    "web-confirmation905-google-es",
+    "web-confirmation905-google-en"
+  ],
+  "continuation": "Reuse Google pair912 and URL ES909 as prior variants; next916 selects H0490/H0622 and repaired URL EN then H0267/H0389 plus five boundaries. No H0397 replay without response repair.",
+  "private_review_sha256": "e9e695cea8ee919629fdad26a2fcc043f79960ac0373d8edd4935c94581a052b"
+}
