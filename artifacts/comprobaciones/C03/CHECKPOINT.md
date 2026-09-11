@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**71/742 cubiertos, 671 abiertos, 0 no aplican; 43 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: e9b3459c0beaf27be052b7dfc6549ae9654941a186afc62c1d9f0d1426624e6d. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**71/742 cubiertos, 671 abiertos, 0 no aplican; 43 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente publicada941:3eca55d86b459b8ab2e0d9811a44ff8e2e4e827c. Última ejecución940:8 ejecutados,2 válidos,6 fallidos,0 créditos. Apps43 precede web42. Reparaciones945/946 integradas WIP;948 corrige segundo veto C# demostrado por flujo, antes de947 ya sellado. Los apartados de tandas anteriores son historia; novedades al final.
+Fuente publicada948:8c383af1ef1ffde022be16c0635ab4e94c96a8a9. Última ejecución947:8ejecutados,4pass/4fail,0créditos; EN variante negativa aprobada.951 corrección léxica mínima en compilación,952 siguiente dirigido. Historia debajo, novedades al final.
 
 Últimos tres tramos:
 
@@ -294,3 +294,13 @@ Exit0/sesión88207 recogidafa8921;61,453s, VRAM3497,56MiB/RAM2414,47MiB,0violaci
 71/742 cubiertos,671 abiertos,0 no aplican;43 nuevas acreditaciones24h,43 actualizaciones recientes ahora,0 sin fecha inicial distinguible dentro de ventana.0/35 categorías,C03 3/11. No Full ni suites por orden posterior del dueño. Goal activo/progreso; sin permiso pendiente. Reserva siguiente942/943: búsquedas en Opera/GX, cinco literales y dos variantes previas fallidas; diagnóstico cerrado, todavía sin parche ni crédito.
 
 948 integrado tras revisión raízbe91a9/cfd8b6. Build real de producto y cierre de servidores completados exit0/0, sesión56621 recogida0af760; recibo C:/Users/usuario/AppData/Local/BAXY/C03-app-policy948-private/BUILD_EXIT.json. Core publicado sincronizado con ejecutable efectivo del shell (SHA2445a212a28ef7d8b0a61d6c5b71d0392fe84be00dde668e11883671ab45ebe3). Fuente945/946/948 adoptada para medir947; ninguna suite ejecutada ni éxito de encuesta atribuido aún.
+
+## 947 terminado;951 elimina falso veto léxico de autoridad observada
+
+947:8ejecutados,4pass/4fail,0créditos; ROOT9dec8781a0bf74f7f8ac235bd9a6c81ed336524ec795c7f402bc8b7337b2b474. Fuente8c383af1ef1ffde022be16c0635ab4e94c96a8a9. EN variante pasa lectura negativa inv576a8d29-24f3-457b-ad3d-b7af3fd6c6fe y final fiel, sin repetirla. H0503 yES consultan correctamente pero el nombre humano de la autoridad se rechaza como forbidden_term. H0503 mantieneopen; causa escrita enseguida, registro76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad. Límites: prohibición/destinoausente/inferencia conceptual válidos; cita y condición futura fallan por respuesta ajena al pedido. Ninguna apertura u otro efecto; tres lecturas reales app.installed.
+
+Sesión7712 recogida7b7700exit0;80,297s,VRAM3497,56MiB/RAM2423,75MiB,0violaciones,pinsíntegros. Sin crédito UI/voz. No repetir947 entero.951 usa ObservedResponseLiterals existente enPython/C# para excluir del análisis léxico sólo el nombre humano exacto de la autoridad de app.installed verificada; conserva respuesta original, hechos y resto de términos.Dos archivos, sin nueva capa ni waiver general. Build951 sesión95800 en marcha;952 prepara sóloH0503+ESoriginales y5límites nuevos, EN947pasado sirve como par anterior.949web en worktree externo,950ya sellado12casos24líneas. Apps43>web42; ningún nuevo provider.
+
+71/742cubiertos,671abiertos,0NA;43altas24h,0/35categorías,C03 3/11. Goalactivo/progreso, no pruebasautomáticas/Full por instrucción del dueño.
+
+951 adoptado: revisión raíz0993b7, build951 exit0/shutdown0 sesión95800 recogida9bf851, Core publicado sincronizado.952 revisado completo61af77: 7casos14wire, H0503+ESfallidos intactos y5límitesnuevos; EN947aprobado sin repetir. SEAL7cfcb8259cdfeea00610f129c0699da28ce51d0e79fbc443d386d9814e680922 runner45798d8d31b98c81d078081a17ebb4d753fc27ea0580e1ff4748f6ca45768d48. Fuente2archivos14insertions3deletions, aún cero crédito por reparación.

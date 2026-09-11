@@ -1,3 +1,11 @@
+## 947 terminado;951 elimina falso veto léxico de autoridad observada
+
+947:8ejecutados,4pass/4fail,0créditos; ROOT9dec8781a0bf74f7f8ac235bd9a6c81ed336524ec795c7f402bc8b7337b2b474. Fuente8c383af1ef1ffde022be16c0635ab4e94c96a8a9. EN variante pasa lectura negativa inv576a8d29-24f3-457b-ad3d-b7af3fd6c6fe y final fiel, sin repetirla. H0503 yES consultan correctamente pero el nombre humano de la autoridad se rechaza como forbidden_term. H0503 mantieneopen; causa escrita enseguida, registro76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad. Límites: prohibición/destinoausente/inferencia conceptual válidos; cita y condición futura fallan por respuesta ajena al pedido. Ninguna apertura u otro efecto; tres lecturas reales app.installed.
+
+Sesión7712 recogida7b7700exit0;80,297s,VRAM3497,56MiB/RAM2423,75MiB,0violaciones,pinsíntegros. Sin crédito UI/voz. No repetir947 entero.951 usa ObservedResponseLiterals existente enPython/C# para excluir del análisis léxico sólo el nombre humano exacto de la autoridad de app.installed verificada; conserva respuesta original, hechos y resto de términos.Dos archivos, sin nueva capa ni waiver general. Build951 sesión95800 en marcha;952 prepara sóloH0503+ESoriginales y5límites nuevos, EN947pasado sirve como par anterior.949web en worktree externo,950ya sellado12casos24líneas. Apps43>web42; ningún nuevo provider.
+
+71/742cubiertos,671abiertos,0NA;43altas24h,0/35categorías,C03 3/11. Goalactivo/progreso, no pruebasautomáticas/Full por instrucción del dueño.
+
 948 ya integrado/compilado exit0/0; siguiente inmediato: commit fuentes y manifest947/prepare/run. 948 integrado tras revisión raízbe91a9/cfd8b6. Build real de producto y cierre de servidores completados exit0/0, sesión56621 recogida0af760; recibo C:/Users/usuario/AppData/Local/BAXY/C03-app-policy948-private/BUILD_EXIT.json. Core publicado sincronizado con ejecutable efectivo del shell (SHA2445a212a28ef7d8b0a61d6c5b71d0392fe84be00dde668e11883671ab45ebe3). Fuente945/946/948 adoptada para medir947; ninguna suite ejecutada ni éxito de encuesta atribuido aún.
 
 ## Reanudación948 →947

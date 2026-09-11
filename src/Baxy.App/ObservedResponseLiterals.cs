@@ -52,11 +52,18 @@ internal static class ObservedResponseLiterals
             && node.TryGetProperty("operation", out JsonElement operation)
             && operation.ValueKind == JsonValueKind.String
             && (operation.GetString()!.StartsWith("window.", StringComparison.Ordinal)
-                || operation.GetString() == "system.process.list")
+                || operation.GetString() is "system.process.list" or "app.installed")
             && node.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True
             && node.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object)
         {
+            if (operation.GetString() == "app.installed"
+                && IsString(observed, "authority", "windows_start_catalog_snapshot"))
+            {
+                // The provider's human-readable authority is observed data too.
+                names.Add("catálogo de inicio de Windows");
+                names.Add("Windows Start application catalog");
+            }
             bool processInventory = operation.GetString() == "system.process.list";
             string[] fields = processInventory ? ["name"] : ["title", "processName"];
             if (observed.TryGetProperty(processInventory ? "processes" : "windows", out JsonElement entries)

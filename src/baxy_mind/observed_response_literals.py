@@ -8,7 +8,7 @@ import re
 def without_observed_names(text: str, situation: object) -> str:
     """Mask complete observed names in a scratch copy; never change public prose.
 
-    Only successful typed window/process observations supply vocabulary. Mission steps
+    Only successful typed observations supply vocabulary. Mission steps
     keep their own verification envelope; merged observations and dialogue do not.
     """
     names: set[str] = set()
@@ -26,10 +26,14 @@ def without_observed_names(text: str, situation: object) -> str:
         operation = node.get("operation")
         if (node.get("kind") == "operation"
                 and isinstance(operation, str)
-                and (operation.startswith("window.") or operation == "system.process.list")
+                and (operation.startswith("window.") or operation in {"system.process.list", "app.installed"})
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
             observed = node.get("observed")
+            if (operation == "app.installed" and isinstance(observed, dict)
+                    and observed.get("authority") == "windows_start_catalog_snapshot"):
+                # The provider's human-readable authority is observed data too.
+                names.update(("catálogo de inicio de Windows", "Windows Start application catalog"))
             process_inventory = operation == "system.process.list"
             entries = observed.get("processes" if process_inventory else "windows") if isinstance(observed, dict) else None
             fields = ("name",) if process_inventory else ("title", "processName")

@@ -1,0 +1,149 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T20:16:02.8134594Z",
+  "candidate": "8c383af1ef1ffde022be16c0635ab4e94c96a8a9",
+  "source_candidate": 948,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "59ce95b4e3cae56ec9d8713614f489931592b1a22f7583a54087a9b83e29a1a2",
+  "manifest_sha256": "737e0adbf55d35d121e3ba612ed86d1ed161fd3b3e0dce9571acaa1f705a6b0b",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0503",
+      "verdict": "fail",
+      "reason": "Actual app.installed verified negative inv51b451d9-3b70-4924-bddc-e5a39bb43d0f. False first opened claim correctly rejected. Faithful retry/third rejected as forbidden_term: human-readable observed catalog name. Final composition_failed, remains open; cause updated immediately.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 1,
+      "case_id": "app-missing940-variant-es",
+      "verdict": "fail",
+      "reason": "Courtesy fix reaches actual app.installed verified negative inv424accfd-ccfa-42d0-b967-a0f97f9becab. First/third draft forbidden_term for observed catalog name; retry also asserted_failure for unrecognized registered wording. Final composition_failed.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 2,
+      "case_id": "app-missing940-variant-en",
+      "verdict": "pass",
+      "reason": "Actual app.installed verified negative inv576a8d29-24f3-457b-ad3d-b7af3fd6c6fe, xkdrn681 absent from observed Windows Start catalog. Useful faithful English final; passes Python and C# composition. A pertinent variant, no independent survey credit.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The application xkdrn681 was not found in the Windows Start application catalog, so it cannot be opened.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 3,
+      "case_id": "app-missing947-boundary-prohibition",
+      "verdict": "pass",
+      "reason": "Acknowledges both prohibitions; no app lookup or opening.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Claro, no verificaré ni abriré la aplicación qzvmp472.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 4,
+      "case_id": "app-missing947-boundary-quotation",
+      "verdict": "fail",
+      "reason": "Asks what action the user is taking instead of explaining the quotation; no lookup or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What specific action are you taking regarding application xkdrn681?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 5,
+      "case_id": "app-missing947-boundary-missing-target",
+      "verdict": "pass",
+      "reason": "Requests missing application identity, no invented target or effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Sobre qué aplicación necesitas comprobar si está instalada?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 6,
+      "case_id": "app-missing947-boundary-future-condition",
+      "verdict": "fail",
+      "reason": "Wrong actor/language and altered target rjv924 instead of rjvqx294; repeats as command rather than respecting future condition. No lookup/effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Si autorizo eso la semana que viene, verifica si la aplicación rjv924 está instalada.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 7,
+      "case_id": "app-missing947-boundary-absence-inference",
+      "verdict": "pass",
+      "reason": "Correctly explains that a random-looking name cannot establish installed state; no lookup/effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No necesariamente. Un nombre de aplicación que parezca aleatorio no demuestra por sí solo que no está instalada; depende del contexto y de si el sistema reconoce la app.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    }
+  ],
+  "executed": 8,
+  "passed": 4,
+  "failed": 4,
+  "not_executed": 0,
+  "coverage_added": 0,
+  "registry_before": "e9b3459c0beaf27be052b7dfc6549ae9654941a186afc62c1d9f0d1426624e6d",
+  "registry_after": "76950cfbb3ee7b1aa5d0acd7b09c0b1247e99d848d2ba933bb3b6891a374f0ad",
+  "resources": {
+    "utc": "2026-09-11T20:12:57.389243+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2423.75390625,
+    "seconds": 80.29699999999139,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "scope": "8 turns/8 controls,3 actual verified app.installed reads, no app.open or other effects. Session7712 collected7b7700 exit0/pins unchanged. No UI/voice credit."
+}
