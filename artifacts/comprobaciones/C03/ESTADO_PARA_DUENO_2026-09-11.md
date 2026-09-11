@@ -1,16 +1,16 @@
 # Estado para el dueño — 11 de septiembre
 
-La encuesta avanzó a **70/742 cubiertos, 672 abiertos y 0 no aplican**. BAXY abrió Terminal y confirmó lo observado. También abrió Notepad al recibir la corrección en inglés que antes fallaba.
+La encuesta avanzó a **71/742 cubiertos, 671 abiertos y 0 no aplican**. Las dos últimas tandas acreditaron Terminal y la búsqueda de «toreo» en Google. También pasó la corrección en inglés para abrir Notepad.
 
-La tanda ejecutó 7 casos: 6 válidos, 1 fallido y 1 crédito nuevo. Una prohibición todavía recibió una respuesta de incapacidad injustificada, aunque no ejecutó la acción prohibida.
+Se corrigió el rechazo de una respuesta fiel que contenía el signo de consulta de la URL. La última tanda ejecutó6casos:4válidos y2fallidos. Todavía algunas prohibiciones y condiciones futuras reciben mensajes de fallo inadecuados; no ejecutaron la acción.
 
-| Medición934 | Resultado |
+| Medición919 | Resultado |
 |---|---:|
-| Pico VRAM | 3497,56 MiB |
-| Pico RAM | 2130,32 MiB |
-| Duración | 34,484 s |
-| Violaciones de recursos | 0 |
+| Pico VRAM |3549,50MiB |
+| Pico RAM |2957,55MiB |
+| Duración |48,937s |
+| Violaciones de recursos |0 |
 
-RAM y VRAM se comparan por separado con4096MiB. Apertura de apps y web empatan en43abiertos: continúa web con una reparación ya preparada. Los efectos inciertos anteriores siguen sin reintentos.
+RAM y VRAM se comparan por separado con4096MiB. Apertura de apps vuelve primera con43abiertos frente a42web. Continúa el diagnóstico de causas comunes para acreditar varios literales; los efectos inciertos anteriores siguen sin reintentos.
 
-Ritmo:42 acreditaciones confirmadas en24h; dos actualizaciones adicionales no permiten fechar la primera acreditación.0/35categorías cerradas y3/11filasC03cumplidas. No hay fecha de cierre fiable. Suites/Fast/Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.
+Ritmo:43 acreditaciones confirmadas en24h; dos actualizaciones adicionales no permiten fechar la primera acreditación.0/35categorías cerradas y3/11filasC03cumplidas. No hay fecha de cierre fiable. Suites/Fast/Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.

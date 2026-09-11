@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T19:23:29.5350925Z",
-  "covered": 70,
-  "open": 672,
+  "utc": "2026-09-11T19:28:35.5116471Z",
+  "covered": 71,
+  "open": 671,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 44,
+  "covered_updated_last_24h": 45,
   "updated_recent_ids": [
     "H0017",
     "H0035",
@@ -51,9 +51,10 @@
     "H0490",
     "H0622",
     "H0267",
-    "H0688"
+    "H0688",
+    "H0397"
   ],
-  "confirmed_new_grants_last_24h": 42,
+  "confirmed_new_grants_last_24h": 43,
   "first_grant_date_not_distinguished_for_recent_ids": [
     "H0180",
     "H0499"
@@ -71,8 +72,8 @@
       "category": "web_navigation_search",
       "label": "Navegación y búsqueda web",
       "total": 46,
-      "covered": 3,
-      "open": 43,
+      "covered": 4,
+      "open": 42,
       "not_applicable": 0
     },
     {
@@ -355,16 +356,17 @@
     "APP_PRIORITY922/ROOT_ADJUDICATION.json",
     "APP_RESPONSE925/ROOT_ADJUDICATION.json",
     "APP_GROUNDING930/ROOT_ADJUDICATION.json",
-    "APP_TERMINAL934/ROOT_ADJUDICATION.json"
+    "APP_TERMINAL934/ROOT_ADJUDICATION.json",
+    "WEB_RESPONSE919/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps43/web43 tied after H0688 grant934. Root selects web; adopt reserved927 then directed919, no full panel replay.",
+  "equal_maximum_open_next_selection": "Apps43 now precedes web42 after H0397 credit919.937 investigates missing provider observations;938 pre-provider largest app intent group.936 preserves future web controls and five named-browser failures.",
   "latest_product_run": {
-    "batch": 934,
-    "executed": 7,
-    "passed": 6,
-    "failed": 1,
+    "batch": 919,
+    "executed": 6,
+    "passed": 4,
+    "failed": 2,
     "not_executed": 0,
     "coverage_added": 1
   },
-  "registry_sha256": "c6b76f41751102fb244888ea972f345f90aaa9e48a413b2ad53d682dcbc7a922"
+  "registry_sha256": "e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492"
 }

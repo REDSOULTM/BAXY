@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**70/742 cubiertos, 672 abiertos, 0 no aplican; 42 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: c6b76f41751102fb244888ea972f345f90aaa9e48a413b2ad53d682dcbc7a922. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**71/742 cubiertos, 671 abiertos, 0 no aplican; 43 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente932:5d7fed5124af3394299d39effeb6c087a829ec00. Última ejecución934:7 ejecutados,6 válidos,1 fallido,+H0688. Apps43/web43 empatadas; raíz selecciona web919 tras reparación927. Los apartados de tandas anteriores son historia; novedades al final.
+Fuente vigente927:76a6c0948908b1ee90ff98a9165defac141b4e4b. Última ejecución919:6 ejecutados,4 válidos,2 fallidos,+H0397. Apps43 precede web42; informes937/938 preparan siguiente avance. Los apartados de tandas anteriores son historia; novedades al final.
 
 Últimos tres tramos:
 
@@ -28,7 +28,7 @@ Tabla de la taxonomía846, ordenada por requisitos abiertos:
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
 | Abrir aplicaciones | 54 | 11 | 43 | 0 |
-| Navegación y búsqueda web | 46 | 3 | 43 | 0 |
+| Navegación y búsqueda web | 46 | 4 | 42 | 0 |
 | Música | 39 | 0 | 39 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
@@ -247,3 +247,11 @@ Apps43/web43 empatan: raíz selecciona web.935 verifica reserva919 intacta; pró
 Raíz revisó y adoptó repair927 SHA7e9bd891cd94238a1bc3b83ae41aacece4291730209b58814bd2bd779b80cc59; llm.py SHA8b92e63fa0ad0f7ce741cfd962f8e31da3d41e8699e0e8dfe984a7828e48a37c. Cambia sólo la detección de pregunta: el ? dentro de requestedUrl/finalUrl exactos, observados en navegación verified/succeeded, no se trata como pregunta agregada. La salida original y demás verificaciones se conservan; URL distinta o pregunta exterior no se exceptúan. Preserva926. Sin tests/build por orden y cambio sólo Python; pendiente ejecución real919.
 
 935 REPORT SHA7f73e3511f0811d69edec6124bfe48ea4d664e4dc9cead3aa1a56f0965b054f2 confirma reserva919 intacta, H0397+5límites nunca ejecutados, referencias912 pertinentes. Apps43/web43 permite seleccionar web.70/742,672open,0NA;42altas24h,0/35categorías.
+
+## Tramo919 — búsqueda Google acreditada después de927
+
+71/742 cubiertos,671 abiertos,0 no aplican;43 altas confirmadas24h,0/35 categorías cerradas.6 casos ejecutados,4válidos/2fallidos,+H0397 escrito al verificar efecto y respuesta. Navegación a https://www.google.com/search?q=toreo completed/verified inva5c2c6d4-954f-4306-b005-030b701a1d54; final «Confirmado, se navegó a https://www.google.com/search?q=toreo.». Pares pertinentes Google912 se referencian sin repetir. Prohibición y condición futura recibieron mensajes de fallo inadecuados, sin efectos; cita, aclaración y privacidad conceptual válidas.
+
+Exit0,7admisiones reales incluida1confirmación exacta ordinaria,6finales, pins intactos.48,937s, VRAM3549,50MiB/RAM2957,55MiB, sin violaciones. Sin suites/build ni crédito UI/voz/lectura de contenido. La reparación927 de signo de consulta sí queda observada.
+
+Apps43 vuelve primera frente a web42.937 revisa pérdida de observaciones en fallos de proveedor;938 busca causa anterior al provider que permita varios literales, sin repetir efectos inciertos.936 PLAN SHA dbf9d37031ea561f4fa5017f28f7d18fc9e2e3f994f60e225c4ed991a8559c26 conserva controles web nuevos H0084/H0326/H0605 y grupo5 de navegador nombrado, todavía sin panel ni ejecución. No rellenar35 con fallos no reparados. Registro SHA e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492.

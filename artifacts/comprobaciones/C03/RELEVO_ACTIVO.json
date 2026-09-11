@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "70/742covered,672open,0NA;42grants24h,0/35categories,C03 3/11.9347executed6pass1fail,+H0688.",
-  "continuation": "Apps43/web43 tied after H0688 grant934. Root selects web; adopt reserved927 then directed919, no full panel replay.",
+  "checkpoint": "71/742covered,671open,0NA;43grants24h,0/35categories,C03 3/11.9196executed4pass2fail,+H0397.",
+  "continuation": "Apps43 now precedes web42 after H0397 credit919.937 investigates missing provider observations;938 pre-provider largest app intent group.936 preserves future web controls and five named-browser failures.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -29,12 +29,12 @@
   },
   "surveyVerificationCounts": {
     "not_applicable": 0,
-    "open": 672,
-    "covered": 70
+    "open": 671,
+    "covered": 71
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "5d7fed5124af3394299d39effeb6c087a829ec00",
-  "workStatus": "adjudicated934_select_web919",
+  "publishedSourceCommit": "76a6c0948908b1ee90ff98a9165defac141b4e4b",
+  "workStatus": "adjudicated919_apps_priority937938",
   "goalStatusNote": "Owner approved the proposed methodology: omit automated suites, Fast and Full; retain sealed product executions and evidence-based survey credit. Previous scope blocker resolved.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "0a945cb407d3f3aaede2796c8924a6630bfd392b",
@@ -87,15 +87,15 @@
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "exitCode": 0,
-    "sourceCandidate": "5d7fed5124af3394299d39effeb6c087a829ec00",
+    "sourceCandidate": "76a6c0948908b1ee90ff98a9165defac141b4e4b",
     "state": "complete",
-    "sessionId": 95633,
+    "sessionId": 50717,
     "coverageAdded": 1,
-    "failed": 1,
-    "receipt": "APP_TERMINAL934/ROOT_ADJUDICATION.json",
+    "failed": 2,
+    "receipt": "WEB_RESPONSE919/ROOT_ADJUDICATION.json",
     "notExecuted": 0,
-    "passed": 6,
-    "collectionChunk": "646b09"
+    "passed": 4,
+    "collectionChunk": "ffce4a"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
