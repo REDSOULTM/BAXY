@@ -114,7 +114,7 @@ def test_count_composition_keeps_observation_scope_without_competing_row_count(t
     original = copy.deepcopy(source)
     seen = _compose_situation_payload(source, "es", text)["seen"]
     assert seen == {
-        "observedProcessCount": 207,
+        "observedProcessCount": {"value": 207, "unit": "accessible process instances observed before row selection"},
         "observationScope": (
             "processes accessible during this observation; "
             "completeness for the whole PC is not established"
@@ -128,7 +128,10 @@ def test_resource_projection_keeps_instance_identity_and_correct_measurement(sor
     source = situation(sort)
     original = copy.deepcopy(source)
     seen = _compose_situation_payload(source, "en", "List the running processes.")["seen"]
-    assert seen["observedProcessCount"] == 207 and seen["returnedProcessCount"] == 2
+    assert seen["observedProcessCount"] == {
+        "value": 207, "unit": "accessible process instances observed before row selection",
+    }
+    assert seen["returnedProcessCount"] == {"value": 2, "unit": "selected process rows supplied from that observation"}
     assert [row["process_identity"] for row in seen["processes"]] == [
         "Editor (PID 731)", "Editor (PID 927)",
     ]

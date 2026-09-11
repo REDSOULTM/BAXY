@@ -54,7 +54,9 @@ def test_process_instances_get_enough_bounded_output_without_changing_their_fact
     user_message = request["messages"][-1]["content"]
     facts = json.loads(user_message.split("situation: ", 1)[1].split("\n", 1)[0])
     assert len(facts["seen"]["processes"]) == count
-    assert facts["seen"]["observedProcessCount"] == 209
+    assert facts["seen"]["observedProcessCount"] == {
+        "value": 209, "unit": "accessible process instances observed before row selection",
+    }
     assert [p["process_identity"] for p in facts["seen"]["processes"]] == [
         f"Editor (PID {pid})" for pid in range(701, 701 + count)
     ]

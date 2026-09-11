@@ -85,8 +85,10 @@ def test_verified_process_scope_reaches_first_prompt_and_existing_retry(
         "processes accessible during this observation; "
         "completeness for the whole PC is not established"
     )
-    assert seen["observedProcessCount"] == 207
-    assert seen["returnedProcessCount"] == 2
+    assert seen["observedProcessCount"] == {
+        "value": 207, "unit": "accessible process instances observed before row selection",
+    }
+    assert seen["returnedProcessCount"] == {"value": 2, "unit": "selected process rows supplied from that observation"}
     assert [row["process_identity"] for row in seen["processes"]] == [
         "Editor (PID 731)", "Editor (PID 927)",
     ]
@@ -143,28 +145,43 @@ def test_selected_ranking_keeps_all_rows_and_identities_on_retry(row_count, reso
         prompt_facts = request["messages"][-1]["content"]
         facts = json.loads(prompt_facts.split("situation: ", 1)[1].split("\n", 1)[0])
         assert facts["seen"]["processes"] == expected_rows
-        assert facts["seen"]["returnedProcessCount"] == row_count
-        assert facts["seen"]["observedProcessCount"] == 207
+        assert facts["seen"]["returnedProcessCount"] == {
+            "value": row_count, "unit": "selected process rows supplied from that observation",
+        }
+        assert facts["seen"]["observedProcessCount"] == {
+            "value": 207, "unit": "accessible process instances observed before row selection",
+        }
 
 
-def test_count_only_prompt_keeps_the_observed_count_and_scope_without_rows():
-    client = Recorder(["Se observaron 207 procesos accesibles."])
+@pytest.mark.parametrize("question,reply", [
+    ("Cuántos procesos observaste sin listarlos?", "Se observaron 207 procesos accesibles."),
+    ("How many processes did you observe?", "207 accessible processes were observed."),
+])
+@pytest.mark.parametrize("retry", [False, True])
+def test_count_only_prompt_keeps_the_observed_count_and_scope_without_rows_on_retry(question, reply, retry):
+    source = situation()
+    original = copy.deepcopy(source)
+    client = Recorder(["", reply] if retry else [reply])
 
     assert client.compose_user_message(
-        "Cuántos procesos observaste sin listarlos?", "status", {"situation": situation()}
-    ) == "Se observaron 207 procesos accesibles."
-    assert len(client.requests) == 1
-    system = client.requests[0]["messages"][0]["content"].casefold()
-    assert "a count-only reply states the observed count and scope without rows" in system
-    prompt_facts = client.requests[0]["messages"][-1]["content"]
-    facts = json.loads(prompt_facts.split("situation: ", 1)[1].split("\n", 1)[0])
-    assert facts["seen"] == {
-        "observedProcessCount": 207,
-        "observationScope": (
-            "processes accessible during this observation; "
-            "completeness for the whole PC is not established"
-        ),
-    }
+        question, "status", {"situation": source}
+    ) == reply
+    assert len(client.requests) == (2 if retry else 1)
+    assert source == original
+    for request in client.requests:
+        system = request["messages"][0]["content"].casefold()
+        assert "a count-only reply states the observed count and scope without rows" in system
+        prompt_facts = request["messages"][-1]["content"]
+        facts = json.loads(prompt_facts.split("situation: ", 1)[1].split("\n", 1)[0])
+        assert facts["seen"] == {
+            "observedProcessCount": {
+                "value": 207, "unit": "accessible process instances observed before row selection",
+            },
+            "observationScope": (
+                "processes accessible during this observation; "
+                "completeness for the whole PC is not established"
+            ),
+        }
 
 
 @pytest.mark.parametrize(

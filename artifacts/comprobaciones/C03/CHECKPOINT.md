@@ -1,3 +1,11 @@
+812 validado:306dueñas pass/0skip/3,34s;Fast0 recogido63356,Release22,94s,0advertencias/errores,31pinsintactos. Siete líneas ligan cuentas a población, sin prompt/checker.813 listo mismos50 tras publicación. 81140/50 preservado,10ganancias/7pérdidas;sin adopción. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+812 integrado: siete líneas de proyección ligan cuentas a población, sin prompt/checker. 306dueñas pass/0skip/3,34s;Fast activo63356/PID4048,31pins.813 preparado mismos50, worktree retirado tras snapshot exacto.81140/50 preservado,10ganancias/7pérdidas,sin adopción. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+811 completo, sesión2624 recogida0 y sin procesos producto:40/50 válidos,10fallidos; 10ganancias/7pérdidas frente809. Listas11/11,conteos12/12,memoria8/11,CPU9/11,noespecificado0/4,app0/1. Identidades/PIDs conservados en filas mostradas; regresiones por cardinalidad/alcance. 253,406s; mediana4,512s; VRAM3499,56MiB/RAM2455,99MiB,sin infracciones.810sinadoptar. 812 aislado: ligar cada cuenta a su población en proyección existente,sin prompt/checker. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+811 activo, sesión2624/launcher21988: mismos50, fuente810 identidad proyectada nombre+PID. 247 dueñas pass/0skip, Fast0/Release22,18s,30pins. Publicadof4480bf2, originigual/mainintacto. Adjudicación raíz contra observaciones nuevas; sin fuente/Full duranteGPU.80937/50 conservado. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.
+
 810 validado:247 dueñas pass/0skip/3,04s; Fast0 recogido sesión85129, Release22,18s, 0advertencias/errores,30pins intactos. Cambio único: nombre+PID juntos en proyección existente; modelo/prompt/checker/presupuestos/canónico intactos.811 listo mismos50, antes publicar con80937/50 preservado. Sin adopción ni crédito. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.
 
 810 integrado: seis líneas en proyección existente agrupan nombre y PID como dato, sin cambiar prompt. 247 dueñas pass/0skip/3,04s; Fast activo sesión85129/PID5312,30pins.811 preparado y revisado, mismos50. Worktree810 retirado tras snapshot exacto.80937/50 conservado, sin adopción. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.

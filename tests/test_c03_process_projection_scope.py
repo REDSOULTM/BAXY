@@ -44,7 +44,12 @@ def test_count_only_has_scope_meaning_without_enum_or_competing_rows(user_text):
 
     projected = project_process_measurements(source, user_text)
 
-    assert projected == {"observedProcessCount": 207, "observationScope": SCOPE_MEANING}
+    assert projected == {
+        "observedProcessCount": {
+            "value": 207, "unit": "accessible process instances observed before row selection",
+        },
+        "observationScope": SCOPE_MEANING,
+    }
     assert "accessible_processes" not in json.dumps(projected)
     assert source == original
 
@@ -61,8 +66,12 @@ def test_list_scope_keeps_counts_order_identity_and_resource_units(sort, user_te
 
     assert projected["observationScope"] == SCOPE_MEANING
     assert "accessible_processes" not in json.dumps(projected)
-    assert projected["observedProcessCount"] == 207
-    assert projected["returnedProcessCount"] == 2
+    assert projected["observedProcessCount"] == {
+        "value": 207, "unit": "accessible process instances observed before row selection",
+    }
+    assert projected["returnedProcessCount"] == {
+        "value": 2, "unit": "selected process rows supplied from that observation",
+    }
     assert projected["logicalProcessorCount"] == 8
     assert projected["sort"] == sort
     rows = projected["processes"]

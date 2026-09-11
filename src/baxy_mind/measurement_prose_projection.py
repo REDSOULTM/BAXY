@@ -85,6 +85,13 @@ def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[s
             "processes accessible during this observation; "
             "completeness for the whole PC is not established"
         )
+        for key, unit in (
+            ("observedProcessCount", "accessible process instances observed before row selection"),
+            ("returnedProcessCount", "selected process rows supplied from that observation"),
+        ):
+            value = seen.get(key)
+            if type(value) is int and value >= 0:
+                result[key] = {"value": value, "unit": unit}
     request = fold(user_text)
     count_request = re.search(
         r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,

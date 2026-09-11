@@ -1,0 +1,66 @@
+{
+  "source_candidate": 810,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias con PIDs, nombres y MB correctos en orden;145 observados/10 mostrados, subconjunto de los accesibles explícito."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias/PIDs y MB correctos,145 observados/10 mostrados y subconjunto explícito. La alusión general al límite no afirma que sólo10 sean accesibles."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Declara diez listados pero muestra sólo cuatro. Métrica memoria y cuatro identidades/valores correctos no reparan la contradicción de cardinalidad."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Dos máximos actuales por intervalo, PIDs y porcentajes correctos, declara exactamente dos mostrados de145observados y explica que son los primeros dos del ranking accesible. No se pidió un número concreto; el recorte es explícito y no afirma diez mostrados."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "139 procesos observados accesibles, con límite explícito de completitud del sistema; no confunde diez filas con el conteo."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Top5 de memoria conserva las cinco identidades/PIDs, orden y MB correctos;142observados/5listados como subconjunto, sin agregar instancias."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Afirma diez listados mientras muestra cuatro; declarar memoria y conservar esos cuatro PIDs/valores no repara la cardinalidad falsa."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Atribuye el working set de un proceso python a la aplicación de mayor memoria sin observación de membresía ni agregado de aplicaciones."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "139 observados, alcance de procesos accesibles y completitud del sistema no establecida; conteo verdadero con límite."
+    }
+  ]
+}

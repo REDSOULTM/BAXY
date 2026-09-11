@@ -33,7 +33,9 @@ def test_compositor_preserves_selected_instances_order_measurements_and_raw_evid
     seen = _compose_situation_payload(source, "en", "List the selected processes.")["seen"]
 
     assert {key: value for key, value in seen.items() if key != "processes"} == {
-        "sort": sort, "observedProcessCount": 217, "returnedProcessCount": row_count,
+        "sort": sort,
+        "observedProcessCount": {"value": 217, "unit": "accessible process instances observed before row selection"},
+        "returnedProcessCount": {"value": row_count, "unit": "selected process rows supplied from that observation"},
         "logicalProcessorCount": 8,
         "observationScope": (
             "processes accessible during this observation; "
@@ -104,7 +106,7 @@ def test_count_only_still_omits_all_rows_and_identity_fields(sort):
     original = copy.deepcopy(source)
 
     assert project_process_measurements(source, "Count processes without listing.") == {
-        "observedProcessCount": 217,
+        "observedProcessCount": {"value": 217, "unit": "accessible process instances observed before row selection"},
         "observationScope": (
             "processes accessible during this observation; "
             "completeness for the whole PC is not established"

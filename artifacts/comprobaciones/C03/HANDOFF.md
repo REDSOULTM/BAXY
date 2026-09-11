@@ -1,4 +1,4 @@
-# Handoff — C03 — 2026-09-11 — 860c9fdc publicado
+# Handoff — C03 — 2026-09-11 — f4480bf2 publicado
 
 ## Objetivo y estado
 C03 íntegro EN_CURSO: aceptación100/100, ocho rutas, recuperación, UI/audio real, Full final y continuidadC04–C09. Autoridad: attachment310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md, SHA951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d. Encuesta742/rev1248 intacta:28cubiertos/714abiertos/0NA; matriz3cumplidas/5contradichas/3pendientes. No crédito nuevo.
@@ -6,12 +6,14 @@ C03 íntegro EN_CURSO: aceptación100/100, ocho rutas, recuperación, UI/audio r
 809 completo y adjudicado por raíz:37/50, siete ganancias/siete pérdidas vs807. Listas9/11, conteos12/12, CPU9/11, memoria3/11, no especificado4/4, app0/1. Sesión13207 recogida0; sin procesos producto/TaskManager.243,25s; VRAM3497,56MiB/RAMresidente2399,81MiB, sin infracciones. Todos50 finales,29pins intactos; candidato808 sin adoptar. Recibos PROCESS_BATCH809; RESPUESTAS_ADJUDICADAS.md privado en C03-process-batch809-private. Finalizador809 ejecutado una vez; no repetir.
 
 ## Decisión y siguiente acción
-810 validado:247 dueñas pass/0skip/3,04s; Fast0 recogido sesión85129, Release22,18s, 0advertencias/errores,30pins intactos. Cambio único: nombre+PID juntos en proyección existente; modelo/prompt/checker/presupuestos/canónico intactos.811 listo mismos50, antes publicar con80937/50 preservado. Sin adopción ni crédito. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.
+812 validado:306dueñas pass/0skip/3,34s;Fast0 recogido63356,Release22,94s,0advertencias/errores,31pinsintactos. Siete líneas ligan cuentas a población, sin prompt/checker.813 listo mismos50 tras publicación. 81140/50 preservado,10ganancias/7pérdidas;sin adopción. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
 
-Publicar fuente810+evidencia809, lanzar811 y registrar sesión/PIDs. Worktree810 retirado con snapshot exacto. Preparador811 y reparador810 terminaron; finalizador811 sólo prepara ensamblador exterior, sin juicio.
+Publicar y lanzar813; finalizador813 exterior preparado, no ejecutado. Ningún agente activo. Worktree812 retirado con snapshot exacto.811sesión2624 recogida0, todos50juicios finales conservados.
 
 ## Validación y decisiones conservadas
-808 actual publicado860c9fdc, origin igual:204 dueñas pass/0skip/2,78s; Fast0/Release21,84s/0advertencias/errores,29pins. Cambió sólo párrafo existente de filas y test.806 proyección de alcance conservada;198 dueñas yFast0.80737/50,80537/50,80135/50 y80328/50 en9+41 permanecen históricos, sin regrado. Propuesta checker804 descartada por falsos vetos y aceptación de identidad extra.
+810 actual publicadof4480bf2, originigual:247 dueñas pass/0skip/3,04s,Fast0/Release22,18s,30pins. Proyección nombre+PID, seis líneas; sin Full810 ni adopción.
+
+808 publicado860c9fdc como antecedente:204 dueñas pass/0skip/2,78s; Fast0/Release21,84s/0advertencias/errores,29pins. Cambió sólo párrafo existente de filas y test.806 proyección de alcance conservada;198 dueñas yFast0.80737/50,80537/50,80135/50 y80328/50 en9+41 permanecen históricos, sin regrado. Propuesta checker804 descartada por falsos vetos y aceptación de identidad extra.
 
 Full804 repetición1 verde:12714Pythonpass/3skips/466subtests/603,40s;.NET4642pass/1omisión agregada;16optativas impresas no disjuntas. Release4,58s,28pins. PrimerFull rojo preservado. R278 restauró bytesHEAD de2REVIEW_CAPTURE sin cambiarJSON;3dueñaspass. No publicar hashes históricos defectuosos. Logs/4recibos nuevos804/803resume preservados con-text; logrojo conserva espacios crudos. Full804 no es Full806/808. Full acumulado de adopción y final pendientes.
 

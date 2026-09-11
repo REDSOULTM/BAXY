@@ -1,0 +1,20 @@
+{
+  "batch": 813,
+  "candidate": 812,
+  "adopted": false,
+  "registered_cases": 50,
+  "runner": "scratchpad/c03-process-batch813.py",
+  "reviewer": "scratchpad/c03-review-process813.py",
+  "runner_sha256": "b636a7014803c7e662be94cce4fdeb67dc0c95861ab673b2a5fbdb79a5f1b185",
+  "reviewer_sha256": "b494c90d0c8ddc701db29a49a8f6186bbe3fd4f07e992ffb86cadff03b92b73b",
+  "source_pins_sha256": "53e5ae5949e821a8c19fba203afed1eaf56cdbfd80b44cb1f2bdf1cd52f3c7a3",
+  "validation_sha256": "653ebe9960ccdb09cf05aac1e20d801b75f4cd7ccdffa651f38eff39ea66a9da",
+  "root_review": "Verified exact derivation of811 guards/seals to813/812 and31pins; independent baselineFull804 retained. Same50panel795/model/backend/profile settings. Root quality judgment required.",
+  "launch_after": "Own publication, build servers idle, freeRAM>=4000MiB, no concurrent product/tests.",
+  "full_scope": "Full804 prior baseline only, not Full812. Cumulative adoption and final Full pending.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

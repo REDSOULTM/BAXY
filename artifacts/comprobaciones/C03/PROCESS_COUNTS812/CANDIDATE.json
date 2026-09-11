@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-11T05:02:43.116525+00:00",
+  "candidate": 812,
+  "adopted": false,
+  "base_commit": "f4480bf2ba95efcd29cae7f5fd6238b0b0011890",
+  "changed_files": [
+    "src/baxy_mind/measurement_prose_projection.py",
+    "tests/test_c03_process_count_projection.py",
+    "tests/test_c03_process_identity_projection.py",
+    "tests/test_c03_process_inventory.py",
+    "tests/test_c03_process_output_budget.py",
+    "tests/test_c03_process_projection_scope.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "difference": "Seven lines in existing accessible-process projection bind each count to its population as value/unit. Observed instances before selection and supplied selected rows stay distinct. No new instruction, checker or layer.",
+  "root_review": "Exact nonnegative integers, including zero and large values, retained without rounding or recounting. Missing/malformed counts and unknown scope remain raw. Counts are not claimed as already narrated rows. Raw evidence, identities810, row order and resource measurements unchanged.",
+  "cause": "81140/50: three observed-versus-returned confusions, six false narrated row counts and one app aggregation failure. This tests count representation, not a claimed fix for omitted output rows or app membership.",
+  "owners": "Root eight complete suites306 passed/0skipped/3.34s; command chunkbb83f9 exit0. Includes direct valid count replies and retry ES/EN, preserving the no-extra-call check.",
+  "baseline_full": "Full804/FULL_RETRY1 is previous baseline only, not Full812. Python-only812 owners+Fast precede813; cumulative adoption and final Full remain required.",
+  "unchanged": "Model, backend, sampler, prompts, budgets, factual checker, canonical observations, frozen50 panel.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}
