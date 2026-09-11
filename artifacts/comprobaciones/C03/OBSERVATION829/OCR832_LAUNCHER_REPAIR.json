@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-11T09:15:23.117781+00:00",
+  "prior_failed_preflight": {
+    "collection_chunk": "b22e70",
+    "exit_code": 1,
+    "reported_busy_pid": 25556,
+    "reported_name": "python.exe",
+    "outputs_created": false,
+    "model_inference_started": false,
+    "historical_pid_identity": "not recoverable; no ancestry receipt from that failed process"
+  },
+  "diagnosis": {
+    "review_private": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ocr832-launcher-review.md",
+    "review_sha256": "488749368c0af470d070feb2c74afcc2778ebd17c564f230ad588f1302db99cb",
+    "cause": "Windows venv redirector parent has the same arguments and matched scratchpad/c03- guard",
+    "probe": "One non-model ancestry probe by delegated preparation confirmed mechanism, not historical PID identity"
+  },
+  "repair": {
+    "old_driver_sha256": "b370cc5c341fb829b664263ec00727643186f5836a28c114fb9910fe1c939134",
+    "driver_sha256": "7c44441d25f1105aec06e61043faa1b445017a33395bb2b3fecea812ec2c4626",
+    "scope": "Exclude only immediate parent with exact venv executable, distinct verified base child executable and identical arguments. All other busy predicates unchanged."
+  },
+  "root_checks": {
+    "actual_guard_ast_executed": true,
+    "current_and_verified_parent_only": [
+      15564,
+      17684
+    ],
+    "independent_runner_still_detected": true,
+    "model_started": false,
+    "source46_unchanged": true
+  }
+}

@@ -79,9 +79,24 @@ def main():
     require(Path(subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=ROOT, text=True).strip()).resolve() == ROOT.resolve(), 'Wrong repository')
     require(subprocess.check_output(['git', 'branch', '--show-current'], cwd=ROOT, text=True).strip() == 'Goal-c03', 'Wrong branch')
     require(psutil.virtual_memory().available >= 2700 * 2**20, 'Initial free RAM below 2700 MiB')
+    own_pids = {os.getpid()}
+    current_process = psutil.Process()
+    parent_process = current_process.parent()
+    if parent_process is not None:
+        try:
+            is_own_venv_launcher = (
+                Path(parent_process.exe()).resolve() == Path(sys.executable).resolve()
+                and Path(current_process.exe()).resolve() == Path(sys._base_executable).resolve()
+                and Path(parent_process.exe()).resolve() != Path(current_process.exe()).resolve()
+                and parent_process.cmdline()[1:] == current_process.cmdline()[1:]
+            )
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            is_own_venv_launcher = False
+        if is_own_venv_launcher:
+            own_pids.add(parent_process.pid)
     busy = []
     for process in psutil.process_iter(['pid', 'name', 'cmdline']):
-        if process.pid == os.getpid():
+        if process.pid in own_pids:
             continue
         info = process.info
         name = (info['name'] or '').lower()
@@ -329,6 +344,7 @@ def main():
     require(normalized_command(command) == normalized_command(previous_command), 'Inherited server command changed')
     prereg = {'utc': utc(), 'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'candidate': 'OBSERVATION829/UNICODE_RETRY2', 'case_ids': [c['id'] for c in cases], 'case_count': 8,
+        'own_invocation_pids': sorted(own_pids),
         'seals': seals, 'source_pins': pins, 'sources': sources, 'environment': environment, 'config': config,
         'server_command': command, 'previous772_server_command': previous_command, 'server_cwd': str(Path(config['python']).parent),
         'intent': 'status', 'input': 'Literal user_message; situation(kind=operation, operation=ocr.read, verified=true, succeeded=true, polarity=success, observed=unchanged receipt.Result). No other facts.',

@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "829 Full verde recogido0 f2dfa4:12907Pythonpass/3skip/466subtests/682,40s;4715.NETpass/1omisiónagregada/16optinsno disjuntos;46pins1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac. Nativo16checks estructuralespass; recorte1108x694 frenteventana2564x1320/escritorio1244x818 requiere diagnósticoDPI835. Candidato829sinadoptar,publicarWIPvalidado. 832listo conFullSHAd7858325857a250d1a5aeafaebe327cd6aa8aad3b4d26fa1ff5f9997f832c9ed,driverb370cc5c. Sinmodelo aún. Encuesta36/706/0,82449/50,H0675abierto,C03EN_CURSO.",
-  "continuation": "Publish validated WIP829 with capture coordinate limitation, then run OCR832 immediately on exact Full/pins. Root adjudicates8answers. DPI835 probe external preparation may continue; no source edits during GPU. Do not re-run Full77847 or nativecapture829. Diagnose DPI separately before real app observation834. All C03 remains active.",
+  "checkpoint": "829 Full green, published validated WIP5ab3c01a, not adopted.832 initial preflight failed before outputs/model; verified own venv parent exclusion repaired, independent runner still detected. DPI835 metadata probe confirmed physical/virtualized mismatch, context restored. Survey36/706/0; processes49/50; H0675 and all C03 active.",
+  "continuation": "Publish runner-only repair then execute OCR832 with unchanged Full/source/panel/profile. Root judges8 answers. Integrate DPI835 only after GPU and owners; native capture proof before adoption.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "observation829_validated_ocr832_pending",
+  "workStatus": "ocr832_launcher_repaired_dpi835_confirmed",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Root reproduced Unicode layout loss in new829 projection (1 failing test), removed premature check/helper, 13 targeted and325 integration pass, Fast0; interrupted oldFull receipts preserved; newFull77847started. Driver832 transport byte preservation dynamically verified without model. No new survey/category credit.",
+  "previousGoalTurnClassificationReason": "Published validated WIP829; root DPI probe proved coordinate mismatch; isolated and repaired driver self-parent false busy guard without changing product source.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -120,7 +120,7 @@
     "source_pins_unchanged": true,
     "adopted": false
   },
-  "activeReadOnlyAgent": "capture826_provenance: external DPI835 metadata-only probe preparation",
+  "activeReadOnlyAgent": "capture826_provenance: isolated DPI835 repair preparation, no build during GPU",
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "name": "process824",
@@ -955,5 +955,6 @@
     "owners_reference_pass": 17,
     "owners_reference_skip": 1,
     "receipt": "PROCESS_NARRATOR823/ROOT_VALIDATION.json"
-  }
+  },
+  "publishedCandidateCommit": "5ab3c01a3c842213bf83f0ba530580c4f121ea60"
 }
